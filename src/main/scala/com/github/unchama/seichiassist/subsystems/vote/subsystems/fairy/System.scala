@@ -1,15 +1,13 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy
 
 import cats.effect.concurrent.Ref
-import cats.effect.{ConcurrentEffect, Sync, SyncEffect, SyncIO}
-import cats.instances.uuid
+import cats.effect.{ConcurrentEffect, Sync, SyncIO}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.{
   BukkitRepositoryControls,
   PlayerDataRepository
 }
 import com.github.unchama.datarepository.template.RepositoryDefinition
-import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.repository.SpeechServiceRepositoryDefinitions
@@ -29,12 +27,9 @@ trait System[F[_], Player] extends Subsystem[F] {
 
 object System {
 
-  def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread, G[_]: SyncEffect: ContextCoercion[
-    *[_],
-    F
-  ]]: SyncIO[System[F, Player]] = {
+  def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread]: SyncIO[System[F, Player]] = {
     val persistence = new JdbcFairyPersistence[F]
-    implicit val gatewayProvider: Player => FairySpeechGateway[SyncIO] =
+    implicit val fairySpeechGatewayProvider: Player => FairySpeechGateway[SyncIO] =
       new BukkitFairySpeechGateway(_)
 
     for {
@@ -49,9 +44,6 @@ object System {
     } yield {
       new System[F, Player] {
         override val api: FairyAPI[F, Player] = new FairyAPI[F, Player] {
-          val repository: PlayerDataRepository[FairySpeechService[SyncIO]] =
-            speechServiceRepositoryControls.repository
-
           override def appleOpenState(uuid: UUID): F[AppleOpenState] =
             persistence.appleOpenState(uuid)
 
@@ -116,6 +108,10 @@ object System {
             uuid: UUID,
             fairyRecoveryMana: FairyRecoveryMana
           ): F[Unit] = persistence.updateFairyRecoveryMana(uuid, fairyRecoveryMana)
+
+          override val fairySpeechServiceRepository
+            : PlayerDataRepository[FairySpeechService[SyncIO]] =
+            speechServiceRepositoryControls.repository
         }
 
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] =

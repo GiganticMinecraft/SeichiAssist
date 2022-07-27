@@ -5,7 +5,6 @@ import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions.BukkitFairySpeak
 import org.bukkit.entity.Player
 
 import scala.concurrent.duration.FiniteDuration

@@ -23,9 +23,10 @@ object BukkitReceiveVoteBenefits {
     F
   ]]: ReceiveVoteBenefits[F, G, Player] =
     new ReceiveVoteBenefits[F, G, Player] {
-      override def receive(
-        player: Player
-      )(implicit voteAPI: VoteAPI[F], breakCountAPI: BreakCountAPI[F, G, Player]): F[Unit] = {
+      override def receive(player: Player)(
+        implicit voteAPI: VoteAPI[F, Player],
+        breakCountAPI: BreakCountAPI[F, G, Player]
+      ): F[Unit] = {
         val uuid = player.getUniqueId
         for {
           notReceivedBenefits <- voteAPI.notReceivedVoteBenefits(uuid) // 受け取っていない投票特典数

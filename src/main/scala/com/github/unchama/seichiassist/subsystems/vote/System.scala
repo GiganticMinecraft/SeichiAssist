@@ -11,16 +11,16 @@ import org.bukkit.entity.Player
 
 import java.util.UUID
 
-trait System[F[_]] extends Subsystem[F] {
+trait System[F[_], Player] extends Subsystem[F] {
   val api: VoteAPI[F, Player]
 }
 
 object System {
 
-  def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread]: System[F] = {
+  def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread]: System[F, Player] = {
     val votePersistence = new JdbcVotePersistence[F]
 
-    new System[F] {
+    new System[F, Player] {
       override implicit val api: VoteAPI[F, Player] = new VoteAPI[F, Player] {
         override def voteCounterIncrement(playerName: PlayerName): F[Unit] =
           votePersistence.voteCounterIncrement(playerName)

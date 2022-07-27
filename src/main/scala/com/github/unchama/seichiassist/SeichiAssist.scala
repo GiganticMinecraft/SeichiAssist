@@ -388,11 +388,11 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val sharedInventorySystem: subsystems.sharedinventory.System[IO] =
     subsystems.sharedinventory.System.wired[IO]
 
-  private lazy val voteSystem: subsystems.vote.System[IO] =
+  private lazy val voteSystem: subsystems.vote.System[IO, Player] =
     subsystems.vote.System.wired[IO]
 
   private lazy val fairySystem: subsystems.vote.subsystems.fairy.System[IO, Player] =
-    subsystems.vote.subsystems.fairy.System.wired[IO, SyncIO].unsafeRunSync()
+    subsystems.vote.subsystems.fairy.System.wired[IO].unsafeRunSync()
 
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
@@ -572,7 +572,7 @@ class SeichiAssist extends JavaPlugin() {
       anywhereEnderSystem.accessApi
     implicit val sharedInventoryAPI: SharedInventoryAPI[IO, Player] =
       sharedInventorySystem.api
-    implicit val voteAPI: VoteAPI[IO] = voteSystem.api
+    implicit val voteAPI: VoteAPI[IO, Player] = voteSystem.api
     implicit val fairyAPI: FairyAPI[IO, Player] = fairySystem.api
 
     val menuRouter = TopLevelRouter.apply

@@ -73,7 +73,7 @@ object TopLevelRouter {
     subHomeReadApi: SubHomeReadAPI[IO],
     enderChestAccessApi: AnywhereEnderChestAPI[IO],
     sharedInventoryAPI: SharedInventoryAPI[IO, Player],
-    voteAPI: VoteAPI[IO],
+    voteAPI: VoteAPI[IO, Player],
     fairyAPI: FairyAPI[IO, Player]
   ): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     import assortedRankingApi._

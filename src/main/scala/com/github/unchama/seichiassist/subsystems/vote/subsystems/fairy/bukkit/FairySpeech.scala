@@ -1,8 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit
 
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
-import cats.effect.{ConcurrentEffect, Sync, SyncIO}
-import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
+import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
   FairyMessage,
@@ -10,16 +9,12 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.p
   NameCalledByFairy
 }
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.resources.FairyMessageTable
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.service.FairySpeechService
 import org.bukkit.entity.Player
 
 import java.time.LocalTime
 import scala.util.Random
 
-class FairySpeech[F[_]: ConcurrentEffect](
-  implicit serviceRepository: PlayerDataRepository[FairySpeechService[SyncIO]],
-  fairyAPI: FairyAPI[F, Player]
-) {
+class FairySpeech[F[_]: ConcurrentEffect](implicit fairyAPI: FairyAPI[F, Player]) {
 
   import cats.implicits._
 
@@ -36,6 +31,7 @@ class FairySpeech[F[_]: ConcurrentEffect](
           FairyMessageTable.nightMessages(nameCalledByFairy)
       message <- randomMessage(fairyMessages)
     } yield {
+      val serviceRepository = fairyAPI.fairySpeechServiceRepository
       serviceRepository(player)
         .makeSpeech(message, fairyAPI.fairyPlaySound(player.getUniqueId).toIO.unsafeRunSync())
     }
