@@ -7,8 +7,8 @@ import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.domain.EffectPoint
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.SummonFairy
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.FairySpeech
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.routines.FairySpeechRoutine
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyUsingState.Using
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
   FairyRecoveryManaAmount,
   FairyUsingState
@@ -97,6 +97,7 @@ object BukkitSummonFairy {
         SequentialEffect(
           UnfocusedEffect {
             eff.unsafeRunSync()
+            new FairySpeech().summonSpeech(player)
             BukkitFairySpeak[IO].speakStartMessage(player).unsafeRunSync()
           },
           MessageEffect(

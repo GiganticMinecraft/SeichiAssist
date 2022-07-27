@@ -392,7 +392,7 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.vote.System.wired[IO]
 
   private lazy val fairySystem: subsystems.vote.subsystems.fairy.System[IO, Player] =
-    subsystems.vote.subsystems.fairy.System.wired[IO, SyncIO]
+    subsystems.vote.subsystems.fairy.System.wired[IO, SyncIO].unsafeRunSync()
 
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
