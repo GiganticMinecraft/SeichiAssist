@@ -5,19 +5,14 @@ import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.FairySpeak
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain._
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
-  FairyMessage,
-  FairyMessages,
-  NameCalledByFairy
-}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property._
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.resources.FairyMessageTable
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.entity.Player
-import org.bukkit.ChatColor._
 
 import java.time.LocalTime
 import scala.util.Random
