@@ -6,17 +6,8 @@ import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain._
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.bukkit.FairyLoreTable
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
-  AppleOpenState,
-  FairyEndTime,
-  FairyLore,
-  FairyPlaySound,
-  FairyRecoveryMana,
-  FairySummonCost,
-  FairyUsingState
-}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property._
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.infrastructure.JdbcFairyPersistence
 import org.bukkit.entity.Player
 
