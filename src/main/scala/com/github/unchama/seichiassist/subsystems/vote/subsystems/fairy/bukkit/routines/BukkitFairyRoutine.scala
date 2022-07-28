@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.routines
 
 import cats.effect.{ConcurrentEffect, IO, SyncIO, Timer}
+import cats.implicits.catsSyntaxFlatMapOps
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
@@ -43,6 +44,7 @@ class BukkitFairyRoutine extends FairyRoutine[IO, SyncIO, Player] {
     RepeatingRoutine.permanentRoutine(
       repeatInterval,
       onMainThread.runAction {
+        println(s"UsingState: ${fairyAPI.fairyUsingState(player).unsafeRunSync()}")
         if (fairyAPI.fairyUsingState(player).unsafeRunSync() == FairyUsingState.Using) {
           if (
             fairyAPI
@@ -53,13 +55,16 @@ class BukkitFairyRoutine extends FairyRoutine[IO, SyncIO, Player] {
               .get
               .isBefore(LocalDateTime.now())
           ) {
-            new FairySpeech[IO, SyncIO].bye(player).runAsync(_ => IO.unit)
+            // 終了時間が今よりも過去だったとき(つまり有効時間終了済み)
+            new FairySpeech[IO, SyncIO].bye(player).runAsync(_ => IO.unit) >>
+              fairyAPI
+                .updateFairyUsingState(player, FairyUsingState.NotUsing)
+                .runAsync(_ => IO.unit)
           } else {
+            // まだ終了時間ではない(つまり有効時間内)
             BukkitRecoveryMana[IO, SyncIO](player).recovery.runAsync(_ => IO.unit)
           }
-        } else {
-          SyncIO.unit
-        }
+        } else SyncIO.unit
       }
     )
   }
