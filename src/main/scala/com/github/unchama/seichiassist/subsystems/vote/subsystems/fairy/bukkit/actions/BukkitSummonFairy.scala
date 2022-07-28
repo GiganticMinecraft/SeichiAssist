@@ -53,7 +53,7 @@ object BukkitSummonFairy {
             uuid = player.getUniqueId
             _ <- voteAPI.decreaseEffectPoint(uuid, EffectPoint(fairySummonCost.value * 2))
             _ <- fairyAPI.updateFairyRecoveryManaAmount(uuid, recoveryMana)
-            _ <- fairyAPI.updateFairyEndTime(player, fairySummonCost.validTime)
+            _ <- fairyAPI.updateFairyEndTime(player, fairySummonCost.endTime)
           } yield ()
 
           LiftIO[IO].liftIO {
