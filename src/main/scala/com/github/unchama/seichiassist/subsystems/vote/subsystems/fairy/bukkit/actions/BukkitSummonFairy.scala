@@ -63,6 +63,7 @@ object BukkitSummonFairy {
               FairySpeechRoutineが一度も起動されていなければ起動する
              */
             if (isFairyEndTimeDefined.isEmpty) {
+              println("empty")
               import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
               implicit val contextShift: ContextShift[IO] =
                 IO.contextShift(ExecutionContext.global)

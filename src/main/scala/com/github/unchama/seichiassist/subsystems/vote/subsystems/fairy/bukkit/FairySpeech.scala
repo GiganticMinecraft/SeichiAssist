@@ -48,7 +48,7 @@ class FairySpeech[F[_]: ConcurrentEffect](implicit fairyAPI: FairyAPI[F, Player]
         FairyMessageTable.manaFullMessages
       case FairyManaRecoveryState.consumptionApple =>
         FairyMessageTable.consumed
-      case FairyMessageTable.notConsumed =>
+      case FairyManaRecoveryState.notConsumptionApple =>
         FairyMessageTable.notConsumed
     }
     randomMessage(messages(nameCalledByFairy)).map { message =>

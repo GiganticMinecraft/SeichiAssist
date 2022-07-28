@@ -34,139 +34,146 @@ object BukkitRecoveryMana {
         .readManaAmount(player)
         .map { oldManaAmount =>
           if (oldManaAmount.isFull)
-            return new FairySpeech[IO].speechRandomly(player, FairyManaRecoveryState.full)
-          val uuid = player.getUniqueId
-
-          for {
-            seichiAmountData <- breakCountAPI.seichiAmountDataRepository(player).read.toIO
-            defaultRecoveryManaAmount <- fairyAPI.fairyRecoveryMana(uuid)
-            chainVoteNumber <- voteAPI.chainVoteDayNumber(uuid)
-            appleOpenState <- fairyAPI.appleOpenState(uuid)
-            gachaimoObjectOpt <- MineStackObjectList.findByName("gachaimo")
-          } yield {
-            val playerLevel = seichiAmountData.levelCorrespondingToExp
-
-            val playerdata = SeichiAssist.playermap(player.getUniqueId)
-            val gachaRingoObject = gachaimoObjectOpt.get
-            val mineStackedGachaRingoAmount =
-              playerdata.minestack.getStackedAmountOf(gachaRingoObject)
-
-            val isAppleOpenStateIsOpenOROpenALittle =
-              appleOpenState == AppleOpenState.OpenALittle || appleOpenState == AppleOpenState.Open
-            val isManaExistsSeventyFivePercent = oldManaAmount.ratioToCap.exists(_ >= 0.75)
-
-            val defaultAmount = Math.pow(playerLevel.level / 10, 2)
-
-            val chainVoteDayNumber = chainVoteNumber.value
-            // 連続投票を適用した除算量
-            val chainVoteDivisionAmount =
-              if (chainVoteDayNumber >= 30) 2
-              else if (chainVoteDayNumber >= 10) 1.2
-              else if (chainVoteDayNumber >= 3) 1.25
-              else 1
-
-            // りんごの開放状況を適用した除算量
-            val appleOpenStateDivisionAmount =
-              if (isAppleOpenStateIsOpenOROpenALittle && isManaExistsSeventyFivePercent) 2
-              else 1
-
-            // りんごの開放状況まで適用したりんごの消費量 (暫定)
-            val appleOpenStateReflectedAmount =
-              (defaultAmount / chainVoteDivisionAmount).toInt / appleOpenStateDivisionAmount
-
-            // 妖精がつまみ食いする量
-            val amountEatenByKnob =
-              if (appleOpenStateReflectedAmount >= 10)
-                new Random().nextInt(appleOpenStateReflectedAmount / 10)
-              else 0
-
-            /*
-            最終的に算出されたりんごの消費量
-            (現時点では持っているりんごの数を
-              考慮していないので消費量は確定していない)
-             */
-            val finallyAppleConsumptionAmount =
-              Math.max(appleOpenStateReflectedAmount + amountEatenByKnob, 1)
-
-            // りんごの消費量
-            val appleConsumptionAmount =
-              if (appleOpenState == AppleOpenState.NotOpen) {
-                0
-              } else {
-                Math.max(finallyAppleConsumptionAmount, mineStackedGachaRingoAmount)
-              }
-
-            // マナの回復量を算出する
-            val recoveryManaAmount = {
-              val appleOpenStateDivision = {
-                if (isAppleOpenStateIsOpenOROpenALittle && isManaExistsSeventyFivePercent) 2
-                else if (appleOpenState == AppleOpenState.NotOpen) 4
-                else 1
-              }
-
-              val reflectedAppleOpenStateAmount =
-                defaultRecoveryManaAmount.recoveryMana / appleOpenStateDivision
-
-              // minestackに入っているりんごの数を適用したマナの回復量
-              val reflectedMineStackedAmount: Int =
-                if (finallyAppleConsumptionAmount > mineStackedGachaRingoAmount) {
-                  if (mineStackedGachaRingoAmount == 0) {
-                    reflectedAppleOpenStateAmount / {
-                      if (appleOpenState == AppleOpenState.Open) 4
-                      else if (appleOpenState == AppleOpenState.OpenALittle) 4
-                      else 2
-                    }
-                  } else {
-                    if ((mineStackedGachaRingoAmount / finallyAppleConsumptionAmount) <= 0.5)
-                      (reflectedAppleOpenStateAmount * 0.5).toInt
-                    else
-                      (reflectedAppleOpenStateAmount * mineStackedGachaRingoAmount / finallyAppleConsumptionAmount).toInt
-                  }
-                } else reflectedAppleOpenStateAmount
-
-              (reflectedMineStackedAmount - reflectedMineStackedAmount / 100) + Random.nextInt(
-                reflectedMineStackedAmount / 50
-              )
-            }
-
-            // minestackからりんごを消費する
-            playerdata
-              .minestack
-              .subtractStackedAmountOf(gachaRingoObject, appleConsumptionAmount)
-
-            // マナを回復する
-            manaApi
-              .manaAmount(player)
-              .restoreAbsolute(ManaAmount(recoveryManaAmount))
+            new FairySpeech[IO]
+              .speechRandomly(player, FairyManaRecoveryState.full)
               .unsafeRunSync()
+          else {
+            val uuid = player.getUniqueId
 
-            if (finallyAppleConsumptionAmount > mineStackedGachaRingoAmount) {
-              MessageEffect(s"$RESET$YELLOW${BOLD}MineStackにがちゃりんごがないようです。。。")
-                .apply(player)
+            val eff = for {
+              seichiAmountData <- breakCountAPI.seichiAmountDataRepository(player).read.toIO
+              defaultRecoveryManaAmount <- fairyAPI.fairyRecoveryMana(uuid)
+              chainVoteNumber <- voteAPI.chainVoteDayNumber(uuid)
+              appleOpenState <- fairyAPI.appleOpenState(uuid)
+              gachaimoObjectOpt <- MineStackObjectList.findByName("gachaimo")
+            } yield {
+              val playerLevel = seichiAmountData.levelCorrespondingToExp
+
+              val playerdata = SeichiAssist.playermap(player.getUniqueId)
+              val gachaRingoObject = gachaimoObjectOpt.get
+              val mineStackedGachaRingoAmount =
+                playerdata.minestack.getStackedAmountOf(gachaRingoObject)
+
+              val isAppleOpenStateIsOpenOROpenALittle =
+                appleOpenState == AppleOpenState.OpenALittle || appleOpenState == AppleOpenState.Open
+              val isManaExistsSeventyFivePercent = oldManaAmount.ratioToCap.exists(_ >= 0.75)
+
+              val defaultAmount = Math.pow(playerLevel.level / 10, 2)
+
+              val chainVoteDayNumber = chainVoteNumber.value
+              // 連続投票を適用した除算量
+              val chainVoteDivisionAmount =
+                if (chainVoteDayNumber >= 30) 2
+                else if (chainVoteDayNumber >= 10) 1.2
+                else if (chainVoteDayNumber >= 3) 1.25
+                else 1
+
+              // りんごの開放状況を適用した除算量
+              val appleOpenStateDivisionAmount =
+                if (isAppleOpenStateIsOpenOROpenALittle && isManaExistsSeventyFivePercent) 2
+                else 1
+
+              // りんごの開放状況まで適用したりんごの消費量 (暫定)
+              val appleOpenStateReflectedAmount =
+                (defaultAmount / chainVoteDivisionAmount).toInt / appleOpenStateDivisionAmount
+
+              // 妖精がつまみ食いする量
+              val amountEatenByKnob =
+                if (appleOpenStateReflectedAmount >= 10)
+                  new Random().nextInt(appleOpenStateReflectedAmount / 10)
+                else 0
+
+              /*
+                 最終的に算出されたりんごの消費量
+                  (現時点では持っているりんごの数を
+                  考慮していないので消費量は確定していない)
+               */
+              val finallyAppleConsumptionAmount =
+                Math.max(appleOpenStateReflectedAmount + amountEatenByKnob, 1)
+
+              // りんごの消費量
+              val appleConsumptionAmount =
+                if (appleOpenState == AppleOpenState.NotOpen) {
+                  0
+                } else {
+                  Math.max(finallyAppleConsumptionAmount, mineStackedGachaRingoAmount)
+                }
+
+              // マナの回復量を算出する
+              val recoveryManaAmount = {
+                val appleOpenStateDivision = {
+                  if (isAppleOpenStateIsOpenOROpenALittle && isManaExistsSeventyFivePercent) 2
+                  else if (appleOpenState == AppleOpenState.NotOpen) 4
+                  else 1
+                }
+
+                val reflectedAppleOpenStateAmount =
+                  defaultRecoveryManaAmount.recoveryMana / appleOpenStateDivision
+
+                // minestackに入っているりんごの数を適用したマナの回復量
+                val reflectedMineStackedAmount =
+                  if (finallyAppleConsumptionAmount > mineStackedGachaRingoAmount) {
+                    if (mineStackedGachaRingoAmount == 0) {
+                      reflectedAppleOpenStateAmount / {
+                        if (appleOpenState == AppleOpenState.Open) 4
+                        else if (appleOpenState == AppleOpenState.OpenALittle) 4
+                        else 2
+                      }
+                    } else {
+                      if ((mineStackedGachaRingoAmount / finallyAppleConsumptionAmount) <= 0.5)
+                        (reflectedAppleOpenStateAmount * 0.5).toInt
+                      else
+                        (reflectedAppleOpenStateAmount * mineStackedGachaRingoAmount / finallyAppleConsumptionAmount).toInt
+                    }
+                  } else reflectedAppleOpenStateAmount
+
+                (reflectedMineStackedAmount - reflectedMineStackedAmount / 100) +
+                  (if (reflectedMineStackedAmount >= 50)
+                     Random.nextInt(reflectedMineStackedAmount / 50)
+                   else 0)
+              }
+
+              // minestackからりんごを消費する
+              playerdata
+                .minestack
+                .subtractStackedAmountOf(gachaRingoObject, appleConsumptionAmount)
+
+              // マナを回復する
+              manaApi
+                .manaAmount(player)
+                .restoreAbsolute(ManaAmount(recoveryManaAmount))
                 .unsafeRunSync()
-            }
 
-            SequentialEffect(
-              UnfocusedEffect {
-                new FairySpeech[IO]()
-                  .speechRandomly(
-                    player,
-                    if (finallyAppleConsumptionAmount > mineStackedGachaRingoAmount)
-                      FairyManaRecoveryState.notConsumptionApple
-                    else FairyManaRecoveryState.consumptionApple
-                  )
+              if (finallyAppleConsumptionAmount > mineStackedGachaRingoAmount) {
+                MessageEffect(s"$RESET$YELLOW${BOLD}MineStackにがちゃりんごがないようです。。。")
+                  .apply(player)
                   .unsafeRunSync()
-              },
-              MessageEffect(s"$RESET$YELLOW${BOLD}マナ妖精が${recoveryManaAmount}マナを回復してくれました"),
-              if (appleConsumptionAmount != 0)
-                MessageEffect(
-                  s"$RESET$YELLOW${BOLD}あっ！${appleConsumptionAmount}個のがちゃりんごが食べられてる！"
-                )
-              else MessageEffect(s"$RESET$YELLOW${BOLD}あなたは妖精にりんごを渡しませんでした。")
-            ).apply(player).unsafeRunSync()
+              }
+
+              SequentialEffect(
+                UnfocusedEffect {
+                  new FairySpeech[IO]
+                    .speechRandomly(
+                      player,
+                      if (finallyAppleConsumptionAmount > mineStackedGachaRingoAmount)
+                        FairyManaRecoveryState.notConsumptionApple
+                      else FairyManaRecoveryState.consumptionApple
+                    )
+                    .unsafeRunSync()
+                },
+                MessageEffect(s"$RESET$YELLOW${BOLD}マナ妖精が${recoveryManaAmount}マナを回復してくれました"),
+                if (appleConsumptionAmount != 0)
+                  MessageEffect(
+                    s"$RESET$YELLOW${BOLD}あっ！${appleConsumptionAmount}個のがちゃりんごが食べられてる！"
+                  )
+                else MessageEffect(s"$RESET$YELLOW${BOLD}あなたは妖精にりんごを渡しませんでした。")
+              ).apply(player).unsafeRunSync()
+            }
+            eff.unsafeRunAsyncAndForget()
           }
         }
-        .unsafeRunSync()
+        .toIO
+
   }
 
 }

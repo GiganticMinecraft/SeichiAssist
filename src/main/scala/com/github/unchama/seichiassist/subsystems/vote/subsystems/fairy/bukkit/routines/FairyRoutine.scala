@@ -22,6 +22,7 @@ object FairyRoutine {
     manaApi: ManaApi[IO, SyncIO, Player],
     context: RepeatingTaskContext
   ): IO[Nothing] = {
+    println("startRoutine")
 
     val repeatInterval: IO[FiniteDuration] = IO {
       import scala.concurrent.duration._
