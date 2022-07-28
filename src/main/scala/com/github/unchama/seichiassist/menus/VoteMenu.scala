@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.menus
 
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
-import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
@@ -19,11 +18,9 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions.BukkitSummonFairy
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
   AppleOpenState,
-  FairyMessage,
   FairyPlaySound,
   FairySummonCost
 }
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.service.FairySpeechService
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -279,12 +276,12 @@ object VoteMenu extends Menu {
               val endTime =
                 fairyAPI.fairyEndTime(player).unsafeRunSync().get.endTimeOpt.get
 
-              BukkitFairySpeak[IO]
-                .speak(
-                  player,
-                  FairyMessage(s"僕は${endTime.getHour}:${endTime.getMinute}には帰るよー。")
-                )
-                .unsafeRunAsyncAndForget()
+//              BukkitFairySpeak[IO]
+//                .speak(
+//                  player,
+//                  FairyMessage(s"僕は${endTime.getHour}:${endTime.getMinute}には帰るよー。")
+//                )
+//                .unsafeRunAsyncAndForget()
             },
             closeInventoryEffect
           )

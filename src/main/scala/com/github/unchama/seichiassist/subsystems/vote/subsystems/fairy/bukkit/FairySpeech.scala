@@ -4,6 +4,7 @@ import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
+  FairyManaRecoveryState,
   FairyMessage,
   FairyMessages,
   NameCalledByFairy
@@ -36,11 +37,26 @@ class FairySpeech[F[_]: ConcurrentEffect](implicit fairyAPI: FairyAPI[F, Player]
         .makeSpeech(message, fairyAPI.fairyPlaySound(player.getUniqueId).toIO.unsafeRunSync())
     }
 
-  // TODO: 妖精によるマナ回復関連が定義されたこれを定義する
-//  def speechRandomly(player: Player): F[Unit] = {
-//    val nameCalledByFairy = NameCalledByFairy(player.getName)
-//
-//  }
+  def speechRandomly(
+    player: Player,
+    fairyManaRecoveryState: FairyManaRecoveryState
+  ): F[Unit] = {
+    val nameCalledByFairy = NameCalledByFairy(player.getName)
+    val messages = fairyManaRecoveryState match {
+      case FairyManaRecoveryState.full =>
+        FairyMessageTable.manaFullMessages
+      case FairyManaRecoveryState.consumptionApple =>
+        FairyMessageTable.consumed
+      case FairyMessageTable.notConsumed =>
+        FairyMessageTable.notConsumed
+    }
+    randomMessage(messages(nameCalledByFairy)).map { message =>
+      fairyAPI
+        .fairySpeechServiceRepository(player)
+        .makeSpeech(message, fairyAPI.fairyPlaySound(player.getUniqueId).toIO.unsafeRunSync())
+        .unsafeRunSync()
+    }
+  }
 
   private def randomMessage(fairyMessages: FairyMessages): F[FairyMessage] = Sync[F].delay {
     val messages = fairyMessages.messages
