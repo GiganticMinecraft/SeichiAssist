@@ -173,11 +173,28 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
    */
   override def appleAteByFairyMyRanking(uuid: UUID): F[AppleAteByFairyRank] = Sync[F].delay {
     DB.readOnly { implicit session =>
-      val rank = sql"SELECT name,p_apple,COUNT(*) AS rank FROM playerdata;"
+      val rank = sql"SELECT name,p_apple,COUNT(*) AS rank FROM playerdata ORDER BY DESC;"
         .map(_.int("rank"))
         .single()
         .apply()
       AppleAteByFairyRank(rank.get)
     }
   }
+
+  /**
+   * 妖精に食べさせたりんごの量の順位上位4件を返す
+   */
+  override def appleAteByFairyRankingTopFour(uuid: UUID): F[AppleAteByFairyRankTopFour] =
+    Sync[F].delay {
+      DB.readOnly { implicit session =>
+        val topFour =
+          sql"SELECT name,p_apple,COUNT(*) AS rank FROM playerdata ORDER BY DESC LIMIT 4;"
+            .map(_.intOpt("rank"))
+            .toList()
+            .apply()
+            .map(_.map(AppleAteByFairyRank))
+
+        AppleAteByFairyRankTopFour(topFour.head.get, topFour(1), topFour(2), topFour(3))
+      }
+    }
 }

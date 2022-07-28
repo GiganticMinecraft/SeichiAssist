@@ -144,6 +144,20 @@ object System {
              */
             override def appleAteByFairy(uuid: UUID): IO[AppleAmount] =
               persistence.appleAteByFairy(uuid)
+
+            /**
+             * 自分の妖精に食べさせたりんごの量の順位を返す
+             */
+            override def appleAteByFairyMyRanking(player: Player): IO[AppleAteByFairyRank] =
+              persistence.appleAteByFairyMyRanking(player.getUniqueId)
+
+            /**
+             * 妖精に食べさせたりんごの量の順位上位3件を返す
+             */
+            override def appleAteByFairyRankingTopThree(
+              player: Player
+            ): IO[AppleAteByFairyRankTopFour] =
+              persistence.appleAteByFairyRankingTopFour(player.getUniqueId)
           }
 
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[IO, _]] = {

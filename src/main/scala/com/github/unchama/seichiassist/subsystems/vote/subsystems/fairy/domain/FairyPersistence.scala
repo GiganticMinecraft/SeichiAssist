@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
   AppleAmount,
   AppleAteByFairyRank,
+  AppleAteByFairyRankTopFour,
   AppleOpenState,
   FairyEndTime,
   FairyRecoveryMana,
@@ -78,5 +79,10 @@ trait FairyPersistence[F[_]] {
    * 自分の妖精に食べさせたりんごの量の順位を返す
    */
   def appleAteByFairyMyRanking(uuid: UUID): F[AppleAteByFairyRank]
+
+  /**
+   * 妖精に食べさせたりんごの量の順位上位4件を返す
+   */
+  def appleAteByFairyRankingTopFour(uuid: UUID): F[AppleAteByFairyRankTopFour]
 
 }
