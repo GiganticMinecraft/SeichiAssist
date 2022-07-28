@@ -71,9 +71,14 @@ class FairySpeech[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
     playSound <- fairyAPI.fairyPlaySound(player.getUniqueId)
   } yield {
     val endTime = endTimeOpt.get.endTimeOpt.get
-    fairyAPI
-      .fairySpeechServiceRepository(player)
-      .makeSpeech(FairyMessage(s"僕は${endTime.getHour}:${endTime.getMinute}には帰るよー。"), playSound)
+    ContextCoercion {
+      fairyAPI
+        .fairySpeechServiceRepository(player)
+        .makeSpeech(
+          FairyMessage(s"僕は${endTime.getHour}:${endTime.getMinute}には帰るよー。"),
+          playSound
+        )
+    }.toIO.unsafeRunSync()
   }
 
   private def randomMessage(fairyMessages: FairyMessages): F[FairyMessage] = Sync[F].delay {
