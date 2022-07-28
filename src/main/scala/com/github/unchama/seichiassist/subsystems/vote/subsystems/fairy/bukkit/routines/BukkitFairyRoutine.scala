@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.routines
 
 import cats.effect.{ConcurrentEffect, IO, SyncIO, Timer}
-import cats.implicits.catsSyntaxFlatMapOps
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
@@ -10,12 +9,9 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.FairyRoutine
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.FairySpeech
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions.BukkitRecoveryMana
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairyUsingState
 import org.bukkit.entity.Player
 
-import java.time.LocalDateTime
 import scala.concurrent.duration.FiniteDuration
 
 class BukkitFairyRoutine extends FairyRoutine[IO, SyncIO, Player] {
@@ -44,27 +40,7 @@ class BukkitFairyRoutine extends FairyRoutine[IO, SyncIO, Player] {
     RepeatingRoutine.permanentRoutine(
       repeatInterval,
       onMainThread.runAction {
-        println(s"UsingState: ${fairyAPI.fairyUsingState(player).unsafeRunSync()}")
-        if (fairyAPI.fairyUsingState(player).unsafeRunSync() == FairyUsingState.Using) {
-          if (
-            fairyAPI
-              .fairyEndTime(player)
-              .unsafeRunSync()
-              .get
-              .endTimeOpt
-              .get
-              .isBefore(LocalDateTime.now())
-          ) {
-            // 終了時間が今よりも過去だったとき(つまり有効時間終了済み)
-            new FairySpeech[IO, SyncIO].bye(player).runAsync(_ => IO.unit) >>
-              fairyAPI
-                .updateFairyUsingState(player, FairyUsingState.NotUsing)
-                .runAsync(_ => IO.unit)
-          } else {
-            // まだ終了時間ではない(つまり有効時間内)
-            BukkitRecoveryMana[IO, SyncIO](player).recovery.runAsync(_ => IO.unit)
-          }
-        } else SyncIO.unit
+        BukkitRecoveryMana[IO, SyncIO](player).recovery.runAsync(_ => IO.unit)
       }
     )
   }
