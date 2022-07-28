@@ -391,8 +391,14 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val voteSystem: subsystems.vote.System[IO, Player] =
     subsystems.vote.System.wired[IO]
 
-  private lazy val fairySystem: subsystems.vote.subsystems.fairy.System[IO, Player] =
-    subsystems.vote.subsystems.fairy.System.wired[IO].unsafeRunSync()
+  private lazy val fairySystem: subsystems.vote.subsystems.fairy.System[IO, Player] = {
+    import PluginExecutionContexts.sleepAndRoutineContext
+    implicit val breakCountAPI: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
+    implicit val voteAPI: VoteAPI[IO, Player] = voteSystem.api
+    implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
+
+    subsystems.vote.subsystems.fairy.System.wired.unsafeRunSync()
+  }
 
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,

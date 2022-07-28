@@ -8,21 +8,21 @@ import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.FairyRoutine
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions.BukkitRecoveryMana
 import org.bukkit.entity.Player
 
 import scala.concurrent.duration.FiniteDuration
 
-object FairyRoutine {
+object BukkitFairyRoutine extends FairyRoutine[IO, SyncIO, Player] {
 
-  def start(player: Player)(
-    implicit fairyAPI: FairyAPI[IO, Player],
-    breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
+  override def start(player: Player)(
+    implicit breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
+    fairyAPI: FairyAPI[IO, Player],
     voteAPI: VoteAPI[IO, Player],
     manaApi: ManaApi[IO, SyncIO, Player],
     context: RepeatingTaskContext
   ): IO[Nothing] = {
-    println("startRoutine")
 
     val repeatInterval: IO[FiniteDuration] = IO {
       import scala.concurrent.duration._

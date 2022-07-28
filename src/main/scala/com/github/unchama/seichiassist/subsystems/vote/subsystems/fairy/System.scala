@@ -1,17 +1,25 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy
 
 import cats.effect.concurrent.Ref
-import cats.effect.{ConcurrentEffect, Sync, SyncIO}
+import cats.effect.{IO, SyncIO}
+import com.github.unchama.concurrent.RepeatingTaskContext
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.{
   BukkitRepositoryControls,
   PlayerDataRepository
 }
 import com.github.unchama.datarepository.template.RepositoryDefinition
-import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.repository.SpeechServiceRepositoryDefinitions
+import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
+import com.github.unchama.seichiassist.subsystems.mana.ManaApi
+import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.FairyRoutine
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.repository.{
+  FairyManaRecoveryRoutineFiberRepositoryDefinition,
+  SpeechServiceRepositoryDefinitions
+}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.gateway.BukkitFairySpeechGateway
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.routines.BukkitFairyRoutine
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairySpeechGateway
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.bukkit.FairyLoreTable
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property._
@@ -27,10 +35,16 @@ trait System[F[_], Player] extends Subsystem[F] {
 
 object System {
 
-  def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread]: SyncIO[System[F, Player]] = {
-    val persistence = new JdbcFairyPersistence[F]
+  def wired(
+    implicit breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
+    voteAPI: VoteAPI[IO, Player],
+    manaApi: ManaApi[IO, SyncIO, Player],
+    context: RepeatingTaskContext
+  ): SyncIO[System[IO, Player]] = {
+    val persistence = new JdbcFairyPersistence[IO]
     implicit val fairySpeechGatewayProvider: Player => FairySpeechGateway[SyncIO] =
       new BukkitFairySpeechGateway(_)
+    implicit val fairyRoutine: FairyRoutine[IO, SyncIO, Player] = BukkitFairyRoutine
 
     for {
       speechServiceRepositoryControls <- BukkitRepositoryControls.createHandles(
@@ -42,81 +56,97 @@ object System {
           )
       )
     } yield {
-      new System[F, Player] {
-        override val api: FairyAPI[F, Player] = new FairyAPI[F, Player] {
-          override def appleOpenState(uuid: UUID): F[AppleOpenState] =
+      new System[IO, Player] {
+        override implicit val api: FairyAPI[IO, Player] = new FairyAPI[IO, Player] {
+          override def appleOpenState(uuid: UUID): IO[AppleOpenState] =
             persistence.appleOpenState(uuid)
 
           override def updateAppleOpenState(
             uuid: UUID,
             appleOpenState: AppleOpenState
-          ): F[Unit] =
+          ): IO[Unit] =
             persistence.changeAppleOpenState(uuid, appleOpenState)
 
           import cats.implicits._
 
-          override def getFairyLore(uuid: UUID): F[FairyLore] = for {
+          override def getFairyLore(uuid: UUID): IO[FairyLore] = for {
             state <- appleOpenState(uuid)
           } yield FairyLoreTable.loreTable(state.amount - 1)
 
           override def updateFairySummonCost(
             uuid: UUID,
             fairySummonCost: FairySummonCost
-          ): F[Unit] =
+          ): IO[Unit] =
             persistence.updateFairySummonCost(uuid, fairySummonCost)
 
-          override def fairySummonCost(player: Player): F[FairySummonCost] =
+          override def fairySummonCost(player: Player): IO[FairySummonCost] =
             persistence.fairySummonCost(player.getUniqueId)
 
           override protected val fairyPlaySoundRepository
-            : KeyedDataRepository[UUID, Ref[F, FairyPlaySound]] =
-            KeyedDataRepository.unlift[UUID, Ref[F, FairyPlaySound]] { _ =>
+            : KeyedDataRepository[UUID, Ref[IO, FairyPlaySound]] =
+            KeyedDataRepository.unlift[UUID, Ref[IO, FairyPlaySound]] { _ =>
               Some(Ref.unsafe(FairyPlaySound.on))
             }
 
-          override def fairyPlaySound(uuid: UUID): F[FairyPlaySound] =
+          override def fairyPlaySound(uuid: UUID): IO[FairyPlaySound] =
             if (fairyPlaySoundRepository.isDefinedAt(uuid))
               fairyPlaySoundRepository(uuid).get
-            else Sync[F].pure(FairyPlaySound.on)
+            else IO.pure(FairyPlaySound.on)
 
-          override def fairyPlaySoundToggle(uuid: UUID): F[Unit] = for {
+          override def fairyPlaySoundToggle(uuid: UUID): IO[Unit] = for {
             nowSetting <- fairyPlaySound(uuid)
           } yield fairyPlaySoundRepository(uuid).set(
             if (nowSetting == FairyPlaySound.on) FairyPlaySound.off
             else FairyPlaySound.on
           )
 
-          override def fairyEndTime(player: Player): F[Option[FairyEndTime]] =
+          override def fairyEndTime(player: Player): IO[Option[FairyEndTime]] =
             persistence.fairyEndTime(player.getUniqueId)
 
-          override def updateFairyEndTime(player: Player, fairyEndTime: FairyEndTime): F[Unit] =
+          override def updateFairyEndTime(
+            player: Player,
+            fairyEndTime: FairyEndTime
+          ): IO[Unit] =
             persistence.updateFairyEndTime(player.getUniqueId, fairyEndTime)
 
-          override def fairyUsingState(player: Player): F[FairyUsingState] =
+          override def fairyUsingState(player: Player): IO[FairyUsingState] =
             persistence.fairyUsingState(player.getUniqueId)
 
           override def updateFairyUsingState(
             player: Player,
             fairyUsingState: FairyUsingState
-          ): F[Unit] =
+          ): IO[Unit] =
             persistence.updateFairyUsingState(player.getUniqueId, fairyUsingState)
 
-          override def fairyRecoveryMana(uuid: UUID): F[FairyRecoveryMana] =
+          override def fairyRecoveryMana(uuid: UUID): IO[FairyRecoveryMana] =
             persistence.fairyRecoveryMana(uuid)
 
           override def updateFairyRecoveryManaAmount(
             uuid: UUID,
             fairyRecoveryMana: FairyRecoveryMana
-          ): F[Unit] = persistence.updateFairyRecoveryMana(uuid, fairyRecoveryMana)
+          ): IO[Unit] = persistence.updateFairyRecoveryMana(uuid, fairyRecoveryMana)
 
           override val fairySpeechServiceRepository
             : PlayerDataRepository[FairySpeechService[SyncIO]] =
             speechServiceRepositoryControls.repository
         }
 
-        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] =
-          Seq(speechServiceRepositoryControls).map(_.coerceFinalizationContextTo[F])
-
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[IO, _]] =
+          BukkitRepositoryControls
+            .createHandles(
+              RepositoryDefinition
+                .Phased
+                .TwoPhased(
+                  FairyManaRecoveryRoutineFiberRepositoryDefinition
+                    .initialization[SyncIO, Player],
+                  FairyManaRecoveryRoutineFiberRepositoryDefinition.finalization[SyncIO, Player]
+                )
+            )
+            .map { fairyRecoveryRoutineFiberRepositoryControls =>
+              Seq(speechServiceRepositoryControls, fairyRecoveryRoutineFiberRepositoryControls)
+                .map(_.coerceFinalizationContextTo[IO])
+            }
+            .unsafeRunSync()
       }
     }
   }

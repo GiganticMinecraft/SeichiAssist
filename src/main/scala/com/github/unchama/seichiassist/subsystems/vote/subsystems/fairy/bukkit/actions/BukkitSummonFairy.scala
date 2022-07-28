@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions
 
-import cats.effect.{ConcurrentEffect, ContextShift, IO, LiftIO, SyncIO}
+import cats.effect.{ConcurrentEffect, IO, LiftIO, SyncIO}
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
@@ -8,7 +8,6 @@ import com.github.unchama.seichiassist.subsystems.vote.domain.EffectPoint
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.SummonFairy
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.FairySpeech
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.routines.FairyRoutine
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairySpawnRequest
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairySpawnRequestResult._
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
@@ -21,8 +20,6 @@ import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.entity.Player
-
-import scala.concurrent.ExecutionContext
 
 object BukkitSummonFairy {
 
@@ -56,20 +53,8 @@ object BukkitSummonFairy {
             uuid = player.getUniqueId
             _ <- voteAPI.decreaseEffectPoint(uuid, EffectPoint(fairySummonCost.value * 2))
             _ <- fairyAPI.updateFairyRecoveryManaAmount(uuid, recoveryMana)
-            isFairyEndTimeDefined <- fairyAPI.fairyEndTime(player)
             _ <- fairyAPI.updateFairyEndTime(player, fairySummonCost.validTime)
-          } yield {
-            /*
-              FairySpeechRoutineが一度も起動されていなければ起動する
-             */
-            if (isFairyEndTimeDefined.isEmpty) {
-              println("empty")
-              import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
-              implicit val contextShift: ContextShift[IO] =
-                IO.contextShift(ExecutionContext.global)
-              FairyRoutine.start(player).start.unsafeRunSync()
-            }
-          }
+          } yield ()
 
           LiftIO[IO].liftIO {
             SequentialEffect(

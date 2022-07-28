@@ -76,7 +76,7 @@ object VoteMenu extends Menu {
 
   private object ConstantButtons {
 
-    implicit val ioCE: ConcurrentEffect[IO] =
+    private implicit val ioCE: ConcurrentEffect[IO] =
       IO.ioConcurrentEffect(PluginExecutionContexts.asyncShift)
 
     def receiveVoteBenefitsButton(player: Player)(
