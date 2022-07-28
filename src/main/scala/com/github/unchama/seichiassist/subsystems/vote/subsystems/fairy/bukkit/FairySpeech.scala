@@ -32,9 +32,10 @@ class FairySpeech[F[_]: ConcurrentEffect](implicit fairyAPI: FairyAPI[F, Player]
           FairyMessageTable.nightMessages(nameCalledByFairy)
       message <- randomMessage(fairyMessages)
     } yield {
-      val serviceRepository = fairyAPI.fairySpeechServiceRepository
-      serviceRepository(player)
+      val serviceRepository = fairyAPI.fairySpeechServiceRepository(player)
+      serviceRepository
         .makeSpeech(message, fairyAPI.fairyPlaySound(player.getUniqueId).toIO.unsafeRunSync())
+        .unsafeRunSync()
     }
 
   def speechRandomly(

@@ -38,9 +38,7 @@ object FairyRoutine {
     RepeatingRoutine.permanentRoutine(
       repeatInterval,
       onMainThread.runAction {
-        SyncIO {
-          BukkitRecoveryMana(player).recovery.runAsync(_ => IO.unit)
-        }
+        BukkitRecoveryMana(player).recovery.runAsync(_ => IO.unit)
       }
     )
   }

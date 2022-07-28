@@ -414,7 +414,9 @@ class SeichiAssist extends JavaPlugin() {
     subhomeSystem,
     presentSystem,
     anywhereEnderSystem,
-    sharedInventorySystem
+    sharedInventorySystem,
+    voteSystem,
+    fairySystem
   )
 
   private lazy val buildAssist: BuildAssist = {

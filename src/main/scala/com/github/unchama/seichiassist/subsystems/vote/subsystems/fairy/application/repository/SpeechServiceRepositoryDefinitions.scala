@@ -13,7 +13,7 @@ object SpeechServiceRepositoryDefinitions {
     implicit gatewayProvider: Player => FairySpeechGateway[F]
   ): TwoPhasedRepositoryInitialization[F, Player, FairySpeechService[F]] =
     TwoPhasedRepositoryInitialization.withoutPrefetching[F, Player, FairySpeechService[F]] {
-      player => Sync[F].delay(new FairySpeechService[F](gatewayProvider(player)))
+      player => Applicative[F].pure(new FairySpeechService[F](gatewayProvider(player)))
     }
 
   def finalization[F[_]: Applicative, Player]

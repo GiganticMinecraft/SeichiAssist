@@ -148,12 +148,14 @@ object BukkitRecoveryMana {
 
             SequentialEffect(
               UnfocusedEffect {
-                new FairySpeech[IO]().speechRandomly(
-                  player,
-                  if (finallyAppleConsumptionAmount > mineStackedGachaRingoAmount)
-                    FairyManaRecoveryState.notConsumptionApple
-                  else FairyManaRecoveryState.consumptionApple
-                )
+                new FairySpeech[IO]()
+                  .speechRandomly(
+                    player,
+                    if (finallyAppleConsumptionAmount > mineStackedGachaRingoAmount)
+                      FairyManaRecoveryState.notConsumptionApple
+                    else FairyManaRecoveryState.consumptionApple
+                  )
+                  .unsafeRunSync()
               },
               MessageEffect(s"$RESET$YELLOW${BOLD}マナ妖精が${recoveryManaAmount}マナを回復してくれました"),
               if (appleConsumptionAmount != 0)
