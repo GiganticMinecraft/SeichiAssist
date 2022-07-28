@@ -91,6 +91,21 @@ class FairySpeech[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
     }.toIO.unsafeRunSync()
   }
 
+  def bye(player: Player): F[Unit] = for {
+    playSound <- fairyAPI.fairyPlaySound(player.getUniqueId)
+  } yield {
+    ContextCoercion {
+      fairyAPI
+        .fairySpeechServiceRepository(player)
+        .makeSpeech(
+          FairyMessage(s"""あっ、もうこんな時間だ！
+                          |じゃーねー！${player.getName}
+                          |""".stripMargin),
+          playSound
+        )
+    }.toIO.unsafeRunSync()
+  }
+
   private def randomMessage(fairyMessages: FairyMessages): F[FairyMessage] = Sync[F].delay {
     val messages = fairyMessages.messages
     messages(Random.nextInt(messages.size))

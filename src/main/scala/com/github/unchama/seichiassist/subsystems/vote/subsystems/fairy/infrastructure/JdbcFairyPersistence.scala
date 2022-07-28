@@ -70,8 +70,10 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
     Sync[F].delay {
       DB.localTx { implicit session =>
         sql"""UPDATE playerdata 
-             | SET canVotingFairyUse = ${if (fairyUsingState == FairyUsingState.Using) true
-            else false} WHERE uuid = ${uuid.toString}""".stripMargin.execute().apply()
+             | SET canVotingFairyUse = ${fairyUsingState == FairyUsingState.Using} WHERE uuid = ${uuid.toString}"""
+          .stripMargin
+          .execute()
+          .apply()
       }
     }
 
