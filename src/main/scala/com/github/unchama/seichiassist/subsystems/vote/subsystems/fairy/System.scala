@@ -19,6 +19,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.applicat
   SpeechServiceRepositoryDefinitions
 }
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.gateway.BukkitFairySpeechGateway
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.listeners.FairyPlayerJoinGreeter
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.routines.BukkitFairyRoutine
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairySpeechGateway
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property._
@@ -26,6 +27,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.r
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.infrastructure.JdbcFairyPersistence
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.service.FairySpeechService
 import org.bukkit.entity.Player
+import org.bukkit.event.Listener
 
 import java.util.UUID
 
@@ -169,8 +171,8 @@ object System {
                 .map(_.coerceFinalizationContextTo[IO])
             }
             .unsafeRunSync()
-
         }
+        override val listeners: Seq[Listener] = Seq(new FairyPlayerJoinGreeter)
       }
     }
   }
