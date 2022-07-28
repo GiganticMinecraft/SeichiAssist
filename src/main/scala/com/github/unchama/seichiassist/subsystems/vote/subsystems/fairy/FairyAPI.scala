@@ -41,6 +41,11 @@ trait FairyWriteAPI[F[_], Player] {
    */
   def updateFairyEndTime(player: Player, fairyEndTime: FairyEndTime): F[Unit]
 
+  /**
+   * 妖精が食べたりんごの数を増加させる
+   */
+  def increaseAppleAteByFairy(uuid: UUID, appleAmount: AppleAmount): F[Unit]
+
 }
 
 object FairyWriteAPI {
@@ -80,6 +85,11 @@ trait FairyReadAPI[F[_], G[_], Player] {
    * 妖精が回復するマナの量を取得する
    */
   def fairyRecoveryMana(uuid: UUID): F[FairyRecoveryMana]
+
+  /**
+   * 妖精が食べたりんごの量を取得する
+   */
+  def appleAteByFairy(uuid: UUID): F[AppleAmount]
 
   /**
    * 妖精の音を鳴らすかどうか保持するようのリポジトリ

@@ -132,6 +132,18 @@ object System {
             override val fairySpeechServiceRepository
               : PlayerDataRepository[FairySpeechService[SyncIO]] =
               speechServiceRepositoryControls.repository
+
+            override def increaseAppleAteByFairy(
+              uuid: UUID,
+              appleAmount: AppleAmount
+            ): IO[Unit] =
+              persistence.increaseAppleAteByFairy(uuid, appleAmount)
+
+            /**
+             * 妖精が食べたりんごの量を取得する
+             */
+            override def appleAteByFairy(uuid: UUID): IO[AppleAmount] =
+              persistence.appleAteByFairy(uuid)
           }
 
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[IO, _]] = {

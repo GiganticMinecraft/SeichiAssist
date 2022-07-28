@@ -2,13 +2,7 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.infrast
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain._
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
-  AppleOpenState,
-  FairyEndTime,
-  FairyRecoveryMana,
-  FairySummonCost,
-  FairyUsingState
-}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property._
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID
@@ -149,4 +143,28 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
     }
   }
 
+  /**
+   * 妖精が食べたりんごの量を増加させる
+   */
+  override def increaseAppleAteByFairy(uuid: UUID, appleAmount: AppleAmount): F[Unit] =
+    Sync[F].delay {
+      DB.localTx { implicit session =>
+        sql"UPDATE playerdata SET p_apple = p_apple + ${appleAmount.amount} WHERE uuid = ${uuid.toString}"
+          .execute()
+          .apply()
+      }
+    }
+
+  /**
+   * 妖精が食べたりんごの量を取得する
+   */
+  override def appleAteByFairy(uuid: UUID): F[AppleAmount] = Sync[F].delay {
+    DB.readOnly { implicit session =>
+      val appleAmountOpt = sql"SELECT p_apple FROM playerdata WHERE uuid = ${uuid.toString}"
+        .map(_.int("p_apple"))
+        .single()
+        .apply()
+      AppleAmount(appleAmountOpt.get)
+    }
+  }
 }

@@ -11,6 +11,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.RecoveryMana
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.FairySpeech
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
+  AppleAmount,
   AppleOpenState,
   FairyManaRecoveryState,
   FairyUsingState
@@ -145,6 +146,12 @@ object BukkitRecoveryMana {
               playerdata
                 .minestack
                 .subtractStackedAmountOf(gachaRingoObject, appleConsumptionAmount)
+
+              // 消費したりんごの量を保存する
+              fairyAPI
+                .increaseAppleAteByFairy(uuid, AppleAmount(appleConsumptionAmount.toInt))
+                .toIO
+                .unsafeRunSync()
 
               // マナを回復する
               ContextCoercion(

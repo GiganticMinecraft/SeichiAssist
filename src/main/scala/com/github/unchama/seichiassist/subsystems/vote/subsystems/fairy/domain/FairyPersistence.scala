@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain
 
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
+  AppleAmount,
   AppleOpenState,
   FairyEndTime,
   FairyRecoveryMana,
@@ -61,5 +62,15 @@ trait FairyPersistence[F[_]] {
    * 妖精の効果が終了する時刻を取得する
    */
   def fairyEndTime(uuid: UUID): F[Option[FairyEndTime]]
+
+  /**
+   * 妖精が食べたりんごの量を増加させる
+   */
+  def increaseAppleAteByFairy(uuid: UUID, appleAmount: AppleAmount): F[Unit]
+
+  /**
+   * 妖精が食べたりんごの量を取得する
+   */
+  def appleAteByFairy(uuid: UUID): F[AppleAmount]
 
 }
