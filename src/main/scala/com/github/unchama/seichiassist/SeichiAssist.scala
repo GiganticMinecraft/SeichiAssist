@@ -391,8 +391,9 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val voteSystem: subsystems.vote.System[IO, Player] =
     subsystems.vote.System.wired[IO]
 
-  private lazy val fairySystem: subsystems.vote.subsystems.fairy.System[IO, Player] = {
-    import PluginExecutionContexts.sleepAndRoutineContext
+  private lazy val fairySystem: subsystems.vote.subsystems.fairy.System[IO, SyncIO, Player] = {
+    import PluginExecutionContexts.{asyncShift, sleepAndRoutineContext}
+    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val breakCountAPI: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
     implicit val voteAPI: VoteAPI[IO, Player] = voteSystem.api
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
@@ -581,7 +582,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val sharedInventoryAPI: SharedInventoryAPI[IO, Player] =
       sharedInventorySystem.api
     implicit val voteAPI: VoteAPI[IO, Player] = voteSystem.api
-    implicit val fairyAPI: FairyAPI[IO, Player] = fairySystem.api
+    implicit val fairyAPI: FairyAPI[IO, SyncIO, Player] = fairySystem.api
 
     val menuRouter = TopLevelRouter.apply
     import menuRouter.{canOpenStickMenu, ioCanOpenCategorizedMineStackMenu}

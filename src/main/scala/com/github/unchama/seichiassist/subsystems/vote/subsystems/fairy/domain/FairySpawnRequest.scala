@@ -17,7 +17,7 @@ class FairySpawnRequest[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F], 
 
   def spawnRequest(player: Player)(
     implicit breakCountAPI: BreakCountAPI[F, G, Player],
-    fairyAPI: FairyAPI[F, Player],
+    fairyAPI: FairyAPI[F, G, Player],
     voteAPI: VoteAPI[F, Player]
   ): F[FairySpawnRequestResult] = {
     val seichiAmountRepository = ContextCoercion(

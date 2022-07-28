@@ -10,7 +10,7 @@ trait FairyRoutine[F[_], G[_], Player] {
 
   def start(player: Player)(
     implicit breakCountAPI: BreakCountAPI[F, G, Player],
-    fairyAPI: FairyAPI[F, Player],
+    fairyAPI: FairyAPI[F, G, Player],
     voteAPI: VoteAPI[F, Player],
     manaApi: ManaApi[F, G, Player],
     context: RepeatingTaskContext

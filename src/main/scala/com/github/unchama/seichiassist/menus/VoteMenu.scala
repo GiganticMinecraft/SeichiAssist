@@ -36,7 +36,7 @@ object VoteMenu extends Menu {
 
   class Environment(
     implicit val voteAPI: VoteAPI[IO, Player],
-    val fairyAPI: FairyAPI[IO, Player],
+    val fairyAPI: FairyAPI[IO, SyncIO, Player],
     val breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
     val manaApi: ManaApi[IO, SyncIO, Player],
     val ioCanOpenFirstPage: IO CanOpen FirstPage.type
@@ -147,7 +147,7 @@ object VoteMenu extends Menu {
 
     def fairySummonTimeToggleButton(
       player: Player
-    )(implicit fairyAPI: FairyAPI[IO, Player]): Button = {
+    )(implicit fairyAPI: FairyAPI[IO, SyncIO, Player]): Button = {
       val fairySummonCost = fairyAPI.fairySummonCost(player).unsafeRunSync()
       Button(
         new IconItemStackBuilder(Material.WATCH)
@@ -179,7 +179,7 @@ object VoteMenu extends Menu {
 
     def fairyContractSettingToggle(
       uuid: UUID
-    )(implicit fairyAPI: FairyAPI[IO, Player]): Button =
+    )(implicit fairyAPI: FairyAPI[IO, SyncIO, Player]): Button =
       Button(
         new IconItemStackBuilder(Material.PAPER)
           .title(s"$GOLD$UNDERLINE${BOLD}妖精とのお約束")
@@ -205,7 +205,7 @@ object VoteMenu extends Menu {
 
     def fairyPlaySoundToggleButton(
       uuid: UUID
-    )(implicit fairyAPI: FairyAPI[IO, Player]): Button = {
+    )(implicit fairyAPI: FairyAPI[IO, SyncIO, Player]): Button = {
       val description =
         List(s"$RESET$DARK_GRAY※この機能はデフォルトでONです。", s"$RESET$DARK_RED${UNDERLINE}クリックで切り替え")
       val playSoundOnLore = List(s"$RESET${GREEN}現在音が鳴る設定になっています。") ++ description
@@ -232,7 +232,7 @@ object VoteMenu extends Menu {
     }
 
     def fairySummonButton(player: Player)(
-      implicit fairyAPI: FairyAPI[IO, Player],
+      implicit fairyAPI: FairyAPI[IO, SyncIO, Player],
       voteAPI: VoteAPI[IO, Player],
       breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
       manaApi: ManaApi[IO, SyncIO, Player]
@@ -263,7 +263,9 @@ object VoteMenu extends Menu {
       )
     }
 
-    def checkTimeButton(player: Player)(implicit fairyAPI: FairyAPI[IO, Player]): Button = {
+    def checkTimeButton(
+      player: Player
+    )(implicit fairyAPI: FairyAPI[IO, SyncIO, Player]): Button = {
       Button(
         new IconItemStackBuilder(Material.COMPASS)
           .title(s"$LIGHT_PURPLE$UNDERLINE${BOLD}マナ妖精に時間を聞く")

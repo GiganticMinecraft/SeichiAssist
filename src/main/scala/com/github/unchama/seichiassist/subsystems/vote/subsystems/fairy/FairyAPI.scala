@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy
 
-import cats.effect.SyncIO
 import cats.effect.concurrent.Ref
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
@@ -50,7 +49,7 @@ object FairyWriteAPI {
 
 }
 
-trait FairyReadAPI[F[_], Player] {
+trait FairyReadAPI[F[_], G[_], Player] {
 
   /**
    * 妖精にあげるりんごの開放状態を取得する
@@ -91,7 +90,7 @@ trait FairyReadAPI[F[_], Player] {
     Ref[F, FairyPlaySound]
   ]
 
-  val fairySpeechServiceRepository: PlayerDataRepository[FairySpeechService[SyncIO]]
+  val fairySpeechServiceRepository: PlayerDataRepository[FairySpeechService[G]]
 
   /**
    * 妖精が有効な時間を返す
@@ -102,8 +101,12 @@ trait FairyReadAPI[F[_], Player] {
 
 object FairyReadAPI {
 
-  def apply[F[_], Player](implicit ev: FairyReadAPI[F, Player]): FairyReadAPI[F, Player] = ev
+  def apply[F[_], G[_], Player](
+    implicit ev: FairyReadAPI[F, G, Player]
+  ): FairyReadAPI[F, G, Player] = ev
 
 }
 
-trait FairyAPI[F[_], Player] extends FairyReadAPI[F, Player] with FairyWriteAPI[F, Player]
+trait FairyAPI[F[_], G[_], Player]
+    extends FairyReadAPI[F, G, Player]
+    with FairyWriteAPI[F, Player]

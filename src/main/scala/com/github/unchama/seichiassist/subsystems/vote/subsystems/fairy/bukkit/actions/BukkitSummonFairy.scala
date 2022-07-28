@@ -25,7 +25,7 @@ object BukkitSummonFairy {
 
   def apply(player: Player)(
     implicit breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
-    fairyAPI: FairyAPI[IO, Player],
+    fairyAPI: FairyAPI[IO, SyncIO, Player],
     voteAPI: VoteAPI[IO, Player],
     manaApi: ManaApi[IO, SyncIO, Player],
     concurrentEffect: ConcurrentEffect[IO]
@@ -60,7 +60,7 @@ object BukkitSummonFairy {
             SequentialEffect(
               UnfocusedEffect {
                 eff.unsafeRunSync()
-                new FairySpeech().summonSpeech(player).unsafeRunSync()
+                new FairySpeech[IO, SyncIO]().summonSpeech(player).unsafeRunSync()
               },
               MessageEffect(
                 List(

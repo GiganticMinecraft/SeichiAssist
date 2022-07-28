@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit
 
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, Sync}
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
   FairyManaRecoveryState,
@@ -15,7 +16,9 @@ import org.bukkit.entity.Player
 import java.time.LocalTime
 import scala.util.Random
 
-class FairySpeech[F[_]: ConcurrentEffect](implicit fairyAPI: FairyAPI[F, Player]) {
+class FairySpeech[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
+  implicit fairyAPI: FairyAPI[F, G, Player]
+) {
 
   import cats.implicits._
 
@@ -33,9 +36,12 @@ class FairySpeech[F[_]: ConcurrentEffect](implicit fairyAPI: FairyAPI[F, Player]
       message <- randomMessage(fairyMessages)
     } yield {
       val serviceRepository = fairyAPI.fairySpeechServiceRepository(player)
-      serviceRepository
-        .makeSpeech(message, fairyAPI.fairyPlaySound(player.getUniqueId).toIO.unsafeRunSync())
-        .unsafeRunSync()
+      ContextCoercion {
+        serviceRepository.makeSpeech(
+          message,
+          fairyAPI.fairyPlaySound(player.getUniqueId).toIO.unsafeRunSync()
+        )
+      }.toIO.unsafeRunSync()
     }
 
   def speechRandomly(
@@ -52,10 +58,11 @@ class FairySpeech[F[_]: ConcurrentEffect](implicit fairyAPI: FairyAPI[F, Player]
         FairyMessageTable.notConsumed
     }
     randomMessage(messages(nameCalledByFairy)).map { message =>
-      fairyAPI
-        .fairySpeechServiceRepository(player)
-        .makeSpeech(message, fairyAPI.fairyPlaySound(player.getUniqueId).toIO.unsafeRunSync())
-        .unsafeRunSync()
+      ContextCoercion {
+        fairyAPI
+          .fairySpeechServiceRepository(player)
+          .makeSpeech(message, fairyAPI.fairyPlaySound(player.getUniqueId).toIO.unsafeRunSync())
+      }.toIO.unsafeRunSync()
     }
   }
 
