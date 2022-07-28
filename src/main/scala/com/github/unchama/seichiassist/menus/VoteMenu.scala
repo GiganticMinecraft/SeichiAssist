@@ -15,6 +15,7 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.bukkit.actions.BukkitReceiveVoteBenefits
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.FairySpeech
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions.BukkitSummonFairy
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
   AppleOpenState,
@@ -275,18 +276,30 @@ object VoteMenu extends Menu {
         LeftClickButtonEffect {
           SequentialEffect(
             UnfocusedEffect {
-              fairyAPI.fairyEndTime(player).unsafeRunSync().get.endTimeOpt.get
-
-//              BukkitFairySpeak[IO]
-//                .speak(
-//                  player,
-//                  FairyMessage(s"僕は${endTime.getHour}:${endTime.getMinute}には帰るよー。")
-//                )
-//                .unsafeRunAsyncAndForget()
+              new FairySpeech[IO, SyncIO]().speechEndTime(player).unsafeRunSync()
             },
             closeInventoryEffect
           )
         }
+      )
+    }
+
+    def gachaRingoInformation(player: Player): Button = {
+      Button(
+        new IconItemStackBuilder(Material.GOLDEN_APPLE)
+          .title(s"$YELLOW$UNDERLINE$BOLD㊙ がちゃりんご情報 ㊙")
+          .lore(
+            List(
+              s"$RESET$RED$BOLD※ﾆﾝｹﾞﾝに見られないように気を付けること！",
+              s"$RESET$RED$BOLD  毎日大妖精からデータを更新すること！",
+              "",
+              s"$RESET$GOLD${BOLD}昨日までにがちゃりんごを",
+              s"$RESET$GOLD${BOLD}たくさんくれたﾆﾝｹﾞﾝたち",
+              s"$RESET${DARK_GRAY}召喚されたらラッキーだよ！"
+            )
+          )
+          .enchanted()
+          .build()
       )
     }
 

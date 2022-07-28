@@ -66,6 +66,16 @@ class FairySpeech[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
     }
   }
 
+  def speechEndTime(player: Player): F[Unit] = for {
+    endTimeOpt <- fairyAPI.fairyEndTime(player)
+    playSound <- fairyAPI.fairyPlaySound(player.getUniqueId)
+  } yield {
+    val endTime = endTimeOpt.get.endTimeOpt.get
+    fairyAPI
+      .fairySpeechServiceRepository(player)
+      .makeSpeech(FairyMessage(s"僕は${endTime.getHour}:${endTime.getMinute}には帰るよー。"), playSound)
+  }
+
   private def randomMessage(fairyMessages: FairyMessages): F[FairyMessage] = Sync[F].delay {
     val messages = fairyMessages.messages
     messages(Random.nextInt(messages.size))

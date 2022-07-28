@@ -107,6 +107,11 @@ trait FairyReadAPI[F[_], G[_], Player] {
    */
   def fairyEndTime(player: Player): F[Option[FairyEndTime]]
 
+  /**
+   * 自分の妖精に食べさせたりんごの量の順位を返す
+   */
+  def appleAteByFairyMyRanking(player: Player): F[AppleAteByFairyRank]
+
 }
 
 object FairyReadAPI {

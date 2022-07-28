@@ -167,4 +167,17 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
       AppleAmount(appleAmountOpt.get)
     }
   }
+
+  /**
+   * 自分の妖精に食べさせたりんごの量の順位を返す
+   */
+  override def appleAteByFairyMyRanking(uuid: UUID): F[AppleAteByFairyRank] = Sync[F].delay {
+    DB.readOnly { implicit session =>
+      val rank = sql"SELECT name,p_apple,COUNT(*) AS rank FROM playerdata;"
+        .map(_.int("rank"))
+        .single()
+        .apply()
+      AppleAteByFairyRank(rank.get)
+    }
+  }
 }
