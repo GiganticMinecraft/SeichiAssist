@@ -85,4 +85,9 @@ trait FairyPersistence[F[_]] {
    */
   def appleAteByFairyRankingTopFour(uuid: UUID): F[AppleAteByFairyRankTopFour]
 
+  /**
+   * 妖精が食べたりんごの合計数を返す
+   */
+  def allEatenAppleAmount: F[AppleAmount]
+
 }

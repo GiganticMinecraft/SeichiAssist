@@ -173,11 +173,13 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
    */
   override def appleAteByFairyMyRanking(uuid: UUID): F[AppleAteByFairyRank] = Sync[F].delay {
     DB.readOnly { implicit session =>
-      val rank = sql"SELECT name,p_apple,COUNT(*) AS rank FROM playerdata ORDER BY DESC;"
-        .map(_.int("rank"))
+      sql"SELECT name,p_apple,COUNT(*) AS rank FROM playerdata ORDER BY rank DESC;"
+        .map(rs =>
+          AppleAteByFairyRank(rs.string("name"), rs.int("rank"), AppleAmount(rs.int("p_apple")))
+        )
         .single()
         .apply()
-      AppleAteByFairyRank(rank.get)
+        .get
     }
   }
 
@@ -188,13 +190,31 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
     Sync[F].delay {
       DB.readOnly { implicit session =>
         val topFour =
-          sql"SELECT name,p_apple,COUNT(*) AS rank FROM playerdata ORDER BY DESC LIMIT 4;"
-            .map(_.intOpt("rank"))
+          sql"SELECT name,p_apple,COUNT(*) AS rank FROM playerdata ORDER BY rank DESC LIMIT 4;"
+            .map(rs => (rs.stringOpt("name"), rs.intOpt("rank"), rs.intOpt("p_apple")))
             .toList()
             .apply()
-            .map(_.map(AppleAteByFairyRank))
+            .map(data =>
+              if (data._1.nonEmpty)
+                Some(AppleAteByFairyRank(data._1.get, data._2.get, AppleAmount(data._3.get)))
+              else None
+            )
 
         AppleAteByFairyRankTopFour(topFour.head.get, topFour(1), topFour(2), topFour(3))
       }
     }
+
+  /**
+   * 妖精が食べたりんごの合計数を返す
+   */
+  override def allEatenAppleAmount: F[AppleAmount] = Sync[F].delay {
+    DB.readOnly { implicit session =>
+      val amount = sql"SELECT SUM(p_apple) AS allAppleAmount FROM playerdata;"
+        .map(_.int("p_apple"))
+        .single()
+        .apply()
+        .get
+      AppleAmount(amount)
+    }
+  }
 }

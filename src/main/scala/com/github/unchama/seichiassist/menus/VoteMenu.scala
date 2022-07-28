@@ -284,7 +284,9 @@ object VoteMenu extends Menu {
       )
     }
 
-    def gachaRingoInformation(player: Player): Button = {
+    def gachaRingoInformation(
+      player: Player
+    )(fairyAPI: FairyAPI[IO, SyncIO, Player]): Button = {
       Button(
         new IconItemStackBuilder(Material.GOLDEN_APPLE)
           .title(s"$YELLOW$UNDERLINE$BOLD㊙ がちゃりんご情報 ㊙")
@@ -296,7 +298,29 @@ object VoteMenu extends Menu {
               s"$RESET$GOLD${BOLD}昨日までにがちゃりんごを",
               s"$RESET$GOLD${BOLD}たくさんくれたﾆﾝｹﾞﾝたち",
               s"$RESET${DARK_GRAY}召喚されたらラッキーだよ！"
-            )
+            ) ++ {
+              // TOP4のランキングロール
+              val topFour = fairyAPI.appleAteByFairyRankingTopFour(player).unsafeRunSync()
+              List(Some(topFour.one), topFour.two, topFour.three, topFour.four).flatMap {
+                rankDataOpt =>
+                  if (rankDataOpt.nonEmpty) {
+                    val rankData = rankDataOpt.get
+                    List(
+                      s"${GRAY}たくさんくれたﾆﾝｹﾞﾝ第${rankData.rank}位！",
+                      s"${GRAY}なまえ：${rankData.name} りんご：${rankData.appleAmount.amount}個"
+                    )
+                  } else Nil
+              }
+            } ++ {
+              val myRank = fairyAPI.appleAteByFairyMyRanking(player).unsafeRunSync()
+              List(
+                s"${AQUA}ぜーんぶで${fairyAPI.allEatenAppleAmount.unsafeRunSync().amount}個もらえた！",
+                "",
+                s"$GREEN↓呼び出したﾆﾝｹﾞﾝの情報↓",
+                s"${GREEN}今までに${myRank.appleAmount.amount}個もらった",
+                s"${GREEN}ﾆﾝｹﾞﾝの中では${myRank.rank}番目にたくさんくれる！"
+              )
+            }
           )
           .enchanted()
           .build()
