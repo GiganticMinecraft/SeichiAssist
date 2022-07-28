@@ -20,7 +20,8 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.a
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
   AppleOpenState,
   FairyPlaySound,
-  FairySummonCost
+  FairySummonCost,
+  FairyUsingState
 }
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -72,7 +73,19 @@ object VoteMenu extends Menu {
         ChestSlotRef(3, 0) -> CommonButtons.openStickMenu
       )
 
-    IO(MenuSlotLayout(buttons))
+    val dynamicButtons =
+      Map(
+        ChestSlotRef(0, 6) -> gachaRingoInformation(player),
+        ChestSlotRef(1, 4) -> checkTimeButton(player)
+      )
+
+    fairyAPI.fairyUsingState(player).map { usingState =>
+      MenuSlotLayout(buttons).merge(
+        if (usingState == FairyUsingState.Using)
+          MenuSlotLayout(dynamicButtons)
+        else MenuSlotLayout.emptyLayout
+      )
+    }
   }
 
   private object ConstantButtons {
@@ -286,7 +299,7 @@ object VoteMenu extends Menu {
 
     def gachaRingoInformation(
       player: Player
-    )(fairyAPI: FairyAPI[IO, SyncIO, Player]): Button = {
+    )(implicit fairyAPI: FairyAPI[IO, SyncIO, Player]): Button = {
       Button(
         new IconItemStackBuilder(Material.GOLDEN_APPLE)
           .title(s"$YELLOW$UNDERLINE$BOLD㊙ がちゃりんご情報 ㊙")
