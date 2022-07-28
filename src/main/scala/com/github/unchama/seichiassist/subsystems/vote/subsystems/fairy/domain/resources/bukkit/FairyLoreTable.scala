@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.bukkit
+package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.resources.bukkit
 
 import cats.data.NonEmptyList
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property

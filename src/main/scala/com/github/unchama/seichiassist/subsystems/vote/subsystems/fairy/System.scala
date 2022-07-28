@@ -21,8 +21,8 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.applicat
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.gateway.BukkitFairySpeechGateway
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.routines.BukkitFairyRoutine
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairySpeechGateway
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.bukkit.FairyLoreTable
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property._
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.resources.bukkit.FairyLoreTable
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.infrastructure.JdbcFairyPersistence
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.service.FairySpeechService
 import org.bukkit.entity.Player
