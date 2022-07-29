@@ -200,10 +200,13 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
               if (data._1.nonEmpty)
                 Some(AppleAteByFairyRank(data._1.get, data._2.get, AppleAmount(data._3.get)))
               else None
-            ) ++ Seq.fill(3)(None)
-        /* このSeqは最低一人しか参加していなかった場合に
-              2位以降を取り出したときにIndexOutOfBoundsを起こさせないためのやつ */
-        AppleAteByFairyRankTopFour(topFour.head.get, topFour(1), topFour(2), topFour(3))
+            )
+        AppleAteByFairyRankTopFour(
+          topFour.head.get,
+          topFour.lift(1).flatten,
+          topFour.lift(2).flatten,
+          topFour.lift(3).flatten
+        )
       }
     }
 
