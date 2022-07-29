@@ -1,9 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy
 
-import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
 import com.github.unchama.concurrent.RepeatingTaskContext
-import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.{
   BukkitRepositoryControls,
   PlayerDataRepository
@@ -21,9 +19,9 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.applicat
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.gateway.BukkitFairySpeechGateway
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.listeners.FairyPlayerJoinGreeter
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.routines.BukkitFairyRoutine
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairySpeechGateway
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property._
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.resources.bukkit.FairyLoreTable
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairySpeechGateway
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.infrastructure.JdbcFairyPersistence
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.service.FairySpeechService
 import org.bukkit.entity.Player
@@ -51,16 +49,14 @@ object System {
       new BukkitFairyRoutine
 
     for {
-      speechServiceRepositoryControls <- {
-        BukkitRepositoryControls.createHandles(
-          RepositoryDefinition
-            .Phased
-            .TwoPhased(
-              SpeechServiceRepositoryDefinitions.initialization[SyncIO, Player],
-              SpeechServiceRepositoryDefinitions.finalization[SyncIO, Player]
-            )
-        )
-      }
+      speechServiceRepositoryControls <- BukkitRepositoryControls.createHandles(
+        RepositoryDefinition
+          .Phased
+          .TwoPhased(
+            SpeechServiceRepositoryDefinitions.initialization[SyncIO, Player],
+            SpeechServiceRepositoryDefinitions.finalization[SyncIO, Player]
+          )
+      )
     } yield {
       new System[IO, SyncIO, Player] {
         override implicit val api: FairyAPI[IO, SyncIO, Player] =
@@ -86,24 +82,6 @@ object System {
 
             override def fairySummonCost(player: Player): IO[FairySummonCost] =
               persistence.fairySummonCost(player.getUniqueId)
-
-            override protected val fairyPlaySoundRepository
-              : KeyedDataRepository[UUID, Ref[IO, FairyPlaySound]] =
-              KeyedDataRepository.unlift[UUID, Ref[IO, FairyPlaySound]] { _ =>
-                Some(Ref.unsafe(FairyPlaySound.on))
-              }
-
-            override def fairyPlaySound(uuid: UUID): IO[FairyPlaySound] =
-              if (fairyPlaySoundRepository.isDefinedAt(uuid))
-                fairyPlaySoundRepository(uuid).get
-              else IO.pure(FairyPlaySound.on)
-
-            override def fairyPlaySoundToggle(uuid: UUID): IO[Unit] = for {
-              nowSetting <- fairyPlaySound(uuid)
-            } yield fairyPlaySoundRepository(uuid).set(
-              if (nowSetting == FairyPlaySound.on) FairyPlaySound.off
-              else FairyPlaySound.on
-            )
 
             override def fairyEndTime(player: Player): IO[Option[FairyEndTime]] =
               persistence.fairyEndTime(player.getUniqueId)
@@ -154,6 +132,17 @@ object System {
 
             override def allEatenAppleAmount: IO[AppleAmount] =
               persistence.allEatenAppleAmount
+
+            override def fairySpeechSound(uuid: UUID): IO[FairyPlaySound] =
+              persistence.fairySpeechSound(uuid)
+
+            override def toggleFairySpeechSound(uuid: UUID): IO[Unit] =
+              persistence.toggleFairySpeechSound(
+                uuid,
+                if (fairySpeechSound(uuid).unsafeRunSync() == FairyPlaySound.on)
+                  FairyPlaySound.off
+                else FairyPlaySound.on
+              )
           }
 
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[IO, _]] = {

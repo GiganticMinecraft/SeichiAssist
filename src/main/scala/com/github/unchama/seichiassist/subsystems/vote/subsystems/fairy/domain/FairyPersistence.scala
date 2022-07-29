@@ -6,6 +6,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.p
   AppleAteByFairyRankTopFour,
   AppleOpenState,
   FairyEndTime,
+  FairyPlaySound,
   FairyRecoveryMana,
   FairySummonCost,
   FairyUsingState
@@ -89,5 +90,15 @@ trait FairyPersistence[F[_]] {
    * 妖精が食べたりんごの合計数を返す
    */
   def allEatenAppleAmount: F[AppleAmount]
+
+  /**
+   * 妖精が喋るときに音をだすかをトグルする
+   */
+  def toggleFairySpeechSound(uuid: UUID, fairyPlaySound: FairyPlaySound): F[Unit]
+
+  /**
+   * 妖精が喋ったときに音を再生するか取得する
+   */
+  def fairySpeechSound(uuid: UUID): F[FairyPlaySound]
 
 }

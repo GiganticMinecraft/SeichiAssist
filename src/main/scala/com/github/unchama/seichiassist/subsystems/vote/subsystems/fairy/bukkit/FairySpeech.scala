@@ -40,7 +40,7 @@ class FairySpeech[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
       ContextCoercion {
         serviceRepository.makeSpeech(
           message,
-          fairyAPI.fairyPlaySound(player.getUniqueId).toIO.unsafeRunSync()
+          ContextCoercion(fairyAPI.fairySpeechSound(player.getUniqueId)).toIO.unsafeRunSync()
         )
       }.toIO.unsafeRunSync()
     }
@@ -62,28 +62,33 @@ class FairySpeech[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
       ContextCoercion {
         fairyAPI
           .fairySpeechServiceRepository(player)
-          .makeSpeech(message, fairyAPI.fairyPlaySound(player.getUniqueId).toIO.unsafeRunSync())
+          .makeSpeech(
+            message,
+            fairyAPI.fairySpeechSound(player.getUniqueId).toIO.unsafeRunSync()
+          )
       }.toIO.unsafeRunSync()
     }
   }
 
-  def speechEndTime(player: Player): F[Unit] = for {
-    endTimeOpt <- fairyAPI.fairyEndTime(player)
-    playSound <- fairyAPI.fairyPlaySound(player.getUniqueId)
-  } yield {
-    val endTime = endTimeOpt.get.endTimeOpt.get
-    ContextCoercion {
-      fairyAPI
-        .fairySpeechServiceRepository(player)
-        .makeSpeech(
-          FairyMessage(s"僕は${endTime.getHour}:${endTime.getMinute}には帰るよー。"),
-          playSound
-        )
-    }.toIO.unsafeRunSync()
+  def speechEndTime(player: Player): F[Unit] = {
+    for {
+      endTimeOpt <- fairyAPI.fairyEndTime(player)
+      playSound <- fairyAPI.fairySpeechSound(player.getUniqueId)
+    } yield {
+      val endTime = endTimeOpt.get.endTimeOpt.get
+      ContextCoercion {
+        fairyAPI
+          .fairySpeechServiceRepository(player)
+          .makeSpeech(
+            FairyMessage(s"僕は${endTime.getHour}:${endTime.getMinute}には帰るよー。"),
+            playSound
+          )
+      }.toIO.unsafeRunSync()
+    }
   }
 
   def welcomeBack(player: Player): F[Unit] = for {
-    playSound <- fairyAPI.fairyPlaySound(player.getUniqueId)
+    playSound <- fairyAPI.fairySpeechSound(player.getUniqueId)
   } yield {
     ContextCoercion {
       fairyAPI
@@ -93,7 +98,7 @@ class FairySpeech[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
   }
 
   def bye(player: Player): F[Unit] = for {
-    playSound <- fairyAPI.fairyPlaySound(player.getUniqueId)
+    playSound <- fairyAPI.fairySpeechSound(player.getUniqueId)
   } yield {
     val repository = fairyAPI.fairySpeechServiceRepository(player)
     (ContextCoercion {
