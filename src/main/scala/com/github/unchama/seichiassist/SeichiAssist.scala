@@ -41,7 +41,7 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
   onMainThread
 }
 import com.github.unchama.seichiassist.data.player.PlayerData
-import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
+import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.domain.actions.{
   GetNetworkConnectionCount,
@@ -800,10 +800,6 @@ object SeichiAssist {
   val gachadatalist: mutable.ArrayBuffer[GachaPrize] = mutable.ArrayBuffer()
   // Playerdataに依存するデータリスト
   val playermap: mutable.HashMap[UUID, PlayerData] = mutable.HashMap()
-  // プレイ時間ランキング表示用データリスト
-  val ranklist_playtick: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
-  // 投票ポイント表示用データリスト
-  val ranklist_p_vote: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
 
   var instance: SeichiAssist = _
   // デバッグフラグ(デバッグモード使用時はここで変更するのではなくconfig.ymlの設定値を変更すること！)
