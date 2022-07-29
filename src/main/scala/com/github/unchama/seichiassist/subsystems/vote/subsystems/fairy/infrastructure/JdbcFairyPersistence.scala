@@ -37,7 +37,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
     }
 
   /**
-   * 妖精が有効な時間の状態を更新する
+   * 妖精を召喚するためのコストを更新する
    */
   override def updateFairySummonCost(uuid: UUID, fairySummonCost: FairySummonCost): F[Unit] =
     Sync[F].delay {
@@ -64,7 +64,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   }
 
   /**
-   * 妖精が召喚されているかを更新します
+   * 妖精の召喚状態を更新します
    */
   override def updateFairyUsingState(uuid: UUID, fairyUsingState: FairyUsingState): F[Unit] =
     Sync[F].delay {
