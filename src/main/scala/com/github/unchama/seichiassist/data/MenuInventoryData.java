@@ -1,12 +1,10 @@
 package com.github.unchama.seichiassist.data;
 
-import cats.effect.IO;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.achievement.Nicknames;
 import com.github.unchama.seichiassist.data.player.AchievementPoint;
 import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.data.player.PlayerNickname;
-import com.github.unchama.seichiassist.subsystems.vote.VoteAPI;
 import com.github.unchama.seichiassist.subsystems.vote.domain.EffectPoint;
 import com.github.unchama.seichiassist.util.AsyncInventorySetter;
 import com.github.unchama.seichiassist.util.ItemMetaFactory;
@@ -25,7 +23,10 @@ import scala.Option;
 import scala.collection.mutable.HashMap;
 import scala.collection.mutable.Map;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public final class MenuInventoryData {
