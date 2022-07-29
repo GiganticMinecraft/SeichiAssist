@@ -191,10 +191,12 @@ object VoteMenu extends Menu {
             SequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
               UnfocusedEffect(
-                fairyAPI.updateFairySummonCost(
-                  player.getUniqueId,
-                  FairySummonCost(fairySummonCost.value % 4 + 1)
-                )
+                fairyAPI
+                  .updateFairySummonCost(
+                    player.getUniqueId,
+                    FairySummonCost(fairySummonCost.value % 4 + 1)
+                  )
+                  .unsafeRunSync()
               )
             )
           }
