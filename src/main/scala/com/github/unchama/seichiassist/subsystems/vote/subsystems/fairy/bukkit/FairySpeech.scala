@@ -8,6 +8,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.p
   FairyManaRecoveryState,
   FairyMessage,
   FairyMessages,
+  FairyPlaySound,
   NameCalledByFairy
 }
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.resources.FairyMessageTable
@@ -94,16 +95,12 @@ class FairySpeech[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
   def bye(player: Player): F[Unit] = for {
     playSound <- fairyAPI.fairyPlaySound(player.getUniqueId)
   } yield {
-    ContextCoercion {
-      fairyAPI
-        .fairySpeechServiceRepository(player)
-        .makeSpeech(
-          FairyMessage(s"""あっ、もうこんな時間だ！
-                          |じゃーねー！${player.getName}
-                          |""".stripMargin),
-          playSound
-        )
-    }.toIO.unsafeRunSync()
+    val repository = fairyAPI.fairySpeechServiceRepository(player)
+    (ContextCoercion {
+      repository.makeSpeech(FairyMessage(s"あっ、もうこんな時間だ！"), FairyPlaySound.off)
+    } >> ContextCoercion {
+      repository.makeSpeech(FairyMessage(s"じゃーねー！${player.getName}"), playSound)
+    }).toIO.unsafeRunSync()
   }
 
   private def randomMessage(fairyMessages: FairyMessages): F[FairyMessage] = Sync[F].delay {
