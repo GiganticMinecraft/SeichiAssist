@@ -212,15 +212,17 @@ object VoteMenu extends Menu {
           LeftClickButtonEffect {
             SequentialEffect(
               UnfocusedEffect {
-                fairyAPI.updateAppleOpenState(
-                  uuid,
-                  AppleOpenState
-                    .values
-                    .find(
-                      _.amount == fairyAPI.appleOpenState(uuid).unsafeRunSync().amount % 4 + 1
-                    )
-                    .get
-                )
+                fairyAPI
+                  .updateAppleOpenState(
+                    uuid,
+                    AppleOpenState
+                      .values
+                      .find(
+                        _.amount == fairyAPI.appleOpenState(uuid).unsafeRunSync().amount % 4 + 1
+                      )
+                      .get
+                  )
+                  .unsafeRunSync()
               },
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
             )
