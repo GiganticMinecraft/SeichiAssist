@@ -49,8 +49,10 @@ object BukkitRecoveryMana {
               .isBefore(LocalDateTime.now())
           ) {
             // 終了時間が今よりも過去だったとき(つまり有効時間終了済み)
-            new FairySpeech[F, G]
-              .bye(player) >> fairyAPI.updateFairyUsingState(player, FairyUsingState.NotUsing)
+            (new FairySpeech[F, G].bye(player) >> fairyAPI.updateFairyUsingState(
+              player,
+              FairyUsingState.NotUsing
+            )).toIO.unsafeRunSync()
           } else {
             // 有効期限内
             if (oldManaAmount.isFull) {
@@ -119,7 +121,9 @@ object BukkitRecoveryMana {
                   if (appleOpenState == AppleOpenState.NotOpen) {
                     0
                   } else {
-                    Math.max(finallyAppleConsumptionAmount, mineStackedGachaRingoAmount)
+                    if (mineStackedGachaRingoAmount > finallyAppleConsumptionAmount)
+                      finallyAppleConsumptionAmount
+                    else mineStackedGachaRingoAmount
                   }
 
                 // マナの回復量を算出する
