@@ -143,10 +143,10 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
                     List(s"プレゼントが定義されていません。プレゼントを定義するには/present defineを使用してください。")
                 },
                 b =>
-                  b.map {
+                  b.sortBy(_._1).map {
                     case (id, state) =>
                       s"ID=$id: ${decoratePresentState(state)}"
-                  }.toList
+                  }
               )
             } yield {
               MessageEffect(messageLine)
