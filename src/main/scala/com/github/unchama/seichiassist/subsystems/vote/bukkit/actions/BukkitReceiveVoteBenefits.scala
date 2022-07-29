@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.vote.bukkit.actions
 
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
-import cats.effect.{ConcurrentEffect, Sync, SyncEffect}
+import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.data.{GachaSkullData, ItemData}
@@ -32,22 +32,23 @@ object BukkitReceiveVoteBenefits {
           notReceivedBenefits <- voteAPI.notReceivedVoteBenefits(uuid) // 受け取っていない投票特典数
           _ <- voteAPI.increaseVoteBenefits(uuid, notReceivedBenefits) // 受け取ってない分を受け取ったことにする
         } yield {
-          if (notReceivedBenefits.value == 0) return Sync[F].pure(())
+          if (notReceivedBenefits.value != 0) {
+            val playerLevel =
+              ContextCoercion(breakCountAPI.seichiAmountDataRepository(player).read.map {
+                _.levelCorrespondingToExp.level
+              }).toIO.unsafeRunSync()
 
-          val playerLevel =
-            ContextCoercion(breakCountAPI.seichiAmountDataRepository(player).read.map {
-              _.levelCorrespondingToExp.level
-            }).toIO.unsafeRunSync()
+            val items = (0 until notReceivedBenefits.value).map { _ =>
+              ContextCoercion(voteAPI.increaseEffectPointsByTen(uuid)).toIO.unsafeRunSync()
+              Seq.fill(10)(GachaSkullData.gachaForVoting) ++
+                Seq(
+                  if (playerLevel < 50) ItemData.getSuperPickaxe(1)
+                  else ItemData.getVotingGift(1)
+                )
+            }
 
-          val items = (0 until notReceivedBenefits.value).map { _ =>
-            ContextCoercion(voteAPI.increaseEffectPointsByTen(uuid)).toIO.unsafeRunSync()
-            Seq.fill(10)(GachaSkullData.gachaForVoting) ++
-              Seq(
-                if (playerLevel < 50) ItemData.getSuperPickaxe(1) else ItemData.getVotingGift(1)
-              )
+            grantItemStacksEffect[F](items.flatten: _*)
           }
-
-          grantItemStacksEffect[F](items.flatten: _*)
         }
       }
     }
