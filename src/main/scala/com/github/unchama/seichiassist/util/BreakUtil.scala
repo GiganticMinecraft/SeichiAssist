@@ -350,7 +350,8 @@ object BreakUtil {
             .filter { block =>
               block.getType match {
                 case Material.AIR =>
-                  Bukkit.getLogger.warning(s"AIRの破壊が${block.getLocation.toString}にて試行されました。")
+                  if (SeichiAssist.DEBUG)
+                    Bukkit.getLogger.warning(s"AIRの破壊が${block.getLocation.toString}にて試行されました。")
                   false
                 case _ => true
               }
