@@ -4,10 +4,9 @@ import cats.data.EitherT
 import cats.effect.IO
 import com.github.unchama.contextualexecutor.builder.ResponseEffectOrResult
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.data.RankData
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.database.{DatabaseConstants, DatabaseGateway}
-import com.github.unchama.seichiassist.task.{CoolDownTask, PlayerDataLoading}
+import com.github.unchama.seichiassist.task.PlayerDataLoading
 import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -26,62 +25,8 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
   import com.github.unchama.util.syntax.ResultSetSyntax._
 
-  private val plugin = SeichiAssist.instance
-
   private val tableReference: String =
     s"${gateway.databaseName}.${DatabaseConstants.PLAYERDATA_TABLENAME}"
-
-  // 投票特典配布時の処理(p_givenvoteの値の更新もココ)
-  def compareVotePoint(player: Player, playerdata: PlayerData): Int = {
-    ifCoolDownDoneThenGet(player, playerdata) {
-      val struuid = playerdata.uuid.toString
-
-      var p_vote = 0
-      var p_givenvote = 0
-
-      var command = s"select p_vote,p_givenvote from $tableReference where uuid = '$struuid'"
-      try {
-        gateway.executeQuery(command).recordIteration { lrs =>
-          p_vote = lrs.getInt("p_vote")
-          p_givenvote = lrs.getInt("p_givenvote")
-        }
-      } catch {
-        case e: SQLException =>
-          println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
-          e.printStackTrace()
-          player.sendMessage(RED.toString + "投票特典の受け取りに失敗しました")
-          return 0
-      }
-
-      // 比較して差があればその差の値を返す(同時にp_givenvoteも更新しておく)
-      if (p_vote > p_givenvote) {
-        command = ("update " + tableReference
-          + " set p_givenvote = " + p_vote
-          + s" where uuid = '$struuid'")
-        if (gateway.executeUpdate(command) == ActionStatus.Fail) {
-          player.sendMessage(RED.toString + "投票特典の受け取りに失敗しました")
-          return 0
-        }
-
-        return p_vote - p_givenvote
-      }
-      player.sendMessage(YELLOW.toString + "投票特典は全て受け取り済みのようです")
-      0
-    }
-  }
-
-  @inline private def ifCoolDownDoneThenGet(player: Player, playerdata: PlayerData)(
-    supplier: => Int
-  ): Int = {
-    // 連打による負荷防止の為クールダウン処理
-    if (!playerdata.votecooldownflag) {
-      player.sendMessage(RED.toString + "しばらく待ってからやり直してください")
-      return 0
-    }
-    new CoolDownTask(player, true, false).runTaskLater(plugin, 1200)
-
-    supplier
-  }
 
   // 最新のnumofsorryforbug値を返してmysqlのnumofsorrybug値を初期化する処理
   def givePlayerBug(player: Player): Int = {
@@ -173,91 +118,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         return null
     }
     uuidList.toList
-  }
-
-  /**
-   * 全ランキングリストの更新処理
-   *
-   * @return
-   *   成否…true: 成功、false: 失敗 TODO この処理はDB上と通信を行う為非同期にすべき
-   */
-  def successRankingUpdate(): Boolean = {
-    if (!successPlayTickRankingUpdate()) return false
-    if (!successVoteRankingUpdate()) return false
-    successAppleNumberRankingUpdate()
-  }
-
-  // ランキング表示用にプレイ時間のカラムだけ全員分引っ張る
-  private def successPlayTickRankingUpdate(): Boolean = {
-    val ranklist = mutable.ArrayBuffer[RankData]()
-    val command = ("select name,playtick from " + tableReference
-      + " order by playtick desc")
-    try {
-      gateway.executeQuery(command).recordIteration { lrs =>
-        val rankdata = new RankData()
-        rankdata.name = lrs.getString("name")
-        rankdata.playtick = lrs.getInt("playtick")
-        ranklist += rankdata
-      }
-    } catch {
-      case e: SQLException =>
-        println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
-        e.printStackTrace()
-        return false
-    }
-
-    SeichiAssist.ranklist_playtick.clear()
-    SeichiAssist.ranklist_playtick.addAll(ranklist)
-    true
-  }
-
-  // ランキング表示用に投票数のカラムだけ全員分引っ張る
-  private def successVoteRankingUpdate(): Boolean = {
-    val ranklist = mutable.ArrayBuffer[RankData]()
-    val command = ("select name,p_vote from " + tableReference
-      + " order by p_vote desc")
-    try {
-      gateway.executeQuery(command).recordIteration { lrs =>
-        val rankdata = new RankData()
-        rankdata.name = lrs.getString("name")
-        rankdata.p_vote = lrs.getInt("p_vote")
-        ranklist += rankdata
-      }
-    } catch {
-      case e: SQLException =>
-        println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
-        e.printStackTrace()
-        return false
-    }
-
-    SeichiAssist.ranklist_p_vote.clear()
-    SeichiAssist.ranklist_p_vote.addAll(ranklist)
-    true
-  }
-
-  // ランキング表示用に上げたりんご数のカラムだけ全員分引っ張る
-  private def successAppleNumberRankingUpdate(): Boolean = {
-    val ranklist = mutable.ArrayBuffer[RankData]()
-    SeichiAssist.allplayergiveapplelong = 0
-    val command = s"select name,p_apple from $tableReference order by p_apple desc"
-    try {
-      gateway.executeQuery(command).recordIteration { lrs =>
-        val rankdata = new RankData()
-        rankdata.name = lrs.getString("name")
-        rankdata.p_apple = lrs.getInt("p_apple")
-        ranklist += rankdata
-        SeichiAssist.allplayergiveapplelong += rankdata.p_apple.toLong
-      }
-    } catch {
-      case e: SQLException =>
-        println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
-        e.printStackTrace()
-        return false
-    }
-
-    SeichiAssist.ranklist_p_apple.clear()
-    SeichiAssist.ranklist_p_apple.addAll(ranklist)
-    true
   }
 
   // 全員に詫びガチャの配布

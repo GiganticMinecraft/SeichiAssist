@@ -652,11 +652,6 @@ class SeichiAssist extends JavaPlugin() {
       getServer.getPluginManager.registerEvents(_, this)
     }
 
-    // ランキングリストを最新情報に更新する
-    if (!SeichiAssist.databaseGateway.playerDataManipulator.successRankingUpdate()) {
-      throw new RuntimeException("ランキングデータの作成に失敗しました。サーバーを停止します…")
-    }
-
     startRepeatedJobs()
 
     // サブシステムのリポジトリのバックアップ処理を走らせる
@@ -809,8 +804,6 @@ object SeichiAssist {
   val ranklist_playtick: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
   // 投票ポイント表示用データリスト
   val ranklist_p_vote: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
-  // マナ妖精表示用のデータリスト
-  val ranklist_p_apple: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
 
   var instance: SeichiAssist = _
   // デバッグフラグ(デバッグモード使用時はここで変更するのではなくconfig.ymlの設定値を変更すること！)
@@ -821,8 +814,6 @@ object SeichiAssist {
   var seichiAssistConfig: Config = _
   // (minestackに格納する)Gachadataに依存するデータリスト
   val msgachadatalist: mutable.ArrayBuffer[MineStackGachaData] = mutable.ArrayBuffer()
-  var allplayergiveapplelong = 0L
-
   object Scopes {
     implicit val globalChatInterceptionScope: InterceptionScope[UUID, String] = {
       import PluginExecutionContexts.asyncShift

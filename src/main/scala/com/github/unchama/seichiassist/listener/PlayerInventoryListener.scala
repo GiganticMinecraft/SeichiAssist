@@ -6,26 +6,19 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.player.GiganticBerserk
-import com.github.unchama.seichiassist.data.{GachaSkullData, ItemData, MenuInventoryData}
-import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
+import com.github.unchama.seichiassist.data.{GachaSkullData, MenuInventoryData}
 import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
-import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
+import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
-import com.github.unchama.seichiassist.task.VotingFairyTask
-import com.github.unchama.seichiassist.util.{
-  InventoryOperations,
-  StaticGachaPrizeFactory,
-  TimeUtils
-}
+import com.github.unchama.seichiassist.util.{InventoryOperations, StaticGachaPrizeFactory}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.{EntityType, Player}
-import org.bukkit.event.inventory.{InventoryClickEvent, InventoryCloseEvent, InventoryType}
+import org.bukkit.event.inventory.{InventoryClickEvent, InventoryCloseEvent}
 import org.bukkit.event.{EventHandler, Listener}
-import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.inventory.{ItemFlag, ItemStack}
 import org.bukkit.{Bukkit, Material, Sound}
 
@@ -45,7 +38,6 @@ class PlayerInventoryListener(
 
   private val playerMap = SeichiAssist.playermap
   private val gachaDataList = SeichiAssist.gachadatalist
-  private val databaseGateway = SeichiAssist.databaseGateway
 
   // ガチャ交換システム
   @EventHandler
@@ -383,200 +375,6 @@ class PlayerInventoryListener(
       }
     }
 
-  }
-
-  // 投票ptメニュー
-//  @EventHandler
-  def onVotingMenuEvent(event: InventoryClickEvent): Unit = {
-    // 外枠のクリック処理なら終了
-    if (event.getClickedInventory == null) {
-      return
-    }
-
-    val itemstackcurrent = event.getCurrentItem
-    val view = event.getView
-    val he = view.getPlayer
-    // インベントリを開けたのがプレイヤーではない時終了
-    if (he.getType != EntityType.PLAYER) {
-      return
-    }
-
-    val topinventory = view.getTopInventory.ifNull {
-      return
-    }
-    // インベントリが存在しない時終了
-    // インベントリサイズが4列でない時終了
-    if (topinventory.row != 4) {
-      return
-    }
-    val player = he.asInstanceOf[Player]
-    val uuid = player.getUniqueId
-    val playerdata = playerMap(uuid)
-
-    val playerLevel = SeichiAssist
-      .instance
-      .breakCountSystem
-      .api
-      .seichiAmountDataRepository(player)
-      .read
-      .unsafeRunSync()
-      .levelCorrespondingToExp
-      .level
-
-    // インベントリ名が以下の時処理
-    if (topinventory.getTitle == DARK_PURPLE.toString + "" + BOLD + "投票ptメニュー") {
-      event.setCancelled(true)
-
-      if (event.getClickedInventory.getType == InventoryType.PLAYER) {
-        return
-      }
-
-      val isSkull = itemstackcurrent.getType == Material.SKULL_ITEM
-
-      /*
-       * クリックしたボタンに応じた各処理内容の記述ここから
-       */
-
-      // 投票pt受取
-      if (itemstackcurrent.getType == Material.DIAMOND) {
-        // nは特典をまだ受け取ってない投票分
-        var n = databaseGateway.playerDataManipulator.compareVotePoint(player, playerdata)
-        // 投票数に変化が無ければ処理終了
-        if (n == 0) {
-          return
-        }
-        // 先にp_voteの値を更新しておく
-        playerdata.p_givenvote = playerdata.p_givenvote + n
-
-        var count = 0
-        while (n > 0) {
-          // ここに投票1回につきプレゼントする特典の処理を書く
-
-          // ガチャ券プレゼント処理
-          val skull = GachaSkullData.gachaForVoting
-          for { _ <- 0 to 9 } {
-            if (
-              player.getInventory.contains(skull) || !InventoryOperations.isPlayerInventoryFull(
-                player
-              )
-            ) {
-              InventoryOperations.addItem(player, skull)
-            } else {
-              InventoryOperations.dropItem(player, skull)
-            }
-          }
-
-          // ピッケルプレゼント処理(レベル50になるまで)
-          if (playerLevel < 50) {
-            val pickaxe = ItemData.getSuperPickaxe(1)
-            if (InventoryOperations.isPlayerInventoryFull(player)) {
-              InventoryOperations.dropItem(player, pickaxe)
-            } else {
-              InventoryOperations.addItem(player, pickaxe)
-            }
-          }
-
-          // 投票ギフト処理(レベル50から)
-          if (playerLevel >= 50) {
-            val gift = ItemData.getVotingGift(1)
-            if (InventoryOperations.isPlayerInventoryFull(player)) {
-              InventoryOperations.dropItem(player, gift)
-            } else {
-              InventoryOperations.addItem(player, gift)
-            }
-          }
-          // エフェクトポイント加算処理
-          playerdata.effectPoint += 10
-
-          n -= 1
-          count += 1
-        }
-
-        player.sendMessage(GOLD.toString + "投票特典" + WHITE + "(" + count + "票分)を受け取りました")
-        player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-
-        val itemmeta = itemstackcurrent.getItemMeta
-        itemstackcurrent.setItemMeta(itemmeta)
-        player.openInventory(MenuInventoryData.getVotingMenuData(player))
-      } else if (itemstackcurrent.getType == Material.BOOK_AND_QUILL) {
-        // 投票リンク表示
-        player.sendMessage(
-          RED.toString + "" + UNDERLINE + "https://minecraft.jp/servers/54d3529e4ddda180780041a7/vote"
-        )
-        player.sendMessage(
-          RED.toString + "" + UNDERLINE + "https://monocraft.net/servers/Cf3BffNIRMERDNbAfWQm"
-        )
-        player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-        player.closeInventory()
-      } else if (
-        isSkull && itemstackcurrent
-          .getItemMeta
-          .asInstanceOf[SkullMeta]
-          .getOwningPlayer
-          .getName == "MHF_ArrowLeft"
-      ) {
-
-        effectEnvironment.unsafeRunAsyncTargetedEffect(player)(
-          SequentialEffect(
-            CommonSoundEffects.menuTransitionFenceSound,
-            ioCanOpenFirstPage.open(StickMenu.firstPage)
-          ),
-          "棒メニューの1ページ目を開く"
-        )
-
-        // NOTE: WHEN
-      } else if (itemstackcurrent.getType == Material.WATCH) {
-        player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-        playerdata.toggleVotingFairy = playerdata.toggleVotingFairy % 4 + 1
-        player.openInventory(MenuInventoryData.getVotingMenuData(player))
-      } else if (itemstackcurrent.getType == Material.PAPER) {
-        player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-        playerdata.toggleGiveApple = playerdata.toggleGiveApple % 4 + 1
-        player.openInventory(MenuInventoryData.getVotingMenuData(player))
-      } else if (itemstackcurrent.getType == Material.JUKEBOX) {
-        player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-        playerdata.toggleVFSound = !playerdata.toggleVFSound
-        player.openInventory(MenuInventoryData.getVotingMenuData(player))
-      } else if (itemstackcurrent.getType == Material.GHAST_TEAR) {
-        player.closeInventory()
-
-        // プレイヤーレベルが10に達していないとき
-        if (playerLevel < 10) {
-          player.sendMessage(GOLD.toString + "プレイヤーレベルが足りません")
-          player.playSound(player.getLocation, Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
-          return
-        }
-
-        // 既に妖精召喚している場合終了
-        if (playerdata.usingVotingFairy) {
-          player.sendMessage(GOLD.toString + "既に妖精を召喚しています")
-          player.playSound(player.getLocation, Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
-          return
-        }
-
-        // 投票ptが足りない場合終了
-        if (playerdata.effectPoint < playerdata.toggleVotingFairy * 2) {
-          player.sendMessage(GOLD.toString + "投票ptが足りません")
-          player.playSound(player.getLocation, Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
-          return
-        }
-
-        VotingFairyListener.summon(player)
-        player.closeInventory()
-      } else if (itemstackcurrent.getType == Material.COMPASS) {
-        VotingFairyTask.speak(
-          player,
-          "僕は" + TimeUtils.showHour(playerdata.votingFairyEndTime) + "には帰るよー。",
-          playerdata.toggleVFSound
-        )
-        player.closeInventory()
-      } // 妖精召喚
-      // 妖精音トグル
-      // 妖精リンゴトグル
-      // 妖精時間トグル
-      // 棒メニューに戻る
-
-    }
   }
 
   @EventHandler

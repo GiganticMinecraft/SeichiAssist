@@ -312,15 +312,6 @@ object PlayerDataLoading {
             playerData.TitleFlags.addOne(1)
         }
 
-        // マナ妖精
-        playerData.usingVotingFairy = rs.getBoolean("canVotingFairyUse")
-        playerData.VotingFairyRecoveryValue = rs.getInt("VotingFairyRecoveryValue")
-        playerData.hasVotingFairyMana = rs.getInt("hasVotingFairyMana")
-        playerData.toggleGiveApple = rs.getInt("toggleGiveApple")
-        playerData.toggleVotingFairy = rs.getInt("toggleVotingFairy")
-        playerData.setVotingFairyTime(rs.getString("newVotingFairyTime"))
-        playerData.p_apple = rs.getLong("p_apple")
-
         playerData.giganticBerserk = GiganticBerserk(
           rs.getInt("GBlevel"),
           rs.getInt("GBexp"),

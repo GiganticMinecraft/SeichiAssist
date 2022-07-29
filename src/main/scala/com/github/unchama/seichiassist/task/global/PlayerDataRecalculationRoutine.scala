@@ -6,7 +6,6 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.SeichiAchievement
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
-import com.github.unchama.seichiassist.task.VotingFairyTask
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
@@ -76,11 +75,6 @@ object PlayerDataRecalculationRoutine {
             }
           )
           .unsafeRunSync()
-
-        // 投票妖精関連
-        if (playerData.usingVotingFairy) {
-          VotingFairyTask.run(player)
-        }
 
         // GiganticBerserk
         playerData.GBcd = 0

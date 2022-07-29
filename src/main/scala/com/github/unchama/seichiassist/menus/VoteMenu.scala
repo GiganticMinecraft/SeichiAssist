@@ -4,8 +4,8 @@ import cats.effect.{ConcurrentEffect, IO, SyncIO}
 import cats.implicits.toTraverseOps
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.router.CanOpen
-import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
+import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
 import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
@@ -25,7 +25,6 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.p
   FairySummonCost,
   FairyUsingState
 }
-import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects.closeInventoryEffect
@@ -170,15 +169,25 @@ object VoteMenu extends Menu {
       }
     )
 
+    def getFairyValidTime(fairySummonCost: FairySummonCost): String = {
+      fairySummonCost match {
+        case FairySummonCost(1) => "30分"
+        case FairySummonCost(2) => "1時間"
+        case FairySummonCost(3) => "1時間30分"
+        case FairySummonCost(4) => "2時間"
+      }
+    }
+
     val fairySummonTimeToggleButton: IO[Button] = {
       RecomputedButton(IO {
         val fairySummonCost = fairyAPI.fairySummonCost(player).unsafeRunSync()
+
         Button(
           new IconItemStackBuilder(Material.WATCH)
             .title(s"$AQUA$UNDERLINE${BOLD}マナ妖精 時間設定")
             .lore(
               List(
-                s"$RESET$GREEN$BOLD${VotingFairyTask.dispToggleVFTime(fairySummonCost.value)}",
+                s"$RESET$GREEN$BOLD${getFairyValidTime(fairySummonCost)}",
                 "",
                 s"$RESET${GRAY}コスト",
                 s"$RESET$RED$BOLD${fairySummonCost.value * 2}投票pt",
@@ -266,15 +275,15 @@ object VoteMenu extends Menu {
 
     val fairySummonButton: Button = {
       val fairySummonState =
-        fairyAPI.fairySummonCost(player).unsafeRunSync().value
+        fairyAPI.fairySummonCost(player).unsafeRunSync()
       Button(
         new IconItemStackBuilder(Material.GHAST_TEAR)
           .title(s"$LIGHT_PURPLE$UNDERLINE${BOLD}マナ妖精 召喚")
           .lore(
             List(
-              s"$RESET$GRAY${fairySummonState * 2}投票ptを消費して",
+              s"$RESET$GRAY${fairySummonState.value * 2}投票ptを消費して",
               s"$RESET${GRAY}マナ妖精を呼びます",
-              s"$RESET${GRAY}時間: ${VotingFairyTask.dispToggleVFTime(fairySummonState)}",
+              s"$RESET${GRAY}時間: ${getFairyValidTime(fairySummonState)}",
               s"$RESET${DARK_RED}Lv.10以上で開放"
             )
           )
