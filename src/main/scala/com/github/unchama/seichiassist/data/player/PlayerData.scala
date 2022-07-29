@@ -8,6 +8,8 @@ import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
 import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiStarLevel
+import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
+import com.github.unchama.seichiassist.subsystems.vote.domain.EffectPoint
 import com.github.unchama.seichiassist.util.RelativeDirection
 import com.github.unchama.seichiassist.util.exp.{ExperienceManager, IExperienceManager}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -297,9 +299,9 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
     achievePoint = achievePoint.copy(used = achievePoint.used + amount)
   }
 
-  def convertEffectPointToAchievePoint(): Unit = {
+  def convertEffectPointToAchievePoint(voteAPI: VoteAPI[IO, Player]): Unit = {
     achievePoint = achievePoint.copy(conversionCount = achievePoint.conversionCount + 1)
-    effectPoint -= 10
+    voteAPI.decreaseEffectPoint(uuid, EffectPoint(10))
   }
 
   // パッシブスキルの獲得量表示

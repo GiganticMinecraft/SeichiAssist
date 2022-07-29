@@ -9,6 +9,7 @@ import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.MenuInventoryData.MenuType
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
+import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.targetedeffect.SequentialEffect
 import org.bukkit.entity.{EntityType, Player}
 import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}
@@ -32,6 +33,7 @@ object OnClickTitleMenu {
 
   def onPlayerClickTitleMenuEvent(event: InventoryClickEvent)(
     implicit effectEnvironment: EffectEnvironment,
+    voteAPI: VoteAPI[IO, Player],
     ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type
   ): Unit = {
     import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
@@ -76,6 +78,7 @@ object OnClickTitleMenu {
 
     val mat = current.getType
     val isSkull = mat == Material.SKULL_ITEM
+    val effectPoint = voteAPI.effectPoints(player).unsafeRunSync()
     topInventory.getTitle match {
       case MenuType.COMBINE.invName =>
         event.setCancelled(true)
@@ -88,8 +91,8 @@ object OnClickTitleMenu {
           // エフェクトポイント→実績ポイント変換
           case Material.EMERALD =>
             clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
-            if (pd.effectPoint >= 10) {
-              pd.convertEffectPointToAchievePoint()
+            if (voteAPI.effectPoints(player).unsafeRunSync().value >= 10) {
+              pd.convertEffectPointToAchievePoint(voteAPI)
             } else {
               player.sendMessage("エフェクトポイントが不足しています。")
             }
@@ -130,7 +133,9 @@ object OnClickTitleMenu {
         mat match {
           case Material.EMERALD_ORE | Material.EMERALD =>
             pd.recalculateAchievePoint()
-            player.openInventory(MenuInventoryData.computeRefreshedCombineMenu(player))
+            player.openInventory(
+              MenuInventoryData.computeRefreshedCombineMenu(player, effectPoint)
+            )
 
           case _ =>
         }
@@ -165,7 +170,9 @@ object OnClickTitleMenu {
 
           case Material.BARRIER =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            player.openInventory(MenuInventoryData.computeRefreshedCombineMenu(player))
+            player.openInventory(
+              MenuInventoryData.computeRefreshedCombineMenu(player, effectPoint)
+            )
 
           case _ if isSkull && isApplicableAsNextPageButton(current) =>
             // 次ページ
@@ -211,7 +218,9 @@ object OnClickTitleMenu {
 
           case Material.BARRIER =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            player.openInventory(MenuInventoryData.computeRefreshedCombineMenu(player))
+            player.openInventory(
+              MenuInventoryData.computeRefreshedCombineMenu(player, effectPoint)
+            )
 
           case _ if isSkull && isApplicableAsNextPageButton(current) =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
@@ -256,7 +265,9 @@ object OnClickTitleMenu {
 
           case Material.BARRIER =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            player.openInventory(MenuInventoryData.computeRefreshedCombineMenu(player))
+            player.openInventory(
+              MenuInventoryData.computeRefreshedCombineMenu(player, effectPoint)
+            )
 
           case _ if isSkull && isApplicableAsNextPageButton(current) =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
@@ -304,7 +315,9 @@ object OnClickTitleMenu {
 
           case Material.BARRIER =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            player.openInventory(MenuInventoryData.computeRefreshedCombineMenu(player))
+            player.openInventory(
+              MenuInventoryData.computeRefreshedCombineMenu(player, effectPoint)
+            )
 
           case _ if isSkull && isApplicableAsNextPageButton(current) =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)

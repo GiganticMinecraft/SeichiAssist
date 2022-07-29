@@ -11,6 +11,7 @@ import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
+import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.util.{InventoryOperations, StaticGachaPrizeFactory}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -27,6 +28,7 @@ import scala.collection.mutable.ArrayBuffer
 class PlayerInventoryListener(
   implicit effectEnvironment: EffectEnvironment,
   manaApi: ManaApi[IO, SyncIO, Player],
+  voteAPI: VoteAPI[IO, Player],
   ioCanOpenFirstPage: IO CanOpen FirstPage.type,
   ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type,
   ioOnMainThread: OnMinecraftServerThread[IO]

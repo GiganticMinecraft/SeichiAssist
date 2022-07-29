@@ -14,6 +14,7 @@ import com.github.unchama.seichiassist.data.player.NicknameStyle
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
+import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.targetedeffect.player.{FocusedSoundEffect, PlayerEffects}
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import org.bukkit.ChatColor._
@@ -28,7 +29,8 @@ object AchievementMenu extends Menu {
   class Environment(
     implicit val ioCanOpenStickMenu: IO CanOpen FirstPage.type,
     val ioCanOpenCategoryMenu: IO CanOpen AchievementCategoryMenu,
-    val ioOnMainThread: OnMinecraftServerThread[IO]
+    val ioOnMainThread: OnMinecraftServerThread[IO],
+    val voteAPI: VoteAPI[IO, Player]
   )
 
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$DARK_PURPLE${BOLD}実績・二つ名システム")
@@ -109,7 +111,12 @@ object AchievementMenu extends Menu {
         .build(),
       action.LeftClickButtonEffect(
         CommonSoundEffects.menuTransitionFenceSound,
-        PlayerEffects.openInventoryEffect(MenuInventoryData.computeRefreshedCombineMenu(player))
+        PlayerEffects.openInventoryEffect(
+          MenuInventoryData.computeRefreshedCombineMenu(
+            player,
+            environment.voteAPI.effectPoints(player).unsafeRunSync()
+          )
+        )
       )
     )
 

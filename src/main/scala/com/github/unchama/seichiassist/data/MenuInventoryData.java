@@ -1,10 +1,13 @@
 package com.github.unchama.seichiassist.data;
 
+import cats.effect.IO;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.achievement.Nicknames;
 import com.github.unchama.seichiassist.data.player.AchievementPoint;
 import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.data.player.PlayerNickname;
+import com.github.unchama.seichiassist.subsystems.vote.VoteAPI;
+import com.github.unchama.seichiassist.subsystems.vote.domain.EffectPoint;
 import com.github.unchama.seichiassist.util.AsyncInventorySetter;
 import com.github.unchama.seichiassist.util.ItemMetaFactory;
 import org.bukkit.Bukkit;
@@ -64,8 +67,10 @@ public final class MenuInventoryData {
      * 二つ名組み合わせ
      * @param p プレイヤー
      * @return メニュー
+     * 本来ならここにeffectPointではなくVoteAPIを渡したいところだが、
+     * VoteAPIを呼び出すにはcats.ioが必要で、Javaではcats.ioが呼び出せないのでこうするしかない。
      */
-    public static Inventory computeRefreshedCombineMenu(final Player p) {
+    public static Inventory computeRefreshedCombineMenu(final Player p, EffectPoint effectPoint) {
         final UUID uuid = p.getUniqueId();
         final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
@@ -118,7 +123,7 @@ public final class MenuInventoryData {
                     ChatColor.RESET + "" + ChatColor.RED + "実績ポイントに変換できます。",
                     ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "投票pt 10pt → 実績pt 3pt",
                     ChatColor.RESET + "" + ChatColor.AQUA + "クリックで変換を一回行います。",
-                    ChatColor.RESET + "" + ChatColor.GREEN + "所有投票pt :" + playerdata.effectPoint(),
+                    ChatColor.RESET + "" + ChatColor.GREEN + "所有投票pt :" + effectPoint.value(),
                     ChatColor.RESET + "" + ChatColor.GREEN + "所有実績pt :" + playerdata.achievePoint().left()
             );
 
