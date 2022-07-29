@@ -63,30 +63,32 @@ object VoteMenu extends Menu {
 
     val staticButtons =
       Map(
-        ChestSlotRef(0, 0) -> receiveVoteBenefitsButton,
-        ChestSlotRef(0, 4) -> fairySummonButton,
         ChestSlotRef(1, 0) -> showVoteURLButton,
         ChestSlotRef(3, 0) -> CommonButtons.openStickMenu
       )
 
     val computeButtonsIO =
       Seq(
+        ChestSlotRef(0, 0) -> receiveVoteBenefitsButton,
+        ChestSlotRef(0, 4) -> fairySummonButton,
         ChestSlotRef(0, 2) -> fairySummonTimeToggleButton,
         ChestSlotRef(1, 2) -> fairyContractSettingToggle,
         ChestSlotRef(2, 2) -> fairyPlaySoundToggleButton
       ).traverse(_.sequence)
 
-    val dynamicButtons =
-      Map(ChestSlotRef(0, 6) -> gachaRingoInformation, ChestSlotRef(1, 4) -> checkTimeButton)
+    val dynamicButtonsIO =
+      Seq(ChestSlotRef(0, 6) -> gachaRingoInformation, ChestSlotRef(1, 4) -> checkTimeButton)
+        .traverse(_.sequence)
 
     for {
       fairyUsingState <- environment.fairyAPI.fairyUsingState(constantButtons.player)
       computeButtons <- computeButtonsIO
+      dynamicButtons <- dynamicButtonsIO
     } yield {
       val exceptDynamicButtons = staticButtons ++ computeButtons
       MenuSlotLayout(exceptDynamicButtons).merge(
         if (fairyUsingState == FairyUsingState.Using)
-          MenuSlotLayout(dynamicButtons)
+          MenuSlotLayout(dynamicButtons: _*)
         else MenuSlotLayout.emptyLayout
       )
     }
@@ -106,7 +108,7 @@ object VoteMenu extends Menu {
     private implicit val ioCE: ConcurrentEffect[IO] =
       IO.ioConcurrentEffect(PluginExecutionContexts.asyncShift)
 
-    val receiveVoteBenefitsButton: Button = {
+    val receiveVoteBenefitsButton: IO[Button] = {
       val uuid = player.getUniqueId
       for {
         benefits <- voteAPI.receivedVoteBenefits(uuid)
@@ -139,7 +141,7 @@ object VoteMenu extends Menu {
           }
         )
       }
-    }.unsafeRunSync()
+    }
 
     val showVoteURLButton: Button = Button(
       new IconItemStackBuilder(Material.BOOK_AND_QUILL)
@@ -273,7 +275,7 @@ object VoteMenu extends Menu {
       })
     }
 
-    val fairySummonButton: Button = {
+    val fairySummonButton: IO[Button] = IO {
       val fairySummonState =
         fairyAPI.fairySummonCost(player).unsafeRunSync()
       Button(
@@ -300,7 +302,7 @@ object VoteMenu extends Menu {
       )
     }
 
-    val checkTimeButton: Button =
+    val checkTimeButton: IO[Button] = IO {
       Button(
         new IconItemStackBuilder(Material.COMPASS)
           .title(s"$LIGHT_PURPLE$UNDERLINE${BOLD}マナ妖精に時間を聞く")
@@ -316,8 +318,9 @@ object VoteMenu extends Menu {
           )
         }
       )
+    }
 
-    val gachaRingoInformation: Button =
+    val gachaRingoInformation: IO[Button] = IO {
       Button(
         new IconItemStackBuilder(Material.GOLDEN_APPLE)
           .title(s"$YELLOW$UNDERLINE$BOLD㊙ がちゃりんご情報 ㊙")
@@ -356,6 +359,7 @@ object VoteMenu extends Menu {
           .enchanted()
           .build()
       )
+    }
 
   }
 }
