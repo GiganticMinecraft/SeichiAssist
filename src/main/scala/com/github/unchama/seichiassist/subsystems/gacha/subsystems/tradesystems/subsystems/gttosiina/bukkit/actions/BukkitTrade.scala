@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.subsystems.gttosiina.bukkit.actions
 
 import cats.effect.ConcurrentEffect
-import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity.Gigantic
@@ -22,25 +21,17 @@ object BukkitTrade {
     (contents: List[ItemStack]) =>
       for {
         gachaList <- gachaAPI.list
+        giganticItemStacks <- gachaList // TODO GTアイテムかどうかを確率に依存すべきではない
+          .filter(_.probability.value < Gigantic.maxProbability.value)
+          .traverse(gachaPrize =>
+            gachaAPI.grantGachaPrize(gachaPrize).createNewItem(Some(name))
+          )
       } yield {
-        // TODO GTアイテムかどうかを確率に依存すべきではない
-        val giganticItemStacks =
-          gachaList
-            .filter(_.probability.value < Gigantic.maxProbability.value)
-            .traverse(gachaPrize =>
-              gachaAPI.grantGachaPrize(gachaPrize).createNewItem(Some(name))
-            )
-
         // 交換可能なItemStack達
         val tradableItems = contents.filter { targetItem =>
-          giganticItemStacks
-            .map { itemStacks =>
-              itemStacks.exists(gachaPrizeItemStack =>
-                gachaPrizeItemStack.isSimilar(targetItem)
-              )
-            }
-            .toIO
-            .unsafeRunSync()
+          giganticItemStacks.exists(gachaPrizeItemStack =>
+            gachaPrizeItemStack.isSimilar(targetItem)
+          )
         }
 
         // 交換不可能なItemStack達
@@ -55,5 +46,4 @@ object BukkitTrade {
           nonTradableItems
         )
       }
-
 }

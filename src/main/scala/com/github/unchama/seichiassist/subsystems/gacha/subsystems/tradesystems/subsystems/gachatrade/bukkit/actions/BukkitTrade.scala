@@ -21,41 +21,34 @@ object BukkitTrade {
     (contents: List[ItemStack]) =>
       for {
         gachaList <- gachaAPI.list
-      } yield {
         // GTアイテムを除去し、今回の対象であるあたりまでを含めたリスト
-        val targetsList =
+        targetsList =
           gachaList
             .filterNot(_.probability.value < Gigantic.maxProbability.value)
             .filter(_.probability.value < Regular.maxProbability.value)
 
         // 大当たりのアイテム
-        val bigList = targetsList.filter(_.probability.value < Big.maxProbability.value)
+        bigList <- targetsList
+          .filter(_.probability.value < Big.maxProbability.value)
+          .traverse(gachaPrize =>
+            gachaAPI.grantGachaPrize(gachaPrize).createNewItem(Some(owner))
+          )
 
         // あたりのアイテム
-        val regularList = targetsList.diff(bigList)
+        regularList <- targetsList.diff(bigList).traverse { gachaPrize =>
+          gachaAPI.grantGachaPrize(gachaPrize).createNewItem(Some(owner))
+        }
 
+      } yield {
         // 交換可能な大当たりのアイテム
         val tradableBigItems =
           contents.filter(targetItem =>
-            bigList.exists(gachaPrize =>
-              gachaAPI
-                .grantGachaPrize(gachaPrize)
-                .createNewItem(Some(owner))
-                .map(itemStack => itemStack == targetItem)
-                .toIO
-                .unsafeRunSync()
-            )
+            bigList.exists(itemStack => itemStack.isSimilar(targetItem))
           )
 
         // 交換可能なあたりのアイテム
         val tradableRegularItems = contents.filter(targetItem =>
-          regularList.exists(gachaPrize =>
-            gachaAPI
-              .grantGachaPrize(gachaPrize)
-              .createNewItem(Some(owner))
-              .toIO
-              .unsafeRunSync() == targetItem
-          )
+          regularList.exists(itemStack => itemStack.isSimilar(targetItem))
         )
 
         // 交換不可能なアイテム達
