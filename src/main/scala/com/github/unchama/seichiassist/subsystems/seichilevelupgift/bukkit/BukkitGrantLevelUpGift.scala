@@ -13,14 +13,16 @@ import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.{
   GrantLevelUpGift
 }
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 
-class BukkitGrantLevelUpGift[F[_]: Sync: OnMinecraftServerThread: GachaAPI, G[
+class BukkitGrantLevelUpGift[F[_]: Sync: OnMinecraftServerThread, G[_]: ContextCoercion[*[
   _
-]: ContextCoercion[*[_], F]]
-    extends GrantLevelUpGift[F, Player, G] {
-  override def grant(
-    gift: Gift
-  )(implicit gachaPointApi: GachaPointApi[F, G, Player]): Kleisli[F, Player, Unit] = {
+], F]]
+    extends GrantLevelUpGift[F, Player, G, ItemStack] {
+  override def grant(gift: Gift)(
+    implicit gachaPointApi: GachaPointApi[F, G, Player],
+    gachaAPI: GachaAPI[F, ItemStack]
+  ): Kleisli[F, Player, Unit] = {
     val giftItemInterpreter: GiftItemInterpreter[F, G, Player] =
       new BukkitGiftItemInterpreter[F, G]
     gift match {
@@ -34,9 +36,9 @@ class BukkitGrantLevelUpGift[F[_]: Sync: OnMinecraftServerThread: GachaAPI, G[
 
 object BukkitGrantLevelUpGift {
 
-  implicit def apply[F[_]: Sync: OnMinecraftServerThread: GachaAPI, G[_]: ContextCoercion[*[
-    _
-  ], F]]: GrantLevelUpGift[F, Player, G] =
+  implicit def apply[F[_]: Sync: OnMinecraftServerThread, G[_]: ContextCoercion[*[_], F]](
+    implicit gachaAPI: GachaAPI[F, ItemStack]
+  ): GrantLevelUpGift[F, Player, G, ItemStack] =
     new BukkitGrantLevelUpGift[F, G]
 
 }

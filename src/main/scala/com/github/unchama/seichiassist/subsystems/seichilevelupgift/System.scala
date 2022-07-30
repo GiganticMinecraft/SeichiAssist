@@ -11,15 +11,17 @@ import com.github.unchama.seichiassist.subsystems.seichilevelupgift.bukkit.Bukki
 import com.github.unchama.seichiassist.subsystems.seichilevelupgift.usecases.GrantGiftOnSeichiLevelDiff
 import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 
 object System {
 
-  def backGroundProcess[F[_]: OnMinecraftServerThread: ErrorLogger: Async: GachaAPI, G[
+  def backGroundProcess[F[_]: OnMinecraftServerThread: ErrorLogger: Async, G[
     _
   ]: ContextCoercion[*[_], F]](
     implicit breakCountReadApi: BreakCountReadAPI[F, G, Player],
     gachaPointApi: GachaPointApi[F, G, Player],
-    send: SendMinecraftMessage[F, Player]
+    send: SendMinecraftMessage[F, Player],
+    gachaAPI: GachaAPI[F, ItemStack]
   ): F[Nothing] = {
     StreamExtra.compileToRestartingStream("[SeichiLevelUpGift]") {
       breakCountReadApi.seichiLevelUpdates.evalTap {

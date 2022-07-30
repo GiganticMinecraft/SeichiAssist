@@ -12,22 +12,23 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.SeichiAssist.databaseGateway
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.data.MineStackGachaData
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
-import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.BukkitGrantGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
+  GachaPrize,
+  GachaPrizeEncoder,
   GachaPrizeId,
   GachaPrizeListPersistence,
   GachaProbability
 }
 import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.GlobalPlayerAccessor
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketFromAdminTeamGateway
-import com.github.unchama.seichiassist.util.InventoryOperations
-import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
+import com.github.unchama.targetedeffect.{TargetedEffect, UnfocusedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}
+import org.bukkit.inventory.ItemStack
 
 import java.util.UUID
 import scala.util.chaining.scalaUtilChainingOps
@@ -36,8 +37,9 @@ class GachaCommand[F[
   _
 ]: OnMinecraftServerThread: NonServerThreadContextShift: Sync: ConcurrentEffect](
   implicit gachaTicketPersistence: GachaTicketFromAdminTeamGateway[F],
-  gachaPersistence: GachaPrizeListPersistence[F],
-  gachaAPI: GachaAPI[F]
+  gachaPersistence: GachaPrizeListPersistence[F, ItemStack],
+  gachaAPI: GachaAPI[F, ItemStack],
+  gachaPrizeEncoder: GachaPrizeEncoder[ItemStack]
 ) {
 
   import cats.implicits._
@@ -180,9 +182,11 @@ class GachaCommand[F[
             gachaPrize <- gachaAPI.gachaPrize(
               GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
             )
-          } yield InventoryOperations.grantItemStacksEffect[IO](
-            gachaPrize.get.createNewItem(Some(context.sender.getName))
-          )
+          } yield UnfocusedEffect {
+            new BukkitGrantGachaPrize[IO](gachaPrize.get)
+              .createNewItem(Some(context.sender.getName))
+              .unsafeRunAsync(_ => IO.unit)
+          }
 
           eff.toIO
         }

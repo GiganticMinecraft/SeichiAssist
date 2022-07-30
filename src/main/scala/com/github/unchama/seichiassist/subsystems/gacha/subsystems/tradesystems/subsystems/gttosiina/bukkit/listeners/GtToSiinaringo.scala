@@ -13,8 +13,10 @@ import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.{EventHandler, Listener}
+import org.bukkit.inventory.ItemStack
 
-class GtToSiinaringo[F[_]: ConcurrentEffect: GachaAPI] extends Listener {
+class GtToSiinaringo[F[_]: ConcurrentEffect](implicit gachaAPI: GachaAPI[F, ItemStack])
+    extends Listener {
 
   @EventHandler
   def onGachaRingoEvent(event: InventoryCloseEvent): Unit = {

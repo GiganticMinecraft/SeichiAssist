@@ -89,6 +89,7 @@ import com.github.unchama.util.{ActionStatus, ClassUtils}
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import org.bukkit.ChatColor._
 import org.bukkit.entity.{Entity, Player, Projectile}
+import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.{Bukkit, Material}
 import org.flywaydb.core.Flyway
@@ -388,7 +389,7 @@ class SeichiAssist extends JavaPlugin() {
       .wired[SyncIO, IO](seichiAssistConfig.getAnywhereEnderConfiguration)
   }
 
-  private lazy implicit val gachaAPI: GachaAPI[IO] = gachaSystem.api
+  private lazy implicit val gachaAPI: GachaAPI[IO, ItemStack] = gachaSystem.api
 
   private lazy val gachaSystem: subsystems.gacha.System[IO] = {
     val system = subsystems.gacha.System.wired

@@ -5,10 +5,11 @@ import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.subsystems.gachatrade.bukkit.listeners.GachaTradeListener
 import org.bukkit.event.Listener
+import org.bukkit.inventory.ItemStack
 
 object System {
 
-  def wired[F[_]: ConcurrentEffect: GachaAPI]: Subsystem[F] = {
+  def wired[F[_]: ConcurrentEffect](implicit gachaAPI: GachaAPI[F, ItemStack]): Subsystem[F] = {
     new Subsystem[F] {
       override val listeners: Seq[Listener] = Seq(new GachaTradeListener[F]())
     }

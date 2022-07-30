@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.subsystems.gachatrade.bukkit.actions
 
-import cats.effect.Sync
+import cats.effect.ConcurrentEffect
+import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity._
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.application.actions.Trade
@@ -14,7 +15,9 @@ object BukkitTrade {
 
   import cats.implicits._
 
-  def apply[F[_]: Sync](owner: String)(implicit gachaAPI: GachaAPI[F]): Trade[F, ItemStack] =
+  def apply[F[_]: ConcurrentEffect](
+    owner: String
+  )(implicit gachaAPI: GachaAPI[F, ItemStack]): Trade[F, ItemStack] =
     (contents: List[ItemStack]) =>
       for {
         gachaList <- gachaAPI.list
@@ -34,12 +37,25 @@ object BukkitTrade {
         // 交換可能な大当たりのアイテム
         val tradableBigItems =
           contents.filter(targetItem =>
-            bigList.exists(_.createNewItem(Some(owner)) == targetItem)
+            bigList.exists(gachaPrize =>
+              gachaAPI
+                .grantGachaPrize(gachaPrize)
+                .createNewItem(Some(owner))
+                .map(itemStack => itemStack == targetItem)
+                .toIO
+                .unsafeRunSync()
+            )
           )
 
         // 交換可能なあたりのアイテム
         val tradableRegularItems = contents.filter(targetItem =>
-          regularList.exists(_.createNewItem(Some(owner)) == targetItem)
+          regularList.exists(gachaPrize =>
+            gachaAPI
+              .grantGachaPrize(gachaPrize)
+              .createNewItem(Some(owner))
+              .toIO
+              .unsafeRunSync() == targetItem
+          )
         )
 
         // 交換不可能なアイテム達

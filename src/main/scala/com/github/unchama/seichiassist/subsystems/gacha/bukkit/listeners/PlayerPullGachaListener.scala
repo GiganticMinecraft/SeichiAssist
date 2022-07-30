@@ -13,11 +13,11 @@ import org.bukkit.ChatColor._
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
-import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.{EquipmentSlot, ItemStack}
 import org.bukkit.{GameMode, Material}
 
 class PlayerPullGachaListener[F[_]: ConcurrentEffect: OnMinecraftServerThread](
-  implicit gachaAPI: GachaAPI[F]
+  implicit gachaAPI: GachaAPI[F, ItemStack]
 ) extends Listener {
 
   @EventHandler

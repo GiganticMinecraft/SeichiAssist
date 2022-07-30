@@ -2,26 +2,28 @@ package com.github.unchama.seichiassist.subsystems.gacha
 
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
-import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaPrizeId
-import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
+import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
+import com.github.unchama.seichiassist.subsystems.gacha.domain.{GachaPrize, GachaPrizeId}
 
-trait GachaLotteryAPI[F[_]] {
+trait GachaLotteryAPI[F[_], ItemStack] {
 
   /**
    * ガチャ景品を抽選してその結果を返す作用
    */
-  def runLottery(amount: Int): F[Vector[GachaPrize]]
+  def runLottery(amount: Int): F[Vector[GachaPrize[ItemStack]]]
 
 }
 
 object GachaLotteryAPI {
 
-  def apply[F[_]](implicit ev: GachaLotteryAPI[F]): GachaLotteryAPI[F] =
+  def apply[F[_], ItemStack](
+    implicit ev: GachaLotteryAPI[F, ItemStack]
+  ): GachaLotteryAPI[F, ItemStack] =
     ev
 
 }
 
-trait GachaReadAPI[F[_]] {
+trait GachaReadAPI[F[_], ItemStack] {
 
   import cats.implicits._
 
@@ -30,17 +32,17 @@ trait GachaReadAPI[F[_]] {
   /**
    * ガチャの景品リスト用のリポジトリ
    */
-  protected val gachaPrizesListRepository: Ref[F, Vector[GachaPrize]]
+  protected val gachaPrizesListRepository: Ref[F, Vector[GachaPrize[ItemStack]]]
 
   /**
    * ガチャの景品リストを返す
    */
-  final def list: F[Vector[GachaPrize]] = gachaPrizesListRepository.get
+  final def list: F[Vector[GachaPrize[ItemStack]]] = gachaPrizesListRepository.get
 
   /**
    * [[GachaPrizeId]]に対応する[[GachaPrize]]を取得する
    */
-  final def gachaPrize(gachaPrizeId: GachaPrizeId): F[Option[GachaPrize]] = for {
+  final def gachaPrize(gachaPrizeId: GachaPrizeId): F[Option[GachaPrize[ItemStack]]] = for {
     prizes <- list
   } yield prizes.find(_.id == gachaPrizeId)
 
@@ -51,15 +53,19 @@ trait GachaReadAPI[F[_]] {
     prizes <- list
   } yield prizes.exists(_.id == gachaPrizeId)
 
+  val grantGachaPrize: GachaPrize[ItemStack] => GrantGachaPrize[F]
+
 }
 
 object GachaReadAPI {
 
-  def apply[F[_]](implicit ev: GachaReadAPI[F]): GachaReadAPI[F] = ev
+  def apply[F[_], ItemStack](
+    implicit ev: GachaReadAPI[F, ItemStack]
+  ): GachaReadAPI[F, ItemStack] = ev
 
 }
 
-trait GachaWriteAPI[F[_]] {
+trait GachaWriteAPI[F[_], ItemStack] {
 
   /**
    * ガチャの景品リストを何らかの方法でロードする
@@ -69,7 +75,7 @@ trait GachaWriteAPI[F[_]] {
   /**
    * ガチャの景品リストを、与えたGachaPrizesListに置き換えを行う
    */
-  def replace(gachaPrizesList: Vector[GachaPrize]): F[Unit]
+  def replace(gachaPrizesList: Vector[GachaPrize[ItemStack]]): F[Unit]
 
   /**
    * ガチャ景品リストを空にする
@@ -84,14 +90,19 @@ trait GachaWriteAPI[F[_]] {
   /**
    * ガチャ景品リストにGachaPrizeを追加する
    */
-  def addGachaPrize(gachaPrize: GachaPrizeId => GachaPrize): F[Unit]
+  def addGachaPrize(gachaPrize: GachaPrizeId => GachaPrize[ItemStack]): F[Unit]
 
 }
 
 object GachaWriteAPI {
 
-  def apply[F[_]](implicit ev: GachaWriteAPI[F]): GachaWriteAPI[F] = ev
+  def apply[F[_], ItemStack](
+    implicit ev: GachaWriteAPI[F, ItemStack]
+  ): GachaWriteAPI[F, ItemStack] = ev
 
 }
 
-trait GachaAPI[F[_]] extends GachaReadAPI[F] with GachaWriteAPI[F] with GachaLotteryAPI[F]
+trait GachaAPI[F[_], ItemStack]
+    extends GachaReadAPI[F, ItemStack]
+    with GachaWriteAPI[F, ItemStack]
+    with GachaLotteryAPI[F, ItemStack]
