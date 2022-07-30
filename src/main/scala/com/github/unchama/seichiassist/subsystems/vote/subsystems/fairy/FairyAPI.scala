@@ -10,7 +10,6 @@ trait FairyWriteAPI[F[_], G[_], Player] {
 
   /**
    * 妖精にあげるりんごの開放状態を変更する
-   *  ※妖精にあげるりんごの数を変更する
    */
   def updateAppleOpenState(uuid: UUID, appleOpenState: AppleOpenState): F[Unit]
 
