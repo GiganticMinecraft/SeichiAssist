@@ -40,7 +40,7 @@ class BukkitFairyRoutine extends FairyRoutine[IO, SyncIO, Player] {
     RepeatingRoutine.permanentRoutine(
       repeatInterval,
       onMainThread.runAction {
-        BukkitRecoveryMana[IO, SyncIO](player).recovery.runAsync(_ => IO.unit)
+        new BukkitRecoveryMana[IO, SyncIO](player).recovery.runAsync(_ => IO.unit)
       }
     )
   }
