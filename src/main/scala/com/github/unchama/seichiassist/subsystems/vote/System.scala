@@ -51,7 +51,7 @@ object System {
 
         import cats.implicits._
 
-        override def notReceivedVoteBenefits(uuid: UUID): F[VoteBenefit] = for {
+        override def restVoteBenefits(uuid: UUID): F[VoteBenefit] = for {
           voteCounter <- voteCounter(uuid)
           receivedVote <- receivedVoteBenefits(uuid)
         } yield VoteBenefit(voteCounter.value - receivedVote.value)

@@ -64,7 +64,7 @@ trait VoteReadAPI[F[_], Player] {
   /**
    * 投票特典を受け取っていない回数を返す作用
    */
-  def notReceivedVoteBenefits(uuid: UUID): F[VoteBenefit]
+  def restVoteBenefits(uuid: UUID): F[VoteBenefit]
 
 }
 

@@ -29,7 +29,7 @@ object BukkitReceiveVoteBenefits {
       ): F[Unit] = {
         val uuid = player.getUniqueId
         for {
-          notReceivedBenefits <- voteAPI.notReceivedVoteBenefits(uuid) // 受け取っていない投票特典数
+          notReceivedBenefits <- voteAPI.restVoteBenefits(uuid) // 受け取っていない投票特典数
           _ <- voteAPI.increaseVoteBenefits(uuid, notReceivedBenefits) // 受け取ってない分を受け取ったことにする
         } yield {
           if (notReceivedBenefits.value != 0) {
