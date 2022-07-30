@@ -92,7 +92,7 @@ object OnClickTitleMenu {
           case Material.EMERALD =>
             clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
             if (voteAPI.effectPoints(player).unsafeRunSync().value >= 10) {
-              pd.convertEffectPointToAchievePoint(voteAPI)
+              pd.convertEffectPointToAchievePoint
             } else {
               player.sendMessage("エフェクトポイントが不足しています。")
             }

@@ -299,7 +299,7 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
     achievePoint = achievePoint.copy(used = achievePoint.used + amount)
   }
 
-  def convertEffectPointToAchievePoint(voteAPI: VoteAPI[IO, Player]): Unit = {
+  def convertEffectPointToAchievePoint(implicit voteAPI: VoteAPI[IO, Player]): Unit = {
     achievePoint = achievePoint.copy(conversionCount = achievePoint.conversionCount + 1)
     voteAPI.decreaseEffectPoint(uuid, EffectPoint(10))
   }
