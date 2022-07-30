@@ -43,7 +43,7 @@ object System {
           gachaPrizesListRepository.set(gachaPrizesList)
 
         override def runLottery(amount: Int): F[Vector[GachaPrize]] =
-          LotteryOfGachaItems.using(Sync[F], api).lottery(amount)
+          new LotteryOfGachaItems[F].runLottery(amount, gachaPrizesListRepository)
 
         override def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Unit] = for {
           prizes <- list

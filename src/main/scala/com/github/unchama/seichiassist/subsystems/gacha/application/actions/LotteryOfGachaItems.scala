@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gacha.application.actions
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
+import cats.effect.concurrent.Ref
 import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{GachaPrizeId, GachaProbability}
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaprizefactory.bukkit.StaticGachaPrizeFactory
@@ -12,31 +12,22 @@ import scala.annotation.tailrec
  * ガチャアイテムの抽選を行う作用
  */
 
-trait LotteryOfGachaItems[F[_]] {
-
-  def lottery: F[Vector[GachaPrize]] = lottery(1)
-
-  def lottery(amount: Int): F[Vector[GachaPrize]]
-
-}
-
-object LotteryOfGachaItems {
-
-  def apply[F[_]](implicit ev: LotteryOfGachaItems[F]): LotteryOfGachaItems[F] =
-    ev
+class LotteryOfGachaItems[F[_]: Sync] {
 
   import cats.implicits._
 
-  def using[F[_]: Sync](implicit gachaAPI: GachaAPI[F]): LotteryOfGachaItems[F] =
-    (amount: Int) =>
-      for {
-        gachaPrizes <- gachaAPI.list
-        randomList <-
-          (0 until amount)
-            .map(_ => Sync[F].delay(Math.random()))
-            .toList
-            .traverse(random => random)
-      } yield randomList.map(lottery(1.0, _, gachaPrizes)).toVector
+  def runLottery(
+    amount: Int,
+    gachaPrizesListRepository: Ref[F, Vector[GachaPrize]]
+  ): F[Vector[GachaPrize]] =
+    for {
+      gachaPrizes <- gachaPrizesListRepository.get
+      randomList <-
+        (0 until amount)
+          .map(_ => Sync[F].delay(Math.random()))
+          .toList
+          .traverse(random => random)
+    } yield randomList.map(lottery(1.0, _, gachaPrizes)).toVector
 
   /**
    * ガチャアイテムの抽選を行うための再帰関数
