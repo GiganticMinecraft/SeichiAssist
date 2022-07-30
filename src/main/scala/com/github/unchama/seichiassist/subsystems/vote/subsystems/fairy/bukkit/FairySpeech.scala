@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit
 
-import cats.effect.{ConcurrentEffect, Sync}
+import cats.effect.Sync
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property._
@@ -10,7 +10,7 @@ import org.bukkit.entity.Player
 import java.time.LocalTime
 import scala.util.Random
 
-class FairySpeech[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
+class FairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
   implicit fairyAPI: FairyAPI[F, G, Player]
 ) {
 
