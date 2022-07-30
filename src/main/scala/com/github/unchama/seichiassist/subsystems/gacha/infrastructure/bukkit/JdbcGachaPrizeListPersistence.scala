@@ -47,12 +47,11 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync: NonServerThreadContextShift]
     Sync[F].delay {
       DB.localTx { implicit session =>
         sql"truncate table gachadata".execute().apply()
-        gachaPrizesList.foreach { gachaPrize =>
+        val batchParams = gachaPrizesList.map { gachaPrize =>
           val itemStackString = ItemStackCodec.toString(gachaPrize.itemStack)
-          sql"insert into gachadata values (${gachaPrize.id.id},${gachaPrize.probability.value},$itemStackString)"
-            .execute()
-            .apply()
+          Seq(gachaPrize.id.id, gachaPrize.probability.value, itemStackString)
         }
+        sql"insert into gachadata values (?,?,?)".batch(batchParams).apply[List]()
       }
     }
   }
