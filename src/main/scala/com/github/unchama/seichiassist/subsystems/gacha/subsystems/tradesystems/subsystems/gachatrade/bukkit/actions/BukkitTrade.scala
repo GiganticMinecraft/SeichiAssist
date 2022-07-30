@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.subsystems.gachatrade.bukkit.actions
 
 import cats.effect.ConcurrentEffect
-import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity._
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.application.actions.Trade
