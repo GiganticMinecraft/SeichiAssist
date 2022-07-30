@@ -125,10 +125,11 @@ object System {
             override def appleAteByFairyMyRanking(player: Player): IO[AppleAteByFairyRank] =
               persistence.appleAteByFairyMyRanking(player.getUniqueId)
 
-            override def appleAteByFairyRankingTopFour(
-              player: Player
-            ): IO[AppleAteByFairyRankTopFour] =
-              persistence.appleAteByFairyRankingTopFour(player.getUniqueId)
+            override def appleAteByFairyRanking(
+              player: Player,
+              number: Int
+            ): IO[Vector[Option[AppleAteByFairyRank]]] =
+              persistence.appleAteByFairyRanking(player.getUniqueId, number)
 
             override def allEatenAppleAmount: IO[AppleAmount] =
               persistence.allEatenAppleAmount

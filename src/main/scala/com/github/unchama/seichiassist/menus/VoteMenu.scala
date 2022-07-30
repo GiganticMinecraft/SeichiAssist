@@ -325,17 +325,17 @@ object VoteMenu extends Menu {
               s"$RESET${DARK_GRAY}召喚されたらラッキーだよ！"
             ) ++ {
               // TOP4のランキングロール
-              val topFour = fairyAPI.appleAteByFairyRankingTopFour(player).unsafeRunSync()
-              List(Some(topFour.one), topFour.two, topFour.three, topFour.four).flatMap {
-                rankDataOpt =>
+              val topFour = fairyAPI.appleAteByFairyRanking(player, 4).unsafeRunSync()
+              List(topFour.headOption, topFour.lift(1), topFour.lift(2), topFour.lift(3))
+                .flatMap { rankDataOpt =>
                   if (rankDataOpt.nonEmpty) {
-                    val rankData = rankDataOpt.get
+                    val rankData = rankDataOpt.get.get
                     List(
                       s"${GRAY}たくさんくれたﾆﾝｹﾞﾝ第${rankData.rank}位！",
                       s"${GRAY}なまえ：${rankData.name} りんご：${rankData.appleAmount.amount}個"
                     )
                   } else Nil
-              }
+                }
             } ++ {
               val myRank = fairyAPI.appleAteByFairyMyRanking(player).unsafeRunSync()
               List(

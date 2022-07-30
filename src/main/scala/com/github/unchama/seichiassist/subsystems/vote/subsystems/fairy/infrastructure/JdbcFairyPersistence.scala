@@ -186,27 +186,24 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   }
 
   /**
-   * 妖精に食べさせたりんごの量の順位上位4件を返す
+   * 妖精に食べさせたりんごの量の順位上位`number`件を返す
    */
-  override def appleAteByFairyRankingTopFour(uuid: UUID): F[AppleAteByFairyRankTopFour] =
+  override def appleAteByFairyRanking(
+    uuid: UUID,
+    number: Int
+  ): F[Vector[Option[AppleAteByFairyRank]]] =
     Sync[F].delay {
       DB.readOnly { implicit session =>
-        val topFour =
-          sql"SELECT name,p_apple,COUNT(*) AS rank FROM playerdata ORDER BY rank DESC LIMIT 4;"
-            .map(rs => (rs.stringOpt("name"), rs.intOpt("rank"), rs.intOpt("p_apple")))
-            .toList()
-            .apply()
-            .map(data =>
-              if (data._1.nonEmpty)
-                Some(AppleAteByFairyRank(data._1.get, data._2.get, AppleAmount(data._3.get)))
-              else None
-            )
-        AppleAteByFairyRankTopFour(
-          topFour.head.get,
-          topFour.lift(1).flatten,
-          topFour.lift(2).flatten,
-          topFour.lift(3).flatten
-        )
+        sql"SELECT name,p_apple,COUNT(*) AS rank FROM playerdata ORDER BY rank DESC LIMIT $number;"
+          .map(rs => (rs.stringOpt("name"), rs.intOpt("rank"), rs.intOpt("p_apple")))
+          .toList()
+          .apply()
+          .map(data =>
+            if (data._1.nonEmpty)
+              Some(AppleAteByFairyRank(data._1.get, data._2.get, AppleAmount(data._3.get)))
+            else None
+          )
+          .toVector
       }
     }
 
