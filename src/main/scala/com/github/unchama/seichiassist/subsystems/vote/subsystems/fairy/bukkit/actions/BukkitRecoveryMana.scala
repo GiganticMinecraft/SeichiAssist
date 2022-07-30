@@ -60,10 +60,12 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: Applicative, G[_]: ContextCoerc
         new FairySpeech[F, G].speechRandomly(player, FairyManaRecoveryState.full)
       }.whenA(isUsing && oldManaAmount.isFull)
 
-      finallyAppleConsumptionAmount <- computeFinallyAppleConsumptionAmount
-      recoveryManaAmount <- computeManaRecoveryAmount
-
       appleConsumptionAmount <- computeAppleConsumptionAmount
+      finallyAppleConsumptionAmount <- computeFinallyAppleConsumptionAmount(
+        appleConsumptionAmount
+      )
+      recoveryManaAmount <- computeManaRecoveryAmount(appleConsumptionAmount)
+
       gachaRingoObject <- LiftIO[F].liftIO {
         MineStackObjectList.findByName("gachaimo")
       }
@@ -156,8 +158,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: Applicative, G[_]: ContextCoerc
    * MineStackに入っているがちゃりんごの数を考慮した
    * がちゃりんごの消費量を計算します。
    */
-  private def computeFinallyAppleConsumptionAmount: F[Int] = for {
-    appleConsumptionAmount <- computeAppleConsumptionAmount
+  private def computeFinallyAppleConsumptionAmount(appleConsumptionAmount: Int): F[Int] = for {
     appleOpenState <- fairyAPI.appleOpenState(uuid)
     gachaRingoObject <- LiftIO[F].liftIO {
       MineStackObjectList.findByName("gachaimo")
@@ -179,7 +180,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: Applicative, G[_]: ContextCoerc
   /**
    * マナの回復量を計算します。
    */
-  private def computeManaRecoveryAmount: F[Int] = for {
+  private def computeManaRecoveryAmount(appleConsumptionAmount: Int): F[Int] = for {
     defaultRecoveryManaAmount <- fairyAPI.fairyRecoveryMana(uuid)
     appleOpenState <- fairyAPI.appleOpenState(uuid)
     oldManaAmount <- ContextCoercion {
@@ -188,7 +189,6 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: Applicative, G[_]: ContextCoerc
     gachaRingoObject <- LiftIO[F].liftIO {
       MineStackObjectList.findByName("gachaimo")
     }
-    appleConsumptionAmount <- computeAppleConsumptionAmount
   } yield {
     val isAppleOpenStateIsOpenOrOpenALittle =
       appleOpenState == AppleOpenState.OpenALittle || appleOpenState == AppleOpenState.Open
