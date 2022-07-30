@@ -1,16 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit
 
-import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
-  FairyManaRecoveryState,
-  FairyMessage,
-  FairyMessages,
-  FairyPlaySound,
-  NameCalledByFairy
-}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property._
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.resources.FairyMessageTable
 import org.bukkit.entity.Player
 
@@ -58,55 +51,49 @@ class FairySpeech[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
       case FairyManaRecoveryState.notConsumptionApple =>
         FairyMessageTable.notConsumed
     }
-    randomMessage(messages(nameCalledByFairy)).map { message =>
-      ContextCoercion {
-        fairyAPI
-          .fairySpeechServiceRepository(player)
-          .makeSpeech(
-            message,
-            fairyAPI.fairySpeechSound(player.getUniqueId).toIO.unsafeRunSync()
-          )
-      }.toIO.unsafeRunSync()
-    }
+    for {
+      message <- randomMessage(messages(nameCalledByFairy))
+      fairyPlaySound <- fairyAPI.fairySpeechSound(player.getUniqueId)
+      _ <- ContextCoercion {
+        fairyAPI.fairySpeechServiceRepository(player).makeSpeech(message, fairyPlaySound)
+      }
+    } yield ()
   }
 
   def speechEndTime(player: Player): F[Unit] = {
     for {
       endTimeOpt <- fairyAPI.fairyEndTime(player)
       playSound <- fairyAPI.fairySpeechSound(player.getUniqueId)
-    } yield {
-      val endTime = endTimeOpt.get.endTimeOpt.get
-      ContextCoercion {
+      endTime = endTimeOpt.get.endTimeOpt.get
+      _ <- ContextCoercion {
         fairyAPI
           .fairySpeechServiceRepository(player)
           .makeSpeech(
             FairyMessage(s"僕は${endTime.getHour}:${endTime.getMinute}には帰るよー。"),
             playSound
           )
-      }.toIO.unsafeRunSync()
-    }
+      }
+    } yield ()
   }
 
   def welcomeBack(player: Player): F[Unit] = for {
     playSound <- fairyAPI.fairySpeechSound(player.getUniqueId)
-  } yield {
-    ContextCoercion {
+    _ <- ContextCoercion {
       fairyAPI
         .fairySpeechServiceRepository(player)
         .makeSpeech(FairyMessage(s"おかえり！${player.getName}"), playSound)
-    }.toIO.unsafeRunSync()
-  }
+    }
+  } yield ()
 
   def bye(player: Player): F[Unit] = for {
     playSound <- fairyAPI.fairySpeechSound(player.getUniqueId)
-  } yield {
-    val repository = fairyAPI.fairySpeechServiceRepository(player)
-    (ContextCoercion {
+    repository = fairyAPI.fairySpeechServiceRepository(player)
+    _ <- ContextCoercion {
       repository.makeSpeech(FairyMessage(s"あっ、もうこんな時間だ！"), FairyPlaySound.off)
     } >> ContextCoercion {
       repository.makeSpeech(FairyMessage(s"じゃーねー！${player.getName}"), playSound)
-    }).toIO.unsafeRunSync()
-  }
+    }
+  } yield ()
 
   private def randomMessage(fairyMessages: FairyMessages): F[FairyMessage] = Sync[F].delay {
     val messages = fairyMessages.messages
