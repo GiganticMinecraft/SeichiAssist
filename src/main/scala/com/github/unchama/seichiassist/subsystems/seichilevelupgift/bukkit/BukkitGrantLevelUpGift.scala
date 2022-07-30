@@ -27,7 +27,7 @@ class BukkitGrantLevelUpGift[F[_]: Sync: OnMinecraftServerThread: GachaAPI, G[
       case item: Gift.Item =>
         giftItemInterpreter(item)
       case Gift.AutomaticGachaRun =>
-        Kleisli { player => BukkitDrawGacha[F].draw(player, 1) }
+        Kleisli { player => new BukkitDrawGacha[F].draw(player, 1) }
     }
   }
 }

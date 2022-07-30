@@ -86,7 +86,7 @@ class PlayerPullGachaListener[F[_]: ConcurrentEffect: OnMinecraftServerThread](
     }
 
     // ガチャの実行
-    BukkitDrawGacha[F].draw(player, count).toIO.unsafeRunAsyncAndForget()
+    new BukkitDrawGacha[F].draw(player, count).toIO.unsafeRunSync()
   }
 
 }
