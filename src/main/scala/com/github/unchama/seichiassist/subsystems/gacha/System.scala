@@ -41,7 +41,7 @@ object System {
         override def replace(gachaPrizesList: Vector[GachaPrize]): F[Unit] =
           gachaPrizesListRepository.set(gachaPrizesList)
 
-        override def lottery(amount: Int): F[Vector[GachaPrize]] =
+        override def runLottery(amount: Int): F[Vector[GachaPrize]] =
           LotteryOfGachaItems.using(Sync[F], api).lottery(amount)
 
         override def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Unit] = for {

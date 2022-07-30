@@ -24,7 +24,7 @@ object BukkitDrawGacha {
         implicit gachaAPI: GachaAPI[F]
       ): F[Unit] = {
         for {
-          gachaPrizes <- gachaAPI.lottery(amount)
+          gachaPrizes <- gachaAPI.runLottery(amount)
         } yield {
           gachaPrizes.foreach { gachaPrize =>
             val givenItem = gachaPrize.createNewItem(Some(player.getName))
