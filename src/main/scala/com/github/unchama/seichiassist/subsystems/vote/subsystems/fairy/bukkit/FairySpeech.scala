@@ -35,15 +35,15 @@ class FairySpeech[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
         else
           FairyMessageTable.nightMessages(nameCalledByFairy)
       message <- randomMessage(fairyMessages)
-    } yield {
-      val serviceRepository = fairyAPI.fairySpeechServiceRepository(player)
-      ContextCoercion {
-        serviceRepository.makeSpeech(
-          message,
-          ContextCoercion(fairyAPI.fairySpeechSound(player.getUniqueId)).toIO.unsafeRunSync()
-        )
-      }.toIO.unsafeRunSync()
-    }
+
+      serviceRepository = fairyAPI.fairySpeechServiceRepository(player)
+      fairySpeechSound <- ContextCoercion {
+        fairyAPI.fairySpeechSound(player.getUniqueId)
+      }
+      _ <- ContextCoercion {
+        serviceRepository.makeSpeech(message, fairySpeechSound)
+      }
+    } yield ()
 
   def speechRandomly(
     player: Player,
