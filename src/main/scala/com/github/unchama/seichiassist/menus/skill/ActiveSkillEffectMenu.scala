@@ -66,17 +66,20 @@ object ActiveSkillEffectMenu extends Menu {
               FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.5f)
             ).apply(player)
           } else {
-            voteAPI.decreaseEffectPoint(player.getUniqueId, EffectPoint(effect.usePoint)) >>
-              IO {
+            voteAPI.decreaseEffectPoint(
+              player.getUniqueId,
+              EffectPoint(effect.usePoint)
+            ) >> SequentialEffect(
+              UnfocusedEffect {
                 val state = playerData.skillEffectState
                 playerData.skillEffectState =
                   state.copy(obtainedEffects = state.obtainedEffects + effect)
-              } >> SequentialEffect(
-                MessageEffect(
-                  s"${LIGHT_PURPLE}エフェクト：${effect.nameOnUI}$RESET$LIGHT_PURPLE${BOLD}を解除しました"
-                ),
-                FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.2f)
-              ).apply(player)
+              },
+              MessageEffect(
+                s"${LIGHT_PURPLE}エフェクト：${effect.nameOnUI}$RESET$LIGHT_PURPLE${BOLD}を解除しました"
+              ),
+              FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.2f)
+            ).apply(player)
           }
       } yield ()
 
