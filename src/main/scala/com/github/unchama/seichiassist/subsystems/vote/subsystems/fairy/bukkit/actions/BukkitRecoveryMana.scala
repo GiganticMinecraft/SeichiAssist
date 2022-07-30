@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions
 
+import cats.Applicative
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.generic.ContextCoercion
@@ -29,13 +30,36 @@ object BukkitRecoveryMana {
 
   import cats.implicits._
 
-  def apply[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](player: Player)(
+  def apply[F[_]: ConcurrentEffect: Applicative, G[_]: ContextCoercion[*[_], F]](
+    player: Player
+  )(
     implicit breakCountAPI: BreakCountAPI[F, G, Player],
     fairyAPI: FairyAPI[F, G, Player],
     voteAPI: VoteAPI[F, Player],
     manaApi: ManaApi[F, G, Player]
   ): RecoveryMana[F] = new RecoveryMana[F] {
     override def recovery: F[Unit] = {
+      for {
+        fairyUsingState <- fairyAPI.fairyUsingState(player)
+        fairyEndTimeOpt <- fairyAPI.fairyEndTime(player)
+        endTime = fairyEndTimeOpt.get.endTimeOpt.get
+        isUsing = fairyUsingState == FairyUsingState.Using
+        _ <- {
+          new FairySpeech[F, G]
+            .bye(player) >> fairyAPI.updateFairyUsingState(player, FairyUsingState.NotUsing)
+        }.whenA(
+          // 終了時間が今よりも過去だったとき(つまり有効時間終了済み)
+          isUsing && endTime.isBefore(LocalDateTime.now())
+        )
+        oldManaAmount <- ContextCoercion {
+          manaApi.readManaAmount(player)
+        }
+
+        _ <- {
+          new FairySpeech[F, G].speechRandomly(player, FairyManaRecoveryState.full)
+        }.whenA(isUsing && oldManaAmount.isFull)
+
+      } yield ()
       ContextCoercion(manaApi.readManaAmount(player)).map { oldManaAmount =>
         if (fairyAPI.fairyUsingState(player).toIO.unsafeRunSync() == FairyUsingState.Using) {
           if (
