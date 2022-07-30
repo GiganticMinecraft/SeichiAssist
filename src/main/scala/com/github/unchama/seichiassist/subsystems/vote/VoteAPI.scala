@@ -22,7 +22,7 @@ trait VoteWriteAPI[F[_]] {
   def decreaseEffectPoint(uuid: UUID, effectPoint: EffectPoint): F[Unit]
 
   /**
-   * effectPointを10増加させる作用
+   * effectPointを増加させる作用
    */
   def increaseEffectPointsByTen(uuid: UUID): F[Unit]
 
