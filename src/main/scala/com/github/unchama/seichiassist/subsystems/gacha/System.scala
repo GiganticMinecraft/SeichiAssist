@@ -57,7 +57,9 @@ object System {
          */
         override def addGachaPrize(gachaPrize: GachaPrizeId => GachaPrize): F[Unit] = for {
           prizes <- list
-          newList = prizes ++ Vector(gachaPrize(GachaPrizeId(prizes.map(_.id.id).max + 1)))
+          newList = prizes ++ Vector(
+            gachaPrize(GachaPrizeId(if (prizes.nonEmpty) prizes.map(_.id.id).max + 1 else 1))
+          )
           _ <- replace(newList)
         } yield ()
 
