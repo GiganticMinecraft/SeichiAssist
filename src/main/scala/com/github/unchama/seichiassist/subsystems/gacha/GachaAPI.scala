@@ -30,8 +30,7 @@ trait GachaReadAPI[F[_]] {
   /**
    * ガチャの景品リスト用のリポジトリ
    */
-  protected val gachaPrizesListRepository: Ref[F, Vector[GachaPrize]] =
-    Ref.unsafe[F, Vector[GachaPrize]](Vector.empty)
+  protected val gachaPrizesListRepository: Ref[F, Vector[GachaPrize]]
 
   /**
    * ガチャの景品リストを返す

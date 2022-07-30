@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.gacha
 
+import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
@@ -60,6 +61,8 @@ object System {
           _ <- replace(newList)
         } yield ()
 
+        override protected val gachaPrizesListRepository: Ref[F, Vector[GachaPrize]] =
+          Ref.unsafe[F, Vector[GachaPrize]](Vector.empty)
       }
       override val commands: Map[String, TabExecutor] = Map(
         "gacha" -> new GachaCommand[F]().executor
