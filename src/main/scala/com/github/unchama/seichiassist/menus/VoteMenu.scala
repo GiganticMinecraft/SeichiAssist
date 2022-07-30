@@ -171,15 +171,6 @@ object VoteMenu extends Menu {
       }
     )
 
-    def getFairyValidTime(fairySummonCost: FairySummonCost): String = {
-      fairySummonCost match {
-        case FairySummonCost(1) => "30分"
-        case FairySummonCost(2) => "1時間"
-        case FairySummonCost(3) => "1時間30分"
-        case FairySummonCost(4) => "2時間"
-      }
-    }
-
     val fairySummonTimeToggleButton: IO[Button] = {
       RecomputedButton(IO {
         val fairySummonCost = fairyAPI.fairySummonCost(player).unsafeRunSync()
@@ -189,7 +180,7 @@ object VoteMenu extends Menu {
             .title(s"$AQUA$UNDERLINE${BOLD}マナ妖精 時間設定")
             .lore(
               List(
-                s"$RESET$GREEN$BOLD${getFairyValidTime(fairySummonCost)}",
+                s"$RESET$GREEN$BOLD${fairySummonCost.finiteDuration}",
                 "",
                 s"$RESET${GRAY}コスト",
                 s"$RESET$RED$BOLD${fairySummonCost.value * 2}投票pt",
@@ -285,7 +276,7 @@ object VoteMenu extends Menu {
             List(
               s"$RESET$GRAY${fairySummonState.value * 2}投票ptを消費して",
               s"$RESET${GRAY}マナ妖精を呼びます",
-              s"$RESET${GRAY}時間: ${getFairyValidTime(fairySummonState)}",
+              s"$RESET${GRAY}時間: ${fairySummonState.finiteDuration}",
               s"$RESET${DARK_RED}Lv.10以上で開放"
             )
           )
