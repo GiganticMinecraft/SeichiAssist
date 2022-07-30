@@ -113,7 +113,7 @@ object BukkitRecoveryMana {
                 // 連続投票を適用した除算量
                 val chainVoteDivisionAmount =
                   if (chainVoteDayNumber >= 30) 2
-                  else if (chainVoteDayNumber >= 10) 1.2
+                  else if (chainVoteDayNumber >= 10) 1.5
                   else if (chainVoteDayNumber >= 3) 1.25
                   else 1
 
