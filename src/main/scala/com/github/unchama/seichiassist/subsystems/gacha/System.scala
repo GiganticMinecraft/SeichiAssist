@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.gacha
 
-import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
@@ -28,14 +27,16 @@ object System {
     implicit val gachaTicketPersistence: JdbcGachaTicketFromAdminTeamGateway[F] =
       new JdbcGachaTicketFromAdminTeamGateway[F]
 
-    val system: System[F] = new System[F] {
+    new System[F] {
       override implicit val api: GachaAPI[F] = new GachaAPI[F] {
+
         import cats.implicits._
 
         override protected implicit val _FSync: Sync[F] = implicitly[ConcurrentEffect[F]]
 
-        override def load: F[Unit] =
-          gachaPrizesListRepository.set(gachaPersistence.list.toIO.unsafeRunSync())
+        override def load: F[Unit] = gachaPersistence.list.flatMap { gachaPrizes =>
+          gachaPrizesListRepository.set(gachaPrizes)
+        }
 
         override def replace(gachaPrizesList: Vector[GachaPrize]): F[Unit] =
           gachaPrizesListRepository.set(gachaPrizesList)
@@ -65,9 +66,6 @@ object System {
       )
       override val listeners: Seq[Listener] = Seq(new PlayerPullGachaListener[F]())
     }
-
-    system.api.load.toIO.unsafeRunAsyncAndForget()
-    system
   }
 
 }
