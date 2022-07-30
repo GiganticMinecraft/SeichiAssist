@@ -39,7 +39,7 @@ object System {
     implicit breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
     voteAPI: VoteAPI[IO, Player],
     manaApi: ManaApi[IO, SyncIO, Player],
-    context: RepeatingTaskContext,
+    repeatingTaskContext: RepeatingTaskContext,
     concurrentEffect: ConcurrentEffect[IO]
   ): SyncIO[System[IO, SyncIO, Player]] = {
     val persistence = new JdbcFairyPersistence[IO]
