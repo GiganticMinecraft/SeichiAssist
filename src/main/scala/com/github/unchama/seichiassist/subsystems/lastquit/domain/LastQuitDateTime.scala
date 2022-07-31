@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.lastQuit.domain
+package com.github.unchama.seichiassist.subsystems.lastquit.domain
 
 import java.time.LocalDateTime
 

@@ -1,7 +1,7 @@
-package com.github.unchama.seichiassist.subsystems.lastQuit.infrastructure
+package com.github.unchama.seichiassist.subsystems.lastquit.infrastructure
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.lastQuit.domain.{
+import com.github.unchama.seichiassist.subsystems.lastquit.domain.{
   LastQuitDateTime,
   LastQuitPersistence
 }
