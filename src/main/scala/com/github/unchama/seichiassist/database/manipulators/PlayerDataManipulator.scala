@@ -7,7 +7,6 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.database.{DatabaseConstants, DatabaseGateway}
 import com.github.unchama.seichiassist.task.PlayerDataLoading
-import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.util.ActionStatus
@@ -15,7 +14,6 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.bukkit.inventory.Inventory
 
 import java.sql.SQLException
 import java.util.UUID
@@ -124,21 +122,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   def addAllPlayerBug(amount: Int): ActionStatus = {
     val command = s"update $tableReference set numofsorryforbug = numofsorryforbug + $amount"
     gateway.executeUpdate(command)
-  }
-
-  def selectPocketInventoryOf(
-    uuid: UUID
-  ): IO[ResponseEffectOrResult[CommandSender, Inventory]] = {
-    val command = s"select inventory from $tableReference where uuid = '$uuid'"
-
-    val executeQuery = IO {
-      gateway
-        .executeQuery(command)
-        .recordIteration { lrs => BukkitSerialization.fromBase64(lrs.getString("inventory")) }
-        .head
-    }
-
-    catchingDatabaseErrors(uuid.toString, EitherT.right(executeQuery).value)
   }
 
   private def catchingDatabaseErrors[R](
