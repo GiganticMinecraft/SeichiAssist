@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.subsystems.lastquit
 import cats.effect.ConcurrentEffect
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.lastquit.bukkit.commands.LastQuitCommand
+import com.github.unchama.seichiassist.subsystems.lastquit.bukkit.listeners.LastQuitUpdater
 import com.github.unchama.seichiassist.subsystems.lastquit.domain.{
   LastQuitDateTime,
   LastQuitPersistence,
@@ -10,6 +11,7 @@ import com.github.unchama.seichiassist.subsystems.lastquit.domain.{
 }
 import com.github.unchama.seichiassist.subsystems.lastquit.infrastructure.JdbcLastQuitPersistence
 import org.bukkit.command.TabExecutor
+import org.bukkit.event.Listener
 
 import java.util.UUID
 
@@ -35,6 +37,8 @@ object System {
       override val commands: Map[String, TabExecutor] = Map(
         "lastquit" -> new LastQuitCommand().executor
       )
+
+      override val listeners: Seq[Listener] = Seq(new LastQuitUpdater[F])
 
     }
 
