@@ -1,14 +1,13 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.listeners
 
-import cats.Applicative
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.FairySpeech
+import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.{EventHandler, Listener}
-import org.bukkit.ChatColor._
 
 import java.time.LocalDateTime
 
