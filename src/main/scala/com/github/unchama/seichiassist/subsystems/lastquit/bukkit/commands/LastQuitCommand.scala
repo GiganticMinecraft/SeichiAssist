@@ -20,7 +20,7 @@ class LastQuitCommand[F[_]: ConcurrentEffect](implicit lastQuitAPI: LastQuitAPI[
       val playerName = context.args.parsed.head.asInstanceOf[String]
       val lastQuitOpt =
         lastQuitAPI.lastQuitDateTime(PlayerName(playerName)).toIO.unsafeRunSync()
-      val eff = IO {
+      IO {
         lastQuitOpt match {
           case Some(lastQuit) =>
             val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
@@ -37,7 +37,6 @@ class LastQuitCommand[F[_]: ConcurrentEffect](implicit lastQuitAPI: LastQuitAPI[
             )
         }
       }
-      eff
     }
     .build()
     .asNonBlockingTabExecutor()
