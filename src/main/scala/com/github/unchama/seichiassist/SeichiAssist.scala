@@ -386,6 +386,9 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val sharedInventorySystem: subsystems.sharedinventory.System[IO] =
     subsystems.sharedinventory.System.wired[IO]
 
+  private lazy val lastQuitSystem: subsystems.lastquit.System[IO] =
+    subsystems.lastquit.System.wired[IO]
+
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
     expBottleStackSystem,
@@ -406,7 +409,8 @@ class SeichiAssist extends JavaPlugin() {
     subhomeSystem,
     presentSystem,
     anywhereEnderSystem,
-    sharedInventorySystem
+    sharedInventorySystem,
+    lastQuitSystem
   )
 
   private lazy val buildAssist: BuildAssist = {
