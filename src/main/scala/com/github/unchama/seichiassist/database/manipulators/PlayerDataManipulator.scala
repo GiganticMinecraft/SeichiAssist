@@ -8,7 +8,6 @@ import com.github.unchama.seichiassist.data.RankData
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.database.{DatabaseConstants, DatabaseGateway}
 import com.github.unchama.seichiassist.task.{CoolDownTask, PlayerDataLoading}
-import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.util.ActionStatus
@@ -16,7 +15,6 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.bukkit.inventory.Inventory
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.sql.SQLException
@@ -315,21 +313,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     gateway.executeUpdate(command)
   }
 
-  def selectPocketInventoryOf(
-    uuid: UUID
-  ): IO[ResponseEffectOrResult[CommandSender, Inventory]] = {
-    val command = s"select inventory from $tableReference where uuid = '$uuid'"
-
-    val executeQuery = IO {
-      gateway
-        .executeQuery(command)
-        .recordIteration { lrs => BukkitSerialization.fromBase64(lrs.getString("inventory")) }
-        .head
-    }
-
-    catchingDatabaseErrors(uuid.toString, EitherT.right(executeQuery).value)
-  }
-
   private def catchingDatabaseErrors[R](
     targetName: String,
     program: IO[Either[TargetedEffect[CommandSender], R]]
@@ -343,35 +326,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
           Left(MessageEffect(s"${RED}データベースアクセスに失敗しました。"))
         }
       case Right(result) => IO.pure(result)
-    }
-  }
-
-  def inquireLastQuitOf(playerName: String): IO[TargetedEffect[CommandSender]] = {
-    val fetchLastQuitData: IO[ResponseEffectOrResult[CommandSender, String]] = EitherT
-      .right(IO {
-        import scalikejdbc._
-        DB.readOnly { implicit session =>
-          sql"""select lastquit from playerdata where name = $playerName"""
-            .map(rs => rs.string("lastquit"))
-            .single()
-            .apply()
-        }.get
-      })
-      .value
-
-    catchingDatabaseErrors(playerName, fetchLastQuitData).map {
-      case Left(errorEffect) =>
-        import com.github.unchama.generic.syntax._
-
-        val messages = List(
-          s"${RED}最終ログアウト日時の照会に失敗しました。",
-          s"${RED}プレイヤー名が変更されていないか確認してください。",
-          s"${RED}プレイヤー名が正しいのにこのエラーが出る場合、最終ログイン時間が古い可能性があります。"
-        )
-
-        errorEffect.followedBy(MessageEffect(messages))
-      case Right(lastQuit) =>
-        MessageEffect(s"${playerName}の最終ログアウト日時：$lastQuit")
     }
   }
 

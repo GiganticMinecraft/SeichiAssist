@@ -593,7 +593,6 @@ class SeichiAssist extends JavaPlugin() {
       "map" -> MapCommand.executor,
       "ef" -> new EffectCommand(fastDiggingEffectSystem.settingsApi).executor,
       "seichiassist" -> SeichiAssistCommand.executor,
-      "lastquit" -> LastQuitCommand.executor,
       "stick" -> StickCommand.executor,
       "rmp" -> RmpCommand.executor,
       "halfguard" -> HalfBlockProtectCommand.executor,
