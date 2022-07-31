@@ -4,10 +4,10 @@ sealed trait FairyManaRecoveryState
 
 object FairyManaRecoveryState {
 
-  case object full extends FairyManaRecoveryState
+  case object Full extends FairyManaRecoveryState
 
-  case object notConsumptionApple extends FairyManaRecoveryState
+  case object NotConsumptionApple extends FairyManaRecoveryState
 
-  case object consumptionApple extends FairyManaRecoveryState
+  case object ConsumptionApple extends FairyManaRecoveryState
 
 }

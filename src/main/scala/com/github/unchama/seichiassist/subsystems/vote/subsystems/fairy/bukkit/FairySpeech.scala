@@ -44,11 +44,11 @@ class FairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
   ): F[Unit] = {
     val nameCalledByFairy = NameCalledByFairy(player.getName)
     val messages = fairyManaRecoveryState match {
-      case FairyManaRecoveryState.full =>
+      case FairyManaRecoveryState.Full =>
         FairyMessageTable.manaFullMessages
-      case FairyManaRecoveryState.consumptionApple =>
+      case FairyManaRecoveryState.ConsumptionApple =>
         FairyMessageTable.consumed
-      case FairyManaRecoveryState.notConsumptionApple =>
+      case FairyManaRecoveryState.NotConsumptionApple =>
         FairyMessageTable.notConsumed
     }
     for {

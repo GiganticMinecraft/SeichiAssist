@@ -56,7 +56,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
         manaApi.readManaAmount(player)
       }
       _ <- {
-        new FairySpeech[F, G].speechRandomly(player, FairyManaRecoveryState.full)
+        new FairySpeech[F, G].speechRandomly(player, FairyManaRecoveryState.Full)
       }.whenA(isUsing && oldManaAmount.isFull)
 
       appleConsumptionAmount <- computeAppleConsumptionAmount
@@ -85,8 +85,8 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
           new FairySpeech[F, G].speechRandomly(
             player,
             if (finallyAppleConsumptionAmount > mineStackedGachaRingoAmount)
-              FairyManaRecoveryState.notConsumptionApple
-            else FairyManaRecoveryState.consumptionApple
+              FairyManaRecoveryState.NotConsumptionApple
+            else FairyManaRecoveryState.ConsumptionApple
           ) >>
           SequentialEffect(
             MessageEffectF(s"$RESET$YELLOW${BOLD}マナ妖精が${recoveryManaAmount}マナを回復してくれました"),
