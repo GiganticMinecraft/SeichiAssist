@@ -252,7 +252,7 @@ object VoteMenu extends Menu {
               if (
                 fairyAPI
                   .fairySpeechSound(player.getUniqueId)
-                  .unsafeRunSync() == FairyPlaySound.on
+                  .unsafeRunSync() == FairyPlaySound.On
               )
                 playSoundOnLore
               else playSoundOffLore

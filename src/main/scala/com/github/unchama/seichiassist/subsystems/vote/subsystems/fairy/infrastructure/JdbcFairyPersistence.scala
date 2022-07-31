@@ -227,7 +227,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   override def toggleFairySpeechSound(uuid: UUID, fairyPlaySound: FairyPlaySound): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
-        sql"UPDATE playerdata SET is_fairy_speech_play_sound = ${fairyPlaySound == FairyPlaySound.on} WHERE uuid = ${uuid.toString}"
+        sql"UPDATE playerdata SET is_fairy_speech_play_sound = ${fairyPlaySound == FairyPlaySound.On} WHERE uuid = ${uuid.toString}"
           .execute()
           .apply()
       }
@@ -245,7 +245,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
             .single()
             .apply()
             .get
-        if (isPlaySound) FairyPlaySound.on else FairyPlaySound.off
+        if (isPlaySound) FairyPlaySound.On else FairyPlaySound.Off
       }
     }
 }

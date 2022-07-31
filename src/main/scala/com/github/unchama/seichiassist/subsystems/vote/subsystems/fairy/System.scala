@@ -140,9 +140,9 @@ object System {
             override def toggleFairySpeechSound(uuid: UUID): IO[Unit] =
               persistence.toggleFairySpeechSound(
                 uuid,
-                if (fairySpeechSound(uuid).unsafeRunSync() == FairyPlaySound.on)
-                  FairyPlaySound.off
-                else FairyPlaySound.on
+                if (fairySpeechSound(uuid).unsafeRunSync() == FairyPlaySound.On)
+                  FairyPlaySound.Off
+                else FairyPlaySound.On
               )
           }
 

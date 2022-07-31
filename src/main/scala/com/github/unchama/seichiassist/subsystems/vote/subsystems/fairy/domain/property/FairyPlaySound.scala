@@ -4,8 +4,8 @@ sealed trait FairyPlaySound
 
 object FairyPlaySound {
 
-  case object on extends FairyPlaySound
+  case object On extends FairyPlaySound
 
-  case object off extends FairyPlaySound
+  case object Off extends FairyPlaySound
 
 }
