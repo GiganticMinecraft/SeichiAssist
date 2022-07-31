@@ -164,13 +164,11 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
       playerdata.minestack.getStackedAmountOf(gachaRingoObject.get)
 
     // りんごの消費量
-    if (appleOpenState == AppleOpenState.NotOpen) {
+    if (appleOpenState == AppleOpenState.NotOpen)
       0
-    } else {
-      if (mineStackedGachaRingoAmount > appleConsumptionAmount)
-        appleConsumptionAmount
-      else mineStackedGachaRingoAmount
-    }
+    else if (mineStackedGachaRingoAmount > appleConsumptionAmount)
+      appleConsumptionAmount
+    else mineStackedGachaRingoAmount
   }
 
   /**
@@ -195,11 +193,10 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
 
     // マナの回復量を算出する
 
-    val appleOpenStateDivision = {
+    val appleOpenStateDivision =
       if (isAppleOpenStateIsOpenOrOpenALittle && isEnoughMana) 2
       else if (appleOpenState == AppleOpenState.NotOpen) 4
       else 1
-    }
 
     val reflectedAppleOpenStateAmount =
       defaultRecoveryManaAmount.recoveryMana / appleOpenStateDivision
@@ -208,23 +205,23 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
     val mineStackBasedRegenValue =
       if (appleConsumptionAmount > mineStackedGachaRingoAmount) {
         if (mineStackedGachaRingoAmount == 0) {
-          reflectedAppleOpenStateAmount / {
+          reflectedAppleOpenStateAmount / (
             if (appleOpenState == AppleOpenState.Open) 4
             else if (appleOpenState == AppleOpenState.OpenALittle) 4
             else 2
-          }
-        } else {
-          if ((mineStackedGachaRingoAmount / appleConsumptionAmount) <= 0.5)
-            (reflectedAppleOpenStateAmount * 0.5).toInt
-          else
-            (reflectedAppleOpenStateAmount * mineStackedGachaRingoAmount / appleConsumptionAmount).toInt
-        }
+          )
+        } else if ((mineStackedGachaRingoAmount / appleConsumptionAmount) <= 0.5)
+          (reflectedAppleOpenStateAmount * 0.5).toInt
+        else
+          (reflectedAppleOpenStateAmount * mineStackedGachaRingoAmount / appleConsumptionAmount).toInt
       } else reflectedAppleOpenStateAmount
 
-    (mineStackBasedRegenValue - mineStackBasedRegenValue / 100) +
-      (if (mineStackBasedRegenValue >= 50)
-         Random.nextInt(mineStackBasedRegenValue / 50)
-       else 0)
+    val randomizedAdd =
+      if (mineStackBasedRegenValue >= 50)
+        Random.nextInt(mineStackBasedRegenValue / 50)
+      else 0
+
+    (mineStackBasedRegenValue - mineStackBasedRegenValue / 100) + randomizedAdd
   }
 
 }
