@@ -1,5 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property
 
-case class FairyMessages(messages: FairyMessage*) {
-  require(messages.nonEmpty)
-}
+import cats.data.NonEmptyVector
+
+case class FairyMessages(messages: NonEmptyVector[FairyMessage])

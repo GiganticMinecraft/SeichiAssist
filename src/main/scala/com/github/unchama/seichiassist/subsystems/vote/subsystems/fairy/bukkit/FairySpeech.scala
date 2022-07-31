@@ -96,7 +96,7 @@ class FairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
   } yield ()
 
   private def randomMessage(fairyMessages: FairyMessages): F[FairyMessage] = Sync[F].delay {
-    val messages = fairyMessages.messages
+    val messages = fairyMessages.messages.toVector
     messages(Random.nextInt(messages.size))
   }
 

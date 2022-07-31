@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.resources
 
+import cats.data.NonEmptyVector
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
   FairyMessage,
   FairyMessages,
@@ -13,11 +14,13 @@ object FairyMessageTable {
    */
   val morningMessages: NameCalledByFairy => FairyMessages = (name: NameCalledByFairy) =>
     FairyMessages(
-      FairyMessage(s"おはよ！${name.value}"),
-      FairyMessage(s"ヤッホー${name.value}"),
-      FairyMessage(s"ふわぁ。。。${name.value}朝は早いね。"),
-      FairyMessage("うーん、今日も一日頑張ろ！"),
-      FairyMessage(s"今日は整地日和だね！${name.value}")
+      NonEmptyVector.of(
+        FairyMessage(s"おはよ！${name.value}"),
+        FairyMessage(s"ヤッホー${name.value}"),
+        FairyMessage(s"ふわぁ。。。${name.value}朝は早いね。"),
+        FairyMessage("うーん、今日も一日頑張ろ！"),
+        FairyMessage(s"今日は整地日和だね！${name.value}")
+      )
     )
 
   /**
@@ -25,21 +28,25 @@ object FairyMessageTable {
    */
   val dayMessages: NameCalledByFairy => FairyMessages = (name: NameCalledByFairy) =>
     FairyMessages(
-      FairyMessage(s"やあ！${name.value}"),
-      FairyMessage(s"ヤッホー${name.value}！"),
-      FairyMessage(s"あっ、${name.value}じゃん。丁度お腹空いてたんだ！"),
-      FairyMessage(s"この匂い…${name.value}ってがちゃりんごいっぱい持ってる…?"),
-      FairyMessage("今日のおやつはがちゃりんごいっぱいだ！")
+      NonEmptyVector.of(
+        FairyMessage(s"やあ！${name.value}"),
+        FairyMessage(s"ヤッホー${name.value}！"),
+        FairyMessage(s"あっ、${name.value}じゃん。丁度お腹空いてたんだ！"),
+        FairyMessage(s"この匂い…${name.value}ってがちゃりんごいっぱい持ってる…?"),
+        FairyMessage("今日のおやつはがちゃりんごいっぱいだ！")
+      )
     )
 
   // 夜に妖精を召喚したときに表示されるメッセージ
   val nightMessages: NameCalledByFairy => FairyMessages = (name: NameCalledByFairy) =>
     FairyMessages(
-      FairyMessage(s"やあ！${name.value}"),
-      FairyMessage(s"ヤッホー${name.value}！"),
-      FairyMessage(s"ふわぁ。。。${name.value}は夜も元気だね。"),
-      FairyMessage(s"もう寝ようと思ってたのにー。${name.value}はしょうがないなぁ"),
-      FairyMessage("こんな時間に呼ぶなんて…りんごははずんでもらうよ？")
+      NonEmptyVector.of(
+        FairyMessage(s"やあ！${name.value}"),
+        FairyMessage(s"ヤッホー${name.value}！"),
+        FairyMessage(s"ふわぁ。。。${name.value}は夜も元気だね。"),
+        FairyMessage(s"もう寝ようと思ってたのにー。${name.value}はしょうがないなぁ"),
+        FairyMessage("こんな時間に呼ぶなんて…りんごははずんでもらうよ？")
+      )
     )
 
   /**
@@ -47,12 +54,14 @@ object FairyMessageTable {
    */
   val manaFullMessages: NameCalledByFairy => FairyMessages = (name: NameCalledByFairy) =>
     FairyMessages(
-      FairyMessage("整地しないのー？"),
-      FairyMessage("たくさん働いて、たくさんりんごを食べようね！"),
-      FairyMessage("僕はいつか大きながちゃりんごを食べ尽して見せるっ！"),
-      FairyMessage("ちょっと食べ疲れちゃった"),
-      FairyMessage(s"${name.value}はどのりんごが好き？僕はがちゃりんご！"),
-      FairyMessage("動いてお腹を空かしていっぱい食べるぞー！")
+      NonEmptyVector.of(
+        FairyMessage("整地しないのー？"),
+        FairyMessage("たくさん働いて、たくさんりんごを食べようね！"),
+        FairyMessage("僕はいつか大きながちゃりんごを食べ尽して見せるっ！"),
+        FairyMessage("ちょっと食べ疲れちゃった"),
+        FairyMessage(s"${name.value}はどのりんごが好き？僕はがちゃりんご！"),
+        FairyMessage("動いてお腹を空かしていっぱい食べるぞー！")
+      )
     )
 
   /**
@@ -60,11 +69,13 @@ object FairyMessageTable {
    */
   val consumed: NameCalledByFairy => FairyMessages = (name: NameCalledByFairy) =>
     FairyMessages(
-      FairyMessage("(´～｀)ﾓｸﾞﾓｸﾞ…"),
-      FairyMessage("がちゃりんごって美味しいよね！"),
-      FairyMessage("あぁ！幸せ！"),
-      FairyMessage(s"${name.value}のりんごはおいしいなぁ"),
-      FairyMessage("いつもりんごをありがとう！")
+      NonEmptyVector.of(
+        FairyMessage("(´～｀)ﾓｸﾞﾓｸﾞ…"),
+        FairyMessage("がちゃりんごって美味しいよね！"),
+        FairyMessage("あぁ！幸せ！"),
+        FairyMessage(s"${name.value}のりんごはおいしいなぁ"),
+        FairyMessage("いつもりんごをありがとう！")
+      )
     )
 
   /**
@@ -72,11 +83,13 @@ object FairyMessageTable {
    */
   val notConsumed: NameCalledByFairy => FairyMessages = (name: NameCalledByFairy) =>
     FairyMessages(
-      FairyMessage("お腹空いたなぁー。"),
-      FairyMessage("がちゃりんごがっ！食べたいっ！"),
-      FairyMessage("(´；ω；`)ｳｩｩ ﾋﾓｼﾞｲ..."),
-      FairyMessage(s"＠うんちゃま ${name.value}が意地悪するんだっ！"),
-      FairyMessage("うわーん！お腹空いたよー！")
+      NonEmptyVector.of(
+        FairyMessage("お腹空いたなぁー。"),
+        FairyMessage("がちゃりんごがっ！食べたいっ！"),
+        FairyMessage("(´；ω；`)ｳｩｩ ﾋﾓｼﾞｲ..."),
+        FairyMessage(s"＠うんちゃま ${name.value}が意地悪するんだっ！"),
+        FairyMessage("うわーん！お腹空いたよー！")
+      )
     )
 
 }
