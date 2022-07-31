@@ -18,7 +18,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.p
 }
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.targetedeffect.SequentialEffect
-import com.github.unchama.targetedeffect.commandsender.MessageEffect
+import com.github.unchama.targetedeffect.commandsender.MessageEffectF
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
@@ -72,10 +72,8 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: Applicative, G[_]: ContextCoerc
       mineStackedGachaRingoAmount =
         playerdata.minestack.getStackedAmountOf(gachaRingoObject.get)
 
-      _ <- LiftIO[F]
-        .liftIO {
-          MessageEffect(s"$RESET$YELLOW${BOLD}MineStackにがちゃりんごがないようです。。。").apply(player)
-        }
+      _ <- MessageEffectF(s"$RESET$YELLOW${BOLD}MineStackにがちゃりんごがないようです。。。")
+        .apply(player)
         .whenA(
           isUsing && !oldManaAmount.isFull && appleConsumptionAmount > mineStackedGachaRingoAmount
         )
@@ -90,16 +88,15 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: Applicative, G[_]: ContextCoerc
             if (finallyAppleConsumptionAmount > mineStackedGachaRingoAmount)
               FairyManaRecoveryState.notConsumptionApple
             else FairyManaRecoveryState.consumptionApple
-          ) >> LiftIO[F].liftIO {
-            SequentialEffect(
-              MessageEffect(s"$RESET$YELLOW${BOLD}マナ妖精が${recoveryManaAmount}マナを回復してくれました"),
-              if (appleConsumptionAmount != 0)
-                MessageEffect(
-                  s"$RESET$YELLOW${BOLD}あっ！${appleConsumptionAmount}個のがちゃりんごが食べられてる！"
-                )
-              else MessageEffect(s"$RESET$YELLOW${BOLD}あなたは妖精にりんごを渡しませんでした。")
-            ).apply(player)
-          }
+          ) >>
+          SequentialEffect(
+            MessageEffectF(s"$RESET$YELLOW${BOLD}マナ妖精が${recoveryManaAmount}マナを回復してくれました"),
+            if (appleConsumptionAmount != 0)
+              MessageEffectF(
+                s"$RESET$YELLOW${BOLD}あっ！${appleConsumptionAmount}個のがちゃりんごが食べられてる！"
+              )
+            else MessageEffectF(s"$RESET$YELLOW${BOLD}あなたは妖精にりんごを渡しませんでした。")
+          ).apply(player)
       }.whenA(isUsing && !oldManaAmount.isFull)
     } yield ()
 
