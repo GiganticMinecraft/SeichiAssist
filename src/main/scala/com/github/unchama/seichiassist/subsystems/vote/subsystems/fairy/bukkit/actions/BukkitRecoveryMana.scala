@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions
 
-import cats.Applicative
 import cats.effect.{ConcurrentEffect, LiftIO}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
@@ -26,7 +25,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 import scala.util.Random
 
-class BukkitRecoveryMana[F[_]: ConcurrentEffect: Applicative, G[_]: ContextCoercion[*[_], F]](
+class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
   player: Player
 )(
   implicit breakCountAPI: BreakCountAPI[F, G, Player],
