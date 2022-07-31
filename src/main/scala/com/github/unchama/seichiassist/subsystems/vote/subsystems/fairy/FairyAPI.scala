@@ -83,7 +83,7 @@ trait FairyReadAPI[F[_], G[_], Player] {
   /**
    * 妖精が食べたりんごの量を取得する
    */
-  def appleAteByFairy(uuid: UUID): F[AppleAmount]
+  def appleAteByFairy(uuid: UUID): F[Option[AppleAmount]]
 
   val fairySpeechServiceRepository: PlayerDataRepository[FairySpeechService[G]]
 
@@ -95,7 +95,7 @@ trait FairyReadAPI[F[_], G[_], Player] {
   /**
    * 自分の妖精に食べさせたりんごの量の順位を返す
    */
-  def appleAteByFairyMyRanking(player: Player): F[AppleAteByFairyRank]
+  def appleAteByFairyMyRanking(player: Player): F[Option[AppleAteByFairyRank]]
 
   /**
    * 妖精に食べさせたりんごの量の順位上`number`件を返す

@@ -119,10 +119,12 @@ object System {
             ): IO[Unit] =
               persistence.increaseAppleAteByFairy(uuid, appleAmount)
 
-            override def appleAteByFairy(uuid: UUID): IO[AppleAmount] =
+            override def appleAteByFairy(uuid: UUID): IO[Option[AppleAmount]] =
               persistence.appleAteByFairy(uuid)
 
-            override def appleAteByFairyMyRanking(player: Player): IO[AppleAteByFairyRank] =
+            override def appleAteByFairyMyRanking(
+              player: Player
+            ): IO[Option[AppleAteByFairyRank]] =
               persistence.appleAteByFairyMyRanking(player.getUniqueId)
 
             override def appleAteByFairyRanking(

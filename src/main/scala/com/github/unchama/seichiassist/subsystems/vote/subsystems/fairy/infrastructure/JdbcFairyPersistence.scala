@@ -160,30 +160,34 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   /**
    * 妖精が食べたりんごの量を取得する
    */
-  override def appleAteByFairy(uuid: UUID): F[AppleAmount] = Sync[F].delay {
+  override def appleAteByFairy(uuid: UUID): F[Option[AppleAmount]] = Sync[F].delay {
     DB.readOnly { implicit session =>
       val appleAmountOpt = sql"SELECT p_apple FROM playerdata WHERE uuid = ${uuid.toString}"
         .map(_.int("p_apple"))
         .single()
         .apply()
-      AppleAmount(appleAmountOpt.get)
+      appleAmountOpt.map(AppleAmount)
     }
   }
 
   /**
    * 自分の妖精に食べさせたりんごの量の順位を返す
    */
-  override def appleAteByFairyMyRanking(uuid: UUID): F[AppleAteByFairyRank] = Sync[F].delay {
-    DB.readOnly { implicit session =>
-      sql"SELECT name,p_apple,COUNT(*) AS rank FROM playerdata ORDER BY rank DESC;"
-        .map(rs =>
-          AppleAteByFairyRank(rs.string("name"), rs.int("rank"), AppleAmount(rs.int("p_apple")))
-        )
-        .single()
-        .apply()
-        .get
+  override def appleAteByFairyMyRanking(uuid: UUID): F[Option[AppleAteByFairyRank]] =
+    Sync[F].delay {
+      DB.readOnly { implicit session =>
+        sql"SELECT name,p_apple,COUNT(*) AS rank FROM playerdata ORDER BY rank DESC;"
+          .map(rs =>
+            AppleAteByFairyRank(
+              rs.string("name"),
+              rs.int("rank"),
+              AppleAmount(rs.int("p_apple"))
+            )
+          )
+          .single()
+          .apply()
+      }
     }
-  }
 
   /**
    * 妖精に食べさせたりんごの量の順位上位`number`件を返す
