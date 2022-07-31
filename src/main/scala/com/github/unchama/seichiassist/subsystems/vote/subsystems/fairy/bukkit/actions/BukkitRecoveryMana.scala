@@ -34,8 +34,8 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
   manaApi: ManaApi[F, G, Player]
 ) extends RecoveryMana[F] {
 
-  private lazy val uuid: UUID = player.getUniqueId
-  private lazy val playerdata = SeichiAssist.playermap(uuid)
+  private val uuid: UUID = player.getUniqueId
+  private val playerdata = SeichiAssist.playermap(uuid)
 
   import cats.implicits._
 
