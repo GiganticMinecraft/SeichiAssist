@@ -15,7 +15,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   override def changeAppleOpenState(uuid: UUID, openState: AppleOpenState): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
-        sql"UPDATE playerdata SET toggleGiveApple = ${openState.amount} WHERE uuid = ${uuid.toString}"
+        sql"UPDATE playerdata SET toggleGiveApple = ${openState.serializedValue} WHERE uuid = ${uuid.toString}"
           .execute()
           .apply()
       }
@@ -26,14 +26,14 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
    */
   override def appleOpenState(uuid: UUID): F[AppleOpenState] =
     Sync[F].delay {
-      val appleAmount = DB.readOnly { implicit session =>
+      val serializedValue = DB.readOnly { implicit session =>
         sql"SELECT toggleGiveApple FROM playerdata WHERE uuid = ${uuid.toString}"
           .map(_.int("toggleGiveApple"))
           .single()
           .apply()
           .get
       }
-      AppleOpenState.values.find(_.amount == appleAmount).get
+      AppleOpenState.values.find(_.serializedValue == serializedValue).get
     }
 
   /**

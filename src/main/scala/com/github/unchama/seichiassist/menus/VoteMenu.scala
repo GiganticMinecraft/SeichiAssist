@@ -28,7 +28,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.p
   NotEnoughSeichiLevel
 }
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
-  AppleOpenState,
+  AppleOpenStateDependency,
   FairyPlaySound,
   FairySummonCost,
   FairyUsingState
@@ -227,12 +227,8 @@ object VoteMenu extends Menu {
                 fairyAPI
                   .updateAppleOpenState(
                     uuid,
-                    AppleOpenState
-                      .values
-                      .find(
-                        _.amount == fairyAPI.appleOpenState(uuid).unsafeRunSync().amount % 4 + 1
-                      )
-                      .get
+                    AppleOpenStateDependency
+                      .dependency(fairyAPI.appleOpenState(uuid).unsafeRunSync())
                   )
                   .unsafeRunSync()
               },

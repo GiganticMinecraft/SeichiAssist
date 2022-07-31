@@ -72,7 +72,7 @@ object System {
 
             override def getFairyLore(uuid: UUID): IO[FairyLore] = for {
               state <- appleOpenState(uuid)
-            } yield FairyLoreTable.loreTable(state.amount - 1)
+            } yield FairyLoreTable.loreTable(state)
 
             override def updateFairySummonCost(
               uuid: UUID,

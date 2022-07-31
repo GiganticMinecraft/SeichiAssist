@@ -2,7 +2,12 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.
 
 import enumeratum._
 
-sealed class AppleOpenState(val amount: Int) extends EnumEntry
+/**
+ * がちゃりんごの開放状況を管理するクラス
+ * @param serializedValue
+ *  開放状況を永続化する際に必要な番号
+ */
+sealed class AppleOpenState(val serializedValue: Int) extends EnumEntry
 
 case object AppleOpenState extends Enum[AppleOpenState] {
 
