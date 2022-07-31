@@ -38,11 +38,6 @@ trait FairyWriteAPI[F[_], G[_], Player] {
    */
   def increaseAppleAteByFairy(uuid: UUID, appleAmount: AppleAmount): F[Unit]
 
-  /**
-   * 妖精が喋るときに音をだすかをトグルする
-   */
-  def toggleFairySpeechSound(uuid: UUID): F[Unit]
-
 }
 
 object FairyWriteAPI {
@@ -110,11 +105,6 @@ trait FairyReadAPI[F[_], G[_], Player] {
    */
   def allEatenAppleAmount: F[AppleAmount]
 
-  /**
-   * 妖精が喋ったときに音を再生するか取得する
-   */
-  def fairySpeechSound(uuid: UUID): F[Boolean]
-
 }
 
 object FairyReadAPI {
@@ -125,6 +115,27 @@ object FairyReadAPI {
 
 }
 
+trait FairySpeechAPI[F[_]] {
+
+  /**
+   * 妖精が喋るときに音をだすかをトグルする
+   */
+  def toggleFairySpeechSound(uuid: UUID): F[Unit]
+
+  /**
+   * 妖精が喋ったときに音を再生するか取得する
+   */
+  def fairySpeechSound(uuid: UUID): F[Boolean]
+
+}
+
+object FairySpeechAPI {
+
+  def apply[F[_]](implicit ev: FairySpeechAPI[F]): FairySpeechAPI[F] = ev
+
+}
+
 trait FairyAPI[F[_], G[_], Player]
     extends FairyReadAPI[F, G, Player]
     with FairyWriteAPI[F, G, Player]
+    with FairySpeechAPI[F]
