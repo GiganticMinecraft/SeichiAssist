@@ -206,7 +206,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: Applicative, G[_]: ContextCoerc
       defaultRecoveryManaAmount.recoveryMana / appleOpenStateDivision
 
     // minestackに入っているりんごの数を適用したマナの回復量
-    val reflectedMineStackedAmount =
+    val mineStackBasedRegenValue =
       if (appleConsumptionAmount > mineStackedGachaRingoAmount) {
         if (mineStackedGachaRingoAmount == 0) {
           reflectedAppleOpenStateAmount / {
@@ -222,9 +222,9 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: Applicative, G[_]: ContextCoerc
         }
       } else reflectedAppleOpenStateAmount
 
-    (reflectedMineStackedAmount - reflectedMineStackedAmount / 100) +
-      (if (reflectedMineStackedAmount >= 50)
-         Random.nextInt(reflectedMineStackedAmount / 50)
+    (mineStackBasedRegenValue - mineStackBasedRegenValue / 100) +
+      (if (mineStackBasedRegenValue >= 50)
+         Random.nextInt(mineStackBasedRegenValue / 50)
        else 0)
   }
 
