@@ -21,7 +21,7 @@ trait FairyWriteAPI[F[_], G[_], Player] {
   /**
    * 妖精を使っているかどうかを切り替える
    */
-  def updateFairyUsingState(player: Player, fairyUsingState: FairyUsingState): F[Unit]
+  def updateFairyUsingState(player: Player, fairyUsingState: Boolean): F[Unit]
 
   /**
    * 妖精が回復するマナの量を変更する
@@ -73,7 +73,7 @@ trait FairyReadAPI[F[_], G[_], Player] {
   /**
    * 妖精を使っているかを取得する
    */
-  def fairyUsingState(player: Player): F[FairyUsingState]
+  def fairyUsingState(player: Player): F[Boolean]
 
   /**
    * 妖精が回復するマナの量を取得する

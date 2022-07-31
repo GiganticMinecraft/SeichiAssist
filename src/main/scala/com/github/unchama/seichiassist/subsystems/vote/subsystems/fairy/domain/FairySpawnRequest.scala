@@ -3,20 +3,15 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain
 import cats.effect.Sync
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
-import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.SummonFairy
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
-  FairySpawnRequestError,
-  FairyUsingState
-}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairySpawnRequestError
 
 class FairySpawnRequest[F[_]: Sync, G[_]: ContextCoercion[*[_], F], Player](
   implicit breakCountAPI: BreakCountAPI[F, G, Player],
   fairyAPI: FairyAPI[F, G, Player],
   voteAPI: VoteAPI[F, Player],
-  manaApi: ManaApi[F, G, Player],
   summonFairy: SummonFairy[F, G, Player]
 ) {
 
@@ -34,7 +29,7 @@ class FairySpawnRequest[F[_]: Sync, G[_]: ContextCoercion[*[_], F], Player](
     } yield {
       if (seichiLevel < 10)
         Left(FairySpawnRequestError.NotEnoughSeichiLevel)
-      else if (usingState == FairyUsingState.Using)
+      else if (usingState)
         Left(FairySpawnRequestError.AlreadyFairySpawned)
       else if (effectPoints.value < fairySummonCost.value * 2)
         Left(FairySpawnRequestError.NotEnoughEffectPoint)

@@ -66,11 +66,11 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   /**
    * 妖精の召喚状態を更新します
    */
-  override def updateFairyUsingState(uuid: UUID, fairyUsingState: FairyUsingState): F[Unit] =
+  override def updateFairyUsingState(uuid: UUID, fairyUsingState: Boolean): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
         sql"""UPDATE playerdata 
-             | SET canVotingFairyUse = ${fairyUsingState == FairyUsingState.Using} WHERE uuid = ${uuid.toString}"""
+             | SET canVotingFairyUse = ${fairyUsingState} WHERE uuid = ${uuid.toString}"""
           .stripMargin
           .execute()
           .apply()
@@ -80,15 +80,13 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   /**
    * 妖精が召喚されているかを取得します
    */
-  override def fairyUsingState(uuid: UUID): F[FairyUsingState] = Sync[F].delay {
-    val isFairyUsing = DB.readOnly { implicit session =>
+  override def fairyUsingState(uuid: UUID): F[Boolean] = Sync[F].delay {
+    DB.readOnly { implicit session =>
       sql"SELECT canVotingFairyUse FROM playerdata WHERE uuid = ${uuid.toString}"
         .map(_.boolean("canVotingFairyUse"))
         .single()
         .apply()
     }.get
-    if (isFairyUsing) FairyUsingState.Using
-    else FairyUsingState.NotUsing
   }
 
   /**

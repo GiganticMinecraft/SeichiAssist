@@ -28,8 +28,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.p
 }
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
   AppleOpenStateDependency,
-  FairySummonCost,
-  FairyUsingState
+  FairySummonCost
 }
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -92,7 +91,7 @@ object VoteMenu extends Menu {
     } yield {
       val exceptDynamicButtons = staticButtons ++ computeButtons
       MenuSlotLayout(exceptDynamicButtons).merge(
-        if (fairyUsingState == FairyUsingState.Using)
+        if (fairyUsingState)
           MenuSlotLayout(dynamicButtons: _*)
         else MenuSlotLayout.emptyLayout
       )

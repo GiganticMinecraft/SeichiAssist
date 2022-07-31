@@ -6,8 +6,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.p
   FairyAppleConsumeStrategy,
   FairyEndTime,
   FairyRecoveryMana,
-  FairySummonCost,
-  FairyUsingState
+  FairySummonCost
 }
 
 import java.util.UUID
@@ -37,12 +36,12 @@ trait FairyPersistence[F[_]] {
   /**
    * 妖精が召喚されているかを更新する
    */
-  def updateFairyUsingState(uuid: UUID, fairyUsingState: FairyUsingState): F[Unit]
+  def updateFairyUsingState(uuid: UUID, fairyUsingState: Boolean): F[Unit]
 
   /**
    * 妖精が召喚されているかを取得する
    */
-  def fairyUsingState(uuid: UUID): F[FairyUsingState]
+  def fairyUsingState(uuid: UUID): F[Boolean]
 
   /**
    * 妖精が回復するマナの量を変更する

@@ -2,24 +2,19 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.
 
 import cats.effect.ConcurrentEffect
 import com.github.unchama.generic.ContextCoercion
-import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.domain.EffectPoint
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.SummonFairy
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.FairySpeech
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
-  FairyRecoveryManaAmount,
-  FairyUsingState
-}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairyRecoveryManaAmount
 import com.github.unchama.targetedeffect.commandsender.MessageEffectF
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
 class BukkitSummonFairy[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
-  implicit breakCountAPI: BreakCountAPI[F, G, Player],
-  fairyAPI: FairyAPI[F, G, Player],
+  implicit fairyAPI: FairyAPI[F, G, Player],
   voteAPI: VoteAPI[F, Player],
   manaApi: ManaApi[F, G, Player]
 ) extends SummonFairy[F, G, Player] {
@@ -28,7 +23,7 @@ class BukkitSummonFairy[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
 
   override def summon(player: Player): F[Unit] = {
     for {
-      _ <- fairyAPI.updateFairyUsingState(player, FairyUsingState.Using)
+      _ <- fairyAPI.updateFairyUsingState(player, fairyUsingState = true)
       manaAmount <- ContextCoercion {
         manaApi.readManaAmount(player)
       }

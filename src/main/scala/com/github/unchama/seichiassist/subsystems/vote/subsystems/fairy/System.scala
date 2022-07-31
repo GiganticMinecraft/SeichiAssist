@@ -92,12 +92,12 @@ object System {
             ): IO[Unit] =
               persistence.updateFairyEndTime(player.getUniqueId, fairyEndTime)
 
-            override def fairyUsingState(player: Player): IO[FairyUsingState] =
+            override def fairyUsingState(player: Player): IO[Boolean] =
               persistence.fairyUsingState(player.getUniqueId)
 
             override def updateFairyUsingState(
               player: Player,
-              fairyUsingState: FairyUsingState
+              fairyUsingState: Boolean
             ): IO[Unit] =
               persistence.updateFairyUsingState(player.getUniqueId, fairyUsingState)
 

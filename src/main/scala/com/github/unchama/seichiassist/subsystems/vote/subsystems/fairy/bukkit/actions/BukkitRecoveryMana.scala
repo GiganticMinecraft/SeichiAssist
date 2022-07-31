@@ -12,8 +12,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.F
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
   AppleAmount,
   FairyAppleConsumeStrategy,
-  FairyManaRecoveryState,
-  FairyUsingState
+  FairyManaRecoveryState
 }
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.targetedeffect.SequentialEffect
@@ -44,20 +43,18 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
       fairyUsingState <- fairyAPI.fairyUsingState(player)
       fairyEndTimeOpt <- fairyAPI.fairyEndTime(player)
       endTime = fairyEndTimeOpt.get.endTimeOpt.get
-      isUsing = fairyUsingState == FairyUsingState.Using
       _ <- {
-        new FairySpeech[F, G]
-          .bye(player) >> fairyAPI.updateFairyUsingState(player, FairyUsingState.NotUsing)
+        new FairySpeech[F, G].bye(player) >> fairyAPI.updateFairyUsingState(player, false)
       }.whenA(
         // 終了時間が今よりも過去だったとき(つまり有効時間終了済み)
-        isUsing && endTime.isBefore(LocalDateTime.now())
+        fairyUsingState && endTime.isBefore(LocalDateTime.now())
       )
       oldManaAmount <- ContextCoercion {
         manaApi.readManaAmount(player)
       }
       _ <- {
         new FairySpeech[F, G].speechRandomly(player, FairyManaRecoveryState.Full)
-      }.whenA(isUsing && oldManaAmount.isFull)
+      }.whenA(fairyUsingState && oldManaAmount.isFull)
 
       appleConsumptionAmount <- computeAppleConsumptionAmount
       finallyAppleConsumptionAmount <- computeFinallyAppleConsumptionAmount(
@@ -74,7 +71,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
       _ <- MessageEffectF(s"$RESET$YELLOW${BOLD}MineStackにがちゃりんごがないようです。。。")
         .apply(player)
         .whenA(
-          isUsing && !oldManaAmount.isFull && appleConsumptionAmount > mineStackedGachaRingoAmount
+          fairyUsingState && !oldManaAmount.isFull && appleConsumptionAmount > mineStackedGachaRingoAmount
         )
 
       _ <- {
@@ -96,7 +93,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
               )
             else MessageEffectF(s"$RESET$YELLOW${BOLD}あなたは妖精にりんごを渡しませんでした。")
           ).apply(player)
-      }.whenA(isUsing && !oldManaAmount.isFull)
+      }.whenA(fairyUsingState && !oldManaAmount.isFull)
     } yield ()
 
   /**
