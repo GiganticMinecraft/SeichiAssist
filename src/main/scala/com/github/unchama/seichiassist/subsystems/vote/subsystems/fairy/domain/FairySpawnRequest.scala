@@ -19,7 +19,7 @@ class FairySpawnRequest[F[_]: Sync, G[_]: ContextCoercion[*[_], F], Player](
 
   def spawnRequest(player: Player): F[Either[FairySpawnRequestError, F[Unit]]] = {
     for {
-      usingState <- fairyAPI.fairyUsingState(player)
+      usingState <- fairyAPI.isFairyUsing(player)
       effectPoints <- voteAPI.effectPoints(player)
       fairySummonCost <- fairyAPI.fairySummonCost(player)
       seichiAmountRepository <- ContextCoercion(

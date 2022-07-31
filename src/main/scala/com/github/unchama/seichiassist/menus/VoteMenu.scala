@@ -85,13 +85,13 @@ object VoteMenu extends Menu {
         .traverse(_.sequence)
 
     for {
-      fairyUsingState <- environment.fairyAPI.fairyUsingState(constantButtons.player)
+      isFairyUsing <- environment.fairyAPI.isFairyUsing(constantButtons.player)
       computeButtons <- computeButtonsIO
       dynamicButtons <- dynamicButtonsIO
     } yield {
       val exceptDynamicButtons = staticButtons ++ computeButtons
       MenuSlotLayout(exceptDynamicButtons).merge(
-        if (fairyUsingState)
+        if (isFairyUsing)
           MenuSlotLayout(dynamicButtons: _*)
         else MenuSlotLayout.emptyLayout
       )

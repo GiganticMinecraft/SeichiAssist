@@ -23,7 +23,7 @@ class BukkitSummonFairy[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
 
   override def summon(player: Player): F[Unit] = {
     for {
-      _ <- fairyAPI.updateFairyUsingState(player, fairyUsingState = true)
+      _ <- fairyAPI.updateIsFairyUsing(player, isFairyUsing = true)
       manaAmount <- ContextCoercion {
         manaApi.readManaAmount(player)
       }

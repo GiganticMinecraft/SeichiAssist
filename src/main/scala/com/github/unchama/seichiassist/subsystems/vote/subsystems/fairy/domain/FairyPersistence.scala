@@ -36,12 +36,12 @@ trait FairyPersistence[F[_]] {
   /**
    * 妖精が召喚されているかを更新する
    */
-  def updateFairyUsingState(uuid: UUID, fairyUsingState: Boolean): F[Unit]
+  def updateIsFairyUsing(uuid: UUID, isFairyUsing: Boolean): F[Unit]
 
   /**
    * 妖精が召喚されているかを取得する
    */
-  def fairyUsingState(uuid: UUID): F[Boolean]
+  def isFairyUsing(uuid: UUID): F[Boolean]
 
   /**
    * 妖精が回復するマナの量を変更する

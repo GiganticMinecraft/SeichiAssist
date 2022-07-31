@@ -17,14 +17,14 @@ class FairyPlayerJoinGreeter(implicit fairyAPI: FairyAPI[IO, SyncIO, Player]) ex
   def onJoin(e: PlayerJoinEvent): Unit = {
     val player = e.getPlayer
     val eff = for {
-      usingState <- fairyAPI.fairyUsingState(player)
+      usingState <- fairyAPI.isFairyUsing(player)
       endTime <- fairyAPI.fairyEndTime(player)
     } yield {
       if (usingState) {
         if (endTime.get.endTimeOpt.get.isBefore(LocalDateTime.now())) {
           // 終了時間が今よりも過去だったとき(つまり有効時間終了済み)
           player.sendMessage(s"$LIGHT_PURPLE${BOLD}妖精は何処かへ行ってしまったようだ...")
-          fairyAPI.updateFairyUsingState(player, false).unsafeRunSync()
+          fairyAPI.updateIsFairyUsing(player, false).unsafeRunSync()
         } else {
           // まだ終了時間ではない(つまり有効時間内)
           implicit val ioCE: ConcurrentEffect[IO] =
