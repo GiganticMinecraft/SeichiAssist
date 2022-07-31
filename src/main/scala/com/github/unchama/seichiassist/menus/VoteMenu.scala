@@ -364,7 +364,7 @@ object VoteMenu extends Menu {
                   } else Nil
                 }
             } ++ {
-              val myRank = fairyAPI.appleAteByFairyMyRanking(player).unsafeRunSync()
+              val myRank = fairyAPI.appleAteByFairyMyRanking(player).unsafeRunSync().get
               List(
                 s"${AQUA}ぜーんぶで${fairyAPI.allEatenAppleAmount.unsafeRunSync().amount}個もらえた！",
                 "",
