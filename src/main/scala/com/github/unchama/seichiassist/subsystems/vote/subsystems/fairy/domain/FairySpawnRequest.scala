@@ -12,17 +12,17 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.p
   FairyUsingState
 }
 
-class FairySpawnRequest[F[_]: Sync, G[_]: ContextCoercion[*[_], F], Player] {
+class FairySpawnRequest[F[_]: Sync, G[_]: ContextCoercion[*[_], F], Player](
+  implicit breakCountAPI: BreakCountAPI[F, G, Player],
+  fairyAPI: FairyAPI[F, G, Player],
+  voteAPI: VoteAPI[F, Player],
+  manaApi: ManaApi[F, G, Player],
+  summonFairy: SummonFairy[F, G, Player]
+) {
 
   import cats.implicits._
 
-  def spawnRequest(player: Player)(
-    implicit breakCountAPI: BreakCountAPI[F, G, Player],
-    fairyAPI: FairyAPI[F, G, Player],
-    voteAPI: VoteAPI[F, Player],
-    manaApi: ManaApi[F, G, Player],
-    summonFairy: SummonFairy[F, G, Player]
-  ): F[Either[F[FairySpawnRequestResult], F[Unit]]] = {
+  def spawnRequest(player: Player): F[Either[FairySpawnRequestResult, F[Unit]]] = {
     for {
       usingState <- fairyAPI.fairyUsingState(player)
       effectPoints <- voteAPI.effectPoints(player)
@@ -38,9 +38,8 @@ class FairySpawnRequest[F[_]: Sync, G[_]: ContextCoercion[*[_], F], Player] {
         Left(FairySpawnRequestResult.AlreadyFairySpawned)
       else if (effectPoints.value < fairySummonCost.value * 2)
         Left(FairySpawnRequestResult.NotEnoughEffectPoint)
-      else {
+      else
         Right(summonFairy.summon(player))
-      }
     }
   }
 

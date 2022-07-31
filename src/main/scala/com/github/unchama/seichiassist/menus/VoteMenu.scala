@@ -278,7 +278,7 @@ object VoteMenu extends Menu {
       val fairySummonState =
         fairyAPI.fairySummonCost(player).unsafeRunSync()
       implicit val summonFairy: SummonFairy[IO, SyncIO, Player] =
-        new BukkitSummonFairy[IO, SyncIO]()
+        new BukkitSummonFairy[IO, SyncIO]
       Button(
         new IconItemStackBuilder(Material.GHAST_TEAR)
           .title(s"$LIGHT_PURPLE$UNDERLINE${BOLD}マナ妖精 召喚")
@@ -294,9 +294,11 @@ object VoteMenu extends Menu {
           .build(),
         LeftClickButtonEffect {
           SequentialEffect(
-            new FairySpawnRequest().spawnRequest(player).unsafeRunSync() match {
+            new FairySpawnRequest[IO, SyncIO, Player]
+              .spawnRequest(player)
+              .unsafeRunSync() match {
               case Left(errorResult) =>
-                errorResult.unsafeRunSync() match {
+                errorResult match {
                   case NotEnoughSeichiLevel =>
                     spawnFailedEffect(s"${GOLD}プレイヤーレベルが足りません")
                   case AlreadyFairySpawned =>

@@ -168,7 +168,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
       0
     else if (mineStackedGachaRingoAmount > appleConsumptionAmount)
       appleConsumptionAmount
-    else mineStackedGachaRingoAmount
+    else mineStackedGachaRingoAmount.toInt
   }
 
   /**
