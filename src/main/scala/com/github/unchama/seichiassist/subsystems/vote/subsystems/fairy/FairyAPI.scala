@@ -11,7 +11,7 @@ trait FairyWriteAPI[F[_], G[_], Player] {
   /**
    * 妖精にあげるりんごの開放状態を変更する
    */
-  def updateAppleOpenState(uuid: UUID, appleOpenState: AppleOpenState): F[Unit]
+  def updateAppleOpenState(uuid: UUID, appleOpenState: FairyAppleConsumeStrategy): F[Unit]
 
   /**
    * 妖精を召喚するためのコストを変更します。
@@ -58,7 +58,7 @@ trait FairyReadAPI[F[_], G[_], Player] {
   /**
    * 妖精にあげるりんごの開放状態を取得する
    */
-  def appleOpenState(uuid: UUID): F[AppleOpenState]
+  def appleOpenState(uuid: UUID): F[FairyAppleConsumeStrategy]
 
   /**
    * 妖精を召喚するためのコストを取得する

@@ -11,7 +11,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.applicat
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.FairySpeech
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
   AppleAmount,
-  AppleOpenState,
+  FairyAppleConsumeStrategy,
   FairyManaRecoveryState,
   FairyUsingState
 }
@@ -114,7 +114,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
     val playerLevel = seichiAmountData.levelCorrespondingToExp
 
     val isAppleOpenStateIsOpenOrOpenALittle =
-      appleOpenState == AppleOpenState.LessConsume || appleOpenState == AppleOpenState.Consume
+      appleOpenState == FairyAppleConsumeStrategy.LessConsume || appleOpenState == FairyAppleConsumeStrategy.Consume
     val isEnoughMana = oldManaAmount.ratioToCap.exists(_ >= 0.75)
 
     val defaultAmount = Math.pow(playerLevel.level / 10, 2)
@@ -164,7 +164,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
       playerdata.minestack.getStackedAmountOf(gachaRingoObject.get)
 
     // りんごの消費量
-    if (appleOpenState == AppleOpenState.NoConsume)
+    if (appleOpenState == FairyAppleConsumeStrategy.NoConsume)
       0
     else if (mineStackedGachaRingoAmount > appleConsumptionAmount)
       appleConsumptionAmount
@@ -185,7 +185,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
     }
   } yield {
     val isAppleOpenStateIsOpenOrOpenALittle =
-      appleOpenState == AppleOpenState.LessConsume || appleOpenState == AppleOpenState.Consume
+      appleOpenState == FairyAppleConsumeStrategy.LessConsume || appleOpenState == FairyAppleConsumeStrategy.Consume
     val isEnoughMana = oldManaAmount.ratioToCap.exists(_ >= 0.75)
 
     val mineStackedGachaRingoAmount =
@@ -195,7 +195,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
 
     val appleOpenStateDivision =
       if (isAppleOpenStateIsOpenOrOpenALittle && isEnoughMana) 2
-      else if (appleOpenState == AppleOpenState.NoConsume) 4
+      else if (appleOpenState == FairyAppleConsumeStrategy.NoConsume) 4
       else 1
 
     val reflectedAppleOpenStateAmount =
@@ -206,8 +206,8 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
       if (appleConsumptionAmount > mineStackedGachaRingoAmount) {
         if (mineStackedGachaRingoAmount == 0) {
           reflectedAppleOpenStateAmount / (
-            if (appleOpenState == AppleOpenState.Consume) 4
-            else if (appleOpenState == AppleOpenState.LessConsume) 4
+            if (appleOpenState == FairyAppleConsumeStrategy.Consume) 4
+            else if (appleOpenState == FairyAppleConsumeStrategy.LessConsume) 4
             else 2
           )
         } else if ((mineStackedGachaRingoAmount / appleConsumptionAmount) <= 0.5)

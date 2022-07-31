@@ -1,21 +1,21 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.resources.bukkit
 
 import cats.data.NonEmptyList
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.AppleOpenState.{
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairyAppleConsumeStrategy.{
   NoConsume,
   Consume,
   LessConsume,
   Permissible
 }
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
-  AppleOpenState,
+  FairyAppleConsumeStrategy,
   FairyLore
 }
 import org.bukkit.ChatColor._
 
 object FairyLoreTable {
 
-  val loreTable: Map[AppleOpenState, FairyLore] = Map(
+  val loreTable: Map[FairyAppleConsumeStrategy, FairyLore] = Map(
     Permissible -> FairyLore(
       NonEmptyList.of(
         s"$RED$UNDERLINE${BOLD}ガンガンたべるぞ",

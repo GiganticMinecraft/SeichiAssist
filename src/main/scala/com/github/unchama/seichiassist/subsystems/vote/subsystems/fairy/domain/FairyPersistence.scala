@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
   AppleAmount,
   AppleAteByFairyRank,
-  AppleOpenState,
+  FairyAppleConsumeStrategy,
   FairyEndTime,
   FairyPlaySound,
   FairyRecoveryMana,
@@ -18,12 +18,12 @@ trait FairyPersistence[F[_]] {
   /**
    * 妖精に開放するりんごの状態を変更する
    */
-  def changeAppleOpenState(uuid: UUID, openState: AppleOpenState): F[Unit]
+  def changeAppleOpenState(uuid: UUID, openState: FairyAppleConsumeStrategy): F[Unit]
 
   /**
    * 妖精に開放するりんごの状態を取得する
    */
-  def appleOpenState(uuid: UUID): F[AppleOpenState]
+  def appleOpenState(uuid: UUID): F[FairyAppleConsumeStrategy]
 
   /**
    * 妖精が召喚するためのコストを変更する

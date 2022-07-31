@@ -12,7 +12,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   /**
    * 妖精に開放するりんごの状態を変更する
    */
-  override def changeAppleOpenState(uuid: UUID, openState: AppleOpenState): F[Unit] =
+  override def changeAppleOpenState(uuid: UUID, openState: FairyAppleConsumeStrategy): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
         sql"UPDATE playerdata SET toggleGiveApple = ${openState.serializedValue} WHERE uuid = ${uuid.toString}"
@@ -24,7 +24,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   /**
    * 妖精に開放するりんごの状態を取得する
    */
-  override def appleOpenState(uuid: UUID): F[AppleOpenState] =
+  override def appleOpenState(uuid: UUID): F[FairyAppleConsumeStrategy] =
     Sync[F].delay {
       val serializedValue = DB.readOnly { implicit session =>
         sql"SELECT toggleGiveApple FROM playerdata WHERE uuid = ${uuid.toString}"
@@ -33,7 +33,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
           .apply()
           .get
       }
-      AppleOpenState.values.find(_.serializedValue == serializedValue).get
+      FairyAppleConsumeStrategy.values.find(_.serializedValue == serializedValue).get
     }
 
   /**

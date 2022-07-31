@@ -61,12 +61,12 @@ object System {
       new System[IO, SyncIO, Player] {
         override implicit val api: FairyAPI[IO, SyncIO, Player] =
           new FairyAPI[IO, SyncIO, Player] {
-            override def appleOpenState(uuid: UUID): IO[AppleOpenState] =
+            override def appleOpenState(uuid: UUID): IO[FairyAppleConsumeStrategy] =
               persistence.appleOpenState(uuid)
 
             override def updateAppleOpenState(
               uuid: UUID,
-              appleOpenState: AppleOpenState
+              appleOpenState: FairyAppleConsumeStrategy
             ): IO[Unit] =
               persistence.changeAppleOpenState(uuid, appleOpenState)
 
