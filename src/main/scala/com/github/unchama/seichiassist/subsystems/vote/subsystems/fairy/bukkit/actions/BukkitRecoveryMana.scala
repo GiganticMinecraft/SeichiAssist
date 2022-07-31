@@ -114,7 +114,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
     val playerLevel = seichiAmountData.levelCorrespondingToExp
 
     val isAppleOpenStateIsOpenOrOpenALittle =
-      appleOpenState == AppleOpenState.OpenALittle || appleOpenState == AppleOpenState.Open
+      appleOpenState == AppleOpenState.LessConsume || appleOpenState == AppleOpenState.Consume
     val isEnoughMana = oldManaAmount.ratioToCap.exists(_ >= 0.75)
 
     val defaultAmount = Math.pow(playerLevel.level / 10, 2)
@@ -164,7 +164,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
       playerdata.minestack.getStackedAmountOf(gachaRingoObject.get)
 
     // りんごの消費量
-    if (appleOpenState == AppleOpenState.NotOpen)
+    if (appleOpenState == AppleOpenState.NoConsume)
       0
     else if (mineStackedGachaRingoAmount > appleConsumptionAmount)
       appleConsumptionAmount
@@ -185,7 +185,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
     }
   } yield {
     val isAppleOpenStateIsOpenOrOpenALittle =
-      appleOpenState == AppleOpenState.OpenALittle || appleOpenState == AppleOpenState.Open
+      appleOpenState == AppleOpenState.LessConsume || appleOpenState == AppleOpenState.Consume
     val isEnoughMana = oldManaAmount.ratioToCap.exists(_ >= 0.75)
 
     val mineStackedGachaRingoAmount =
@@ -195,7 +195,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
 
     val appleOpenStateDivision =
       if (isAppleOpenStateIsOpenOrOpenALittle && isEnoughMana) 2
-      else if (appleOpenState == AppleOpenState.NotOpen) 4
+      else if (appleOpenState == AppleOpenState.NoConsume) 4
       else 1
 
     val reflectedAppleOpenStateAmount =
@@ -206,8 +206,8 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
       if (appleConsumptionAmount > mineStackedGachaRingoAmount) {
         if (mineStackedGachaRingoAmount == 0) {
           reflectedAppleOpenStateAmount / (
-            if (appleOpenState == AppleOpenState.Open) 4
-            else if (appleOpenState == AppleOpenState.OpenALittle) 4
+            if (appleOpenState == AppleOpenState.Consume) 4
+            else if (appleOpenState == AppleOpenState.LessConsume) 4
             else 2
           )
         } else if ((mineStackedGachaRingoAmount / appleConsumptionAmount) <= 0.5)

@@ -13,12 +13,24 @@ case object AppleOpenState extends Enum[AppleOpenState] {
 
   override val values: IndexedSeq[AppleOpenState] = findValues
 
-  case object OpenAnyway extends AppleOpenState(1)
+  /**
+   * ガンガン食べるぞ
+   */
+  case object Permissible extends AppleOpenState(1)
 
-  case object Open extends AppleOpenState(2)
+  /**
+   * バッチリたべよう
+   */
+  case object Consume extends AppleOpenState(2)
 
-  case object OpenALittle extends AppleOpenState(3)
+  /**
+   * リンゴだいじに
+   */
+  case object LessConsume extends AppleOpenState(3)
 
-  case object NotOpen extends AppleOpenState(4)
+  /**
+   * リンゴつかうな
+   */
+  case object NoConsume extends AppleOpenState(4)
 
 }

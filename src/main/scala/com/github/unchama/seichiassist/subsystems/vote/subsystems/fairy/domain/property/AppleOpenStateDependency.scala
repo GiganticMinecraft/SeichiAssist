@@ -5,6 +5,11 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.p
 object AppleOpenStateDependency {
 
   val dependency: Map[AppleOpenState, AppleOpenState] =
-    Map(OpenAnyway -> Open, Open -> OpenALittle, OpenALittle -> NotOpen, NotOpen -> OpenAnyway)
+    Map(
+      Permissible -> Consume,
+      Consume -> LessConsume,
+      LessConsume -> NoConsume,
+      NoConsume -> Permissible
+    )
 
 }
