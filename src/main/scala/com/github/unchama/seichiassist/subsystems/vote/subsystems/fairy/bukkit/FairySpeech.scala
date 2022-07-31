@@ -89,7 +89,7 @@ class FairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
     playSound <- fairyAPI.fairySpeechSound(player.getUniqueId)
     repository = fairyAPI.fairySpeechServiceRepository(player)
     _ <- ContextCoercion {
-      repository.makeSpeech(FairyMessage(s"あっ、もうこんな時間だ！"), FairyPlaySound.Off)
+      repository.makeSpeech(FairyMessage(s"あっ、もうこんな時間だ！"), fairyPlaySound = false)
     } >> ContextCoercion {
       repository.makeSpeech(FairyMessage(s"じゃーねー！${player.getName}"), playSound)
     }

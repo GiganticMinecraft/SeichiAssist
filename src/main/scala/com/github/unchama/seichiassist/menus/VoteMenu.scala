@@ -9,7 +9,6 @@ import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
 import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
-import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
@@ -29,7 +28,6 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.p
 }
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
   AppleOpenStateDependency,
-  FairyPlaySound,
   FairySummonCost,
   FairyUsingState
 }
@@ -48,8 +46,7 @@ object VoteMenu extends Menu {
     val fairyAPI: FairyAPI[IO, SyncIO, Player],
     val breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
     val manaApi: ManaApi[IO, SyncIO, Player],
-    val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
-    onMainThread: OnMinecraftServerThread[IO]
+    val ioCanOpenFirstPage: IO CanOpen FirstPage.type
   )
 
   /**
@@ -249,11 +246,7 @@ object VoteMenu extends Menu {
           new IconItemStackBuilder(Material.JUKEBOX)
             .title(s"$GOLD$UNDERLINE${BOLD}マナ妖精の音トグル")
             .lore(
-              if (
-                fairyAPI
-                  .fairySpeechSound(player.getUniqueId)
-                  .unsafeRunSync() == FairyPlaySound.On
-              )
+              if (fairyAPI.fairySpeechSound(player.getUniqueId).unsafeRunSync())
                 playSoundOnLore
               else playSoundOffLore
             )

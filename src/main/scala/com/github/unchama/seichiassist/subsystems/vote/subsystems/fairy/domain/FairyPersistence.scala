@@ -5,7 +5,6 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.p
   AppleAteByFairyRank,
   FairyAppleConsumeStrategy,
   FairyEndTime,
-  FairyPlaySound,
   FairyRecoveryMana,
   FairySummonCost,
   FairyUsingState
@@ -93,11 +92,11 @@ trait FairyPersistence[F[_]] {
   /**
    * 妖精が喋るときに音をだすかをトグルする
    */
-  def toggleFairySpeechSound(uuid: UUID, fairyPlaySound: FairyPlaySound): F[Unit]
+  def toggleFairySpeechSound(uuid: UUID, fairyPlaySound: Boolean): F[Unit]
 
   /**
    * 妖精が喋ったときに音を再生するか取得する
    */
-  def fairySpeechSound(uuid: UUID): F[FairyPlaySound]
+  def fairySpeechSound(uuid: UUID): F[Boolean]
 
 }

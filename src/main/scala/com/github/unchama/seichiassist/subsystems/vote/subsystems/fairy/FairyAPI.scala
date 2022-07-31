@@ -113,7 +113,7 @@ trait FairyReadAPI[F[_], G[_], Player] {
   /**
    * 妖精が喋ったときに音を再生するか取得する
    */
-  def fairySpeechSound(uuid: UUID): F[FairyPlaySound]
+  def fairySpeechSound(uuid: UUID): F[Boolean]
 
 }
 

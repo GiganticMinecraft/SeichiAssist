@@ -136,16 +136,11 @@ object System {
             override def allEatenAppleAmount: IO[AppleAmount] =
               persistence.allEatenAppleAmount
 
-            override def fairySpeechSound(uuid: UUID): IO[FairyPlaySound] =
+            override def fairySpeechSound(uuid: UUID): IO[Boolean] =
               persistence.fairySpeechSound(uuid)
 
             override def toggleFairySpeechSound(uuid: UUID): IO[Unit] =
-              persistence.toggleFairySpeechSound(
-                uuid,
-                if (fairySpeechSound(uuid).unsafeRunSync() == FairyPlaySound.On)
-                  FairyPlaySound.Off
-                else FairyPlaySound.On
-              )
+              persistence.toggleFairySpeechSound(uuid, !fairySpeechSound(uuid).unsafeRunSync())
           }
 
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[IO, _]] = {

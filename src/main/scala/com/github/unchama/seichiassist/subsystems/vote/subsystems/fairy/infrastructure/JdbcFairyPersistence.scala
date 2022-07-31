@@ -228,10 +228,10 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   /**
    * 妖精が喋るときに音をだすかをトグルする
    */
-  override def toggleFairySpeechSound(uuid: UUID, fairyPlaySound: FairyPlaySound): F[Unit] =
+  override def toggleFairySpeechSound(uuid: UUID, fairyPlaySound: Boolean): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
-        sql"UPDATE playerdata SET is_fairy_speech_play_sound = ${fairyPlaySound == FairyPlaySound.On} WHERE uuid = ${uuid.toString}"
+        sql"UPDATE playerdata SET is_fairy_speech_play_sound = $fairyPlaySound WHERE uuid = ${uuid.toString}"
           .execute()
           .apply()
       }
@@ -240,16 +240,14 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   /**
    * 妖精が喋ったときに音を再生するか取得する
    */
-  override def fairySpeechSound(uuid: UUID): F[FairyPlaySound] =
+  override def fairySpeechSound(uuid: UUID): F[Boolean] =
     Sync[F].delay {
       DB.readOnly { implicit session =>
-        val isPlaySound =
-          sql"SELECT is_fairy_speech_play_sound FROM playerdata WHERE uuid=${uuid.toString}"
-            .map(_.boolean("is_fairy_speech_play_sound"))
-            .single()
-            .apply()
-            .get
-        if (isPlaySound) FairyPlaySound.On else FairyPlaySound.Off
+        sql"SELECT is_fairy_speech_play_sound FROM playerdata WHERE uuid=${uuid.toString}"
+          .map(_.boolean("is_fairy_speech_play_sound"))
+          .single()
+          .apply()
+          .get
       }
     }
 }
