@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.menus
 
+import cats.data.Kleisli
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
 import cats.implicits.toTraverseOps
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
@@ -17,8 +18,15 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.bukkit.actions.BukkitReceiveVoteBenefits
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.SummonFairy
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.FairySpeech
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions.BukkitSummonFairy
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairySpawnRequest
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairySpawnRequestResult.{
+  AlreadyFairySpawned,
+  NotEnoughEffectPoint,
+  NotEnoughSeichiLevel
+}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
   AppleOpenState,
   FairyPlaySound,
@@ -269,6 +277,8 @@ object VoteMenu extends Menu {
     val fairySummonButton: IO[Button] = IO {
       val fairySummonState =
         fairyAPI.fairySummonCost(player).unsafeRunSync()
+      implicit val summonFairy: SummonFairy[IO, SyncIO, Player] =
+        new BukkitSummonFairy[IO, SyncIO]()
       Button(
         new IconItemStackBuilder(Material.GHAST_TEAR)
           .title(s"$LIGHT_PURPLE$UNDERLINE${BOLD}マナ妖精 召喚")
@@ -284,12 +294,31 @@ object VoteMenu extends Menu {
           .build(),
         LeftClickButtonEffect {
           SequentialEffect(
-            UnfocusedEffect {
-              BukkitSummonFairy(player).summon.unsafeRunSync()
+            new FairySpawnRequest().spawnRequest(player).unsafeRunSync() match {
+              case Left(errorResult) =>
+                errorResult.unsafeRunSync() match {
+                  case NotEnoughSeichiLevel =>
+                    spawnFailedEffect(s"${GOLD}プレイヤーレベルが足りません")
+                  case AlreadyFairySpawned =>
+                    spawnFailedEffect(s"${GOLD}既に妖精を召喚しています")
+                  case NotEnoughEffectPoint =>
+                    spawnFailedEffect(s"${GOLD}投票ptが足りません")
+                }
+              case Right(process) =>
+                UnfocusedEffect {
+                  process.unsafeRunSync()
+                }
             },
             closeInventoryEffect
           )
         }
+      )
+    }
+
+    private def spawnFailedEffect(message: String): Kleisli[IO, Player, Unit] = {
+      SequentialEffect(
+        MessageEffect(message),
+        FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
       )
     }
 
