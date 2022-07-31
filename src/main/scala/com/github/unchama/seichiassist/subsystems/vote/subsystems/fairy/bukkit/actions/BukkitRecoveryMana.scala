@@ -115,7 +115,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
 
     val isAppleOpenStateIsOpenOrOpenALittle =
       appleOpenState == AppleOpenState.OpenALittle || appleOpenState == AppleOpenState.Open
-    val isManaExistsSeventyFivePercent = oldManaAmount.ratioToCap.exists(_ >= 0.75)
+    val isEnoughMana = oldManaAmount.ratioToCap.exists(_ >= 0.75)
 
     val defaultAmount = Math.pow(playerLevel.level / 10, 2)
 
@@ -129,7 +129,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
 
     // りんごの開放状況を適用した除算量
     val appleOpenStateDivisionAmount =
-      if (isAppleOpenStateIsOpenOrOpenALittle && isManaExistsSeventyFivePercent) 2
+      if (isAppleOpenStateIsOpenOrOpenALittle && isEnoughMana) 2
       else 1
 
     // りんごの開放状況まで適用したりんごの消費量 (暫定)
@@ -188,7 +188,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
   } yield {
     val isAppleOpenStateIsOpenOrOpenALittle =
       appleOpenState == AppleOpenState.OpenALittle || appleOpenState == AppleOpenState.Open
-    val isManaExistsSeventyFivePercent = oldManaAmount.ratioToCap.exists(_ >= 0.75)
+    val isEnoughMana = oldManaAmount.ratioToCap.exists(_ >= 0.75)
 
     val mineStackedGachaRingoAmount =
       playerdata.minestack.getStackedAmountOf(gachaRingoObject.get)
@@ -196,7 +196,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
     // マナの回復量を算出する
 
     val appleOpenStateDivision = {
-      if (isAppleOpenStateIsOpenOrOpenALittle && isManaExistsSeventyFivePercent) 2
+      if (isAppleOpenStateIsOpenOrOpenALittle && isEnoughMana) 2
       else if (appleOpenState == AppleOpenState.NotOpen) 4
       else 1
     }
