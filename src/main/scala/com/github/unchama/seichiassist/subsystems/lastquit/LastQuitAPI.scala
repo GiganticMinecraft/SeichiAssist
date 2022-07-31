@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.lastquit
 
-import com.github.unchama.seichiassist.subsystems.lastquit.domain.LastQuitDateTime
+import com.github.unchama.seichiassist.subsystems.lastquit.domain.{LastQuitDateTime, PlayerName}
 
 import java.util.UUID
 
@@ -24,7 +24,7 @@ trait LastQuitReadAPI[F[_]] {
   /**
    * 最終ログアウト日時を取得します。
    */
-  def lastQuitDateTime(uuid: UUID): F[LastQuitDateTime]
+  def lastQuitDateTime(playerName: PlayerName): F[Option[LastQuitDateTime]]
 
 }
 

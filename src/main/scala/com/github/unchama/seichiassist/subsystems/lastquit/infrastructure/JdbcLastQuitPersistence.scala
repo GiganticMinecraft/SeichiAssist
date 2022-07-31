@@ -3,7 +3,8 @@ package com.github.unchama.seichiassist.subsystems.lastquit.infrastructure
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.lastquit.domain.{
   LastQuitDateTime,
-  LastQuitPersistence
+  LastQuitPersistence,
+  PlayerName
 }
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
@@ -25,14 +26,16 @@ class JdbcLastQuitPersistence[F[_]: Sync] extends LastQuitPersistence[F] {
   /**
    * 最終ログアウト日時を取得します
    */
-  override def lastQuitDateTime(uuid: UUID): F[LastQuitDateTime] = Sync[F].delay {
-    DB.readOnly { implicit session =>
-      val lastQuitDateTime = sql"SELECT lastquit FROM playerdata WHERE uuid = ${uuid.toString}"
-        .map(_.localDateTime("lastquit"))
-        .single()
-        .apply()
-        .get
-      LastQuitDateTime(lastQuitDateTime)
+  override def lastQuitDateTime(playerName: PlayerName): F[Option[LastQuitDateTime]] =
+    Sync[F].delay {
+      DB.readOnly { implicit session =>
+        val lastQuitDateTime =
+          sql"SELECT lastquit FROM playerdata WHERE name = ${playerName.name}"
+            .map(_.localDateTime("lastquit"))
+            .toList()
+            .apply()
+            .headOption
+        lastQuitDateTime.map(LastQuitDateTime)
+      }
     }
-  }
 }
