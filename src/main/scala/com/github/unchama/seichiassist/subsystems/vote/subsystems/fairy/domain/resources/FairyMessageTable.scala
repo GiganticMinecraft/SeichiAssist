@@ -8,7 +8,9 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.p
 
 object FairyMessageTable {
 
-  // 朝に妖精を召喚したときに表示されるメッセージ
+  /**
+   *   朝に妖精を召喚したときに表示されるメッセージ
+   */
   val morningMessages: NameCalledByFairy => FairyMessages = (name: NameCalledByFairy) =>
     FairyMessages(
       FairyMessage(s"おはよ！${name.value}"),
@@ -18,7 +20,9 @@ object FairyMessageTable {
       FairyMessage(s"今日は整地日和だね！${name.value}")
     )
 
-  // 昼に妖精を召喚したときに表示されるメッセージ
+  /**
+   * 昼に妖精を召喚したときに表示されるメッセージ
+   */
   val dayMessages: NameCalledByFairy => FairyMessages = (name: NameCalledByFairy) =>
     FairyMessages(
       FairyMessage(s"やあ！${name.value}"),
@@ -38,7 +42,9 @@ object FairyMessageTable {
       FairyMessage("こんな時間に呼ぶなんて…りんごははずんでもらうよ？")
     )
 
-  // マナが満タンだったときに表示されるメッセージ
+  /**
+   * マナが満タンだったときに表示されるメッセージ
+   */
   val manaFullMessages: NameCalledByFairy => FairyMessages = (name: NameCalledByFairy) =>
     FairyMessages(
       FairyMessage("整地しないのー？"),
@@ -49,7 +55,9 @@ object FairyMessageTable {
       FairyMessage("動いてお腹を空かしていっぱい食べるぞー！")
     )
 
-  // 妖精にりんごが消費されたときに表示されるメッセージ
+  /**
+   * 妖精にりんごが消費されたときに表示されるメッセージ
+   */
   val consumed: NameCalledByFairy => FairyMessages = (name: NameCalledByFairy) =>
     FairyMessages(
       FairyMessage("(´～｀)ﾓｸﾞﾓｸﾞ…"),
@@ -59,7 +67,9 @@ object FairyMessageTable {
       FairyMessage("いつもりんごをありがとう！")
     )
 
-  // 妖精がりんごを消費しなかったときに表示されるメッセージ
+  /**
+   * 妖精がりんごを消費しなかったときに表示されるメッセージ
+   */
   val notConsumed: NameCalledByFairy => FairyMessages = (name: NameCalledByFairy) =>
     FairyMessages(
       FairyMessage("お腹空いたなぁー。"),
