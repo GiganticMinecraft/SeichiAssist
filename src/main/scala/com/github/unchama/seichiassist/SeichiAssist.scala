@@ -383,8 +383,10 @@ class SeichiAssist extends JavaPlugin() {
       .wired[SyncIO, IO](seichiAssistConfig.getAnywhereEnderConfiguration)
   }
 
-  private lazy val sharedInventorySystem: subsystems.sharedinventory.System[IO] =
-    subsystems.sharedinventory.System.wired[IO]
+  private lazy val sharedInventorySystem: subsystems.sharedinventory.System[IO] = {
+    import PluginExecutionContexts.{asyncShift, timer}
+    subsystems.sharedinventory.System.wired[IO, IO].unsafeRunSync()
+  }
 
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
