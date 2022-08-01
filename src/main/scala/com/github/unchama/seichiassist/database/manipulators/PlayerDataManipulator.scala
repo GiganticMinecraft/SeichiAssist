@@ -8,7 +8,6 @@ import com.github.unchama.seichiassist.data.RankData
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.database.{DatabaseConstants, DatabaseGateway}
 import com.github.unchama.seichiassist.task.{CoolDownTask, PlayerDataLoading}
-import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.util.ActionStatus
@@ -16,7 +15,6 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.bukkit.inventory.Inventory
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.sql.SQLException
@@ -290,21 +288,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     SeichiAssist.ranklist_p_apple.clear()
     SeichiAssist.ranklist_p_apple.addAll(ranklist)
     true
-  }
-
-  def selectPocketInventoryOf(
-    uuid: UUID
-  ): IO[ResponseEffectOrResult[CommandSender, Inventory]] = {
-    val command = s"select inventory from $tableReference where uuid = '$uuid'"
-
-    val executeQuery = IO {
-      gateway
-        .executeQuery(command)
-        .recordIteration { lrs => BukkitSerialization.fromBase64(lrs.getString("inventory")) }
-        .head
-    }
-
-    catchingDatabaseErrors(uuid.toString, EitherT.right(executeQuery).value)
   }
 
   private def catchingDatabaseErrors[R](
