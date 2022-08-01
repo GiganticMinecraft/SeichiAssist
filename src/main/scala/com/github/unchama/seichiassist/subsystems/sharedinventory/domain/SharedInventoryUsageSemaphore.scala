@@ -31,7 +31,7 @@ object SharedInventoryUsageSemaphore {
   /**
    * 再び共有インベントリを利用できるまでのクールタイム時間
    */
-  final val usageInterval = 200.millisecond
+  final val usageInterval = 10.second
 
   def newIn[F[_]: Concurrent: Timer, G[_]: Sync](
     implicit persistence: SharedInventoryPersistence[F]

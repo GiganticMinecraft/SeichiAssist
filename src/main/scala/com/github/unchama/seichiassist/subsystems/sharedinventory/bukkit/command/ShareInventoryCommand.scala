@@ -2,19 +2,17 @@ package com.github.unchama.seichiassist.subsystems.sharedinventory.bukkit.comman
 
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, IO, Sync}
-import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
 import com.github.unchama.seichiassist.subsystems.sharedinventory.domain.SharedFlag
 import com.github.unchama.seichiassist.subsystems.sharedinventory.domain.bukkit.InventoryContents
-import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.InventoryOperations
-import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.CommandEffect
+import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import org.bukkit.ChatColor._
-import org.bukkit.command.{CommandSender, TabExecutor}
+import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{Bukkit, Material}
@@ -40,26 +38,33 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
   private def withdrawFromSharedInventory(player: Player): IO[TargetedEffect[Player]] = {
     val uuid = player.getUniqueId
     val eff = for {
-      _ <- checkInventoryOperationCoolDown(player)
+      oldSharedFlag <- sharedInventoryAPI.sharedFlag(player)
       loadedInventory <- sharedInventoryAPI.load(uuid)
       _ <- sharedInventoryAPI.clear(uuid)
+      newSharedFlag <- sharedInventoryAPI.sharedFlag(player)
+      playerInventory = player.getInventory
+      _ <- Sync[F]
+        .delay {
+          val inventoryContents = loadedInventory
+            .getOrElse(return IO.pure(MessageEffect(s"$RESET$RED${BOLD}収納アイテムが存在しません。")))
+            .inventoryContents
+          // 手持ちのアイテムをドロップする
+          playerInventory
+            .getContents
+            .filterNot(itemStack => itemStack == null || itemStack.getType == Material.AIR)
+            .foreach(itemStack => dropIfNotEmpty(Some(itemStack), player))
+          // 取り出したアイテムをセットする
+          playerInventory.setContents(inventoryContents.toArray)
+          Bukkit.getLogger.info(s"${player.getName}がアイテム取り出しを実施(DB)書き換え成功")
+        }
+        .whenA(oldSharedFlag != newSharedFlag && loadedInventory.nonEmpty)
     } yield {
-      val playerInventory = player.getInventory
-      val inventoryContents =
-        loadedInventory
-          .getOrElse(return IO.pure(MessageEffect(s"$RESET$RED${BOLD}収納アイテムが存在しません。")))
-          .inventoryContents
-      // 手持ちのアイテムをドロップする
-      playerInventory
-        .getContents
-        .filterNot(itemStack => itemStack == null || itemStack.getType == Material.AIR)
-        .foreach(itemStack => dropIfNotEmpty(Some(itemStack), player))
-
-      // 取り出したアイテムをセットする
-      playerInventory.setContents(inventoryContents.toArray)
-
-      Bukkit.getLogger.info(s"${player.getName}がアイテム取り出しを実施(DB)書き換え成功")
-      MessageEffect(s"${GREEN}アイテムを取得しました。手持ちにあったアイテムはドロップしました。")
+      if (oldSharedFlag != newSharedFlag && loadedInventory.nonEmpty)
+        MessageEffect(s"${GREEN}アイテムを取得しました。手持ちにあったアイテムはドロップしました。")
+      else if (oldSharedFlag == newSharedFlag)
+        MessageEffect(s"$RESET$RED${BOLD}もう少し待ってからアイテム取り出しを行ってください。")
+      else
+        MessageEffect(s"$RESET$RED${BOLD}収納アイテムが存在しません。")
     }
 
     eff.toIO
@@ -74,15 +79,23 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
       return IO.pure(MessageEffect(s"$RESET$RED${BOLD}収納アイテムが存在しません。"))
 
     val eff = for {
+      oldSharedFlag <- sharedInventoryAPI.sharedFlag(player)
       _ <- sharedInventoryAPI.save(uuid, InventoryContents(inventoryContents))
+      newSharedFlag <- sharedInventoryAPI.sharedFlag(player)
+      _ <- Sync[F]
+        .delay {
+          playerInventory.clear()
+          Bukkit.getLogger.info(s"${player.getName}がアイテム収納を実施(SQL送信成功)")
+        }
+        .whenA(oldSharedFlag != newSharedFlag)
     } yield {
-      playerInventory.clear()
-
-      Bukkit.getLogger.info(s"${player.getName}がアイテム収納を実施(SQL送信成功)")
-      SequentialEffect(
-        CommandEffect("stick"),
-        MessageEffect(s"${GREEN}アイテムを収納しました。10秒以上あとに、手持ちを空にして取り出してください。")
-      )
+      if (oldSharedFlag == newSharedFlag)
+        MessageEffect(s"$RESET$RED${BOLD}もう少し待ってからアイテムを収納してください。")
+      else
+        SequentialEffect(
+          CommandEffect("stick"),
+          MessageEffect(s"${GREEN}アイテムを収納しました。10秒以上あとに、手持ちを空にして取り出してください。")
+        )
     }
 
     eff.toIO
@@ -90,19 +103,5 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
 
   private def dropIfNotEmpty(itemStackOption: Option[ItemStack], to: Player): Unit =
     itemStackOption.foreach(InventoryOperations.dropItem(to, _))
-
-  private def checkInventoryOperationCoolDown(
-    player: Player
-  ): F[Either[TargetedEffect[CommandSender], Unit]] = Sync[F].delay {
-    val playerData = SeichiAssist.playermap(player.getUniqueId)
-    // 連打による負荷防止
-    // TODO このフラグをそのうちsubSystemにしたい
-    if (!playerData.shareinvcooldownflag)
-      Left(MessageEffect(s"${RED}しばらく待ってからやり直してください"))
-    else {
-      new CoolDownTask(player, CoolDownTask.SHAREINV).runTaskLater(SeichiAssist.instance, 200)
-      Right(())
-    }
-  }
 
 }
