@@ -384,7 +384,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val sharedInventorySystem: subsystems.sharedinventory.System[IO] = {
-    import PluginExecutionContexts.{asyncShift, timer}
+    import PluginExecutionContexts.timer
     subsystems.sharedinventory.System.wired[IO, IO].unsafeRunSync()
   }
 
