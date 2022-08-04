@@ -6,7 +6,7 @@ import cats.effect.{ConcurrentEffect, IO}
 import cats.implicits._
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.contextualexecutor.ContextualExecutor
-import com.github.unchama.contextualexecutor.builder.Parsers
+import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.{
   BranchedExecutor,
   EchoExecutor,
@@ -272,7 +272,8 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
       def executor[F[_]: ConcurrentEffect: NonServerThreadContextShift](
         implicit persistence: PresentPersistence[F, ItemStack]
       ): ContextualExecutor =
-        playerCommandBuilder
+        ContextualExecutorBuilder
+          .beginConfiguration()
           .argumentsParsers(List(presentIdParser), onMissingArguments = help)
           .execution { context =>
             if (!context.sender.hasPermission("seichiassist.present.delete")) {
@@ -325,7 +326,8 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
         implicit persistence: PresentPersistence[F, ItemStack],
         globalPlayerAccessor: UuidToLastSeenName[F]
       ): ContextualExecutor =
-        playerCommandBuilder
+        ContextualExecutorBuilder
+          .beginConfiguration()
           .argumentsParsers(
             List(presentIdParser, presentScopeModeParser),
             onMissingArguments = help
@@ -402,7 +404,8 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
         implicit persistence: PresentPersistence[F, ItemStack],
         globalPlayerAccessor: UuidToLastSeenName[F]
       ): ContextualExecutor =
-        playerCommandBuilder
+        ContextualExecutorBuilder
+          .beginConfiguration()
           .argumentsParsers(
             List(presentIdParser, presentScopeModeParser),
             onMissingArguments = help
