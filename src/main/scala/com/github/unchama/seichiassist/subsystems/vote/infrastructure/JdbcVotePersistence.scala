@@ -16,14 +16,10 @@ class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
    */
   def createPlayerData(uuid: UUID): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      sql"""INSERT INTO vote 
+      sql"""INSERT IGNORE INTO vote 
            | (uuid, vote_number, chain_vote_number, effect_point, given_effect_point, last_vote)
            | VALUES
-           | (${uuid.toString}, 0, 0, 0, 0, NULL)
-           |  WHERE NOT EXISTS (SELECT uuid FROM vote WHERE uuid = ${uuid.toString})"""
-        .stripMargin
-        .execute()
-        .apply()
+           | (${uuid.toString}, 0, 0, 0, 0, NULL)""".stripMargin.execute().apply()
     }
   }
 
@@ -32,7 +28,9 @@ class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
    */
   override def voteCounterIncrement(playerName: PlayerName): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      sql"UPDATE vote SET vote_number = vote_number + 1".execute().apply()
+      sql"UPDATE vote SET vote_number = vote_number + 1 WHERE uuid = (SELECT uuid FROM playerdata WHERE name = ${playerName.name})"
+        .execute()
+        .apply()
     }
   }
 
