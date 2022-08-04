@@ -14,7 +14,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
    */
   def createPlayerData(uuid: UUID): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      sql"INSERT IGNORE INTO vote_fairy uuid VALUES $uuid".execute().apply()
+      sql"INSERT IGNORE INTO vote_fairy uuid VALUES ${uuid.toString}".execute().apply()
     }
   }
 
