@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.vote.bukkit.command
 
-import cats.Monad
 import cats.effect.ConcurrentEffect
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
@@ -22,8 +21,6 @@ class VoteCommand[F[_]: ConcurrentEffect](implicit voteAPI: VoteAPI[F, Player]) 
   import cats.implicits._
 
   private val recordExecutor = {
-    implicit val F: Monad[F] = Monad[F]
-
     ContextualExecutorBuilder
       .beginConfiguration()
       .executionCSEffect { context =>
@@ -37,7 +34,7 @@ class VoteCommand[F[_]: ConcurrentEffect](implicit voteAPI: VoteAPI[F, Player]) 
               _ <- voteAPI.voteCounterIncrement(playerName)
               _ <- voteAPI.updateChainVote(playerName)
             } yield ()
-            eff.toIO
+            eff.toIO.unsafeRunSync()
           }
         )
       }
