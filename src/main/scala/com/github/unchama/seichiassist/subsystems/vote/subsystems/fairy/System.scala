@@ -137,6 +137,12 @@ object System {
 
             override def toggleFairySpeechSound(uuid: UUID): IO[Unit] =
               persistence.toggleFairySpeechSound(uuid, !fairySpeechSound(uuid).unsafeRunSync())
+
+            /**
+             * プレイヤーデータを作成する
+             */
+            override def createPlayerData(uuid: UUID): IO[Unit] =
+              persistence.createPlayerData(uuid)
           }
 
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[IO, _]] = {

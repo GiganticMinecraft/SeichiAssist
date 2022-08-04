@@ -14,6 +14,11 @@ import java.util.UUID
 trait FairyPersistence[F[_]] {
 
   /**
+   * プレイヤーデータを作成する
+   */
+  def createPlayerData(uuid: UUID): F[Unit]
+
+  /**
    * 妖精に開放するりんごの状態を変更する
    */
   def changeAppleOpenState(uuid: UUID, openState: FairyAppleConsumeStrategy): F[Unit]

@@ -17,6 +17,7 @@ class FairyPlayerJoinGreeter(implicit fairyAPI: FairyAPI[IO, SyncIO, Player]) ex
   def onJoin(e: PlayerJoinEvent): Unit = {
     val player = e.getPlayer
     val eff = for {
+      _ <- fairyAPI.createPlayerData(player.getUniqueId)
       isUsing <- fairyAPI.isFairyUsing(player)
       endTime <- fairyAPI.fairyEndTime(player)
     } yield {

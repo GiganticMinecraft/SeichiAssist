@@ -10,6 +10,15 @@ import java.util.UUID
 class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
 
   /**
+   * プレイヤーデータを作成する
+   */
+  def createPlayerData(uuid: UUID): F[Unit] = Sync[F].delay {
+    DB.localTx { implicit session =>
+      sql"INSERT IGNORE INTO vote_fairy uuid VALUES $uuid".execute().apply()
+    }
+  }
+
+  /**
    * 妖精に開放するりんごの状態を変更する
    */
   override def changeAppleOpenState(uuid: UUID, openState: FairyAppleConsumeStrategy): F[Unit] =
@@ -193,9 +202,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   /**
    * 妖精に食べさせたりんごの量の順位上位`number`件を返す
    */
-  override def appleAteByFairyRanking(
-    number: Int
-  ): F[Vector[Option[AppleAteByFairyRank]]] =
+  override def appleAteByFairyRanking(number: Int): F[Vector[Option[AppleAteByFairyRank]]] =
     Sync[F].delay {
       DB.readOnly { implicit session =>
         sql"""SELECT name,given_apple_amount,COUNT(*) AS rank FROM vote_fairy 

@@ -9,6 +9,11 @@ import java.util.UUID
 trait FairyWriteAPI[F[_], G[_], Player] {
 
   /**
+   * プレイヤーデータを作成する
+   */
+  def createPlayerData(uuid: UUID): F[Unit]
+
+  /**
    * 妖精にあげるりんごの開放状態を変更する
    */
   def updateAppleOpenState(uuid: UUID, appleOpenState: FairyAppleConsumeStrategy): F[Unit]
