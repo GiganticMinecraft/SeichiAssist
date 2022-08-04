@@ -9,7 +9,8 @@ CREATE TABLE vote_fairy(
 	fairy_end_time DATETIME DEFAULT NULL,
 	given_apple_amount BIGINT DEFAULT 0,
 	is_play_fairy_speech_sound BOOLEAN DEFAULT true
-)
+);
+
 INSERT INTO
 	vote_fairy(
 		uuid,
