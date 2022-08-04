@@ -14,7 +14,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
    */
   def createPlayerData(uuid: UUID): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      sql"INSERT IGNORE INTO vote_fairy uuid VALUES ${uuid.toString}".execute().apply()
+      sql"INSERT IGNORE INTO vote_fairy (uuid) VALUES (${uuid.toString})".execute().apply()
     }
   }
 
@@ -184,18 +184,23 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   override def appleAteByFairyMyRanking(uuid: UUID): F[Option[AppleAteByFairyRank]] =
     Sync[F].delay {
       DB.readOnly { implicit session =>
-        sql"""SELECT (SELECT name FROM playerdata WHERE uuid = ${uuid.toString}),given_apple_amount,COUNT(*) AS rank 
-             | FROM vote_fairy ORDER BY rank DESC WHERE uuid = ${uuid.toString};"""
+        sql"""SELECT vote_fairy.uuid AS uuid,name,given_apple_amount,COUNT(*) AS rank 
+             | FROM vote_fairy 
+             | INNER JOIN playerdata
+             | ON (playerdata.uuid = vote_fairy.uuid)
+             | ORDER BY rank DESC;"""
           .stripMargin
           .map(rs =>
-            AppleAteByFairyRank(
+            rs.string("uuid") -> AppleAteByFairyRank(
               rs.string("name"),
               rs.int("rank"),
               AppleAmount(rs.int("given_apple_amount"))
             )
           )
-          .single()
+          .toList()
           .apply()
+          .find(_._1 == uuid.toString)
+          .map(_._2)
       }
     }
 
