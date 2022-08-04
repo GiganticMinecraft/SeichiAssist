@@ -513,8 +513,8 @@ class SeichiAssist extends JavaPlugin() {
        */
       ClassUtils.withThreadContextClassLoaderAs(
         classOf[SeichiAssist].getClassLoader,
-        () =>
-          Flyway
+        () => {
+          val loadedFlyway = Flyway
             .configure
             .dataSource(getURL, getID, getPW)
             .baselineOnMigrate(true)
@@ -522,7 +522,10 @@ class SeichiAssist extends JavaPlugin() {
             .baselineVersion("1.0.0")
             .schemas("flyway_managed_schema")
             .load
-            .migrate
+
+          loadedFlyway.repair()
+          loadedFlyway.migrate
+        }
       )
     }
 
