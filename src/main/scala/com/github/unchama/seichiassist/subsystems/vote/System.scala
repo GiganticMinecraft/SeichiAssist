@@ -4,10 +4,12 @@ import cats.effect.ConcurrentEffect
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.vote.bukkit.command.VoteCommand
+import com.github.unchama.seichiassist.subsystems.vote.bukkit.listeners.PlayerDataCreator
 import com.github.unchama.seichiassist.subsystems.vote.domain._
 import com.github.unchama.seichiassist.subsystems.vote.infrastructure.JdbcVotePersistence
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
+import org.bukkit.event.Listener
 
 import java.util.UUID
 
@@ -18,7 +20,7 @@ trait System[F[_], Player] extends Subsystem[F] {
 object System {
 
   def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread]: System[F, Player] = {
-    val votePersistence = new JdbcVotePersistence[F]
+    implicit val votePersistence: VotePersistence[F] = new JdbcVotePersistence[F]
 
     new System[F, Player] {
       override implicit val api: VoteAPI[F, Player] = new VoteAPI[F, Player] {
@@ -60,6 +62,8 @@ object System {
       override val commands: Map[String, TabExecutor] = Map(
         "vote" -> new VoteCommand[F].executor
       )
+
+      override val listeners: Seq[Listener] = Seq(new PlayerDataCreator[F])
     }
   }
 
