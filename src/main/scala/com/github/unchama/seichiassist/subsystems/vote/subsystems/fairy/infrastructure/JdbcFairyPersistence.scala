@@ -15,7 +15,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   override def changeAppleOpenState(uuid: UUID, openState: FairyAppleConsumeStrategy): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
-        sql"UPDATE playerdata SET toggleGiveApple = ${openState.serializedValue} WHERE uuid = ${uuid.toString}"
+        sql"UPDATE vote_fairy SET apple_open_state = ${openState.serializedValue} WHERE uuid = ${uuid.toString}"
           .execute()
           .apply()
       }
@@ -27,8 +27,8 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   override def appleOpenState(uuid: UUID): F[FairyAppleConsumeStrategy] =
     Sync[F].delay {
       val serializedValue = DB.readOnly { implicit session =>
-        sql"SELECT toggleGiveApple FROM playerdata WHERE uuid = ${uuid.toString}"
-          .map(_.int("toggleGiveApple"))
+        sql"SELECT apple_open_state FROM vote_fairy WHERE uuid = ${uuid.toString}"
+          .map(_.int("apple_open_state"))
           .single()
           .apply()
           .get
@@ -42,7 +42,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   override def updateFairySummonCost(uuid: UUID, fairySummonCost: FairySummonCost): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
-        sql"UPDATE playerdata SET toggleVotingFairy = ${fairySummonCost.value} WHERE uuid = ${uuid.toString}"
+        sql"UPDATE vote_fairy SET fairy_summon_cost = ${fairySummonCost.value} WHERE uuid = ${uuid.toString}"
           .execute()
           .apply()
       }
@@ -54,8 +54,8 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   override def fairySummonCost(uuid: UUID): F[FairySummonCost] = Sync[F].delay {
     DB.readOnly { implicit session =>
       val fairySummonCost =
-        sql"SELECT toggleVotingFairy FROM playerdata WHERE uuid = ${uuid.toString}"
-          .map(_.int("toggleVotingFairy"))
+        sql"SELECT fairy_summon_cost FROM vote_fairy WHERE uuid = ${uuid.toString}"
+          .map(_.int("fairy_summon_cost"))
           .single()
           .apply()
           .get
@@ -69,8 +69,8 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   override def updateIsFairyUsing(uuid: UUID, isFairyUsing: Boolean): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
-        sql"""UPDATE playerdata 
-             | SET canVotingFairyUse = ${isFairyUsing} WHERE uuid = ${uuid.toString}"""
+        sql"""UPDATE vote_fairy 
+             | SET is_fairy_using = $isFairyUsing WHERE uuid = ${uuid.toString}"""
           .stripMargin
           .execute()
           .apply()
@@ -82,8 +82,8 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
    */
   override def isFairyUsing(uuid: UUID): F[Boolean] = Sync[F].delay {
     DB.readOnly { implicit session =>
-      sql"SELECT canVotingFairyUse FROM playerdata WHERE uuid = ${uuid.toString}"
-        .map(_.boolean("canVotingFairyUse"))
+      sql"SELECT is_fairy_using FROM vote_fairy WHERE uuid = ${uuid.toString}"
+        .map(_.boolean("is_fairy_using"))
         .single()
         .apply()
     }.get
@@ -97,7 +97,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
     fairyRecoveryMana: FairyRecoveryMana
   ): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      sql"UPDATE playerdata SET VotingFairyRecoveryValue = ${fairyRecoveryMana.recoveryMana} WHERE uuid = ${uuid.toString}"
+      sql"UPDATE vote_fairy SET fairy_recovery_mana_value = ${fairyRecoveryMana.recoveryMana} WHERE uuid = ${uuid.toString}"
         .execute()
         .apply()
     }
@@ -109,8 +109,8 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   override def fairyRecoveryMana(uuid: UUID): F[FairyRecoveryMana] = Sync[F].delay {
     DB.readOnly { implicit session =>
       val recoveryMana =
-        sql"SELECT VotingFairyRecoveryValue FROM playerdata WHERE uuid = ${uuid.toString}"
-          .map(_.int("VotingFairyRecoveryValue"))
+        sql"SELECT fairy_recovery_mana_value FROM vote_fairy WHERE uuid = ${uuid.toString}"
+          .map(_.int("fairy_recovery_mana_value"))
           .single()
           .apply()
           .get
@@ -124,7 +124,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   override def updateFairyEndTime(uuid: UUID, fairyEndTime: FairyEndTime): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
-        sql"UPDATE playerdata SET newVotingFairyTime = ${fairyEndTime.endTimeOpt.get} WHERE uuid = ${uuid.toString}"
+        sql"UPDATE vote_fairy SET fairy_end_time = ${fairyEndTime.endTimeOpt.get} WHERE uuid = ${uuid.toString}"
           .execute()
           .apply()
       }
@@ -135,8 +135,8 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
    */
   override def fairyEndTime(uuid: UUID): F[Option[FairyEndTime]] = Sync[F].delay {
     DB.readOnly { implicit session =>
-      val dateOpt = sql"SELECT newVotingFairyTime FROM playerdata WHERE uuid = ${uuid.toString}"
-        .map(_.localDateTime("newVotingFairyTime"))
+      val dateOpt = sql"SELECT fairy_end_time FROM vote_fairy WHERE uuid = ${uuid.toString}"
+        .map(_.localDateTime("fairy_end_time"))
         .single()
         .apply()
       dateOpt.map { date => FairyEndTime(Some(date)) }
@@ -149,7 +149,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   override def increaseAppleAteByFairy(uuid: UUID, appleAmount: AppleAmount): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
-        sql"UPDATE playerdata SET p_apple = p_apple + ${appleAmount.amount} WHERE uuid = ${uuid.toString}"
+        sql"UPDATE vote_fairy SET given_apple_amount = given_apple_amount + ${appleAmount.amount} WHERE uuid = ${uuid.toString}"
           .execute()
           .apply()
       }
@@ -160,10 +160,11 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
    */
   override def appleAteByFairy(uuid: UUID): F[Option[AppleAmount]] = Sync[F].delay {
     DB.readOnly { implicit session =>
-      val appleAmountOpt = sql"SELECT p_apple FROM playerdata WHERE uuid = ${uuid.toString}"
-        .map(_.int("p_apple"))
-        .single()
-        .apply()
+      val appleAmountOpt =
+        sql"SELECT given_apple_amount FROM vote_fairy WHERE uuid = ${uuid.toString}"
+          .map(_.int("given_apple_amount"))
+          .single()
+          .apply()
       appleAmountOpt.map(AppleAmount)
     }
   }
@@ -174,12 +175,12 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   override def appleAteByFairyMyRanking(uuid: UUID): F[Option[AppleAteByFairyRank]] =
     Sync[F].delay {
       DB.readOnly { implicit session =>
-        sql"SELECT name,p_apple,COUNT(*) AS rank FROM playerdata ORDER BY rank DESC;"
+        sql"SELECT name,given_apple_amount,COUNT(*) AS rank FROM vote_fairy ORDER BY rank DESC;"
           .map(rs =>
             AppleAteByFairyRank(
               rs.string("name"),
               rs.int("rank"),
-              AppleAmount(rs.int("p_apple"))
+              AppleAmount(rs.int("given_apple_amount"))
             )
           )
           .single()
@@ -196,8 +197,8 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   ): F[Vector[Option[AppleAteByFairyRank]]] =
     Sync[F].delay {
       DB.readOnly { implicit session =>
-        sql"SELECT name,p_apple,COUNT(*) AS rank FROM playerdata ORDER BY rank DESC LIMIT $number;"
-          .map(rs => (rs.stringOpt("name"), rs.intOpt("rank"), rs.intOpt("p_apple")))
+        sql"SELECT name,given_apple_amount,COUNT(*) AS rank FROM vote_fairy ORDER BY rank DESC LIMIT $number;"
+          .map(rs => (rs.stringOpt("name"), rs.intOpt("rank"), rs.intOpt("given_apple_amount")))
           .toList()
           .apply()
           .map(data =>
@@ -214,7 +215,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
    */
   override def allEatenAppleAmount: F[AppleAmount] = Sync[F].delay {
     DB.readOnly { implicit session =>
-      val amount = sql"SELECT SUM(p_apple) AS allAppleAmount FROM playerdata;"
+      val amount = sql"SELECT SUM(given_apple_amount) AS allAppleAmount FROM vote_fairy;"
         .map(_.int("allAppleAmount"))
         .single()
         .apply()
@@ -229,7 +230,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   override def toggleFairySpeechSound(uuid: UUID, fairyPlaySound: Boolean): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
-        sql"UPDATE playerdata SET is_fairy_speech_play_sound = $fairyPlaySound WHERE uuid = ${uuid.toString}"
+        sql"UPDATE vote_fairy SET is_play_fairy_speech_sound = $fairyPlaySound WHERE uuid = ${uuid.toString}"
           .execute()
           .apply()
       }
@@ -241,8 +242,8 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   override def fairySpeechSound(uuid: UUID): F[Boolean] =
     Sync[F].delay {
       DB.readOnly { implicit session =>
-        sql"SELECT is_fairy_speech_play_sound FROM playerdata WHERE uuid=${uuid.toString}"
-          .map(_.boolean("is_fairy_speech_play_sound"))
+        sql"SELECT is_play_fairy_speech_sound FROM vote_fairy WHERE uuid=${uuid.toString}"
+          .map(_.boolean("is_play_fairy_speech_sound"))
           .single()
           .apply()
           .get

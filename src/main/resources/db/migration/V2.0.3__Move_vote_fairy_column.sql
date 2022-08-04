@@ -3,6 +3,7 @@ USE seichiassist;
 CREATE TABLE vote_fairy(
 	uuid CHAR(36) PRIMARY KEY,
 	apple_open_state INT,
+	fairy_summon_cost INT,
 	is_fairy_using BOOLEAN,
 	fairy_recovery_mana_value INT,
 	fairy_end_time DATETIME,
@@ -13,6 +14,7 @@ INSERT INTO
 	vote_fairy(
 		uuid,
 		apple_open_state,
+		fairy_summon_cost,
 		is_fairy_using,
 		fairy_recovery_mana_value,
 		fairy_end_time,
@@ -22,6 +24,7 @@ INSERT INTO
 SELECT
 	uuid,
 	toggleGiveApple,
+	toggleVotingFairy,
 	canVotingFairyUse,
 	VotingFairyRecoveryValue,
 	newVotingFairyTime,
@@ -32,6 +35,7 @@ FROM
 
 ALTER TABLE
 	playerdata DROP toggleGiveApple,
+	DROP toggleVotingFairy,
 	DROP canVotingFairyUse,
 	DROP VotingFairyRecoveryValue,
 	DROP newVotingFairyTime,
