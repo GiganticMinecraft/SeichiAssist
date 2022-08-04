@@ -17,10 +17,11 @@ class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
   def createPlayerData(uuid: UUID): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
       sql"""INSERT INTO vote 
-      | (uuid, vote_number, chain_vote_number, effect_point, given_effect_point, last_vote)
-      | VALUES
-      | (${uuid.toString}, 0, 0, 0, 0, NULL)
-      |  WHERE NOT EXISTS (SELECT uuid FROM vote WHERE uuid = ${uuid.toString})"""
+           | (uuid, vote_number, chain_vote_number, effect_point, given_effect_point, last_vote)
+           | VALUES
+           | (${uuid.toString}, 0, 0, 0, 0, NULL)
+           |  WHERE NOT EXISTS (SELECT uuid FROM vote WHERE uuid = ${uuid.toString})"""
+        .stripMargin
         .execute()
         .apply()
     }
