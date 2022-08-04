@@ -344,7 +344,7 @@ object VoteMenu extends Menu {
               s"$RESET${DARK_GRAY}召喚されたらラッキーだよ！"
             ) ++ {
               // TOP4のランキングロール
-              val topFour = fairyAPI.appleAteByFairyRanking(player, 4).unsafeRunSync()
+              val topFour = fairyAPI.appleAteByFairyRanking(4).unsafeRunSync()
               List(topFour.headOption, topFour.lift(1), topFour.lift(2), topFour.lift(3))
                 .flatMap { rankDataOpt =>
                   if (rankDataOpt.nonEmpty) {

@@ -81,7 +81,7 @@ trait FairyPersistence[F[_]] {
   /**
    * 妖精に食べさせたりんごの量の順位上位`number`件を返す
    */
-  def appleAteByFairyRanking(uuid: UUID, number: Int): F[Vector[Option[AppleAteByFairyRank]]]
+  def appleAteByFairyRanking(number: Int): F[Vector[Option[AppleAteByFairyRank]]]
 
   /**
    * 妖精が食べたりんごの合計数を返す

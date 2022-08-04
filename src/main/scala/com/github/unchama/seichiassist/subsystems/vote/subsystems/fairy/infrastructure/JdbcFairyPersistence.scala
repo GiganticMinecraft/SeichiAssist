@@ -175,7 +175,9 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   override def appleAteByFairyMyRanking(uuid: UUID): F[Option[AppleAteByFairyRank]] =
     Sync[F].delay {
       DB.readOnly { implicit session =>
-        sql"SELECT name,given_apple_amount,COUNT(*) AS rank FROM vote_fairy ORDER BY rank DESC;"
+        sql"""SELECT (SELECT name FROM playerdata WHERE uuid = ${uuid.toString}),given_apple_amount,COUNT(*) AS rank 
+             | FROM vote_fairy ORDER BY rank DESC WHERE uuid = ${uuid.toString};"""
+          .stripMargin
           .map(rs =>
             AppleAteByFairyRank(
               rs.string("name"),
@@ -192,12 +194,14 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
    * 妖精に食べさせたりんごの量の順位上位`number`件を返す
    */
   override def appleAteByFairyRanking(
-    uuid: UUID,
     number: Int
   ): F[Vector[Option[AppleAteByFairyRank]]] =
     Sync[F].delay {
       DB.readOnly { implicit session =>
-        sql"SELECT name,given_apple_amount,COUNT(*) AS rank FROM vote_fairy ORDER BY rank DESC LIMIT $number;"
+        sql"""SELECT name,given_apple_amount,COUNT(*) AS rank FROM vote_fairy 
+             | INNER JOIN playerdata ON (vote_fairy.uuid = playerdata.uuid) 
+             | ORDER BY rank DESC LIMIT $number;"""
+          .stripMargin
           .map(rs => (rs.stringOpt("name"), rs.intOpt("rank"), rs.intOpt("given_apple_amount")))
           .toList()
           .apply()

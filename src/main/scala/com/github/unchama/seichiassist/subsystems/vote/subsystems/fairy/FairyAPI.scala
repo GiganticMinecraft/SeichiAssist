@@ -95,10 +95,7 @@ trait FairyReadAPI[F[_], G[_], Player] {
   /**
    * 妖精に食べさせたりんごの量の順位上`number`件を返す
    */
-  def appleAteByFairyRanking(
-    player: Player,
-    number: Int
-  ): F[Vector[Option[AppleAteByFairyRank]]]
+  def appleAteByFairyRanking(number: Int): F[Vector[Option[AppleAteByFairyRank]]]
 
   /**
    * 妖精が食べたりんごの合計数を返す

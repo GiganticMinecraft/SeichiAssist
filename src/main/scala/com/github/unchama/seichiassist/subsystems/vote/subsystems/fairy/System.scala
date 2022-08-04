@@ -125,10 +125,9 @@ object System {
               persistence.appleAteByFairyMyRanking(player.getUniqueId)
 
             override def appleAteByFairyRanking(
-              player: Player,
               number: Int
             ): IO[Vector[Option[AppleAteByFairyRank]]] =
-              persistence.appleAteByFairyRanking(player.getUniqueId, number)
+              persistence.appleAteByFairyRanking(number)
 
             override def allEatenAppleAmount: IO[AppleAmount] =
               persistence.allEatenAppleAmount
