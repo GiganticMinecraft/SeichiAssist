@@ -5,6 +5,11 @@ import java.util.UUID
 trait VotePersistence[F[_]] {
 
   /**
+   * プレイヤーデータを作成する作用
+   */
+  def createPlayerData(uuid: UUID): F[Unit]
+
+  /**
    * 投票回数をインクリメントする作用
    */
   def voteCounterIncrement(playerName: PlayerName): F[Unit]

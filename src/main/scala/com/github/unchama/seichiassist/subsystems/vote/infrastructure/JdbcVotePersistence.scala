@@ -12,17 +12,26 @@ class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
   private val chainVoteAllowableWidth = 4
 
   /**
+   * プレイヤーデータを作成する作用
+   */
+  def createPlayerData(uuid: UUID): F[Unit] = Sync[F].delay {
+    DB.localTx { implicit session =>
+      sql"""INSERT INTO vote 
+      | (uuid, vote_number, chain_vote_number, effect_point, given_effect_point, last_vote)
+      | VALUES
+      | (${uuid.toString}, 0, 0, 0, 0, NULL)
+      |  WHERE NOT EXISTS (SELECT uuid FROM vote WHERE uuid = ${uuid.toString})"""
+        .execute()
+        .apply()
+    }
+  }
+
+  /**
    * 投票回数をインクリメントする作用
    */
   override def voteCounterIncrement(playerName: PlayerName): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      sql"""INSERT INTO vote 
-           | (uuid,vote_number,chain_vote_number,effect_point,given_effect_point,last_vote)
-           | VALUES 
-           | ((SELECT uuid FROM playerdata WHERE name = ${playerName.name}),1,0,0,0,NULL)
-           | ON DUPLICATE KEY UPDATE
-           | vote_number = vote_number + 1
-           """.stripMargin.execute().apply()
+      sql"UPDATE vote SET vote_number = vote_number + 1".execute().apply()
     }
   }
 
