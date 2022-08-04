@@ -17,6 +17,6 @@ INSERT INTO vote(
     given_effect_point,
     last_vote
 )
-SELECT uuid,p_vote,chainvote,effectpoint,p_givenvote,lastvote FROM playerdata;
+SELECT uuid,p_vote,chainvote,effectpoint,p_givenvote,CONVERT(lastvote, DATE) FROM playerdata;
 
 ALTER TABLE playerdata DROP p_vote,chainvote,effectpoint,p_givenvote,lastvote;
