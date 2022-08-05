@@ -9,7 +9,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 class BukkitGrantGachaPrize[F[_]: Sync](gachaPrize: GachaPrize[ItemStack])
-    extends GrantGachaPrize[F] {
+    extends GrantGachaPrize[F, ItemStack] {
 
   import cats.implicits._
 

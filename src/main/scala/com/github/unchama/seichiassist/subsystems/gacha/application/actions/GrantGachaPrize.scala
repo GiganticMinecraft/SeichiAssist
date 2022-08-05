@@ -2,9 +2,8 @@ package com.github.unchama.seichiassist.subsystems.gacha.application.actions
 
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GrantState
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 
-trait GrantGachaPrize[F[_]] {
+trait GrantGachaPrize[F[_], ItemStack] {
 
   /**
    * GachaPrizeをPlayerに付与します。
