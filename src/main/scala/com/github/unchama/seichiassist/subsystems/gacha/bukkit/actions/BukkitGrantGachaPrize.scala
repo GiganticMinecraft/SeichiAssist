@@ -31,11 +31,9 @@ class BukkitGrantGachaPrize[F[_]: Sync](gachaPrize: GachaPrize[ItemStack])
   }
 
   def createNewItem(owner: Option[String]): F[ItemStack] = Sync[F].delay {
-    val givenItem =
-      if (gachaPrize.hasOwner && owner.nonEmpty)
-        appendOwnerInformation(owner.get)(gachaPrize.itemStack)
-      else gachaPrize.itemStack
-    givenItem
+    if (gachaPrize.hasOwner && owner.nonEmpty)
+      appendOwnerInformation(owner.get)(gachaPrize.itemStack)
+    else gachaPrize.itemStack
   }
 
 }
