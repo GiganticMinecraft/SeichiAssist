@@ -17,14 +17,12 @@ import org.bukkit.inventory.ItemStack
 
 class BukkitGrantLevelUpGift[F[_]: Sync: OnMinecraftServerThread, G[_]: ContextCoercion[*[
   _
-], F]]
-    extends GrantLevelUpGift[F, Player, G, ItemStack] {
-  override def grant(gift: Gift)(
-    implicit gachaPointApi: GachaPointApi[F, G, Player],
-    gachaAPI: GachaAPI[F, ItemStack]
-  ): Kleisli[F, Player, Unit] = {
-    val giftItemInterpreter: GiftItemInterpreter[F, G, Player] =
+], F]](implicit gachaPointApi: GachaPointApi[F, G, Player], gachaAPI: GachaAPI[F, ItemStack])
+    extends GrantLevelUpGift[F, Player] {
+  override def grant(gift: Gift): Kleisli[F, Player, Unit] = {
+    val giftItemInterpreter: GiftItemInterpreter[F, Player] =
       new BukkitGiftItemInterpreter[F, G]
+
     gift match {
       case item: Gift.Item =>
         giftItemInterpreter(item)
@@ -37,8 +35,9 @@ class BukkitGrantLevelUpGift[F[_]: Sync: OnMinecraftServerThread, G[_]: ContextC
 object BukkitGrantLevelUpGift {
 
   implicit def apply[F[_]: Sync: OnMinecraftServerThread, G[_]: ContextCoercion[*[_], F]](
-    implicit gachaAPI: GachaAPI[F, ItemStack]
-  ): GrantLevelUpGift[F, Player, G, ItemStack] =
+    implicit gachaAPI: GachaAPI[F, ItemStack],
+    gachaPointApi: GachaPointApi[F, G, Player]
+  ): GrantLevelUpGift[F, Player] =
     new BukkitGrantLevelUpGift[F, G]
 
 }
