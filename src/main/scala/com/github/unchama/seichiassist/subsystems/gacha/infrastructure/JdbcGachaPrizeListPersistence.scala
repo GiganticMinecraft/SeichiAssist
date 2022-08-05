@@ -1,14 +1,8 @@
-package com.github.unchama.seichiassist.subsystems.gacha.infrastructure.bukkit
+package com.github.unchama.seichiassist.subsystems.gacha.infrastructure
 
 import cats.effect.Sync
 import com.github.unchama.concurrent.NonServerThreadContextShift
-import com.github.unchama.seichiassist.subsystems.gacha.domain.{
-  GachaPrize,
-  GachaPrizeEncoder,
-  GachaPrizeId,
-  GachaPrizeListPersistence,
-  GachaProbability
-}
+import com.github.unchama.seichiassist.subsystems.gacha.domain._
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 class JdbcGachaPrizeListPersistence[F[_]: Sync: NonServerThreadContextShift, ItemStack]

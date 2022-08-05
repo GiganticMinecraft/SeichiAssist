@@ -18,7 +18,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   GachaPrizeEncoder,
   GachaPrizeId
 }
-import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.bukkit.JdbcGachaPrizeListPersistence
+import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.JdbcGachaPrizeListPersistence
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.infrastructure.JdbcGachaTicketFromAdminTeamGateway
 import org.bukkit.command.TabExecutor
 import org.bukkit.event.Listener
@@ -78,7 +78,7 @@ object System {
           : Ref[F, Vector[GachaPrize[ItemStack]]] =
           Ref.unsafe[F, Vector[GachaPrize[ItemStack]]](Vector.empty)
 
-        override val grantGachaPrize: GachaPrize[ItemStack] => GrantGachaPrize[F] =
+        override val grantGachaPrize: GachaPrize[ItemStack] => GrantGachaPrize[F, ItemStack] =
           new BukkitGrantGachaPrize[F](_)
 
       }

@@ -53,7 +53,7 @@ trait GachaReadAPI[F[_], ItemStack] {
     prizes <- list
   } yield prizes.exists(_.id == gachaPrizeId)
 
-  val grantGachaPrize: GachaPrize[ItemStack] => GrantGachaPrize[F]
+  val grantGachaPrize: GachaPrize[ItemStack] => GrantGachaPrize[F, ItemStack]
 
 }
 

@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gacha.domain
 
 /**
- * @param itemStack ガチャで排出されるアイテム。数もそのまま利用されます
+ * @param itemStack ガチャで排出されるアイテム。
  * @param probability ガチャで排出される確率
  * @param hasOwner 記名する場合はtrueにしてください
  */

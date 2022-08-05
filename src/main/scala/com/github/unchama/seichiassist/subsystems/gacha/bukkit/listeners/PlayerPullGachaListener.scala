@@ -24,14 +24,12 @@ class PlayerPullGachaListener[F[_]: ConcurrentEffect: OnMinecraftServerThread](
   def onPlayerRightClickGachaEvent(event: PlayerInteractEvent): Unit = {
     val player = event.getPlayer
 
-    // サバイバルモードでない場合は処理を終了
     if (player.getGameMode != GameMode.SURVIVAL) return
 
     val clickedItemStack = event.getItem.ifNull {
       return
     }
 
-    // ガチャ券でない場合は終了
     if (!ItemInformation.isGachaTicket(clickedItemStack)) return
 
     event.setCancelled(true)
