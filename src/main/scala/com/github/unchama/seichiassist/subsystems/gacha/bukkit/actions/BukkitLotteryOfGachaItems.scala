@@ -28,28 +28,29 @@ class BukkitLotteryOfGachaItems[F[_]: Sync] extends LotteryOfGachaItems[F, ItemS
           .map(_ => Sync[F].delay(Math.random()))
           .toList
           .traverse(random => random)
-    } yield randomList.map(lottery(1.0, _, gachaPrizes)).toVector
+    } yield randomList
+      .map(random => lottery(GachaProbability(1.0), GachaProbability(random), gachaPrizes))
+      .toVector
 
   /**
    * ガチャアイテムの抽選を行うための再帰関数
    *
-   * @param sum 現在の合計値
-   * @param random 乱数(1.0まで)
+   * @param sumGachaProbability 現在の合計値
+   * @param probability ガチャの確率
    * @param gachaPrizes ガチャの景品リスト
    * @return 抽選されたガチャアイテム
    */
   @tailrec
   private def lottery(
-    sum: Double,
-    random: Double,
+    sumGachaProbability: GachaProbability,
+    probability: GachaProbability,
     gachaPrizes: Vector[GachaPrize[ItemStack]]
   ): GachaPrize[ItemStack] = {
-    require(0.0 <= random && random <= 1.0, "randomは0.0以上1.0以下である必要があります。")
-
-    val nowSum = sum - gachaPrizes.head.probability.value
+    val nowSum = sumGachaProbability.value - gachaPrizes.head.probability.value
     val droppedGachaPrizes = gachaPrizes.drop(1)
-    if (nowSum <= random) gachaPrizes.head
-    else if (droppedGachaPrizes.nonEmpty) lottery(nowSum, random, droppedGachaPrizes)
+    if (nowSum <= probability.value) gachaPrizes.head
+    else if (droppedGachaPrizes.nonEmpty)
+      lottery(GachaProbability(nowSum), probability, droppedGachaPrizes)
     else
       GachaPrize[ItemStack](
         StaticGachaPrizeFactory.gachaRingo,
