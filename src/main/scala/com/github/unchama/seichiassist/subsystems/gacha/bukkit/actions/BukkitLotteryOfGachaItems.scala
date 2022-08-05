@@ -44,6 +44,8 @@ class BukkitLotteryOfGachaItems[F[_]: Sync] extends LotteryOfGachaItems[F, ItemS
     random: Double,
     gachaPrizes: Vector[GachaPrize[ItemStack]]
   ): GachaPrize[ItemStack] = {
+    require(0.0 <= random && random <= 1.0, "randomは0.0以上1.0以下である必要があります。")
+
     val nowSum = sum - gachaPrizes.head.probability.value
     val droppedGachaPrizes = gachaPrizes.drop(1)
     if (nowSum <= random) gachaPrizes.head

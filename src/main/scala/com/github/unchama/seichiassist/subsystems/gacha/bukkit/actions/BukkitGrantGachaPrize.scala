@@ -23,12 +23,10 @@ class BukkitGrantGachaPrize[F[_]: Sync](gachaPrize: GachaPrize[ItemStack])
   } yield {
     if (BreakUtil.tryAddItemIntoMineStack(player, item)) {
       GrantState.grantedMineStack
+    } else if (!InventoryOperations.isPlayerInventoryFull(player)) {
+      GrantState.addedInventory
     } else {
-      if (!InventoryOperations.isPlayerInventoryFull(player)) {
-        GrantState.addedInventory
-      } else {
-        GrantState.dropped
-      }
+      GrantState.dropped
     }
   }
 
