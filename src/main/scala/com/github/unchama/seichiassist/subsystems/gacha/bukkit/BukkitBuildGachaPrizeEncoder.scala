@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack
 
 object BukkitBuildGachaPrizeEncoder extends GachaPrizeEncoder[ItemStack] {
 
-  def encode(
+  override def encode(
     itemStackString: String,
     gachaProbability: GachaProbability,
     hasOwner: Boolean,
