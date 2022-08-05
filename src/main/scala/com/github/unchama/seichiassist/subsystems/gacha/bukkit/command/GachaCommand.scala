@@ -364,9 +364,9 @@ class GachaCommand[F[
         var potato = 0
         (0 to numberOfTimes).foreach { _ =>
           val rand = Math.random()
-          if (rand < Gigantic) gigantic += 1
-          else if (rand < Big) big += 1
-          else if (rand < Regular) regular += 1
+          if (rand < Gigantic.maxProbability.value) gigantic += 1
+          else if (rand < Big.maxProbability.value) big += 1
+          else if (rand < Regular.maxProbability.value) regular += 1
           else potato += 1
         }
 
