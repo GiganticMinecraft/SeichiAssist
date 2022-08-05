@@ -38,6 +38,8 @@ object GrantGiftOnSeichiLevelDiff {
             SendMinecraftMessage[F, Player].string(player, "レベルアップ記念のアイテムを配布しました。")
           case Gift.AutomaticGachaRun =>
             SendMinecraftMessage[F, Player].string(player, "レベルアップ記念としてガチャを回しました。")
+          case Gift.GachaPointWorthSingleTicket =>
+            SendMinecraftMessage[F, Player].string(player, "レベルアップ記念のガチャポイントを付与しました。")
         }
       }
     }

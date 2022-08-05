@@ -7,6 +7,7 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.BukkitDrawGacha
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
+import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.GachaPoint
 import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.{
   Gift,
   GiftItemInterpreter,
@@ -26,6 +27,10 @@ class BukkitGrantLevelUpGift[F[_]: Sync: OnMinecraftServerThread, G[_]: ContextC
     gift match {
       case item: Gift.Item =>
         giftItemInterpreter(item)
+      case Gift.GachaPointWorthSingleTicket =>
+        gachaPointApi
+          .addGachaPoint(GachaPoint.perGachaTicket)
+          .mapK[F](ContextCoercion.asFunctionK)
       case Gift.AutomaticGachaRun =>
         Kleisli { player => new BukkitDrawGacha[F].draw(player, 1) }
     }
