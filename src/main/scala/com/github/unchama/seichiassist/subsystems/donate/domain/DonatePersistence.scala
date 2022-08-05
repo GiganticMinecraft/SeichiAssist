@@ -10,4 +10,9 @@ trait DonatePersistence[F[_]] {
     donatePremiumEffectPoint: DonatePremiumEffectPoint
   ): F[Unit]
 
+  /**
+   * プレミアムエフェクト購入履歴を読み込む
+   */
+  def loadPremiumEffectPurchaseHistory: F[Vector[PremiumEffectPurchaseData]]
+
 }
