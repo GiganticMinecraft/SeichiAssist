@@ -11,7 +11,7 @@ import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.{
   Gift,
   GiftBundle,
   GiftBundleTable,
-  GrantLevelUpGift
+  GrantLevelUpGiftAlgebra
 }
 
 object GrantGiftOnSeichiLevelDiff {
@@ -23,7 +23,7 @@ object GrantGiftOnSeichiLevelDiff {
     player: Player
   )(
     implicit send: SendMinecraftMessage[F, Player],
-    grant: GrantLevelUpGift[F, Player]
+    grant: GrantLevelUpGiftAlgebra[F, Player]
   ): F[Unit] = {
     val giftBundles = HasSuccessor[SeichiLevel]
       .leftOpenRightClosedRange(levelDiff.left, levelDiff.right)
@@ -32,7 +32,7 @@ object GrantGiftOnSeichiLevelDiff {
 
     val giftBundle = giftBundles.fold(GiftBundle.empty)(_ combine _)
     giftBundle.traverseGifts { (gift, count) =>
-      GrantLevelUpGift[F, Player].grant(gift).replicateA(count).run(player) >> {
+      GrantLevelUpGiftAlgebra[F, Player].grant(gift).replicateA(count).run(player) >> {
         gift match {
           case _: Gift.Item =>
             SendMinecraftMessage[F, Player].string(player, "レベルアップ記念のアイテムを配布しました。")
