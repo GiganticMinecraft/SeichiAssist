@@ -18,6 +18,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.BukkitGra
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity.{
   Big,
   Gigantic,
+  Potato,
   Regular
 }
 import com.github.unchama.seichiassist.subsystems.gacha.domain._
@@ -358,17 +359,18 @@ class GachaCommand[F[
       )
       .execution { context =>
         val numberOfTimes = context.args.parsed.head.asInstanceOf[Int]
-        var gigantic = 0
-        var big = 0
-        var regular = 0
-        var potato = 0
-        (0 to numberOfTimes).foreach { _ =>
+        val result = (0 to numberOfTimes).map { _ =>
           val rand = Math.random()
-          if (rand < Gigantic.maxProbability.value) gigantic += 1
-          else if (rand < Big.maxProbability.value) big += 1
-          else if (rand < Regular.maxProbability.value) regular += 1
-          else potato += 1
+          if (rand < Gigantic.maxProbability.value) Gigantic
+          else if (rand < Big.maxProbability.value) Big
+          else if (rand < Regular.maxProbability.value) Regular
+          else Potato
         }
+
+        val gigantic = result.count(_ == Gigantic)
+        val big = result.count(_ == Big)
+        val regular = result.count(_ == Regular)
+        val potato = result.count(_ == Potato)
 
         IO(
           MessageEffect(
