@@ -15,17 +15,16 @@ import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTempla
 import com.github.unchama.seichiassist.data.MineStackGachaData
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.BukkitGrantGachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.domain.{
-  GachaPrize,
-  GachaPrizeEncoder,
-  GachaPrizeId,
-  GachaPrizeListPersistence,
-  GachaProbability
+import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity.{
+  Big,
+  Gigantic,
+  Regular
 }
+import com.github.unchama.seichiassist.subsystems.gacha.domain._
 import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.GlobalPlayerAccessor
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketFromAdminTeamGateway
+import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
-import com.github.unchama.targetedeffect.{TargetedEffect, UnfocusedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.inventory.ItemStack
@@ -182,11 +181,8 @@ class GachaCommand[F[
             gachaPrize <- gachaAPI.gachaPrize(
               GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
             )
-          } yield UnfocusedEffect {
-            new BukkitGrantGachaPrize[IO](gachaPrize.get)
-              .createNewItem(Some(context.sender.getName))
-              .unsafeRunAsync(_ => IO.unit)
-          }
+            _ <- new BukkitGrantGachaPrize[F](gachaPrize.get).grantGachaPrize(context.sender)
+          } yield MessageEffect("ガチャアイテムを付与しました。")
 
           eff.toIO
         }
@@ -368,9 +364,9 @@ class GachaCommand[F[
         var potato = 0
         (0 to numberOfTimes).foreach { _ =>
           val rand = Math.random()
-          if (rand < 0.001) gigantic += 1
-          else if (rand < 0.01) big += 1
-          else if (rand < 0.1) regular += 1
+          if (rand < Gigantic) gigantic += 1
+          else if (rand < Big) big += 1
+          else if (rand < Regular) regular += 1
           else potato += 1
         }
 

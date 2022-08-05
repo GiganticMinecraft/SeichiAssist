@@ -29,29 +29,20 @@ class BukkitDrawGacha[F[_]: Sync](implicit gachaAPI: GachaAPI[F, ItemStack])
       (gachaPrizes zip states).foreach {
         case (gachaPrize, state) =>
           val givenItem = gachaPrize.itemStack
-          /*
-           *  メッセージ設定
-           *  ①まずMineStackに入るか試す
-           *  ②入らなかったらインベントリに直接入れる
-           *  ③インベントリが満タンだったらドロップする
-           */
-          val additionalMessage =
-            if (state == GrantState.grantedMineStack) {
+
+          val additionalMessage = state match {
+            case GrantState.grantedMineStack =>
               s"${AQUA}景品をマインスタックに収納しました。"
-            } else {
-              if (state == GrantState.addedInventory) {
-                InventoryOperations.addItem(player, givenItem)
-                ""
-              } else {
-                InventoryOperations.dropItem(player, givenItem)
-                s"${AQUA}景品がドロップしました。"
-              }
-            }
+            case GrantState.dropped =>
+              s"${AQUA}景品がドロップしました。"
+            case _ =>
+              ""
+          }
 
           if (gachaPrize.probability.value < GachaRarity.Gigantic.maxProbability.value) {
             val loreWithoutOwnerName =
               givenItem.getItemMeta.getLore.asScala.toList.filterNot {
-                _ == s"§r§2所有者：${player.getName}"
+                _ == s"$RESET${DARK_GREEN}所有者：${player.getName}"
               }
 
             val localizedEnchantmentList =
@@ -92,10 +83,14 @@ class BukkitDrawGacha[F[_]: Sync](implicit gachaAPI: GachaAPI[F, ItemStack])
           } else if (gachaPrize.probability.value < GachaRarity.Big.maxProbability.value) {
             player.playSound(player.getLocation, Sound.ENTITY_WITHER_SPAWN, 0.8f, 1f)
             if (amount == 1) player.sendMessage(s"${GOLD}おめでとう！！大当たり！$additionalMessage")
-          } else if (gachaPrize.probability.value < GachaRarity.Regular.maxProbability.value) {
-            if (amount == 1) player.sendMessage(s"${YELLOW}おめでとう！当たり！$additionalMessage")
-          } else {
-            if (amount == 1) player.sendMessage(s"${WHITE}はずれ！また遊んでね！$additionalMessage")
+          } else if (
+            gachaPrize
+              .probability
+              .value < GachaRarity.Regular.maxProbability.value && amount == 1
+          ) {
+            player.sendMessage(s"${YELLOW}おめでとう！当たり！$additionalMessage")
+          } else if (amount == 1) {
+            player.sendMessage(s"${WHITE}はずれ！また遊んでね！$additionalMessage")
           }
       }
     }
