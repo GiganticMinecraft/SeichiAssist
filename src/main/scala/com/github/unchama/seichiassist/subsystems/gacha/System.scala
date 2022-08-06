@@ -8,18 +8,10 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.minecraft.bukkit.algebra.BukkitItemStackSerializeAndDeserialize
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.BukkitBuildGachaPrizeEncoder
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.{
-  BukkitGrantGachaPrize,
-  BukkitLotteryOfGachaItems
-}
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.{BukkitGrantGachaPrize, BukkitLotteryOfGachaItems}
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.command.GachaCommand
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.listeners.PlayerPullGachaListener
-import com.github.unchama.seichiassist.subsystems.gacha.domain.{
-  GachaPrize,
-  GachaPrizeEncoder,
-  GachaPrizeId
-}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.{GachaPrize, GachaPrizeId}
 import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.JdbcGachaPrizeListPersistence
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.infrastructure.JdbcGachaTicketFromAdminTeamGateway
 import org.bukkit.command.TabExecutor
@@ -42,7 +34,6 @@ object System {
       new JdbcGachaPrizeListPersistence[F, ItemStack]()
     implicit val gachaTicketPersistence: JdbcGachaTicketFromAdminTeamGateway[F] =
       new JdbcGachaTicketFromAdminTeamGateway[F]
-    implicit val gachaPrizeEncoder: GachaPrizeEncoder[ItemStack] = BukkitBuildGachaPrizeEncoder
 
     val system = new System[F] {
       override implicit val api: GachaAPI[F, ItemStack] = new GachaAPI[F, ItemStack] {

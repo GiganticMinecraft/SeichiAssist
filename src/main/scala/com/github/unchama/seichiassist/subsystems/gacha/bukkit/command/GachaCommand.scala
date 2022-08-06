@@ -38,8 +38,7 @@ class GachaCommand[F[
 ]: OnMinecraftServerThread: NonServerThreadContextShift: Sync: ConcurrentEffect](
   implicit gachaTicketPersistence: GachaTicketFromAdminTeamGateway[F],
   gachaPersistence: GachaPrizeListPersistence[F, ItemStack],
-  gachaAPI: GachaAPI[F, ItemStack],
-  gachaPrizeEncoder: GachaPrizeEncoder[ItemStack]
+  gachaAPI: GachaAPI[F, ItemStack]
 ) {
 
   import cats.implicits._
