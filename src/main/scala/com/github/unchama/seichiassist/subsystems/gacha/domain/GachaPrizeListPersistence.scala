@@ -5,15 +5,11 @@ trait GachaPrizeListPersistence[F[_], ItemStack] {
   /**
    * ガチャアイテムとして登録されているアイテムリストをGachaPrizeのVectorとして返します。
    */
-  def list(
-    implicit gachaPrizeEncoder: GachaPrizeEncoder[ItemStack]
-  ): F[Vector[GachaPrize[ItemStack]]]
+  def list: F[Vector[GachaPrize[ItemStack]]]
 
   /**
    * ガチャリストを更新します。
    */
-  def set(gachaPrizesList: Vector[GachaPrize[ItemStack]])(
-    implicit gachaPrizeEncoder: GachaPrizeEncoder[ItemStack]
-  ): F[Unit]
+  def set(gachaPrizesList: Vector[GachaPrize[ItemStack]]): F[Unit]
 
 }

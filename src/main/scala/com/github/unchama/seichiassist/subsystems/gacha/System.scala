@@ -3,7 +3,9 @@ package com.github.unchama.seichiassist.subsystems.gacha
 import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.concurrent.NonServerThreadContextShift
+import com.github.unchama.generic.serialization.SerializeAndDeserialize
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.minecraft.bukkit.algebra.BukkitItemStackSerializeAndDeserialize
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.BukkitBuildGachaPrizeEncoder
@@ -34,6 +36,8 @@ object System {
 
   def wired[F[_]: OnMinecraftServerThread: NonServerThreadContextShift: ConcurrentEffect]
     : F[System[F]] = {
+    implicit val serializeAndDeserialize: SerializeAndDeserialize[Unit, ItemStack] =
+      BukkitItemStackSerializeAndDeserialize.instance
     implicit val gachaPersistence: JdbcGachaPrizeListPersistence[F, ItemStack] =
       new JdbcGachaPrizeListPersistence[F, ItemStack]()
     implicit val gachaTicketPersistence: JdbcGachaTicketFromAdminTeamGateway[F] =
