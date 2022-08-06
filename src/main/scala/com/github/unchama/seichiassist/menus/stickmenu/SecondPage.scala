@@ -76,6 +76,7 @@ object SecondPage extends Menu {
       ChestSlotRef(0, 8) -> hubCommandButton,
       ChestSlotRef(3, 0) -> CommonButtons.openStickMenu,
       ChestSlotRef(3, 3) -> recycleBinButton,
+      ChestSlotRef(3, 6) -> randomTeleportButton,
       ChestSlotRef(3, 8) -> appleConversionButton
     )
 
@@ -513,6 +514,22 @@ object SecondPage extends Menu {
         }
       )
     }
+
+    val randomTeleportButton: Button = Button(
+      new IconItemStackBuilder(Material.COMPASS)
+        .title(s"$YELLOW$UNDERLINE${BOLD}ランダムテレポートします。")
+        .lore(
+          List(
+            s"$RESET$DARK_RED${UNDERLINE}ランダムな場所にテレポートします。",
+            s"$RESET${DARK_GRAY}command=>[/rtp]"
+          )
+        )
+        .build(),
+      LeftClickButtonEffect {
+        CommandEffect("rtp")
+      }
+    )
+
   }
 
 }

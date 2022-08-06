@@ -90,7 +90,7 @@ publicなメソッドについては、ドキュメンテーションを記載�
 
 ## Commit Style
 1コミットあたりの情報は最小限としてください。
-コミットメッセージは変更の方向性を表す英語の動詞(add, remove, clean等)から始めることを推奨しています。
+コミットメッセージは[コンベンショナルコミット](https://www.conventionalcommits.org/ja/v1.0.0/)を採用することをを推奨しています。
 
 ## Branch Model
 [Git-flow](https://qiita.com/KosukeSone/items/514dd24828b485c69a05) を簡略化したものを使用します。
