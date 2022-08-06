@@ -30,18 +30,18 @@ trait System[F[_]] extends Subsystem[F] {
 
 object System {
 
+  import cats.implicits._
+
   def wired[F[_]: OnMinecraftServerThread: NonServerThreadContextShift: ConcurrentEffect]
-    : System[F] = {
+    : F[System[F]] = {
     implicit val gachaPersistence: JdbcGachaPrizeListPersistence[F, ItemStack] =
       new JdbcGachaPrizeListPersistence[F, ItemStack]()
     implicit val gachaTicketPersistence: JdbcGachaTicketFromAdminTeamGateway[F] =
       new JdbcGachaTicketFromAdminTeamGateway[F]
     implicit val gachaPrizeEncoder: GachaPrizeEncoder[ItemStack] = BukkitBuildGachaPrizeEncoder
 
-    new System[F] {
+    val system = new System[F] {
       override implicit val api: GachaAPI[F, ItemStack] = new GachaAPI[F, ItemStack] {
-
-        import cats.implicits._
 
         override protected implicit val _FSync: Sync[F] = implicitly[ConcurrentEffect[F]]
 
@@ -87,6 +87,8 @@ object System {
       )
       override val listeners: Seq[Listener] = Seq(new PlayerPullGachaListener[F]())
     }
+
+    system.api.load.map { _ => system }
   }
 
 }
