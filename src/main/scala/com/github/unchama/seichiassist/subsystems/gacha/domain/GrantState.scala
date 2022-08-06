@@ -4,10 +4,10 @@ sealed trait GrantState
 
 object GrantState {
 
-  case object grantedMineStack extends GrantState
+  case object GrantedMineStack extends GrantState
 
-  case object addedInventory extends GrantState
+  case object AddedInventory extends GrantState
 
-  case object dropped extends GrantState
+  case object Dropped extends GrantState
 
 }

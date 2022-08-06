@@ -31,9 +31,9 @@ class BukkitDrawGacha[F[_]: Sync](implicit gachaAPI: GachaAPI[F, ItemStack])
           val givenItem = gachaPrize.itemStack
 
           val additionalMessage = state match {
-            case GrantState.grantedMineStack =>
+            case GrantState.GrantedMineStack =>
               s"${AQUA}景品をマインスタックに収納しました。"
-            case GrantState.dropped =>
+            case GrantState.Dropped =>
               s"${AQUA}景品がドロップしました。"
             case _ =>
               ""

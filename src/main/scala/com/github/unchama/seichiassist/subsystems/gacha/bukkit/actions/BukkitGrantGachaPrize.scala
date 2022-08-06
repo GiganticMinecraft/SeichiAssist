@@ -22,11 +22,11 @@ class BukkitGrantGachaPrize[F[_]: Sync](gachaPrize: GachaPrize[ItemStack])
     item <- createNewItem(Some(player.getName))
   } yield {
     if (BreakUtil.tryAddItemIntoMineStack(player, item)) {
-      GrantState.grantedMineStack
+      GrantState.GrantedMineStack
     } else if (!InventoryOperations.isPlayerInventoryFull(player)) {
-      GrantState.addedInventory
+      GrantState.AddedInventory
     } else {
-      GrantState.dropped
+      GrantState.Dropped
     }
   }
 
