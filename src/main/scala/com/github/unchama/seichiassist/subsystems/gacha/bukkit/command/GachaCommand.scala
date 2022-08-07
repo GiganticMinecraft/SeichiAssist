@@ -8,7 +8,7 @@ import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.ParserResponse.{failWith, succeedWith}
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
-import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.minecraft.actions.{GetPlayerUUID, OnMinecraftServerThread}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.SeichiAssist.databaseGateway
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
@@ -22,7 +22,6 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.Gacha
   Regular
 }
 import com.github.unchama.seichiassist.subsystems.gacha.domain._
-import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.GlobalPlayerAccessor
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketFromAdminTeamGateway
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
@@ -35,7 +34,7 @@ import scala.util.chaining.scalaUtilChainingOps
 
 class GachaCommand[F[
   _
-]: OnMinecraftServerThread: NonServerThreadContextShift: Sync: ConcurrentEffect](
+]: OnMinecraftServerThread: NonServerThreadContextShift: Sync: ConcurrentEffect: GetPlayerUUID](
   implicit gachaTicketPersistence: GachaTicketFromAdminTeamGateway[F],
   gachaPersistence: GachaPrizeListPersistence[F, ItemStack],
   gachaAPI: GachaAPI[F, ItemStack]
@@ -145,12 +144,7 @@ class GachaCommand[F[
             value =>
               value.toLowerCase match {
                 case "all" => Some("all")
-                case _ =>
-                  val uuid = new GlobalPlayerAccessor[F].entries.toIO.unsafeRunSync().filter {
-                    case (uuid, _) => uuid.toString == value.toLowerCase
-                  }
-                  if (uuid.nonEmpty) Some(uuid.head._1.toString)
-                  else None
+                case _     => GetPlayerUUID[F].byPlayerName(value).toIO.unsafeRunSync()
               },
             MessageEffect("指定されたプレイヤー名が見つかりませんでした。")
           ),
@@ -167,7 +161,7 @@ class GachaCommand[F[
         } else {
           // Parserによりallじゃなかった場合はUUIDであることが確定している
           Kleisli
-            .liftF(gachaTicketPersistence.add(amount, UUID.fromString(args.head.toString)))
+            .liftF(gachaTicketPersistence.add(amount, args.head.asInstanceOf[UUID]))
             .flatMap(_ => MessageEffectF(s"${GREEN}ガチャ券${amount}枚加算成功"))
         }
       }
