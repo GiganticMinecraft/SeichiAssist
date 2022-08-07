@@ -4,14 +4,12 @@ import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.serialization.SerializeAndDeserialize
-import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.minecraft.actions.{GetPlayerUUID, OnMinecraftServerThread}
+import com.github.unchama.minecraft.bukkit.actions.GetBukkitPlayerUUID
 import com.github.unchama.minecraft.bukkit.algebra.BukkitItemStackSerializeAndDeserialize
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.{
-  BukkitGrantGachaPrize,
-  BukkitLotteryOfGachaItems
-}
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.{BukkitGrantGachaPrize, BukkitLotteryOfGachaItems}
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.command.GachaCommand
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.listeners.PlayerPullGachaListener
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{GachaPrize, GachaPrizeId}
@@ -37,6 +35,7 @@ object System {
       new JdbcGachaPrizeListPersistence[F, ItemStack]()
     implicit val gachaTicketPersistence: JdbcGachaTicketFromAdminTeamGateway[F] =
       new JdbcGachaTicketFromAdminTeamGateway[F]
+    implicit val getPlayerUUID: GetPlayerUUID[F] = new GetBukkitPlayerUUID[F]
 
     val system = new System[F] {
       override implicit val api: GachaAPI[F, ItemStack] = new GachaAPI[F, ItemStack] {
