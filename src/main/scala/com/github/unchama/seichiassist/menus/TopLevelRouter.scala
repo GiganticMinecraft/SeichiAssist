@@ -12,7 +12,8 @@ import com.github.unchama.seichiassist.menus.achievement.{
 }
 import com.github.unchama.seichiassist.menus.minestack.{
   CategorizedMineStackMenu,
-  MineStackMainMenu
+  MineStackMainMenu,
+  MineStackSelectItemColorMenu
 }
 import com.github.unchama.seichiassist.menus.ranking.{RankingMenu, RankingRootMenu}
 import com.github.unchama.seichiassist.menus.skill.{
@@ -37,6 +38,7 @@ import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.ranking.api.AssortedRankingApi
 import com.github.unchama.seichiassist.subsystems.ranking.domain.values.{LoginTime, VoteCount}
+import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
 import com.github.unchama.seichiassist.subsystems.subhome.SubHomeReadAPI
 import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.entity.Player
@@ -67,7 +69,8 @@ object TopLevelRouter {
     fourDimensionalPocketApi: FourDimensionalPocketApi[IO, Player],
     globalNotification: DiscordNotificationAPI[IO],
     subHomeReadApi: SubHomeReadAPI[IO],
-    enderChestAccessApi: AnywhereEnderChestAPI[IO]
+    enderChestAccessApi: AnywhereEnderChestAPI[IO],
+    sharedInventoryAPI: SharedInventoryAPI[IO, Player]
   ): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     import assortedRankingApi._
 
@@ -98,6 +101,9 @@ object TopLevelRouter {
       new AchievementGroupMenu.Environment
     implicit lazy val passiveSkillMenuEnv: PassiveSkillMenu.Environment =
       new PassiveSkillMenu.Environment
+    implicit lazy val mineStackSelectItemColorMenuEnv
+      : MineStackSelectItemColorMenu.Environment =
+      new MineStackSelectItemColorMenu.Environment
 
     implicit lazy val seichiRankingMenuEnv: RankingMenu[SeichiAmountData]#Environment =
       new RankingMenu.Environment
@@ -113,6 +119,8 @@ object TopLevelRouter {
 
     implicit lazy val stickMenuEnv: FirstPage.Environment = new FirstPage.Environment
 
+    implicit lazy val ioCanOpenSelectItemColorMenu: IO CanOpen MineStackSelectItemColorMenu =
+      _.open
     implicit lazy val ioCanOpenAchievementGroupMenu: IO CanOpen AchievementGroupMenu = _.open
     implicit lazy val ioCanOpenHomeConfirmationMenu
       : IO CanOpen HomeMenu.SubHomeChangeConfirmationMenu =

@@ -41,8 +41,7 @@ class EntityListener(
     }
 
     // もしサバイバルでなければ処理を終了
-    // もしフライ中なら終了
-    if ((player.getGameMode ne GameMode.SURVIVAL) || player.isFlying) return
+    if (player.getGameMode != GameMode.SURVIVAL) return
 
     // 壊されるブロックを取得
     val block =

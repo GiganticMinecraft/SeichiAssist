@@ -156,7 +156,7 @@ object VotingFairyListener {
       }
 
       // りんご所持数で値変更
-      val gachaimoObject = MineStackObjectList.findByName("gachaimo").get
+      val gachaimoObject = MineStackObjectList.findByName("gachaimo").unsafeRunSync().get
       val l = playerdata.minestack.getStackedAmountOf(gachaimoObject)
       if (m > l) {
         if (l == 0) {
@@ -183,7 +183,10 @@ object VotingFairyListener {
       // りんごを減らす
       playerdata
         .minestack
-        .subtractStackedAmountOf(MineStackObjectList.findByName("gachaimo").get, m)
+        .subtractStackedAmountOf(
+          MineStackObjectList.findByName("gachaimo").unsafeRunSync().get,
+          m
+        )
 
       // 減ったりんごの数をplayerdataに加算
       playerdata.p_apple += m

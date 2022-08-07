@@ -8,7 +8,6 @@ import com.github.unchama.seichiassist.data.RankData
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.database.{DatabaseConstants, DatabaseGateway}
 import com.github.unchama.seichiassist.task.{CoolDownTask, PlayerDataLoading}
-import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.util.ActionStatus
@@ -16,7 +15,6 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.bukkit.inventory.Inventory
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.sql.SQLException
@@ -140,7 +138,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     val executeQuery = IO {
       import scalikejdbc._
       DB.localTx { implicit session =>
-        sql"""update seichiassist set numofsorryforbug = numofsorryforbug + $num where name = $playerName"""
+        sql"""update playerdata set numofsorryforbug = numofsorryforbug + $num where name = $playerName"""
           .update()
           .apply()
       }
@@ -197,85 +195,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       return false
     }
     true
-  }
-
-  def saveSharedInventory(
-    player: Player,
-    serializedInventory: String
-  ): IO[ResponseEffectOrResult[Player, Unit]] = {
-    val assertSharedInventoryBeEmpty: EitherT[IO, TargetedEffect[CommandSender], Unit] =
-      for {
-        sharedInventorySerialized <- EitherT(loadShareInv(player))
-        _ <- EitherT.fromEither[IO] {
-          if (sharedInventorySerialized != null && sharedInventorySerialized != "")
-            Left(MessageEffect(s"${RED}既にアイテムが収納されています"))
-          else
-            Right(())
-        }
-      } yield ()
-
-    val writeInventoryData = IO {
-      // シリアル化されたインベントリデータを書き込む
-      val updateCommand =
-        s"UPDATE $tableReference SET shareinv = '$serializedInventory' WHERE uuid = '${player.getUniqueId}'"
-
-      if (gateway.executeUpdate(updateCommand) == ActionStatus.Fail) {
-        Bukkit.getLogger.warning(s"${player.getName} database failure.")
-        Left(MessageEffect(s"${RED}アイテムの収納に失敗しました"))
-      } else {
-        Right(())
-      }
-    }
-
-    for {
-      _ <- EitherT(checkInventoryOperationCoolDown(player))
-      _ <- assertSharedInventoryBeEmpty
-      _ <- EitherT(writeInventoryData)
-    } yield ()
-  }.value
-
-  def loadShareInv(player: Player): IO[ResponseEffectOrResult[CommandSender, String]] = {
-    val loadInventoryData: IO[Either[Nothing, String]] = EitherT
-      .right(IO {
-        val command =
-          s"SELECT shareinv FROM $tableReference WHERE uuid = '${player.getUniqueId}'"
-
-        gateway.executeQuery(command).recordIteration(_.getString("shareinv")).headOption.get
-      })
-      .value
-
-    for {
-      _ <- EitherT(checkInventoryOperationCoolDown(player))
-      serializedInventory <- EitherT(catchingDatabaseErrors(player.getName, loadInventoryData))
-    } yield serializedInventory
-  }.value
-
-  private def checkInventoryOperationCoolDown(
-    player: Player
-  ): IO[Either[TargetedEffect[CommandSender], Unit]] = {
-    val playerData = SeichiAssist.playermap(player.getUniqueId)
-    IO {
-      // 連打による負荷防止
-      if (!playerData.shareinvcooldownflag)
-        Left(MessageEffect(s"${RED}しばらく待ってからやり直してください"))
-      else {
-        new CoolDownTask(player, CoolDownTask.SHAREINV).runTaskLater(plugin, 200)
-        Right(())
-      }
-    }
-  }
-
-  def clearShareInv(
-    player: Player,
-    playerdata: PlayerData
-  ): IO[ResponseEffectOrResult[CommandSender, Unit]] = IO {
-    val command = s"UPDATE $tableReference SET shareinv = '' WHERE uuid = '${playerdata.uuid}'"
-
-    if (gateway.executeUpdate(command) == ActionStatus.Fail) {
-      Bukkit.getLogger.warning(s"${player.getName} sql failed. => clearShareInv")
-      Left(MessageEffect(s"${RED}アイテムのクリアに失敗しました"))
-    } else
-      Right(())
   }
 
   // TODO IO-nize
@@ -392,21 +311,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   def addAllPlayerBug(amount: Int): ActionStatus = {
     val command = s"update $tableReference set numofsorryforbug = numofsorryforbug + $amount"
     gateway.executeUpdate(command)
-  }
-
-  def selectPocketInventoryOf(
-    uuid: UUID
-  ): IO[ResponseEffectOrResult[CommandSender, Inventory]] = {
-    val command = s"select inventory from $tableReference where uuid = '$uuid'"
-
-    val executeQuery = IO {
-      gateway
-        .executeQuery(command)
-        .recordIteration { lrs => BukkitSerialization.fromBase64(lrs.getString("inventory")) }
-        .head
-    }
-
-    catchingDatabaseErrors(uuid.toString, EitherT.right(executeQuery).value)
   }
 
   private def catchingDatabaseErrors[R](

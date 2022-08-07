@@ -29,7 +29,6 @@ import org.bukkit.plugin.java.JavaPlugin
 
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.Duration
-import scala.math.BigDecimal
 
 object Config {
   def loadFrom(plugin: JavaPlugin): Config = { // config.ymlがない時にDefaultのファイルを生成
@@ -49,25 +48,13 @@ final class Config private (val config: FileConfiguration) {
 
   private def getDoubleFailFast(path: String) = config.getString(path).toDouble
 
-  def getMinuteMineSpeed: Double = getDoubleFailFast("minutespeedamount")
-
-  def getLoginPlayerMineSpeed: Double = getDoubleFailFast("onlineplayersamount")
-
-  def getGachaPresentInterval: Int = getIntFailFast("presentinterval")
-
   def getDualBreaklevel: Int = getIntFailFast("dualbreaklevel")
 
   def getMultipleIDBlockBreakLevel: Int = getIntFailFast("multipleidblockbreaklevel")
 
   def getDropExplevel(i: Int): Double = getDoubleFailFast("dropexplevel" + i)
 
-  def getPassivePortalInventorylevel: Int = getIntFailFast("passiveportalinventorylevel")
-
-  def getMineStacklevel(i: Int): Int = getIntFailFast("minestacklevel" + i)
-
   def getDB: String = config.getString("db")
-
-  def getTable: String = config.getString("table")
 
   def getID: String = config.getString("id")
 
@@ -94,8 +81,6 @@ final class Config private (val config: FileConfiguration) {
   def getSubHomeMax: Int = getIntFailFast("subhomemax")
 
   def getDebugMode: Int = getIntFailFast("debugmode")
-
-  def getMebiusDebug: Int = getIntFailFast("mebiusdebug")
 
   def rateGiganticToRingo: Int = getIntFailFast("rategigantictoringo")
 

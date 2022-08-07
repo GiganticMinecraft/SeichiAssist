@@ -5,10 +5,10 @@ import cats.implicits.toTraverseOps
 import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.menus.CommonButtons
-import com.github.unchama.seichiassist.minestack.MineStackObj
-import com.github.unchama.seichiassist.{MineStackObjectList, SkullOwners}
+import com.github.unchama.seichiassist.minestack.MineStackObjectWithColorVariants
 import eu.timepit.refined.auto._
 import org.bukkit.ChatColor.{BOLD, DARK_BLUE}
 import org.bukkit.entity.Player
@@ -21,7 +21,8 @@ object MineStackSelectItemColorMenu {
 
 }
 
-case class MineStackSelectItemColorMenu(mineStackObj: MineStackObj) extends Menu {
+case class MineStackSelectItemColorMenu(group: MineStackObjectWithColorVariants, oldPage: Int)
+    extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
 
@@ -33,18 +34,15 @@ case class MineStackSelectItemColorMenu(mineStackObj: MineStackObj) extends Menu
     player: Player
   )(implicit environment: MineStackSelectItemColorMenu.Environment): IO[MenuSlotLayout] = {
     import environment.canOpenCategorizedMineStackMenu
-    val buttonMapping = MineStackObjectList
-      .getColoredVariantsMineStackObjectsByRepresentative(mineStackObj)
-      .zipWithIndex
-      .map {
-        case (inListMineStackObj, index) =>
-          index -> MineStackButtons(player).getMineStackItemButtonOf(inListMineStackObj)
-      } ++ Seq(
+    val buttonMapping = (List(group.representative) ++ group.coloredVariants).zipWithIndex.map {
+      case (inListMineStackObj, index) =>
+        index -> MineStackButtons(player).getMineStackObjectButtonOf(inListMineStackObj)
+    } ++ List(
       ChestSlotRef(5, 0) -> IO(
         CommonButtons.transferButton(
           new SkullItemStackBuilder(SkullOwners.MHF_ArrowUp),
-          s"MineStack1ページ目へ",
-          CategorizedMineStackMenu(mineStackObj.stackType, 1)
+          s"MineStack${oldPage + 1}ページ目へ",
+          CategorizedMineStackMenu(group.category, oldPage)
         )
       )
     )
