@@ -18,6 +18,8 @@ chunk-search-command-base: "chunk-search-rs --protobuf --threads 12"
 
 # 色々な設定、説明は割愛
 defaultmineamount: '3'
+minutespeedamount: '0.01'
+onlineplayersamount: '0.5'
 dualbreaklevel: '10'
 trialbreaklevel: '20'
 explosionlevel: '30'

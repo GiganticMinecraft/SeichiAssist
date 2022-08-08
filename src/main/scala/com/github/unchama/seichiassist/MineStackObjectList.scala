@@ -121,7 +121,7 @@ object MineStackObjectList {
     materialMineStackObject(AGRICULTURAL, "sugar_cane", "サトウキビ", Material.SUGAR_CANE, 0),
     materialMineStackObject(AGRICULTURAL, "pumpkin", "カボチャ", Material.PUMPKIN, 0),
     materialMineStackObject(AGRICULTURAL, "ink_sack3", "カカオ豆", Material.INK_SACK, 3),
-    materialMineStackObject(AGRICULTURAL, "huge_mushroom_1", "キノコ", Material.HUGE_MUSHROOM_1,1),
+    materialMineStackObject(AGRICULTURAL, "huge_mushroom_1", "キノコ", Material.HUGE_MUSHROOM_1,0),
     materialMineStackObject(AGRICULTURAL, "huge_mushroom_2", "キノコ", Material.HUGE_MUSHROOM_2, 0),
     materialMineStackObject(AGRICULTURAL, "melon", "スイカ", Material.MELON, 0),
     materialMineStackObject(AGRICULTURAL, "melon_block", "スイカ", Material.MELON_BLOCK, 0),
