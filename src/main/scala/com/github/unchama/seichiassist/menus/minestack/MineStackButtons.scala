@@ -13,12 +13,13 @@ import com.github.unchama.seichiassist.MineStackObjectList.{
 }
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.minestack.{
-  MineStackObjectWithColorVariants,
   MineStackObject,
-  MineStackObjectCategory
+  MineStackObjectCategory,
+  MineStackObjectWithColorVariants
 }
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
 import com.github.unchama.targetedeffect
+import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
@@ -144,6 +145,8 @@ private[minestack] case class MineStackButtons(player: Player) {
             }
             (itemDetail ++ operationDetail).asJava
           }
+
+          setAmount(1)
         }
       }
     }
@@ -199,11 +202,13 @@ private[minestack] case class MineStackButtons(player: Player) {
             MineStackSelectItemColorMenu(mineStackObjectWithColorVariants, oldPage)
           )
       },
-      targetedeffect.UnfocusedEffect {
-        playerData
-          .hisotryData
-          .addHistory(getMineStackObjectFromMineStackObjectGroup(mineStackObjectGroup))
-      }
+      if (mineStackObjectGroup.isLeft)
+        targetedeffect.UnfocusedEffect {
+          playerData
+            .hisotryData
+            .addHistory(getMineStackObjectFromMineStackObjectGroup(mineStackObjectGroup))
+        }
+      else emptyEffect
     )
   }
 

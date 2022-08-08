@@ -39,13 +39,19 @@ object RegionMenu extends Menu {
     for {
       buttonToClaimRegion <- computeButtonToClaimRegion
     } yield {
-      menuinventory.MenuSlotLayout(
-        0 -> summonWandButton,
-        1 -> buttonToClaimRegion,
-        2 -> displayOpenerRegionButton,
-        3 -> openRegionGUIButton,
-        4 -> openGridRegionMenuButton
-      )
+      menuinventory
+        .MenuSlotLayout(
+          0 -> summonWandButton,
+          1 -> buttonToClaimRegion,
+          2 -> displayOpenerRegionButton,
+          4 -> openGridRegionMenuButton
+        )
+        .merge(
+          // ヴァルハラサーバー(`serverNum = 3`) では RegionGUI が利用できない (2022/08/06現在) ので表示しない
+          if (SeichiAssist.seichiAssistConfig.getServerNum != 3)
+            MenuSlotLayout(3 -> openRegionGUIButton)
+          else MenuSlotLayout.emptyLayout
+        )
     }
   }
 

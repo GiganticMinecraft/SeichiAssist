@@ -211,7 +211,6 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val managedFlySystem: subsystems.managedfly.System[SyncIO, IO] = {
     import PluginExecutionContexts.{asyncShift, cachedThreadPool, onMainThread}
 
-    implicit val effectEnvironment: DefaultEffectEnvironment.type = DefaultEffectEnvironment
     implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
 
     val configuration = subsystems
@@ -347,7 +346,6 @@ class SeichiAssist extends JavaPlugin() {
     : subsystems.discordnotification.System[IO] = {
     import PluginExecutionContexts.asyncShift
 
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
 
     subsystems
@@ -359,7 +357,6 @@ class SeichiAssist extends JavaPlugin() {
   lazy val subhomeSystem: subhome.System[IO] = {
     import PluginExecutionContexts.{asyncShift, onMainThread}
 
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     subhome.System.wired
   }
@@ -471,8 +468,6 @@ class SeichiAssist extends JavaPlugin() {
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
-    implicit val syncClock: Clock[SyncIO] = Clock.create[SyncIO]
-
     // チャンネルを追加
     Bukkit.getMessenger.registerOutgoingPluginChannel(this, "BungeeCord")
 
@@ -513,8 +508,8 @@ class SeichiAssist extends JavaPlugin() {
        */
       ClassUtils.withThreadContextClassLoaderAs(
         classOf[SeichiAssist].getClassLoader,
-        () =>
-          Flyway
+        () => {
+          val loadedFlyway = Flyway
             .configure
             .dataSource(getURL, getID, getPW)
             .baselineOnMigrate(true)
@@ -522,7 +517,10 @@ class SeichiAssist extends JavaPlugin() {
             .baselineVersion("1.0.0")
             .schemas("flyway_managed_schema")
             .load
-            .migrate
+
+          loadedFlyway.repair()
+          loadedFlyway.migrate
+        }
       )
     }
 
@@ -781,8 +779,6 @@ class SeichiAssist extends JavaPlugin() {
 }
 
 object SeichiAssist {
-  val SEICHIWORLDNAME = "world_sw"
-  val DEBUGWORLDNAME = "world"
   // Gachadataに依存するデータリスト
   val gachadatalist: mutable.ArrayBuffer[GachaPrize] = mutable.ArrayBuffer()
   // Playerdataに依存するデータリスト

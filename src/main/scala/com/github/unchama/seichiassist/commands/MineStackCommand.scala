@@ -10,8 +10,10 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.menus.minestack.CategorizedMineStackMenu
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
-import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
+import com.github.unchama.seichiassist.util.BreakUtil
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
+import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
+import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 
 object MineStackCommand {
@@ -22,7 +24,8 @@ object MineStackCommand {
       Map(
         "on" -> ChildExecutors.setAutoCollectionExecutor(true),
         "off" -> ChildExecutors.setAutoCollectionExecutor(false),
-        "open" -> ChildExecutors.openCategorizedMineStackMenu
+        "open" -> ChildExecutors.openCategorizedMineStackMenu,
+        "store-all" -> ChildExecutors.storeEverythingInInventory
       )
     ).asNonBlockingTabExecutor()
 
@@ -74,6 +77,28 @@ object MineStackCommand {
               )
             )
           )
+        }
+        .build()
+
+    def storeEverythingInInventory: ContextualExecutor =
+      playerCommandBuilder
+        .execution { context =>
+          IO {
+            val player = context.sender
+            val inventory = player.getInventory
+            SequentialEffect(
+              UnfocusedEffect {
+                inventory.getContents.toList.zipWithIndex.foreach {
+                  case (itemStack, index) =>
+                    if (
+                      itemStack != null && BreakUtil.tryAddItemIntoMineStack(player, itemStack)
+                    )
+                      inventory.clear(index)
+                }
+              },
+              MessageEffect(s"${YELLOW}インベントリの中身をすべてマインスタックに収納しました。")
+            )
+          }
         }
         .build()
 
