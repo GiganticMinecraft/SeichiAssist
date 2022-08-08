@@ -15,12 +15,6 @@ import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTempla
 import com.github.unchama.seichiassist.data.MineStackGachaData
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.BukkitGrantGachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity.{
-  Big,
-  Gigantic,
-  Potato,
-  Regular
-}
 import com.github.unchama.seichiassist.subsystems.gacha.domain._
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketFromAdminTeamGateway
 import com.github.unchama.targetedeffect.TargetedEffect
@@ -99,7 +93,6 @@ class GachaCommand[F[
         "clear" -> clear,
         "save" -> save,
         "reload" -> reload,
-        "demo" -> demo,
         "addms" -> addms,
         "addms2" -> addms2,
         "listms" -> listms,
@@ -342,40 +335,6 @@ class GachaCommand[F[
         } yield MessageEffect("ガチャデータをmysqlから読み込みました。")
 
         eff.toIO
-      }
-      .build()
-
-    val demo: ContextualExecutor = ContextualExecutorBuilder
-      .beginConfiguration()
-      .argumentsParsers(
-        List(Parsers.closedRangeInt(1, 1000000, MessageEffect("試行回数は1～100万回までで指定してください。")))
-      )
-      .execution { context =>
-        val numberOfTimes = context.args.parsed.head.asInstanceOf[Int]
-        val result = (0 to numberOfTimes).map { _ =>
-          val rand = Math.random()
-          if (rand < Gigantic.maxProbability.value) Gigantic
-          else if (rand < Big.maxProbability.value) Big
-          else if (rand < Regular.maxProbability.value) Regular
-          else Potato
-        }
-
-        val gigantic = result.count(_ == Gigantic)
-        val big = result.count(_ == Big)
-        val regular = result.count(_ == Regular)
-        val potato = result.count(_ == Potato)
-
-        IO(
-          MessageEffect(
-            List(
-              s"$AQUA${BOLD}ガチャ${numberOfTimes}回試行結果",
-              s"ギガンティック:${gigantic}回(${gigantic.asInstanceOf[Double] / numberOfTimes * 100.0}%)",
-              s"大当たり:${big}回(${big.asInstanceOf[Double] / numberOfTimes * 100.0}%)",
-              s"あたり:${regular}回(${regular.asInstanceOf[Double] / numberOfTimes * 100.0}%)",
-              s"ハズレ:${potato}回(${potato.asInstanceOf[Double] / numberOfTimes * 100.0}%)"
-            )
-          )
-        )
       }
       .build()
 
