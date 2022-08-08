@@ -144,6 +144,8 @@ private[minestack] case class MineStackButtons(player: Player) {
             }
             (itemDetail ++ operationDetail).asJava
           }
+
+          setAmount(1)
         }
       }
     }
