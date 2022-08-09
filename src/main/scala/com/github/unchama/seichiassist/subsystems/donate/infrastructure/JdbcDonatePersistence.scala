@@ -5,7 +5,9 @@ import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillPremiumEffe
 import com.github.unchama.seichiassist.subsystems.donate.domain.{
   DonatePersistence,
   DonatePremiumEffectPoint,
-  PlayerName
+  Obtained,
+  PlayerName,
+  PremiumEffectPurchaseData
 }
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
@@ -56,6 +58,21 @@ class JdbcDonatePersistence[F[_]: Sync] extends DonatePersistence[F] {
             .single()
             .apply()
         DonatePremiumEffectPoint(premiumEffectPointsOpt.get)
+      }
+    }
+
+  override def donatePremiumEffectPointPurchaseHistory(
+    uuid: UUID
+  ): F[Vector[PremiumEffectPurchaseData]] =
+    Sync[F].delay {
+      DB.readOnly { implicit session =>
+        sql"SELECT get_points,timestamp FROM donate_purchase_history WHERE uuid = ${uuid.toString}"
+          .map(rs =>
+            Obtained(DonatePremiumEffectPoint(rs.int("get_points")), rs.localDate("timestamp"))
+          )
+          .toList()
+          .apply()
+          .toVector
       }
     }
 
