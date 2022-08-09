@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.donate.infrastructure
 
 import cats.effect.Sync
+import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillPremiumEffect
 import com.github.unchama.seichiassist.subsystems.donate.domain.{
   DonatePersistence,
   DonatePremiumEffectPoint,
@@ -26,6 +27,15 @@ class JdbcDonatePersistence[F[_]: Sync] extends DonatePersistence[F] {
         .apply()
     }
   }
+
+  def useDonatePremiumEffectPoint(uuid: UUID, effect: ActiveSkillPremiumEffect): F[Unit] =
+    Sync[F].delay {
+      DB.localTx { implicit session =>
+        sql"INSERT INTO donate_usage_history (uuid, effect_name, use_points) VALUES (${uuid.toString}, ${effect.entryName}, ${effect.usePoint})"
+          .execute()
+          .apply()
+      }
+    }
 
   override def currentPremiumEffectPoints(uuid: UUID): F[DonatePremiumEffectPoint] =
     Sync[F].delay {
