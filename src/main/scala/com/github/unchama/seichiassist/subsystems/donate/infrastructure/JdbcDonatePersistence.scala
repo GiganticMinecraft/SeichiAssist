@@ -42,7 +42,7 @@ class JdbcDonatePersistence[F[_]: Sync] extends DonatePersistence[F] {
       DB.readOnly { implicit session =>
         val premiumEffectPointsOpt =
           sql"""SELECT
-               |   COALESCE(SUM(purchase_history.get_points), 0) - COALESCE(SUM(usage_history.use_points), 0) AS currentPremiumEffectPoints
+               |   COALESCE(SUM(purchase_history.get_points) - SUM(usage_history.use_points), 0) AS currentPremiumEffectPoints
                | FROM
                |   donate_usage_history usage_history
                | LEFT JOIN donate_purchase_history purchase_history ON
