@@ -15,8 +15,10 @@ class JdbcDonatePersistence[F[_]: Sync] extends DonatePersistence[F] {
     donatePremiumEffectPoint: DonatePremiumEffectPoint
   ): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      sql"""INSERT INTO donatedata (playername,getpoint,date) 
-           | VALUES (${playerName.name},${donatePremiumEffectPoint.value},NOW())"""
+      sql"""INSERT INTO donate_purchase_history 
+           | (uuid, get_points) 
+           | VALUES 
+           | (SELECT uuid FROM playerdata WHERE name = ${playerName.name}, ${donatePremiumEffectPoint.value})"""
         .stripMargin
         .execute()
         .apply()
