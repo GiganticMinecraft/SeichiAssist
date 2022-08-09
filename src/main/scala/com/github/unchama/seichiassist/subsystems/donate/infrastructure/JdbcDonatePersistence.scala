@@ -28,7 +28,10 @@ class JdbcDonatePersistence[F[_]: Sync] extends DonatePersistence[F] {
     }
   }
 
-  def useDonatePremiumEffectPoint(uuid: UUID, effect: ActiveSkillPremiumEffect): F[Unit] =
+  override def useDonatePremiumEffectPoint(
+    uuid: UUID,
+    effect: ActiveSkillPremiumEffect
+  ): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
         sql"INSERT INTO donate_usage_history (uuid, effect_name, use_points) VALUES (${uuid.toString}, ${effect.entryName}, ${effect.usePoint})"
