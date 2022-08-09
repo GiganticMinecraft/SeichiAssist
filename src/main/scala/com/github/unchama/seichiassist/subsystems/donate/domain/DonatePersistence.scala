@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.donate.domain
 
+import java.util.UUID
+
 trait DonatePersistence[F[_]] {
 
   /**
@@ -11,8 +13,8 @@ trait DonatePersistence[F[_]] {
   ): F[Unit]
 
   /**
-   * プレミアムエフェクト購入履歴を読み込む
+   * 現在のプレミアムエフェクトポイントの合計を取得する作用
    */
-  def loadPremiumEffectPurchaseHistory: F[Vector[PremiumEffectPurchaseData]]
+  def currentPremiumEffectPoints(uuid: UUID): F[DonatePremiumEffectPoint]
 
 }

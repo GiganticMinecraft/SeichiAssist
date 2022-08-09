@@ -8,6 +8,8 @@ import com.github.unchama.seichiassist.subsystems.donate.domain.{
 }
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
+import java.util.UUID
+
 class JdbcDonatePersistence[F[_]: Sync] extends DonatePersistence[F] {
 
   override def addDonatePremiumEffectPoint(
@@ -24,5 +26,24 @@ class JdbcDonatePersistence[F[_]: Sync] extends DonatePersistence[F] {
         .apply()
     }
   }
+
+  override def currentPremiumEffectPoints(uuid: UUID): F[DonatePremiumEffectPoint] =
+    Sync[F].delay {
+      DB.readOnly { implicit session =>
+        val premiumEffectPointsOpt =
+          sql"""SELECT
+               |   COALESCE(SUM(purchase_history.get_points), 0) - COALESCE(SUM(usage_history.use_points), 0) AS currentPremiumEffectPoints
+               | FROM
+               |   donate_usage_history usage_history
+               | LEFT JOIN donate_purchase_history purchase_history ON
+               |   usage_history.uuid = purchase_history.uuid
+               | WHERE usage_history.uuid = ${uuid.toString}"""
+            .stripMargin
+            .map(_.int("currentPremiumEffectPoints"))
+            .single()
+            .apply()
+        DonatePremiumEffectPoint(premiumEffectPointsOpt.get)
+      }
+    }
 
 }
