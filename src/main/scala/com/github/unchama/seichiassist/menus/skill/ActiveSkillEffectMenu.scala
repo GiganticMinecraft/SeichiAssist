@@ -184,7 +184,7 @@ object ActiveSkillEffectMenu extends Menu {
                       s"$RESET${GREEN}現在選択しているエフェクト：${playerData.skillEffectState.selection.nameOnUI}",
                       s"$RESET${YELLOW}使えるエフェクトポイント：${playerData.effectPoint}",
                       s"$RESET$DARK_GRAY※投票すると獲得できます",
-                      s"$RESET${LIGHT_PURPLE}使えるプレミアムポイント$premiumEffectPoint",
+                      s"$RESET${LIGHT_PURPLE}使えるプレミアムポイント${premiumEffectPoint.value}",
                       s"$RESET$DARK_GRAY※寄付をすると獲得できます"
                     )
                   )
