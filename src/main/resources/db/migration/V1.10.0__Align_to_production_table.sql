@@ -25,10 +25,10 @@
 # 2022/08/10 現在本番環境にも残っている。
 use seichiassist;
 
-alter table playerdata drop column areaflag;
-alter table playerdata drop column assaultareaflag;
-alter table playerdata drop column VotingFairyTime;
-alter table playerdata drop column subhome_name;
+alter table playerdata drop column if exists areaflag;
+alter table playerdata drop column if exists assaultareaflag;
+alter table playerdata drop column if exists VotingFairyTime;
+alter table playerdata drop column if exists subhome_name;
 
 # https://github.com/GiganticMinecraft/SeichiAssist/blob/5f6a83de44cdd3c19ae412348008c6530f98890a/src/com/github/unchama/seichiassist/Sql.java
 # の時点では build_count は double のはずであったが、
