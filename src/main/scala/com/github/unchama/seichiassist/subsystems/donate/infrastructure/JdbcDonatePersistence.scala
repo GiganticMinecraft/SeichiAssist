@@ -7,7 +7,8 @@ import com.github.unchama.seichiassist.subsystems.donate.domain.{
   DonatePremiumEffectPoint,
   Obtained,
   PlayerName,
-  PremiumEffectPurchaseData
+  PremiumEffectPurchaseData,
+  Used
 }
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
@@ -75,5 +76,23 @@ class JdbcDonatePersistence[F[_]: Sync] extends DonatePersistence[F] {
           .toVector
       }
     }
+
+  override def donatePremiumEffectPointUsageHistory(
+    uuid: UUID
+  ): F[Vector[PremiumEffectPurchaseData]] = Sync[F].delay {
+    DB.readOnly { implicit session =>
+      sql"SELECT effect_name, use_points, timestamp FROM donate_usage_history WHERE uuid = ${uuid.toString}"
+        .map(rs =>
+          Used(
+            DonatePremiumEffectPoint(rs.int("use_points")),
+            rs.localDate("timestamp"),
+            ActiveSkillPremiumEffect.withName(rs.string("effect_name"))
+          )
+        )
+        .toList()
+        .apply()
+        .toVector
+    }
+  }
 
 }
