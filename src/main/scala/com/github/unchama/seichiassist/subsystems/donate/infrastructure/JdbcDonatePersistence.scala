@@ -24,7 +24,7 @@ class JdbcDonatePersistence[F[_]: Sync] extends DonatePersistence[F] {
       sql"""INSERT INTO donate_purchase_history 
            | (uuid, get_points) 
            | VALUES 
-           | (SELECT uuid FROM playerdata WHERE name = ${playerName.name}, ${donatePremiumEffectPoint.value})"""
+           | ((SELECT uuid FROM playerdata WHERE name = ${playerName.name};), ${donatePremiumEffectPoint.value})"""
         .stripMargin
         .execute()
         .apply()
