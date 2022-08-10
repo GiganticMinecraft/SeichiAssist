@@ -9,10 +9,10 @@ import com.github.unchama.itemstackbuilder.{
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.subsystems.donate.DonateAPI
 import com.github.unchama.seichiassist.subsystems.donate.domain.{Obtained, Used}
-import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import net.md_5.bungee.api.ChatColor._
 import org.bukkit.ChatColor.{GOLD, GREEN, RESET}
 import org.bukkit.Material
@@ -53,19 +53,13 @@ case class PremiumPointTransactionHistoryMenu(pageNumber: Int) extends Menu {
     val uuid = player.getUniqueId
 
     for {
-      history <- SeichiAssist
-        .databaseGateway
-        .donateDataManipulator
-        .loadTransactionHistoryFor(player)
       purchaseHistory <- donateAPI.donatePremiumEffectPointPurchaseHistory(uuid)
       usageHistory <- donateAPI.donatePremiumEffectPointUsageHistory(uuid)
     } yield {
       val entriesPerPage = 3 * 9
+      val history = (purchaseHistory ++ usageHistory).toList.sortBy(_.timestamp)
       val slicedHistory =
-        (purchaseHistory ++ usageHistory)
-          .toList
-          .sortBy(_.timestamp)
-          .slice((pageNumber - 1) * entriesPerPage, pageNumber * entriesPerPage)
+        history.slice((pageNumber - 1) * entriesPerPage, pageNumber * entriesPerPage)
 
       val historySection =
         slicedHistory.zipWithIndex.map {
