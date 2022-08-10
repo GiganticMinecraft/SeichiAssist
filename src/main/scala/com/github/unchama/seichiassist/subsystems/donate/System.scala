@@ -23,13 +23,7 @@ object System {
     implicit val persistence: DonatePersistence[F] = new JdbcDonatePersistence[F]
 
     new System[F] {
-      override val api: DonateAPI[F] = new DonateAPI[F] {
-        override def addDonatePremiumEffectPoint(
-          playerName: PlayerName,
-          donatePremiumEffectPoint: DonatePremiumEffectPoint
-        ): F[Unit] =
-          persistence.addDonatePremiumEffectPoint(playerName, donatePremiumEffectPoint)
-      }
+      override val api: DonateAPI[F] = new DonateAPI[F] {}
 
       override val commands: Map[String, TabExecutor] = Map(
         "donation" -> new DonationCommand[F].executor
