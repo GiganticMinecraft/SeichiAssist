@@ -9,8 +9,9 @@ import com.github.unchama.itemstackbuilder.{
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
-import com.github.unchama.seichiassist.database.manipulators.DonateDataManipulator._
 import com.github.unchama.seichiassist.menus.CommonButtons
+import com.github.unchama.seichiassist.subsystems.donate.DonateAPI
+import com.github.unchama.seichiassist.subsystems.donate.domain.{Obtained, Used}
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import net.md_5.bungee.api.ChatColor._
 import org.bukkit.ChatColor.{GOLD, GREEN, RESET}
@@ -21,7 +22,8 @@ object PremiumPointTransactionHistoryMenu {
 
   class Environment(
     implicit val ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
-    val ioCanOpenTransactionHistoryMenu: IO CanOpen PremiumPointTransactionHistoryMenu
+    val ioCanOpenTransactionHistoryMenu: IO CanOpen PremiumPointTransactionHistoryMenu,
+    val donateAPI: DonateAPI[IO]
   )
 
 }
@@ -48,15 +50,22 @@ case class PremiumPointTransactionHistoryMenu(pageNumber: Int) extends Menu {
   ): IO[List[(Int, Button)]] = {
     import environment._
 
+    val uuid = player.getUniqueId
+
     for {
       history <- SeichiAssist
         .databaseGateway
         .donateDataManipulator
         .loadTransactionHistoryFor(player)
+      purchaseHistory <- donateAPI.donatePremiumEffectPointPurchaseHistory(uuid)
+      usageHistory <- donateAPI.donatePremiumEffectPointUsageHistory(uuid)
     } yield {
       val entriesPerPage = 3 * 9
       val slicedHistory =
-        history.slice((pageNumber - 1) * entriesPerPage, pageNumber * entriesPerPage)
+        (purchaseHistory ++ usageHistory)
+          .toList
+          .sortBy(_.timestamp)
+          .slice((pageNumber - 1) * entriesPerPage, pageNumber * entriesPerPage)
 
       val historySection =
         slicedHistory.zipWithIndex.map {
@@ -68,24 +77,20 @@ case class PremiumPointTransactionHistoryMenu(pageNumber: Int) extends Menu {
                     .title(s"$AQUA$UNDERLINE${BOLD}寄付")
                     .lore(
                       List(
-                        s"${RESET.toString}${GREEN}金額：${amount * 100}",
-                        s"$RESET${GREEN}プレミアムエフェクトポイント：+$amount",
+                        s"${RESET.toString}${GREEN}金額：${amount.value * 100}",
+                        s"$RESET${GREEN}プレミアムエフェクトポイント：+${amount.value}",
                         s"$RESET${GREEN}日時：$date"
                       )
                     )
                     .build()
                 case Used(amount, date, forPurchaseOf) =>
                   {
-                    forPurchaseOf match {
-                      case Left(unknownEffectName) =>
-                        new IconItemStackBuilder(Material.BEDROCK)
-                          .title(s"$RESET${YELLOW}購入エフェクト：未定義($unknownEffectName)")
-                      case Right(skill) =>
-                        new IconItemStackBuilder(skill.materialOnUI)
-                          .title(s"$RESET${YELLOW}購入エフェクト：${skill.nameOnUI}")
-                    }
-                  }.lore(s"$RESET${GOLD}プレミアムエフェクトポイント： -$amount", s"$RESET${GOLD}日時：$date")
-                    .build()
+                    new IconItemStackBuilder(forPurchaseOf.materialOnUI)
+                      .title(s"$RESET${YELLOW}購入エフェクト：${forPurchaseOf.nameOnUI}")
+                  }.lore(
+                    s"$RESET${GOLD}プレミアムエフェクトポイント： -${amount.value}",
+                    s"$RESET${GOLD}日時：$date"
+                  ).build()
               }
 
             (index, Button(itemStack, Nil))

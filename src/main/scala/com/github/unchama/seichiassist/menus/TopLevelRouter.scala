@@ -29,6 +29,7 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmount
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
+import com.github.unchama.seichiassist.subsystems.donate.DonateAPI
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
   FastDiggingEffectApi,
   FastDiggingSettingsApi
@@ -70,7 +71,8 @@ object TopLevelRouter {
     globalNotification: DiscordNotificationAPI[IO],
     subHomeReadApi: SubHomeReadAPI[IO],
     enderChestAccessApi: AnywhereEnderChestAPI[IO],
-    sharedInventoryAPI: SharedInventoryAPI[IO, Player]
+    sharedInventoryAPI: SharedInventoryAPI[IO, Player],
+    donateAPI: DonateAPI[IO]
   ): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     import assortedRankingApi._
 

@@ -16,10 +16,10 @@ import com.github.unchama.seichiassist.seichiskill.effect.{
   ActiveSkillPremiumEffect,
   UnlockableActiveSkillEffect
 }
+import com.github.unchama.seichiassist.subsystems.donate.DonateAPI
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import com.github.unchama.util.ActionStatus
 import net.md_5.bungee.api.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
@@ -35,7 +35,8 @@ object ActiveSkillEffectMenu extends Menu {
     implicit val ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
     val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type,
     val ioCanOpenTransactionHistoryMenu: IO CanOpen PremiumPointTransactionHistoryMenu,
-    val ioOnMainThread: OnMinecraftServerThread[IO]
+    val ioOnMainThread: OnMinecraftServerThread[IO],
+    val donateAPI: DonateAPI[IO]
   )
 
   override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}整地スキルエフェクト選択")
@@ -48,7 +49,9 @@ object ActiveSkillEffectMenu extends Menu {
     }
   }
 
-  def unlockOrSet(effect: ActiveSkillEffect): TargetedEffect[Player] = Kleisli { player =>
+  def unlockOrSet(
+    effect: ActiveSkillEffect
+  )(implicit donateAPI: DonateAPI[IO]): TargetedEffect[Player] = Kleisli { player =>
     val playerData = SeichiAssist.playermap(player.getUniqueId)
 
     def unlockNormalEffect(effect: ActiveSkillNormalEffect): IO[Unit] =
@@ -77,37 +80,26 @@ object ActiveSkillEffectMenu extends Menu {
 
     def unlockPremiumEffect(effect: ActiveSkillPremiumEffect): IO[Unit] =
       for {
-        premiumEffectPoint <- SeichiAssist
-          .databaseGateway
-          .donateDataManipulator
-          .currentPremiumPointFor(player)
+        premiumEffectPoint <- donateAPI.currentPremiumEffectPoints(player.getUniqueId)
         _ <-
-          if (premiumEffectPoint < effect.usePoint) {
+          if (premiumEffectPoint.value < effect.usePoint) {
             SequentialEffect(
               MessageEffect(s"${DARK_RED}プレミアムエフェクトポイントが足りません"),
               FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.5f)
             ).apply(player)
           } else {
             for {
-              transactionResult <- SeichiAssist
-                .databaseGateway
-                .donateDataManipulator
-                .recordPremiumEffectPurchase(player, effect)
-              _ <- transactionResult match {
-                case ActionStatus.Ok =>
-                  IO {
-                    val state = playerData.skillEffectState
-                    playerData.skillEffectState =
-                      state.copy(obtainedEffects = state.obtainedEffects + effect)
-                  } >> SequentialEffect(
-                    MessageEffect(
-                      s"${LIGHT_PURPLE}プレミアムエフェクト：${effect.nameOnUI}$RESET$LIGHT_PURPLE${BOLD}を解除しました"
-                    ),
-                    FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.2f)
-                  ).apply(player)
-                case ActionStatus.Fail =>
-                  MessageEffect("購入履歴が正しく記録されませんでした。管理者に報告してください。")(player)
-              }
+              _ <- donateAPI.useDonatePremiumEffectPoint(player.getUniqueId, effect)
+              _ <- IO {
+                val state = playerData.skillEffectState
+                playerData.skillEffectState =
+                  state.copy(obtainedEffects = state.obtainedEffects + effect)
+              } >> SequentialEffect(
+                MessageEffect(
+                  s"${LIGHT_PURPLE}プレミアムエフェクト：${effect.nameOnUI}$RESET$LIGHT_PURPLE${BOLD}を解除しました"
+                ),
+                FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.2f)
+              ).apply(player)
             } yield ()
           }
       } yield ()
@@ -178,10 +170,7 @@ object ActiveSkillEffectMenu extends Menu {
 
     val effectDataButton: IO[Button] =
       for {
-        premiumEffectPoint <- SeichiAssist
-          .databaseGateway
-          .donateDataManipulator
-          .currentPremiumPointFor(player)
+        premiumEffectPoint <- donateAPI.currentPremiumEffectPoints(player.getUniqueId)
         button <-
           IO {
             val playerData = SeichiAssist.playermap(getUniqueId)

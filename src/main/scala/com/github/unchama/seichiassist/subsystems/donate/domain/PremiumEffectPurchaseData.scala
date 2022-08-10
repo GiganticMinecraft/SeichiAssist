@@ -4,13 +4,13 @@ import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillPremiumEffe
 
 import java.time.LocalDate
 
-sealed trait PremiumEffectPurchaseData
+abstract class PremiumEffectPurchaseData(val timestamp: LocalDate)
 
 case class Obtained(effectPoint: DonatePremiumEffectPoint, purchaseDate: LocalDate)
-    extends PremiumEffectPurchaseData
+    extends PremiumEffectPurchaseData(purchaseDate)
 
 case class Used(
   usePoint: DonatePremiumEffectPoint,
   usedDate: LocalDate,
   forPurchaseOf: ActiveSkillPremiumEffect
-) extends PremiumEffectPurchaseData
+) extends PremiumEffectPurchaseData(usedDate)

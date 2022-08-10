@@ -63,6 +63,7 @@ import com.github.unchama.seichiassist.subsystems.breakcount.{BreakCountAPI, Bre
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
+import com.github.unchama.seichiassist.subsystems.donate.DonateAPI
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
   FastDiggingEffectApi,
@@ -383,6 +384,9 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val sharedInventorySystem: subsystems.sharedinventory.System[IO] =
     subsystems.sharedinventory.System.wired[IO]
 
+  private lazy val donateSystem: subsystems.donate.System[IO] =
+    subsystems.donate.System.wired[IO]
+
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
     expBottleStackSystem,
@@ -403,7 +407,8 @@ class SeichiAssist extends JavaPlugin() {
     subhomeSystem,
     presentSystem,
     anywhereEnderSystem,
-    sharedInventorySystem
+    sharedInventorySystem,
+    donateSystem
   )
 
   private lazy val buildAssist: BuildAssist = {
@@ -562,6 +567,7 @@ class SeichiAssist extends JavaPlugin() {
       anywhereEnderSystem.accessApi
     implicit val sharedInventoryAPI: SharedInventoryAPI[IO, Player] =
       sharedInventorySystem.api
+    implicit val donateAPI: DonateAPI[IO] = donateSystem.api
 
     val menuRouter = TopLevelRouter.apply
     import menuRouter.{canOpenStickMenu, ioCanOpenCategorizedMineStackMenu}
