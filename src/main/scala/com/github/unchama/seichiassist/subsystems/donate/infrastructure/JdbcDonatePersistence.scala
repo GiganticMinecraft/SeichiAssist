@@ -24,7 +24,7 @@ class JdbcDonatePersistence[F[_]: Sync] extends DonatePersistence[F] {
       sql"""INSERT INTO donate_purchase_history 
            | (uuid, get_points) 
            | VALUES 
-           | ((SELECT uuid FROM playerdata WHERE name = ${playerName.name};), ${donatePremiumEffectPoint.value})"""
+           | ((SELECT uuid FROM playerdata WHERE name = ${playerName.name}), ${donatePremiumEffectPoint.value})"""
         .stripMargin
         .execute()
         .apply()
@@ -47,17 +47,12 @@ class JdbcDonatePersistence[F[_]: Sync] extends DonatePersistence[F] {
     Sync[F].delay {
       DB.readOnly { implicit session =>
         val premiumEffectPointsOpt =
-          sql"""SELECT
-               |   COALESCE(SUM(purchase_history.get_points) - SUM(usage_history.use_points), 0) AS currentPremiumEffectPoints
-               | FROM
-               |   donate_usage_history usage_history
-               | LEFT JOIN donate_purchase_history purchase_history ON
-               |   usage_history.uuid = purchase_history.uuid
-               | WHERE usage_history.uuid = ${uuid.toString}"""
-            .stripMargin
-            .map(_.int("currentPremiumEffectPoints"))
-            .single()
-            .apply()
+          sql"""SELECT (
+               | SELECT COALESCE(SUM(get_points), 0) AS sum_get_points FROM donate_purchase_history
+               | WHERE uuid = ${uuid.toString}) - (
+               | SELECT COALESCE(SUM(use_points), 0) AS sum_use_points FROM donate_usage_history 
+               | WHERE uuid = ${uuid.toString}) AS currentPremiumEffectPoints
+             """.stripMargin.map(_.int("currentPremiumEffectPoints")).single().apply()
         DonatePremiumEffectPoint(premiumEffectPointsOpt.get)
       }
     }
