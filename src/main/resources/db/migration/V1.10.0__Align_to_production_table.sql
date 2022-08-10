@@ -23,6 +23,8 @@
 # https://github.com/GiganticMinecraft/SeichiAssist/blob/5f6a83de44cdd3c19ae412348008c6530f98890a/src/com/github/unchama/seichiassist/Sql.java
 # の時点で存在していなかったが playerdata テーブルに残っていたカラム。
 # 2022/08/10 現在本番環境にも残っている。
+use seichiassist;
+
 alter table playerdata drop column areaflag;
 alter table playerdata drop column assaultareaflag;
 alter table playerdata drop column VotingFairyTime;
