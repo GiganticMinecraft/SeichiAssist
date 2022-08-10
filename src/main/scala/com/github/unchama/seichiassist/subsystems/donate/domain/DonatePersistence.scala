@@ -29,4 +29,9 @@ trait DonatePersistence[F[_]] {
    */
   def donatePremiumEffectPointPurchaseHistory(uuid: UUID): F[Vector[PremiumEffectPurchaseData]]
 
+  /**
+   * プレミアムエフェクトの使用履歴を取得する作用
+   */
+  def donatePremiumEffectPointUsageHistory(uuid: UUID): F[Vector[PremiumEffectPurchaseData]]
+
 }
