@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.gacha
 
-import cats.effect.Sync
+import cats.Functor
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{GachaPrize, GachaPrizeId}
 
@@ -26,7 +26,7 @@ trait GachaReadAPI[F[_], ItemStack] {
 
   import cats.implicits._
 
-  protected implicit val _FSync: Sync[F]
+  protected implicit val _FFunctor: Functor[F]
 
   /**
    * ガチャの景品リストを返す
