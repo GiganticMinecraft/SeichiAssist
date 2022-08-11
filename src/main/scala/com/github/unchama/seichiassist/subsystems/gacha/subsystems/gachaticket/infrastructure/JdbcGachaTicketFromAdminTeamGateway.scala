@@ -14,7 +14,7 @@ class JdbcGachaTicketFromAdminTeamGateway[F[_]: Sync: NonServerThreadContextShif
   /**
    * 現在データベース中にある全プレイヤーの「運営からのガチャ券」の枚数を増加させる作用
    */
-  override def add(amount: Int): F[Unit] = {
+  override def addToAllKnownPlayers(amount: Int): F[Unit] = {
     NonServerThreadContextShift[F].shift >> Sync[F].delay[Unit] {
       DB.localTx { implicit session =>
         sql"update playerdata set numofsorryforbug = numofsorryforbug + $amount"

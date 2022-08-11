@@ -7,7 +7,7 @@ trait GachaTicketFromAdminTeamGateway[F[_]] {
   /**
    * 現在データベース中にある全プレイヤーの「運営からのガチャ券」の枚数を増加させる作用
    */
-  def add(amount: Int): F[Unit]
+  def addToAllKnownPlayers(amount: Int): F[Unit]
 
   /**
    * 指定されたプレイヤー名の「運営からのガチャ券」の枚数を増加させる作用

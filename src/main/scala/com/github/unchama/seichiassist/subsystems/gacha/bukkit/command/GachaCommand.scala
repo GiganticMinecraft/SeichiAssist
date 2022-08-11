@@ -142,7 +142,7 @@ class GachaCommand[F[
         args.head.toString match {
           case "all" =>
             Kleisli
-              .liftF(gachaTicketPersistence.add(amount))
+              .liftF(gachaTicketPersistence.addToAllKnownPlayers(amount))
               .flatMap(_ => MessageEffectF(s"${GREEN}全プレイヤーへガチャ券${amount}枚加算成功"))
           case name =>
             Kleisli
