@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.gacha
 
+import cats.Functor
 import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.concurrent.NonServerThreadContextShift
@@ -41,7 +42,7 @@ object System {
     val system = new System[F] {
       override implicit val api: GachaAPI[F, ItemStack] = new GachaAPI[F, ItemStack] {
 
-        override protected implicit val _FSync: Sync[F] = implicitly[ConcurrentEffect[F]]
+        override protected implicit val _FFunctor: Functor[F] = implicitly[ConcurrentEffect[F]]
 
         override def load: F[Unit] = gachaPersistence.list.flatMap { gachaPrizes =>
           gachaPrizesListRepository.set(gachaPrizes)
