@@ -1,6 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain
 
-import com.github.unchama.seichiassist.subsystems.gacha.domain.PlayerName
+import com.github.unchama.seichiassist.subsystems.gacha.domain.{
+  PlayerName,
+  ReceiptResultOfGachaTicketFromAdminTeam
+}
 
 trait GachaTicketFromAdminTeamRepository[F[_]] {
 
@@ -12,6 +15,6 @@ trait GachaTicketFromAdminTeamRepository[F[_]] {
   /**
    * 指定されたプレイヤー名の「運営からのガチャ券」の枚数を増加させる作用
    */
-  def add(amount: Int, playerName: PlayerName): F[Unit]
+  def add(amount: Int, playerName: PlayerName): F[ReceiptResultOfGachaTicketFromAdminTeam]
 
 }

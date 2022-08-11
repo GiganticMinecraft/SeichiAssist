@@ -28,9 +28,9 @@ import scala.util.chaining.scalaUtilChainingOps
 class GachaCommand[F[
   _
 ]: OnMinecraftServerThread: NonServerThreadContextShift: Sync: ConcurrentEffect](
-                                                                                                     implicit gachaTicketPersistence: GachaTicketFromAdminTeamRepository[F],
-                                                                                                     gachaPersistence: GachaPrizeListPersistence[F, ItemStack],
-                                                                                                     gachaAPI: GachaAPI[F, ItemStack]
+  implicit gachaTicketPersistence: GachaTicketFromAdminTeamRepository[F],
+  gachaPersistence: GachaPrizeListPersistence[F, ItemStack],
+  gachaAPI: GachaAPI[F, ItemStack]
 ) {
 
   import cats.implicits._
@@ -146,8 +146,17 @@ class GachaCommand[F[
               .flatMap(_ => MessageEffectF(s"${GREEN}全プレイヤーへガチャ券${amount}枚加算成功"))
           case name =>
             Kleisli
-              .liftF(gachaTicketPersistence.add(amount, PlayerName(name)))
-              .flatMap(_ => MessageEffectF(s"${GREEN}ガチャ券${amount}枚加算成功"))
+              .liftF[F, CommandSender, ReceiptResultOfGachaTicketFromAdminTeam](
+                gachaTicketPersistence.add(amount, PlayerName(name))
+              )
+              .flatMap {
+                case ReceiptResultOfGachaTicketFromAdminTeam.Success =>
+                  MessageEffectF(s"${GREEN}ガチャ券${amount}枚加算成功")
+                case ReceiptResultOfGachaTicketFromAdminTeam.NotExists =>
+                  MessageEffectF(s"${RED}プレイヤーが存在しません。")
+                case ReceiptResultOfGachaTicketFromAdminTeam.MultipleFounds =>
+                  MessageEffectF(s"${RED}該当プレイヤーが複数見つかりました。")
+              }
         }
       }
       .build()
