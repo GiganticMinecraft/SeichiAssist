@@ -37,7 +37,6 @@ object System {
       new JdbcGachaPrizeListPersistence[F, ItemStack]()
     implicit val gachaTicketPersistence: JdbcGachaTicketFromAdminTeamRepository[F] =
       new JdbcGachaTicketFromAdminTeamRepository[F]
-    implicit val getPlayerUUID: GetPlayerUUID[F] = new GetBukkitPlayerUUID[F]
 
     val system = new System[F] {
       override implicit val api: GachaAPI[F, ItemStack] = new GachaAPI[F, ItemStack] {
@@ -60,10 +59,6 @@ object System {
           _ <- replace(prizes.diff(targetPrize))
         } yield ()
 
-        /**
-         * `GachaPrize`を追加する。
-         * `GachaPrizeId`を与えなかった場合は最大`GachaPrizeId`の次の値が指定されます
-         */
         override def addGachaPrize(gachaPrize: GachaPrizeId => GachaPrize[ItemStack]): F[Unit] =
           for {
             prizes <- list
@@ -73,13 +68,13 @@ object System {
             _ <- replace(newList)
           } yield ()
 
-        override protected val gachaPrizesListRepository
-          : Ref[F, Vector[GachaPrize[ItemStack]]] =
+        protected val gachaPrizesListRepository: Ref[F, Vector[GachaPrize[ItemStack]]] =
           Ref.unsafe[F, Vector[GachaPrize[ItemStack]]](Vector.empty)
 
         override val grantGachaPrize: GachaPrize[ItemStack] => GrantGachaPrize[F, ItemStack] =
           new BukkitGrantGachaPrize[F](_)
 
+        override def list: F[Vector[GachaPrize[ItemStack]]] = gachaPrizesListRepository.get
       }
       override val commands: Map[String, TabExecutor] = Map(
         "gacha" -> new GachaCommand[F]().executor

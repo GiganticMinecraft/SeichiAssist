@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.gacha
 
 import cats.effect.Sync
-import cats.effect.concurrent.Ref
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{GachaPrize, GachaPrizeId}
 
@@ -30,14 +29,9 @@ trait GachaReadAPI[F[_], ItemStack] {
   protected implicit val _FSync: Sync[F]
 
   /**
-   * ガチャの景品リスト用のリポジトリ
-   */
-  protected val gachaPrizesListRepository: Ref[F, Vector[GachaPrize[ItemStack]]]
-
-  /**
    * ガチャの景品リストを返す
    */
-  final def list: F[Vector[GachaPrize[ItemStack]]] = gachaPrizesListRepository.get
+  def list: F[Vector[GachaPrize[ItemStack]]]
 
   /**
    * [[GachaPrizeId]]に対応する[[GachaPrize]]を取得する
