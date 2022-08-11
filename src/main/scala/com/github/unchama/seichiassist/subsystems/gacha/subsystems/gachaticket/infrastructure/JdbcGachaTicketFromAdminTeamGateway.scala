@@ -14,8 +14,8 @@ class JdbcGachaTicketFromAdminTeamGateway[F[_]: Sync: NonServerThreadContextShif
   /**
    * 現在データベース中にある全プレイヤーの「運営からのガチャ券」の枚数を増加させる作用
    */
-  override def add(amount: Int): F[Boolean] = {
-    NonServerThreadContextShift[F].shift >> Sync[F].delay {
+  override def add(amount: Int): F[Unit] = {
+    NonServerThreadContextShift[F].shift >> Sync[F].delay[Unit] {
       DB.localTx { implicit session =>
         sql"update playerdata set numofsorryforbug = numofsorryforbug + $amount"
           .execute()
@@ -27,8 +27,8 @@ class JdbcGachaTicketFromAdminTeamGateway[F[_]: Sync: NonServerThreadContextShif
   /**
    * 指定されたUUIDのプレイヤーの「運営からのガチャ券」の枚数を増加させる作用
    */
-  override def add(amount: Int, playerName: PlayerName): F[Boolean] = {
-    NonServerThreadContextShift[F].shift >> Sync[F].delay {
+  override def add(amount: Int, playerName: PlayerName): F[Unit] = {
+    NonServerThreadContextShift[F].shift >> Sync[F].delay[Unit] {
       DB.localTx { implicit session =>
         sql"update playerdata set numofsorryforbug = numofsorryforbug + $amount where playername = ${playerName.name}"
           .execute()
