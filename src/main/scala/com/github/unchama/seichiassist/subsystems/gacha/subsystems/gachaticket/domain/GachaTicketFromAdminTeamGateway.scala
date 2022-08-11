@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain
 
-import java.util.UUID
+import com.github.unchama.seichiassist.subsystems.gacha.domain.PlayerName
 
 trait GachaTicketFromAdminTeamGateway[F[_]] {
 
@@ -10,8 +10,8 @@ trait GachaTicketFromAdminTeamGateway[F[_]] {
   def add(amount: Int): F[Boolean]
 
   /**
-   * 指定されたUUIDのプレイヤーの「運営からのガチャ券」の枚数を増加させる作用
+   * 指定されたプレイヤー名の「運営からのガチャ券」の枚数を増加させる作用
    */
-  def add(amount: Int, uuid: UUID): F[Boolean]
+  def add(amount: Int, playerName: PlayerName): F[Boolean]
 
 }

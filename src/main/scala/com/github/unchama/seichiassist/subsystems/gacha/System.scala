@@ -5,7 +5,6 @@ import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.serialization.SerializeAndDeserialize
 import com.github.unchama.minecraft.actions.{GetPlayerUUID, OnMinecraftServerThread}
-import com.github.unchama.minecraft.bukkit.actions.GetBukkitPlayerUUID
 import com.github.unchama.minecraft.bukkit.algebra.BukkitItemStackSerializeAndDeserialize
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
