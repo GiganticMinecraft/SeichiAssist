@@ -3,11 +3,11 @@ package com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.
 import cats.effect.Sync
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.seichiassist.subsystems.gacha.domain.PlayerName
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketFromAdminTeamGateway
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketFromAdminTeamRepository
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
-class JdbcGachaTicketFromAdminTeamGateway[F[_]: Sync: NonServerThreadContextShift]
-    extends GachaTicketFromAdminTeamGateway[F] {
+class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextShift]
+    extends GachaTicketFromAdminTeamRepository[F] {
 
   import cats.implicits._
 

@@ -16,7 +16,7 @@ import com.github.unchama.seichiassist.data.MineStackGachaData
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.BukkitGrantGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain._
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketFromAdminTeamGateway
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketFromAdminTeamRepository
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
 import org.bukkit.ChatColor._
@@ -28,9 +28,9 @@ import scala.util.chaining.scalaUtilChainingOps
 class GachaCommand[F[
   _
 ]: OnMinecraftServerThread: NonServerThreadContextShift: Sync: ConcurrentEffect](
-  implicit gachaTicketPersistence: GachaTicketFromAdminTeamGateway[F],
-  gachaPersistence: GachaPrizeListPersistence[F, ItemStack],
-  gachaAPI: GachaAPI[F, ItemStack]
+                                                                                                     implicit gachaTicketPersistence: GachaTicketFromAdminTeamRepository[F],
+                                                                                                     gachaPersistence: GachaPrizeListPersistence[F, ItemStack],
+                                                                                                     gachaAPI: GachaAPI[F, ItemStack]
 ) {
 
   import cats.implicits._

@@ -16,7 +16,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.bukkit.command.GachaComm
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.listeners.PlayerPullGachaListener
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{GachaPrize, GachaPrizeId}
 import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.JdbcGachaPrizeListPersistence
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.infrastructure.JdbcGachaTicketFromAdminTeamGateway
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.infrastructure.JdbcGachaTicketFromAdminTeamRepository
 import org.bukkit.command.TabExecutor
 import org.bukkit.event.Listener
 import org.bukkit.inventory.ItemStack
@@ -35,8 +35,8 @@ object System {
       BukkitItemStackSerializeAndDeserialize.instance
     implicit val gachaPersistence: JdbcGachaPrizeListPersistence[F, ItemStack] =
       new JdbcGachaPrizeListPersistence[F, ItemStack]()
-    implicit val gachaTicketPersistence: JdbcGachaTicketFromAdminTeamGateway[F] =
-      new JdbcGachaTicketFromAdminTeamGateway[F]
+    implicit val gachaTicketPersistence: JdbcGachaTicketFromAdminTeamRepository[F] =
+      new JdbcGachaTicketFromAdminTeamRepository[F]
     implicit val getPlayerUUID: GetPlayerUUID[F] = new GetBukkitPlayerUUID[F]
 
     val system = new System[F] {
