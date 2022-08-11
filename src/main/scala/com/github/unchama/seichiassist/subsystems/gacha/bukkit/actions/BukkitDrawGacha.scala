@@ -1,11 +1,15 @@
 package com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions
 
-import cats.effect.Sync
+import cats.effect.{IO, Sync}
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.DrawGacha
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity
-import com.github.unchama.seichiassist.subsystems.gacha.domain.GrantState
+import com.github.unchama.seichiassist.subsystems.gacha.domain.{
+  CanBeSignedAsGachaPrize,
+  GrantState
+}
 import com.github.unchama.seichiassist.util.SendMessageEffect.sendMessageToEveryone
 import com.github.unchama.seichiassist.util._
 import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
@@ -14,17 +18,22 @@ import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-class BukkitDrawGacha[F[_]: Sync](implicit gachaAPI: GachaAPI[F, ItemStack])
-    extends DrawGacha[F, Player] {
+class BukkitDrawGacha[F[_]: Sync: OnMinecraftServerThread](
+  implicit gachaAPI: GachaAPI[F, ItemStack],
+  canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
+) extends DrawGacha[F, Player] {
 
   import cats.implicits._
+  import PlayerSendable._
 
   import scala.jdk.CollectionConverters._
 
   override def draw(player: Player, amount: Int): F[Unit] = {
     for {
       gachaPrizes <- gachaAPI.runLottery(amount)
-      states <- gachaPrizes.traverse(new BukkitGrantGachaPrize(_).grantGachaPrize(player))
+      states <- gachaPrizes.traverse(gachaPrize =>
+        new BukkitGrantGachaPrize().grantGachaPrize(gachaPrize)(player)
+      )
     } yield {
       (gachaPrizes zip states).foreach {
         case (gachaPrize, state) =>
@@ -73,8 +82,8 @@ class BukkitDrawGacha[F[_]: Sync](implicit gachaAPI: GachaAPI[F, ItemStack])
               }
             player.sendMessage(s"${RED}おめでとう！！！！！Gigantic☆大当たり！$additionalMessage")
             player.spigot().sendMessage(message)
-            sendMessageToEveryone(s"$GOLD${player.getName}がガチャでGigantic☆大当たり！")
-            sendMessageToEveryone(message)
+            sendMessageToEveryone(s"$GOLD${player.getName}がガチャでGigantic☆大当たり！")(forString[IO])
+            sendMessageToEveryone(message)(forTextComponent[IO])
             SendSoundEffect.sendEverySoundWithoutIgnore(
               Sound.ENTITY_ENDERDRAGON_DEATH,
               0.5f,

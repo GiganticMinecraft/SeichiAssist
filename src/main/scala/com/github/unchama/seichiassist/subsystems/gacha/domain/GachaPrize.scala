@@ -10,4 +10,13 @@ case class GachaPrize[ItemStack](
   probability: GachaProbability,
   hasOwner: Boolean,
   id: GachaPrizeId
-)
+) {
+
+  def materializeWithOwnerSignature(
+    ownerName: String
+  )(implicit sign: CanBeSignedAsGachaPrize[ItemStack]): ItemStack = {
+    if (hasOwner) sign.signWith(ownerName)(this.itemStack)
+    else this.itemStack
+  }
+
+}

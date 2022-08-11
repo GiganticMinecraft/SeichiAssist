@@ -4,6 +4,7 @@ import cats.effect.ConcurrentEffect
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaprizefactory.bukkit.StaticGachaPrizeFactory
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.subsystems.gttosiina.bukkit.actions.BukkitTrade
 import com.github.unchama.seichiassist.util.InventoryOperations
@@ -15,8 +16,10 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 
-class GtToSiinaringo[F[_]: ConcurrentEffect](implicit gachaAPI: GachaAPI[F, ItemStack])
-    extends Listener {
+class GtToSiinaringo[F[_]: ConcurrentEffect](
+  implicit gachaAPI: GachaAPI[F, ItemStack],
+  canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
+) extends Listener {
 
   @EventHandler
   def onGachaRingoEvent(event: InventoryCloseEvent): Unit = {

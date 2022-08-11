@@ -6,6 +6,7 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.BukkitDrawGacha
+import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util._
 import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
@@ -17,7 +18,8 @@ import org.bukkit.inventory.{EquipmentSlot, ItemStack}
 import org.bukkit.{GameMode, Material}
 
 class PlayerPullGachaListener[F[_]: ConcurrentEffect: OnMinecraftServerThread](
-  implicit gachaAPI: GachaAPI[F, ItemStack]
+  implicit gachaAPI: GachaAPI[F, ItemStack],
+  canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
 ) extends Listener {
 
   @EventHandler

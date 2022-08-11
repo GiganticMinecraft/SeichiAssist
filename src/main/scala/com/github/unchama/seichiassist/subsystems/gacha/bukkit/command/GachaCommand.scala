@@ -31,7 +31,8 @@ class GachaCommand[F[
 ]: OnMinecraftServerThread: NonServerThreadContextShift: Sync: ConcurrentEffect](
   implicit gachaTicketPersistence: GachaTicketFromAdminTeamRepository[F],
   gachaPersistence: GachaPrizeListPersistence[F, ItemStack],
-  gachaAPI: GachaAPI[F, ItemStack]
+  gachaAPI: GachaAPI[F, ItemStack],
+  canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
 ) {
 
   import cats.implicits._
@@ -175,7 +176,7 @@ class GachaCommand[F[
             gachaPrize <- gachaAPI.gachaPrize(
               GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
             )
-            _ <- new BukkitGrantGachaPrize[F](gachaPrize.get).grantGachaPrize(context.sender)
+            _ <- new BukkitGrantGachaPrize[F]().grantGachaPrize(gachaPrize.get)(context.sender)
           } yield MessageEffect("ガチャアイテムを付与しました。")
 
           eff.toIO

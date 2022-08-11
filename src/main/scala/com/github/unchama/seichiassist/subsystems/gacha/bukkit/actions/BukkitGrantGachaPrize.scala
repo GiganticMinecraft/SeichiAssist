@@ -1,39 +1,45 @@
 package com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions
 
+import cats.Monad
+import cats.data.Kleisli
 import cats.effect.Sync
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.domain.{GachaPrize, GrantState}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.{
+  CanBeSignedAsGachaPrize,
+  GachaPrize,
+  GrantState
+}
 import com.github.unchama.seichiassist.util.{BreakUtil, InventoryOperations}
-import com.github.unchama.util.bukkit.ItemStackUtil.appendOwnerInformation
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-class BukkitGrantGachaPrize[F[_]: Sync](gachaPrize: GachaPrize[ItemStack])
-    extends GrantGachaPrize[F, ItemStack] {
+class BukkitGrantGachaPrize[F[_]: Sync: OnMinecraftServerThread](
+  implicit canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
+) extends GrantGachaPrize[F, ItemStack] {
 
-  import cats.implicits._
-
-  /**
-   * GachaPrizeをPlayerに付与します。
-   * まずMineStackに入るかどうか検証し、
-   * 入らなければプレイヤーに直接付与します
-   */
-  def grantGachaPrize(player: Player): F[GrantState] = for {
-    item <- createNewItem(Some(player.getName))
-  } yield {
-    if (BreakUtil.tryAddItemIntoMineStack(player, item)) {
-      GrantState.GrantedMineStack
-    } else if (!InventoryOperations.isPlayerInventoryFull(player)) {
-      GrantState.AddedInventory
-    } else {
-      GrantState.Dropped
+  override def tryInsertIntoMineStack(
+    prize: GachaPrize[ItemStack]
+  ): Kleisli[F, Player, Boolean] =
+    Kleisli { player =>
+      Sync[F].delay { BreakUtil.tryAddItemIntoMineStack(player, prize.itemStack) }
     }
-  }
 
-  def createNewItem(owner: Option[String]): F[ItemStack] = Sync[F].delay {
-    if (gachaPrize.hasOwner && owner.nonEmpty)
-      appendOwnerInformation(owner.get)(gachaPrize.itemStack)
-    else gachaPrize.itemStack
-  }
+  override def insertIntoPlayerInventoryOrDrop(
+    prize: GachaPrize[ItemStack]
+  ): Kleisli[F, Player, GrantState] =
+    Kleisli { player =>
+      Sync[F].delay {
+        val newItemStack = prize.materializeWithOwnerSignature(player.getName)
+        if (!InventoryOperations.isPlayerInventoryFull(player)) {
+          InventoryOperations.addItem(player, newItemStack)
+          GrantState.AddedInventory
+        } else {
+          InventoryOperations.dropItem(player, newItemStack)
+          GrantState.Dropped
+        }
+      }
+    }
 
+  override implicit val _FMonad: Monad[F] = implicitly
 }

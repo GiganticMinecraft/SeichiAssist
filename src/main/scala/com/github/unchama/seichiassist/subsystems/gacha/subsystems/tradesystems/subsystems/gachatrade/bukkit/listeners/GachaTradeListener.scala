@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems
 import cats.effect.ConcurrentEffect
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaskull.bukkit.GachaSkullData
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.subsystems.gachatrade.bukkit.actions.BukkitTrade
 import com.github.unchama.seichiassist.util.InventoryOperations
@@ -14,8 +15,10 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 
-class GachaTradeListener[F[_]: ConcurrentEffect](implicit gachaAPI: GachaAPI[F, ItemStack])
-    extends Listener {
+class GachaTradeListener[F[_]: ConcurrentEffect](
+  implicit gachaAPI: GachaAPI[F, ItemStack],
+  canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
+) extends Listener {
 
   @EventHandler
   def onGachaTrade(event: InventoryCloseEvent): Unit = {

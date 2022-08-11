@@ -1,17 +1,33 @@
 package com.github.unchama.seichiassist.subsystems.gacha.application.actions
 
-import com.github.unchama.seichiassist.subsystems.gacha.domain.GrantState
+import cats.Monad
+import cats.data.Kleisli
+import com.github.unchama.seichiassist.subsystems.gacha.domain.{GachaPrize, GrantState}
 import org.bukkit.entity.Player
 
 trait GrantGachaPrize[F[_], ItemStack] {
 
-  /**
-   * GachaPrizeをPlayerに付与します。
-   * まずMineStackに入るかどうか検証し、
-   * 入らなければプレイヤーに直接付与します
-   */
-  def grantGachaPrize(player: Player): F[GrantState]
+  import cats.implicits._
 
-  def createNewItem(owner: Option[String]): F[ItemStack]
+  implicit val _FMonad: Monad[F]
+
+  def tryInsertIntoMineStack(prize: GachaPrize[ItemStack]): Kleisli[F, Player, Boolean]
+
+  def insertIntoPlayerInventoryOrDrop(
+    prize: GachaPrize[ItemStack]
+  ): Kleisli[F, Player, GrantState]
+
+  final def grantGachaPrize(prize: GachaPrize[ItemStack]): Kleisli[F, Player, GrantState] =
+    Kleisli { player =>
+      for {
+        insertMineStackResult <- tryInsertIntoMineStack(prize)(player)
+        grantState <-
+          if (insertMineStackResult) {
+            Monad[F].pure(GrantState.GrantedMineStack)
+          } else {
+            insertIntoPlayerInventoryOrDrop(prize)(player)
+          }
+      } yield grantState
+    }
 
 }
