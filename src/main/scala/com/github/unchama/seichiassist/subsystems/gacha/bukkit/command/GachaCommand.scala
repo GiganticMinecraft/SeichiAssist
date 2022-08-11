@@ -23,6 +23,7 @@ import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.inventory.ItemStack
 
+import java.util.UUID
 import scala.util.chaining.scalaUtilChainingOps
 
 class GachaCommand[F[
@@ -39,7 +40,7 @@ class GachaCommand[F[
     MessageEffect(
       List(
         s"$YELLOW$BOLD/gachaコマンドの使い方",
-        s"$RED/gacha give <all/プレイヤー名> <個数>",
+        s"$RED/gacha give <all/プレイヤー名/UUID> <個数>",
         "ガチャ券配布コマンドです。allを指定で全員に配布(マルチ鯖対応済)",
         s"$RED/gacha get <ID> (<名前>)",
         "指定したガチャリストのIDを入手 (所有者付きにもできます) IDを0に指定するとガチャリンゴを入手できます",
@@ -144,19 +145,24 @@ class GachaCommand[F[
             Kleisli
               .liftF(gachaTicketPersistence.addToAllKnownPlayers(amount))
               .flatMap(_ => MessageEffectF(s"${GREEN}全プレイヤーへガチャ券${amount}枚加算成功"))
-          case name =>
-            Kleisli
-              .liftF[F, CommandSender, ReceiptResultOfGachaTicketFromAdminTeam](
-                gachaTicketPersistence.add(amount, PlayerName(name))
-              )
-              .flatMap {
-                case ReceiptResultOfGachaTicketFromAdminTeam.Success =>
-                  MessageEffectF(s"${GREEN}ガチャ券${amount}枚加算成功")
-                case ReceiptResultOfGachaTicketFromAdminTeam.NotExists =>
-                  MessageEffectF(s"${RED}プレイヤーが存在しません。")
-                case ReceiptResultOfGachaTicketFromAdminTeam.MultipleFounds =>
-                  MessageEffectF(s"${RED}該当プレイヤーが複数見つかりました。")
-              }
+          case value =>
+            val uuidRegex =
+              "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}".r
+
+            (if (uuidRegex.matches(value)) {
+               Kleisli.liftF[F, CommandSender, ReceiptResultOfGachaTicketFromAdminTeam](
+                 gachaTicketPersistence.addByUUID(amount, UUID.fromString(value))
+               )
+             } else {
+               Kleisli.liftF[F, CommandSender, ReceiptResultOfGachaTicketFromAdminTeam](
+                 gachaTicketPersistence.addByPlayerName(amount, PlayerName(value))
+               )
+             }).flatMap {
+              case ReceiptResultOfGachaTicketFromAdminTeam.Success =>
+                MessageEffectF(s"${GREEN}ガチャ券${amount}枚加算成功")
+              case ReceiptResultOfGachaTicketFromAdminTeam.NotExists =>
+                MessageEffectF(s"${RED}プレイヤーが存在しません。")
+            }
         }
       }
       .build()
