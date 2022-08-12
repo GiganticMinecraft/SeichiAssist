@@ -41,5 +41,5 @@ class BukkitGrantGachaPrize[F[_]: Sync: OnMinecraftServerThread](
       }
     }
 
-  override implicit val _FMonad: Monad[F] = implicitly
+  override implicit val F: Monad[F] = implicitly
 }

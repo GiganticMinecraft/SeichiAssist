@@ -9,7 +9,7 @@ trait GrantGachaPrize[F[_], ItemStack] {
 
   import cats.implicits._
 
-  implicit val _FMonad: Monad[F]
+  implicit val F: Monad[F]
 
   def tryInsertIntoMineStack(prize: GachaPrize[ItemStack]): Kleisli[F, Player, Boolean]
 
