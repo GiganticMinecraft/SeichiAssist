@@ -13,7 +13,7 @@ trait SerializeAndDeserialize[ParseError, T] {
   /**
    * 文字列から [[T]] の値を構築することを試みる。
    *
-   * [[T]] の値を構築できなかった場合は、構築できなかった理由を説明する
+   * [[T]] の値が構築できなかった場合は、理由を説明する
    * [[ParseError]] が [[Left]] で返る。
    */
   def deserialize(str: String): Either[ParseError, T]
