@@ -7,7 +7,10 @@ import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity.Gigantic
 import com.github.unchama.seichiassist.subsystems.tradesystems.application.actions.TradeRule
-import com.github.unchama.seichiassist.subsystems.tradesystems.domain.{TradeResult, TradedAmount}
+import com.github.unchama.seichiassist.subsystems.tradesystems.domain.{
+  TradeResult,
+  TradeSuccessResult
+}
 import org.bukkit.inventory.ItemStack
 
 object BukkitTrade {
@@ -38,7 +41,8 @@ object BukkitTrade {
 
         TradeResult[ItemStack](
           tradableItems.map(itemStack =>
-            TradedAmount(
+            TradeSuccessResult(
+              itemStack,
               itemStack.getAmount * SeichiAssist.seichiAssistConfig.rateGiganticToRingo
             )
           ),

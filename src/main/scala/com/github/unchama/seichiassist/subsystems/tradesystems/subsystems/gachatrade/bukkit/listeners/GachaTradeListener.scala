@@ -48,7 +48,7 @@ class GachaTradeListener[F[_]: ConcurrentEffect](
       else InventoryOperations.dropItem(player, itemStack)
     }
 
-    val tradeAmount = tradedInformation.tradedAmounts.map(_.amount).sum
+    val tradeAmount = tradedInformation.tradedSuccessResult.map(_.amount).sum
 
     /*
      * ガチャ券を付与する
@@ -63,7 +63,7 @@ class GachaTradeListener[F[_]: ConcurrentEffect](
     /*
      * お知らせする
      */
-    val tradableItemStacks = tradedInformation.tradedAmounts
+    val tradableItemStacks = tradedInformation.tradedSuccessResult
     if (tradeAmount == 0) {
       player.sendMessage(s"${YELLOW}景品を認識しませんでした。すべてのアイテムを返却します")
     } else {

@@ -48,15 +48,15 @@ class GtToSiinaringo[F[_]: ConcurrentEffect](
       else InventoryOperations.dropItem(player, itemStack)
     }
 
-    if (tradedInformation.tradedAmounts.isEmpty) {
+    val tradedAmount = tradedInformation.tradedSuccessResult.map(result => result.amount).sum
+
+    if (tradedAmount == 0) {
       player.sendMessage(s"${YELLOW}ギガンティック大当たり景品を認識しませんでした。すべてのアイテムを返却します")
     } else {
       player.sendMessage(
-        s"${GREEN}ギガンティック大当たり景品を${tradedInformation.tradedAmounts.map(_.amount / SeichiAssist.seichiAssistConfig.rateGiganticToRingo).sum}個認識しました"
+        s"${GREEN}ギガンティック大当たり景品を${tradedInformation.tradedSuccessResult.map(_.amount / SeichiAssist.seichiAssistConfig.rateGiganticToRingo).sum}個認識しました"
       )
     }
-
-    val tradedAmount = tradedInformation.tradedAmounts.map(_.amount).sum
 
     /**
      * 椎名林檎をインベントリへ

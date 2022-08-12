@@ -73,9 +73,7 @@ class GachaCommand[F[
         s"$DARK_RED※変更したら必ずsaveコマンドを実行(セーブされません)",
         s"$RED/gacha reload",
         "ガチャリストをmysqlから読み込む",
-        s"$DARK_GRAY※onEnable時と同じ処理",
-        s"$RED/gacha demo <回数>",
-        "現在のガチャリストで指定回数試行し結果を表示。100万回まで"
+        s"$DARK_GRAY※onEnable時と同じ処理"
       )
     )
   )

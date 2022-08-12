@@ -6,7 +6,10 @@ import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity._
 import com.github.unchama.seichiassist.subsystems.tradesystems.application.actions.TradeRule
-import com.github.unchama.seichiassist.subsystems.tradesystems.domain.{TradeResult, TradedAmount}
+import com.github.unchama.seichiassist.subsystems.tradesystems.domain.{
+  TradeResult,
+  TradeSuccessResult
+}
 import org.bukkit.inventory.ItemStack
 
 object BukkitTrade {
@@ -56,8 +59,10 @@ object BukkitTrade {
 
         TradeResult[ItemStack](
           tradableBigItems.map(itemStack =>
-            TradedAmount(itemStack.getAmount * 12)
-          ) ++ tradableRegularItems.map(itemStack => TradedAmount(itemStack.getAmount * 3)),
+            TradeSuccessResult(itemStack, itemStack.getAmount * 12)
+          ) ++ tradableRegularItems.map(itemStack =>
+            TradeSuccessResult(itemStack, itemStack.getAmount * 3)
+          ),
           nonTradableItems
         )
       }
