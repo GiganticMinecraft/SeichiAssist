@@ -55,7 +55,6 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.subsystems.{gachatrade, gttosiina}
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository
@@ -65,7 +64,6 @@ import com.github.unchama.seichiassist.subsystems.present.infrastructure.GlobalP
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
 import com.github.unchama.seichiassist.subsystems.subhome.SubHomeReadAPI
-import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global._
 import com.github.unchama.util.{ActionStatus, ClassUtils}
@@ -375,10 +373,10 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.gacha.System.wired.unsafeRunSync()
 
   private lazy val gtToSiinaSystem: Subsystem[IO] =
-    subsystems.gttosiina.System.wired
+    subsystems.tradesystems.subsystems.gttosiina.System.wired
 
   private lazy val gachaTradeSystem: Subsystem[IO] =
-    subsystems.gachatrade.System.wired
+    subsystems.tradesystems.subsystems.gachatrade.System.wired
 
   private lazy val sharedInventorySystem: subsystems.sharedinventory.System[IO] =
     subsystems.sharedinventory.System.wired[IO]

@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.listeners
 
 import cats.effect.ConcurrentEffect
-import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaskull.bukkit.GachaSkullData
@@ -38,7 +37,7 @@ class GachaTradeListener[F[_]: ConcurrentEffect](
 
     // 交換後の情報
     val tradedInformation =
-      BukkitTrade[F](name).trade(inventory.getContents.toList).toIO.unsafeRunSync()
+      BukkitTrade[F](name).trade(inventory.getContents.toList)
 
     /*
      * 非対象商品をインベントリに戻す

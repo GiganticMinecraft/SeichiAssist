@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.bukkit.listeners
 
 import cats.effect.ConcurrentEffect
-import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
@@ -38,7 +37,7 @@ class GtToSiinaringo[F[_]: ConcurrentEffect](
     if (inventory.getTitle != s"$GOLD${BOLD}椎名林檎と交換したい景品を入れてネ") return
     // 交換後の情報
     val tradedInformation =
-      BukkitTrade[F](name).trade(inventory.getContents.toList).toIO.unsafeRunSync()
+      BukkitTrade[F](name).trade(inventory.getContents.toList)
 
     /**
      * 非対象商品をインベントリに戻す
