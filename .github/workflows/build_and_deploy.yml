@@ -18,7 +18,6 @@ on:
       - develop
     paths:
       - src/**/
-      - src/main/resources/plugin.yml
       - build.sbt
       - .scalafix.conf
       - .scalafmt.conf
