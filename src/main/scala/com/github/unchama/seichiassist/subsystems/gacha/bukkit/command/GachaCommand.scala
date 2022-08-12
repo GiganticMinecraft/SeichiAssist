@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.gacha.bukkit.command
 
 import cats.data.Kleisli
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
-import cats.effect.{ConcurrentEffect, IO, Sync}
+import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.ParserResponse.{failWith, succeedWith}
@@ -193,7 +193,7 @@ class GachaCommand[
               GachaPrize(mainHandItem, GachaProbability(probability), probability < 0.1, _)
             )
           } yield MessageEffect(
-            List("ガチャアイテムを追加しました！", "ガチャアイテムを永続化するためには/gacha saveを実行してください。")
+            List("ガチャアイテムを追加しました！", "ガチャアイテムを保存するためには/gacha saveを実行してください。")
           )
 
           eff.toIO
