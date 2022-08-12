@@ -12,10 +12,10 @@ import com.github.unchama.seichiassist.util._
 import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 import org.bukkit.ChatColor._
 import org.bukkit.event.block.Action
+import org.bukkit.{GameMode, Material}
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.{EquipmentSlot, ItemStack}
-import org.bukkit.{GameMode, Material}
 
 class PlayerPullGachaListener[F[_]: ConcurrentEffect: OnMinecraftServerThread](
   implicit gachaAPI: GachaAPI[F, ItemStack],
@@ -47,12 +47,6 @@ class PlayerPullGachaListener[F[_]: ConcurrentEffect: OnMinecraftServerThread](
     // オフハンドから実行された時処理を終了
     if (event.getHand == EquipmentSlot.OFF_HAND) return
 
-    // ガチャデータが設定されていない場合
-    if (gachaAPI.list.toIO.unsafeRunSync().isEmpty) {
-      player.sendMessage("ガチャデータがありません")
-      return
-    }
-
     val action = event.getAction
     val clickedBlock = event.getClickedBlock.ifNull {
       return
@@ -66,6 +60,12 @@ class PlayerPullGachaListener[F[_]: ConcurrentEffect: OnMinecraftServerThread](
     if (
       action == Action.RIGHT_CLICK_BLOCK && (clickedBlock.getType == Material.CHEST || clickedBlock.getType == Material.TRAPPED_CHEST)
     ) return
+
+    // ガチャデータが設定されていない場合
+    if (gachaAPI.list.toIO.unsafeRunSync().isEmpty) {
+      player.sendMessage("ガチャデータがありません")
+      return
+    }
 
     val count =
       if (player.isSneaking) {
