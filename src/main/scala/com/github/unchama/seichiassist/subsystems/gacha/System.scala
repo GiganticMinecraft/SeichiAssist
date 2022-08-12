@@ -90,7 +90,9 @@ object System {
       override val listeners: Seq[Listener] = Seq(new PlayerPullGachaListener[F]())
     }
 
-    system.api.load.map { _ => system }
+    for {
+      _ <- system.api.load
+    } yield system
   }
 
 }
