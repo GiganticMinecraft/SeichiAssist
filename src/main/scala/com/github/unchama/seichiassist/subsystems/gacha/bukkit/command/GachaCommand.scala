@@ -26,9 +26,9 @@ import org.bukkit.inventory.ItemStack
 import java.util.UUID
 import scala.util.chaining.scalaUtilChainingOps
 
-class GachaCommand[F[
-  _
-]: OnMinecraftServerThread: NonServerThreadContextShift: Sync: ConcurrentEffect](
+class GachaCommand[
+  F[_]: OnMinecraftServerThread: NonServerThreadContextShift: ConcurrentEffect
+](
   implicit gachaTicketPersistence: GachaTicketFromAdminTeamRepository[F],
   gachaPersistence: GachaPrizeListPersistence[F, ItemStack],
   gachaAPI: GachaAPI[F, ItemStack],
