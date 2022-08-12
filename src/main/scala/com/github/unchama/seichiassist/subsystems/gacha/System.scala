@@ -39,7 +39,7 @@ object System {
 
   def wired[F[_]: OnMinecraftServerThread: NonServerThreadContextShift: ConcurrentEffect]
     : F[System[F]] = {
-    implicit val serializeAndDeserialize: SerializeAndDeserialize[Unit, ItemStack] =
+    implicit val serializeAndDeserialize: SerializeAndDeserialize[Nothing, ItemStack] =
       BukkitItemStackSerializeAndDeserialize
     implicit val gachaPersistence: GachaPrizeListPersistence[F, ItemStack] =
       new JdbcGachaPrizeListPersistence[F, ItemStack]()

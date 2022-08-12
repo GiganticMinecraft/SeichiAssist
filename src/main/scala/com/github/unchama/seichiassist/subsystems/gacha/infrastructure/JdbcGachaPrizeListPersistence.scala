@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain._
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack](
-  implicit serializeAndDeserialize: SerializeAndDeserialize[Unit, ItemStack]
+  implicit serializeAndDeserialize: SerializeAndDeserialize[Nothing, ItemStack]
 ) extends GachaPrizeListPersistence[F, ItemStack] {
 
   /**
