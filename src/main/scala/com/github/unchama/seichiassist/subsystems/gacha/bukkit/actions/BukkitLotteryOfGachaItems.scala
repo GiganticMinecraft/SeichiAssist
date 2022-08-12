@@ -52,7 +52,7 @@ class BukkitLotteryOfGachaItems[F[_]: Sync] extends LotteryOfGachaItems[F, ItemS
     else if (droppedGachaPrizes.nonEmpty)
       lottery(GachaProbability(nowSum), probability, droppedGachaPrizes)
     else
-      GachaPrize[ItemStack](
+      GachaPrize(
         StaticGachaPrizeFactory.gachaRingo,
         GachaProbability(1.0),
         hasOwner = false,
