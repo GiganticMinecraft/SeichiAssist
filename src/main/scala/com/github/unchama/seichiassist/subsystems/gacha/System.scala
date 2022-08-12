@@ -60,8 +60,8 @@ object System {
         override def replace(gachaPrizesList: Vector[GachaPrize[ItemStack]]): F[Unit] =
           gachaPrizesListRepository.set(gachaPrizesList)
 
-        override def runLottery(amount: Int): F[Vector[GachaPrize[ItemStack]]] =
-          new BukkitLotteryOfGachaItems[F].runLottery(amount, gachaPrizesListRepository)
+        override def runLottery(runs: Int): F[Vector[GachaPrize[ItemStack]]] =
+          new BukkitLotteryOfGachaItems[F].runLottery(runs, gachaPrizesListRepository)
 
         override def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Unit] = for {
           prizes <- list

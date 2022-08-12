@@ -9,7 +9,7 @@ trait GachaLotteryAPI[F[_], ItemStack] {
   /**
    * ガチャ景品を抽選してその結果を返す作用
    */
-  def runLottery(amount: Int): F[Vector[GachaPrize[ItemStack]]]
+  def runLottery(runs: Int): F[Vector[GachaPrize[ItemStack]]]
 
 }
 
