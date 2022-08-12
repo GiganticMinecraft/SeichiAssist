@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems
 
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.domain.TradeResult
 
-trait Trade[F[_], ItemStack] {
+trait TradeRule[F[_], ItemStack] {
 
   /**
    * ガチャアイテムから椎名林檎やガチャ券へ交換できるアイテムを列挙する
@@ -11,8 +11,8 @@ trait Trade[F[_], ItemStack] {
 
 }
 
-object Trade {
+object TradeRule {
 
-  def apply[F[_], ItemStack](implicit ev: Trade[F, ItemStack]): Trade[F, ItemStack] = ev
+  def apply[F[_], ItemStack](implicit ev: TradeRule[F, ItemStack]): TradeRule[F, ItemStack] = ev
 
 }

@@ -5,7 +5,7 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity.Gigantic
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.application.actions.Trade
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.application.actions.TradeRule
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.domain.{
   TradeResult,
   TradedAmount
@@ -19,7 +19,7 @@ object BukkitTrade {
   def apply[F[_]: ConcurrentEffect](name: String)(
     implicit gachaAPI: GachaAPI[F, ItemStack],
     canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
-  ): Trade[F, ItemStack] =
+  ): TradeRule[F, ItemStack] =
     (contents: List[ItemStack]) =>
       for {
         gachaList <- gachaAPI.list
