@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.subsystems.gachatrade.bukkit.actions
 
 import cats.effect.ConcurrentEffect
+import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity._
@@ -18,9 +19,9 @@ object BukkitTrade {
   def apply[F[_]: ConcurrentEffect](owner: String)(
     implicit gachaAPI: GachaAPI[F, ItemStack],
     canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
-  ): TradeRule[F, ItemStack] =
-    (contents: List[ItemStack]) =>
-      for {
+  ): TradeRule[ItemStack] =
+    (contents: List[ItemStack]) => {
+      val eff = for {
         gachaList <- gachaAPI.list
         // GTアイテムを除去し、今回の対象であるあたりまでを含めたリスト
         targetsList =
@@ -63,5 +64,7 @@ object BukkitTrade {
           nonTradableItems
         )
       }
+      eff.toIO.unsafeRunSync()
+    }
 
 }

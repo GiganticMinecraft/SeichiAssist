@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.subsystems.gttosiina.bukkit.actions
 
 import cats.effect.ConcurrentEffect
+import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
@@ -19,9 +20,9 @@ object BukkitTrade {
   def apply[F[_]: ConcurrentEffect](name: String)(
     implicit gachaAPI: GachaAPI[F, ItemStack],
     canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
-  ): TradeRule[F, ItemStack] =
-    (contents: List[ItemStack]) =>
-      for {
+  ): TradeRule[ItemStack] =
+    (contents: List[ItemStack]) => {
+      val eff = for {
         gachaList <- gachaAPI.list
         giganticItemStacks = gachaList // TODO GTアイテムかどうかを確率に依存すべきではない
           .filter(_.probability.value < Gigantic.maxProbability.value)
@@ -47,4 +48,6 @@ object BukkitTrade {
           nonTradableItems
         )
       }
+      eff.toIO.unsafeRunSync()
+    }
 }
