@@ -1,11 +1,11 @@
-package com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.subsystems.gttosiina
+package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade
 
 import cats.effect.ConcurrentEffect
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.BukkitCanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.subsystems.gttosiina.bukkit.listeners.GtToSiinaringo
+import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.listeners.GachaTradeListener
 import org.bukkit.event.Listener
 import org.bukkit.inventory.ItemStack
 
@@ -15,7 +15,7 @@ object System {
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
       new BukkitCanBeSignedAsGachaPrize
     new Subsystem[F] {
-      override val listeners: Seq[Listener] = Seq(new GtToSiinaringo[F]())
+      override val listeners: Seq[Listener] = Seq(new GachaTradeListener[F]())
     }
   }
 

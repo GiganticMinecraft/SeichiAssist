@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.domain
+package com.github.unchama.seichiassist.subsystems.tradesystems.domain
 
 /**
  * ガチャ景品から交換した結果表す型

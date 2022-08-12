@@ -1,6 +1,6 @@
-package com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.application.actions
+package com.github.unchama.seichiassist.subsystems.tradesystems.application.actions
 
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.domain.TradeResult
+import com.github.unchama.seichiassist.subsystems.tradesystems.domain.TradeResult
 
 /**
  * 特定のアイテムを交換するためのルール（何を何個入れると何が何個得られて何が返却されるか）

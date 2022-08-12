@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.subsystems.gttosiina.bukkit.actions
+package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.bukkit.actions
 
 import cats.effect.ConcurrentEffect
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
@@ -6,11 +6,8 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity.Gigantic
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.application.actions.TradeRule
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.domain.{
-  TradeResult,
-  TradedAmount
-}
+import com.github.unchama.seichiassist.subsystems.tradesystems.application.actions.TradeRule
+import com.github.unchama.seichiassist.subsystems.tradesystems.domain.{TradeResult, TradedAmount}
 import org.bukkit.inventory.ItemStack
 
 object BukkitTrade {
