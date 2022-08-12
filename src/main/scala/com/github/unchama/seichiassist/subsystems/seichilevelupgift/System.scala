@@ -27,7 +27,7 @@ object System {
     gachaPointApi: GachaPointApi[F, G, Player]
   ): F[Nothing] = {
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
-      new BukkitCanBeSignedAsGachaPrize
+      BukkitCanBeSignedAsGachaPrize
     implicit val grantLevelUpGiftAlgebra: GrantLevelUpGiftAlgebra[F, Player] =
       new BukkitGrantLevelUpGift
     StreamExtra.compileToRestartingStream("[SeichiLevelUpGift]") {

@@ -13,7 +13,7 @@ object System {
 
   def wired[F[_]: ConcurrentEffect](implicit gachaAPI: GachaAPI[F, ItemStack]): Subsystem[F] = {
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
-      new BukkitCanBeSignedAsGachaPrize
+      BukkitCanBeSignedAsGachaPrize
     new Subsystem[F] {
       override val listeners: Seq[Listener] = Seq(new GachaTradeListener[F]())
     }
