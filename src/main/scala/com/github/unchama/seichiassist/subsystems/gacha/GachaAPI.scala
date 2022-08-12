@@ -81,10 +81,12 @@ trait GachaWriteAPI[F[_], ItemStack] {
    */
   def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Unit]
 
+  final type gachaPrizeByGachaPrizeId = GachaPrizeId => GachaPrize[ItemStack]
+
   /**
    * ガチャ景品リストにGachaPrizeを追加する
    */
-  def addGachaPrize(gachaPrize: GachaPrizeId => GachaPrize[ItemStack]): F[Unit]
+  def addGachaPrize(gachaPrize: gachaPrizeByGachaPrizeId): F[Unit]
 
 }
 
