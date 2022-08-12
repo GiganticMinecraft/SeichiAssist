@@ -19,9 +19,11 @@ import com.github.unchama.seichiassist.subsystems.gacha.bukkit.listeners.PlayerP
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   CanBeSignedAsGachaPrize,
   GachaPrize,
-  GachaPrizeId
+  GachaPrizeId,
+  GachaPrizeListPersistence
 }
 import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.JdbcGachaPrizeListPersistence
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketFromAdminTeamRepository
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.infrastructure.JdbcGachaTicketFromAdminTeamRepository
 import org.bukkit.command.TabExecutor
 import org.bukkit.event.Listener
@@ -39,9 +41,9 @@ object System {
     : F[System[F]] = {
     implicit val serializeAndDeserialize: SerializeAndDeserialize[Unit, ItemStack] =
       BukkitItemStackSerializeAndDeserialize.instance
-    implicit val gachaPersistence: JdbcGachaPrizeListPersistence[F, ItemStack] =
+    implicit val gachaPersistence: GachaPrizeListPersistence[F, ItemStack] =
       new JdbcGachaPrizeListPersistence[F, ItemStack]()
-    implicit val gachaTicketPersistence: JdbcGachaTicketFromAdminTeamRepository[F] =
+    implicit val gachaTicketPersistence: GachaTicketFromAdminTeamRepository[F] =
       new JdbcGachaTicketFromAdminTeamRepository[F]
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
       new BukkitCanBeSignedAsGachaPrize
