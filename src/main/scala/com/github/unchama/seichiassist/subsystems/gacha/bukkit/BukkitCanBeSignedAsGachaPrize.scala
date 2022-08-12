@@ -15,11 +15,6 @@ object BukkitCanBeSignedAsGachaPrize extends CanBeSignedAsGachaPrize[ItemStack] 
    * メタが `f` によって変更されたような新たな `ItemStack` を作成する
    */
   private def modifyMeta(f: ItemMeta => Unit)(stack: ItemStack): ItemStack = {
-    val itemMeta = stack.getItemMeta
-    val newItem = stack.clone()
-    f(itemMeta)
-    newItem.setItemMeta(itemMeta)
-    newItem
   }
 
   /**
