@@ -5,7 +5,7 @@ import com.github.unchama.seichiassist.util.BukkitSerialization
 import org.bukkit.Bukkit
 import org.bukkit.inventory.ItemStack
 
-class BukkitItemStackSerializeAndDeserialize extends SerializeAndDeserialize[Unit, ItemStack] {
+object BukkitItemStackSerializeAndDeserialize extends SerializeAndDeserialize[Unit, ItemStack] {
 
   override def serialize(itemStack: ItemStack): String = {
     val inventory = Bukkit.getServer.createInventory(null, 9)
@@ -15,12 +15,5 @@ class BukkitItemStackSerializeAndDeserialize extends SerializeAndDeserialize[Uni
 
   override def deserialize(itemStackStr: String): Either[Unit, ItemStack] =
     Right(BukkitSerialization.fromBase64(itemStackStr).getItem(0))
-
-}
-
-object BukkitItemStackSerializeAndDeserialize {
-
-  val instance: SerializeAndDeserialize[Unit, ItemStack] =
-    new BukkitItemStackSerializeAndDeserialize
 
 }
