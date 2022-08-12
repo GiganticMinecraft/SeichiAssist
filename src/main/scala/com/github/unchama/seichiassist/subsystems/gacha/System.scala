@@ -51,7 +51,7 @@ object System {
     val system = new System[F] {
       override implicit val api: GachaAPI[F, ItemStack] = new GachaAPI[F, ItemStack] {
 
-        override protected implicit val _FFunctor: Functor[F] = implicitly[ConcurrentEffect[F]]
+        override protected implicit val F: Functor[F] = implicitly[ConcurrentEffect[F]]
 
         override def load: F[Unit] = gachaPersistence.list.flatMap { gachaPrizes =>
           gachaPrizesListRepository.set(gachaPrizes)

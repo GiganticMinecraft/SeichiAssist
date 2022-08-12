@@ -26,7 +26,7 @@ trait GachaReadAPI[F[_], ItemStack] {
 
   import cats.implicits._
 
-  protected implicit val _FFunctor: Functor[F]
+  protected implicit val F: Functor[F]
 
   /**
    * ガチャの景品リストを返す
