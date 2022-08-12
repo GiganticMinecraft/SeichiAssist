@@ -36,7 +36,7 @@ trait GachaReadAPI[F[_], ItemStack] {
   /**
    * [[GachaPrizeId]]に対応する[[GachaPrize]]を取得する
    */
-  final def gachaPrize(gachaPrizeId: GachaPrizeId): F[Option[GachaPrize[ItemStack]]] = for {
+  final def fetch(gachaPrizeId: GachaPrizeId): F[Option[GachaPrize[ItemStack]]] = for {
     prizes <- list
   } yield prizes.find(_.id == gachaPrizeId)
 
