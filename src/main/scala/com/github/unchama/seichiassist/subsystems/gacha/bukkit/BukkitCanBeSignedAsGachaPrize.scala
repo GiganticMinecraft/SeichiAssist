@@ -15,6 +15,11 @@ object BukkitCanBeSignedAsGachaPrize extends CanBeSignedAsGachaPrize[ItemStack] 
    * メタが `f` によって変更されたような新たな `ItemStack` を作成する
    */
   private def modifyMeta(f: ItemMeta => Unit)(stack: ItemStack): ItemStack = {
+    val itemMeta = stack.getItemMeta
+    val newItem = stack.clone()
+    f(itemMeta)
+    newItem.setItemMeta(itemMeta)
+    newItem
   }
 
   /**
@@ -27,7 +32,7 @@ object BukkitCanBeSignedAsGachaPrize extends CanBeSignedAsGachaPrize[ItemStack] 
       import m._
       setLore {
         val originalLore = if (itemStack.getItemMeta.hasLore) getLore.asScala else Nil
-        val appended = originalLore ++ List(s"$RESET${DARK_GREEN}所有者：${ownerName}")
+        val appended = originalLore ++ List(s"$RESET${DARK_GREEN}所有者：$ownerName")
 
         appended.asJava
       }

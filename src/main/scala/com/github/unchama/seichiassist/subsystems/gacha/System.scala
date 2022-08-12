@@ -46,7 +46,7 @@ object System {
     implicit val gachaTicketPersistence: GachaTicketFromAdminTeamRepository[F] =
       new JdbcGachaTicketFromAdminTeamRepository[F]
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
-      new BukkitCanBeSignedAsGachaPrize
+      BukkitCanBeSignedAsGachaPrize
 
     val system = new System[F] {
       override implicit val api: GachaAPI[F, ItemStack] = new GachaAPI[F, ItemStack] {
