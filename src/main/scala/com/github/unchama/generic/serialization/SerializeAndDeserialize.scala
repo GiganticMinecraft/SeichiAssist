@@ -16,6 +16,6 @@ trait SerializeAndDeserialize[ParseError, T] {
    * [[T]] の値が構築できなかった場合は、理由を説明する
    * [[ParseError]] が [[Left]] で返る。
    */
-  def deserialize(str: String): Either[ParseError, T]
+  def deserialize(serialized: String): Either[ParseError, T]
 
 }

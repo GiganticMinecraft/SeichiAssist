@@ -13,7 +13,7 @@ object BukkitItemStackSerializeAndDeserialize extends SerializeAndDeserialize[Un
     BukkitSerialization.toBase64(inventory)
   }
 
-  override def deserialize(itemStackStr: String): Either[Unit, ItemStack] =
-    Right(BukkitSerialization.fromBase64(itemStackStr).getItem(0))
+  override def deserialize(serialized: String): Either[Unit, ItemStack] =
+    Right(BukkitSerialization.fromBase64(serialized).getItem(0))
 
 }
