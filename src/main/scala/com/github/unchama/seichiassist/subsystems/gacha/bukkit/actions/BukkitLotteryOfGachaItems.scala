@@ -46,18 +46,22 @@ class BukkitLotteryOfGachaItems[F[_]: Sync] extends LotteryOfGachaItems[F, ItemS
     probability: GachaProbability,
     gachaPrizes: Vector[GachaPrize[ItemStack]]
   ): GachaPrize[ItemStack] = {
-    val nowSum = sumGachaProbability.value - gachaPrizes.head.probability.value
-    val droppedGachaPrizes = gachaPrizes.drop(1)
-    if (nowSum <= probability.value) gachaPrizes.head
-    else if (droppedGachaPrizes.nonEmpty)
-      lottery(GachaProbability(nowSum), probability, droppedGachaPrizes)
-    else
+    if (gachaPrizes.isEmpty) {
       GachaPrize(
         StaticGachaPrizeFactory.gachaRingo,
         GachaProbability(1.0),
         signOwner = false,
         GachaPrizeId(0)
       )
+    } else {
+      val prizeAtHead = gachaPrizes.head
+      val probabilitySumUptoHead = sumGachaProbability.value - prizeAtHead.probability.value
+      if (probabilitySumUptoHead <= probability.value) {
+        prizeAtHead
+      } else {
+        lottery(GachaProbability(probabilitySumUptoHead), probability, gachaPrizes.drop(1))
+      }
+    }
   }
 
 }
