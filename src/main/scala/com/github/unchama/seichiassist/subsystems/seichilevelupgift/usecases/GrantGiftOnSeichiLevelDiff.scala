@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.seichilevelupgift.usecases
 
-import cats.Applicative
 import cats.effect.Bracket.catsKleisliBracket
 import cats.effect.Sync
 import com.github.unchama.generic.Diff
@@ -18,10 +17,7 @@ object GrantGiftOnSeichiLevelDiff {
 
   import cats.implicits._
 
-  final def grantGiftTo[F[_]: Applicative: Sync, Player](
-    levelDiff: Diff[SeichiLevel],
-    player: Player
-  )(
+  final def grantGiftTo[F[_]: Sync, Player](levelDiff: Diff[SeichiLevel], player: Player)(
     implicit send: SendMinecraftMessage[F, Player],
     grant: GrantLevelUpGiftAlgebra[F, Player]
   ): F[Unit] = {
