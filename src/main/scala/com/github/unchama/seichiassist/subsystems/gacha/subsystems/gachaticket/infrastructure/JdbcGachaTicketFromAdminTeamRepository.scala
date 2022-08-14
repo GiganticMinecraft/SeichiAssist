@@ -40,10 +40,9 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
     NonServerThreadContextShift[F].shift >> Sync[F].delay {
       DB.localTx { implicit session =>
         val affectedRows =
-          sql"""UPDATE playerdata SET numofsorryforbug = CASE (SELECT COUNT(*) FROM playerdata WHERE name = ${playerName.name})
-                 |	WHEN 1 THEN numofsorryforbug + $amount
-                 |  ELSE numofsorryforbug
-                 |END""".update.apply()
+          sql"UPDATE playerdata SET numofsorryforbug = numofsorryforbug + $amount WHERE name = ${playerName.name}"
+            .update
+            .apply()
 
         getReceiptResult(affectedRows)
       }
@@ -60,10 +59,9 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
     NonServerThreadContextShift[F].shift >> Sync[F].delay {
       DB.localTx { implicit session =>
         val affectedRows =
-          sql"""UPDATE playerdata SET numofsorryforbug = CASE (SELECT COUNT(*) FROM playerdata WHERE uuid = ${uuid.toString})
-               |	WHEN 1 THEN numofsorryforbug + $amount
-               |  ELSE numofsorryforbug
-               |END""".stripMargin.update().apply()
+          sql"UPDATE playerdata SET numofsorryforbug = numofsorryforbug + $amount WHERE uuid = ${uuid.toString}"
+            .update()
+            .apply()
 
         getReceiptResult(affectedRows)
       }
