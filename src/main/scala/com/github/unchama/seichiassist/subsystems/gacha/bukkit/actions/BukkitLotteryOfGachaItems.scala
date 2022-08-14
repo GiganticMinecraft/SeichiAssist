@@ -55,7 +55,7 @@ class BukkitLotteryOfGachaItems[F[_]: Sync] extends LotteryOfGachaItems[F, ItemS
       GachaPrize(
         StaticGachaPrizeFactory.gachaRingo,
         GachaProbability(1.0),
-        hasOwner = false,
+        signOwner = false,
         GachaPrizeId(0)
       )
   }

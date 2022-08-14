@@ -3,19 +3,19 @@ package com.github.unchama.seichiassist.subsystems.gacha.domain
 /**
  * @param itemStack ガチャで排出されるアイテム。
  * @param probability ガチャで排出される確率
- * @param hasOwner 記名する場合はtrueにしてください
+ * @param signOwner 記名する場合はtrueにしてください
  */
 case class GachaPrize[ItemStack](
   itemStack: ItemStack,
   probability: GachaProbability,
-  hasOwner: Boolean,
+  signOwner: Boolean,
   id: GachaPrizeId
 ) {
 
   def materializeWithOwnerSignature(
     ownerName: String
   )(implicit sign: CanBeSignedAsGachaPrize[ItemStack]): ItemStack = {
-    if (hasOwner) sign.signWith(ownerName)(this.itemStack)
+    if (signOwner) sign.signWith(ownerName)(this.itemStack)
     else this.itemStack
   }
 
