@@ -4,22 +4,22 @@ import cats.data.Kleisli
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.GachaPoint
 
 /**
- * レベルアップ報酬をプレーヤーに付与する algebra。
+ * レベルアップ報酬をプレイヤーに付与する algebra。
  */
 trait GrantLevelUpGiftAlgebra[F[_], Player] {
 
   /**
-   * プレーヤーに `item` に相当するアイテムを付与する。
+   * プレイヤーに `item` に相当するアイテムを付与する。
    */
   def grantGiftItem(item: Gift.Item): Kleisli[F, Player, Unit]
 
   /**
-   * プレーヤーにガチャポイントを付与する。
+   * プレイヤーにガチャポイントを付与する。
    */
   def grantGachaPoint(gachaPoint: GachaPoint): Kleisli[F, Player, Unit]
 
   /**
-   * ガチャを一回回して、結果をプレーヤーに付与する。
+   * ガチャを一回回して、結果をプレイヤーに付与する。
    */
   def runGachaForPlayer: Kleisli[F, Player, Unit]
 
