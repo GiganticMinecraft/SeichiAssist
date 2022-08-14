@@ -17,7 +17,7 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
   import cats.implicits._
 
   /**
-   * 現在データベース中にある全プレイヤーの「運営からのガチャ券」の枚数を増加させる作用
+   * @return 呼び出された時点で永続化バックエンド中にある全プレイヤーの「運営からのガチャ券」を増加させる作用
    */
   override def addToAllKnownPlayers(amount: Int): F[Unit] = {
     NonServerThreadContextShift[F].shift >> Sync[F].delay[Unit] {
@@ -30,7 +30,7 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
   }
 
   /**
-   * 指定されたUUIDのプレイヤーの「運営からのガチャ券」の枚数を増加させる作用
+   * @return 指定されたプレイヤー名の「運営からのガチャ券」の枚数を増加させる作用
    */
   override def addByPlayerName(
     amount: Int,
@@ -51,7 +51,7 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
   }
 
   /**
-   * 指定されたUUIDの「運営からのガチャ券」の枚数を増加させる作用
+   *  @return 指定されたUUIDの「運営からのガチャ券」の枚数を増加させる作用
    */
   override def addByUUID(
     amount: Int,
