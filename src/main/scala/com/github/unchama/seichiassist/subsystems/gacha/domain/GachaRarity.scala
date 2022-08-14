@@ -14,8 +14,6 @@ object GachaRarity {
 
     case object Regular extends GachaRarity(GachaProbability(0.1))
 
-    case object Potato extends GachaRarity(GachaProbability(1.0))
-
     override def values: IndexedSeq[GachaRarity] = findValues
 
   }
