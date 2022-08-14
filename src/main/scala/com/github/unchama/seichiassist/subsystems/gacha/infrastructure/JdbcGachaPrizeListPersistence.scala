@@ -15,7 +15,7 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack](
   override def list: F[Vector[GachaPrize[ItemStack]]] = {
     Sync[F].delay {
       DB.readOnly { implicit session =>
-        sql"select * from gachadata"
+        sql"select id,itemstack,probability from gachadata"
           .map { rs =>
             val probability = rs.double("probability")
             // TODO ガチャアイテムに対して記名を行うかどうかを確率に依存すべきではない
