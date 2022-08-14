@@ -45,7 +45,7 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
                  |  ELSE numofsorryforbug
                  |END""".update.apply()
 
-          ReceiptResultOfGachaTicketFromAdminTeam.getReceiptResult(affectedRows)
+          getReceiptResult(affectedRows)
         }
       }
   }
@@ -66,9 +66,15 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
                  |  ELSE numofsorryforbug
                  |END""".stripMargin.update().apply()
 
-          ReceiptResultOfGachaTicketFromAdminTeam.getReceiptResult(affectedRows)
+          getReceiptResult(affectedRows)
         }
       }
   }
+
+  private def getReceiptResult(updatedRows: Int): ReceiptResultOfGachaTicketFromAdminTeam =
+    updatedRows match {
+      case 0 => ReceiptResultOfGachaTicketFromAdminTeam.NotExists
+      case 1 => ReceiptResultOfGachaTicketFromAdminTeam.Success
+    }
 
 }
