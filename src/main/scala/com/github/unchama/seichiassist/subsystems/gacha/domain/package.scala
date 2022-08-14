@@ -1,8 +1,8 @@
-package com.github.unchama.seichiassist.subsystems.gacha.domain
+package com.github.unchama.seichiassist.subsystems.gacha
 
 import cats.effect.concurrent.Ref
 
-object GlobalGachaPrizeList {
+package object domain {
 
   type GlobalGachaPrizeList[F[_], ItemStack] = Ref[F, Vector[GachaPrize[ItemStack]]]
 
