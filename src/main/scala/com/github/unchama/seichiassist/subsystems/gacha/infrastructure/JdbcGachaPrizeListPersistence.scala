@@ -29,8 +29,7 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack](
                   GachaPrizeId(rs.int("id"))
                 )
               }
-              .toOption
-              .get
+              .merge
           }
           .toList()
           .apply()
