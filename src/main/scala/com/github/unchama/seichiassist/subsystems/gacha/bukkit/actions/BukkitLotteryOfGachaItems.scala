@@ -24,10 +24,7 @@ class BukkitLotteryOfGachaItems[F[_]: Sync] extends LotteryOfGachaItems[F, ItemS
     for {
       gachaPrizes <- gachaPrizesListRepository.get
       randomList <-
-        (0 until amount)
-          .map(_ => Sync[F].delay(Math.random()))
-          .toList
-          .traverse(random => random)
+        (0 until amount).toList.traverse(_ => Sync[F].delay(Math.random()))
     } yield randomList
       .map(random => lottery(GachaProbability(1.0), GachaProbability(random), gachaPrizes))
       .toVector
