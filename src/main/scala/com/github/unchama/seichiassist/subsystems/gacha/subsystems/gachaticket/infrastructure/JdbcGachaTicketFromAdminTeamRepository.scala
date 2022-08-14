@@ -20,6 +20,7 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
    * @return 呼び出された時点で永続化バックエンド中にある全プレイヤーの「運営からのガチャ券」を増加させる作用
    */
   override def addToAllKnownPlayers(amount: Int): F[Unit] = {
+    // NOTE: apply関数はBooleanを返すのでdelayメソッドには型明示が必要
     NonServerThreadContextShift[F].shift >> Sync[F].delay[Unit] {
       DB.localTx { implicit session =>
         sql"update playerdata set numofsorryforbug = numofsorryforbug + $amount"
@@ -36,18 +37,17 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
     amount: Int,
     playerName: PlayerName
   ): F[ReceiptResultOfGachaTicketFromAdminTeam] = {
-    NonServerThreadContextShift[F].shift >> Sync[F]
-      .delay[ReceiptResultOfGachaTicketFromAdminTeam] {
-        DB.localTx { implicit session =>
-          val affectedRows =
-            sql"""UPDATE playerdata SET numofsorryforbug = CASE (SELECT COUNT(*) FROM playerdata WHERE name = ${playerName.name})
+    NonServerThreadContextShift[F].shift >> Sync[F].delay {
+      DB.localTx { implicit session =>
+        val affectedRows =
+          sql"""UPDATE playerdata SET numofsorryforbug = CASE (SELECT COUNT(*) FROM playerdata WHERE name = ${playerName.name})
                  |	WHEN 1 THEN numofsorryforbug + $amount
                  |  ELSE numofsorryforbug
                  |END""".update.apply()
 
-          getReceiptResult(affectedRows)
-        }
+        getReceiptResult(affectedRows)
       }
+    }
   }
 
   /**
@@ -57,18 +57,17 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
     amount: Int,
     uuid: UUID
   ): F[ReceiptResultOfGachaTicketFromAdminTeam] = {
-    NonServerThreadContextShift[F].shift >> Sync[F]
-      .delay[ReceiptResultOfGachaTicketFromAdminTeam] {
-        DB.localTx { implicit session =>
-          val affectedRows =
-            sql"""UPDATE playerdata SET numofsorryforbug = CASE (SELECT COUNT(*) FROM playerdata WHERE uuid = ${uuid.toString})
-                 |	WHEN 1 THEN numofsorryforbug + $amount
-                 |  ELSE numofsorryforbug
-                 |END""".stripMargin.update().apply()
+    NonServerThreadContextShift[F].shift >> Sync[F].delay {
+      DB.localTx { implicit session =>
+        val affectedRows =
+          sql"""UPDATE playerdata SET numofsorryforbug = CASE (SELECT COUNT(*) FROM playerdata WHERE uuid = ${uuid.toString})
+               |	WHEN 1 THEN numofsorryforbug + $amount
+               |  ELSE numofsorryforbug
+               |END""".stripMargin.update().apply()
 
-          getReceiptResult(affectedRows)
-        }
+        getReceiptResult(affectedRows)
       }
+    }
   }
 
   private def getReceiptResult(updatedRows: Int): ReceiptResultOfGachaTicketFromAdminTeam =
