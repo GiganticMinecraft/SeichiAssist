@@ -12,7 +12,9 @@ import org.bukkit.inventory.ItemStack
 
 object System {
 
-  def wired[F[_]: ConcurrentEffect](implicit gachaAPI: GachaAPI[F, ItemStack, Player]): Subsystem[F] = {
+  def wired[F[_]: ConcurrentEffect](
+    implicit gachaAPI: GachaAPI[F, ItemStack, Player]
+  ): Subsystem[F] = {
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
       BukkitCanBeSignedAsGachaPrize
     new Subsystem[F] {
