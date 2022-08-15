@@ -4,6 +4,7 @@ import cats.effect.ConcurrentEffect
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
+import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity._
 import com.github.unchama.seichiassist.subsystems.tradesystems.application.actions.TradeRule
 import com.github.unchama.seichiassist.subsystems.tradesystems.domain.{
@@ -26,12 +27,12 @@ object BukkitTrade {
         // GTアイテムを除去し、今回の対象であるあたりまでを含めたリスト
         targetsList =
           gachaList
-            .filterNot(_.probability.value < Gigantic.maxProbability.value)
-            .filter(_.probability.value < Regular.maxProbability.value)
+            .filterNot(GachaRarity.of[ItemStack](_) == Gigantic)
+            .filter(GachaRarity.of[ItemStack](_) == Regular)
 
         // 大当たりのアイテム
         bigList = targetsList
-          .filter(_.probability.value < Big.maxProbability.value)
+          .filter(GachaRarity.of[ItemStack](_) == Big)
           .map(gachaPrize =>
             gachaPrize
               .copy(itemStack = canBeSignedAsGachaPrize.signWith(owner)(gachaPrize.itemStack))

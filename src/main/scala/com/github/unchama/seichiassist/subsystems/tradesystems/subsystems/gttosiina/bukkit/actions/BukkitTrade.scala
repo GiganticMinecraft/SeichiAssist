@@ -5,6 +5,7 @@ import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
+import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity.Gigantic
 import com.github.unchama.seichiassist.subsystems.tradesystems.application.actions.TradeRule
 import com.github.unchama.seichiassist.subsystems.tradesystems.domain.{
@@ -25,7 +26,7 @@ object BukkitTrade {
       val eff = for {
         gachaList <- gachaAPI.list
         giganticItemStacks = gachaList // TODO GTアイテムかどうかを確率に依存すべきではない
-          .filter(_.probability.value < Gigantic.maxProbability.value)
+          .filter(GachaRarity.of[ItemStack](_) == Gigantic)
           .map(gachaPrize =>
             gachaPrize
               .copy(itemStack = canBeSignedAsGachaPrize.signWith(name)(gachaPrize.itemStack))
