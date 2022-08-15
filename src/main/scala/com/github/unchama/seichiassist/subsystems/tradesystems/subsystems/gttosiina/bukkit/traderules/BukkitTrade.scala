@@ -46,7 +46,7 @@ object BukkitTrade {
         TradeResult[ItemStack](
           tradableItems.map(itemStack =>
             TradeSuccessResult(
-              StaticGachaPrizeFactory.getMaxRingo,
+              StaticGachaPrizeFactory.getMaxRingo(name),
               itemStack.getAmount * SeichiAssist.seichiAssistConfig.rateGiganticToRingo
             )
           ),
