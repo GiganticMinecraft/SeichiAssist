@@ -34,9 +34,9 @@ class BukkitDrawGacha[F[_]: Sync: OnMinecraftServerThread](
 
   import scala.jdk.CollectionConverters._
 
-  override def draw(player: Player, amount: Int): F[Unit] = {
+  override def draw(player: Player, count: Int): F[Unit] = {
     for {
-      gachaPrizes <- gachaAPI.runLottery(amount)
+      gachaPrizes <- gachaAPI.runLottery(count)
       states <- gachaPrizes.traverse(gachaPrize =>
         new BukkitGrantGachaPrize().grantGachaPrize(gachaPrize)(player)
       )
@@ -98,10 +98,10 @@ class BukkitDrawGacha[F[_]: Sync: OnMinecraftServerThread](
               )
             case Big =>
               player.playSound(player.getLocation, Sound.ENTITY_WITHER_SPAWN, 0.8f, 1f)
-              if (amount == 1) player.sendMessage(s"${GOLD}おめでとう！！大当たり！$additionalMessage")
-            case Regular if amount == 1 =>
+              if (count == 1) player.sendMessage(s"${GOLD}おめでとう！！大当たり！$additionalMessage")
+            case Regular if count == 1 =>
               player.sendMessage(s"${YELLOW}おめでとう！当たり！$additionalMessage")
-            case GachaRingoOrExpBottle if amount == 1 =>
+            case GachaRingoOrExpBottle if count == 1 =>
               player.sendMessage(s"${WHITE}はずれ！また遊んでね！$additionalMessage")
           }
       }

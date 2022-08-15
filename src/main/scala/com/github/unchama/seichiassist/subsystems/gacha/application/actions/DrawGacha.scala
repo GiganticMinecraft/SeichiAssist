@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.gacha.application.actions
 
 trait DrawGacha[F[_], Player] {
 
-  def draw(player: Player, amount: Int): F[Unit]
+  def draw(player: Player, count: Int): F[Unit]
 
 }
 

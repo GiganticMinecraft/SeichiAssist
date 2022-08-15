@@ -18,6 +18,7 @@ object GachaRarity {
 
     override def values: IndexedSeq[GachaRarity] = findValues
 
+    // FIXME: これ本当にガチャのレアリティと紐づいている...?
     def of[ItemStack](gachaPrize: GachaPrize[ItemStack]): GachaRarity = {
       val gachaPrizeProbability = gachaPrize.probability.value
       if (gachaPrizeProbability < GachaRarity.Gigantic.maxProbability.value)
