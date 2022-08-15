@@ -4,7 +4,6 @@ import cats.effect.ConcurrentEffect
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity._
 import com.github.unchama.seichiassist.subsystems.tradesystems.domain.{
   TradeResult,
@@ -25,26 +24,26 @@ object BukkitTrade {
     (contents: List[ItemStack]) => {
       val eff = for {
         gachaList <- gachaAPI.list
+      } yield {
         // GTアイテムを除去し、今回の対象であるあたりまでを含めたリスト
-        targetsList =
+        val targetsList =
           gachaList
-            .filterNot(GachaRarity.of[ItemStack](_) == Gigantic)
-            .filter(GachaRarity.of[ItemStack](_) == Regular)
+            .filterNot(_.probability.value < Gigantic.maxProbability.value)
+            .filter(_.probability.value < Regular.maxProbability.value)
 
         // 大当たりのアイテム
-        bigList = targetsList
-          .filter(GachaRarity.of[ItemStack](_) == Big)
+        val bigList = targetsList
+          .filter(_.probability.value < Big.maxProbability.value)
           .map(gachaPrize =>
             gachaPrize
               .copy(itemStack = canBeSignedAsGachaPrize.signWith(owner)(gachaPrize.itemStack))
           )
 
         // あたりのアイテム
-        regularList = targetsList.diff(bigList).map { gachaPrize =>
+        val regularList = targetsList.diff(bigList).map { gachaPrize =>
           canBeSignedAsGachaPrize.signWith(owner)(gachaPrize.itemStack)
         }
 
-      } yield {
         // 交換可能な大当たりのアイテム
         val tradableBigItems =
           contents.filter(targetItem =>
