@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.bukkit.actions
+package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.bukkit.traderules
 
 import cats.effect.ConcurrentEffect
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
