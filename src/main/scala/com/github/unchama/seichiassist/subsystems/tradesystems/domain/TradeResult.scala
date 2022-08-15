@@ -9,5 +9,5 @@ case class TradeResult[ItemStack](
 )
 
 case class TradeSuccessResult[ItemStack](itemStack: ItemStack, amount: Int) {
-  require(amount >= 0)
+  require(amount >= 1)
 }
