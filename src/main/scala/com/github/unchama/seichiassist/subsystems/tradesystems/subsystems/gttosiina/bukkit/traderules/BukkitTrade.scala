@@ -7,7 +7,11 @@ import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity.Gigantic
-import com.github.unchama.seichiassist.subsystems.tradesystems.domain.{TradeResult, TradeRule, TradeSuccessResult}
+import com.github.unchama.seichiassist.subsystems.tradesystems.domain.{
+  TradeResult,
+  TradeRule,
+  TradeSuccessResult
+}
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -22,13 +26,14 @@ object BukkitTrade {
     (contents: List[ItemStack]) => {
       val eff = for {
         gachaList <- gachaAPI.list
-        giganticItemStacks = gachaList // TODO GTアイテムかどうかを確率に依存すべきではない
+      } yield {
+        val giganticItemStacks = gachaList // TODO GTアイテムかどうかを確率に依存すべきではない
           .filter(GachaRarity.of[ItemStack](_) == Gigantic)
           .map(gachaPrize =>
             gachaPrize
               .copy(itemStack = canBeSignedAsGachaPrize.signWith(name)(gachaPrize.itemStack))
           )
-      } yield {
+
         // 交換可能なItemStack達
         val tradableItems = contents.filter { targetItem =>
           giganticItemStacks.exists(gachaPrize => gachaPrize.itemStack.isSimilar(targetItem))
