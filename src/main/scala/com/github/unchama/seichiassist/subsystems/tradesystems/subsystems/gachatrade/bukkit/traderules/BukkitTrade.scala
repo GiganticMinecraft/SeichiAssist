@@ -7,6 +7,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGach
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity._
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaskull.bukkit.GachaSkullData
 import com.github.unchama.seichiassist.subsystems.tradesystems.domain.{
+  BigOrRegular,
   TradeResult,
   TradeRule,
   TradeSuccessResult
