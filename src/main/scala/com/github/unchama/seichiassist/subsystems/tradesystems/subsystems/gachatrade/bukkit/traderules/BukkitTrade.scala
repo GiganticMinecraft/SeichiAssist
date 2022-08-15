@@ -2,8 +2,10 @@ package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gacha
 
 import cats.effect.ConcurrentEffect
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
+import com.github.unchama.generic.ListExtra
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
+import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity._
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaskull.bukkit.GachaSkullData
 import com.github.unchama.seichiassist.subsystems.tradesystems.domain.{
@@ -27,46 +29,31 @@ object BukkitTrade {
       val eff = for {
         gachaList <- gachaAPI.list
       } yield {
-        // GTアイテムを除去し、今回の対象であるあたりまでを含めたリスト
-        val targetsList =
-          gachaList
-            .filterNot(_.probability.value < Gigantic.maxProbability.value)
-            .filter(_.probability.value < Regular.maxProbability.value)
-
         // 大当たりのアイテム
-        val bigList = targetsList
-          .filter(_.probability.value < Big.maxProbability.value)
-          .map(gachaPrize =>
-            gachaPrize
-              .copy(itemStack = canBeSignedAsGachaPrize.signWith(owner)(gachaPrize.itemStack))
-          )
-
-        // あたりのアイテム
-        val regularList = targetsList.diff(bigList).map { gachaPrize =>
+        val bigList = gachaList.filter(GachaRarity.of[ItemStack](_) == Big).map { gachaPrize =>
           canBeSignedAsGachaPrize.signWith(owner)(gachaPrize.itemStack)
         }
 
-        // 交換可能な大当たりのアイテム
-        val tradableBigItems =
-          contents.filter(targetItem =>
-            bigList.exists(gachaPrize => gachaPrize.itemStack.isSimilar(targetItem))
-          )
+        // あたりのアイテム
+        val regularList = gachaList.filter(GachaRarity.of[ItemStack](_) == Regular).map {
+          gachaPrize => canBeSignedAsGachaPrize.signWith(owner)(gachaPrize.itemStack)
+        }
 
-        // 交換可能なあたりのアイテム
-        val tradableRegularItems = contents.filter(targetItem =>
-          regularList.exists(itemStack => itemStack.isSimilar(targetItem))
-        )
-
-        // 交換不可能なアイテム達
-        val nonTradableItems = contents.diff(tradableBigItems :: tradableRegularItems)
+        val result =
+          ListExtra.partitionWith(contents) { itemStack =>
+            if (bigList.exists(_.isSimilar(itemStack)))
+              Right(BigOrRegular.Big)
+            else if (regularList.exists(_.isSimilar(itemStack)))
+              Right(BigOrRegular.Regular)
+            else Left(itemStack)
+          }
 
         TradeResult[ItemStack](
-          tradableBigItems.map(itemStack =>
-            TradeSuccessResult(GachaSkullData.gachaForExchanging, itemStack.getAmount * 12)
-          ) ++ tradableRegularItems.map(itemStack =>
-            TradeSuccessResult(GachaSkullData.gachaForExchanging, itemStack.getAmount * 3)
-          ),
-          nonTradableItems
+          result._2.map {
+            case Big     => TradeSuccessResult(GachaSkullData.gachaForExchanging, 12)
+            case Regular => TradeSuccessResult(GachaSkullData.gachaForExchanging, 3)
+          },
+          result._1
         )
       }
       eff.toIO.unsafeRunSync()
