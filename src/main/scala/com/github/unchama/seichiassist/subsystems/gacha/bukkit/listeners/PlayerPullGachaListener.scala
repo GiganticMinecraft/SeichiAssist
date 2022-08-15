@@ -5,20 +5,20 @@ import cats.effect.Effect.ops.toAllEffectOps
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.BukkitDrawGacha
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util._
 import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 import org.bukkit.ChatColor._
+import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
-import org.bukkit.{GameMode, Material}
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.{EquipmentSlot, ItemStack}
+import org.bukkit.{GameMode, Material}
 
 class PlayerPullGachaListener[F[_]: ConcurrentEffect: OnMinecraftServerThread](
-  implicit gachaAPI: GachaAPI[F, ItemStack],
+  implicit gachaAPI: GachaAPI[F, ItemStack, Player],
   canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
 ) extends Listener {
 
@@ -84,7 +84,7 @@ class PlayerPullGachaListener[F[_]: ConcurrentEffect: OnMinecraftServerThread](
     }
 
     // ガチャの実行
-    new BukkitDrawGacha[F].draw(player, count).toIO.unsafeRunSync()
+    gachaAPI.drawGacha(player, count).toIO.unsafeRunSync()
   }
 
 }

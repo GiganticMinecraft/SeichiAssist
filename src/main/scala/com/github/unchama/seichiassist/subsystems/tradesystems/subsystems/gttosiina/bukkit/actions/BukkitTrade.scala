@@ -8,10 +8,8 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGach
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity.Gigantic
 import com.github.unchama.seichiassist.subsystems.tradesystems.application.actions.TradeRule
-import com.github.unchama.seichiassist.subsystems.tradesystems.domain.{
-  TradeResult,
-  TradeSuccessResult
-}
+import com.github.unchama.seichiassist.subsystems.tradesystems.domain.{TradeResult, TradeSuccessResult}
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 object BukkitTrade {
@@ -19,7 +17,7 @@ object BukkitTrade {
   import cats.implicits._
 
   def apply[F[_]: ConcurrentEffect](name: String)(
-    implicit gachaAPI: GachaAPI[F, ItemStack],
+    implicit gachaAPI: GachaAPI[F, ItemStack, Player],
     canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
   ): TradeRule[ItemStack] =
     (contents: List[ItemStack]) => {

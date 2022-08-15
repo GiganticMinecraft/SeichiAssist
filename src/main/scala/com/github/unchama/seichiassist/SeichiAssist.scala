@@ -382,7 +382,7 @@ class SeichiAssist extends JavaPlugin() {
       .wired[SyncIO, IO](seichiAssistConfig.getAnywhereEnderConfiguration)
   }
 
-  private lazy implicit val gachaAPI: GachaAPI[IO, ItemStack] = gachaSystem.api
+  private lazy implicit val gachaAPI: GachaAPI[IO, ItemStack, Player] = gachaSystem.api
 
   private lazy val gachaSystem: subsystems.gacha.System[IO] =
     subsystems.gacha.System.wired.unsafeRunSync()

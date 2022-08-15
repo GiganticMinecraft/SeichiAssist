@@ -11,6 +11,7 @@ import com.github.unchama.seichiassist.subsystems.tradesystems.domain.{
   TradeResult,
   TradeSuccessResult
 }
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 object BukkitTrade {
@@ -18,7 +19,7 @@ object BukkitTrade {
   import cats.implicits._
 
   def apply[F[_]: ConcurrentEffect](owner: String)(
-    implicit gachaAPI: GachaAPI[F, ItemStack],
+    implicit gachaAPI: GachaAPI[F, ItemStack, Player],
     canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
   ): TradeRule[ItemStack] =
     (contents: List[ItemStack]) => {

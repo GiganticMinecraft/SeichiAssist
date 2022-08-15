@@ -21,6 +21,7 @@ import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
 import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 import java.util.UUID
@@ -31,7 +32,7 @@ class GachaCommand[
 ](
   implicit gachaTicketPersistence: GachaTicketFromAdminTeamRepository[F],
   gachaPersistence: GachaPrizeListPersistence[F, ItemStack],
-  gachaAPI: GachaAPI[F, ItemStack],
+  gachaAPI: GachaAPI[F, ItemStack, Player],
   canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
 ) {
 

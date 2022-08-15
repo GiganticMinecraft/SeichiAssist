@@ -3,8 +3,10 @@ package com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions
 import cats.effect.{IO, Sync}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
-import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
-import com.github.unchama.seichiassist.subsystems.gacha.application.actions.DrawGacha
+import com.github.unchama.seichiassist.subsystems.gacha.application.actions.{
+  DrawGacha,
+  LotteryOfGachaItems
+}
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity.{
   Big,
@@ -14,6 +16,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.Gacha
 }
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   CanBeSignedAsGachaPrize,
+  GlobalGachaPrizeList,
   GrantState
 }
 import com.github.unchama.seichiassist.util.SendMessageEffect.sendMessageToEveryone
@@ -25,18 +28,19 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 class BukkitDrawGacha[F[_]: Sync: OnMinecraftServerThread](
-  implicit gachaAPI: GachaAPI[F, ItemStack],
+  implicit lotteryOfGachaItems: LotteryOfGachaItems[F, ItemStack],
+  gachaPrizesRepository: GlobalGachaPrizeList[F, ItemStack],
   canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
 ) extends DrawGacha[F, Player] {
 
-  import cats.implicits._
   import PlayerSendable._
+  import cats.implicits._
 
   import scala.jdk.CollectionConverters._
 
   override def draw(player: Player, count: Int): F[Unit] = {
     for {
-      gachaPrizes <- gachaAPI.runLottery(count)
+      gachaPrizes <- lotteryOfGachaItems.runLottery(count, gachaPrizesRepository)
       states <- gachaPrizes.traverse(gachaPrize =>
         new BukkitGrantGachaPrize().grantGachaPrize(gachaPrize)(player)
       )
@@ -103,6 +107,7 @@ class BukkitDrawGacha[F[_]: Sync: OnMinecraftServerThread](
               player.sendMessage(s"${YELLOW}おめでとう！当たり！$additionalMessage")
             case GachaRingoOrExpBottle if count == 1 =>
               player.sendMessage(s"${WHITE}はずれ！また遊んでね！$additionalMessage")
+            case _ =>
           }
           if (count > 1) {
             player.sendMessage(s"$AQUA${count}回ガチャを回しました。")

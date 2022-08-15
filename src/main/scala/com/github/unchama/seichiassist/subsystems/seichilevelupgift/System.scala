@@ -23,7 +23,7 @@ object System {
   ]: ContextCoercion[*[_], F]](
     implicit breakCountReadApi: BreakCountReadAPI[F, G, Player],
     send: SendMinecraftMessage[F, Player],
-    gachaAPI: GachaAPI[F, ItemStack],
+    gachaAPI: GachaAPI[F, ItemStack, Player],
     gachaPointApi: GachaPointApi[F, G, Player]
   ): F[Nothing] = {
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =

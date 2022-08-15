@@ -15,7 +15,7 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 
 class GachaTradeListener[F[_]: ConcurrentEffect](
-  implicit gachaAPI: GachaAPI[F, ItemStack],
+  implicit gachaAPI: GachaAPI[F, ItemStack, Player],
   canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
 ) extends Listener {
 

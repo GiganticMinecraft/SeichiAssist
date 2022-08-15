@@ -4,20 +4,18 @@ import cats.Functor
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{GachaPrize, GachaPrizeId}
 
-trait GachaLotteryAPI[F[_], ItemStack] {
+trait GachaDrawAPI[F[_], Player] {
 
   /**
-   * ガチャ景品を抽選してその結果を返す作用
+   * ガチャを実行する作用
    */
-  def runLottery(runs: Int): F[Vector[GachaPrize[ItemStack]]]
+  def drawGacha(player: Player, draws: Int): F[Unit]
 
 }
 
 object GachaLotteryAPI {
 
-  def apply[F[_], ItemStack](
-    implicit ev: GachaLotteryAPI[F, ItemStack]
-  ): GachaLotteryAPI[F, ItemStack] =
+  def apply[F[_], Player](implicit ev: GachaDrawAPI[F, Player]): GachaDrawAPI[F, Player] =
     ev
 
 }
@@ -98,7 +96,7 @@ object GachaWriteAPI {
 
 }
 
-trait GachaAPI[F[_], ItemStack]
+trait GachaAPI[F[_], ItemStack, Player]
     extends GachaReadAPI[F, ItemStack]
     with GachaWriteAPI[F, ItemStack]
-    with GachaLotteryAPI[F, ItemStack]
+    with GachaDrawAPI[F, Player]
