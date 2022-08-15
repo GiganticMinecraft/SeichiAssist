@@ -50,8 +50,9 @@ object BukkitTrade {
 
         TradeResult[ItemStack](
           result._2.map {
-            case Big     => TradeSuccessResult(GachaSkullData.gachaForExchanging, 12)
-            case Regular => TradeSuccessResult(GachaSkullData.gachaForExchanging, 3)
+            case BigOrRegular.Big => TradeSuccessResult(GachaSkullData.gachaForExchanging, 12)
+            case BigOrRegular.Regular =>
+              TradeSuccessResult(GachaSkullData.gachaForExchanging, 3)
           },
           result._1
         )
