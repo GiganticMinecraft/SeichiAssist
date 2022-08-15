@@ -5,6 +5,7 @@ import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity._
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaskull.bukkit.GachaSkullData
 import com.github.unchama.seichiassist.subsystems.tradesystems.domain.{
   TradeResult,
   TradeRule,
@@ -60,9 +61,9 @@ object BukkitTrade {
 
         TradeResult[ItemStack](
           tradableBigItems.map(itemStack =>
-            TradeSuccessResult(itemStack, itemStack.getAmount * 12)
+            TradeSuccessResult(GachaSkullData.gachaForExchanging, itemStack.getAmount * 12)
           ) ++ tradableRegularItems.map(itemStack =>
-            TradeSuccessResult(itemStack, itemStack.getAmount * 3)
+            TradeSuccessResult(GachaSkullData.gachaForExchanging, itemStack.getAmount * 3)
           ),
           nonTradableItems
         )
