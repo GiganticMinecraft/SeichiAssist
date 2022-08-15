@@ -7,7 +7,7 @@ package com.github.unchama.seichiassist.subsystems.tradesystems.domain
 trait TradeRule[ItemStack] {
 
   /**
-   * ガチャアイテムから椎名林檎やガチャ券へ交換できるアイテムを列挙する
+   * プレーヤーが入力したアイテムから、交換結果を計算する
    */
   def trade(contents: List[ItemStack]): TradeResult[ItemStack]
 
