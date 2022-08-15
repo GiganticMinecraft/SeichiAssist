@@ -6,11 +6,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity._
-import com.github.unchama.seichiassist.subsystems.tradesystems.application.actions.TradeRule
-import com.github.unchama.seichiassist.subsystems.tradesystems.domain.{
-  TradeResult,
-  TradeSuccessResult
-}
+import com.github.unchama.seichiassist.subsystems.tradesystems.domain.{TradeResult, TradeRule, TradeSuccessResult}
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 

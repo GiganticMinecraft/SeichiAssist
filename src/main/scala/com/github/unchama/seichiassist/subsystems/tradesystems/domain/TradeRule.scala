@@ -1,6 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.tradesystems.application.actions
-
-import com.github.unchama.seichiassist.subsystems.tradesystems.domain.TradeResult
+package com.github.unchama.seichiassist.subsystems.tradesystems.domain
 
 /**
  * 特定のアイテムを交換するためのルール（何を何個入れると何が何個得られて何が返却されるか）
