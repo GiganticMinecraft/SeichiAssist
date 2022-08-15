@@ -69,9 +69,7 @@ class PlayerPullGachaListener[F[_]: ConcurrentEffect: OnMinecraftServerThread](
 
     val count =
       if (player.isSneaking) {
-        val amount = clickedItemStack.getAmount
-        player.sendMessage(s"$AQUA${amount}回ガチャを回しました。")
-        amount
+        clickedItemStack.getAmount
       } else 1
 
     if (

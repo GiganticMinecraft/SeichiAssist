@@ -104,6 +104,9 @@ class BukkitDrawGacha[F[_]: Sync: OnMinecraftServerThread](
             case GachaRingoOrExpBottle if count == 1 =>
               player.sendMessage(s"${WHITE}はずれ！また遊んでね！$additionalMessage")
           }
+          if (count > 1) {
+            player.sendMessage(s"$AQUA${count}回ガチャを回しました。")
+          }
       }
     }
   }
