@@ -8,7 +8,7 @@ import com.github.unchama.seichiassist.subsystems.donate.domain.{
 
 import java.util.UUID
 
-trait DonateWriteAPI[F[_]] {
+trait DonatePremiumPointWriteAPI[F[_]] {
 
   /**
    * プレミアムエフェクトポイントを使用する作用
@@ -20,35 +20,38 @@ trait DonateWriteAPI[F[_]] {
 
 }
 
-object DonateWriteAPI {
+object DonatePremiumPointWriteAPI {
 
-  def apply[F[_]](implicit ev: DonateWriteAPI[F]): DonateWriteAPI[F] = ev
+  def apply[F[_]](implicit ev: DonatePremiumPointWriteAPI[F]): DonatePremiumPointWriteAPI[F] =
+    ev
 
 }
 
-trait DonateReadAPI[F[_]] {
+trait DonatePremiumPointReadAPI[F[_]] {
 
   /**
    * 現在のプレミアムエフェクトポイントの合計を取得する作用
    */
-  def currentPremiumEffectPoints(uuid: UUID): F[DonatePremiumEffectPoint]
+  def currentPoint(uuid: UUID): F[DonatePremiumEffectPoint]
 
   /**
    * プレミアムエフェクトの購入履歴を取得する作用
    */
-  def donatePremiumEffectPointPurchaseHistory(uuid: UUID): F[Vector[PremiumEffectPurchaseData]]
+  def fetchGrantHistory(uuid: UUID): F[Vector[PremiumEffectPurchaseData]]
 
   /**
    * プレミアムエフェクトの使用履歴を取得する作用
    */
-  def donatePremiumEffectPointUsageHistory(uuid: UUID): F[Vector[PremiumEffectPurchaseData]]
+  def fetchUseHistory(uuid: UUID): F[Vector[PremiumEffectPurchaseData]]
 
 }
 
-object DonateReadAPI {
+object DonatePremiumPointReadAPI {
 
-  def apply[F[_]](implicit ev: DonateReadAPI[F]): DonateReadAPI[F] = ev
+  def apply[F[_]](implicit ev: DonatePremiumPointReadAPI[F]): DonatePremiumPointReadAPI[F] = ev
 
 }
 
-trait DonateAPI[F[_]] extends DonateWriteAPI[F] with DonateReadAPI[F]
+trait DonatePremiumPointAPI[F[_]]
+    extends DonatePremiumPointWriteAPI[F]
+    with DonatePremiumPointReadAPI[F]

@@ -16,7 +16,7 @@ import java.util.UUID
 
 trait System[F[_]] extends Subsystem[F] {
 
-  val api: DonateAPI[F]
+  val api: DonatePremiumPointAPI[F]
 
 }
 
@@ -26,16 +26,16 @@ object System {
     implicit val persistence: DonatePersistence[F] = new JdbcDonatePersistence[F]
 
     new System[F] {
-      override val api: DonateAPI[F] = new DonateAPI[F] {
-        override def currentPremiumEffectPoints(uuid: UUID): F[DonatePremiumEffectPoint] =
+      override val api: DonatePremiumPointAPI[F] = new DonatePremiumPointAPI[F] {
+        override def currentPoint(uuid: UUID): F[DonatePremiumEffectPoint] =
           persistence.currentPremiumEffectPoints(uuid)
 
-        override def donatePremiumEffectPointPurchaseHistory(
+        override def fetchGrantHistory(
           uuid: UUID
         ): F[Vector[PremiumEffectPurchaseData]] =
           persistence.donatePremiumEffectPointPurchaseHistory(uuid)
 
-        override def donatePremiumEffectPointUsageHistory(
+        override def fetchUseHistory(
           uuid: UUID
         ): F[Vector[PremiumEffectPurchaseData]] =
           persistence.donatePremiumEffectPointUsageHistory(uuid)

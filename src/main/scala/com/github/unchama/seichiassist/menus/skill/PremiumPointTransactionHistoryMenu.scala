@@ -11,7 +11,7 @@ import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.CommonButtons
-import com.github.unchama.seichiassist.subsystems.donate.DonateAPI
+import com.github.unchama.seichiassist.subsystems.donate.DonatePremiumPointAPI
 import com.github.unchama.seichiassist.subsystems.donate.domain.{Obtained, Used}
 import net.md_5.bungee.api.ChatColor._
 import org.bukkit.ChatColor.{GOLD, GREEN, RESET}
@@ -23,7 +23,7 @@ object PremiumPointTransactionHistoryMenu {
   class Environment(
     implicit val ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
     val ioCanOpenTransactionHistoryMenu: IO CanOpen PremiumPointTransactionHistoryMenu,
-    val donateAPI: DonateAPI[IO]
+    val donateAPI: DonatePremiumPointAPI[IO]
   )
 
 }
@@ -53,8 +53,8 @@ case class PremiumPointTransactionHistoryMenu(pageNumber: Int) extends Menu {
     val uuid = player.getUniqueId
 
     for {
-      purchaseHistory <- donateAPI.donatePremiumEffectPointPurchaseHistory(uuid)
-      usageHistory <- donateAPI.donatePremiumEffectPointUsageHistory(uuid)
+      purchaseHistory <- donateAPI.fetchGrantHistory(uuid)
+      usageHistory <- donateAPI.fetchUseHistory(uuid)
     } yield {
       val entriesPerPage = 3 * 9
       val history = (purchaseHistory ++ usageHistory).toList.sortBy(_.timestamp)

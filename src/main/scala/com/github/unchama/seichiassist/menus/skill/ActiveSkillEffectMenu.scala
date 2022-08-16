@@ -16,7 +16,7 @@ import com.github.unchama.seichiassist.seichiskill.effect.{
   ActiveSkillPremiumEffect,
   UnlockableActiveSkillEffect
 }
-import com.github.unchama.seichiassist.subsystems.donate.DonateAPI
+import com.github.unchama.seichiassist.subsystems.donate.DonatePremiumPointAPI
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -36,7 +36,7 @@ object ActiveSkillEffectMenu extends Menu {
     val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type,
     val ioCanOpenTransactionHistoryMenu: IO CanOpen PremiumPointTransactionHistoryMenu,
     val ioOnMainThread: OnMinecraftServerThread[IO],
-    val donateAPI: DonateAPI[IO]
+    val donateAPI: DonatePremiumPointAPI[IO]
   )
 
   override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}整地スキルエフェクト選択")
@@ -51,7 +51,7 @@ object ActiveSkillEffectMenu extends Menu {
 
   def unlockOrSet(
     effect: ActiveSkillEffect
-  )(implicit donateAPI: DonateAPI[IO]): TargetedEffect[Player] = Kleisli { player =>
+  )(implicit donateAPI: DonatePremiumPointAPI[IO]): TargetedEffect[Player] = Kleisli { player =>
     val playerData = SeichiAssist.playermap(player.getUniqueId)
 
     def unlockNormalEffect(effect: ActiveSkillNormalEffect): IO[Unit] =
@@ -80,7 +80,7 @@ object ActiveSkillEffectMenu extends Menu {
 
     def unlockPremiumEffect(effect: ActiveSkillPremiumEffect): IO[Unit] =
       for {
-        premiumEffectPoint <- donateAPI.currentPremiumEffectPoints(player.getUniqueId)
+        premiumEffectPoint <- donateAPI.currentPoint(player.getUniqueId)
         _ <-
           if (premiumEffectPoint.value < effect.usePoint) {
             SequentialEffect(
@@ -171,7 +171,7 @@ object ActiveSkillEffectMenu extends Menu {
 
     val effectDataButton: IO[Button] =
       for {
-        premiumEffectPoint <- donateAPI.currentPremiumEffectPoints(player.getUniqueId)
+        premiumEffectPoint <- donateAPI.currentPoint(player.getUniqueId)
         button <-
           IO {
             val playerData = SeichiAssist.playermap(getUniqueId)
