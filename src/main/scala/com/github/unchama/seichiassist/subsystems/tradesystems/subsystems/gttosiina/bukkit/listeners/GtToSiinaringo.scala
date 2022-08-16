@@ -2,8 +2,7 @@ package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttos
 
 import cats.effect.ConcurrentEffect
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
-import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
+import com.github.unchama.seichiassist.subsystems.gacha.domain.{CanBeSignedAsGachaPrize, GachaPrize}
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaprizefactory.bukkit.StaticGachaPrizeFactory
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.bukkit.traderules.BukkitTrade
 import com.github.unchama.seichiassist.util.InventoryOperations
@@ -15,9 +14,8 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 
-class GtToSiinaringo[F[_]: ConcurrentEffect](
-  implicit gachaAPI: GachaAPI[F, ItemStack, Player],
-  canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
+class GtToSiinaringo[F[_]: ConcurrentEffect](gachaPrizeTable: Vector[GachaPrize[ItemStack]])(
+  implicit canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
 ) extends Listener {
 
   @EventHandler
@@ -37,7 +35,7 @@ class GtToSiinaringo[F[_]: ConcurrentEffect](
     if (inventory.getTitle != s"$GOLD${BOLD}椎名林檎と交換したい景品を入れてネ") return
     // 交換後の情報
     val tradedInformation =
-      BukkitTrade[F](name).trade(inventory.getContents.toList)
+      new BukkitTrade(name, gachaPrizeTable).trade(inventory.getContents.toList)
 
     /*
      * 非対象アイテムをインベントリに戻す

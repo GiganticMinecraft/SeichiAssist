@@ -12,13 +12,20 @@ import org.bukkit.inventory.ItemStack
 
 object System {
 
+  import cats.implicits._
+
   def wired[F[_]: ConcurrentEffect](
     implicit gachaAPI: GachaAPI[F, ItemStack, Player]
-  ): Subsystem[F] = {
+  ): F[Subsystem[F]] = {
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
       BukkitCanBeSignedAsGachaPrize
-    new Subsystem[F] {
-      override val listeners: Seq[Listener] = Seq(new GtToSiinaringo[F]())
+
+    for {
+      gachaPrizeTable <- gachaAPI.list
+    } yield {
+      new Subsystem[F] {
+        override val listeners: Seq[Listener] = Seq(new GtToSiinaringo[F](gachaPrizeTable))
+      }
     }
   }
 
