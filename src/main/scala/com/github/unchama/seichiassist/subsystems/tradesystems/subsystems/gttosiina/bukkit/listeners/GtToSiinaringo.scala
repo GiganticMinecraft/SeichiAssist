@@ -39,8 +39,8 @@ class GtToSiinaringo[F[_]: ConcurrentEffect](
     val tradedInformation =
       BukkitTrade[F](name).trade(inventory.getContents.toList)
 
-    /**
-     * 非対象商品をインベントリに戻す
+    /*
+     * 非対象アイテムをインベントリに戻す
      */
     tradedInformation.nonTradableItemStacks.filterNot(_ == null).foreach { itemStack =>
       if (!InventoryOperations.isPlayerInventoryFull(player))
@@ -58,7 +58,7 @@ class GtToSiinaringo[F[_]: ConcurrentEffect](
       )
     }
 
-    /**
+    /*
      * 椎名林檎をインベントリへ
      */
     val siinaringo = StaticGachaPrizeFactory.getMaxRingo(name)
@@ -68,7 +68,7 @@ class GtToSiinaringo[F[_]: ConcurrentEffect](
       else InventoryOperations.dropItem(player, siinaringo)
     }
 
-    /**
+    /*
      * お知らせする
      */
     if (tradedAmount > 0) {

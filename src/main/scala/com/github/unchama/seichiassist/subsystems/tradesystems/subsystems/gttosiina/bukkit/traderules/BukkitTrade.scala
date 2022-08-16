@@ -28,7 +28,7 @@ object BukkitTrade {
       val eff = for {
         gachaList <- gachaAPI.list
       } yield {
-        val giganticItemStacks = gachaList // TODO GTアイテムかどうかを確率に依存すべきではない
+        val giganticItemStacks = gachaList
           .filter(GachaRarity.of[ItemStack](_) == Gigantic)
           .map(gachaPrize =>
             gachaPrize

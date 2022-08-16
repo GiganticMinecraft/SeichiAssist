@@ -40,7 +40,7 @@ class GachaTradeListener[F[_]: ConcurrentEffect](
       BukkitTrade[F](name).trade(inventory.getContents.toList)
 
     /*
-     * 非対象商品をインベントリに戻す
+     * 非対象アイテムをインベントリに戻す
      */
     tradedInformation.nonTradableItemStacks.filterNot(_ == null).foreach { itemStack =>
       if (!InventoryOperations.isPlayerInventoryFull(player))
