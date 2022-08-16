@@ -48,6 +48,11 @@ object BukkitTrade {
             else Left(itemStack)
           }
 
+        /* NOTE: 2022/08/16現在、交換できるギガンテックアイテムは
+            スタックできるアイテムではない。
+            すなわち、この実装は交換できるアイテムが必ず単一のアイテムである
+            ことが前提となっている。
+         */
         TradeResult[ItemStack](
           tradable.map {
             case BigOrRegular.Big => TradeSuccessResult(GachaSkullData.gachaForExchanging, 12)
