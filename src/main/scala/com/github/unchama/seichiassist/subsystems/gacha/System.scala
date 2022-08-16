@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.gacha
 
 import cats.Functor
-import cats.effect.concurrent.Ref
 import cats.effect.ConcurrentEffect
+import cats.effect.concurrent.Ref
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.serialization.SerializeAndDeserialize
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
@@ -74,11 +74,10 @@ object System {
           override def addGachaPrize(gachaPrize: gachaPrizeByGachaPrizeId): F[Unit] =
             for {
               prizes <- list
-              newList = prizes ++ Vector(
-                gachaPrize(
-                  GachaPrizeId(if (prizes.nonEmpty) prizes.map(_.id.id).max + 1 else 1)
-                )
-              )
+              newList = gachaPrize(
+                GachaPrizeId(if (prizes.nonEmpty) prizes.map(_.id.id).max + 1 else 1)
+              ) +: prizes
+
               _ <- replace(newList)
             } yield ()
 
