@@ -39,7 +39,7 @@ object BukkitTrade {
           gachaPrize => canBeSignedAsGachaPrize.signWith(owner)(gachaPrize.itemStack)
         }
 
-        val result =
+        val (nonTradable, tradable) =
           ListExtra.partitionWith(contents) { itemStack =>
             if (bigList.exists(_.isSimilar(itemStack)))
               Right(BigOrRegular.Big)
@@ -49,12 +49,12 @@ object BukkitTrade {
           }
 
         TradeResult[ItemStack](
-          result._2.map {
+          tradable.map {
             case BigOrRegular.Big => TradeSuccessResult(GachaSkullData.gachaForExchanging, 12)
             case BigOrRegular.Regular =>
               TradeSuccessResult(GachaSkullData.gachaForExchanging, 3)
           },
-          result._1
+          nonTradable
         )
       }
       eff.toIO.unsafeRunSync()
