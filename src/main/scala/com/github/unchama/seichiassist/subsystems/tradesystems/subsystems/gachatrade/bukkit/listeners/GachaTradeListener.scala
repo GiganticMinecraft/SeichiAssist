@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.listeners
 
-import cats.effect.ConcurrentEffect
+import cats.effect.{ConcurrentEffect, IO}
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   CanBeSignedAsGachaPrize,
   GachaPrize
@@ -41,26 +42,23 @@ class GachaTradeListener[F[_]: ConcurrentEffect](
     val tradedInformation =
       new BukkitTrade(name, gachaPrizeTable).trade(inventory.getContents.toList)
 
-    /*
-     * 非対象アイテムをインベントリに戻す
-     */
-    tradedInformation.nonTradableItemStacks.filterNot(_ == null).foreach { itemStack =>
-      if (!InventoryOperations.isPlayerInventoryFull(player))
-        InventoryOperations.addItem(player, itemStack)
-      else InventoryOperations.dropItem(player, itemStack)
-    }
-
     val tradeAmount = tradedInformation.tradedSuccessResult.map(_.amount).sum
 
     /*
      * ガチャ券を付与する
      */
     val skull = GachaSkullData.gachaForExchanging
-    (0 until tradeAmount).foreach { _ =>
-      if (!InventoryOperations.isPlayerInventoryFull(player))
-        InventoryOperations.addItem(player, skull)
-      else InventoryOperations.dropItem(player, skull)
-    }
+
+    /*
+     * ガチャ券と交換できなかったアイテムをインベントリに
+     */
+    InventoryOperations
+      .grantItemStacksEffect[IO](
+        tradedInformation.nonTradableItemStacks.filterNot(_ == null) ++ Seq
+          .fill(tradeAmount)(skull): _*
+      )
+      .apply(player)
+      .unsafeRunSync()
 
     /*
      * お知らせする

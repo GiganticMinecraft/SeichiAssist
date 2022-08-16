@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.bukkit.listeners
 
-import cats.effect.ConcurrentEffect
+import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   CanBeSignedAsGachaPrize,
   GachaPrize
@@ -40,15 +41,6 @@ class GtToSiinaringo[F[_]: ConcurrentEffect](gachaPrizeTable: Vector[GachaPrize[
     val tradedInformation =
       new BukkitTrade(name, gachaPrizeTable).trade(inventory.getContents.toList)
 
-    /*
-     * 非対象アイテムをインベントリに戻す
-     */
-    tradedInformation.nonTradableItemStacks.filterNot(_ == null).foreach { itemStack =>
-      if (!InventoryOperations.isPlayerInventoryFull(player))
-        InventoryOperations.addItem(player, itemStack)
-      else InventoryOperations.dropItem(player, itemStack)
-    }
-
     val tradedAmount = tradedInformation.tradedSuccessResult.map(result => result.amount).sum
 
     if (tradedAmount == 0) {
@@ -60,14 +52,13 @@ class GtToSiinaringo[F[_]: ConcurrentEffect](gachaPrizeTable: Vector[GachaPrize[
     }
 
     /*
-     * 椎名林檎をインベントリへ
+     * 椎名林檎と非対象アイテムをインベントリへ
      */
     val siinaringo = StaticGachaPrizeFactory.getMaxRingo(name)
-    (0 until tradedAmount).foreach { _ =>
-      if (!InventoryOperations.isPlayerInventoryFull(player))
-        InventoryOperations.addItem(player, siinaringo)
-      else InventoryOperations.dropItem(player, siinaringo)
-    }
+    InventoryOperations.grantItemStacksEffect[IO](
+      tradedInformation.nonTradableItemStacks.filterNot(_ == null) ++ Seq
+        .fill(tradedAmount)(siinaringo): _*
+    )
 
     /*
      * お知らせする
