@@ -11,7 +11,7 @@ trait SerializeAndDeserialize[ParseError, T] {
   def serialize(value: T): String
 
   /**
-   * 文字列から [[T]] の値を構築することを試みる。
+   * 文字列から [[T]] へのデシリアライズを試みる。
    *
    * [[T]] の値が構築できなかった場合は、理由を説明する
    * [[ParseError]] が [[Left]] で返る。
