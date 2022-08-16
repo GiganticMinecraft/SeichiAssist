@@ -34,7 +34,7 @@ object BukkitCanBeSignedAsGachaPrize extends CanBeSignedAsGachaPrize[ItemStack] 
       import m._
       setLore {
         val originalLore = if (itemStack.getItemMeta.hasLore) getLore.asScala else Nil
-        val appended = originalLore ++ List(s"$RESET${DARK_GREEN}所有者：$ownerName")
+        val appended = originalLore :+ s"$RESET${DARK_GREEN}所有者：$ownerName"
 
         appended.asJava
       }
