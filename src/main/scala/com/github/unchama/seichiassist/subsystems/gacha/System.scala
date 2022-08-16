@@ -56,7 +56,7 @@ object System {
       override implicit val api: GachaAPI[F, ItemStack, Player] =
         new GachaAPI[F, ItemStack, Player] {
 
-          override protected implicit val F: Functor[F] = implicitly[Functor[F]]
+          override protected implicit val F: Functor[F] = implicitly
 
           override def load: F[Unit] = gachaPersistence.list.flatMap { gachaPrizes =>
             gachaPrizesListRepository.set(gachaPrizes)
