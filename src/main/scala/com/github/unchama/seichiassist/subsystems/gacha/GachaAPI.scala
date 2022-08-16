@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.{GachaPrize, Gach
 trait GachaDrawAPI[F[_], Player] {
 
   /**
-   * ガチャを実行する作用
+   * @return ガチャを実行する作用
    */
   def drawGacha(player: Player, draws: Int): F[Unit]
 
@@ -27,12 +27,12 @@ trait GachaReadAPI[F[_], ItemStack] {
   protected implicit val F: Functor[F]
 
   /**
-   * ガチャの景品リストを返す
+   * @return ガチャの景品リスト
    */
   def list: F[Vector[GachaPrize[ItemStack]]]
 
   /**
-   * [[GachaPrizeId]]に対応する[[GachaPrize]]を取得する
+   * @return [[GachaPrizeId]]に対応する[[GachaPrize]]
    */
   final def fetch(gachaPrizeId: GachaPrizeId): F[Option[GachaPrize[ItemStack]]] = for {
     prizes <- list
