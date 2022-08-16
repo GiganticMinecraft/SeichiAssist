@@ -94,7 +94,8 @@ object ActiveSkillEffectMenu extends Menu {
                 val state = playerData.skillEffectState
                 playerData.skillEffectState =
                   state.copy(obtainedEffects = state.obtainedEffects + effect)
-              } >> SequentialEffect(
+              }
+              _ <- SequentialEffect(
                 MessageEffect(
                   s"${LIGHT_PURPLE}プレミアムエフェクト：${effect.nameOnUI}$RESET$LIGHT_PURPLE${BOLD}を解除しました"
                 ),
