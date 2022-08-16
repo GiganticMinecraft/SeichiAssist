@@ -30,14 +30,10 @@ object System {
         override def currentPoint(uuid: UUID): F[DonatePremiumEffectPoint] =
           persistence.currentPremiumEffectPoints(uuid)
 
-        override def fetchGrantHistory(
-          uuid: UUID
-        ): F[Vector[PremiumEffectPurchaseData]] =
+        override def fetchGrantHistory(uuid: UUID): F[Vector[PremiumEffectPurchaseData]] =
           persistence.donatePremiumEffectPointPurchaseHistory(uuid)
 
-        override def fetchUseHistory(
-          uuid: UUID
-        ): F[Vector[PremiumEffectPurchaseData]] =
+        override def fetchUseHistory(uuid: UUID): F[Vector[PremiumEffectPurchaseData]] =
           persistence.donatePremiumEffectPointUsageHistory(uuid)
 
         override def useDonatePremiumEffectPoint(
