@@ -66,7 +66,7 @@ class JdbcDonatePersistence[F[_]: Sync] extends DonatePersistence[F] {
           .map(rs =>
             Obtained(DonatePremiumEffectPoint(rs.int("get_points")), rs.localDate("timestamp"))
           )
-          .toList()
+          .list
           .apply()
           .toVector
       }
@@ -84,7 +84,7 @@ class JdbcDonatePersistence[F[_]: Sync] extends DonatePersistence[F] {
             ActiveSkillPremiumEffect.withName(rs.string("effect_name"))
           )
         )
-        .toList()
+        .list
         .apply()
         .toVector
     }
