@@ -2,7 +2,10 @@ package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gacha
 
 import cats.effect.ConcurrentEffect
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
-import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
+import com.github.unchama.seichiassist.subsystems.gacha.domain.{
+  CanBeSignedAsGachaPrize,
+  GachaPrize
+}
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaskull.bukkit.GachaSkullData
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.traderules.BukkitTrade
 import com.github.unchama.seichiassist.util.InventoryOperations
@@ -15,6 +18,8 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 
 class GachaTradeListener[F[_]: ConcurrentEffect](
+  gachaPrizeTable: Vector[GachaPrize[ItemStack]]
+)(
   implicit gachaAPI: GachaAPI[F, ItemStack, Player],
   canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
 ) extends Listener {
@@ -37,7 +42,7 @@ class GachaTradeListener[F[_]: ConcurrentEffect](
 
     // 交換後の情報
     val tradedInformation =
-      BukkitTrade[F](name).trade(inventory.getContents.toList)
+      new BukkitTrade(name, gachaPrizeTable).trade(inventory.getContents.toList)
 
     /*
      * 非対象アイテムをインベントリに戻す
