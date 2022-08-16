@@ -30,7 +30,7 @@ object BukkitTrade {
       } yield {
         val giganticItemStacks = gachaList
           .filter(GachaRarity.of[ItemStack](_) == Gigantic)
-          .map(gachaPrize => canBeSignedAsGachaPrize.signWith(name)(gachaPrize.itemStack))
+          .map(gachaPrize => canBeSignedAsGachaPrize.signWith(name)(gachaPrize))
 
         val nonTradableItems =
           contents.filter(itemStack => giganticItemStacks.exists(_.isSimilar(itemStack)))
@@ -39,7 +39,7 @@ object BukkitTrade {
           contents
             .diff(nonTradableItems)
             .map(_ =>
-              /* NOTE: 2022/08/16現在、交換できるギガンテックアイテムは
+              /* NOTE: 2022/08/16現在、交換できるあたり、大当たりのアイテムは
                   スタックできるアイテムではない。
                   すなわち、この実装は交換できるアイテムが必ず単一のアイテムである
                   ことが前提となっている。

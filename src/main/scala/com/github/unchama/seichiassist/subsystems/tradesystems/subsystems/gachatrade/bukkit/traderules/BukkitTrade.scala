@@ -31,12 +31,12 @@ object BukkitTrade {
       } yield {
         // 大当たりのアイテム
         val bigList = gachaList.filter(GachaRarity.of[ItemStack](_) == Big).map { gachaPrize =>
-          canBeSignedAsGachaPrize.signWith(owner)(gachaPrize.itemStack)
+          canBeSignedAsGachaPrize.signWith(owner)(gachaPrize)
         }
 
         // あたりのアイテム
         val regularList = gachaList.filter(GachaRarity.of[ItemStack](_) == Regular).map {
-          gachaPrize => canBeSignedAsGachaPrize.signWith(owner)(gachaPrize.itemStack)
+          gachaPrize => canBeSignedAsGachaPrize.signWith(owner)(gachaPrize)
         }
 
         val (nonTradable, tradable) =

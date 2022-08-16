@@ -1,14 +1,16 @@
 package com.github.unchama.seichiassist.subsystems.gacha.bukkit
 
-import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
+import com.github.unchama.seichiassist.subsystems.gacha.domain.{
+  CanBeSignedAsGachaPrize,
+  GachaPrize
+}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
-
 import org.bukkit.ChatColor._
 
 object BukkitCanBeSignedAsGachaPrize extends CanBeSignedAsGachaPrize[ItemStack] {
-  override def signWith(ownerName: String): ItemStack => ItemStack = { itemStack =>
-    appendOwnerInformation(ownerName)(itemStack)
+  override def signWith(ownerName: String): GachaPrize[ItemStack] => ItemStack = { gachaPrize =>
+    appendOwnerInformation(ownerName)(gachaPrize.itemStack)
   }
 
   /**

@@ -15,7 +15,7 @@ case class GachaPrize[ItemStack](
   def materializeWithOwnerSignature(
     ownerName: String
   )(implicit sign: CanBeSignedAsGachaPrize[ItemStack]): ItemStack = {
-    if (signOwner) sign.signWith(ownerName)(this.itemStack)
+    if (signOwner) sign.signWith(ownerName)(this)
     else this.itemStack
   }
 
