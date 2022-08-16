@@ -12,9 +12,3 @@ trait TradeRule[ItemStack] {
   def trade(contents: List[ItemStack]): TradeResult[ItemStack]
 
 }
-
-object TradeRule {
-
-  def apply[ItemStack](implicit ev: TradeRule[ItemStack]): TradeRule[ItemStack] = ev
-
-}
