@@ -23,7 +23,7 @@ trait GrantGachaPrize[F[_], ItemStack] {
         insertMineStackResult <- tryInsertIntoMineStack(prize)(player)
         grantState <-
           if (insertMineStackResult) {
-            Monad[F].pure(GrantState.GrantedMineStack)
+            F.pure(GrantState.GrantedMineStack)
           } else {
             insertIntoPlayerInventoryOrDrop(prize)(player)
           }
