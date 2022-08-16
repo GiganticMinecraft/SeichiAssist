@@ -1,7 +1,7 @@
 package com.github.unchama.generic.serialization
 
 /**
- * シリアライズ / デシリアライズが行える型の型クラス
+ * シリアライズおよびデシリアライズが行える型の型クラス
  */
 trait SerializeAndDeserialize[ParseError, T] {
 
