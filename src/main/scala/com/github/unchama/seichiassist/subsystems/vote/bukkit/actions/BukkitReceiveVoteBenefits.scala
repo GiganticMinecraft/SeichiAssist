@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote.bukkit.actions
 
-import cats.Applicative
-import cats.effect.{ConcurrentEffect, SyncEffect}
+import cats.effect.{Sync, SyncEffect}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.data.{GachaSkullData, ItemData}
@@ -11,7 +10,7 @@ import com.github.unchama.seichiassist.subsystems.vote.application.actions.Recei
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
 import org.bukkit.entity.Player
 
-class BukkitReceiveVoteBenefits[F[_]: OnMinecraftServerThread: ConcurrentEffect: Applicative, G[
+class BukkitReceiveVoteBenefits[F[_]: OnMinecraftServerThread: Sync, G[
   _
 ]: SyncEffect: ContextCoercion[*[_], F]](
   implicit voteAPI: VoteAPI[F, Player],
