@@ -45,8 +45,6 @@ object System {
     val persistence = new JdbcFairyPersistence[IO]
     implicit val fairySpeechGatewayProvider: Player => FairySpeechGateway[SyncIO] =
       new BukkitFairySpeechGateway[SyncIO](_)
-    implicit val fairyRoutine: FairyRoutine[IO, SyncIO, Player] =
-      new BukkitFairyRoutine
 
     for {
       speechServiceRepositoryControls <- BukkitRepositoryControls.createHandles(
@@ -144,6 +142,9 @@ object System {
             override def createPlayerData(uuid: UUID): IO[Unit] =
               persistence.createPlayerData(uuid)
           }
+
+        implicit val fairyRoutine: FairyRoutine[IO, SyncIO, Player] =
+          new BukkitFairyRoutine
 
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[IO, _]] = {
           BukkitRepositoryControls
