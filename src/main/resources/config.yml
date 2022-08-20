@@ -20,7 +20,6 @@ chunk-search-command-base: "chunk-search-rs --protobuf --threads 12"
 defaultmineamount: '3'
 minutespeedamount: '0.01'
 onlineplayersamount: '0.5'
-presentinterval: '1000'
 dualbreaklevel: '10'
 trialbreaklevel: '20'
 explosionlevel: '30'
@@ -39,7 +38,6 @@ dropexplevel7: '60'
 dropexplevel8: '76'
 dropexplevel9: '94'
 dropexplevel10: '114'
-passiveportalinventorylevel: '1'
 dokodemoenderlevel: '25'
 
 # サブホームポイント数の設定
@@ -52,11 +50,6 @@ subhomemax: 5
 # debugmode: 0=デバッグモードオフ, 1=デバッグモードオン
 # 変更値を反映させるにはサーバを再起動するか/reloadしてください
 debugmode: '0'
-
-# デバッグモード(メビウス帽子専用)の設定
-# debugmode: 0=デバッグモードオフ, 1=デバッグモードオン
-# 変更値を反映させるにはサーバを再起動するか/reloadしてください
-mebiusdebug: '0'
 
 # ギガンティック→椎名林檎交換レートの設定
 # デフォルト値はギガンティック1個につき椎名林檎4個

@@ -53,8 +53,8 @@ class PlayerInventoryListener(
     val name = playerdata.lowercaseName
     val inventory = event.getInventory
 
-    // インベントリサイズが36でない時終了
-    if (inventory.row != 4) {
+    // インベントリサイズが54でない時終了
+    if (inventory.row != 6) {
       return
     }
     if (inventory.getTitle == s"${LIGHT_PURPLE.toString}${BOLD}交換したい景品を入れてください") {
