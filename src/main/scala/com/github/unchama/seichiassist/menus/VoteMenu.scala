@@ -21,15 +21,8 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.applicat
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.FairySpeech
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions.BukkitSummonFairy
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairySpawnRequest
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairySpawnRequestError.{
-  AlreadyFairySpawned,
-  NotEnoughEffectPoint,
-  NotEnoughSeichiLevel
-}
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
-  AppleOpenStateDependency,
-  FairySummonCost
-}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairySpawnRequestError.{AlreadyFairySpawned, NotEnoughEffectPoint, NotEnoughSeichiLevel}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{AppleOpenStateDependency, FairySummonCost}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects.closeInventoryEffect
@@ -136,7 +129,7 @@ object VoteMenu extends Menu {
           LeftClickButtonEffect {
             SequentialEffect(
               TargetedEffect.delay { player =>
-                BukkitReceiveVoteBenefits[IO, SyncIO].receive(player).unsafeRunSync()
+                new BukkitReceiveVoteBenefits[IO, SyncIO].receive(player).unsafeRunSync()
               },
               MessageEffect(
                 s"${GOLD}投票特典$WHITE(${voteCounter.value - benefits.value}票分)を受け取りました"

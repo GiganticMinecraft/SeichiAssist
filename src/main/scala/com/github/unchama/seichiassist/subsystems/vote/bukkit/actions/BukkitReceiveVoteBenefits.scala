@@ -12,44 +12,41 @@ import com.github.unchama.seichiassist.subsystems.vote.application.actions.Recei
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
 import org.bukkit.entity.Player
 
-object BukkitReceiveVoteBenefits {
+class BukkitReceiveVoteBenefits[F[_]: OnMinecraftServerThread: ConcurrentEffect: Applicative, G[
+  _
+]: SyncEffect: ContextCoercion[*[_], F]](
+  implicit voteAPI: VoteAPI[F, Player],
+  breakCountAPI: BreakCountAPI[F, G, Player]
+) extends ReceiveVoteBenefits[F, G, Player] {
 
   import cats.implicits._
 
   /**
    * 投票特典を配布する
    */
-  def apply[F[_]: OnMinecraftServerThread: ConcurrentEffect: Applicative, G[
-    _
-  ]: SyncEffect: ContextCoercion[*[_], F]]: ReceiveVoteBenefits[F, G, Player] =
-    new ReceiveVoteBenefits[F, G, Player] {
-      override def receive(player: Player)(
-        implicit voteAPI: VoteAPI[F, Player],
-        breakCountAPI: BreakCountAPI[F, G, Player]
-      ): F[Unit] = {
-        val uuid = player.getUniqueId
-        for {
-          notReceivedBenefits <- voteAPI.restVoteBenefits(uuid)
-          _ <- voteAPI.increaseVoteBenefits(uuid, notReceivedBenefits) // 受け取ってない分を受け取ったことにする
-          _ <- Applicative[F].whenA(notReceivedBenefits.value != 0) {
-            val playerLevel =
-              ContextCoercion(breakCountAPI.seichiAmountDataRepository(player).read.map {
-                _.levelCorrespondingToExp.level
-              }).toIO.unsafeRunSync()
+  override def receive(player: Player): F[Unit] = {
+    val uuid = player.getUniqueId
+    for {
+      notReceivedBenefits <- voteAPI.restVoteBenefits(uuid)
+      _ <- voteAPI.increaseVoteBenefits(uuid, notReceivedBenefits) // 受け取ってない分を受け取ったことにする
+      _ <- Applicative[F].whenA(notReceivedBenefits.value != 0) {
+        val playerLevel =
+          ContextCoercion(breakCountAPI.seichiAmountDataRepository(player).read.map {
+            _.levelCorrespondingToExp.level
+          }).toIO.unsafeRunSync()
 
-            val items = (0 until notReceivedBenefits.value).map { _ =>
-              ContextCoercion(voteAPI.increaseEffectPointsByTen(uuid)).toIO.unsafeRunSync()
-              Seq.fill(10)(GachaSkullData.gachaForVoting) ++
-                Seq(
-                  if (playerLevel < 50) ItemData.getSuperPickaxe(1)
-                  else ItemData.getVotingGift(1)
-                )
-            }
+        val items = (0 until notReceivedBenefits.value).map { _ =>
+          ContextCoercion(voteAPI.increaseEffectPointsByTen(uuid)).toIO.unsafeRunSync()
+          Seq.fill(10)(GachaSkullData.gachaForVoting) ++
+            Seq(
+              if (playerLevel < 50) ItemData.getSuperPickaxe(1)
+              else ItemData.getVotingGift(1)
+            )
+        }
 
-            grantItemStacksEffect[F](items.flatten: _*).apply(player)
-          }
-        } yield ()
+        grantItemStacksEffect[F](items.flatten: _*).apply(player)
       }
-    }
+    } yield ()
+  }
 
 }
