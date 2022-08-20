@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote.bukkit.actions
 
 import cats.Applicative
-import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
@@ -29,23 +28,20 @@ class BukkitReceiveVoteBenefits[F[_]: OnMinecraftServerThread: ConcurrentEffect:
     for {
       notReceivedBenefits <- voteAPI.restVoteBenefits(uuid)
       _ <- voteAPI.increaseVoteBenefits(uuid, notReceivedBenefits) // 受け取ってない分を受け取ったことにする
-      _ <- Applicative[F].whenA(notReceivedBenefits.value != 0) {
-        val playerLevel =
-          ContextCoercion(breakCountAPI.seichiAmountDataRepository(player).read.map {
-            _.levelCorrespondingToExp.level
-          }).toIO.unsafeRunSync()
-
-        val items = (0 until notReceivedBenefits.value).map { _ =>
-          ContextCoercion(voteAPI.increaseEffectPointsByTen(uuid)).toIO.unsafeRunSync()
-          Seq.fill(10)(GachaSkullData.gachaForVoting) ++
-            Seq(
-              if (playerLevel < 50) ItemData.getSuperPickaxe(1)
-              else ItemData.getVotingGift(1)
-            )
-        }
-
-        grantItemStacksEffect[F](items.flatten: _*).apply(player)
-      }
+      playerLevel <- ContextCoercion(breakCountAPI.seichiAmountDataRepository(player).read.map {
+        _.levelCorrespondingToExp.level
+      })
+      items =
+        Seq.fill(10 * notReceivedBenefits.value)(GachaSkullData.gachaForVoting) ++
+          Seq.fill(notReceivedBenefits.value)(
+            if (playerLevel < 50) ItemData.getSuperPickaxe(1)
+            else ItemData.getVotingGift(1)
+          )
+      _ <- {
+        ContextCoercion(voteAPI.increaseEffectPointsByTen(uuid))
+          .replicateA(notReceivedBenefits.value) >>
+          grantItemStacksEffect[F](items: _*).apply(player)
+      }.whenA(notReceivedBenefits.value != 0)
     } yield ()
   }
 
