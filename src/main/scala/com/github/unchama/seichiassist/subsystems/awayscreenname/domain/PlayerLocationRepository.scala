@@ -7,7 +7,7 @@ trait PlayerLocationRepository[F[_], Location, Player] {
   protected val locationRepository: Ref[F, PlayerLocation[Location]]
 
   /**
-   * @return リポジトリの値を受け取ったプレイヤーの[[Location]]に更新する作用
+   * @return リポジトリの値を新しい[[PlayerLocation]]に更新する作用
    */
   def updateNowLocation(): F[Unit]
 

@@ -16,7 +16,7 @@ class BukkitPlayerLocationRepository[F[_]: Sync](player: Player)
     Ref.unsafe[F, PlayerLocation[Location]](PlayerLocation(player.getLocation))
 
   /**
-   * @return リポジトリの値を受け取ったプレイヤーの[[Location]]に更新する作用
+   * @return リポジトリの値を新しい[[PlayerLocation]]に更新する作用
    */
   override def updateNowLocation(): F[Unit] =
     locationRepository.set(PlayerLocation[Location](player.getLocation))
