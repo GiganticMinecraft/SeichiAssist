@@ -174,7 +174,7 @@ Compile / PB.targets := Seq(scalapb.gen() -> (Compile / sourceManaged).value / "
 
 lazy val root = (project in file(".")).settings(
   name := "SeichiAssist",
-  assembly / assemblyOutputPath := baseDirectory.value / "target" / "build" / s"SeichiAssist.jar",
+  assembly / assemblyOutputPath := baseDirectory.value / "target" / "build" / "SeichiAssist.jar",
   libraryDependencies := providedDependencies ++ testDependencies ++ dependenciesToEmbed,
   excludeDependencies := Seq(ExclusionRule(organization = "org.bukkit", name = "bukkit")),
   unmanagedBase := baseDirectory.value / "localDependencies",
