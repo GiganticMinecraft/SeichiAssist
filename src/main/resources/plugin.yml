@@ -164,19 +164,19 @@ permissions:
   seichiassist.minestack:
     default: true
   seichiassist.present.grant:
-    default: false
+    default: op
     description: "'/present grant' の使用許可を与える。"
   seichiassist.present.revoke:
-    default: false
+    default: op
     description: "'/present revoke' の使用許可を与える。"
   seichiassist.present.define:
-    default: false
+    default: op
     description: "'/present define' の使用許可を与える。"
   seichiassist.present.delete:
-    default: false
+    default: op
     description: "'/present delete' の使用許可を与える。"
   seichiassist.present.*:
-    default: false
+    default: op
     children:
       - seichiassist.present.grant
       - seichiassist.present.revoke
