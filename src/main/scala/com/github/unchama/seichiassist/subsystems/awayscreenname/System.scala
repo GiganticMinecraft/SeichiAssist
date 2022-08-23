@@ -57,6 +57,11 @@ object System {
            */
           override def idleTime(uuid: UUID): F[IdleMinute] = ???
         }
+
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] =
+          Seq(idleMinuteRepositoryControls, playerLocationRepositoryControls).map(
+            _.coerceFinalizationContextTo[F]
+          )
       }
     }
   }
