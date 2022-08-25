@@ -22,9 +22,6 @@ ThisBuild / semanticdbEnabled := true
 // kind-projector 構文を使いたいため
 addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.2" cross CrossVersion.full)
 
-// Scalafixがsemanticdbを必要とするため
-ThisBuild / semanticdbEnabled := true
-
 // CIビルドで詳細なログを確認するため
 ThisBuild / logLevel := {
   if (scala.sys.env.get("BUILD_ENVIRONMENT_IS_CI_OR_LOCAL").contains("CI")) {
