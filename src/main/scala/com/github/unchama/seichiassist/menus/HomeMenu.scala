@@ -55,7 +55,7 @@ object HomeMenu extends Menu {
     import buttonComputations._
 
     val subHomePointPart = for {
-      subHomeNumber <- 1 to SeichiAssist.seichiAssistConfig.getSubHomeMax
+      subHomeNumber <- 1 to SubHome.maxSubHomePerPlayer
     } yield {
       val column = refineV[Interval.ClosedOpen[0, 9]](subHomeNumber - 1)
       column match {
@@ -72,7 +72,7 @@ object HomeMenu extends Menu {
     import cats.implicits._
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
     val dynamicPartComputation = (for {
-      subHomeNumber <- 1 to SeichiAssist.seichiAssistConfig.getSubHomeMax
+      subHomeNumber <- 1 to SubHome.maxSubHomePerPlayer
     } yield {
       val column = refineV[Interval.ClosedOpen[0, 9]](subHomeNumber - 1)
       implicit val ioCanReadSubHome: SubHomeReadAPI[IO] = environment.ioCanReadSubHome

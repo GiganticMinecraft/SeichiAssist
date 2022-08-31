@@ -45,14 +45,12 @@ object SubHomeCommand {
     )
   )
 
-  private val subHomeMax = SeichiAssist.seichiAssistConfig.getSubHomeMax
-
   private val argsAndSenderConfiguredBuilder = playerCommandBuilder.argumentsParsers(
     List(
       Parsers.closedRangeInt(
-        1,
-        subHomeMax,
-        failureMessage = MessageEffect(s"サブホームの番号を1～${subHomeMax}の間で入力してください")
+        SubHomeId.minimumNumber,
+        SubHomeId.maxNumber,
+        failureMessage = MessageEffect(s"サブホームの番号を${SubHomeId.minimumNumber}～${SubHomeId.maxNumber}の間で入力してください")
       )
     ),
     onMissingArguments = printDescriptionExecutor
