@@ -8,7 +8,7 @@ import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.subsystems.subhome.SubHomeReadAPI
 import com.github.unchama.seichiassist.subsystems.subhome.domain.{SubHome, SubHomeId}
-import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
+import com.github.unchama.seichiassist.ManagedWorld
 import com.github.unchama.targetedeffect._
 import com.github.unchama.targetedeffect.player.PlayerEffects._
 import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
