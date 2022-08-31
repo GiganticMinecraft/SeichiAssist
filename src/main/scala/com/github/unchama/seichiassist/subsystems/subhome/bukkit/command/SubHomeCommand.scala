@@ -50,7 +50,9 @@ object SubHomeCommand {
       Parsers.closedRangeInt(
         SubHomeId.minimumNumber,
         SubHomeId.maxNumber,
-        failureMessage = MessageEffect(s"サブホームの番号を${SubHomeId.minimumNumber}～${SubHomeId.maxNumber}の間で入力してください")
+        failureMessage = MessageEffect(
+          s"サブホームの番号を${SubHomeId.minimumNumber}～${SubHomeId.maxNumber}の間で入力してください"
+        )
       )
     ),
     onMissingArguments = printDescriptionExecutor

@@ -1,14 +1,17 @@
 package com.github.unchama.seichiassist.subsystems.subhome.domain
 
 case class SubHomeId(value: Int) extends AnyVal {
-  require(SubHomeId.minimumNumber <= value && value <= SubHomeId.maxNumber,
-    s"SubHomeIdは${SubHomeId.minimumNumber}から${SubHomeId.maxNumber}の間である必要があります")
+  require(
+    SubHomeId.minimumNumber <= value && value <= SubHomeId.maxNumber,
+    s"SubHomeIdは${SubHomeId.minimumNumber}から${SubHomeId.maxNumber}の間である必要があります"
+  )
 
   override def toString: String = value.toString
 
 }
 
 object SubHomeId {
+
   /**
    * SubHomeIdが持つことができる最小値
    */
