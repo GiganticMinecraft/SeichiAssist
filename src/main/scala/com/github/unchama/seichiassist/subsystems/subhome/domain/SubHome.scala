@@ -13,3 +13,10 @@ case class SubHomeLocation(
  * サブホームオブジェクトのクラス
  */
 case class SubHome(name: Option[String], location: SubHomeLocation)
+
+object SubHome {
+  /**
+   * プレイヤーが持つことができるサブホームの最大個数
+   */
+  val maxSubHomePerPlayer: 9 = 9
+}
