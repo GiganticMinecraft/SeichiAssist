@@ -3,20 +3,20 @@ package com.github.unchama.seichiassist.subsystems.idletime.bukkit.routines
 import cats.effect.SyncIO
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.seichiassist.subsystems.idletime.domain.{
-  PlayerAwayTimeRecalculationRoutine,
+  PlayerIdleTimeRecalculationRoutine,
   PlayerIdleMinuteRepository,
   PlayerLocationRepository
 }
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
-class BukkitPlayerAwayTimeRecalculationRoutine(player: Player)(
+class BukkitPlayerIdleTimeRecalculationRoutine(player: Player)(
   implicit idleTimeRepository: KeyedDataRepository[Player, PlayerIdleMinuteRepository[SyncIO]],
   locationRepository: KeyedDataRepository[
     Player,
     PlayerLocationRepository[SyncIO, Location, Player]
   ]
-) extends PlayerAwayTimeRecalculationRoutine[Player] {
+) extends PlayerIdleTimeRecalculationRoutine[Player] {
 
   import cats.implicits._
 

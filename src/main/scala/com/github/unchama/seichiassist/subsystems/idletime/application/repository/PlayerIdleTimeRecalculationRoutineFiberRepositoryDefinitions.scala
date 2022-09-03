@@ -7,16 +7,16 @@ import com.github.unchama.datarepository.template.finalization.RepositoryFinaliz
 import com.github.unchama.datarepository.template.initialization.TwoPhasedRepositoryInitialization
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.subsystems.idletime.domain.PlayerAwayTimeRecalculationRoutine
+import com.github.unchama.seichiassist.subsystems.idletime.domain.PlayerIdleTimeRecalculationRoutine
 
-object PlayerAwayTimeRecalculationRoutineFiberRepositoryDefinitions {
+object PlayerIdleTimeRecalculationRoutineFiberRepositoryDefinitions {
 
   import cats.implicits._
 
   type RepositoryValue[F[_]] = Deferred[F, Fiber[F, Nothing]]
 
   def initialization[F[_]: Sync, Player](
-    playerAwayTimeRecalculationRoutine: Player => PlayerAwayTimeRecalculationRoutine[Player]
+    playerIdleTimeRecalculationRoutine: Player => PlayerIdleTimeRecalculationRoutine[Player]
   )(
     implicit repeatingTaskContext: RepeatingTaskContext,
     onMainThread: OnMinecraftServerThread[IO],
@@ -27,7 +27,7 @@ object PlayerAwayTimeRecalculationRoutineFiberRepositoryDefinitions {
         for {
           promise <- Deferred.in[F, IO, Fiber[IO, Nothing]]
           _ <- EffectExtra.runAsyncAndForget[IO, F, Unit] {
-            playerAwayTimeRecalculationRoutine(player)
+            playerIdleTimeRecalculationRoutine(player)
               .start
               .start(IO.contextShift(repeatingTaskContext))
               .flatMap(fiber => promise.complete(fiber))

@@ -11,11 +11,11 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.idletime.application.repository.{
   IdleTimeRepositoryDefinitions,
-  PlayerAwayTimeRecalculationRoutineFiberRepositoryDefinitions,
+  PlayerIdleTimeRecalculationRoutineFiberRepositoryDefinitions,
   PlayerLocationRepositoryDefinitions
 }
 import com.github.unchama.seichiassist.subsystems.idletime.bukkit.BukkitPlayerLocationRepository
-import com.github.unchama.seichiassist.subsystems.idletime.bukkit.routines.BukkitPlayerAwayTimeRecalculationRoutine
+import com.github.unchama.seichiassist.subsystems.idletime.bukkit.routines.BukkitPlayerIdleTimeRecalculationRoutine
 import com.github.unchama.seichiassist.subsystems.idletime.domain.{
   PlayerIdleMinuteRepository,
   PlayerLocationRepository
@@ -62,7 +62,7 @@ object System {
           RepositoryDefinition
             .Phased
             .TwoPhased(
-              PlayerAwayTimeRecalculationRoutineFiberRepositoryDefinitions
+              PlayerIdleTimeRecalculationRoutineFiberRepositoryDefinitions
                 .initialization[SyncIO, Player] { player =>
                   implicit val idleTimeRepository
                     : PlayerDataRepository[PlayerIdleMinuteRepository[SyncIO]] =
@@ -71,9 +71,9 @@ object System {
                     : PlayerDataRepository[PlayerLocationRepository[SyncIO, Location, Player]] =
                     playerLocationRepositoryControls.repository
 
-                  new BukkitPlayerAwayTimeRecalculationRoutine(player)
+                  new BukkitPlayerIdleTimeRecalculationRoutine(player)
                 },
-              PlayerAwayTimeRecalculationRoutineFiberRepositoryDefinitions
+              PlayerIdleTimeRecalculationRoutineFiberRepositoryDefinitions
                 .finalization[SyncIO, Player]
             )
         )
