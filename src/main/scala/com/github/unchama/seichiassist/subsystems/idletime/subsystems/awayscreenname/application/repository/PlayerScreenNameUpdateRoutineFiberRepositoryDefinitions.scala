@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.application.repository
 
 import cats.effect.concurrent.Deferred
-import cats.effect.{ConcurrentEffect, Fiber, IO, Sync, SyncIO}
+import cats.effect.{ConcurrentEffect, Fiber, IO, Sync}
 import com.github.unchama.concurrent.RepeatingTaskContext
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
 import com.github.unchama.datarepository.template.initialization.TwoPhasedRepositoryInitialization
@@ -19,19 +19,19 @@ object PlayerScreenNameUpdateRoutineFiberRepositoryDefinitions {
   type RepositoryValue[F[_]] = Deferred[F, Fiber[F, Nothing]]
 
   def initialization[F[_]: Sync, Player](
-    playerScreenNameUpdateRoutine: Player => PlayerScreenNameUpdateRoutine[Player]
+    playerScreenNameUpdateRoutine: PlayerScreenNameUpdateRoutine[Player]
   )(
     implicit repeatingTaskContext: RepeatingTaskContext,
     onMainThread: OnMinecraftServerThread[IO],
     concurrentEffect: ConcurrentEffect[IO],
-    updatePlayerScreenName: UpdatePlayerScreenName[SyncIO, Player]
+    updatePlayerScreenName: UpdatePlayerScreenName[IO, Player]
   ): TwoPhasedRepositoryInitialization[F, Player, RepositoryValue[IO]] =
     TwoPhasedRepositoryInitialization.withoutPrefetching[F, Player, RepositoryValue[IO]] {
       player =>
         for {
           promise <- Deferred.in[F, IO, Fiber[IO, Nothing]]
           _ <- EffectExtra.runAsyncAndForget[IO, F, Unit] {
-            playerScreenNameUpdateRoutine(player)
+            playerScreenNameUpdateRoutine
               .start(player)
               .start(IO.contextShift(repeatingTaskContext))
               .flatMap(fiber => promise.complete(fiber))
