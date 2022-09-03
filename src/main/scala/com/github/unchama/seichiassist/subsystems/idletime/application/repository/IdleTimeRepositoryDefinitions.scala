@@ -6,7 +6,7 @@ import com.github.unchama.datarepository.template.finalization.RepositoryFinaliz
 import com.github.unchama.datarepository.template.initialization.TwoPhasedRepositoryInitialization
 import com.github.unchama.seichiassist.subsystems.idletime.domain.PlayerIdleMinuteRepository
 
-object IdleMinuteRepositoryDefinitions {
+object IdleTimeRepositoryDefinitions {
 
   def initialization[F[_]: Sync, Player]
     : TwoPhasedRepositoryInitialization[F, Player, PlayerIdleMinuteRepository[F]] =

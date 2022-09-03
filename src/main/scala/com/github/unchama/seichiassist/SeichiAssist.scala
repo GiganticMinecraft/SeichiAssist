@@ -387,11 +387,15 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.sharedinventory.System.wired[IO]
 
   private lazy val idleTimeSystem: subsystems.idletime.System[IO, Player] = {
-    subsystems.idletime.System.wired[IO, SyncIO].unsafeRunSync()
+    import PluginExecutionContexts.{onMainThread, sleepAndRoutineContext}
+    subsystems.idletime.System.wired[IO].unsafeRunSync()
   }
 
   private lazy val awayScreenNameSystem: Subsystem[IO] = {
     import PluginExecutionContexts.{onMainThread, sleepAndRoutineContext}
+
+    implicit val idleTimeAPI: IdleTimeAPI[IO, Player] = idleTimeSystem.api
+
     subsystems.idletime.subsystems.awayscreenname.System.wired[IO].unsafeRunSync()
   }
 

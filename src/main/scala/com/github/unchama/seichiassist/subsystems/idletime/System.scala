@@ -1,11 +1,26 @@
 package com.github.unchama.seichiassist.subsystems.idletime
 
-import cats.effect.{Sync, SyncEffect}
-import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
+import cats.effect.{ContextShift, IO, LiftIO, Sync, SyncIO}
+import com.github.unchama.concurrent.RepeatingTaskContext
+import com.github.unchama.datarepository.bukkit.player.{
+  BukkitRepositoryControls,
+  PlayerDataRepository
+}
 import com.github.unchama.datarepository.template.RepositoryDefinition
-import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.idletime.application.repository.IdleMinuteRepositoryDefinitions
+import com.github.unchama.seichiassist.subsystems.idletime.application.repository.{
+  IdleTimeRepositoryDefinitions,
+  PlayerAwayTimeRecalculationRoutineFiberRepositoryDefinitions,
+  PlayerLocationRepositoryDefinitions
+}
+import com.github.unchama.seichiassist.subsystems.idletime.bukkit.BukkitPlayerLocationRepository
+import com.github.unchama.seichiassist.subsystems.idletime.bukkit.routines.BukkitPlayerAwayTimeRecalculationRoutine
+import com.github.unchama.seichiassist.subsystems.idletime.domain.{
+  PlayerIdleMinuteRepository,
+  PlayerLocationRepository
+}
+import org.bukkit.Location
 import org.bukkit.entity.Player
 
 trait System[F[_], Player] extends Subsystem[F] {
@@ -16,25 +31,63 @@ trait System[F[_], Player] extends Subsystem[F] {
 
 object System {
 
-  import cats.implicits._
+  def wired[F[_]: Sync: LiftIO](
+    implicit repeatingTaskContext: RepeatingTaskContext,
+    onMainThread: OnMinecraftServerThread[IO],
+    ioShift: ContextShift[IO]
+  ): SyncIO[System[F, Player]] = {
+    implicit val playerLocationRepository
+      : Player => PlayerLocationRepository[SyncIO, Location, Player] =
+      new BukkitPlayerLocationRepository[SyncIO](_)
 
-  def wired[F[_]: Sync, G[_]: SyncEffect: ContextCoercion[*[_], F]]: G[System[F, Player]] = {
     for {
+      playerLocationRepositoryControls <- BukkitRepositoryControls.createHandles(
+        RepositoryDefinition
+          .Phased
+          .TwoPhased(
+            PlayerLocationRepositoryDefinitions.initialization[SyncIO, Location, Player],
+            PlayerLocationRepositoryDefinitions.finalization[SyncIO, Location, Player]
+          )
+      )
       idleMinuteRepositoryControls <- BukkitRepositoryControls.createHandles(
         RepositoryDefinition
           .Phased
           .TwoPhased(
-            IdleMinuteRepositoryDefinitions.initialization[G, Player],
-            IdleMinuteRepositoryDefinitions.finalization[G, Player]
+            IdleTimeRepositoryDefinitions.initialization[SyncIO, Player],
+            IdleTimeRepositoryDefinitions.finalization[SyncIO, Player]
           )
       )
+      playerAwayTimeRecalculationRoutineFiberRepositoryControls <- BukkitRepositoryControls
+        .createHandles(
+          RepositoryDefinition
+            .Phased
+            .TwoPhased(
+              PlayerAwayTimeRecalculationRoutineFiberRepositoryDefinitions
+                .initialization[SyncIO, Player] { player =>
+                  implicit val idleTimeRepository
+                    : PlayerDataRepository[PlayerIdleMinuteRepository[SyncIO]] =
+                    idleMinuteRepositoryControls.repository
+                  implicit val playerLocationRepository
+                    : PlayerDataRepository[PlayerLocationRepository[SyncIO, Location, Player]] =
+                    playerLocationRepositoryControls.repository
+
+                  new BukkitPlayerAwayTimeRecalculationRoutine(player)
+                },
+              PlayerAwayTimeRecalculationRoutineFiberRepositoryDefinitions
+                .finalization[SyncIO, Player]
+            )
+        )
     } yield {
       new System[F, Player] {
         override val api: IdleTimeAPI[F, Player] = (player: Player) =>
-          ContextCoercion(idleMinuteRepositoryControls.repository(player).currentIdleMinute)
+          idleMinuteRepositoryControls.repository(player).currentIdleMinute.to[F]
 
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] =
-          Seq(idleMinuteRepositoryControls).map(_.coerceFinalizationContextTo[F])
+          Seq(
+            playerLocationRepositoryControls,
+            idleMinuteRepositoryControls,
+            playerAwayTimeRecalculationRoutineFiberRepositoryControls
+          ).map(_.coerceFinalizationContextTo[F])
       }
     }
   }

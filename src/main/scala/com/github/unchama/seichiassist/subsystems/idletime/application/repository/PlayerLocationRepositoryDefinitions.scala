@@ -1,9 +1,9 @@
-package com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.application.repository
+package com.github.unchama.seichiassist.subsystems.idletime.application.repository
 
 import cats.Applicative
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
 import com.github.unchama.datarepository.template.initialization.TwoPhasedRepositoryInitialization
-import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.domain.PlayerLocationRepository
+import com.github.unchama.seichiassist.subsystems.idletime.domain.PlayerLocationRepository
 
 object PlayerLocationRepositoryDefinitions {
 

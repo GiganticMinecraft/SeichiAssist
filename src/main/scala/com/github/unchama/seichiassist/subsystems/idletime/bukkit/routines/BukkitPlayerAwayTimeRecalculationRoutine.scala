@@ -1,23 +1,21 @@
-package com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.bukkit.routines
+package com.github.unchama.seichiassist.subsystems.idletime.bukkit.routines
 
 import cats.effect.SyncIO
 import com.github.unchama.datarepository.KeyedDataRepository
-import com.github.unchama.seichiassist.subsystems.idletime.domain.PlayerIdleMinuteRepository
-import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.domain.{
+import com.github.unchama.seichiassist.subsystems.idletime.domain.{
   PlayerAwayTimeRecalculationRoutine,
-  PlayerLocationRepository,
-  UpdatePlayerScreenName
+  PlayerIdleMinuteRepository,
+  PlayerLocationRepository
 }
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
 class BukkitPlayerAwayTimeRecalculationRoutine(player: Player)(
-  implicit locationRepository: KeyedDataRepository[
+  implicit idleTimeRepository: KeyedDataRepository[Player, PlayerIdleMinuteRepository[SyncIO]],
+  locationRepository: KeyedDataRepository[
     Player,
     PlayerLocationRepository[SyncIO, Location, Player]
-  ],
-  idleMinuteRepository: KeyedDataRepository[Player, PlayerIdleMinuteRepository[SyncIO]],
-  updatePlayerScreenName: UpdatePlayerScreenName[SyncIO, Player]
+  ]
 ) extends PlayerAwayTimeRecalculationRoutine[Player] {
 
   import cats.implicits._
@@ -26,18 +24,15 @@ class BukkitPlayerAwayTimeRecalculationRoutine(player: Player)(
    * @return リポジトリのデータを現在のプレイヤーの位置と放置時間を更新する作用
    */
   def updatePlayerLocationAndPlayerIdleMinute(): SyncIO[Unit] = {
+    val playerIdleTimeRepository = idleTimeRepository(player)
     val playerLocationRepository = locationRepository(player)
-    val playerIdleMinuteRepository = idleMinuteRepository(player)
     for {
       playerLocation <- playerLocationRepository.getRepositoryLocation
       _ <- playerLocationRepository.updateNowLocation()
-      _ <- playerIdleMinuteRepository
+      _ <- playerIdleTimeRepository
         .addOneMinute()
         .whenA(playerLocation.location == player.getLocation)
-      _ <- playerIdleMinuteRepository
-        .reset()
-        .whenA(playerLocation.location != player.getLocation)
-      _ <- updatePlayerScreenName.updatePlayerNameColor(player)
+      _ <- playerIdleTimeRepository.reset().whenA(playerLocation.location != player.getLocation)
     } yield ()
   }
 
