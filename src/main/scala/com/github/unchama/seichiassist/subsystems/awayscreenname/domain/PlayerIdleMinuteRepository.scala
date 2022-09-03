@@ -9,6 +9,11 @@ class PlayerIdleMinuteRepository[F[_]: Sync] {
     Ref.unsafe[F, IdleMinute](IdleMinute.initial)
 
   /**
+   * @return 現在のリポジトリの値を返す作用
+   */
+  def currentIdleMinute: F[IdleMinute] = idleMinuteRepository.get
+
+  /**
    * @return リポジトリの値を1増加させる作用
    */
   def addOneMinute(): F[Unit] = idleMinuteRepository.update(_.increment)
