@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.managedfly.bukkit
 import cats.data.Kleisli
 import cats.effect.{Concurrent, Sync, SyncIO, Timer}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.subsystems.awayscreenname.AwayScreenNameAPI
+import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.AwayScreenNameAPI
 import com.github.unchama.seichiassist.subsystems.managedfly.application._
 import com.github.unchama.seichiassist.subsystems.managedfly.domain._
 import com.github.unchama.seichiassist.util.exp.ExperienceManager

@@ -1,10 +1,10 @@
-package com.github.unchama.seichiassist.subsystems.awayscreenname.application.repository
+package com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.application.repository
 
 import cats.Applicative
 import cats.effect.Sync
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
 import com.github.unchama.datarepository.template.initialization.TwoPhasedRepositoryInitialization
-import com.github.unchama.seichiassist.subsystems.awayscreenname.domain.PlayerIdleMinuteRepository
+import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.domain.PlayerIdleMinuteRepository
 
 object IdleMinuteRepositoryDefinitions {
 

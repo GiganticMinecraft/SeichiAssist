@@ -1,13 +1,8 @@
-package com.github.unchama.seichiassist.subsystems.awayscreenname.bukkit.routines
+package com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.bukkit.routines
 
 import cats.effect.SyncIO
 import com.github.unchama.datarepository.KeyedDataRepository
-import com.github.unchama.seichiassist.subsystems.awayscreenname.domain.{
-  PlayerAwayTimeRecalculationRoutine,
-  PlayerIdleMinuteRepository,
-  PlayerLocationRepository,
-  UpdatePlayerScreenName
-}
+import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.domain.{PlayerAwayTimeRecalculationRoutine, PlayerIdleMinuteRepository, PlayerLocationRepository, UpdatePlayerScreenName}
 import org.bukkit.Location
 import org.bukkit.entity.Player
 

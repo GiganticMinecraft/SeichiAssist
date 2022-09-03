@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.awayscreenname.domain
+package com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.domain
 
 import cats.effect.concurrent.Ref
 

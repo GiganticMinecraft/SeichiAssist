@@ -1,6 +1,6 @@
-package com.github.unchama.seichiassist.subsystems.awayscreenname
+package com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname
 
-import com.github.unchama.seichiassist.subsystems.awayscreenname.domain.IdleMinute
+import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.domain.IdleMinute
 
 trait AwayScreenNameAPI[F[_], Player] {
 

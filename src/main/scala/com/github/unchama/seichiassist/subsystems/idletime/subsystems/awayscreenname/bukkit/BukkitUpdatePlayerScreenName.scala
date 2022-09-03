@@ -1,11 +1,8 @@
-package com.github.unchama.seichiassist.subsystems.awayscreenname.bukkit
+package com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.bukkit
 
 import cats.effect.Sync
 import com.github.unchama.datarepository.KeyedDataRepository
-import com.github.unchama.seichiassist.subsystems.awayscreenname.domain.{
-  PlayerIdleMinuteRepository,
-  UpdatePlayerScreenName
-}
+import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.domain.{PlayerIdleMinuteRepository, UpdatePlayerScreenName}
 import org.bukkit.entity.Player
 import org.bukkit.ChatColor._
 

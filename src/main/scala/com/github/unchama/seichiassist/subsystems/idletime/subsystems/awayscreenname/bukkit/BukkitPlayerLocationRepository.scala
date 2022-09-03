@@ -1,11 +1,8 @@
-package com.github.unchama.seichiassist.subsystems.awayscreenname.bukkit
+package com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.bukkit
 
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
-import com.github.unchama.seichiassist.subsystems.awayscreenname.domain.{
-  PlayerLocation,
-  PlayerLocationRepository
-}
+import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.domain.{PlayerLocation, PlayerLocationRepository}
 import org.bukkit.Location
 import org.bukkit.entity.Player
 

@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.awayscreenname
+package com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname
 
 import cats.effect.{ContextShift, IO, LiftIO, Sync, SyncIO}
 import com.github.unchama.concurrent.RepeatingTaskContext
@@ -9,17 +9,17 @@ import com.github.unchama.datarepository.bukkit.player.{
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.awayscreenname.application.repository.{
+import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.application.repository.{
   IdleMinuteRepositoryDefinitions,
   PlayerAwayTimeRecalculationRoutineFiberRepositoryDefinitions,
   PlayerLocationRepositoryDefinitions
 }
-import com.github.unchama.seichiassist.subsystems.awayscreenname.bukkit.routines.BukkitPlayerAwayTimeRecalculationRoutine
-import com.github.unchama.seichiassist.subsystems.awayscreenname.bukkit.{
+import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.bukkit.{
   BukkitPlayerLocationRepository,
   BukkitUpdatePlayerScreenName
 }
-import com.github.unchama.seichiassist.subsystems.awayscreenname.domain.{
+import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.bukkit.routines.BukkitPlayerAwayTimeRecalculationRoutine
+import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.domain.{
   PlayerIdleMinuteRepository,
   PlayerLocationRepository,
   UpdatePlayerScreenName

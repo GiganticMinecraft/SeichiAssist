@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.awayscreenname.application.repository
+package com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.application.repository
 
 import cats.effect.concurrent.Deferred
 import cats.effect.{ConcurrentEffect, Fiber, IO, Sync}
@@ -7,7 +7,7 @@ import com.github.unchama.datarepository.template.finalization.RepositoryFinaliz
 import com.github.unchama.datarepository.template.initialization.TwoPhasedRepositoryInitialization
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.subsystems.awayscreenname.domain.PlayerAwayTimeRecalculationRoutine
+import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.domain.PlayerAwayTimeRecalculationRoutine
 
 object PlayerAwayTimeRecalculationRoutineFiberRepositoryDefinitions {
 
