@@ -70,7 +70,7 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
 }
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
-import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.AwayScreenNameAPI
+import com.github.unchama.seichiassist.subsystems.idletime.IdleTimeAPI
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository
 import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaReadApi}
@@ -219,7 +219,7 @@ class SeichiAssist extends JavaPlugin() {
       .application
       .SystemConfiguration(expConsumptionAmount = seichiAssistConfig.getFlyExp)
 
-    implicit val awayScreenNameAPI: AwayScreenNameAPI[IO, Player] = awayScreenNameSystem.api
+    implicit val idleTimeAPI: IdleTimeAPI[IO, Player] = idleTimeSystem.api
 
     subsystems.managedfly.System.wired[IO, SyncIO](configuration).unsafeRunSync()
   }
@@ -386,8 +386,11 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val sharedInventorySystem: subsystems.sharedinventory.System[IO] =
     subsystems.sharedinventory.System.wired[IO]
 
-  private lazy val awayScreenNameSystem
-    : subsystems.idletime.subsystems.awayscreenname.System[IO, Player] = {
+  private lazy val idleTimeSystem: subsystems.idletime.System[IO, Player] = {
+    subsystems.idletime.System.wired[IO, SyncIO].unsafeRunSync()
+  }
+
+  private lazy val awayScreenNameSystem: Subsystem[IO] = {
     import PluginExecutionContexts.{onMainThread, sleepAndRoutineContext}
     subsystems.idletime.subsystems.awayscreenname.System.wired[IO].unsafeRunSync()
   }
@@ -413,7 +416,8 @@ class SeichiAssist extends JavaPlugin() {
     presentSystem,
     anywhereEnderSystem,
     sharedInventorySystem,
-    awayScreenNameSystem
+    awayScreenNameSystem,
+    idleTimeSystem
   )
 
   private lazy val buildAssist: BuildAssist = {

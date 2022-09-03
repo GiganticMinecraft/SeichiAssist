@@ -1,8 +1,8 @@
-package com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname
+package com.github.unchama.seichiassist.subsystems.idletime
 
-import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.domain.IdleMinute
+import com.github.unchama.seichiassist.subsystems.idletime.domain.IdleMinute
 
-trait AwayScreenNameAPI[F[_], Player] {
+trait IdleTimeAPI[F[_], Player] {
 
   /**
    * @return 現在の放置時間を取得する作用
@@ -11,10 +11,8 @@ trait AwayScreenNameAPI[F[_], Player] {
 
 }
 
-object AwayScreenNameAPI {
+object IdleTimeAPI {
 
-  def apply[F[_], Player](
-    implicit ev: AwayScreenNameAPI[F, Player]
-  ): AwayScreenNameAPI[F, Player] = ev
+  def apply[F[_], Player](implicit ev: IdleTimeAPI[F, Player]): IdleTimeAPI[F, Player] = ev
 
 }

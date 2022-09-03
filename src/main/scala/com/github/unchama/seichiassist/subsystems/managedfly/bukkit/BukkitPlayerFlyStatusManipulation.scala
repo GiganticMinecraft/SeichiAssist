@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.managedfly.bukkit
 import cats.data.Kleisli
 import cats.effect.{Concurrent, Sync, SyncIO, Timer}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.AwayScreenNameAPI
+import com.github.unchama.seichiassist.subsystems.idletime.IdleTimeAPI
 import com.github.unchama.seichiassist.subsystems.managedfly.application._
 import com.github.unchama.seichiassist.subsystems.managedfly.domain._
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
@@ -14,7 +14,7 @@ class BukkitPlayerFlyStatusManipulation[AsyncContext[
   _
 ]: Timer: Concurrent: OnMinecraftServerThread](
   implicit configuration: SystemConfiguration,
-  awayScreenNameAPI: AwayScreenNameAPI[AsyncContext, Player]
+  idleTimeAPI: IdleTimeAPI[AsyncContext, Player]
 ) extends PlayerFlyStatusManipulation[Kleisli[AsyncContext, Player, *]] {
 
   import cats.implicits._
@@ -64,7 +64,7 @@ class BukkitPlayerFlyStatusManipulation[AsyncContext[
   override val isPlayerIdle: Kleisli[AsyncContext, Player, IdleStatus] = Kleisli {
     player: Player =>
       for {
-        currentIdleMinute <- awayScreenNameAPI.currentIdleMinute(player)
+        currentIdleMinute <- idleTimeAPI.currentIdleMinute(player)
       } yield {
         if (currentIdleMinute.minute >= 10) Idle
         else HasMovedRecently

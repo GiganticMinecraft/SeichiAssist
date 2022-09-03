@@ -9,8 +9,9 @@ import com.github.unchama.datarepository.bukkit.player.{
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
+import com.github.unchama.seichiassist.subsystems.idletime.application.repository.IdleMinuteRepositoryDefinitions
+import com.github.unchama.seichiassist.subsystems.idletime.domain.PlayerIdleMinuteRepository
 import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.application.repository.{
-  IdleMinuteRepositoryDefinitions,
   PlayerAwayTimeRecalculationRoutineFiberRepositoryDefinitions,
   PlayerLocationRepositoryDefinitions
 }
@@ -20,18 +21,11 @@ import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreen
 }
 import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.bukkit.routines.BukkitPlayerAwayTimeRecalculationRoutine
 import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.domain.{
-  PlayerIdleMinuteRepository,
   PlayerLocationRepository,
   UpdatePlayerScreenName
 }
 import org.bukkit.Location
 import org.bukkit.entity.Player
-
-trait System[F[_], Player] extends Subsystem[F] {
-
-  val api: AwayScreenNameAPI[F, Player]
-
-}
 
 object System {
 
@@ -39,7 +33,7 @@ object System {
     implicit repeatingTaskContext: RepeatingTaskContext,
     onMainThread: OnMinecraftServerThread[IO],
     ioShift: ContextShift[IO]
-  ): SyncIO[System[F, Player]] = {
+  ): SyncIO[Subsystem[F]] = {
     implicit val playerLocationRepository
       : Player => PlayerLocationRepository[SyncIO, Location, Player] =
       new BukkitPlayerLocationRepository[SyncIO](_)
@@ -84,10 +78,7 @@ object System {
             )
         )
     } yield {
-      new System[F, Player] {
-        override val api: AwayScreenNameAPI[F, Player] = (player: Player) =>
-          idleMinuteRepositoryControls.repository(player).currentIdleMinute.to[F]
-
+      new Subsystem[F] {
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] =
           Seq(
             idleMinuteRepositoryControls,
