@@ -59,6 +59,7 @@ import com.github.unchama.seichiassist.minestack.MineStackObject.itemStackMineSt
 import com.github.unchama.seichiassist.minestack.{MineStackObject, MineStackObjectCategory}
 import com.github.unchama.seichiassist.subsystems._
 import com.github.unchama.seichiassist.subsystems.anywhereender.AnywhereEnderChestAPI
+import com.github.unchama.seichiassist.subsystems.awayscreenname.AwayScreenNameAPI
 import com.github.unchama.seichiassist.subsystems.breakcount.{BreakCountAPI, BreakCountReadAPI}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
@@ -217,6 +218,8 @@ class SeichiAssist extends JavaPlugin() {
       .managedfly
       .application
       .SystemConfiguration(expConsumptionAmount = seichiAssistConfig.getFlyExp)
+
+    implicit val awayScreenNameAPI: AwayScreenNameAPI[IO, Player] = awayScreenNameSystem.api
 
     subsystems.managedfly.System.wired[IO, SyncIO](configuration).unsafeRunSync()
   }
