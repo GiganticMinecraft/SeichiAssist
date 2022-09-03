@@ -14,13 +14,12 @@ import com.github.unchama.seichiassist.subsystems.awayscreenname.application.rep
   PlayerAwayTimeRecalculationRoutineFiberRepositoryDefinitions,
   PlayerLocationRepositoryDefinitions
 }
+import com.github.unchama.seichiassist.subsystems.awayscreenname.bukkit.routines.BukkitPlayerAwayTimeRecalculationRoutine
 import com.github.unchama.seichiassist.subsystems.awayscreenname.bukkit.{
   BukkitPlayerLocationRepository,
   BukkitUpdatePlayerScreenName
 }
-import com.github.unchama.seichiassist.subsystems.awayscreenname.bukkit.routines.BukkitPlayerAwayTimeRecalculationRoutine
 import com.github.unchama.seichiassist.subsystems.awayscreenname.domain.{
-  IdleMinute,
   PlayerIdleMinuteRepository,
   PlayerLocationRepository,
   UpdatePlayerScreenName
@@ -28,21 +27,13 @@ import com.github.unchama.seichiassist.subsystems.awayscreenname.domain.{
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
-import java.util.UUID
-
-trait System[F[_]] extends Subsystem[F] {
-
-  val api: AwayScreenNameAPI[F]
-
-}
-
 object System {
 
   def wired[F[_]: Sync](
     implicit repeatingTaskContext: RepeatingTaskContext,
     onMainThread: OnMinecraftServerThread[IO],
     ioShift: ContextShift[IO]
-  ): SyncIO[System[F]] = {
+  ): SyncIO[Subsystem[F]] = {
     implicit val playerLocationRepository
       : Player => PlayerLocationRepository[SyncIO, Location, Player] =
       new BukkitPlayerLocationRepository[SyncIO](_)
@@ -87,15 +78,7 @@ object System {
             )
         )
     } yield {
-      new System[F] {
-        override val api: AwayScreenNameAPI[F] = new AwayScreenNameAPI[F] {
-
-          /**
-           * @return 指定したUUIDプレイヤーの[[IdleMinute]]を返す作用
-           */
-          override def idleTime(uuid: UUID): F[IdleMinute] = ???
-        }
-
+      new Subsystem[F] {
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] =
           Seq(
             idleMinuteRepositoryControls,
