@@ -2,7 +2,10 @@ package com.github.unchama.seichiassist.subsystems.awayscreenname
 
 import cats.effect.{ContextShift, IO, Sync, SyncIO}
 import com.github.unchama.concurrent.RepeatingTaskContext
-import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
+import com.github.unchama.datarepository.bukkit.player.{
+  BukkitRepositoryControls,
+  PlayerDataRepository
+}
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
@@ -11,11 +14,16 @@ import com.github.unchama.seichiassist.subsystems.awayscreenname.application.rep
   PlayerAwayTimeRecalculationRoutineFiberRepositoryDefinitions,
   PlayerLocationRepositoryDefinitions
 }
-import com.github.unchama.seichiassist.subsystems.awayscreenname.bukkit.BukkitPlayerLocationRepository
+import com.github.unchama.seichiassist.subsystems.awayscreenname.bukkit.{
+  BukkitPlayerLocationRepository,
+  BukkitUpdatePlayerScreenName
+}
 import com.github.unchama.seichiassist.subsystems.awayscreenname.bukkit.routines.BukkitPlayerAwayTimeRecalculationRoutine
 import com.github.unchama.seichiassist.subsystems.awayscreenname.domain.{
   IdleMinute,
-  PlayerLocationRepository
+  PlayerIdleMinuteRepository,
+  PlayerLocationRepository,
+  UpdatePlayerScreenName
 }
 import org.bukkit.Location
 import org.bukkit.entity.Player
@@ -62,12 +70,18 @@ object System {
             .Phased
             .TwoPhased(
               PlayerAwayTimeRecalculationRoutineFiberRepositoryDefinitions
-                .initialization[SyncIO, Player](player =>
-                  new BukkitPlayerAwayTimeRecalculationRoutine(player)(
-                    playerLocationRepositoryControls.repository,
+                .initialization[SyncIO, Player] { player =>
+                  implicit val playerLocationRepository
+                    : PlayerDataRepository[PlayerLocationRepository[SyncIO, Location, Player]] =
+                    playerLocationRepositoryControls.repository
+                  implicit val idleMinuteRepository
+                    : PlayerDataRepository[PlayerIdleMinuteRepository[SyncIO]] =
                     idleMinuteRepositoryControls.repository
-                  )
-                ),
+                  implicit val updatePlayerScreenName: UpdatePlayerScreenName[SyncIO, Player] =
+                    new BukkitUpdatePlayerScreenName[SyncIO]
+
+                  new BukkitPlayerAwayTimeRecalculationRoutine(player)
+                },
               PlayerAwayTimeRecalculationRoutineFiberRepositoryDefinitions
                 .finalization[SyncIO, Player]
             )
