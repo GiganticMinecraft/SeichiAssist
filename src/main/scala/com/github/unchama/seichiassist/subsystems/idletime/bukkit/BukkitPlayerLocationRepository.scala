@@ -2,7 +2,10 @@ package com.github.unchama.seichiassist.subsystems.idletime.bukkit
 
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
-import com.github.unchama.seichiassist.subsystems.idletime.domain.{PlayerLocation, PlayerLocationRepository}
+import com.github.unchama.seichiassist.subsystems.idletime.domain.{
+  PlayerLocation,
+  PlayerLocationRepository
+}
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
