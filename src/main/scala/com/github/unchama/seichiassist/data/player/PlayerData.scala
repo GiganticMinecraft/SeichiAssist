@@ -36,9 +36,6 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
   // MineStackの履歴
   val hisotryData: MineStackUsageHistory = new MineStackUsageHistory()
 
-  // 放置時間
-  var idleMinute = 0
-
   // 経験値マネージャ
   lazy private val expmanager: IExperienceManager = new ExperienceManager(player)
   val settings = new PlayerSettings()
@@ -192,7 +189,7 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
     val level = amountData.levelCorrespondingToExp.level
     val starLevel = amountData.starLevelCorrespondingToExp
 
-    val newDisplayName =  {
+    val newDisplayName = {
       val nicknameSettings = settings.nickname
       val currentNickname =
         Option
