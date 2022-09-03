@@ -7,7 +7,7 @@ import com.github.unchama.datarepository.template.finalization.RepositoryFinaliz
 import com.github.unchama.datarepository.template.initialization.TwoPhasedRepositoryInitialization
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.subsystems.awayscreenname.bukkit.routines.BukkitPlayerAwayTimeRecalculationRoutine
+import com.github.unchama.seichiassist.subsystems.awayscreenname.domain.PlayerAwayTimeRecalculationRoutine
 
 object PlayerAwayTimeRecalculationRoutineFiberRepositoryDefinitions {
 
@@ -16,11 +16,11 @@ object PlayerAwayTimeRecalculationRoutineFiberRepositoryDefinitions {
   type RepositoryValue[F[_]] = Deferred[F, Fiber[F, Nothing]]
 
   def initialization[F[_]: Sync, Player](
-    implicit
-    playerAwayTimeRecalculationRoutine: Player => BukkitPlayerAwayTimeRecalculationRoutine,
-    repeatingTaskContext: RepeatingTaskContext,
+    playerAwayTimeRecalculationRoutine: Player => PlayerAwayTimeRecalculationRoutine[Player]
+  )(
+    implicit repeatingTaskContext: RepeatingTaskContext,
     onMainThread: OnMinecraftServerThread[IO],
-    ioConcurrent: ConcurrentEffect[IO]
+    concurrentEffect: ConcurrentEffect[IO]
   ): TwoPhasedRepositoryInitialization[F, Player, RepositoryValue[IO]] =
     TwoPhasedRepositoryInitialization.withoutPrefetching[F, Player, RepositoryValue[IO]] {
       player =>

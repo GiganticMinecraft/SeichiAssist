@@ -9,14 +9,14 @@ import com.github.unchama.seichiassist.subsystems.awayscreenname.domain.PlayerId
 object IdleMinuteRepositoryDefinitions {
 
   def initialization[F[_]: Sync, Player]
-    : TwoPhasedRepositoryInitialization[F, Player, PlayerIdleMinuteRepository] =
+    : TwoPhasedRepositoryInitialization[F, Player, PlayerIdleMinuteRepository[F]] =
     TwoPhasedRepositoryInitialization
-      .withoutPrefetching[F, Player, PlayerIdleMinuteRepository] { _ =>
-        Sync[F].pure(new PlayerIdleMinuteRepository)
+      .withoutPrefetching[F, Player, PlayerIdleMinuteRepository[F]] { _ =>
+        Sync[F].pure(new PlayerIdleMinuteRepository[F])
       }
 
   def finalization[F[_]: Applicative, Player]
-    : RepositoryFinalization[F, Player, PlayerIdleMinuteRepository] =
+    : RepositoryFinalization[F, Player, PlayerIdleMinuteRepository[F]] =
     RepositoryFinalization.trivial
 
 }

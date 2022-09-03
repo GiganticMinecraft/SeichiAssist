@@ -19,8 +19,8 @@ object PlayerLocationRepositoryDefinitions {
         Applicative[F].pure(playerLocationRepository(player))
       }
 
-  def finalization[F[_]: Applicative, Player]
-    : RepositoryFinalization[F, Player, PlayerLocationRepository] =
+  def finalization[F[_]: Applicative, Location, Player]
+    : RepositoryFinalization[F, Player, PlayerLocationRepository[F, Location, Player]] =
     RepositoryFinalization.trivial
 
 }
