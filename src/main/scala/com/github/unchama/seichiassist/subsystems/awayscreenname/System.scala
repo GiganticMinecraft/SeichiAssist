@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.awayscreenname
 
-import cats.effect.{ContextShift, IO, Sync, SyncIO}
+import cats.effect.{ContextShift, IO, LiftIO, Sync, SyncIO}
 import com.github.unchama.concurrent.RepeatingTaskContext
 import com.github.unchama.datarepository.bukkit.player.{
   BukkitRepositoryControls,
@@ -27,13 +27,19 @@ import com.github.unchama.seichiassist.subsystems.awayscreenname.domain.{
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
+trait System[F[_], Player] extends Subsystem[F] {
+
+  val api: AwayScreenNameAPI[F, Player]
+
+}
+
 object System {
 
-  def wired[F[_]: Sync](
+  def wired[F[_]: Sync: LiftIO](
     implicit repeatingTaskContext: RepeatingTaskContext,
     onMainThread: OnMinecraftServerThread[IO],
     ioShift: ContextShift[IO]
-  ): SyncIO[Subsystem[F]] = {
+  ): SyncIO[System[F, Player]] = {
     implicit val playerLocationRepository
       : Player => PlayerLocationRepository[SyncIO, Location, Player] =
       new BukkitPlayerLocationRepository[SyncIO](_)
@@ -78,7 +84,10 @@ object System {
             )
         )
     } yield {
-      new Subsystem[F] {
+      new System[F, Player] {
+        override val api: AwayScreenNameAPI[F, Player] = (player: Player) =>
+          idleMinuteRepositoryControls.repository(player).currentIdleMinute.to[F]
+
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] =
           Seq(
             idleMinuteRepositoryControls,

@@ -383,7 +383,7 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val sharedInventorySystem: subsystems.sharedinventory.System[IO] =
     subsystems.sharedinventory.System.wired[IO]
 
-  private lazy val awayScreenNameSystem: Subsystem[IO] = {
+  private lazy val awayScreenNameSystem: subsystems.awayscreenname.System[IO, Player] = {
     import PluginExecutionContexts.{onMainThread, sleepAndRoutineContext}
     subsystems.awayscreenname.System.wired[IO].unsafeRunSync()
   }
