@@ -23,7 +23,7 @@ class BukkitPlayerAwayTimeRecalculationRoutine(player: Player)(
   /**
    * @return リポジトリのデータを現在のプレイヤーの位置と放置時間を更新する作用
    */
-  def updatePlayerLocationAndPlayerIdleMinute(): SyncIO[Unit] = {
+  override def updatePlayerLocationAndPlayerIdleMinute(): SyncIO[Unit] = {
     val playerIdleTimeRepository = idleTimeRepository(player)
     val playerLocationRepository = locationRepository(player)
     for {
