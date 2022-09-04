@@ -9,10 +9,15 @@ import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.idletime.IdleTimeAPI
 import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.application.repository.PlayerScreenNameUpdateRoutineFiberRepositoryDefinitions
 import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.bukkit.{
+  BukkitNameColorByIdleMinute,
   BukkitPlayerScreenNameUpdateRoutine,
   BukkitUpdatePlayerScreenName
 }
-import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.domain.UpdatePlayerScreenName
+import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.domain.{
+  NameColorByIdleMinute,
+  UpdatePlayerScreenName
+}
+import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 
 object System {
@@ -23,6 +28,8 @@ object System {
     ioShift: ContextShift[IO],
     idleTimeAPI: IdleTimeAPI[IO, Player]
   ): SyncIO[Subsystem[F]] = {
+    implicit val nameColorByIdleMinute: NameColorByIdleMinute[ChatColor] =
+      BukkitNameColorByIdleMinute
     implicit val updatePlayerScreenName: UpdatePlayerScreenName[IO, Player] =
       new BukkitUpdatePlayerScreenName[IO]
 

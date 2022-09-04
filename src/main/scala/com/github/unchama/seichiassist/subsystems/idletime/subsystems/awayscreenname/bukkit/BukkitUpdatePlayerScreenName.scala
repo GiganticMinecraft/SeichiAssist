@@ -2,12 +2,14 @@ package com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscree
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.idletime.IdleTimeAPI
-import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.domain.UpdatePlayerScreenName
-import org.bukkit.ChatColor._
+import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.domain.{NameColorByIdleMinute, UpdatePlayerScreenName}
+import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 
-class BukkitUpdatePlayerScreenName[F[_]: Sync](implicit idleTimeAPI: IdleTimeAPI[F, Player])
-    extends UpdatePlayerScreenName[F, Player] {
+class BukkitUpdatePlayerScreenName[F[_]: Sync](
+  implicit idleTimeAPI: IdleTimeAPI[F, Player],
+  nameColorByIdleMinute: NameColorByIdleMinute[ChatColor]
+) extends UpdatePlayerScreenName[F, Player] {
 
   import cats.implicits._
 
@@ -17,10 +19,7 @@ class BukkitUpdatePlayerScreenName[F[_]: Sync](implicit idleTimeAPI: IdleTimeAPI
     } yield {
       val currentDisplayName = player.getDisplayName
       val currentPlayerListName = player.getPlayerListName
-      val newPlayerNameColor =
-        if (currentIdleMinute.minute >= 10) s"$DARK_GRAY"
-        else if (currentIdleMinute.minute >= 3) s"$GRAY"
-        else ""
+      val newPlayerNameColor = nameColorByIdleMinute.getNameColor(currentIdleMinute)
 
       player.setDisplayName(newPlayerNameColor + currentDisplayName)
       player.setPlayerListName(newPlayerNameColor + currentPlayerListName)
