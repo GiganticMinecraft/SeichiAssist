@@ -2,7 +2,10 @@ package com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscree
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.idletime.IdleTimeAPI
-import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.domain.{NameColorByIdleMinute, UpdatePlayerScreenName}
+import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.domain.{
+  NameColorByIdleMinute,
+  UpdatePlayerScreenName
+}
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 
