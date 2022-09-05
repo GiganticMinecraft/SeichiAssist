@@ -55,8 +55,7 @@ import com.github.unchama.seichiassist.infrastructure.scalikejdbc.ScalikeJDBCCon
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.menus.{BuildMainMenu, TopLevelRouter}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.minestack.MineStackObject.itemStackMineStackObject
-import com.github.unchama.seichiassist.minestack.{MineStackObject, MineStackObjectCategory}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObject.itemStackMineStackObject
 import com.github.unchama.seichiassist.subsystems._
 import com.github.unchama.seichiassist.subsystems.anywhereender.AnywhereEnderChestAPI
 import com.github.unchama.seichiassist.subsystems.breakcount.{BreakCountAPI, BreakCountReadAPI}
@@ -74,6 +73,7 @@ import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository
 import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaReadApi}
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
+import com.github.unchama.seichiassist.subsystems.minestack.domain.{MineStackObject, MineStackObjectCategory}
 import com.github.unchama.seichiassist.subsystems.present.infrastructure.GlobalPlayerAccessor
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI

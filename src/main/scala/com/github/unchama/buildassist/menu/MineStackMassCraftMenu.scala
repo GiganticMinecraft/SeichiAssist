@@ -10,7 +10,7 @@ import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, ReloadingButton}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.menus.{BuildMainMenu, ColorScheme, CommonButtons}
-import com.github.unchama.seichiassist.minestack.MineStackObject
+import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObject
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect

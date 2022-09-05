@@ -12,10 +12,10 @@ import com.github.unchama.seichiassist.MineStackObjectList.{
   getBuiltinGachaPrizes
 }
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.minestack.{
+import com.github.unchama.seichiassist.minestack.MineStackObjectWithColorVariants
+import com.github.unchama.seichiassist.subsystems.minestack.domain.{
   MineStackObject,
-  MineStackObjectCategory,
-  MineStackObjectWithColorVariants
+  MineStackObjectCategory
 }
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
 import com.github.unchama.targetedeffect
