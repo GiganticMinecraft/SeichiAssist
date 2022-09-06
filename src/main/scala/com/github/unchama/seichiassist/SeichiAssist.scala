@@ -55,7 +55,7 @@ import com.github.unchama.seichiassist.infrastructure.scalikejdbc.ScalikeJDBCCon
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.menus.{BuildMainMenu, TopLevelRouter}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObject.itemStackMineStackObject
+import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObject.MineStackObjectByItemStack
 import com.github.unchama.seichiassist.subsystems._
 import com.github.unchama.seichiassist.subsystems.anywhereender.AnywhereEnderChestAPI
 import com.github.unchama.seichiassist.subsystems.breakcount.{BreakCountAPI, BreakCountReadAPI}
@@ -814,7 +814,7 @@ object SeichiAssist {
       .toList
       .filter(_.itemStack.getType != Material.EXP_BOTTLE) // 経験値瓶だけはすでにリストにあるので除外
       .map { g =>
-        itemStackMineStackObject(
+        MineStackObjectByItemStack(
           MineStackObjectCategory.GACHA_PRIZES,
           g.objName,
           None,

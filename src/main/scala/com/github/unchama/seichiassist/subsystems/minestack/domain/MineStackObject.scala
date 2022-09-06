@@ -21,7 +21,7 @@ class MineStackObject(
 
 object MineStackObject {
 
-  def materialMineStackObject(
+  def MineStackObjectByMaterial(
     category: MineStackObjectCategory,
     mineStackObjectName: String,
     japaneseName: String,
@@ -37,7 +37,7 @@ object MineStackObject {
     )
   }
 
-  def itemStackMineStackObject(
+  def MineStackObjectByItemStack(
     category: MineStackObjectCategory,
     mineStackObjectName: String,
     japaneseName: Option[String],
