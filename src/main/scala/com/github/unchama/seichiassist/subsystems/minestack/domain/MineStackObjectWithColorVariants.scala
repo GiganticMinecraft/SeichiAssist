@@ -1,6 +1,4 @@
-package com.github.unchama.seichiassist.minestack
-
-import com.github.unchama.seichiassist.subsystems.minestack.domain.{MineStackObject, MineStackObjectCategory}
+package com.github.unchama.seichiassist.subsystems.minestack.domain
 
 case class MineStackObjectWithColorVariants(
   representative: MineStackObject,

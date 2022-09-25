@@ -6,7 +6,7 @@ import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.MineStackObjectList.getAllObjectGroupsInCategory
+import com.github.unchama.seichiassist.subsystems.minestack.bukkit.MineStackObjectList.getAllObjectGroupsInCategory
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObjectCategory

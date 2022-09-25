@@ -8,7 +8,7 @@ import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlot
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.menus.CommonButtons
-import com.github.unchama.seichiassist.minestack.MineStackObjectWithColorVariants
+import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObjectWithColorVariants
 import eu.timepit.refined.auto._
 import org.bukkit.ChatColor.{BOLD, DARK_BLUE}
 import org.bukkit.entity.Player

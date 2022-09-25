@@ -1,6 +1,4 @@
-package com.github.unchama.seichiassist.minestack
-
-import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObject
+package com.github.unchama.seichiassist.subsystems.minestack.domain
 
 class MineStackUsageHistory {
 

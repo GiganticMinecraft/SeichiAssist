@@ -1,16 +1,24 @@
-package com.github.unchama.seichiassist
+package com.github.unchama.seichiassist.subsystems.minestack.bukkit
 
 import cats.effect.IO
 import cats.effect.concurrent.Ref
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObject.{
   MineStackObjectByItemStack,
   MineStackObjectByMaterial
 }
-import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObjectCategory._
-import com.github.unchama.seichiassist.minestack.MineStackObjectWithColorVariants
+import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObjectCategory.{
+  AGRICULTURAL,
+  BUILDING,
+  GACHA_PRIZES,
+  MOB_DROP,
+  ORES,
+  REDSTONE_AND_TRANSPORTATION
+}
 import com.github.unchama.seichiassist.subsystems.minestack.domain.{
   MineStackObject,
-  MineStackObjectCategory
+  MineStackObjectCategory,
+  MineStackObjectWithColorVariants
 }
 import com.github.unchama.seichiassist.util.ItemInformation.itemStackContainsOwnerName
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory

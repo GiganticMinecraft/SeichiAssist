@@ -6,7 +6,8 @@ import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaReadApi}
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.TimeUtils
-import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
+import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.subsystems.minestack.bukkit.MineStackObjectList
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
