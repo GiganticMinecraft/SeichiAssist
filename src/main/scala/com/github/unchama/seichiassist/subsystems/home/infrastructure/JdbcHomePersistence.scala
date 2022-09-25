@@ -3,30 +3,34 @@ package com.github.unchama.seichiassist.subsystems.home.infrastructure
 import cats.effect.Sync
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.subsystems.home.domain.{Home, HomeId, HomeLocation, HomePersistence}
+import com.github.unchama.seichiassist.subsystems.home.domain.{
+  Home,
+  HomeId,
+  HomeLocation,
+  HomePersistence
+}
 import scalikejdbc._
 
 import java.util.UUID
 
-class JdbcHomePersistence[F[_]: Sync: NonServerThreadContextShift]
-    extends HomePersistence[F] {
+class JdbcHomePersistence[F[_]: Sync: NonServerThreadContextShift] extends HomePersistence[F] {
   private val serverId = SeichiAssist.seichiAssistConfig.getServerNum
 
   import cats.implicits._
 
-  override def upsert(ownerUuid: UUID, id: HomeId)(subHome: Home): F[Unit] =
+  override def upsert(ownerUuid: UUID, id: HomeId)(home: Home): F[Unit] =
     NonServerThreadContextShift[F].shift >> Sync[F].delay[Unit] {
       DB.localTx { implicit session =>
-        val HomeLocation(worldName, x, y, z, pitch, yaw) = subHome.location
+        val HomeLocation(worldName, x, y, z, pitch, yaw) = home.location
 
         // NOTE 2021/05/19: 何故かDB上のIDは1少ない。つまり、ID 1のホームはDB上ではid=0である。
         sql"""insert into seichiassist.sub_home
              |(player_uuid, server_id, id, name, location_x, location_y, location_z, world_name, pitch, yaw) values
-             |  (${ownerUuid.toString}, $serverId, ${id.value - 1}, ${subHome
+             |  (${ownerUuid.toString}, $serverId, ${id.value - 1}, ${home
               .name
               .orNull}, $x, $y, $z, $worldName, $pitch, $yaw)
              |    on duplicate key update
-             |      name = ${subHome.name.orNull},
+             |      name = ${home.name.orNull},
              |      location_x = $x,
              |      location_y = $y,
              |      location_z = $z,

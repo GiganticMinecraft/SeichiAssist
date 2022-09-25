@@ -45,15 +45,14 @@ object HomeCommand {
       Parsers.closedRangeInt(
         HomeId.minimumNumber,
         HomeId.maxNumber,
-        failureMessage = MessageEffect(
-          s"ホームの番号を${HomeId.minimumNumber}～${HomeId.maxNumber}の間で入力してください"
-        )
+        failureMessage =
+          MessageEffect(s"ホームの番号を${HomeId.minimumNumber}～${HomeId.maxNumber}の間で入力してください")
       )
     ),
     onMissingArguments = printDescriptionExecutor
   )
 
-  private def subHomeNotSetMessage: List[String] = List(s"${YELLOW}指定されたホームポイントが設定されていません。")
+  private def homeNotSetMessage: List[String] = List(s"${YELLOW}指定されたホームポイントが設定されていません。")
 
   def executor[F[
     _
@@ -75,12 +74,12 @@ object HomeCommand {
   ]: ConcurrentEffect: NonServerThreadContextShift: OnMinecraftServerThread: HomeWriteAPI] =
     argsAndSenderConfiguredBuilder
       .executionCSEffect { context =>
-        val subHomeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
+        val homeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
         val player = context.sender
 
         Kleisli
-          .liftF(HomeWriteAPI[F].remove(player.getUniqueId, subHomeId))
-          .flatMap(_ => MessageEffectF(s"ホームポイント${subHomeId}を削除しました。"))
+          .liftF(HomeWriteAPI[F].remove(player.getUniqueId, homeId))
+          .flatMap(_ => MessageEffectF(s"ホームポイント${homeId}を削除しました。"))
       }
       .build()
 
@@ -89,20 +88,20 @@ object HomeCommand {
   ]: ConcurrentEffect: NonServerThreadContextShift: OnMinecraftServerThread: HomeReadAPI] =
     argsAndSenderConfiguredBuilder
       .execution { context =>
-        val subHomeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
+        val homeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
         val player = context.sender
 
         val eff = for {
           _ <- NonServerThreadContextShift[F].shift
-          subHomeLocation <- HomeReadAPI[F].get(player.getUniqueId, subHomeId)
+          homeLocation <- HomeReadAPI[F].get(player.getUniqueId, homeId)
         } yield {
-          subHomeLocation match {
-            case None => MessageEffect(s"ホームポイント${subHomeId}が設定されてません")
+          homeLocation match {
+            case None => MessageEffect(s"ホームポイント${homeId}が設定されてません")
             case Some(Home(_, location)) =>
               LocationCodec.toBukkitLocation(location) match {
                 case Some(bukkitLocation) =>
                   TeleportEffect.to[F](bukkitLocation).mapK(Effect.toIOK[F]) >>
-                    MessageEffect(s"ホームポイント${subHomeId}にワープしました")
+                    MessageEffect(s"ホームポイント${homeId}にワープしました")
                 case None =>
                   MessageEffect(
                     List(s"${RED}ホームポイントへのワープに失敗しました", s"${RED}登録先のワールドが削除された可能性があります")
@@ -115,20 +114,18 @@ object HomeCommand {
       }
       .build()
 
-  private def setExecutor[F[
-    _
-  ]: ConcurrentEffect: NonServerThreadContextShift: HomeWriteAPI] =
+  private def setExecutor[F[_]: ConcurrentEffect: NonServerThreadContextShift: HomeWriteAPI] =
     argsAndSenderConfiguredBuilder
       .execution { context =>
-        val subHomeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
+        val homeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
         val player = context.sender
 
-        val subHomeLocation = LocationCodec.fromBukkitLocation(player.getLocation)
+        val homeLocation = LocationCodec.fromBukkitLocation(player.getLocation)
 
         val eff = for {
           _ <- NonServerThreadContextShift[F].shift
-          _ <- HomeWriteAPI[F].upsertLocation(player.getUniqueId, subHomeId)(subHomeLocation)
-        } yield MessageEffect(s"現在位置をホームポイント${subHomeId}に設定しました")
+          _ <- HomeWriteAPI[F].upsertLocation(player.getUniqueId, homeId)(homeLocation)
+        } yield MessageEffect(s"現在位置をホームポイント${homeId}に設定しました")
 
         eff.toIO
       }
@@ -138,36 +135,34 @@ object HomeCommand {
     implicit scope: ChatInterceptionScope
   ) = argsAndSenderConfiguredBuilder
     .execution { context =>
-      val subHomeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
+      val homeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
 
       val player = context.sender
       val uuid = player.getUniqueId
 
-      val instruction = List(
-        s"ホームポイント${subHomeId}に設定する名前をチャットで入力してください",
-        s"$YELLOW※入力されたチャット内容は他のプレイヤーには見えません"
-      )
+      val instruction =
+        List(s"ホームポイント${homeId}に設定する名前をチャットで入力してください", s"$YELLOW※入力されたチャット内容は他のプレイヤーには見えません")
 
       def doneMessage(inputName: String): List[String] =
-        List(s"${GREEN}ホームポイント${subHomeId}の名前を", s"$GREEN${inputName}に更新しました")
+        List(s"${GREEN}ホームポイント${homeId}の名前を", s"$GREEN${inputName}に更新しました")
 
       val cancelledInputMessage = List(s"${YELLOW}入力がキャンセルされました。")
 
       for {
-        _ <- Monad[IO].ifM(HomeReadAPI[F].configured(uuid, subHomeId).toIO)(
+        _ <- Monad[IO].ifM(HomeReadAPI[F].configured(uuid, homeId).toIO)(
           MessageEffect(instruction)(player) >>
             scope.interceptFrom(uuid).flatMap {
               case Left(newName) =>
-                HomeWriteAPI[F].rename(uuid, subHomeId)(newName).toIO.flatMap {
+                HomeWriteAPI[F].rename(uuid, homeId)(newName).toIO.flatMap {
                   case RenameResult.Done =>
                     MessageEffect(doneMessage(newName))(player)
                   case RenameResult.NotFound =>
-                    MessageEffect(subHomeNotSetMessage)(player)
+                    MessageEffect(homeNotSetMessage)(player)
                 }
               case Right(Overridden) => MessageEffect(cancelledInputMessage)(player)
               case Right(_)          => IO.unit
             },
-          MessageEffect(subHomeNotSetMessage)(player)
+          MessageEffect(homeNotSetMessage)(player)
         )
       } yield TargetedEffect.emptyEffect
     }
