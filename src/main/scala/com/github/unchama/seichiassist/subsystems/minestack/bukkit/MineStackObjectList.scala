@@ -7,17 +7,11 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObje
   MineStackObjectByItemStack,
   MineStackObjectByMaterial
 }
-import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObjectCategory.{
-  AGRICULTURAL,
-  BUILDING,
-  GACHA_PRIZES,
-  MOB_DROP,
-  ORES,
-  REDSTONE_AND_TRANSPORTATION
-}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObjectCategory._
 import com.github.unchama.seichiassist.subsystems.minestack.domain.{
   MineStackObject,
   MineStackObjectCategory,
+  MineStackObjectGroup,
   MineStackObjectWithColorVariants
 }
 import com.github.unchama.seichiassist.util.ItemInformation.itemStackContainsOwnerName
@@ -29,7 +23,6 @@ object MineStackObjectList {
 
   private def leftElems[A](elems: A*): List[Either[A, Nothing]] = elems.toList.map(Left.apply)
   private def rightElems[B](elems: B*): List[Either[Nothing, B]] = elems.toList.map(Right.apply)
-  type MineStackObjectGroup = Either[MineStackObject, MineStackObjectWithColorVariants]
 
   // @formatter:off
   
