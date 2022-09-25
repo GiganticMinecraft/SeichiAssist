@@ -11,36 +11,31 @@ import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.seichiassist.subsystems.home.domain.HomeId
-import com.github.unchama.seichiassist.subsystems.subhome.bukkit.{LocationCodec, TeleportEffect}
-import com.github.unchama.seichiassist.subsystems.subhome.domain.OperationResult.RenameResult
-import com.github.unchama.seichiassist.subsystems.subhome.domain.{SubHome, SubHomeId}
-import com.github.unchama.seichiassist.subsystems.subhome.{
-  SubHomeAPI,
-  SubHomeReadAPI,
-  SubHomeWriteAPI
-}
+import com.github.unchama.seichiassist.subsystems.home.bukkit.{LocationCodec, TeleportEffect}
+import com.github.unchama.seichiassist.subsystems.home.{HomeAPI, HomeReadAPI, HomeWriteAPI}
+import com.github.unchama.seichiassist.subsystems.home.domain.{Home, HomeId}
+import com.github.unchama.seichiassist.subsystems.home.domain.OperationResult.RenameResult
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 
-object SubHomeCommand {
+object HomeCommand {
 
   import cats.implicits._
 
   private val printDescriptionExecutor = EchoExecutor(
     MessageEffect(
       List(
-        s"$GREEN/subhome コマンドの使い方",
+        s"$GREEN/home コマンドの使い方",
         s"${GREEN}移動する場合",
-        s"$GREEN/subhome warp [移動したいサブホームの番号]",
+        s"$GREEN/home warp [移動したいホームの番号]",
         s"${GREEN}セットする場合",
-        s"$GREEN/subhome set [セットしたいサブホームの番号]",
+        s"$GREEN/home set [セットしたいホームの番号]",
         s"${GREEN}名前変更する場合",
-        s"$GREEN/subhome name [名前変更したいサブホームの番号]",
+        s"$GREEN/home name [名前変更したいホームの番号]",
         s"${GREEN}削除する場合",
-        s"$GREEN/subhome remove [削除したいサブホームの番号]"
+        s"$GREEN/home remove [削除したいホームの番号]"
       )
     )
   )
@@ -51,18 +46,18 @@ object SubHomeCommand {
         HomeId.minimumNumber,
         HomeId.maxNumber,
         failureMessage = MessageEffect(
-          s"サブホームの番号を${HomeId.minimumNumber}～${HomeId.maxNumber}の間で入力してください"
+          s"ホームの番号を${HomeId.minimumNumber}～${HomeId.maxNumber}の間で入力してください"
         )
       )
     ),
     onMissingArguments = printDescriptionExecutor
   )
 
-  private def subHomeNotSetMessage: List[String] = List(s"${YELLOW}指定されたサブホームポイントが設定されていません。")
+  private def subHomeNotSetMessage: List[String] = List(s"${YELLOW}指定されたホームポイントが設定されていません。")
 
   def executor[F[
     _
-  ]: SubHomeAPI: ConcurrentEffect: NonServerThreadContextShift: OnMinecraftServerThread](
+  ]: HomeAPI: ConcurrentEffect: NonServerThreadContextShift: OnMinecraftServerThread](
     implicit scope: ChatInterceptionScope
   ): TabExecutor = BranchedExecutor(
     Map(
@@ -77,21 +72,21 @@ object SubHomeCommand {
 
   private def removeExecutor[F[
     _
-  ]: ConcurrentEffect: NonServerThreadContextShift: OnMinecraftServerThread: SubHomeWriteAPI] =
+  ]: ConcurrentEffect: NonServerThreadContextShift: OnMinecraftServerThread: HomeWriteAPI] =
     argsAndSenderConfiguredBuilder
       .executionCSEffect { context =>
         val subHomeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
         val player = context.sender
 
         Kleisli
-          .liftF(SubHomeWriteAPI[F].remove(player.getUniqueId, subHomeId))
-          .flatMap(_ => MessageEffectF(s"サブホームポイント${subHomeId}を削除しました。"))
+          .liftF(HomeWriteAPI[F].remove(player.getUniqueId, subHomeId))
+          .flatMap(_ => MessageEffectF(s"ホームポイント${subHomeId}を削除しました。"))
       }
       .build()
 
   private def warpExecutor[F[
     _
-  ]: ConcurrentEffect: NonServerThreadContextShift: OnMinecraftServerThread: SubHomeReadAPI] =
+  ]: ConcurrentEffect: NonServerThreadContextShift: OnMinecraftServerThread: HomeReadAPI] =
     argsAndSenderConfiguredBuilder
       .execution { context =>
         val subHomeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
@@ -99,18 +94,18 @@ object SubHomeCommand {
 
         val eff = for {
           _ <- NonServerThreadContextShift[F].shift
-          subHomeLocation <- SubHomeReadAPI[F].get(player.getUniqueId, subHomeId)
+          subHomeLocation <- HomeReadAPI[F].get(player.getUniqueId, subHomeId)
         } yield {
           subHomeLocation match {
-            case None => MessageEffect(s"サブホームポイント${subHomeId}が設定されてません")
-            case Some(SubHome(_, location)) =>
+            case None => MessageEffect(s"ホームポイント${subHomeId}が設定されてません")
+            case Some(Home(_, location)) =>
               LocationCodec.toBukkitLocation(location) match {
                 case Some(bukkitLocation) =>
                   TeleportEffect.to[F](bukkitLocation).mapK(Effect.toIOK[F]) >>
-                    MessageEffect(s"サブホームポイント${subHomeId}にワープしました")
+                    MessageEffect(s"ホームポイント${subHomeId}にワープしました")
                 case None =>
                   MessageEffect(
-                    List(s"${RED}サブホームポイントへのワープに失敗しました", s"${RED}登録先のワールドが削除された可能性があります")
+                    List(s"${RED}ホームポイントへのワープに失敗しました", s"${RED}登録先のワールドが削除された可能性があります")
                   )
               }
           }
@@ -122,7 +117,7 @@ object SubHomeCommand {
 
   private def setExecutor[F[
     _
-  ]: ConcurrentEffect: NonServerThreadContextShift: SubHomeWriteAPI] =
+  ]: ConcurrentEffect: NonServerThreadContextShift: HomeWriteAPI] =
     argsAndSenderConfiguredBuilder
       .execution { context =>
         val subHomeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
@@ -132,14 +127,14 @@ object SubHomeCommand {
 
         val eff = for {
           _ <- NonServerThreadContextShift[F].shift
-          _ <- SubHomeWriteAPI[F].upsertLocation(player.getUniqueId, subHomeId)(subHomeLocation)
-        } yield MessageEffect(s"現在位置をサブホームポイント${subHomeId}に設定しました")
+          _ <- HomeWriteAPI[F].upsertLocation(player.getUniqueId, subHomeId)(subHomeLocation)
+        } yield MessageEffect(s"現在位置をホームポイント${subHomeId}に設定しました")
 
         eff.toIO
       }
       .build()
 
-  private def nameExecutor[F[_]: ConcurrentEffect: NonServerThreadContextShift: SubHomeAPI](
+  private def nameExecutor[F[_]: ConcurrentEffect: NonServerThreadContextShift: HomeAPI](
     implicit scope: ChatInterceptionScope
   ) = argsAndSenderConfiguredBuilder
     .execution { context =>
@@ -149,21 +144,21 @@ object SubHomeCommand {
       val uuid = player.getUniqueId
 
       val instruction = List(
-        s"サブホームポイント${subHomeId}に設定する名前をチャットで入力してください",
+        s"ホームポイント${subHomeId}に設定する名前をチャットで入力してください",
         s"$YELLOW※入力されたチャット内容は他のプレイヤーには見えません"
       )
 
-      def doneMessage(inputName: String) =
-        List(s"${GREEN}サブホームポイント${subHomeId}の名前を", s"$GREEN${inputName}に更新しました")
+      def doneMessage(inputName: String): List[String] =
+        List(s"${GREEN}ホームポイント${subHomeId}の名前を", s"$GREEN${inputName}に更新しました")
 
       val cancelledInputMessage = List(s"${YELLOW}入力がキャンセルされました。")
 
       for {
-        _ <- Monad[IO].ifM(SubHomeReadAPI[F].configured(uuid, subHomeId).toIO)(
+        _ <- Monad[IO].ifM(HomeReadAPI[F].configured(uuid, subHomeId).toIO)(
           MessageEffect(instruction)(player) >>
             scope.interceptFrom(uuid).flatMap {
               case Left(newName) =>
-                SubHomeWriteAPI[F].rename(uuid, subHomeId)(newName).toIO.flatMap {
+                HomeWriteAPI[F].rename(uuid, subHomeId)(newName).toIO.flatMap {
                   case RenameResult.Done =>
                     MessageEffect(doneMessage(newName))(player)
                   case RenameResult.NotFound =>
