@@ -123,7 +123,7 @@ object TopLevelRouter {
       _.open
     implicit lazy val ioCanOpenAchievementGroupMenu: IO CanOpen AchievementGroupMenu = _.open
     implicit lazy val ioCanOpenHomeConfirmationMenu
-      : IO CanOpen HomeMenu.SubHomeChangeConfirmationMenu =
+      : IO CanOpen HomeMenu.HomeChangeConfirmationMenu =
       _.open
     implicit lazy val ioCanOpenAchievementCategoryMenu: IO CanOpen AchievementCategoryMenu =
       _.open
@@ -141,7 +141,7 @@ object TopLevelRouter {
     implicit lazy val ioCanOpenServerSwitchMenu: IO CanOpen ServerSwitchMenu.type = _.open
     implicit lazy val ioCanOpenHomeMenu: IO CanOpen HomeMenu.type = _.open
     implicit lazy val ioCanOpenHomeConfirmMenu
-      : IO CanOpen HomeMenu.SubHomeRemoveConfirmationMenu = _.open
+      : IO CanOpen HomeMenu.HomeRemoveConfirmationMenu = _.open
     implicit lazy val ioCanOpenPassiveSkillMenu: IO CanOpen PassiveSkillMenu.type = _.open
 
     implicit lazy val ioCanOpenSeichiRankingMenu: IO CanOpen RankingMenu[SeichiAmountData] =
