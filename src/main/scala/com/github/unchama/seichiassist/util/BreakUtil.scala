@@ -517,7 +517,7 @@ object BreakUtil {
     /**
      * 重力値の計算を始めるY座標
      */
-    val startY: Int =
+    val blockRelativeHeight: Int =
       if (!isAssault) {
         val usageMode = skillState.usageMode
         if (usageMode != Disabled) {
@@ -570,14 +570,12 @@ object BreakUtil {
 
     // 3. 重力値計算
     /**
-     * OPENHEIGHTマス以上のtransparentmateriallistブロックの連続により、地上判定とする。
+     * MaterialSets.transparentMaterialsに入っているMaterialを持つブロックが
+     * この回数以上連続したとき、重力値のカウントをストップする。
      */
     val surfaceThreshold = 3
 
-    /**
-     * OPENHEIGHTに達したかの計測カウンタ
-     */
-    var checkSurface = 0
+    var surfaceCandidateCount = 0
 
     /**
      * 重力値
@@ -588,7 +586,7 @@ object BreakUtil {
      * 最大ループ数
      */
     val maxY = if (player.getWorld.getEnvironment == Environment.NETHER) 121 else 255
-    val maxOffsetY = maxY - startY
+    val maxOffsetY = maxY - blockRelativeHeight
 
     // NOTE: `1 until 0`など、`x > y`が満たされる`x until y`はイテレーションが行われない
     for (offsetY <- 1 to maxOffsetY) {
@@ -596,17 +594,17 @@ object BreakUtil {
       /**
        * 確認対象ブロック
        */
-      val target = block.getRelative(0, startY + offsetY, 0)
+      val target = block.getRelative(0, blockRelativeHeight + offsetY, 0)
       // 対象ブロックが地上判定ブロックの場合
       if (MaterialSets.transparentMaterials.contains(target.getType)) {
         // カウンタを加算
-        checkSurface += 1
-        if (checkSurface >= surfaceThreshold) {
+        surfaceCandidateCount += 1
+        if (surfaceCandidateCount >= surfaceThreshold) {
           return gravity
         }
       } else {
         // カウンタをクリア
-        checkSurface = 0
+        surfaceCandidateCount = 0
         // 重力値を加算(水は2倍にする)
         gravity += (if (target.getType == Material.WATER) 2 else 1)
       }
