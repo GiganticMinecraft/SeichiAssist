@@ -572,12 +572,12 @@ object BreakUtil {
     /**
      * OPENHEIGHTマス以上のtransparentmateriallistブロックの連続により、地上判定とする。
      */
-    val OPENHEIGHT = 3
+    val surfaceThreshold = 3
 
     /**
      * OPENHEIGHTに達したかの計測カウンタ
      */
-    var openCount = 0
+    var checkSurface = 0
 
     /**
      * 重力値
@@ -587,25 +587,27 @@ object BreakUtil {
     /**
      * 最大ループ数
      */
-    val YMAX = if (player.getWorld.getEnvironment == Environment.NETHER) 121 else 255
+    val maxY = if (player.getWorld.getEnvironment == Environment.NETHER) 121 else 255
+    val maxOffsetY = maxY - startY
 
-    for (checkPointer <- 1 until YMAX) {
+    // NOTE: `1 until 0`など、`x > y`が満たされる`x until y`はイテレーションが行われない
+    for (offsetY <- 1 to maxOffsetY) {
 
       /**
        * 確認対象ブロック
        */
-      val target = block.getRelative(0, startY + checkPointer, 0)
+      val target = block.getRelative(0, startY + offsetY, 0)
       // 対象ブロックが地上判定ブロックの場合
       if (MaterialSets.transparentMaterials.contains(target.getType)) {
         // カウンタを加算
-        openCount += 1
-        if (openCount >= OPENHEIGHT) {
+        checkSurface += 1
+        if (checkSurface >= surfaceThreshold) {
           return gravity
         }
       } else {
         // カウンタをクリア
-        openCount = 0
-        // 重力値を加算(水をは2倍にする)
+        checkSurface = 0
+        // 重力値を加算(水は2倍にする)
         gravity += (if (target.getType == Material.WATER) 2 else 1)
       }
     }
