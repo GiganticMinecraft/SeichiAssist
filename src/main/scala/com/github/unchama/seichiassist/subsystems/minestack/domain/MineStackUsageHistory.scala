@@ -12,7 +12,7 @@ class MineStackUsageHistory {
   def addHistory(mineStackObject: MineStackObject): Unit = {
     _usageHistory = _usageHistory.filterNot(_ == mineStackObject)
     _usageHistory :+= mineStackObject
-    if (_usageHistory.size > maxListSize) _usageHistory.drop(1)
+    if (_usageHistory.size > maxListSize) _usageHistory = _usageHistory.drop(1)
   }
 
   def usageHistory: Vector[MineStackObject] = _usageHistory
