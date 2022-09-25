@@ -8,11 +8,18 @@ import org.bukkit.command.TabExecutor
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{Material, Sound}
 
+import scala.util.chaining.scalaUtilChainingOps
+
 object StickCommand {
   val executor: TabExecutor = playerCommandBuilder
     .execution { context =>
       val sender = context.sender
-      val stickItemStack = new ItemStack(Material.STICK, 1)
+      val stickItemStack = new ItemStack(Material.STICK, 1).tap { itemStack =>
+        import itemStack._
+        val meta = getItemMeta
+        meta.setDisplayName("棒メニューが開ける棒")
+        setItemMeta(meta)
+      }
 
       if (!InventoryOperations.isPlayerInventoryFull(sender)) {
         InventoryOperations.addItem(sender, stickItemStack)
