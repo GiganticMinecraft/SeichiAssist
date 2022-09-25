@@ -11,7 +11,7 @@ import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.seichiassist.subsystems.home.domain.SubHomeId
+import com.github.unchama.seichiassist.subsystems.home.domain.HomeId
 import com.github.unchama.seichiassist.subsystems.subhome.bukkit.{LocationCodec, TeleportEffect}
 import com.github.unchama.seichiassist.subsystems.subhome.domain.OperationResult.RenameResult
 import com.github.unchama.seichiassist.subsystems.subhome.domain.{SubHome, SubHomeId}
@@ -48,10 +48,10 @@ object SubHomeCommand {
   private val argsAndSenderConfiguredBuilder = playerCommandBuilder.argumentsParsers(
     List(
       Parsers.closedRangeInt(
-        SubHomeId.minimumNumber,
-        SubHomeId.maxNumber,
+        HomeId.minimumNumber,
+        HomeId.maxNumber,
         failureMessage = MessageEffect(
-          s"サブホームの番号を${SubHomeId.minimumNumber}～${SubHomeId.maxNumber}の間で入力してください"
+          s"サブホームの番号を${HomeId.minimumNumber}～${HomeId.maxNumber}の間で入力してください"
         )
       )
     ),
@@ -80,7 +80,7 @@ object SubHomeCommand {
   ]: ConcurrentEffect: NonServerThreadContextShift: OnMinecraftServerThread: SubHomeWriteAPI] =
     argsAndSenderConfiguredBuilder
       .executionCSEffect { context =>
-        val subHomeId = SubHomeId(context.args.parsed.head.asInstanceOf[Int])
+        val subHomeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
         val player = context.sender
 
         Kleisli
@@ -94,7 +94,7 @@ object SubHomeCommand {
   ]: ConcurrentEffect: NonServerThreadContextShift: OnMinecraftServerThread: SubHomeReadAPI] =
     argsAndSenderConfiguredBuilder
       .execution { context =>
-        val subHomeId = SubHomeId(context.args.parsed.head.asInstanceOf[Int])
+        val subHomeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
         val player = context.sender
 
         val eff = for {
@@ -125,7 +125,7 @@ object SubHomeCommand {
   ]: ConcurrentEffect: NonServerThreadContextShift: SubHomeWriteAPI] =
     argsAndSenderConfiguredBuilder
       .execution { context =>
-        val subHomeId = SubHomeId(context.args.parsed.head.asInstanceOf[Int])
+        val subHomeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
         val player = context.sender
 
         val subHomeLocation = LocationCodec.fromBukkitLocation(player.getLocation)
@@ -143,7 +143,7 @@ object SubHomeCommand {
     implicit scope: ChatInterceptionScope
   ) = argsAndSenderConfiguredBuilder
     .execution { context =>
-      val subHomeId = SubHomeId(context.args.parsed.head.asInstanceOf[Int])
+      val subHomeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
 
       val player = context.sender
       val uuid = player.getUniqueId
