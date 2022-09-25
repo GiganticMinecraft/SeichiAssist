@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.subhome.bukkit.listeners
+package com.github.unchama.seichiassist.subsystems.home.bukkit.listeners
 
 import cats.effect.ConcurrentEffect
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps

@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.subhome.bukkit.command
+package com.github.unchama.seichiassist.subsystems.home.bukkit.command
 
 import cats.Monad
 import cats.data.Kleisli
@@ -11,6 +11,7 @@ import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
+import com.github.unchama.seichiassist.subsystems.home.domain.SubHomeId
 import com.github.unchama.seichiassist.subsystems.subhome.bukkit.{LocationCodec, TeleportEffect}
 import com.github.unchama.seichiassist.subsystems.subhome.domain.OperationResult.RenameResult
 import com.github.unchama.seichiassist.subsystems.subhome.domain.{SubHome, SubHomeId}

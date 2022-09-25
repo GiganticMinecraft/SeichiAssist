@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.subhome.domain
+package com.github.unchama.seichiassist.subsystems.home.domain
 
 case class SubHomeLocation(
   worldName: String,

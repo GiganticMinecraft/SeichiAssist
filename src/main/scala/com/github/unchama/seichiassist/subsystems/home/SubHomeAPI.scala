@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.subhome
+package com.github.unchama.seichiassist.subsystems.home
 
 import cats.Functor
 import com.github.unchama.seichiassist.subsystems.subhome.domain.{

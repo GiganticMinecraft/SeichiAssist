@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.subhome
+package com.github.unchama.seichiassist.subsystems.home
 
 import cats.effect.ConcurrentEffect
 import com.github.unchama.concurrent.NonServerThreadContextShift

@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.subhome.infrastructure
+package com.github.unchama.seichiassist.subsystems.home.infrastructure
 
 import cats.effect.Sync
 import com.github.unchama.concurrent.NonServerThreadContextShift
