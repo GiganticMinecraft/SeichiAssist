@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
-import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObjectCategory.{
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory.{
   AGRICULTURAL,
   BUILDING,
   GACHA_PRIZES,
@@ -18,7 +18,7 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObje
   ORES,
   REDSTONE_AND_TRANSPORTATION
 }
-import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObjectCategory
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory
 import org.bukkit.ChatColor._
 import org.bukkit.Material
 import org.bukkit.entity.Player

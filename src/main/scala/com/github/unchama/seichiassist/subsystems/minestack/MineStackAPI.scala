@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.minestack
 
-import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObject
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject
 
 trait MineStackWriteAPI[F[_], Player] {
 

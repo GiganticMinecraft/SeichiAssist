@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.minestack.domain
 
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject
+
 class MineStackUsageHistory {
 
   private val maxListSize = 27

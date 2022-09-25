@@ -4,17 +4,13 @@ import cats.effect.IO
 import cats.effect.concurrent.Ref
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaprizefactory.bukkit.StaticGachaPrizeFactory
-import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObject.{
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject.{
   MineStackObjectByItemStack,
   MineStackObjectByMaterial
 }
-import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObjectCategory._
-import com.github.unchama.seichiassist.subsystems.minestack.domain.{
-  MineStackObject,
-  MineStackObjectCategory,
-  MineStackObjectGroup,
-  MineStackObjectWithColorVariants
-}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory._
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{MineStackObject, MineStackObjectCategory, MineStackObjectWithColorVariants}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObjectGroup
 import com.github.unchama.seichiassist.util.ItemInformation.itemStackContainsOwnerName
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack

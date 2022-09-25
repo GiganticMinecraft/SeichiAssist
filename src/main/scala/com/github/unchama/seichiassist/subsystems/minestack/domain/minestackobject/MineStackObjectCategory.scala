@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.minestack.domain
+package com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject
 
 import enumeratum._
 

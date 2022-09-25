@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.data.player
 
-import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObject
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject
 import scala.collection.mutable
 
 class MineStack(_objectCountMap: collection.Map[MineStackObject, Long] = collection.Map.empty) {

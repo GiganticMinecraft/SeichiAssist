@@ -16,9 +16,9 @@ import com.github.unchama.seichiassist.seichiskill.{
   SeichiSkill,
   SeichiSkillUsageMode
 }
-import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObject
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.minestack.bukkit.MineStackObjectList
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject
 import com.github.unchama.util.MillisecondTimer
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
