@@ -24,7 +24,7 @@ class JdbcHomePersistence[F[_]: Sync: NonServerThreadContextShift] extends HomeP
         val HomeLocation(worldName, x, y, z, pitch, yaw) = home.location
 
         // NOTE 2021/05/19: 何故かDB上のIDは1少ない。つまり、ID 1のホームはDB上ではid=0である。
-        sql"""insert into seichiassist.sub_home
+        sql"""insert into seichiassist.home
              |(player_uuid, server_id, id, name, location_x, location_y, location_z, world_name, pitch, yaw) values
              |  (${ownerUuid.toString}, $serverId, ${id.value - 1}, ${home
               .name
@@ -45,7 +45,7 @@ class JdbcHomePersistence[F[_]: Sync: NonServerThreadContextShift] extends HomeP
       DB.readOnly { implicit session =>
         // NOTE 2021/05/19: 何故かDB上のIDは1少ない。つまり、ID 1のホームはDB上ではid=0である。
         sql"""SELECT id, name, location_x, location_y, location_z, world_name, pitch, yaw
-             |  FROM seichiassist.sub_home
+             |  FROM seichiassist.home
              |  where server_id = $serverId
              |  and player_uuid = ${ownerUuid.toString}"""
           .stripMargin
@@ -75,7 +75,7 @@ class JdbcHomePersistence[F[_]: Sync: NonServerThreadContextShift] extends HomeP
     NonServerThreadContextShift[F].shift >> Sync[F].delay {
       DB.localTx { implicit session =>
         // NOTE 2022/04/16: 何故かDB上のIDは1少ない。つまり、ID 1のホームはDB上ではid=0である。
-        sql"""delete from seichiassist.sub_home 
+        sql"""delete from seichiassist.home 
              |  where server_id = $serverId 
              |  and player_uuid = ${ownerUuid.toString} 
              |  and id = ${id.value - 1}""".stripMargin.execute().apply()
