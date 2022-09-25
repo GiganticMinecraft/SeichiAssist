@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.data;
 
-import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory;
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaprizefactory.bukkit.StaticGachaPrizeFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -33,8 +33,8 @@ public class ItemData {
         ItemMeta meta;
         gachaimo = new ItemStack(Material.GOLDEN_APPLE, amount);
         meta = Bukkit.getItemFactory().getItemMeta(Material.GOLDEN_APPLE);
-        meta.setDisplayName(StaticGachaPrizeFactory.getGachaRingoName());
-        List<String> lore = StaticGachaPrizeFactory.getGachaRingoLore();
+        meta.setDisplayName(StaticGachaPrizeFactory.gachaRingoName());
+        List<String> lore = StaticGachaPrizeFactory.gachaRingoLore();
         meta.setLore(lore);
         gachaimo.setItemMeta(meta);
         return gachaimo;

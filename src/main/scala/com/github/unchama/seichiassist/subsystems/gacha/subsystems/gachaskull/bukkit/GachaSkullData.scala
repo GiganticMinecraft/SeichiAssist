@@ -1,7 +1,5 @@
-package com.github.unchama.seichiassist.data
+package com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaskull.bukkit
 
-import cats.effect.SyncIO
-import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository
 import com.github.unchama.seichiassist.util.ItemMetaFactory
 import org.bukkit.ChatColor._
 import org.bukkit.Material
@@ -11,8 +9,6 @@ object GachaSkullData {
 
   import scala.jdk.CollectionConverters._
   import scala.util.chaining._
-
-  JdbcBackedUuidRepository.initializeStaticInstance[SyncIO].unsafeRunSync().apply[SyncIO]
 
   /**
    * ノーマルガチャ券
@@ -29,9 +25,7 @@ object GachaSkullData {
             List(s"$RESET${GREEN}右クリックで使えます").asJava
           }
 
-          /**
-           * 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
-           */
+          // 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
           setOwner("unchama")
         }
       }
@@ -52,9 +46,7 @@ object GachaSkullData {
             List(s"$RESET${GREEN}右クリックで使えます", s"$RESET${LIGHT_PURPLE}投票ありがとナス♡").asJava
           }
 
-          /**
-           * 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
-           */
+          // 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
           setOwner("unchama")
         }
       }
@@ -75,9 +67,7 @@ object GachaSkullData {
             List(s"$RESET${GREEN}右クリックで使えます", s"$RESET${GRAY}ガチャ景品と交換しました。").asJava
           }
 
-          /**
-           * 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
-           */
+          // 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
           setOwner("unchama")
         }
       }

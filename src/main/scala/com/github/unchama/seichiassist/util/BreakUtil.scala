@@ -455,7 +455,6 @@ object BreakUtil {
 
       itemstack.setDurability(0.toShort)
     }
-
     MineStackObjectList
       .findByItemStack(itemstack, player.getName)
       .unsafeRunSync()

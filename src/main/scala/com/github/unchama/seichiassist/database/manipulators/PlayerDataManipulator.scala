@@ -133,23 +133,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     }
   }
 
-  // 指定されたプレイヤーにガチャ券を送信する
-  def addPlayerBug(playerName: String, num: Int): IO[ResponseEffectOrResult[Player, Unit]] = {
-    val executeQuery = IO {
-      import scalikejdbc._
-      DB.localTx { implicit session =>
-        sql"""update playerdata set numofsorryforbug = numofsorryforbug + $num where name = $playerName"""
-          .update()
-          .apply()
-      }
-    }.void
-
-    catchingDatabaseErrors(
-      s"add admin-gacha for $playerName",
-      EitherT.right(executeQuery).value
-    )
-  }
-
   def addChainVote(name: String): Unit =
     DB.localTx { implicit session =>
       val calendar = Calendar.getInstance()
@@ -305,12 +288,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     SeichiAssist.ranklist_p_apple.clear()
     SeichiAssist.ranklist_p_apple.addAll(ranklist)
     true
-  }
-
-  // 全員に詫びガチャの配布
-  def addAllPlayerBug(amount: Int): ActionStatus = {
-    val command = s"update $tableReference set numofsorryforbug = numofsorryforbug + $amount"
-    gateway.executeUpdate(command)
   }
 
   private def catchingDatabaseErrors[R](

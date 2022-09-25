@@ -3,19 +3,11 @@ package com.github.unchama.seichiassist.subsystems.minestack.bukkit
 import cats.effect.IO
 import cats.effect.concurrent.Ref
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObject.{
-  MineStackObjectByItemStack,
-  MineStackObjectByMaterial
-}
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaprizefactory.bukkit.StaticGachaPrizeFactory
+import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObject.{MineStackObjectByItemStack, MineStackObjectByMaterial}
 import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObjectCategory._
-import com.github.unchama.seichiassist.subsystems.minestack.domain.{
-  MineStackObject,
-  MineStackObjectCategory,
-  MineStackObjectGroup,
-  MineStackObjectWithColorVariants
-}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.{MineStackObject, MineStackObjectCategory, MineStackObjectGroup, MineStackObjectWithColorVariants}
 import com.github.unchama.seichiassist.util.ItemInformation.itemStackContainsOwnerName
-import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
@@ -595,7 +587,7 @@ object MineStackObjectList {
    * デフォルトでガチャの内容に含まれている景品。
    */
   private val minestackBuiltinGachaPrizes: List[MineStackObjectGroup] = leftElems(
-    MineStackObjectByItemStack(GACHA_PRIZES,"gachaimo",None,hasNameLore = true,StaticGachaPrizeFactory.getGachaRingo),
+    MineStackObjectByItemStack(GACHA_PRIZES,"gachaimo",None,hasNameLore = true,StaticGachaPrizeFactory.gachaRingo),
     MineStackObjectByItemStack(GACHA_PRIZES,"exp_bottle",Some("エンチャントの瓶"),hasNameLore = false,new ItemStack(Material.EXP_BOTTLE,1))
   )
 
@@ -681,7 +673,7 @@ object MineStackObjectList {
           if (itemNotInfoExists) {
             true
           } else if (itemInfoExists) {
-            if (itemStack.isSimilar(StaticGachaPrizeFactory.getGachaRingo)) {
+            if (itemStack.isSimilar(StaticGachaPrizeFactory.gachaRingo)) {
               true
             } else {
               // ガチャ品

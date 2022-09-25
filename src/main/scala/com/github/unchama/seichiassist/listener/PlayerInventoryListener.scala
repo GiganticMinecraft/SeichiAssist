@@ -6,18 +6,15 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.player.GiganticBerserk
-import com.github.unchama.seichiassist.data.{GachaSkullData, ItemData, MenuInventoryData}
+import com.github.unchama.seichiassist.data.{ItemData, MenuInventoryData}
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaskull.bukkit.GachaSkullData
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.task.VotingFairyTask
-import com.github.unchama.seichiassist.util.{
-  InventoryOperations,
-  StaticGachaPrizeFactory,
-  TimeUtils
-}
+import com.github.unchama.seichiassist.util.{InventoryOperations, TimeUtils}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
@@ -28,8 +25,6 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.inventory.{ItemFlag, ItemStack}
 import org.bukkit.{Bukkit, Material, Sound}
-
-import scala.collection.mutable.ArrayBuffer
 
 class PlayerInventoryListener(
   implicit effectEnvironment: EffectEnvironment,
@@ -44,129 +39,7 @@ class PlayerInventoryListener(
   import com.github.unchama.util.syntax._
 
   private val playerMap = SeichiAssist.playermap
-  private val gachaDataList = SeichiAssist.gachadatalist
   private val databaseGateway = SeichiAssist.databaseGateway
-
-  // ガチャ交換システム
-  @EventHandler
-  def onGachaTradeEvent(event: InventoryCloseEvent): Unit = {
-    val player = event.getPlayer.asInstanceOf[Player]
-    val uuid = player.getUniqueId
-    val playerdata = playerMap(uuid).ifNull {
-      return
-    }
-    // エラー分岐
-    val name = playerdata.lowercaseName
-    val inventory = event.getInventory
-
-    // インベントリサイズが54でない時終了
-    if (inventory.row != 6) {
-      return
-    }
-    if (inventory.getTitle == s"${LIGHT_PURPLE.toString}${BOLD}交換したい景品を入れてください") {
-      var givegacha = 0
-      /*
-       * step1 for文でinventory内に対象商品がないか検索
-       * あったらdurabilityに応じてgivegachaを増やし、非対象商品は返却boxへ
-       */
-      // ガチャ景品交換インベントリの中身を取得
-      val items = inventory.getContents
-      // ドロップ用アイテムリスト(返却box)作成
-      val dropitem = ArrayBuffer[ItemStack]()
-      // カウント用
-      var big = 0
-      var reg = 0
-
-      // for文で１個ずつ対象アイテムか見る
-      // ガチャ景品交換インベントリを一個ずつ見ていくfor文
-      items.foreach {
-        case null =>
-        case item
-            if !item.hasItemMeta ||
-              !item.getItemMeta.hasLore ||
-              item.getType == Material.SKULL_ITEM =>
-          dropitem += item
-        case item =>
-          // ガチャ景品リスト上を線形探索する
-          val matchingGachaData = gachaDataList.find { gachadata =>
-            // ガチャ景品リストにある商品の場合(Lore=説明文と表示名で判別),無い場合はアイテム返却
-            if (
-              gachadata.itemStack.hasItemMeta && gachadata
-                .itemStack
-                .getItemMeta
-                .hasLore && gachadata.compare(item, name)
-            ) {
-              if (SeichiAssist.DEBUG)
-                player.sendMessage(gachadata.itemStack.getItemMeta.getDisplayName)
-              val amount = item.getAmount
-
-              if (gachadata.probability < 0.001) {
-                // ギガンティック大当たりの部分
-                // ガチャ券に交換せずそのままアイテムを返す
-                dropitem += item
-              } else if (gachadata.probability < 0.01) {
-                // 大当たりの部分
-                givegacha += 12 * amount
-                big += amount
-              } else if (gachadata.probability < 0.1) {
-                // 当たりの部分
-                givegacha += 3 * amount
-                reg += amount
-              } else {
-                // それ以外アイテム返却(経験値ポーションとかがここにくるはず)
-                dropitem += item
-              }
-              true
-            } else false
-          }
-          matchingGachaData match {
-            // ガチャ景品リストに対象アイテムが無かった場合
-            case None => dropitem += item
-            case _    =>
-          }
-      }
-      if (big <= 0 && reg <= 0) {
-        player.sendMessage(s"${YELLOW}景品を認識しませんでした。全てのアイテムを返却します")
-      } else {
-        player.sendMessage(s"${GREEN}大当たり景品を${big}個、当たり景品を${reg}個認識しました")
-      }
-      /*
-       * step2 非対象商品をインベントリに戻す
-       */
-      for (m <- dropitem) {
-        if (!InventoryOperations.isPlayerInventoryFull(player)) {
-          InventoryOperations.addItem(player, m)
-        } else {
-          InventoryOperations.dropItem(player, m)
-        }
-      }
-      /*
-       * step3 ガチャ券をインベントリへ
-       */
-      val skull = GachaSkullData.gachaForExchanging
-      var count = 0
-      while (givegacha > 0) {
-        if (
-          player.getInventory.contains(skull) || !InventoryOperations.isPlayerInventoryFull(
-            player
-          )
-        ) {
-          InventoryOperations.addItem(player, skull)
-        } else {
-          InventoryOperations.dropItem(player, skull)
-        }
-        givegacha -= 1
-        count += 1
-      }
-      if (count > 0) {
-        player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-        player.sendMessage(
-          GREEN.toString + "" + count + "枚の" + GOLD + "ガチャ券" + WHITE + "を受け取りました"
-        )
-      }
-    }
-
-  }
 
   // 実績メニューの処理
   @EventHandler
@@ -274,115 +147,6 @@ class PlayerInventoryListener(
       InventoryOperations.grantItemStacksEffect(itemStacksToReturn: _*),
       "鉱石交換でのアイテム返却を行う"
     )
-  }
-
-  // ギガンティック→椎名林檎交換システム
-  @EventHandler
-  def onGachaRingoEvent(event: InventoryCloseEvent): Unit = {
-    val player = event.getPlayer.asInstanceOf[Player]
-    val uuid = player.getUniqueId
-    val playerdata = playerMap(uuid).ifNull {
-      return
-    }
-    // エラー分岐
-    val name = playerdata.lowercaseName
-    val inventory = event.getInventory
-
-    // インベントリサイズが4列でない時終了
-    if (inventory.row != 4) {
-      return
-    }
-    if (inventory.getTitle == GOLD.toString + "" + BOLD + "椎名林檎と交換したい景品を入れてネ") {
-      var giveringo = 0
-      /*
-       * step1 for文でinventory内に対象商品がないか検索
-       * あったらdurabilityに応じてgivegachaを増やし、非対象商品は返却boxへ
-       */
-      // ガチャ景品交換インベントリの中身を取得
-      val item = inventory.getContents
-      // ドロップ用アイテムリスト(返却box)作成
-      val dropitem = ArrayBuffer[ItemStack]()
-      // カウント用
-      var giga = 0
-      // for文で１個ずつ対象アイテムか見る
-      // ガチャ景品交換インベントリを一個ずつ見ていくfor文
-      item.foreach {
-        case null =>
-        case m
-            if !m.hasItemMeta ||
-              !m.getItemMeta.hasLore ||
-              m.getType == Material.SKULL_ITEM =>
-          dropitem.addOne(m)
-        case m =>
-          // ガチャ景品リストを一個ずつ見ていくfor文
-          gachaDataList.find { gachadata =>
-            if (
-              gachadata.itemStack.hasItemMeta && gachadata
-                .itemStack
-                .getItemMeta
-                .hasLore && gachadata.compare(m, name)
-            ) {
-              if (SeichiAssist.DEBUG) {
-                player.sendMessage(gachadata.itemStack.getItemMeta.getDisplayName)
-              }
-              val amount = m.getAmount
-              if (gachadata.probability < 0.001) {
-                // ギガンティック大当たりの部分
-                // 1個につき椎名林檎n個と交換する
-                giveringo += SeichiAssist.seichiAssistConfig.rateGiganticToRingo * amount
-                giga += 1
-              } else {
-                // それ以外アイテム返却
-                dropitem.addOne(m)
-              }
-              true
-            } else false
-          } match {
-            case None => dropitem.addOne(m)
-            case _    =>
-          }
-      }
-      if (giga <= 0) {
-        player.sendMessage(YELLOW.toString + "ギガンティック大当り景品を認識しませんでした。全てのアイテムを返却します")
-      } else {
-        player.sendMessage(GREEN.toString + "ギガンティック大当り景品を" + giga + "個認識しました")
-      }
-      /*
-       * step2 非対象商品をインベントリに戻す
-       */
-      for (m <- dropitem) {
-        if (!InventoryOperations.isPlayerInventoryFull(player)) {
-          InventoryOperations.addItem(player, m)
-        } else {
-          InventoryOperations.dropItem(player, m)
-        }
-      }
-      /*
-       * step3 椎名林檎をインベントリへ
-       */
-      val ringo = StaticGachaPrizeFactory.getMaxRingo(player.getName)
-      var count = 0
-      while (giveringo > 0) {
-        if (
-          player.getInventory.contains(ringo) || !InventoryOperations.isPlayerInventoryFull(
-            player
-          )
-        ) {
-          InventoryOperations.addItem(player, ringo)
-        } else {
-          InventoryOperations.dropItem(player, ringo)
-        }
-        giveringo -= 1
-        count += 1
-      }
-      if (count > 0) {
-        player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-        player.sendMessage(
-          GREEN.toString + "" + count + "個の" + GOLD + "椎名林檎" + WHITE + "を受け取りました"
-        )
-      }
-    }
-
   }
 
   // 投票ptメニュー
