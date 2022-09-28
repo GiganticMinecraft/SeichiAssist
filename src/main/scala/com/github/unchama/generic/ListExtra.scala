@@ -20,4 +20,18 @@ object ListExtra {
     }
   }
 
+  /**
+   * Listの中身で条件に一致するものがあれば`replacement`を先頭に追加しなおし、
+   * 一致するものがなければreplacementを追加します。
+   */
+  def valueReplaceOrAdd[A](
+    list: List[A]
+  )(predicate: A => Boolean, replacement: Option[A] => A): List[A] = {
+    list.find(predicate) match {
+      case Some(value) =>
+        replacement(Some(value)) :: list.filterNot(_ == value)
+      case None => replacement(None) :: list
+    }
+  }
+
 }

@@ -14,7 +14,10 @@ case class MineStackObjectWithAmount(mineStackObject: MineStackObject, amount: L
    * @return `amount`を指定分だけ減少させる作用
    */
   def decrease(value: Long): MineStackObjectWithAmount = {
-    this.copy(amount = amount - value)
+    if (amount - value >= 0)
+      this.copy(amount = amount - value)
+    else
+      this.copy(amount = 0)
   }
 
 }

@@ -12,7 +12,7 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
 object MineStackObjectRepositoryDefinition {
 
   def withContext[F[_]: Sync, Player](
-    persistence: MineStackObjectPersistence[F]
+    implicit persistence: MineStackObjectPersistence[F]
   ): RepositoryDefinition[F, Player, Ref[F, List[MineStackObjectWithAmount]]] =
     RefDictBackedRepositoryDefinition
       .usingUuidRefDict[F, Player, List[MineStackObjectWithAmount]](persistence)(List.empty)
