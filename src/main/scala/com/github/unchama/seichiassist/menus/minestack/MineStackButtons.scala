@@ -242,17 +242,18 @@ private[minestack] case class MineStackButtons(player: Player)(
   }
 
   def computeAutoMineStackToggleButton(
-    implicit onMainThread: OnMinecraftServerThread[IO]
+    implicit onMainThread: OnMinecraftServerThread[IO],
+    mineStackAPI: MineStackAPI[IO, Player, ItemStack]
   ): IO[Button] =
-    RecomputedButton(IO {
-      val playerData = SeichiAssist.playermap(getUniqueId)
-
+    RecomputedButton(for {
+      currentAutoMineStackState <- mineStackAPI.autoMineStack(player)
+    } yield {
       val iconItemStack = {
         val baseBuilder =
           new IconItemStackBuilder(Material.IRON_PICKAXE)
             .title(s"$YELLOW$UNDERLINE${BOLD}対象アイテム自動スタック機能")
 
-        if (playerData.settings.autoMineStack) {
+        if (currentAutoMineStackState) {
           baseBuilder
             .enchanted()
             .lore(List(s"$RESET${GREEN}現在ONです", s"$RESET$DARK_RED${UNDERLINE}クリックでOFF"))
@@ -264,22 +265,21 @@ private[minestack] case class MineStackButtons(player: Player)(
       }.build()
 
       val buttonEffect = action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
-        SequentialEffect(
-          playerData.settings.toggleAutoMineStack,
-          DeferredEffect(IO {
-            val (message, soundPitch) =
-              if (playerData.settings.autoMineStack) {
-                (s"${GREEN}対象アイテム自動スタック機能:ON", 1.0f)
-              } else {
-                (s"${RED}対象アイテム自動スタック機能:OFF", 0.5f)
-              }
+        SequentialEffect(DeferredEffect(for {
+          _ <- mineStackAPI.toggleAutoMineStack(player)
+        } yield {
+          val (message, soundPitch) =
+            if (currentAutoMineStackState) {
+              (s"${GREEN}対象アイテム自動スタック機能:ON", 1.0f)
+            } else {
+              (s"${RED}対象アイテム自動スタック機能:OFF", 0.5f)
+            }
 
-            SequentialEffect(
-              MessageEffect(message),
-              FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundPitch)
-            )
-          })
-        )
+          SequentialEffect(
+            MessageEffect(message),
+            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundPitch)
+          )
+        }))
       }
 
       Button(iconItemStack, buttonEffect)
