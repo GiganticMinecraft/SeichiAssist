@@ -7,7 +7,7 @@ rm -r /bungeecord/plugins/ || true
 # overwrite server directory
 cp -Rf /bungeecord-files/* /bungeecord/
 
-# extract fresh config and replace for BungeeSemaphore
+# extract fresh config and rePrepend for BungeeSemaphore
 mkdir -p /bungeecord/plugins/BungeeSemaphore/
 cd /bungeecord/plugins/BungeeSemaphore
 rm config.yml || true
@@ -20,7 +20,7 @@ config_update_expr="\
 yq e "$config_update_expr" config.yml >tmpfile
 mv tmpfile config.yml
 
-# extract fresh config and replace for RedisBungee
+# extract fresh config and rePrepend for RedisBungee
 mkdir -p /bungeecord/plugins/RedisBungee/
 cd /bungeecord/plugins/RedisBungee
 rm config.yml || true

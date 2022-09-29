@@ -21,27 +21,27 @@ object ListExtra {
   }
 
   /**
-   * Listの中身で条件に一致するものがあったときに`replacement`を先頭に追加し直します
+   * Listの中身で条件に一致するものがあったときに`element`を先頭に追加し直します
    */
-  def replace[A](list: List[A])(predicate: A => Boolean, replacement: A => A): List[A] = {
+  def rePrepend[A](list: List[A])(predicate: A => Boolean, element: A => A): List[A] = {
     list.find(predicate) match {
       case Some(value) =>
-        replacement(value) :: list.filterNot(_ == value)
+        element(value) :: list.filterNot(_ == value)
       case None => list
     }
   }
 
   /**
-   * Listの中身で条件に一致するものがあれば`replacement`を先頭に追加しなおし、
+   * Listの中身で条件に一致するものがあれば`element`を先頭に追加しなおし、
    * 一致するものがなければreplacementを追加します。
    */
-  def valueReplaceOrAdd[A](
+  def rePrependOrAdd[A](
     list: List[A]
-  )(predicate: A => Boolean, replacement: Option[A] => A): List[A] = {
+  )(predicate: A => Boolean, element: Option[A] => A): List[A] = {
     list.find(predicate) match {
       case Some(value) =>
-        replacement(Some(value)) :: list.filterNot(_ == value)
-      case None => replacement(None) :: list
+        element(Some(value)) :: list.filterNot(_ == value)
+      case None => element(None) :: list
     }
   }
 
