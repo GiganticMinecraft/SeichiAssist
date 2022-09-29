@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.minestack
 
-import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackUsageHistory
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject
 
 trait MineStackWriteAPI[F[_], Player, ItemStack] {
@@ -24,7 +23,7 @@ trait MineStackWriteAPI[F[_], Player, ItemStack] {
   ): F[Int]
 
   /**
-   * @return [[Player]]の[[MineStackUsageHistory]]に[[MineStackObject]]を追加する
+   * @return [[Player]]のMineStackUsageHistoryに[[MineStackObject]]を追加する
    */
   def addHistory(player: Player, mineStackObject: MineStackObject[ItemStack]): F[Unit]
 
@@ -46,9 +45,9 @@ trait MineStackReadAPI[F[_], Player, ItemStack] {
   def getStackedAmountOf(player: Player, mineStackObject: MineStackObject[ItemStack]): F[Long]
 
   /**
-   * @return [[Player]]の[[MineStackUsageHistory]]を取得する
+   * @return [[Player]]のMineStackUsageHistoryを取得する
    */
-  def getUsageHistory(player: Player): MineStackUsageHistory[ItemStack]
+  def getUsageHistory(player: Player): Vector[MineStackObject[ItemStack]]
 
 }
 

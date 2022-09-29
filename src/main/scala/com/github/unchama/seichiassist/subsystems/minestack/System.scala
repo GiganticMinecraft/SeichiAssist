@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.minestack
 
-import cats.effect.{ConcurrentEffect, SyncEffect}
+import cats.effect.{ConcurrentEffect, Sync, SyncEffect}
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.{ContextCoercion, ListExtra}
@@ -113,6 +113,16 @@ object System {
               mineStackObjects <- mineStackObjectRepository(player).get
             } yield {
               mineStackObjects.find(_.mineStackObject == mineStackObject).getOrElse(0)
+            }
+
+            override def getUsageHistory(player: Player): Vector[MineStackObject[ItemStack]] =
+              mineStackUsageHistoryRepository(player).usageHistory
+
+            override def addHistory(
+              player: Player,
+              mineStackObject: MineStackObject[ItemStack]
+            ): F[Unit] = Sync[F].delay {
+              mineStackUsageHistoryRepository(player).addHistory(mineStackObject)
             }
           }
       }
