@@ -4,6 +4,6 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
 
 package object domain {
 
-  type MineStackObjectGroup = Either[MineStackObject, MineStackObjectWithColorVariants]
+  type MineStackObjectGroup[ItemStack] = Either[MineStackObject[ItemStack], MineStackObjectWithColorVariants[ItemStack]]
 
 }

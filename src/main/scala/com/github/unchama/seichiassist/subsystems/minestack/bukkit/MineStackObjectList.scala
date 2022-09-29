@@ -2,8 +2,10 @@ package com.github.unchama.seichiassist.subsystems.minestack.bukkit
 
 import cats.effect.IO
 import cats.effect.concurrent.Ref
+import com.github.unchama.minecraft.objects.{MinecraftItemStack, MinecraftMaterial}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaprizefactory.bukkit.StaticGachaPrizeFactory
+import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObjectGroup
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject.{
   MineStackObjectByItemStack,
   MineStackObjectByMaterial
@@ -14,12 +16,14 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
   MineStackObjectCategory,
   MineStackObjectWithColorVariants
 }
-import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObjectGroup
 import com.github.unchama.seichiassist.util.ItemInformation.itemStackContainsOwnerName
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
-object MineStackObjectList {
+class MineStackObjectList(
+  implicit minecraftMaterial: MinecraftMaterial[Material, ItemStack],
+  minecraftItemStack: MinecraftItemStack[ItemStack]
+) {
 
   private def leftElems[A](elems: A*): List[Either[A, Nothing]] = elems.toList.map(Left.apply)
   private def rightElems[B](elems: B*): List[Either[Nothing, B]] = elems.toList.map(Right.apply)
@@ -27,7 +31,7 @@ object MineStackObjectList {
   // @formatter:off
   
   // 採掘可能ブロック
-  private val minestacklistmine: List[MineStackObjectGroup] = leftElems(
+  private val minestacklistmine: List[MineStackObjectGroup[ItemStack]] = leftElems(
     MineStackObjectByMaterial(ORES, "coal_ore", "石炭鉱石", Material.COAL_ORE, 0),
     MineStackObjectByMaterial(ORES, "coal", "石炭", Material.COAL, 0),
     MineStackObjectByMaterial(ORES, "coal_block", "石炭ブロック", Material.COAL_BLOCK, 0),
@@ -53,7 +57,7 @@ object MineStackObjectList {
   )
 
   // モンスター+動物ドロップ
-  private val minestacklistdrop: List[Either[MineStackObject,MineStackObjectWithColorVariants]] = leftElems(
+  private val minestacklistdrop: List[Either[MineStackObject[ItemStack],MineStackObjectWithColorVariants[ItemStack]]] = leftElems(
     MineStackObjectByMaterial(MOB_DROP, "ender_pearl", "エンダーパール", Material.ENDER_PEARL, 0),
     MineStackObjectByMaterial(MOB_DROP, "ender_eye", "エンダーアイ", Material.EYE_OF_ENDER, 0),
     MineStackObjectByMaterial(MOB_DROP, "slime_ball", "スライムボール", Material.SLIME_BALL, 0),
@@ -88,7 +92,7 @@ object MineStackObjectList {
   )
 
   // 採掘で入手可能な農業系ブロック
-  private val minestacklistfarm: List[MineStackObjectGroup] = leftElems(
+  private val minestacklistfarm: List[MineStackObjectGroup[ItemStack]] = leftElems(
     MineStackObjectByMaterial(AGRICULTURAL, "seeds", "種", Material.SEEDS, 0),
     MineStackObjectByMaterial(AGRICULTURAL, "apple", "リンゴ", Material.APPLE, 0),
     MineStackObjectByMaterial(AGRICULTURAL, "long_grass1", "草", Material.LONG_GRASS, 1),
@@ -175,7 +179,7 @@ object MineStackObjectList {
   )
   
   // 建築系ブロック
-  private val minestacklistbuild: List[MineStackObjectGroup] = leftElems(
+  private val minestacklistbuild: List[MineStackObjectGroup[ItemStack]] = leftElems(
     MineStackObjectByMaterial(BUILDING, "log", "オークの原木", Material.LOG, 0),
     MineStackObjectByMaterial(BUILDING, "wood", "オークの木材", Material.WOOD, 0),
     MineStackObjectByMaterial(BUILDING, "wood_step0", "オークの木材ハーフブロック", Material.WOOD_STEP, 0),
@@ -521,7 +525,7 @@ object MineStackObjectList {
   )
 
   // レッドストーン系ブロック
-  private val minestacklistrs: List[MineStackObjectGroup] = leftElems(
+  private val minestacklistrs: List[MineStackObjectGroup[ItemStack]] = leftElems(
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"redstone","レッドストーン", Material.REDSTONE,0),
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"stone_button","石のボタン", Material.STONE_BUTTON,0),
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"wood_button","木のボタン", Material.WOOD_BUTTON,0),
@@ -594,25 +598,25 @@ object MineStackObjectList {
   /**
    * デフォルトでガチャの内容に含まれている景品。
    */
-  private val minestackBuiltinGachaPrizes: List[MineStackObjectGroup] = leftElems(
+  private val minestackBuiltinGachaPrizes: List[MineStackObjectGroup[ItemStack]] = leftElems(
     MineStackObjectByItemStack(GACHA_PRIZES,"gachaimo",None,hasNameLore = true,StaticGachaPrizeFactory.gachaRingo),
     MineStackObjectByItemStack(GACHA_PRIZES,"exp_bottle",Some("エンチャントの瓶"),hasNameLore = false,new ItemStack(Material.EXP_BOTTLE,1))
   )
 
   // @formatter:on
 
-  private val gachaPrizesObjects: Ref[IO, List[MineStackObject]] =
-    Ref.unsafe[IO, List[MineStackObject]](Nil)
+  private val gachaPrizesObjects: Ref[IO, List[MineStackObject[ItemStack]]] =
+    Ref.unsafe[IO, List[MineStackObject[ItemStack]]](Nil)
 
-  def setGachaPrizesList(mineStackObject: List[MineStackObject]): IO[Unit] = {
+  def setGachaPrizesList(mineStackObject: List[MineStackObject[ItemStack]]): IO[Unit] = {
     gachaPrizesObjects.set(mineStackObject)
   }
 
-  def getGachaPrizesList: IO[List[MineStackObject]] =
+  def getGachaPrizesList: IO[List[MineStackObject[ItemStack]]] =
     gachaPrizesObjects.get
 
   // ガチャアイテムを除外したMineStackGroups
-  val exceptGachaItemMineStackGroups: List[MineStackObjectGroup] = List(
+  val exceptGachaItemMineStackGroups: List[MineStackObjectGroup[ItemStack]] = List(
     minestacklistbuild,
     minestacklistdrop,
     minestacklistfarm,
@@ -621,14 +625,14 @@ object MineStackObjectList {
     minestackBuiltinGachaPrizes
   ).flatten
 
-  val allMineStackGroups: IO[List[MineStackObjectGroup]] = for {
+  val allMineStackGroups: IO[List[MineStackObjectGroup[ItemStack]]] = for {
     gachaPrizes <- gachaPrizesObjects.get
     leftGachaPrizes = gachaPrizes.flatMap(leftElems(_))
   } yield {
     exceptGachaItemMineStackGroups ++ leftGachaPrizes
   }
 
-  def getBuiltinGachaPrizes: List[MineStackObject] = {
+  def getBuiltinGachaPrizes: List[MineStackObject[ItemStack]] = {
     minestackBuiltinGachaPrizes.flatMap {
       case Left(mineStackObj) => List(mineStackObj)
       case Right(group)       => List(group.representative) ++ group.coloredVariants
@@ -639,23 +643,22 @@ object MineStackObjectList {
    * すべてのMineStackObjectを返す
    * 可変であるガチャ景品リストに依存しているため、定数ではない
    */
-  def getAllMineStackObjects: IO[List[MineStackObject]] = allMineStackGroups.map(_.flatMap {
-    case Left(mineStackObject: MineStackObject) => List(mineStackObject)
-    case Right(group) => List(group.representative) ++ group.coloredVariants
-  })
+  def getAllMineStackObjects: IO[List[MineStackObject[ItemStack]]] =
+    allMineStackGroups.map(_.flatMap {
+      case Left(mineStackObject: MineStackObject[ItemStack]) => List(mineStackObject)
+      case Right(group) => List(group.representative) ++ group.coloredVariants
+    })
 
   def getAllObjectGroupsInCategory(
     category: MineStackObjectCategory
-  ): IO[List[MineStackObjectGroup]] = {
-    def categoryOf(group: MineStackObjectGroup): MineStackObjectCategory = {
+  ): IO[List[MineStackObjectGroup[ItemStack]]] = {
+    def categoryOf(group: MineStackObjectGroup[ItemStack]): MineStackObjectCategory = {
       group match {
         case Left(mineStackObject) => mineStackObject.category
         case Right(groupedObjects) => groupedObjects.category
       }
     }
-    MineStackObjectList
-      .allMineStackGroups
-      .map(_.filter { group => categoryOf(group) == category })
+    allMineStackGroups.map(_.filter { group => categoryOf(group) == category })
   }
 
   /**
@@ -663,11 +666,14 @@ object MineStackObjectList {
    * @param playerName 検索を行うプレイヤーの名前
    * @return itemStackに対応するMineStackObjectのOption
    */
-  def findByItemStack(itemStack: ItemStack, playerName: String): IO[Option[MineStackObject]] = {
+  def findByItemStack(
+    itemStack: ItemStack,
+    playerName: String
+  ): IO[Option[MineStackObject[ItemStack]]] = {
     getAllMineStackObjects.map {
       _.find { mineStackObj =>
         val material = itemStack.getType
-        val isSameItem = material == mineStackObj.material && itemStack
+        val isSameItem = material == mineStackObj.itemStack.getType && itemStack
           .getDurability
           .toInt == mineStackObj.durability
         if (isSameItem) {
@@ -718,6 +724,6 @@ object MineStackObjectList {
    * @param name internal name
    * @return Some if the associated object was found, otherwise None
    */
-  def findByName(name: String): IO[Option[MineStackObject]] =
+  def findByName(name: String): IO[Option[MineStackObject[ItemStack]]] =
     getAllMineStackObjects.map(_.find(_.mineStackObjectName == name))
 }
