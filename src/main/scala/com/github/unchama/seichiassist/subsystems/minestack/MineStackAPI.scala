@@ -54,6 +54,11 @@ trait MineStackReadAPI[F[_], Player, ItemStack] {
    */
   def getUsageHistory(player: Player): Vector[MineStackObject[ItemStack]]
 
+  /**
+   * @return 現在のAutoMineStackのステータスを取得する
+   */
+  def autoMineStack(player: Player): F[Boolean]
+
 }
 
 object MineStackReadAPI {
