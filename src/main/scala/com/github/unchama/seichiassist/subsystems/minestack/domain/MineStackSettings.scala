@@ -17,4 +17,9 @@ class MineStackSettings[F[_]: Sync] {
    */
   def toggleAutoMineStackTurnOff: F[Unit] = autoMineStack.set(false)
 
+  /**
+   * @return 現在のステータスを取得します
+   */
+  def currentState: F[Boolean] = autoMineStack.get
+
 }

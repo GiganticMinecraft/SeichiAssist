@@ -137,6 +137,15 @@ object System {
             ): F[Unit] = Sync[F].delay {
               mineStackUsageHistoryRepository(player).addHistory(mineStackObject)
             }
+
+            override def toggleAutoMineStack(player: Player): F[Unit] = for {
+              currentState <- mineStackSettingRepository(player)
+            }
+
+            /**
+             * @return 現在のAutoMineStackのステータスを取得する
+             */
+            override def autoMineStack(player: Player): F[Boolean] = ???
           }
       }
 
