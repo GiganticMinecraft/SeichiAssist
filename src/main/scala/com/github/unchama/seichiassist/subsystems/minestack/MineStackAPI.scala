@@ -22,14 +22,6 @@ trait MineStackWriteAPI[F[_], Player, ItemStack] {
     amount: Int
   ): F[Int]
 
-  /**
-   * @return [[Player]]が持っている[[MineStackObject]]の量を取得します
-   */
-  def getStackedAmountOf(
-    player: Player,
-    mineStackObject: MineStackObject[ItemStack]
-  ): F[Long]
-
 }
 
 object MineStackWriteAPI {
@@ -40,4 +32,23 @@ object MineStackWriteAPI {
 
 }
 
-trait MineStackAPI[F[_], Player, ItemStack] extends MineStackWriteAPI[F, Player, ItemStack]
+trait MineStackReadAPI[F[_], Player, ItemStack] {
+
+  /**
+   * @return [[Player]]が持っている[[MineStackObject]]の量を取得します
+   */
+  def getStackedAmountOf(player: Player, mineStackObject: MineStackObject[ItemStack]): F[Long]
+
+}
+
+object MineStackReadAPI {
+
+  def apply[F[_], Player, ItemStack](
+    implicit ev: MineStackReadAPI[F, Player, ItemStack]
+  ): MineStackReadAPI[F, Player, ItemStack] = ev
+
+}
+
+trait MineStackAPI[F[_], Player, ItemStack]
+    extends MineStackWriteAPI[F, Player, ItemStack]
+    with MineStackReadAPI[F, Player, ItemStack]
