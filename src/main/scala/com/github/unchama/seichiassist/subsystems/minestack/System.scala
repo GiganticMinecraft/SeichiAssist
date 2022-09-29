@@ -9,6 +9,7 @@ import com.github.unchama.minecraft.objects.{MinecraftItemStack, MinecraftMateri
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.minestack.application.repository.{
   MineStackObjectRepositoryDefinition,
+  MineStackSettingsRepositoryDefinition,
   MineStackUsageHistoryRepositoryDefinitions
 }
 import com.github.unchama.seichiassist.subsystems.minestack.bukkit.MineStackObjectList
@@ -57,10 +58,22 @@ object System {
             )
         )
       )
+
+      mineStackSettingsRepositoryControls <- ContextCoercion(
+        BukkitRepositoryControls.createHandles(
+          RepositoryDefinition
+            .Phased
+            .TwoPhased(
+              MineStackSettingsRepositoryDefinition.initialization[G, Player],
+              MineStackSettingsRepositoryDefinition.finalization[G, Player]
+            )
+        )
+      )
     } yield {
       val mineStackObjectRepository =
         mineStackObjectRepositoryControls.repository.map(_.mapK(ContextCoercion.asFunctionK))
       val mineStackUsageHistoryRepository = mineStackUsageHistoryRepositoryControls.repository
+      val mineStackSettingRepository = mineStackSettingsRepositoryControls.repository
 
       new System[F, Player, ItemStack] {
         override val api: MineStackAPI[F, Player, ItemStack] =
