@@ -8,11 +8,8 @@ import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
-  MineStackObject,
-  MineStackObjectCategory,
-  MineStackObjectWithColorVariants
-}
+import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{MineStackObject, MineStackObjectCategory, MineStackObjectWithColorVariants}
 import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObjectGroup
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
 import com.github.unchama.targetedeffect
@@ -215,7 +212,8 @@ private[minestack] case class MineStackButtons(player: Player) {
   }
 
   private def withDrawItemEffect(mineStackObject: MineStackObject[ItemStack], amount: Int)(
-    implicit onMainThread: OnMinecraftServerThread[IO]
+    implicit onMainThread: OnMinecraftServerThread[IO],
+    mineStackAPI: MineStackAPI[IO, Player, ItemStack]
   ): TargetedEffect[Player] = {
     for {
       pair <- Kleisli((player: Player) =>
