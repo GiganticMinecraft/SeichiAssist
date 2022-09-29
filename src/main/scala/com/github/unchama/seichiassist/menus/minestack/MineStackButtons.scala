@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.menus.minestack
 
 import cats.data.Kleisli
-import cats.effect.{IO, SyncIO}
+import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
@@ -9,12 +9,12 @@ import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, a
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
+import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObjectGroup
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
   MineStackObject,
   MineStackObjectCategory,
   MineStackObjectWithColorVariants
 }
-import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObjectGroup
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
 import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
@@ -66,7 +66,9 @@ private object MineStackButtons {
 
 }
 
-private[minestack] case class MineStackButtons(player: Player) {
+private[minestack] case class MineStackButtons(player: Player)(
+  implicit mineStackAPI: MineStackAPI[IO, Player, ItemStack]
+) {
 
   import MineStackButtons._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
@@ -105,10 +107,9 @@ private[minestack] case class MineStackButtons(player: Player) {
   })
 
   def getMineStackObjectIconItemStack(
-    mineStackObjectGroup: MineStackObjectGroup[ItemStack]
+    mineStackObjectGroup: MineStackObjectGroup[ItemStack],
+    mineStackAPI: MineStackAPI[IO, Player, ItemStack]
   ): ItemStack = {
-    val playerData = SeichiAssist.playermap(getUniqueId)
-
     import scala.util.chaining._
 
     val mineStackObject = mineStackObjectGroup match {
@@ -132,7 +133,8 @@ private[minestack] case class MineStackButtons(player: Player) {
           }
 
           setLore {
-            val stackedAmount = playerData.minestack.getStackedAmountOf(mineStackObject)
+            val stackedAmount =
+              mineStackAPI.getStackedAmountOf(player, mineStackObject).unsafeRunSync()
             val itemDetail = List(s"$RESET$GREEN${stackedAmount.formatted("%,d")}個")
             val operationDetail = {
               if (mineStackObjectGroup.isRight) {
@@ -153,7 +155,10 @@ private[minestack] case class MineStackButtons(player: Player) {
     }
   }
 
-  def getMineStackGroupButtonOf(mineStackObjectGroup: MineStackObjectGroup, oldPage: Int)(
+  def getMineStackGroupButtonOf(
+    mineStackObjectGroup: MineStackObjectGroup[ItemStack],
+    oldPage: Int
+  )(
     implicit onMainThread: OnMinecraftServerThread[IO],
     canOpenCategorizedMineStackMenu: IO CanOpen MineStackSelectItemColorMenu
   ): IO[Button] = RecomputedButton(IO {
@@ -174,13 +179,13 @@ private[minestack] case class MineStackButtons(player: Player) {
 
   private def objectClickEffect(mineStackObject: MineStackObject[ItemStack], amount: Int)(
     implicit onMainThread: OnMinecraftServerThread[IO],
-    canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu
+    canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu,
+    mineStackAPI: MineStackAPI[IO, Player, ItemStack]
   ): Kleisli[IO, Player, Unit] = {
-    val playerData = SeichiAssist.playermap(getUniqueId)
     SequentialEffect(
       withDrawItemEffect(mineStackObject, amount),
       targetedeffect.UnfocusedEffect {
-        playerData.hisotryData.addHistory(mineStackObject)
+        mineStackAPI.addUsageHistory(player, mineStackObject).unsafeRunSync()
       }
     )
   }
@@ -191,9 +196,9 @@ private[minestack] case class MineStackButtons(player: Player) {
     oldPage: Int
   )(
     implicit onMainThread: OnMinecraftServerThread[IO],
-    canOpenMineStackSelectItemColorMenu: IO CanOpen MineStackSelectItemColorMenu
+    canOpenMineStackSelectItemColorMenu: IO CanOpen MineStackSelectItemColorMenu,
+    mineStackAPI: MineStackAPI[IO, Player, ItemStack]
   ): Kleisli[IO, Player, Unit] = {
-    val playerData = SeichiAssist.playermap(getUniqueId)
     SequentialEffect(
       mineStackObjectGroup match {
         case Left(mineStackObject: MineStackObject[ItemStack]) =>
@@ -207,9 +212,10 @@ private[minestack] case class MineStackButtons(player: Player) {
       },
       if (mineStackObjectGroup.isLeft)
         targetedeffect.UnfocusedEffect {
-          playerData
-            .hisotryData
-            .addHistory(getMineStackObjectFromMineStackObjectGroup(mineStackObjectGroup))
+          mineStackAPI.addUsageHistory(
+            player,
+            getMineStackObjectFromMineStackObjectGroup(mineStackObjectGroup)
+          )
         }
       else emptyEffect
     )
