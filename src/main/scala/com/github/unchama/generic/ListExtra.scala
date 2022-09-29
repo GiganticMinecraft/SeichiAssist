@@ -53,13 +53,10 @@ object ListExtra {
     firstList: List[A],
     secondList: List[A]
   )(conditions: A => Boolean, compute: Option[(A, A)] => B): B = {
+    import cats.implicits._
     val firstTarget = firstList.find(conditions)
     val secondTarget = secondList.find(conditions)
-    if (firstTarget.nonEmpty && secondTarget.nonEmpty) {
-      compute(Some(firstTarget.get, secondTarget.get))
-    } else {
-      compute(None)
-    }
+    compute(firstTarget.product(secondTarget))
   }
 
 }
