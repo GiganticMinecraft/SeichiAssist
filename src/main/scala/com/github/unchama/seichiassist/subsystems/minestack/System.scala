@@ -10,7 +10,6 @@ import com.github.unchama.seichiassist.subsystems.minestack.application.reposito
 import com.github.unchama.seichiassist.subsystems.minestack.bukkit.MineStackObjectList
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
   MineStackObject,
-  MineStackObjectPersistence,
   MineStackObjectWithAmount
 }
 import com.github.unchama.seichiassist.subsystems.minestack.infrastructure.JdbcMineStackObjectPersistence
@@ -31,14 +30,14 @@ object System {
   def wired[F[_]: SyncEffect]: F[System[F, Player, ItemStack]] = {
     implicit val minecraftItemStack: MinecraftItemStack[ItemStack] = new BukkitItemStack
     implicit val minecraftMaterial: MinecraftMaterial[Material, ItemStack] = new BukkitMaterial
-    // FIXME: ここでunsafeRunSync()を呼び出さないように修正する
-    val allMineStackObjects: List[MineStackObject[ItemStack]] =
-      new MineStackObjectList().getAllMineStackObjects.unsafeRunSync()
-    implicit val mineStackObjectPersistence: MineStackObjectPersistence[F, ItemStack] =
-      new JdbcMineStackObjectPersistence[F, ItemStack](allMineStackObjects)
     for {
+      allMineStackObjects <- new MineStackObjectList().getAllMineStackObjects
+      mineStackObjectPersistence = new JdbcMineStackObjectPersistence[F, ItemStack](
+        allMineStackObjects
+      )
       mineStackObjectRepositoryControls <- BukkitRepositoryControls.createHandles(
-        MineStackObjectRepositoryDefinition.withContext[F, Player, ItemStack]
+        MineStackObjectRepositoryDefinition
+          .withContext[F, Player, ItemStack](mineStackObjectPersistence)
       )
     } yield {
       val mineStackObjectRepository = mineStackObjectRepositoryControls.repository
