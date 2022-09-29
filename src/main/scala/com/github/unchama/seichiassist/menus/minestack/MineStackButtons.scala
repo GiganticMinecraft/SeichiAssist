@@ -7,9 +7,12 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.subsystems.minestack.bukkit.MineStackObjectList.getBuiltinGachaPrizes
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{MineStackObject, MineStackObjectCategory, MineStackObjectWithColorVariants}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
+  MineStackObject,
+  MineStackObjectCategory,
+  MineStackObjectWithColorVariants
+}
 import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObjectGroup
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
 import com.github.unchama.targetedeffect
@@ -30,7 +33,8 @@ private object MineStackButtons {
     def withAmount(amount: Int): ItemStack = itemStack.clone().tap(_.setAmount(amount))
   }
 
-  implicit class MineStackObjectOps(private val mineStackObj: MineStackObject) extends AnyVal {
+  implicit class MineStackObjectOps(private val mineStackObj: MineStackObject[ItemStack])
+      extends AnyVal {
     def parameterizedWith(player: Player): ItemStack = {
       // ガチャ品であり、かつがちゃりんごでも経験値瓶でもなければ
       if (
@@ -71,21 +75,21 @@ private[minestack] case class MineStackButtons(player: Player) {
   import scala.jdk.CollectionConverters._
 
   private def getMineStackObjectFromMineStackObjectGroup(
-    mineStackObjectGroup: MineStackObjectGroup
-  ): MineStackObject = {
+    mineStackObjectGroup: MineStackObjectGroup[ItemStack]
+  ): MineStackObject[ItemStack] = {
     mineStackObjectGroup match {
-      case Left(mineStackObject: MineStackObject) =>
+      case Left(mineStackObject: MineStackObject[ItemStack]) =>
         mineStackObject
       case Right(MineStackObjectWithColorVariants(representative, _)) =>
         representative
     }
   }
 
-  def getMineStackObjectButtonOf(mineStackObject: MineStackObject)(
+  def getMineStackObjectButtonOf(mineStackObject: MineStackObject[ItemStack])(
     implicit onMainThread: OnMinecraftServerThread[IO],
     canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu
   ): IO[Button] = RecomputedButton(IO {
-    val mineStackObjectGroup: MineStackObjectGroup = Left(mineStackObject)
+    val mineStackObjectGroup: MineStackObjectGroup[ItemStack] = Left(mineStackObject)
     val itemStack = getMineStackObjectIconItemStack(mineStackObjectGroup)
 
     Button(
@@ -99,13 +103,15 @@ private[minestack] case class MineStackButtons(player: Player) {
     )
   })
 
-  def getMineStackObjectIconItemStack(mineStackObjectGroup: MineStackObjectGroup): ItemStack = {
+  def getMineStackObjectIconItemStack(
+    mineStackObjectGroup: MineStackObjectGroup[ItemStack]
+  ): ItemStack = {
     val playerData = SeichiAssist.playermap(getUniqueId)
 
     import scala.util.chaining._
 
     val mineStackObject = mineStackObjectGroup match {
-      case Left(mineStackObject: MineStackObject) =>
+      case Left(mineStackObject: MineStackObject[ItemStack]) =>
         mineStackObject
       case Right(MineStackObjectWithColorVariants(representative, _)) =>
         representative
@@ -165,7 +171,7 @@ private[minestack] case class MineStackButtons(player: Player) {
     )
   })
 
-  private def objectClickEffect(mineStackObject: MineStackObject, amount: Int)(
+  private def objectClickEffect(mineStackObject: MineStackObject[ItemStack], amount: Int)(
     implicit onMainThread: OnMinecraftServerThread[IO],
     canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu
   ): Kleisli[IO, Player, Unit] = {
@@ -179,7 +185,7 @@ private[minestack] case class MineStackButtons(player: Player) {
   }
 
   private def objectGroupClickEffect(
-    mineStackObjectGroup: MineStackObjectGroup,
+    mineStackObjectGroup: MineStackObjectGroup[ItemStack],
     amount: Int,
     oldPage: Int
   )(
@@ -189,9 +195,11 @@ private[minestack] case class MineStackButtons(player: Player) {
     val playerData = SeichiAssist.playermap(getUniqueId)
     SequentialEffect(
       mineStackObjectGroup match {
-        case Left(mineStackObject: MineStackObject) =>
+        case Left(mineStackObject: MineStackObject[ItemStack]) =>
           withDrawItemEffect(mineStackObject, amount)
-        case Right(mineStackObjectWithColorVariants: MineStackObjectWithColorVariants) =>
+        case Right(
+              mineStackObjectWithColorVariants: MineStackObjectWithColorVariants[ItemStack]
+            ) =>
           canOpenMineStackSelectItemColorMenu.open(
             MineStackSelectItemColorMenu(mineStackObjectWithColorVariants, oldPage)
           )
@@ -206,7 +214,7 @@ private[minestack] case class MineStackButtons(player: Player) {
     )
   }
 
-  private def withDrawItemEffect(mineStackObject: MineStackObject, amount: Int)(
+  private def withDrawItemEffect(mineStackObject: MineStackObject[ItemStack], amount: Int)(
     implicit onMainThread: OnMinecraftServerThread[IO]
   ): TargetedEffect[Player] = {
     for {

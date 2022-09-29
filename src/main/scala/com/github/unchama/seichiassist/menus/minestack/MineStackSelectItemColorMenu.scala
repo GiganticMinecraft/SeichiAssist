@@ -12,6 +12,7 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
 import eu.timepit.refined.auto._
 import org.bukkit.ChatColor.{BOLD, DARK_BLUE}
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 
 object MineStackSelectItemColorMenu {
 
@@ -21,7 +22,7 @@ object MineStackSelectItemColorMenu {
 
 }
 
-case class MineStackSelectItemColorMenu(group: MineStackObjectWithColorVariants, oldPage: Int)
+case class MineStackSelectItemColorMenu(group: MineStackObjectWithColorVariants[ItemStack], oldPage: Int)
     extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
