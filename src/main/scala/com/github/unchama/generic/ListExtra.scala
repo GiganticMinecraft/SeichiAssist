@@ -21,6 +21,17 @@ object ListExtra {
   }
 
   /**
+   * Listの中身で条件に一致するものがあったときに`replacement`を先頭に追加し直します
+   */
+  def replace[A](list: List[A])(predicate: A => Boolean, replacement: A => A): List[A] = {
+    list.find(predicate) match {
+      case Some(value) =>
+        replacement(value) :: list.filterNot(_ == value)
+      case None => list
+    }
+  }
+
+  /**
    * Listの中身で条件に一致するものがあれば`replacement`を先頭に追加しなおし、
    * 一致するものがなければreplacementを追加します。
    */

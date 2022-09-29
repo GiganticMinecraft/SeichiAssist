@@ -10,13 +10,13 @@ trait MineStackWriteAPI[F[_], Player] {
   def addStackedAmountOf(player: Player, mineStackObject: MineStackObject, amount: Int): F[Unit]
 
   /**
-   * @return [[Player]]の[[MineStackObject]]を指定された量だけ減少させる作用
+   * @return [[Player]]の[[MineStackObject]]を指定された量だけ減少させ、実際に減少させた量を返す
    */
   def subtractStackedAmountOf(
     player: Player,
     mineStackObject: MineStackObject,
     amount: Int
-  ): F[Unit]
+  ): F[Int]
 
 }
 

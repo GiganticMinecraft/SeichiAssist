@@ -57,18 +57,17 @@ object System {
             player: Player,
             mineStackObject: MineStackObject,
             amount: Int
-          ): F[Unit] = mineStackObjectRepository(player).update { mineStackObjects =>
-            ListExtra.valueReplaceOrAdd(mineStackObjects)(
-              _.mineStackObject == mineStackObject,
-              {
-                case Some(value) => value.decrease(amount)
-                case None        => MineStackObjectWithAmount(mineStackObject, 0)
-              }
-            )
+          ): F[Int] = {
+            mineStackObjectRepository(player).update { mineStackObjects =>
+              ListExtra.replace(mineStackObjects)(
+                _.mineStackObject == mineStackObject,
+                _.decrease(amount)
+              )
+            }
           }
         }
       }
+
     }
   }
-
 }

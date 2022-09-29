@@ -9,7 +9,11 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
   MineStackObjectByMaterial
 }
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory._
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{MineStackObject, MineStackObjectCategory, MineStackObjectWithColorVariants}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
+  MineStackObject,
+  MineStackObjectCategory,
+  MineStackObjectWithColorVariants
+}
 import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObjectGroup
 import com.github.unchama.seichiassist.util.ItemInformation.itemStackContainsOwnerName
 import org.bukkit.Material
