@@ -2,11 +2,15 @@ package com.github.unchama.seichiassist.subsystems.minestack
 
 import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
+import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.{ContextCoercion, ListExtra}
 import com.github.unchama.minecraft.bukkit.objects.{BukkitItemStack, BukkitMaterial}
 import com.github.unchama.minecraft.objects.{MinecraftItemStack, MinecraftMaterial}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.minestack.application.repository.MineStackObjectRepositoryDefinition
+import com.github.unchama.seichiassist.subsystems.minestack.application.repository.{
+  MineStackObjectRepositoryDefinition,
+  MineStackUsageHistoryRepositoryDefinitions
+}
 import com.github.unchama.seichiassist.subsystems.minestack.bukkit.MineStackObjectList
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
   MineStackObject,
@@ -42,9 +46,22 @@ object System {
             .withContext[G, Player, ItemStack](mineStackObjectPersistence)
         )
       )
+
+      mineStackUsageHistoryRepositoryControls <- ContextCoercion(
+        BukkitRepositoryControls.createHandles(
+          RepositoryDefinition
+            .Phased
+            .TwoPhased(
+              MineStackUsageHistoryRepositoryDefinitions.initialization[G, Player, ItemStack],
+              MineStackUsageHistoryRepositoryDefinitions.finalization[G, Player, ItemStack]
+            )
+        )
+      )
     } yield {
       val mineStackObjectRepository =
         mineStackObjectRepositoryControls.repository.map(_.mapK(ContextCoercion.asFunctionK))
+      val mineStackUsageHistoryRepository = mineStackUsageHistoryRepositoryControls.repository
+
       new System[F, Player, ItemStack] {
         override val api: MineStackAPI[F, Player, ItemStack] =
           new MineStackAPI[F, Player, ItemStack] {
