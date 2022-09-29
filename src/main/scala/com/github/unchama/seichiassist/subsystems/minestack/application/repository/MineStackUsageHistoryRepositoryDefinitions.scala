@@ -10,7 +10,7 @@ object MineStackUsageHistoryRepositoryDefinitions {
   def initialization[F[_]: Applicative, Player, ItemStack]
     : TwoPhasedRepositoryInitialization[F, Player, MineStackUsageHistory[ItemStack]] =
     TwoPhasedRepositoryInitialization
-      .withoutPrefetching[F, Player, MineStackUsageHistory[ItemStack]] { player =>
+      .withoutPrefetching[F, Player, MineStackUsageHistory[ItemStack]] { _ =>
         Applicative[F].pure(new MineStackUsageHistory[ItemStack])
       }
 
