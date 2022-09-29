@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.minestack.bukkit
 
-import cats.effect.IO
+import cats.effect.Sync
 import cats.effect.concurrent.Ref
 import com.github.unchama.minecraft.objects.{MinecraftItemStack, MinecraftMaterial}
 import com.github.unchama.seichiassist.SeichiAssist
@@ -20,7 +20,7 @@ import com.github.unchama.seichiassist.util.ItemInformation.itemStackContainsOwn
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
-class MineStackObjectList(
+class MineStackObjectList[F[_]: Sync](
   implicit minecraftMaterial: MinecraftMaterial[Material, ItemStack],
   minecraftItemStack: MinecraftItemStack[ItemStack]
 ) {
@@ -605,14 +605,16 @@ class MineStackObjectList(
 
   // @formatter:on
 
-  private val gachaPrizesObjects: Ref[IO, List[MineStackObject[ItemStack]]] =
-    Ref.unsafe[IO, List[MineStackObject[ItemStack]]](Nil)
+  import cats.implicits._
 
-  def setGachaPrizesList(mineStackObject: List[MineStackObject[ItemStack]]): IO[Unit] = {
+  private val gachaPrizesObjects: Ref[F, List[MineStackObject[ItemStack]]] =
+    Ref.unsafe[F, List[MineStackObject[ItemStack]]](Nil)
+
+  def setGachaPrizesList(mineStackObject: List[MineStackObject[ItemStack]]): F[Unit] = {
     gachaPrizesObjects.set(mineStackObject)
   }
 
-  def getGachaPrizesList: IO[List[MineStackObject[ItemStack]]] =
+  def getGachaPrizesList: F[List[MineStackObject[ItemStack]]] =
     gachaPrizesObjects.get
 
   // ガチャアイテムを除外したMineStackGroups
@@ -625,7 +627,7 @@ class MineStackObjectList(
     minestackBuiltinGachaPrizes
   ).flatten
 
-  val allMineStackGroups: IO[List[MineStackObjectGroup[ItemStack]]] = for {
+  val allMineStackGroups: F[List[MineStackObjectGroup[ItemStack]]] = for {
     gachaPrizes <- gachaPrizesObjects.get
     leftGachaPrizes = gachaPrizes.flatMap(leftElems(_))
   } yield {
@@ -643,7 +645,7 @@ class MineStackObjectList(
    * すべてのMineStackObjectを返す
    * 可変であるガチャ景品リストに依存しているため、定数ではない
    */
-  def getAllMineStackObjects: IO[List[MineStackObject[ItemStack]]] =
+  def getAllMineStackObjects: F[List[MineStackObject[ItemStack]]] =
     allMineStackGroups.map(_.flatMap {
       case Left(mineStackObject: MineStackObject[ItemStack]) => List(mineStackObject)
       case Right(group) => List(group.representative) ++ group.coloredVariants
@@ -651,7 +653,7 @@ class MineStackObjectList(
 
   def getAllObjectGroupsInCategory(
     category: MineStackObjectCategory
-  ): IO[List[MineStackObjectGroup[ItemStack]]] = {
+  ): F[List[MineStackObjectGroup[ItemStack]]] = {
     def categoryOf(group: MineStackObjectGroup[ItemStack]): MineStackObjectCategory = {
       group match {
         case Left(mineStackObject) => mineStackObject.category
@@ -669,7 +671,7 @@ class MineStackObjectList(
   def findByItemStack(
     itemStack: ItemStack,
     playerName: String
-  ): IO[Option[MineStackObject[ItemStack]]] = {
+  ): F[Option[MineStackObject[ItemStack]]] = {
     getAllMineStackObjects.map {
       _.find { mineStackObj =>
         val material = itemStack.getType
@@ -724,6 +726,6 @@ class MineStackObjectList(
    * @param name internal name
    * @return Some if the associated object was found, otherwise None
    */
-  def findByName(name: String): IO[Option[MineStackObject[ItemStack]]] =
+  def findByName(name: String): F[Option[MineStackObject[ItemStack]]] =
     getAllMineStackObjects.map(_.find(_.mineStackObjectName == name))
 }
