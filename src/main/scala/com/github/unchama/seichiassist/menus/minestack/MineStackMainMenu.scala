@@ -10,6 +10,7 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
+import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory.{
   AGRICULTURAL,
   BUILDING,
@@ -22,6 +23,7 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
 import org.bukkit.ChatColor._
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 
 object MineStackMainMenu extends Menu {
 
@@ -98,14 +100,11 @@ object MineStackMainMenu extends Menu {
      */
     def computeHistoricalMineStackLayout(
       implicit ioOnMainThread: OnMinecraftServerThread[IO],
-      canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu
+      canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu,
+      mineStackAPI: MineStackAPI[IO, Player, ItemStack]
     ): IO[MenuSlotLayout] = {
-      val playerData = SeichiAssist.playermap(getUniqueId)
-
+      val usageHistory = mineStackAPI.getUsageHistory(player)
       for {
-        usageHistory <- IO {
-          playerData.hisotryData.usageHistory
-        }
         buttonMapping <- usageHistory
           .zipWithIndex
           .map {
