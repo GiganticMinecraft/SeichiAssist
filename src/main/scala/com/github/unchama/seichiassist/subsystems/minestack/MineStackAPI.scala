@@ -27,6 +27,11 @@ trait MineStackWriteAPI[F[_], Player, ItemStack] {
    */
   def addUsageHistory(player: Player, mineStackObject: MineStackObject[ItemStack]): F[Unit]
 
+  /**
+   * @return AutoMineStackをステータスをトグルする作用
+   */
+  def toggleAutoMineStack(player: Player): F[Unit]
+
 }
 
 object MineStackWriteAPI {
