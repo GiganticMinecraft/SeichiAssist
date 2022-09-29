@@ -139,8 +139,13 @@ object System {
             }
 
             override def toggleAutoMineStack(player: Player): F[Unit] = for {
-              currentState <- mineStackSettingRepository(player)
-            }
+              currentState <- ContextCoercion(mineStackSettingRepository(player).currentState)
+              _ <- ContextCoercion {
+                if (currentState)
+                  mineStackSettingRepository(player).toggleAutoMineStackTurnOff
+                else mineStackSettingRepository(player).toggleAutoMineStackTurnOn
+              }
+            } yield ()
 
             /**
              * @return 現在のAutoMineStackのステータスを取得する
