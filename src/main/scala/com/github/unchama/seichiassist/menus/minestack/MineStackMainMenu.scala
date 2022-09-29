@@ -6,11 +6,11 @@ import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory.{
   AGRICULTURAL,
   BUILDING,
@@ -19,7 +19,6 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
   ORES,
   REDSTONE_AND_TRANSPORTATION
 }
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory
 import org.bukkit.ChatColor._
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -93,7 +92,6 @@ object MineStackMainMenu extends Menu {
   private case class ButtonComputations(player: Player) extends AnyVal {
 
     import cats.implicits._
-    import player._
 
     /**
      * メインメニュー内の「履歴」機能部分のレイアウトを計算する
