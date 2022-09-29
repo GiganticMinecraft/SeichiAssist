@@ -25,7 +25,7 @@ trait MineStackWriteAPI[F[_], Player, ItemStack] {
   /**
    * @return [[Player]]のMineStackUsageHistoryに[[MineStackObject]]を追加する
    */
-  def addHistory(player: Player, mineStackObject: MineStackObject[ItemStack]): F[Unit]
+  def addUsageHistory(player: Player, mineStackObject: MineStackObject[ItemStack]): F[Unit]
 
 }
 

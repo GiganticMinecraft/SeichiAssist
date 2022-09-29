@@ -118,7 +118,7 @@ object System {
             override def getUsageHistory(player: Player): Vector[MineStackObject[ItemStack]] =
               mineStackUsageHistoryRepository(player).usageHistory
 
-            override def addHistory(
+            override def addUsageHistory(
               player: Player,
               mineStackObject: MineStackObject[ItemStack]
             ): F[Unit] = Sync[F].delay {
