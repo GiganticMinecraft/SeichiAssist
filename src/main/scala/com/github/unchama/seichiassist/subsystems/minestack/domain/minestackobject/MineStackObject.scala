@@ -1,50 +1,51 @@
 package com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject
 
-import org.bukkit.Material
-import org.bukkit.inventory.ItemStack
+import com.github.unchama.minecraft.objects.{MinecraftItemStack, MinecraftMaterial}
 
-class MineStackObject(
-  val mineStackObjectName: String,
-  val uiName: Option[String],
+case class MineStackObject[ItemStack](
+  mineStackObjectName: String,
+  uiName: Option[String],
   private val _itemStack: ItemStack,
-  val hasNameLore: Boolean, // 記名があるかどうか
-  val category: MineStackObjectCategory
+  hasNameLore: Boolean, // 記名があるかどうか
+  category: MineStackObjectCategory
 ) {
 
-  def itemStack: ItemStack = _itemStack.clone()
+  def itemStack(implicit minecraftItemStack: MinecraftItemStack[ItemStack]): ItemStack =
+    minecraftItemStack.clone(_itemStack)
 
-  def material: Material = _itemStack.getType
-
-  def durability: Short = _itemStack.getDurability
+  def durability(implicit minecraftItemStack: MinecraftItemStack[ItemStack]): Short =
+    minecraftItemStack.durability(_itemStack)
 
 }
 
 object MineStackObject {
 
-  def MineStackObjectByMaterial(
+  def MineStackObjectByMaterial[ItemStack, Material](
     category: MineStackObjectCategory,
     mineStackObjectName: String,
     japaneseName: String,
     material: Material,
     durability: Short
-  ): MineStackObject = {
-    new MineStackObject(
+  )(
+    implicit minecraftMaterial: MinecraftMaterial[Material, ItemStack]
+  ): MineStackObject[ItemStack] = {
+    MineStackObject(
       mineStackObjectName,
       Some(japaneseName),
-      new ItemStack(material, 1, durability),
+      minecraftMaterial.toItemStack(material, durability),
       hasNameLore = false,
       category
     )
   }
 
-  def MineStackObjectByItemStack(
+  def MineStackObjectByItemStack[ItemStack](
     category: MineStackObjectCategory,
     mineStackObjectName: String,
     japaneseName: Option[String],
     hasNameLore: Boolean,
     itemStack: ItemStack
-  ): MineStackObject = {
-    new MineStackObject(mineStackObjectName, japaneseName, itemStack, hasNameLore, category)
+  ): MineStackObject[ItemStack] = {
+    MineStackObject(mineStackObjectName, japaneseName, itemStack, hasNameLore, category)
   }
 
 }
