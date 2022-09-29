@@ -12,7 +12,7 @@ trait MineStackWriteAPI[F[_], Player] {
   /**
    * @return [[Player]]の[[MineStackObject]]を指定された量だけ減少させ、実際に減少させた量を返す
    */
-  def subtractStackedAmountOf(
+  def trySubtractStackedAmountOf(
     player: Player,
     mineStackObject: MineStackObject,
     amount: Int

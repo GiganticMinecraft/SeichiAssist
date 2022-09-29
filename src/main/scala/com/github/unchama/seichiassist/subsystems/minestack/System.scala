@@ -53,16 +53,26 @@ object System {
               )
             }
 
-          override def subtractStackedAmountOf(
+          override def trySubtractStackedAmountOf(
             player: Player,
             mineStackObject: MineStackObject,
             amount: Int
           ): F[Int] = {
-            mineStackObjectRepository(player).update { mineStackObjects =>
-              ListExtra.rePrepend(mineStackObjects)(
-                _.mineStackObject == mineStackObject,
-                _.decrease(amount)
-              )
+            for {
+              oldMineStackObjects <- mineStackObjectRepository(player).get
+              updatedMineStackObjects <- mineStackObjectRepository(player).updateAndGet {
+                mineStackObjects =>
+                  ListExtra.rePrepend(mineStackObjects)(
+                    _.mineStackObject == mineStackObject,
+                    _.decrease(amount)
+                  )
+              }
+            } yield {
+              if (oldMineStackObjects.head != updatedMineStackObjects.head) {
+                Math.abs(oldMineStackObjects.head.amount - updatedMineStackObjects.head.amount)
+              } else {
+                0
+              }
             }
           }
         }
