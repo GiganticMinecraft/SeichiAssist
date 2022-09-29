@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.minestack
 
-import cats.effect.SyncEffect
+import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
-import com.github.unchama.generic.ListExtra
+import com.github.unchama.generic.{ContextCoercion, ListExtra}
 import com.github.unchama.minecraft.bukkit.objects.{BukkitItemStack, BukkitMaterial}
 import com.github.unchama.minecraft.objects.{MinecraftItemStack, MinecraftMaterial}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
@@ -27,20 +27,24 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_]: SyncEffect]: F[System[F, Player, ItemStack]] = {
+  def wired[F[_]: ConcurrentEffect, G[_]: SyncEffect: ContextCoercion[*[_], F]]
+    : F[System[F, Player, ItemStack]] = {
     implicit val minecraftItemStack: MinecraftItemStack[ItemStack] = new BukkitItemStack
     implicit val minecraftMaterial: MinecraftMaterial[Material, ItemStack] = new BukkitMaterial
     for {
-      allMineStackObjects <- new MineStackObjectList().getAllMineStackObjects
-      mineStackObjectPersistence = new JdbcMineStackObjectPersistence[F, ItemStack](
-        allMineStackObjects
-      )
-      mineStackObjectRepositoryControls <- BukkitRepositoryControls.createHandles(
-        MineStackObjectRepositoryDefinition
-          .withContext[F, Player, ItemStack](mineStackObjectPersistence)
+      allMineStackObjects <- new MineStackObjectList[F]().getAllMineStackObjects
+      mineStackObjectPersistence =
+        new JdbcMineStackObjectPersistence[G, ItemStack](allMineStackObjects)
+
+      mineStackObjectRepositoryControls <- ContextCoercion(
+        BukkitRepositoryControls.createHandles(
+          MineStackObjectRepositoryDefinition
+            .withContext[G, Player, ItemStack](mineStackObjectPersistence)
+        )
       )
     } yield {
-      val mineStackObjectRepository = mineStackObjectRepositoryControls.repository
+      val mineStackObjectRepository =
+        mineStackObjectRepositoryControls.repository.map(_.mapK(ContextCoercion.asFunctionK))
       new System[F, Player, ItemStack] {
         override val api: MineStackAPI[F, Player, ItemStack] =
           new MineStackAPI[F, Player, ItemStack] {
