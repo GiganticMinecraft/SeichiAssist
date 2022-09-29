@@ -9,7 +9,11 @@ import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, a
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{MineStackObject, MineStackObjectCategory, MineStackObjectWithColorVariants}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
+  MineStackObject,
+  MineStackObjectCategory,
+  MineStackObjectWithColorVariants
+}
 import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObjectGroup
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
 import com.github.unchama.targetedeffect
@@ -217,25 +221,12 @@ private[minestack] case class MineStackButtons(player: Player) {
   ): TargetedEffect[Player] = {
     for {
       pair <- Kleisli((player: Player) =>
-        onMainThread.runAction {
-          for {
-            playerData <- SyncIO {
-              SeichiAssist.playermap(player.getUniqueId)
-            }
-            currentAmount <- SyncIO {
-              playerData.minestack.getStackedAmountOf(mineStackObject)
-            }
-
-            grantAmount = Math.min(amount, currentAmount).toInt
-
-            soundEffectPitch = if (grantAmount == amount) 1.0f else 0.5f
-            itemStackToGrant = mineStackObject.parameterizedWith(player).withAmount(grantAmount)
-
-            _ <- SyncIO {
-              playerData.minestack.subtractStackedAmountOf(mineStackObject, grantAmount.toLong)
-            }
-          } yield (soundEffectPitch, itemStackToGrant)
-        }
+        for {
+          grantAmount <- mineStackAPI
+            .trySubtractStackedAmountOf(player, mineStackObject, amount)
+          soundEffectPitch = if (grantAmount == amount) 1.0f else 0.5f
+          itemStackToGrant = mineStackObject.parameterizedWith(player).withAmount(grantAmount)
+        } yield (soundEffectPitch, itemStackToGrant)
       )
       _ <- SequentialEffect(
         FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, pair._1),
