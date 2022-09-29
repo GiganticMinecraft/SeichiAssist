@@ -11,11 +11,13 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
 
 object MineStackObjectRepositoryDefinition {
 
-  def withContext[F[_]: Sync, Player](
-    implicit persistence: MineStackObjectPersistence[F]
-  ): RepositoryDefinition[F, Player, Ref[F, List[MineStackObjectWithAmount]]] =
+  def withContext[F[_]: Sync, Player, ItemStack](
+    implicit persistence: MineStackObjectPersistence[F, ItemStack]
+  ): RepositoryDefinition[F, Player, Ref[F, List[MineStackObjectWithAmount[ItemStack]]]] =
     RefDictBackedRepositoryDefinition
-      .usingUuidRefDict[F, Player, List[MineStackObjectWithAmount]](persistence)(List.empty)
+      .usingUuidRefDict[F, Player, List[MineStackObjectWithAmount[ItemStack]]](persistence)(
+        List.empty
+      )
       .toRefRepository
 
 }

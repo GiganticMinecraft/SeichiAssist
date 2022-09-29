@@ -11,10 +11,10 @@ import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 import java.util.UUID
 import scala.collection.IndexedSeq.iterableFactory
 
-class JdbcMineStackObjectPersistence[F[_]: Sync](allMineStackObjects: List[MineStackObject])
-    extends MineStackObjectPersistence[F] {
+class JdbcMineStackObjectPersistence[F[_]: Sync, ItemStack](allMineStackObjects: List[MineStackObject[ItemStack]])
+    extends MineStackObjectPersistence[F, ItemStack] {
 
-  override def read(key: UUID): F[Option[List[MineStackObjectWithAmount]]] = Sync[F].delay {
+  override def read(key: UUID): F[Option[List[MineStackObjectWithAmount[ItemStack]]]] = Sync[F].delay {
     val mineStackObjectsWithAmount = DB.readOnly { implicit session =>
       sql"SELECT object_name, amount FROM mine_stack WHERE player_uuid = ${key.toString}"
         .map { rs =>
@@ -36,7 +36,7 @@ class JdbcMineStackObjectPersistence[F[_]: Sync](allMineStackObjects: List[MineS
     Some(mineStackObjectsWithAmount)
   }
 
-  override def write(key: UUID, value: List[MineStackObjectWithAmount]): F[Unit] =
+  override def write(key: UUID, value: List[MineStackObjectWithAmount[ItemStack]]): F[Unit] =
     Sync[F].delay {
       val mineStackObjectDetails = value.map { mineStackObjectWithAmount =>
         val objectName = mineStackObjectWithAmount.mineStackObject.mineStackObjectName

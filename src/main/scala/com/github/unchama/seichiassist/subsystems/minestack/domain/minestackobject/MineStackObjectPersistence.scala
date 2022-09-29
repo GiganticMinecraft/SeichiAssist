@@ -4,4 +4,4 @@ import com.github.unchama.generic.RefDict
 
 import java.util.UUID
 
-trait MineStackObjectPersistence[F[_]] extends RefDict[F, UUID, List[MineStackObjectWithAmount]]
+trait MineStackObjectPersistence[F[_], ItemStack] extends RefDict[F, UUID, List[MineStackObjectWithAmount[ItemStack]]]

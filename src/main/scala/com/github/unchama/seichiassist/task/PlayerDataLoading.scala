@@ -1,23 +1,13 @@
 package com.github.unchama.seichiassist.task
 
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.player._
 import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings
 import com.github.unchama.seichiassist.database.DatabaseConstants
 import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillEffect.NoEffect
-import com.github.unchama.seichiassist.seichiskill.effect.{
-  ActiveSkillNormalEffect,
-  ActiveSkillPremiumEffect,
-  UnlockableActiveSkillEffect
-}
-import com.github.unchama.seichiassist.seichiskill.{
-  ActiveSkill,
-  AssaultSkill,
-  SeichiSkill,
-  SeichiSkillUsageMode
-}
-import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.subsystems.minestack.bukkit.MineStackObjectList
+import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect, UnlockableActiveSkillEffect}
+import com.github.unchama.seichiassist.seichiskill.{ActiveSkill, AssaultSkill, SeichiSkill, SeichiSkillUsageMode}
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject
 import com.github.unchama.util.MillisecondTimer
 import org.bukkit.Bukkit
