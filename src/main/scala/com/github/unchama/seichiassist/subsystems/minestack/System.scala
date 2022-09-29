@@ -68,11 +68,14 @@ object System {
                   )
               }
             } yield {
-              if (oldMineStackObjects.head != updatedMineStackObjects.head) {
-                Math.abs(oldMineStackObjects.head.amount - updatedMineStackObjects.head.amount)
-              } else {
-                0
-              }
+              ListExtra.computeDoubleList(oldMineStackObjects, updatedMineStackObjects)(
+                _.mineStackObject == mineStackObject,
+                {
+                  case Some((oldMineStackObject, updatedMineStackObject)) =>
+                    Math.abs(oldMineStackObject.amount - updatedMineStackObject.amount)
+                  case None => 0
+                }
+              )
             }
           }
         }

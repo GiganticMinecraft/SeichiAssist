@@ -33,7 +33,7 @@ object ListExtra {
 
   /**
    * Listの中身で条件に一致するものがあれば`element`を先頭に追加しなおし、
-   * 一致するものがなければreplacementを追加します。
+   * 一致するものがなければreplacementを追加します
    */
   def rePrependOrAdd[A](
     list: List[A]
@@ -42,6 +42,23 @@ object ListExtra {
       case Some(value) =>
         element(Some(value)) :: list.filterNot(_ == value)
       case None => element(None) :: list
+    }
+  }
+
+  /**
+   * `firstList`と`secondList`共に`conditions`に合致する要素を探し、
+   * 共に存在すれば`compute`をした結果を返します
+   */
+  def computeDoubleList[A, B](
+    firstList: List[A],
+    secondList: List[A]
+  )(conditions: A => Boolean, compute: Option[(A, A)] => B): B = {
+    val firstTarget = firstList.find(conditions)
+    val secondTarget = secondList.find(conditions)
+    if (firstTarget.nonEmpty && secondTarget.nonEmpty) {
+      compute(Some(firstTarget.get, secondTarget.get))
+    } else {
+      compute(None)
     }
   }
 
