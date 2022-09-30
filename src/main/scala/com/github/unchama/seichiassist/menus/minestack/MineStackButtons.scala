@@ -7,14 +7,9 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.minecraft.objects.MinecraftItemStack
-import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObjectGroup
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
-  MineStackObject,
-  MineStackObjectWithColorVariants
-}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{MineStackObject, MineStackObjectWithColorVariants}
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
 import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
@@ -26,9 +21,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.{Material, Sound}
 
 private[minestack] case class MineStackButtons(player: Player)(
-  implicit mineStackAPI: MineStackAPI[IO, Player, ItemStack],
-  minecraftItemStack: MinecraftItemStack[ItemStack],
-  signedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
+  implicit mineStackAPI: MineStackAPI[IO, Player, ItemStack]
 ) {
 
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext

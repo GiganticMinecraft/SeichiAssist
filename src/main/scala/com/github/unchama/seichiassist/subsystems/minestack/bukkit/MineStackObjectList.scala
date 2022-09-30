@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.minestack.bukkit
 
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
-import com.github.unchama.minecraft.objects.{MinecraftItemStack, MinecraftMaterial}
+import com.github.unchama.minecraft.objects.MinecraftMaterial
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaprizefactory.bukkit.StaticGachaPrizeFactory
 import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObjectGroup
@@ -21,8 +21,7 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
 class MineStackObjectList[F[_]: Sync](
-  implicit minecraftMaterial: MinecraftMaterial[Material, ItemStack],
-  minecraftItemStack: MinecraftItemStack[ItemStack]
+  implicit minecraftMaterial: MinecraftMaterial[Material, ItemStack]
 ) {
 
   private def leftElems[A](elems: A*): List[Either[A, Nothing]] = elems.toList.map(Left.apply)

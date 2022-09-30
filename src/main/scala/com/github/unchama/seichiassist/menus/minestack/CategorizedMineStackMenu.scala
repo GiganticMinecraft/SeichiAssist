@@ -6,13 +6,14 @@ import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.subsystems.minestack.bukkit.MineStackObjectList.getAllObjectGroupsInCategory
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.CommonButtons
+import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory
 import com.github.unchama.targetedeffect.{DeferredEffect, TargetedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 
 object CategorizedMineStackMenu {
 
@@ -20,7 +21,8 @@ object CategorizedMineStackMenu {
     implicit val ioCanOpenMineStackMainMenu: IO CanOpen MineStackMainMenu.type,
     val ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu,
     val ioCanOpenSelectItemColorMenu: IO CanOpen MineStackSelectItemColorMenu,
-    val onMainThread: OnMinecraftServerThread[IO]
+    val onMainThread: OnMinecraftServerThread[IO],
+    val mineStackAPI: MineStackAPI[IO, Player, ItemStack]
   )
 
 }
