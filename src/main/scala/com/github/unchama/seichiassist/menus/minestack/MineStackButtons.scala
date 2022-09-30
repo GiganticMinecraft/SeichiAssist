@@ -8,13 +8,11 @@ import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.minecraft.objects.MinecraftItemStack
-import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObjectGroup
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
   MineStackObject,
-  MineStackObjectCategory,
   MineStackObjectWithColorVariants
 }
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
@@ -28,13 +26,13 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.{Material, Sound}
 
 private[minestack] case class MineStackButtons(player: Player)(
-  implicit mineStackAPI: MineStackAPI[IO, Player, ItemStack]
+  implicit mineStackAPI: MineStackAPI[IO, Player, ItemStack],
+  minecraftItemStack: MinecraftItemStack[ItemStack],
+  signedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
 ) {
 
-  import MineStackButtons._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import com.github.unchama.targetedeffect._
-  import player._
 
   import scala.jdk.CollectionConverters._
 
@@ -68,8 +66,7 @@ private[minestack] case class MineStackButtons(player: Player)(
   })
 
   def getMineStackObjectIconItemStack(
-    mineStackObjectGroup: MineStackObjectGroup[ItemStack],
-    mineStackAPI: MineStackAPI[IO, Player, ItemStack]
+    mineStackObjectGroup: MineStackObjectGroup[ItemStack]
   ): ItemStack = {
     import scala.util.chaining._
 
@@ -123,8 +120,6 @@ private[minestack] case class MineStackButtons(player: Player)(
     implicit onMainThread: OnMinecraftServerThread[IO],
     canOpenCategorizedMineStackMenu: IO CanOpen MineStackSelectItemColorMenu
   ): IO[Button] = RecomputedButton(IO {
-    SeichiAssist.playermap(getUniqueId)
-
     val itemStack = getMineStackObjectIconItemStack(mineStackObjectGroup)
 
     Button(
@@ -140,8 +135,7 @@ private[minestack] case class MineStackButtons(player: Player)(
 
   private def objectClickEffect(mineStackObject: MineStackObject[ItemStack], amount: Int)(
     implicit onMainThread: OnMinecraftServerThread[IO],
-    canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu,
-    mineStackAPI: MineStackAPI[IO, Player, ItemStack]
+    canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu
   ): Kleisli[IO, Player, Unit] = {
     SequentialEffect(
       withDrawItemEffect(mineStackObject, amount),
@@ -157,8 +151,7 @@ private[minestack] case class MineStackButtons(player: Player)(
     oldPage: Int
   )(
     implicit onMainThread: OnMinecraftServerThread[IO],
-    canOpenMineStackSelectItemColorMenu: IO CanOpen MineStackSelectItemColorMenu,
-    mineStackAPI: MineStackAPI[IO, Player, ItemStack]
+    canOpenMineStackSelectItemColorMenu: IO CanOpen MineStackSelectItemColorMenu
   ): Kleisli[IO, Player, Unit] = {
     SequentialEffect(
       mineStackObjectGroup match {
@@ -183,10 +176,7 @@ private[minestack] case class MineStackButtons(player: Player)(
   }
 
   private def withDrawItemEffect(mineStackObject: MineStackObject[ItemStack], amount: Int)(
-    implicit onMainThread: OnMinecraftServerThread[IO],
-    mineStackAPI: MineStackAPI[IO, Player, ItemStack],
-    signedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack],
-    minecraftItemStack: MinecraftItemStack[ItemStack]
+    implicit onMainThread: OnMinecraftServerThread[IO]
   ): TargetedEffect[Player] = {
     for {
       pair <- Kleisli((player: Player) =>
@@ -209,8 +199,7 @@ private[minestack] case class MineStackButtons(player: Player)(
   }
 
   def computeAutoMineStackToggleButton(
-    implicit onMainThread: OnMinecraftServerThread[IO],
-    mineStackAPI: MineStackAPI[IO, Player, ItemStack]
+    implicit onMainThread: OnMinecraftServerThread[IO]
   ): IO[Button] =
     RecomputedButton(for {
       currentAutoMineStackState <- mineStackAPI.autoMineStack(player)
