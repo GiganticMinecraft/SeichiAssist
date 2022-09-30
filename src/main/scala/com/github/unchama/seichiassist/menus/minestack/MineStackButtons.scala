@@ -7,7 +7,9 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.minecraft.objects.MinecraftItemStack
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObjectGroup
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
@@ -24,47 +26,6 @@ import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{Material, Sound}
-
-private object MineStackButtons {
-
-  import scala.jdk.CollectionConverters._
-  import scala.util.chaining._
-
-  implicit class ItemStackOps(private val itemStack: ItemStack) extends AnyVal {
-    def withAmount(amount: Int): ItemStack = itemStack.clone().tap(_.setAmount(amount))
-  }
-
-  implicit class MineStackObjectOps(private val mineStackObj: MineStackObject[ItemStack])
-      extends AnyVal {
-    def parameterizedWith(player: Player): ItemStack = {
-      // ガチャ品であり、かつがちゃりんごでも経験値瓶でもなければ
-      if (
-        mineStackObj.category == MineStackObjectCategory.GACHA_PRIZES && !getBuiltinGachaPrizes
-          .contains(mineStackObj)
-      ) {
-        for {
-          gachaData <- SeichiAssist
-            .msgachadatalist
-            .find(_.itemStack.isSimilar(mineStackObj.itemStack))
-        } {
-          if (gachaData.probability < 0.1) {
-            return mineStackObj.itemStack.clone().tap { cloned =>
-              val meta = cloned.getItemMeta.tap { itemMeta =>
-                val itemLore = if (itemMeta.hasLore) itemMeta.getLore.asScala.toList else List()
-                itemMeta
-                  .setLore((itemLore :+ s"$RESET${DARK_GREEN}所有者：${player.getName}").asJava)
-              }
-              cloned.setItemMeta(meta)
-            }
-          }
-        }
-      }
-
-      mineStackObj.itemStack.clone()
-    }
-  }
-
-}
 
 private[minestack] case class MineStackButtons(player: Player)(
   implicit mineStackAPI: MineStackAPI[IO, Player, ItemStack]
@@ -223,7 +184,9 @@ private[minestack] case class MineStackButtons(player: Player)(
 
   private def withDrawItemEffect(mineStackObject: MineStackObject[ItemStack], amount: Int)(
     implicit onMainThread: OnMinecraftServerThread[IO],
-    mineStackAPI: MineStackAPI[IO, Player, ItemStack]
+    mineStackAPI: MineStackAPI[IO, Player, ItemStack],
+    signedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack],
+    minecraftItemStack: MinecraftItemStack[ItemStack]
   ): TargetedEffect[Player] = {
     for {
       pair <- Kleisli((player: Player) =>
@@ -231,7 +194,11 @@ private[minestack] case class MineStackButtons(player: Player)(
           grantAmount <- mineStackAPI
             .trySubtractStackedAmountOf(player, mineStackObject, amount)
           soundEffectPitch = if (grantAmount == amount) 1.0f else 0.5f
-          itemStackToGrant = mineStackObject.parameterizedWith(player).withAmount(grantAmount)
+          itemStackToGrant = mineStackObject
+            .tryToSignedItemStack(player.getName)
+            .getOrElse(mineStackObject.itemStack)
+            .clone()
+          _ = itemStackToGrant.setAmount(amount)
         } yield (soundEffectPitch, itemStackToGrant)
       )
       _ <- SequentialEffect(
