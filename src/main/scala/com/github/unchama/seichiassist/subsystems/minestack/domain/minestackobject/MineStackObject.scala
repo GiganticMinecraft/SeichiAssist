@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobj
 
 import com.github.unchama.minecraft.objects.{MinecraftItemStack, MinecraftMaterial}
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
+  CanBeSignedAsGachaPrize,
   GachaPrize,
   GachaPrizeId,
   GachaProbability
@@ -22,9 +23,7 @@ case class MineStackObject[ItemStack](
     minecraftItemStack.durability(_itemStack)
 
   /**
-   * [[GachaPrize]]への変換を試みる。
-   * これは「[[MineStackObjectCategory]]がGachaPrizesであるならば、
-   * [[GachaPrize]]に変換することが可能である」という条件を前提としている。
+   * [[GachaPrize]]への変換した後、記名済みの[[ItemStack]]へ変換することを試みます
    *
    * FIXME: この実装は[[GachaProbability]]が0.0(つまり通常では排出されない)
    *  になっていたり、[[GachaPrizeId]]が[[Int]]のMaxValueを取っていたりしているが、
@@ -42,19 +41,21 @@ case class MineStackObject[ItemStack](
    *  (期間中は[[GachaPrize]]が存在しないので)ということになるのを防ぐため、確実に[[GachaPrize]]を取得するために
    *  やむを得ず実装したものである。
    */
-  def tryToGachaPrize: Option[GachaPrize[ItemStack]] = {
+  def tryToSignedItemStack(
+    name: String
+  )(implicit signedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]): Option[ItemStack] = {
     if (
       category != MineStackObjectCategory.GACHA_PRIZES || category == MineStackObjectCategory.BUILTIN_GACHA_PRIZES
+    ) return None
+
+    val gachaPrize = GachaPrize[ItemStack](
+      _itemStack,
+      GachaProbability(0.0),
+      signOwner = true,
+      GachaPrizeId(Int.MaxValue)
     )
-      return None
-    Some(
-      GachaPrize[ItemStack](
-        _itemStack,
-        GachaProbability(0.0),
-        signOwner = true,
-        GachaPrizeId(Int.MaxValue)
-      )
-    )
+
+    Some(signedAsGachaPrize.signWith(name)(gachaPrize))
   }
 
 }
