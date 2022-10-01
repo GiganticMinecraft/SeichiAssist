@@ -1,0 +1,3 @@
+USE seichiassist;
+
+ALTER TABLE gachadata ADD VARCHAR(7) NOT NULL DEFAULT 'DEFAULT';
