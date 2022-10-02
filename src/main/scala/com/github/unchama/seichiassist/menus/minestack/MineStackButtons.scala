@@ -9,7 +9,10 @@ import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, a
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObjectGroup
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{MineStackObject, MineStackObjectWithColorVariants}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
+  MineStackObject,
+  MineStackObjectWithColorVariants
+}
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
 import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
