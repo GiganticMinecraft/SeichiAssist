@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.gacha.domain
+package com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent
 
 trait GachaEventPersistence[F[_]] {
 

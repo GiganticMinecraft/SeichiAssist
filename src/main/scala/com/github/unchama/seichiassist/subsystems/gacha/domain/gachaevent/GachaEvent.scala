@@ -1,9 +1,13 @@
-package com.github.unchama.seichiassist.subsystems.gacha.domain
+package com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-case class GachaEvent(eventName: GachaEventName, startTime: LocalDateTime, endTime: LocalDateTime) {
+case class GachaEvent(
+  eventName: GachaEventName,
+  startTime: LocalDateTime,
+  endTime: LocalDateTime
+) {
   require(startTime.isBefore(endTime))
 
   private def toTimeString(localDateTime: LocalDateTime): String = {
