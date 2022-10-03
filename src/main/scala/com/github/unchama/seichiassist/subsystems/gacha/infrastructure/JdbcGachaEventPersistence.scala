@@ -16,7 +16,7 @@ class JdbcGachaEventPersistence[F[_]: Sync] extends GachaEventPersistence[F] {
       DB.localTx { implicit session =>
         sql"""INSERT INTO gacha_events 
              | (event_name, event_start_time, event_end_time) VALUES 
-             | (${gachaEvent.eventName}, ${gachaEvent.getStartTimeString}, ${gachaEvent.getEndTimeString})
+             | (${gachaEvent.eventName}, ${gachaEvent.getStartDateString}, ${gachaEvent.getEndDateString})
            """.stripMargin.execute().apply()
       }
     }
@@ -33,8 +33,8 @@ class JdbcGachaEventPersistence[F[_]: Sync] extends GachaEventPersistence[F] {
         .map { rs =>
           gachaevent.GachaEvent(
             GachaEventName(rs.string("event_name")),
-            rs.localDateTime("event_start_time"),
-            rs.localDateTime("event_end_time")
+            rs.localDate("event_start_time"),
+            rs.localDate("event_end_time")
           )
         }
         .toList()

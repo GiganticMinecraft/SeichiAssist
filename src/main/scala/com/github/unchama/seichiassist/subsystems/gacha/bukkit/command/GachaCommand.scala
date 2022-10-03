@@ -16,6 +16,10 @@ import com.github.unchama.seichiassist.data.MineStackGachaData
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.BukkitGrantGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain._
+import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent.{
+  GachaEvent,
+  GachaEventName
+}
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketFromAdminTeamRepository
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
@@ -24,6 +28,8 @@ import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.UUID
 import scala.util.chaining.scalaUtilChainingOps
 
@@ -75,8 +81,8 @@ class GachaCommand[
         s"$RED/gacha reload",
         "ガチャリストをmysqlから読み込む",
         s"$DARK_GRAY※onEnable時と同じ処理",
-        s"$RED/gacha create-event <イベント名> <開始日時> <終了日時>",
-        "日時はyyyy-MM-dd HH:MM:SSの形式で指定をしてください。"
+        s"$RED/gacha create-event <イベント名> <開始日> <終了日>",
+        "日付はyyyy-MM-ddの形式で指定をしてください。"
       )
     )
   )
@@ -95,6 +101,7 @@ class GachaCommand[
         "clear" -> clear,
         "save" -> save,
         "reload" -> reload,
+        "create-event" -> createEvent,
         "addms" -> addms,
         "addms2" -> addms2,
         "listms" -> listms,
@@ -346,6 +353,46 @@ class GachaCommand[
         eff.toIO
       }
       .build()
+
+    val createEvent: ContextualExecutor =
+      ContextualExecutorBuilder
+        .beginConfiguration()
+        .argumentsParsers {
+          List(Parsers.identity, Parsers.identity, Parsers.identity)
+        }
+        .execution { values =>
+          val parsedArgs = values.args.parsed
+          val eventName = GachaEventName(parsedArgs.head.toString)
+
+          val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+          val startDate = parsedArgs(1).toString
+          val endDate = parsedArgs.last.toString
+          val dateRegex = "[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])".r
+
+          if (!dateRegex.matches(startDate) || !dateRegex.matches(endDate)) {
+            IO(MessageEffect(s"${RED}開始日/終了日はyyyy-MM-ddの形式で指定してください。"))
+          } else {
+            val eff = for {
+              isExistsEvent <- gachaAPI.isExistsGachaEvent(eventName)
+              _ <- gachaAPI
+                .createGachaEvent(
+                  GachaEvent(
+                    eventName,
+                    LocalDate.parse(startDate, dateTimeFormatter),
+                    LocalDate.parse(endDate, dateTimeFormatter)
+                  )
+                )
+                .whenA(!isExistsEvent)
+
+            } yield {
+              if (isExistsEvent) MessageEffect(s"${RED}指定されたイベント名のイベントが存在します。")
+              else MessageEffect(s"${AQUA}イベントを作成しました。")
+            }
+
+            eff.toIO
+          }
+        }
+        .build()
 
     // TODO: ここから下のコマンドの実装はMineStackシステムがレガシーのときに行われているため、旧実装をそのままなぞらえて実装している。
     //  そのため、MineStackシステムがsubsystemsに含まれるときが来たら書き換えることが望ましい。
