@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.subsystems.gacha
 
 import cats.Functor
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
+import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent.GachaEventName
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{GachaPrize, GachaPrizeId}
 
 trait GachaDrawAPI[F[_], Player] {
@@ -35,6 +36,13 @@ trait GachaReadAPI[F[_], ItemStack] {
    * @return 特定のガチャイベントに左右されないガチャ景品リストを取得する
    */
   def alwaysDischargeGachaPrizes: F[Vector[GachaPrize[ItemStack]]]
+
+  /**
+   * @return 指定されたイベント名で排出されるガチャ景品を取得する
+   */
+  def gachaEventDischargeGachaPrizes(
+    gachaEventName: GachaEventName
+  ): F[Vector[GachaPrize[ItemStack]]]
 
   /**
    * @return [[GachaPrizeId]]に対応する[[GachaPrize]]
