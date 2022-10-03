@@ -2,7 +2,10 @@ package com.github.unchama.seichiassist.subsystems.gacha
 
 import cats.Monad
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent.GachaEventName
+import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent.{
+  GachaEvent,
+  GachaEventName
+}
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{GachaPrize, GachaPrizeId}
 
 trait GachaEventAPI[F[_]] {
@@ -10,7 +13,12 @@ trait GachaEventAPI[F[_]] {
   /**
    * @return 指定された名前のガチャイベントが存在するか確認する
    */
-  def isExistsGachaEvent(gachaEventName: GachaEventName): Boolean
+  def isExistsGachaEvent(gachaEventName: GachaEventName): F[Boolean]
+
+  /**
+   * @return ガチャイベントを作成する作用
+   */
+  def createGachaEvent(gachaEvent: GachaEvent): F[Unit]
 
 }
 
