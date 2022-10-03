@@ -1,7 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.gacha.infrastructure
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent.{GachaEvent, GachaEventName, GachaEventPersistence}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent.{
+  GachaEvent,
+  GachaEventName,
+  GachaEventPersistence
+}
 import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
