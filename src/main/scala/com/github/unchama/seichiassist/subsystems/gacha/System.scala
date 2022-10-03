@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.gacha
 
-import cats.Functor
+import cats.Monad
 import cats.effect.ConcurrentEffect
 import cats.effect.concurrent.Ref
 import com.github.unchama.concurrent.NonServerThreadContextShift
@@ -10,19 +10,11 @@ import com.github.unchama.minecraft.bukkit.algebra.BukkitItemStackSerializeAndDe
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.BukkitCanBeSignedAsGachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.{
-  BukkitDrawGacha,
-  BukkitGrantGachaPrize,
-  BukkitLotteryOfGachaItems
-}
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.{BukkitDrawGacha, BukkitGrantGachaPrize, BukkitLotteryOfGachaItems}
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.command.GachaCommand
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.listeners.PlayerPullGachaListener
-import com.github.unchama.seichiassist.subsystems.gacha.domain.{
-  CanBeSignedAsGachaPrize,
-  GachaPrize,
-  GachaPrizeId,
-  GachaPrizeListPersistence
-}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent.GachaEventName
+import com.github.unchama.seichiassist.subsystems.gacha.domain.{CanBeSignedAsGachaPrize, GachaPrize, GachaPrizeId, GachaPrizeListPersistence}
 import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.JdbcGachaPrizeListPersistence
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketFromAdminTeamRepository
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.infrastructure.JdbcGachaTicketFromAdminTeamRepository
@@ -56,7 +48,7 @@ object System {
       override implicit val api: GachaAPI[F, ItemStack, Player] =
         new GachaAPI[F, ItemStack, Player] {
 
-          override protected implicit val F: Functor[F] = implicitly
+          override protected implicit val F: Monad[F] = implicitly
 
           override def load: F[Unit] = gachaPersistence.list.flatMap { gachaPrizes =>
             gachaPrizesListRepository.set(gachaPrizes)
@@ -92,6 +84,10 @@ object System {
 
           override def drawGacha(player: Player, draws: Int): F[Unit] =
             new BukkitDrawGacha[F].draw(player, draws)
+
+          override def alwaysDischargeGachaPrizes: F[Vector[GachaPrize[ItemStack]]] = ???
+
+          override def getOnlyGachaEventDischargeGachaPrizes(gachaEventName: GachaEventName): F[Vector[GachaPrize[ItemStack]]] = ???
         }
       override val commands: Map[String, TabExecutor] = Map(
         "gacha" -> new GachaCommand[F]().executor
