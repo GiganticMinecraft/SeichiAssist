@@ -90,5 +90,27 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack](
    */
   override def getOnlyGachaEventDischargeGachaPrizes(
     gachaEventName: GachaEventName
-  ): F[Vector[GachaPrize[ItemStack]]] = ???
+  ): F[Vector[GachaPrize[ItemStack]]] = Sync[F].delay {
+    DB.readOnly { implicit session =>
+      sql"SELECT id,itemstack,probability FROM gachadata WHERE event_name = ${gachaEventName.name}"
+        .map { rs =>
+          val probability = rs.double("probability")
+          // TODO ガチャアイテムに対して記名を行うかどうかを確率に依存すべきではない
+          serializeAndDeserialize
+            .deserialize(rs.string("itemstack"))
+            .map { itemStack =>
+              GachaPrize(
+                itemStack,
+                GachaProbability(probability),
+                probability < 0.1,
+                GachaPrizeId(rs.int("id"))
+              )
+            }
+            .merge
+        }
+        .toList()
+        .apply()
+        .toVector
+    }
+  }
 }
