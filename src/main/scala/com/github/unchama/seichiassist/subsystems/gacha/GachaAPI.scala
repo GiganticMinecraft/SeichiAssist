@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.gacha
 
-import cats.Monad
+import cats.{Functor, Monad}
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent.{
   GachaEvent,
@@ -8,17 +8,56 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent.{
 }
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{GachaPrize, GachaPrizeId}
 
-trait GachaEventAPI[F[_]] {
+trait GachaEventReadAPI[F[_]] {
+
+  import cats.implicits._
+
+  protected implicit val F: Functor[F]
+
+  /**
+   * @return 現在作成されているガチャイベントの一覧を取得する
+   */
+  def createdGachaEvents: F[Vector[GachaEvent]]
+
+  /**
+   * @return 指定された[[GachaEventName]]のイベントが存在すれば返す。
+   */
+  final def findGachaEvent(gachaEventName: GachaEventName): F[Option[GachaEvent]] = for {
+    gachaEvents <- createdGachaEvents
+  } yield gachaEvents.find(_.eventName == gachaEventName)
 
   /**
    * @return 指定された名前のガチャイベントが存在するか確認する
    */
-  def isExistsGachaEvent(gachaEventName: GachaEventName): F[Boolean]
+  final def isExistsGachaEvent(gachaEventName: GachaEventName): F[Boolean] = for {
+    foundGachaEvent <- findGachaEvent(gachaEventName)
+  } yield foundGachaEvent.nonEmpty
+
+}
+
+object GachaEventReadAPI {
+
+  def apply[F[_]](implicit ev: GachaEventReadAPI[F]): GachaEventReadAPI[F] = ev
+
+}
+
+trait GachaEventWriteAPI[F[_]] {
 
   /**
    * @return ガチャイベントを作成する作用
    */
   def createGachaEvent(gachaEvent: GachaEvent): F[Unit]
+
+  /**
+   * @return ガチャイベントを削除する作用
+   */
+  def deleteGachaEvent(gachaEvent: GachaEvent): F[Unit]
+
+}
+
+object GachaEventWriteAPI {
+
+  def apply[F[_]](implicit ev: GachaEventWriteAPI[F]): GachaEventWriteAPI[F] = ev
 
 }
 
@@ -140,3 +179,5 @@ trait GachaAPI[F[_], ItemStack, Player]
     extends GachaReadAPI[F, ItemStack]
     with GachaWriteAPI[F, ItemStack]
     with GachaDrawAPI[F, Player]
+    with GachaEventReadAPI[F]
+    with GachaEventWriteAPI[F]
