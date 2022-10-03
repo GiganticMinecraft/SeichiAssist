@@ -32,6 +32,11 @@ trait GachaReadAPI[F[_], ItemStack] {
   def list: F[Vector[GachaPrize[ItemStack]]]
 
   /**
+   * @return 特定のガチャイベントに左右されないガチャ景品リストを取得する
+   */
+  def alwaysDischargeGachaPrizes: F[Vector[GachaPrize[ItemStack]]]
+
+  /**
    * @return [[GachaPrizeId]]に対応する[[GachaPrize]]
    */
   final def fetch(gachaPrizeId: GachaPrizeId): F[Option[GachaPrize[ItemStack]]] = for {
