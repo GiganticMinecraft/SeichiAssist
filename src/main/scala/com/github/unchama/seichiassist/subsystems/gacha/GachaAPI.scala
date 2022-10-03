@@ -5,6 +5,15 @@ import com.github.unchama.seichiassist.subsystems.gacha.application.actions.Gran
 import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent.GachaEventName
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{GachaPrize, GachaPrizeId}
 
+trait GachaEventAPI[F[_]] {
+
+  /**
+   * @return 指定された名前のガチャイベントが存在するか確認する
+   */
+  def isExistsGachaEvent(gachaEventName: GachaEventName): Boolean
+
+}
+
 trait GachaDrawAPI[F[_], Player] {
 
   /**
