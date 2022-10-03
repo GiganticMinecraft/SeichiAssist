@@ -74,7 +74,9 @@ class GachaCommand[
         s"$DARK_RED※変更したら必ずsaveコマンドを実行(セーブされません)",
         s"$RED/gacha reload",
         "ガチャリストをmysqlから読み込む",
-        s"$DARK_GRAY※onEnable時と同じ処理"
+        s"$DARK_GRAY※onEnable時と同じ処理",
+        s"$RED/gacha create-event <イベント名> <開始日時> <終了日時>",
+        "日時はyyyy-MM-dd HH:MM:SSの形式で指定をしてください。"
       )
     )
   )
