@@ -3,9 +3,9 @@ package com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent
 trait GachaEventPersistence[F[_]] {
 
   /**
-   * @return ガチャイベントを新規登録します
+   * @return ガチャイベントを新規作成します
    */
-  def registerGachaEvent(gachaEvent: GachaEvent): F[Unit]
+  def createGachaEvent(gachaEvent: GachaEvent): F[Unit]
 
   /**
    * @return ガチャイベントを削除します

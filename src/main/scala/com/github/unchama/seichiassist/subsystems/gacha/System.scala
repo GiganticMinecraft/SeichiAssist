@@ -17,14 +17,21 @@ import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.{
 }
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.command.GachaCommand
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.listeners.PlayerPullGachaListener
-import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent.GachaEventName
+import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent.{
+  GachaEvent,
+  GachaEventName,
+  GachaEventPersistence
+}
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   CanBeSignedAsGachaPrize,
   GachaPrize,
   GachaPrizeId,
   GachaPrizeListPersistence
 }
-import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.JdbcGachaPrizeListPersistence
+import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.{
+  JdbcGachaEventPersistence,
+  JdbcGachaPrizeListPersistence
+}
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketFromAdminTeamRepository
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.infrastructure.JdbcGachaTicketFromAdminTeamRepository
 import org.bukkit.command.TabExecutor
@@ -52,6 +59,8 @@ object System {
       BukkitCanBeSignedAsGachaPrize
     implicit val lotteryOfGachaItems: BukkitLotteryOfGachaItems[F] =
       new BukkitLotteryOfGachaItems[F]
+
+    val gachaEventPersistence: GachaEventPersistence[F] = new JdbcGachaEventPersistence[F]
 
     val system: System[F] = new System[F] {
       override implicit val api: GachaAPI[F, ItemStack, Player] =
@@ -101,6 +110,15 @@ object System {
             gachaEventName: GachaEventName
           ): F[Vector[GachaPrize[ItemStack]]] =
             gachaPersistence.getOnlyGachaEventDischargeGachaPrizes(gachaEventName)
+
+          override def createdGachaEvents: F[Vector[GachaEvent]] =
+            gachaEventPersistence.gachaEvents
+
+          override def createGachaEvent(gachaEvent: GachaEvent): F[Unit] =
+            gachaEventPersistence.createGachaEvent(gachaEvent)
+
+          override def deleteGachaEvent(gachaEventName: GachaEventName): F[Unit] =
+            gachaEventPersistence.deleteGachaEvent(gachaEventName)
         }
       override val commands: Map[String, TabExecutor] = Map(
         "gacha" -> new GachaCommand[F]().executor

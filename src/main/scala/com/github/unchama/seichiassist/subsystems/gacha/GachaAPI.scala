@@ -51,7 +51,7 @@ trait GachaEventWriteAPI[F[_]] {
   /**
    * @return ガチャイベントを削除する作用
    */
-  def deleteGachaEvent(gachaEvent: GachaEvent): F[Unit]
+  def deleteGachaEvent(gachaEventName: GachaEventName): F[Unit]
 
 }
 

@@ -11,7 +11,7 @@ import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 class JdbcGachaEventPersistence[F[_]: Sync] extends GachaEventPersistence[F] {
 
-  override def registerGachaEvent(gachaEvent: GachaEvent): F[Unit] =
+  override def createGachaEvent(gachaEvent: GachaEvent): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
         sql"""INSERT INTO gacha_events 
