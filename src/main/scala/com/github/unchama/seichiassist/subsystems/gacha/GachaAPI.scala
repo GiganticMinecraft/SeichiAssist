@@ -27,7 +27,7 @@ trait GachaReadAPI[F[_], ItemStack] {
   protected implicit val F: Functor[F]
 
   /**
-   * @return ガチャの景品リスト
+   * @return ガチャの景品リストをすべて取得する
    */
   def list: F[Vector[GachaPrize[ItemStack]]]
 
