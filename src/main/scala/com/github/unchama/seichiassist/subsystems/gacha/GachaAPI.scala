@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.gacha
 
-import cats.Functor
+import cats.Monad
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent.GachaEventName
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{GachaPrize, GachaPrizeId}
@@ -25,7 +25,7 @@ trait GachaReadAPI[F[_], ItemStack] {
 
   import cats.implicits._
 
-  protected implicit val F: Functor[F]
+  protected implicit val F: Monad[F]
 
   /**
    * @return ガチャの景品リストをすべて取得する
@@ -38,11 +38,21 @@ trait GachaReadAPI[F[_], ItemStack] {
   def alwaysDischargeGachaPrizes: F[Vector[GachaPrize[ItemStack]]]
 
   /**
-   * @return 指定されたイベント名で排出されるガチャ景品を取得する
+   * @return 指定されたイベント名で排出されるガチャ景品のみを取得する
    */
-  def gachaEventDischargeGachaPrizes(
+  def getOnlyGachaEventDischargeGachaPrizes(
     gachaEventName: GachaEventName
   ): F[Vector[GachaPrize[ItemStack]]]
+
+  /**
+   * @return イベントで排出されるガチャ景品と常に排出されるガチャ景品の合成リストを取得する
+   */
+  final def getGachaEventDischargeGachaPrizes(
+    gachaEventName: GachaEventName
+  ): F[Vector[GachaPrize[ItemStack]]] = for {
+    alwaysGachaPrizes <- alwaysDischargeGachaPrizes
+    onlyGachaEvent <- getOnlyGachaEventDischargeGachaPrizes(gachaEventName)
+  } yield alwaysGachaPrizes ++ onlyGachaEvent
 
   /**
    * @return [[GachaPrizeId]]に対応する[[GachaPrize]]
