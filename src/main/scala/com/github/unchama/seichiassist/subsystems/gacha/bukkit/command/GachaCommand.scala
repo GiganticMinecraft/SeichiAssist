@@ -84,7 +84,9 @@ class GachaCommand[
         s"$RED/gacha create-event <イベント名> <開始日> <終了日>",
         "日付はyyyy-MM-ddの形式で指定をしてください。",
         s"$RED/gacha delete-event <イベント名>",
-        "イベントを削除します。(間違ってイベントを作成した時以外に使わないでください。)"
+        "イベントを削除します。(間違ってイベントを作成した時以外に使わないでください。)",
+        s"$RED/gacha list-event",
+        "イベントの一覧を表示します。"
       )
     )
   )
@@ -105,6 +107,7 @@ class GachaCommand[
         "reload" -> reload,
         "create-event" -> createEvent,
         "delete-event" -> deleteEvent,
+        "list-event" -> eventList,
         "addms" -> addms,
         "addms2" -> addms2,
         "listms" -> listms,
@@ -406,6 +409,23 @@ class GachaCommand[
           val eff = for {
             _ <- gachaAPI.deleteGachaEvent(eventName)
           } yield MessageEffect(s"ガチャイベント: ${eventName.name}を削除しました。")
+
+          eff.toIO
+        }
+        .build()
+
+    val eventList: ContextualExecutor =
+      ContextualExecutorBuilder
+        .beginConfiguration()
+        .execution { values =>
+          val eff = for {
+            events <- gachaAPI.createdGachaEvents
+          } yield {
+            val messages = "イベント名 | 開始日 | 終了日" +: events.map { event =>
+              s"${event.eventName} | ${event.getStartDateString} | ${event.getEndDateString}"
+            }
+            MessageEffect(messages.toList)
+          }
 
           eff.toIO
         }
