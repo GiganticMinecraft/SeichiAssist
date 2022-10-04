@@ -82,7 +82,9 @@ class GachaCommand[
         "ガチャリストをmysqlから読み込む",
         s"$DARK_GRAY※onEnable時と同じ処理",
         s"$RED/gacha create-event <イベント名> <開始日> <終了日>",
-        "日付はyyyy-MM-ddの形式で指定をしてください。"
+        "日付はyyyy-MM-ddの形式で指定をしてください。",
+        s"$RED/gacha delete-event <イベント名>",
+        "イベントを削除します。(間違ってイベントを作成した時以外に使わないでください。)"
       )
     )
   )
@@ -102,6 +104,7 @@ class GachaCommand[
         "save" -> save,
         "reload" -> reload,
         "create-event" -> createEvent,
+        "delete-event" -> deleteEvent,
         "addms" -> addms,
         "addms2" -> addms2,
         "listms" -> listms,
@@ -391,6 +394,20 @@ class GachaCommand[
 
             eff.toIO
           }
+        }
+        .build()
+
+    val deleteEvent: ContextualExecutor =
+      ContextualExecutorBuilder
+        .beginConfiguration()
+        .argumentsParsers(List(Parsers.identity))
+        .execution { values =>
+          val eventName = GachaEventName(values.args.parsed.head.toString)
+          val eff = for {
+            _ <- gachaAPI.deleteGachaEvent(eventName)
+          } yield MessageEffect(s"ガチャイベント: ${eventName.name}を削除しました。")
+
+          eff.toIO
         }
         .build()
 
