@@ -4,8 +4,14 @@ import cats.effect.ConcurrentEffect
 import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
-import com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification.application.actions.NotifyLevelUp
-import com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification.bukkit.actions.BukkitNotifyLevelUp
+import com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification.application.actions.{
+  NotifyBuildAmountThreshold,
+  NotifyLevelUp
+}
+import com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification.bukkit.actions.{
+  BukkitNotifyBuildAmountThreshold,
+  BukkitNotifyLevelUp
+}
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player
@@ -18,13 +24,15 @@ object System {
     buildCountReadAPI: BuildCountAPI[F, G, Player]
   ): F[A] = {
     val action: NotifyLevelUp[F, Player] = BukkitNotifyLevelUp[F]
+    val actionAmount: NotifyBuildAmountThreshold[F, Player] =
+      BukkitNotifyBuildAmountThreshold[F]
     StreamExtra.compileToRestartingStream("[buildcount.notification]") {
       buildCountReadAPI
         .buildAmountUpdateDiffs
         .either(buildCountReadAPI.buildLevelUpdates)
         .evalMap {
           case Left((player, buildAmountDiff)) =>
-            action.ofBuildAmountTo(player)(buildAmountDiff)
+            actionAmount.ofBuildAmountTo(player)(buildAmountDiff)
           case Right((player, levelDiff)) =>
             action.ofBuildLevelTo(player)(levelDiff)
         }
