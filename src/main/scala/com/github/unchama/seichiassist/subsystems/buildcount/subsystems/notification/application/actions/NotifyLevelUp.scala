@@ -7,6 +7,7 @@ import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.B
 trait NotifyLevelUp[F[_], Player] {
 
   def ofBuildLevelTo(player: Player)(diff: Diff[BuildLevel]): F[Unit]
+
   def ofBuildAmountTo(player: Player)(diff: Diff[BuildAmountData]): F[Unit]
 
 }
