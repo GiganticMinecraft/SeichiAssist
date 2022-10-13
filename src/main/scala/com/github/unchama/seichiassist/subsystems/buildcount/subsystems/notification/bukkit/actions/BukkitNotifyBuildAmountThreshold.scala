@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.B
 import com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification.application.actions.NotifyBuildAmountThreshold
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.util.{PlayerSendable, SendMessageEffect, SendSoundEffect}
-import org.bukkit.ChatColor.{GOLD, BOLD}
+import org.bukkit.ChatColor.{BOLD, GOLD}
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 
@@ -29,28 +29,29 @@ object BukkitNotifyBuildAmountThreshold {
         val oldBuildAmountOneMillionUnit = (oldBuildAmount.expAmount.amount / million).toLong
         val newBuildAmountOneMillionUnit = (newBuildAmount.expAmount.amount / million).toLong
         if (oldBuildAmountOneMillionUnit < newBuildAmountOneMillionUnit) {
-          OnMinecraftServerThread[F].runAction(SyncIO {
-            // ○億xxxx万文言の作成
-            // 億の位の数値が0の場合は"x億"は表示せず、百万の位の数値が0の場合はxxxx万を表示しない
-            val newBuildAmountDisplayOneHundredMillionUnit = newBuildAmountOneMillionUnit / 100
-            val newBuildAmountDisplayOneMillionUnit = newBuildAmountOneMillionUnit % 100
-            val newBuildAmountDisplayOneHundredMillionUnitString =
-              if (newBuildAmountDisplayOneHundredMillionUnit > 0) {
-                s"${newBuildAmountDisplayOneHundredMillionUnit}億"
-              } else {
-                ""
-              }
-            val newBuildAmountDisplayOneMillionUnitString =
-              if (newBuildAmountDisplayOneMillionUnit > 0) {
-                s"${newBuildAmountDisplayOneMillionUnit}00万"
-              } else {
-                ""
-              }
-            val newBuildAmountDisplay =
-              newBuildAmountDisplayOneHundredMillionUnitString + newBuildAmountDisplayOneMillionUnitString
+          // ○億xxxx万文言の作成
+          // 億の位の数値が0の場合は"x億"は表示せず、百万の位の数値が0の場合はxxxx万を表示しない
+          val newBuildAmountDisplayOneHundredMillionUnit = newBuildAmountOneMillionUnit / 100
+          val newBuildAmountDisplayOneMillionUnit = newBuildAmountOneMillionUnit % 100
+          val newBuildAmountDisplayOneHundredMillionUnitString =
+            if (newBuildAmountDisplayOneHundredMillionUnit > 0) {
+              s"${newBuildAmountDisplayOneHundredMillionUnit}億"
+            } else {
+              ""
+            }
+          val newBuildAmountDisplayOneMillionUnitString =
+            if (newBuildAmountDisplayOneMillionUnit > 0) {
+              s"${newBuildAmountDisplayOneMillionUnit}00万"
+            } else {
+              ""
+            }
+          val newBuildAmountDisplay =
+            newBuildAmountDisplayOneHundredMillionUnitString + newBuildAmountDisplayOneMillionUnitString
 
-            val notificationMessage =
-              s"${player.getName}の総建築量が${newBuildAmountDisplay}に到達しました！"
+          val notificationMessage =
+            s"${player.getName}の総建築量が${newBuildAmountDisplay}に到達しました！"
+
+          OnMinecraftServerThread[F].runAction(SyncIO {
             SendMessageEffect.sendMessageToEveryoneIgnoringPreference(
               s"$GOLD$BOLD$notificationMessage"
             )(forString[IO])
