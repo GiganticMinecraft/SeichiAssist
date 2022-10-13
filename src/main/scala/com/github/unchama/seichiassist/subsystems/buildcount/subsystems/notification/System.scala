@@ -19,8 +19,13 @@ object System {
   ): F[A] = {
     val action: NotifyLevelUp[F, Player] = BukkitNotifyLevelUp[F]
     StreamExtra.compileToRestartingStream("[buildcount.notification]") {
-      buildCountReadAPI.buildLevelUpdates.evalMap {
-        case (player, levelDiff) =>
+      buildCountReadAPI
+        .buildAmountUpdateDiffs
+        .either(buildCountReadAPI.buildLevelUpdates)
+        .evalMap {
+        case Left((player, buildAmountDiff)) =>
+          action.ofBuildAmountTo(player)(buildAmountDiff)
+        case Right((player,levelDiff)) =>
           action.ofBuildLevelTo(player)(levelDiff)
       }
     }
