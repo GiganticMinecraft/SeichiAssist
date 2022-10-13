@@ -34,7 +34,7 @@ object System {
         }
 
       val amountThresholdNotification =
-        buildCountReadAPI.buildLevelUpdates.evalMap {
+        buildCountReadAPI.buildAmountUpdateDiffs.evalMap {
           case (player, amountDiff) =>
             actionAmount.ofBuildAmountTo(player)(amountDiff)
         }
