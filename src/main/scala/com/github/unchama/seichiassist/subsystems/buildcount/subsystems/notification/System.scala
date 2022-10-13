@@ -27,15 +27,19 @@ object System {
     val actionAmount: NotifyBuildAmountThreshold[F, Player] =
       BukkitNotifyBuildAmountThreshold[F]
     StreamExtra.compileToRestartingStream("[buildcount.notification]") {
-      buildCountReadAPI
-        .buildAmountUpdateDiffs
-        .either(buildCountReadAPI.buildLevelUpdates)
-        .evalMap {
-          case Left((player, buildAmountDiff)) =>
-            actionAmount.ofBuildAmountTo(player)(buildAmountDiff)
-          case Right((player, levelDiff)) =>
+      val levelNotification =
+        buildCountReadAPI.buildLevelUpdates.evalMap {
+          case (player, levelDiff) =>
             action.ofBuildLevelTo(player)(levelDiff)
         }
+
+      val amountThresholdNotification =
+        buildCountReadAPI.buildLevelUpdates.evalMap {
+          case (player, amountDiff) =>
+            actionAmount.ofBuildAmountTo(player)(amountDiff)
+        }
+
+      levelNotification.merge(amountThresholdNotification)
     }
   }
 
