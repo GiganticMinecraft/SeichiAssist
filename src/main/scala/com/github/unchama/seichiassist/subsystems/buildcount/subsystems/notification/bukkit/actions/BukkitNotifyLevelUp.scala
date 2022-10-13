@@ -40,7 +40,7 @@ object BukkitNotifyLevelUp {
         if (oldBuildAmount1MUnit < newBuildAmount1MUnit) {
           OnMinecraftServerThread[F].runAction(SyncIO {
             // ○億xxxx万文言の作成
-            // 億桁の数値が0の場合は"x億"は表示せず、百万桁の数値が0の場合はxxxx万を表示しない
+            // 億の位の数値が0の場合は"x億"は表示せず、百万の位の数値が0の場合はxxxx万を表示しない
             val newBuildAmountDisplay100MUnit = newBuildAmount1MUnit / 100
             val newBuildAmountDisplay1MUnit = newBuildAmount1MUnit % 100
             val newBuildAmountDisplay = (if (newBuildAmountDisplay100MUnit > 0) {
