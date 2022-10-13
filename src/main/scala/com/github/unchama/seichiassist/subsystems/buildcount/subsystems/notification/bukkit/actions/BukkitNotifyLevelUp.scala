@@ -35,23 +35,28 @@ object BukkitNotifyLevelUp {
       override def ofBuildAmountTo(player: Player)(diff: Diff[BuildAmountData]): F[Unit] = {
         val Diff(oldBuildAmount, newBuildAmount) = diff
         val million = 1000000
-        val oldBuildAmount1MUnit = (oldBuildAmount.expAmount.amount / million).toLong
-        val newBuildAmount1MUnit = (newBuildAmount.expAmount.amount / million).toLong
-        if (oldBuildAmount1MUnit < newBuildAmount1MUnit) {
+        val oldBuildAmountOneMillionUnit = (oldBuildAmount.expAmount.amount / million).toLong
+        val newBuildAmountOneMillionUnit = (newBuildAmount.expAmount.amount / million).toLong
+        if (oldBuildAmountOneMillionUnit < newBuildAmountOneMillionUnit) {
           OnMinecraftServerThread[F].runAction(SyncIO {
             // ○億xxxx万文言の作成
             // 億の位の数値が0の場合は"x億"は表示せず、百万の位の数値が0の場合はxxxx万を表示しない
-            val newBuildAmountDisplay100MUnit = newBuildAmount1MUnit / 100
-            val newBuildAmountDisplay1MUnit = newBuildAmount1MUnit % 100
-            val newBuildAmountDisplay = (if (newBuildAmountDisplay100MUnit > 0) {
-                                           s"${newBuildAmountDisplay100MUnit}億"
-                                         } else {
-                                           ""
-                                         }) + (if (newBuildAmountDisplay1MUnit > 0) {
-                                                 s"${newBuildAmountDisplay1MUnit}00万"
-                                               } else {
-                                                 ""
-                                               })
+            val newBuildAmountDisplayOneHundredMillionUnit = newBuildAmountOneMillionUnit / 100
+            val newBuildAmountDisplayOneMillionUnit = newBuildAmountOneMillionUnit % 100
+            val newBuildAmountDisplayOneHundredMillionUnitString =
+              if (newBuildAmountDisplayOneHundredMillionUnit > 0) {
+                s"${newBuildAmountDisplayOneHundredMillionUnit}億"
+              } else {
+                ""
+              }
+            val newBuildAmountDisplayOneMillionUnitString =
+              if (newBuildAmountDisplayOneMillionUnit > 0) {
+                s"${newBuildAmountDisplayOneMillionUnit}00万"
+              } else {
+                ""
+              }
+            val newBuildAmountDisplay =
+              newBuildAmountDisplayOneHundredMillionUnitString + newBuildAmountDisplayOneMillionUnitString
 
             val notificationMessage =
               s"${player.getName}の総建築量が${newBuildAmountDisplay}に到達しました！"
