@@ -23,11 +23,11 @@ object System {
         .buildAmountUpdateDiffs
         .either(buildCountReadAPI.buildLevelUpdates)
         .evalMap {
-        case Left((player, buildAmountDiff)) =>
-          action.ofBuildAmountTo(player)(buildAmountDiff)
-        case Right((player,levelDiff)) =>
-          action.ofBuildLevelTo(player)(levelDiff)
-      }
+          case Left((player, buildAmountDiff)) =>
+            action.ofBuildAmountTo(player)(buildAmountDiff)
+          case Right((player, levelDiff)) =>
+            action.ofBuildLevelTo(player)(levelDiff)
+        }
     }
   }
 
