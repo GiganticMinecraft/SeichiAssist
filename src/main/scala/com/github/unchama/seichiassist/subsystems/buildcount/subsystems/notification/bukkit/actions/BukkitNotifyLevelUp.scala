@@ -3,7 +3,10 @@ package com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notific
 import cats.effect.{IO, Sync}
 import com.github.unchama.generic.Diff
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
-import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.{BuildAssistExpTable, BuildLevel}
+import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.{
+  BuildAssistExpTable,
+  BuildLevel
+}
 import com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification.application.actions.NotifyLevelUp
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.util.PlayerSendable
