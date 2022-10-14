@@ -25,7 +25,7 @@ object BukkitNotifyLevelUp {
 
   // TODO: BukkitNotifyLevelUpなのにdiffの展開やいつメッセージを出すかなどを扱うべきでない。
   // see also: https://github.com/GiganticMinecraft/SeichiAssist/blob/8ce9df9e4fc2da8f84d8aed4e2b74bbe95a61a02/src/main/scala/com/github/unchama/seichiassist/subsystems/breakcount/subsystems/notification/bukkit/actions/BukkitNotifyLevelUp.scala
-  def apply[F[_]: OnMinecraftServerThread: ConcurrentEffect: DiscordNotificationAPI]
+  def apply[F[_]: Sync: DiscordNotificationAPI]
     : NotifyLevelUp[F, Player] = {
     new NotifyLevelUp[F, Player] {
       override def ofBuildLevelTo(player: Player)(diff: Diff[BuildLevel]): F[Unit] = {
