@@ -1,14 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification.bukkit.actions
 
-import cats.Applicative
-import cats.effect.{ConcurrentEffect, IO, Sync}
+import cats.effect.{IO, Sync}
 import com.github.unchama.generic.Diff
-import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
-import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.{
-  BuildAssistExpTable,
-  BuildLevel
-}
+import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.{BuildAssistExpTable, BuildLevel}
 import com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification.application.actions.NotifyLevelUp
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.util.PlayerSendable
@@ -24,9 +19,7 @@ object BukkitNotifyLevelUp {
   import cats.implicits._
 
   // TODO: BukkitNotifyLevelUpなのにdiffの展開やいつメッセージを出すかなどを扱うべきでない。
-  // see also: https://github.com/GiganticMinecraft/SeichiAssist/blob/8ce9df9e4fc2da8f84d8aed4e2b74bbe95a61a02/src/main/scala/com/github/unchama/seichiassist/subsystems/breakcount/subsystems/notification/bukkit/actions/BukkitNotifyLevelUp.scala
-  def apply[F[_]: Sync: DiscordNotificationAPI]
-    : NotifyLevelUp[F, Player] = {
+  def apply[F[_]: Sync: DiscordNotificationAPI]: NotifyLevelUp[F, Player] = {
     new NotifyLevelUp[F, Player] {
       override def ofBuildLevelTo(player: Player)(diff: Diff[BuildLevel]): F[Unit] = {
         val Diff(oldLevel, newLevel) = diff
@@ -45,8 +38,8 @@ object BukkitNotifyLevelUp {
           Sync[F].delay {
             player.sendMessage(messageLevelUp)
           }
-        } else 
-           Sync[F].unit
+        } else
+          Sync[F].unit
       }
     }
   }
