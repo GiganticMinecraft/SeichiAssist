@@ -59,11 +59,11 @@ object System {
           override protected implicit val F: Functor[F] = implicitly
 
           override def load: F[Unit] = gachaPersistence.list.flatMap { gachaPrizes =>
-            gachaPrizesListRepository.set(gachaPrizes)
+            gachaPrizesListReference.set(gachaPrizes)
           }
 
           override def replace(gachaPrizesList: Vector[GachaPrize[ItemStack]]): F[Unit] =
-            gachaPrizesListRepository.set(gachaPrizesList)
+            gachaPrizesListReference.set(gachaPrizesList)
 
           override def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Unit] = for {
             prizes <- list
@@ -81,14 +81,14 @@ object System {
               _ <- replace(newList)
             } yield ()
 
-          protected implicit val gachaPrizesListRepository
+          protected implicit val gachaPrizesListReference
             : Ref[F, Vector[GachaPrize[ItemStack]]] =
             Ref.unsafe[F, Vector[GachaPrize[ItemStack]]](Vector.empty)
 
           override val grantGachaPrize: GrantGachaPrize[F, ItemStack] =
             new BukkitGrantGachaPrize[F]
 
-          override def list: F[Vector[GachaPrize[ItemStack]]] = gachaPrizesListRepository.get
+          override def list: F[Vector[GachaPrize[ItemStack]]] = gachaPrizesListReference.get
 
           override def drawGacha(player: Player, draws: Int): F[Unit] =
             new BukkitDrawGacha[F].draw(player, draws)
