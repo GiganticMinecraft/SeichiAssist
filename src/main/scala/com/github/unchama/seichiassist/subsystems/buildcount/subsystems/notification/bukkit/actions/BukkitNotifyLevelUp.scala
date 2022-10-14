@@ -1,8 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification.bukkit.actions
 
 import cats.Applicative
-import cats.effect.Effect.ops.toAllEffectOps
-import cats.effect.{ConcurrentEffect, IO, Sync, SyncIO}
+import cats.effect.{ConcurrentEffect, IO, Sync}
 import com.github.unchama.generic.Diff
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
@@ -32,24 +31,21 @@ object BukkitNotifyLevelUp {
       override def ofBuildLevelTo(player: Player)(diff: Diff[BuildLevel]): F[Unit] = {
         val Diff(oldLevel, newLevel) = diff
         if (newLevel eqv BuildAssistExpTable.maxLevel) {
-          OnMinecraftServerThread[F].runAction(SyncIO {
-            sendMessageToEveryoneIgnoringPreference(
-              s"$GOLD${player.getName}の建築レベルが最大Lvに到達したよ(`･ω･´)"
-            )(forString[IO])
-            DiscordNotificationAPI[F]
-              .sendPlainText(s"${player.getName}の建築レベルが最大Lvに到達したよ(`･ω･´)")
-              .toIO
-              .unsafeRunAsyncAndForget()
-            player.sendMessage(s"${GOLD}最大Lvに到達したよ(`･ω･´)")
-            sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
-          })
-        } else if (oldLevel < newLevel)
+          val messageLevelMaxGlobal = s"$GOLD${player.getName}の建築レベルが最大Lvに到達したよ(`･ω･´)"
+          val messageLevelMaxDiscord = s"${player.getName}の建築レベルが最大Lvに到達したよ(`･ω･´)"
+          val messageLevelMaxPlayer = s"${GOLD}最大Lvに到達したよ(`･ω･´)"
           Sync[F].delay {
-            player.sendMessage(
-              s"${GOLD}ﾑﾑｯﾚﾍﾞﾙｱｯﾌﾟ∩( ・ω・)∩【建築Lv(${oldLevel.level})→建築Lv(${newLevel.level})】"
-            )
+            sendMessageToEveryoneIgnoringPreference(messageLevelMaxGlobal)(forString[IO])
+            player.sendMessage(messageLevelMaxPlayer)
+            sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
+          } >> DiscordNotificationAPI[F].sendPlainText(messageLevelMaxDiscord)
+        } else if (oldLevel < newLevel) {
+          val messageLevelUp =
+            s"${GOLD}ﾑﾑｯﾚﾍﾞﾙｱｯﾌﾟ∩( ・ω・)∩【建築Lv(${oldLevel.level})→建築Lv(${newLevel.level})】"
+          Sync[F].delay {
+            player.sendMessage(messageLevelUp)
           }
-        else
+        } else
           Applicative[F].unit
       }
     }

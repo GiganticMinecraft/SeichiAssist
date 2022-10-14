@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification.bukkit.actions
 
 import cats.Applicative
-import cats.effect.Effect.ops.toAllEffectOps
-import cats.effect.{ConcurrentEffect, IO, SyncIO}
+import cats.effect.{ConcurrentEffect, IO, Sync}
+import cats.implicits.catsSyntaxFlatMapOps
 import com.github.unchama.generic.{Diff, OptionExtra}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
@@ -25,8 +25,8 @@ object BukkitNotifyBuildAmountThreshold {
       override def ofBuildAmountTo(player: Player)(diff: Diff[BuildAmountData]): F[Unit] = {
         val Diff(oldBuildAmount, newBuildAmount) = diff
         val million = 1000000
-        val oldBuildAmountOneMillionUnit = oldBuildAmount.expAmount.amount / million
-        val newBuildAmountOneMillionUnit = newBuildAmount.expAmount.amount / million
+        val oldBuildAmountOneMillionUnit = (oldBuildAmount.expAmount.amount / million).toInt
+        val newBuildAmountOneMillionUnit = (newBuildAmount.expAmount.amount / million).toInt
         if (oldBuildAmountOneMillionUnit < newBuildAmountOneMillionUnit) {
           // ○億xxxx万文言の作成
           // 億の位の数値が0の場合は"x億"は表示せず、百万の位の数値が0の場合はxxxx万を表示しない
@@ -47,16 +47,12 @@ object BukkitNotifyBuildAmountThreshold {
           val notificationMessage =
             s"${player.getName}の総建築量が${newBuildAmountDisplay}に到達しました！"
 
-          OnMinecraftServerThread[F].runAction(SyncIO {
+          Sync[F].delay {
             SendMessageEffect.sendMessageToEveryoneIgnoringPreference(
               s"$GOLD$BOLD$notificationMessage"
             )(forString[IO])
-            DiscordNotificationAPI[F]
-              .sendPlainText(notificationMessage)
-              .toIO
-              .unsafeRunAsyncAndForget()
             SendSoundEffect.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
-          })
+          } >> DiscordNotificationAPI[F].sendPlainText(notificationMessage)
         } else Applicative[F].unit
       }
     }
