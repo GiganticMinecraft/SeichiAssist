@@ -1,10 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification.bukkit.actions
 
-import cats.Applicative
-import cats.effect.{ConcurrentEffect, IO, Sync}
+import cats.effect.{IO, Sync}
 import cats.implicits.catsSyntaxFlatMapOps
 import com.github.unchama.generic.{Diff, OptionExtra}
-import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
 import com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification.application.actions.NotifyBuildAmountThreshold
@@ -19,8 +17,7 @@ object BukkitNotifyBuildAmountThreshold {
   import PlayerSendable.forString
 
   // TODO: BukkitNotifyLevelUpなのにdiffの展開やいつメッセージを出すかなどを扱うべきでない。
-  def apply[F[_]: Sync: DiscordNotificationAPI]
-    : NotifyBuildAmountThreshold[F, Player] = {
+  def apply[F[_]: Sync: DiscordNotificationAPI]: NotifyBuildAmountThreshold[F, Player] = {
     new NotifyBuildAmountThreshold[F, Player] {
       override def ofBuildAmountTo(player: Player)(diff: Diff[BuildAmountData]): F[Unit] = {
         val Diff(oldBuildAmount, newBuildAmount) = diff
