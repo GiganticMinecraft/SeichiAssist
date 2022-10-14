@@ -45,8 +45,8 @@ object BukkitNotifyLevelUp {
           Sync[F].delay {
             player.sendMessage(messageLevelUp)
           }
-        } else
-          Applicative[F].unit
+        } else 
+           Sync[F].unit
       }
     }
   }
