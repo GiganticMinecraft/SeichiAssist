@@ -72,14 +72,11 @@ object System {
           } yield ()
 
           override def addGachaPrize(gachaPrize: GachaPrizeByGachaPrizeId): F[Unit] =
-            for {
-              prizes <- list
-              newList = gachaPrize(
+            gachaPrizesListReference.update { prizes =>
+              gachaPrize(
                 GachaPrizeId(if (prizes.nonEmpty) prizes.map(_.id.id).max + 1 else 1)
               ) +: prizes
-
-              _ <- replace(newList)
-            } yield ()
+            }
 
           protected implicit val gachaPrizesListReference
             : Ref[F, Vector[GachaPrize[ItemStack]]] =
