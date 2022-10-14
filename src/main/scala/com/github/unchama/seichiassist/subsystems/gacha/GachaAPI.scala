@@ -41,9 +41,8 @@ trait GachaReadAPI[F[_], ItemStack] {
   /**
    * 指定された[[GachaPrizeId]]に対応する[[GachaPrize]]が存在するか確認する
    */
-  final def existsGachaPrize(gachaPrizeId: GachaPrizeId): F[Boolean] = for {
-    prizes <- list
-  } yield prizes.exists(_.id == gachaPrizeId)
+  final def existsGachaPrize(gachaPrizeId: GachaPrizeId): F[Boolean] =
+    F.map(fetch(gachaPrizeId))(_.nonEmpty)
 
   val grantGachaPrize: GrantGachaPrize[F, ItemStack]
 
