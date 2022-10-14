@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.subhome.bukkit
+package com.github.unchama.seichiassist.subsystems.home.bukkit
 
 import cats.data.Kleisli
 import cats.effect.SyncIO
