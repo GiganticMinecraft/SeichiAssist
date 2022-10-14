@@ -23,20 +23,20 @@ object System {
   ]: ConcurrentEffect: OnMinecraftServerThread: ErrorLogger: DiscordNotificationAPI, G[_], A](
     buildCountReadAPI: BuildCountAPI[F, G, Player]
   ): F[A] = {
-    val action: NotifyLevelUp[F, Player] = BukkitNotifyLevelUp[F]
-    val actionAmount: NotifyBuildAmountThreshold[F, Player] =
+    val notifyLevelUp: NotifyLevelUp[F, Player] = BukkitNotifyLevelUp[F]
+    val notifyBuildAmountThreshold: NotifyBuildAmountThreshold[F, Player] =
       BukkitNotifyBuildAmountThreshold[F]
     StreamExtra.compileToRestartingStream("[buildcount.notification]") {
       val levelNotification =
         buildCountReadAPI.buildLevelUpdates.evalMap {
           case (player, levelDiff) =>
-            action.ofBuildLevelTo(player)(levelDiff)
+            notifyLevelUp.ofBuildLevelTo(player)(levelDiff)
         }
 
       val amountThresholdNotification =
         buildCountReadAPI.buildAmountUpdateDiffs.evalMap {
           case (player, amountDiff) =>
-            actionAmount.ofBuildAmountTo(player)(amountDiff)
+            notifyBuildAmountThreshold.ofBuildAmountTo(player)(amountDiff)
         }
 
       levelNotification.merge(amountThresholdNotification)
