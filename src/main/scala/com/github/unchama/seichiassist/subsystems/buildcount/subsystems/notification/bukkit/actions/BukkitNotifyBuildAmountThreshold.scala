@@ -19,7 +19,7 @@ object BukkitNotifyBuildAmountThreshold {
   import PlayerSendable.forString
 
   // TODO: BukkitNotifyLevelUpなのにdiffの展開やいつメッセージを出すかなどを扱うべきでない。
-  def apply[F[_]: OnMinecraftServerThread: ConcurrentEffect: DiscordNotificationAPI]
+  def apply[F[_]: Sync: DiscordNotificationAPI]
     : NotifyBuildAmountThreshold[F, Player] = {
     new NotifyBuildAmountThreshold[F, Player] {
       override def ofBuildAmountTo(player: Player)(diff: Diff[BuildAmountData]): F[Unit] = {
