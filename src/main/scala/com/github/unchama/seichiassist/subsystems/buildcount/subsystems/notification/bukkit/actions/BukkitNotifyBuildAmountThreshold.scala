@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notific
 
 import cats.effect.{IO, Sync}
 import cats.implicits.catsSyntaxFlatMapOps
-import com.github.unchama.generic.{Diff, OptionExtra}
+import com.github.unchama.generic.Diff
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
 import com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification.application.actions.NotifyBuildAmountThreshold
@@ -15,6 +15,7 @@ import org.bukkit.entity.Player
 object BukkitNotifyBuildAmountThreshold {
 
   import PlayerSendable.forString
+  import cats.implicits.catsSyntaxOption
 
   // TODO: BukkitNotifyLevelUpなのにdiffの展開やいつメッセージを出すかなどを扱うべきでない。
   def apply[F[_]: Sync: DiscordNotificationAPI]: NotifyBuildAmountThreshold[F, Player] = {
@@ -30,15 +31,17 @@ object BukkitNotifyBuildAmountThreshold {
           val newBuildAmountDisplayOneHundredMillionUnit = newBuildAmountOneMillionUnit / 100
           val newBuildAmountDisplayOneMillionUnit = newBuildAmountOneMillionUnit % 100
           val newBuildAmountDisplayOneHundredMillionUnitString =
-            OptionExtra.getOrDefault(newBuildAmountDisplayOneHundredMillionUnit > 0)(
-              Some(s"${newBuildAmountDisplayOneHundredMillionUnit}億"),
-              ""
-            )
+            Option
+              .when(newBuildAmountDisplayOneHundredMillionUnit > 0)(
+                s"${newBuildAmountDisplayOneHundredMillionUnit}億"
+              )
+              .orEmpty
           val newBuildAmountDisplayOneMillionUnitString =
-            OptionExtra.getOrDefault(newBuildAmountDisplayOneMillionUnit > 0)(
-              Some(s"${newBuildAmountDisplayOneMillionUnit}00万"),
-              ""
-            )
+            Option
+              .when(newBuildAmountDisplayOneMillionUnit > 0)(
+                s"${newBuildAmountDisplayOneMillionUnit}00万"
+              )
+              .orEmpty
           val newBuildAmountDisplay =
             newBuildAmountDisplayOneHundredMillionUnitString + newBuildAmountDisplayOneMillionUnitString
           val notificationMessage =
