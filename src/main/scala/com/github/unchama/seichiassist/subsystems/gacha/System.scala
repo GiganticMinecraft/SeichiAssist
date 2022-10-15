@@ -9,7 +9,7 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.minecraft.bukkit.algebra.BukkitItemStackSerializeAndDeserialize
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.BukkitCanBeSignedAsGachaPrize
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.BukkitItemStackCanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.{
   BukkitDrawGacha,
   BukkitGrantGachaPrize,
@@ -48,7 +48,7 @@ object System {
     implicit val gachaTicketPersistence: GachaTicketFromAdminTeamRepository[F] =
       new JdbcGachaTicketFromAdminTeamRepository[F]
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
-      BukkitCanBeSignedAsGachaPrize
+      BukkitItemStackCanBeSignedAsGachaPrize
     implicit val lotteryOfGachaItems: BukkitLotteryOfGachaItems[F] =
       new BukkitLotteryOfGachaItems[F]
 

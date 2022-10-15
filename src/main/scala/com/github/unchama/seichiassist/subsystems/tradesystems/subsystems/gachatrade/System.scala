@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gacha
 import cats.effect.ConcurrentEffect
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.BukkitCanBeSignedAsGachaPrize
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.BukkitItemStackCanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.listeners.GachaTradeListener
 import org.bukkit.entity.Player
@@ -18,7 +18,7 @@ object System {
     implicit gachaAPI: GachaAPI[F, ItemStack, Player]
   ): F[Subsystem[F]] = {
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
-      BukkitCanBeSignedAsGachaPrize
+      BukkitItemStackCanBeSignedAsGachaPrize
 
     for {
       gachaPrizeTable <- gachaAPI.list
