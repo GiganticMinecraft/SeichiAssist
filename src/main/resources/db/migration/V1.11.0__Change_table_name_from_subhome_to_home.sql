@@ -1,3 +1,3 @@
 USE seichiassist;
 
-RENAME TABLE IF EXISTS TABLE sub_home TO home;
+RENAME TABLE IF EXISTS sub_home TO home;
