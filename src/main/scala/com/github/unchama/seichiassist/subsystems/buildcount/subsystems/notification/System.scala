@@ -1,19 +1,25 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification
 
-import cats.effect.{ConcurrentEffect, Sync}
+import cats.effect.Concurrent
 import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
-import com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification.application.actions.{NotifyBuildAmountThreshold, NotifyLevelUp}
-import com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification.bukkit.actions.{BukkitNotifyBuildAmountThreshold, BukkitNotifyLevelUp}
+import com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification.application.actions.{
+  NotifyBuildAmountThreshold,
+  NotifyLevelUp
+}
+import com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification.bukkit.actions.{
+  BukkitNotifyBuildAmountThreshold,
+  BukkitNotifyLevelUp
+}
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 
 object System {
 
-  def backgroundProcess[F[_]: Sync: ConcurrentEffect: ErrorLogger: DiscordNotificationAPI, G[
-    _
-  ], A](buildCountReadAPI: BuildCountAPI[F, G, Player]): F[A] = {
+  def backgroundProcess[F[_]: Concurrent: ErrorLogger: DiscordNotificationAPI, G[_], A](
+    buildCountReadAPI: BuildCountAPI[F, G, Player]
+  ): F[A] = {
     val notifyLevelUp: NotifyLevelUp[F, Player] = BukkitNotifyLevelUp[F]
     val notifyBuildAmountThreshold: NotifyBuildAmountThreshold[F, Player] =
       BukkitNotifyBuildAmountThreshold[F]
