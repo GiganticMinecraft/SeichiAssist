@@ -65,11 +65,8 @@ object System {
           override def replace(gachaPrizesList: Vector[GachaPrize[ItemStack]]): F[Unit] =
             gachaPrizesListReference.set(gachaPrizesList)
 
-          override def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Unit] = for {
-            prizes <- list
-            targetPrize = prizes.filter(_.id == gachaPrizeId)
-            _ <- replace(prizes.diff(targetPrize))
-          } yield ()
+          override def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Unit] =
+            gachaPrizesListReference.update { prizes => prizes.filter(_.id == gachaPrizeId) }
 
           override def addGachaPrize(gachaPrize: GachaPrizeByGachaPrizeId): F[Unit] =
             gachaPrizesListReference.update { prizes =>
