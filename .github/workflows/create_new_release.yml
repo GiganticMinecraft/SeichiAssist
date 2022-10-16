@@ -88,6 +88,15 @@ jobs:
       - name: build artifacts
         run: sbt assembly
 
+      - name: Generate Changelog
+        id: generate_changelog
+        uses: nblagoev/pull-release-notes-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          base-ref: "v${{ needs.bump_version.outputs.old_version }}"
+          head-ref: "v${{ needs.bump_version.outputs.new_version }}"
+
       - name: Create release
         id: create_release
         uses: softprops/action-gh-release@v1
@@ -95,6 +104,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: target/build/SeichiAssist.jar
+          body: ${{ steps.generate_changelog.outputs.result }}
           tag_name: "v${{ needs.bump_version.outputs.new_version }}"
           release_name: "バージョン ${{ needs.bump_version.outputs.new_version }} リリース"
           draft: false
