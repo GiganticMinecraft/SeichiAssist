@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification.bukkit.actions
 
 import cats.effect.{IO, Sync}
-import cats.implicits.catsSyntaxFlatMapOps
 import com.github.unchama.generic.Diff
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
