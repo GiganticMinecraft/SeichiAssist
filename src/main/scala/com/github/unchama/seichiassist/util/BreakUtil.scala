@@ -7,11 +7,7 @@ import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, Brea
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange._
-import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{
-  AssaultArmor,
-  DualBreak,
-  TrialBreak
-}
+import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{AssaultArmor, DualBreak, TrialBreak}
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.{Active, Disabled}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.CardinalDirection
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
@@ -492,6 +488,21 @@ object BreakUtil {
   }
 
   /**
+   * 重力値計算対象のブロックかどうかを判定します。
+   * 対象ブロック：以下のいずれかを満たす
+   *  - Material.isSolid == true になるブロック（ただし岩盤を除く）
+   *  - 液体ブロック（水,溶岩）
+   */
+  def isAffectedByGravity(material: Material): Boolean = {
+    material match {
+      case Material.BEDROCK                             => false
+      case m if MaterialSets.fluidMaterials.contains(m) => true
+      case m if m.isSolid                               => true
+      case _                                            => false
+    }
+  }
+
+  /**
    * @param player
    *   破壊プレイヤー
    * @param block
@@ -570,7 +581,7 @@ object BreakUtil {
 
     // 3. 重力値計算
     /**
-     * MaterialSets.transparentMaterialsに入っているMaterialを持つブロックが
+     * isAffectedByGravityを満たさないMaterialを持つブロックが
      * この回数以上連続したとき、重力値のカウントをストップする。
      */
     val surfaceThreshold = 3
@@ -595,8 +606,8 @@ object BreakUtil {
        * 確認対象ブロック
        */
       val target = block.getRelative(0, blockRelativeHeight + offsetY, 0)
-      // 対象ブロックが地上判定ブロックの場合
-      if (MaterialSets.transparentMaterials.contains(target.getType)) {
+      // 対象ブロックが重力値に影響を与えるブロックではない場合
+      if (!isAffectedByGravity(target.getType)) {
         // カウンタを加算
         surfaceCandidateCount += 1
         if (surfaceCandidateCount >= surfaceThreshold) {
