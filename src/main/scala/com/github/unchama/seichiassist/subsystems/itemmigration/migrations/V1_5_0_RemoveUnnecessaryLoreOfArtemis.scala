@@ -33,7 +33,6 @@ object V1_5_0_RemoveUnnecessaryLoreOfArtemis {
     val meta = clone.getItemMeta.tap { meta =>
       import meta._
       setLore {
-        // TODO: 通常ガチャで排出されるARTEMISは「ChatColor.RESET」が含まれていると思われるが、それ以外は含まれていない
         if (isUnbreakable) getLore.asScala.filter(_ != removedLore).asJava
         else getLore
       }
