@@ -31,11 +31,7 @@ object V1_5_0_RemoveUnnecessaryLoreOfArtemis {
 
     val clone = itemStack.clone()
     val meta = clone.getItemMeta.tap { meta =>
-      import meta._
-      setLore {
-        if (isUnbreakable) getLore.asScala.filter(_ != removedLore).asJava
-        else getLore
-      }
+      meta.setLore(meta.getLore.asScala.filter(_ != removedLore).asJava)
     }
     clone.tap(_.setItemMeta(meta))
   }
