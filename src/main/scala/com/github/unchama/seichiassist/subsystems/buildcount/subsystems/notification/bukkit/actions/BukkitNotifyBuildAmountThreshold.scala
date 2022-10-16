@@ -15,7 +15,7 @@ import org.bukkit.entity.Player
 object BukkitNotifyBuildAmountThreshold {
 
   import PlayerSendable.forString
-  import cats.implicits.catsSyntaxOption
+  import cats.implicits._
 
   // TODO: BukkitNotifyLevelUpなのにdiffの展開やいつメッセージを出すかなどを扱うべきでない。
   def apply[F[_]: Sync: DiscordNotificationAPI]: NotifyBuildAmountThreshold[F, Player] = {
