@@ -226,7 +226,6 @@ object PlayerDataLoading {
         playerData.totalexp = rs.getInt("totalexp")
 
         // 実績、二つ名の情報
-        playerData.p_vote_forT = rs.getInt("p_vote")
         playerData.giveachvNo = rs.getInt("giveachvNo")
         playerData.achievePoint = AchievementPoint(
           rs.getInt("achvPointMAX"),
