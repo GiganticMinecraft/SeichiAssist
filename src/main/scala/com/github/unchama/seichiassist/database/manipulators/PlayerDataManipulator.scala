@@ -243,7 +243,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       gateway.executeQuery(command).recordIteration { lrs =>
         val rankdata = new RankData()
         rankdata.name = lrs.getString("name")
-        rankdata.playtick = lrs.getLong("playtick")
+        rankdata.playtick = lrs.getInt("playtick")
         ranklist += rankdata
       }
     } catch {

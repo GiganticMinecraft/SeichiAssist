@@ -220,7 +220,7 @@ object PlayerDataLoading {
 
         playerData.unclaimedApologyItems = rs.getInt("numofsorryforbug")
         playerData.regionCount = rs.getInt("rgnum")
-        playerData.playTick = rs.getLong("playtick")
+        playerData.playTick = rs.getInt("playtick")
         playerData.p_givenvote = rs.getInt("p_givenvote")
         playerData.effectPoint = rs.getInt("effectpoint")
 
