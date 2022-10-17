@@ -200,6 +200,9 @@ object MaterialSets {
   val gravityMaterials: Set[Material] =
     Set(Material.LOG, Material.LOG_2, Material.LEAVES, Material.LEAVES_2)
 
+  val fluidMaterials: Set[Material] =
+    Set(Material.WATER, Material.LAVA)
+
   trait MaterialOf[S <: Set[Material]]
 
   type ItemStackOf[S <: Set[Material]] = ItemStack @@ MaterialOf[S]

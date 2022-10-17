@@ -11,7 +11,7 @@ on:
       - .scalafix.conf
       - .scalafmt.conf
       - project/*
-      - .github/worlflows/*.yml
+      - .github/workflows/*.yml
       
   pull_request:
     branches:
@@ -22,7 +22,7 @@ on:
       - .scalafix.conf
       - .scalafmt.conf
       - project/*
-      - .github/worlflows/*.yml
+      - .github/workflows/*.yml
 
 jobs:
   build_test_and_upload:
@@ -32,12 +32,12 @@ jobs:
     container: ghcr.io/giganticminecraft/seichiassist-builder:1a64049
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: 'recursive'
 
       - name: Prepare build dependencies cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-build-dependencies
           cache-version: v-4
@@ -61,7 +61,7 @@ jobs:
 
       - name: Prepare build cache
         if: github.ref != 'refs/heads/master'
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-build
           cache-version: v-4
@@ -106,7 +106,7 @@ jobs:
         run: sbt assembly
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: SeichiAssist-build
           path: target/build/SeichiAssist.jar

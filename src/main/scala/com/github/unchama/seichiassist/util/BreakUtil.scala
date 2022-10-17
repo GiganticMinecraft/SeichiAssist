@@ -492,6 +492,21 @@ object BreakUtil {
   }
 
   /**
+   * 重力値計算対象のブロックかどうかを判定します。
+   * 対象ブロック：以下のいずれかを満たす
+   *  - Material.isSolid == true になるブロック（ただし岩盤を除く）
+   *  - 液体ブロック（水,溶岩）
+   * ref: [バージョン1.12.x時の最新記事アーカイブ](https://minecraft.fandom.com/wiki/Solid_block?oldid=1132868)
+   */
+  private def isAffectedByGravity(material: Material): Boolean = {
+    material match {
+      case Material.BEDROCK                                          => false
+      case m if MaterialSets.fluidMaterials.contains(m) || m.isSolid => true
+      case _                                                         => false
+    }
+  }
+
+  /**
    * @param player
    *   破壊プレイヤー
    * @param block
@@ -517,7 +532,7 @@ object BreakUtil {
     /**
      * 重力値の計算を始めるY座標
      */
-    val startY: Int =
+    val blockRelativeHeight: Int =
       if (!isAssault) {
         val usageMode = skillState.usageMode
         if (usageMode != Disabled) {
@@ -570,14 +585,12 @@ object BreakUtil {
 
     // 3. 重力値計算
     /**
-     * OPENHEIGHTマス以上のtransparentmateriallistブロックの連続により、地上判定とする。
+     * isAffectedByGravityを満たさないMaterialを持つブロックが
+     * この回数以上連続したとき、重力値のカウントをストップする。
      */
-    val OPENHEIGHT = 3
+    val surfaceThreshold = 3
 
-    /**
-     * OPENHEIGHTに達したかの計測カウンタ
-     */
-    var openCount = 0
+    var surfaceCandidateCount = 0
 
     /**
      * 重力値
@@ -587,25 +600,27 @@ object BreakUtil {
     /**
      * 最大ループ数
      */
-    val YMAX = if (player.getWorld.getEnvironment == Environment.NETHER) 121 else 255
+    val maxY = if (player.getWorld.getEnvironment == Environment.NETHER) 121 else 255
+    val maxOffsetY = maxY - blockRelativeHeight
 
-    for (checkPointer <- 1 until YMAX) {
+    // NOTE: `1 until 0`など、`x > y`が満たされる`x until y`はイテレーションが行われない
+    for (offsetY <- 1 to maxOffsetY) {
 
       /**
        * 確認対象ブロック
        */
-      val target = block.getRelative(0, startY + checkPointer, 0)
-      // 対象ブロックが地上判定ブロックの場合
-      if (MaterialSets.transparentMaterials.contains(target.getType)) {
+      val target = block.getRelative(0, blockRelativeHeight + offsetY, 0)
+      // 対象ブロックが重力値に影響を与えるブロックではない場合
+      if (!isAffectedByGravity(target.getType)) {
         // カウンタを加算
-        openCount += 1
-        if (openCount >= OPENHEIGHT) {
+        surfaceCandidateCount += 1
+        if (surfaceCandidateCount >= surfaceThreshold) {
           return gravity
         }
       } else {
         // カウンタをクリア
-        openCount = 0
-        // 重力値を加算(水をは2倍にする)
+        surfaceCandidateCount = 0
+        // 重力値を加算(水は2倍にする)
         gravity += (if (target.getType == Material.WATER) 2 else 1)
       }
     }
