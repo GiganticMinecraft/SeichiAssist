@@ -90,7 +90,8 @@ jobs:
 
       - name: Generate Changelog
         id: generate_changelog
-        uses: nblagoev/pull-release-notes-action@v1
+        # see https://github.com/GiganticMinecraft/SeichiAssist/issues/1686
+        uses: nblagoev/pull-release-notes-action@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
