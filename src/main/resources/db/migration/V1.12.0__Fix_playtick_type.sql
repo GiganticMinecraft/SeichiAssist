@@ -1,4 +1,4 @@
 use seichiassist;
 
--- 1.10.0 の alter table で default 0 が吹き飛んでいた
+-- 接続時間がオーバーフローしているプレイヤーがいるのでbigintに
 alter table playerdata modify playtick bigint default 0;
