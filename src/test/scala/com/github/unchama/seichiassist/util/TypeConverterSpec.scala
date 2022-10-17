@@ -5,7 +5,7 @@ import org.scalatest.wordspec.AnyWordSpec
 class TypeConverterSpec extends AnyWordSpec {
   "toSecond" should {
     "convert ticks to second" in {
-      assert(40 == TypeConverter.toSecond(800))
+      assert(40 == TypeConverter.toSecond(800L))
     }
   }
 

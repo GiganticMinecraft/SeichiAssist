@@ -10,10 +10,6 @@ public final class TypeConverter {
         return _tick / 20;
     }
 
-    public static long toSecond(int _tick) {
-        return toSecond((long) _tick);
-    }
-
     public static String toTimeString(long seconds) {
         final long totalMinutes = seconds / 60;
         final long hours = totalMinutes / 60;
