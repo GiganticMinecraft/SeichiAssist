@@ -11,9 +11,9 @@ public final class TypeConverter {
     }
 
     public static String toTimeString(long seconds) {
-        final long totalMinutes = seconds / 60;
-        final long hours = totalMinutes / 60;
-        final long minutes = totalMinutes % 60;
+        final long totalMinutes = seconds / 60L;
+        final long hours = totalMinutes / 60L;
+        final long minutes = totalMinutes % 60L;
 
         return (hours == 0 ? "" : hours + "時間") + minutes + "分";
     }
