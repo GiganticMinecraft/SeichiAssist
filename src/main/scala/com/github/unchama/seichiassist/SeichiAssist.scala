@@ -385,7 +385,8 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val sharedInventorySystem: subsystems.sharedinventory.System[IO] =
     subsystems.sharedinventory.System.wired[IO]
 
-  private lazy val voteSystem: subsystems.vote.System[IO, Player] =
+  // TODO: これはprivateであるべきだが、Achievementシステムが再実装されるまでやむを得ずpublicにする
+  lazy val voteSystem: subsystems.vote.System[IO, Player] =
     subsystems.vote.System.wired[IO]
 
   private lazy val fairySystem: subsystems.vote.subsystems.fairy.System[IO, SyncIO, Player] = {
