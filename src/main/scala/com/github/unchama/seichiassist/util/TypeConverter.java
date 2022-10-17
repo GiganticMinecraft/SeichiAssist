@@ -7,7 +7,6 @@ public final class TypeConverter {
     }
 
     public static long toSecond(long _tick) {
-        return _tick / 20;
     }
 
     public static String toTimeString(long seconds) {
