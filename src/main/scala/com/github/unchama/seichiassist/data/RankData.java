@@ -7,7 +7,7 @@ public class RankData {
     /* 整地量 */
     public final long totalbreaknum;
     /* プレイ時間 (ティック) */
-    public long playtick;
+    public int playtick;
     /* 投票回数 */
     public int p_vote;
     /* ??? */

@@ -85,7 +85,7 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
 
   var minestack = new MineStack()
   // プレイ時間
-  var playTick = 0L
+  var playTick = 0
   // 合計経験値
   var totalexp = 0L
   // 特典受け取り済み投票数
@@ -129,8 +129,8 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
   var giganticBerserk: GiganticBerserk = GiganticBerserk()
   // ハーフブロック破壊抑制用
 
-  // プレイ時間の差分を計算するための変数
-  private var totalPlayTick: Option[Long] = None
+  // プレイ時間差分計算用int
+  private var totalPlayTick: Option[Int] = None
 
   // region calculated
   // TODO many properties here may be inlined and deleted
@@ -302,7 +302,7 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
   // 総プレイ時間を更新する
   def updatePlayTick(): Unit = {
     // WARN: 1分毎にupdatePlayTickが呼び出されるというコンテクストに依存している.
-    val nowTotalPlayTick = player.getStatistic(Statistic.PLAY_ONE_TICK).toLong
+    val nowTotalPlayTick = player.getStatistic(Statistic.PLAY_ONE_TICK)
     val diff = nowTotalPlayTick - totalPlayTick.getOrElse(nowTotalPlayTick)
 
     totalPlayTick = Some(nowTotalPlayTick)
