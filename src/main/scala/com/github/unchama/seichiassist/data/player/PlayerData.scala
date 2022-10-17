@@ -129,7 +129,7 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
   var giganticBerserk: GiganticBerserk = GiganticBerserk()
   // ハーフブロック破壊抑制用
 
-  // プレイ時間差分計算用int
+  // プレイ時間の差分を計算するための変数
   private var totalPlayTick: Option[Long] = None
 
   // region calculated
