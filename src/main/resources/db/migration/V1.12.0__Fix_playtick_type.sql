@@ -1,4 +1,4 @@
-use seichiassist;
+USE seichiassist;
 
 -- 接続時間がオーバーフローしているプレイヤーがいるのでbigintに
 ALTER TABLE playerdata MODIFY playtick BIGINT DEFAULT 0;
