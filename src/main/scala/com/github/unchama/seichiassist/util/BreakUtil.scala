@@ -496,13 +496,13 @@ object BreakUtil {
    * 対象ブロック：以下のいずれかを満たす
    *  - Material.isSolid == true になるブロック（ただし岩盤を除く）
    *  - 液体ブロック（水,溶岩）
+   * ref: [バージョン1.12.x時の最新記事アーカイブ](https://minecraft.fandom.com/wiki/Solid_block?oldid=1132868)
    */
-  def isAffectedByGravity(material: Material): Boolean = {
+  private def isAffectedByGravity(material: Material): Boolean = {
     material match {
-      case Material.BEDROCK                             => false
-      case m if MaterialSets.fluidMaterials.contains(m) => true
-      case m if m.isSolid                               => true
-      case _                                            => false
+      case Material.BEDROCK                                          => false
+      case m if MaterialSets.fluidMaterials.contains(m) || m.isSolid => true
+      case _                                                         => false
     }
   }
 
