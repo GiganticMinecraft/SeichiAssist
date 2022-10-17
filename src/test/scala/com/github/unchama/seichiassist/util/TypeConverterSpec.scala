@@ -11,7 +11,7 @@ class TypeConverterSpec extends AnyWordSpec {
 
   "toTimeString" should {
     "convert second to time string" in {
-      assert("16分" == TypeConverter.toTimeString(987))
+      assert("16分" == TypeConverter.toTimeString(987L))
     }
   }
 }
