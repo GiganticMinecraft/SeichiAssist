@@ -19,7 +19,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.{
 }
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.command.GachaCommand
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.listeners.PlayerPullGachaListener
-import com.github.unchama.seichiassist.subsystems.gacha.domain.{BukkitLotteryOfGachaItems, CanBeSignedAsGachaPrize, GachaPrize, GachaPrizeId, GachaPrizeListPersistence, StaticGachaPrizeFactory}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.{LotteryOfGachaItems, CanBeSignedAsGachaPrize, GachaPrize, GachaPrizeId, GachaPrizeListPersistence, StaticGachaPrizeFactory}
 import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.JdbcGachaPrizeListPersistence
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketFromAdminTeamRepository
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.infrastructure.JdbcGachaTicketFromAdminTeamRepository
@@ -48,8 +48,8 @@ object System {
       BukkitItemStackCanBeSignedAsGachaPrize
     implicit val staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack] =
       BukkitStaticGachaPrizeFactory
-    implicit val lotteryOfGachaItems: BukkitLotteryOfGachaItems[F, ItemStack] =
-      new BukkitLotteryOfGachaItems[F, ItemStack]
+    implicit val lotteryOfGachaItems: LotteryOfGachaItems[F, ItemStack] =
+      new LotteryOfGachaItems[F, ItemStack]
 
     val system: System[F] = new System[F] {
       override implicit val api: GachaAPI[F, ItemStack, Player] =

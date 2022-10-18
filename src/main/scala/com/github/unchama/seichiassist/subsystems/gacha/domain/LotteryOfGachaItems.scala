@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.application.actions.Lott
 
 import scala.annotation.tailrec
 
-class BukkitLotteryOfGachaItems[F[_]: Sync, ItemStack](
+class LotteryOfGachaItems[F[_]: Sync, ItemStack](
   implicit staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack]
 ) extends LotteryOfGachaItems[F, ItemStack] {
 
