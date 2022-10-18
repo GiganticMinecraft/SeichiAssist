@@ -7,13 +7,15 @@ import com.github.unchama.seichiassist.subsystems.gacha.bukkit.BukkitStaticGacha
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   GachaPrize,
   GachaPrizeId,
-  GachaProbability
+  GachaProbability,
+  StaticGachaPrizeFactory
 }
-import org.bukkit.inventory.ItemStack
 
 import scala.annotation.tailrec
 
-class BukkitLotteryOfGachaItems[F[_]: Sync] extends LotteryOfGachaItems[F, ItemStack] {
+class BukkitLotteryOfGachaItems[F[_]: Sync, ItemStack](
+  staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack]
+) extends LotteryOfGachaItems[F, ItemStack] {
 
   import cats.implicits._
 
@@ -45,7 +47,7 @@ class BukkitLotteryOfGachaItems[F[_]: Sync] extends LotteryOfGachaItems[F, ItemS
   ): GachaPrize[ItemStack] = {
     if (gachaPrizes.isEmpty) {
       GachaPrize(
-        BukkitStaticGachaPrizeFactory.gachaRingo,
+        staticGachaPrizeFactory.gachaRingo,
         GachaProbability(1.0),
         signOwner = false,
         GachaPrizeId(0)
