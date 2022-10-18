@@ -11,7 +11,7 @@ import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.GachaSkullData
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.BukkitGachaSkullData
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.{InventoryOperations, TimeUtils}
@@ -217,7 +217,7 @@ class PlayerInventoryListener(
           // ここに投票1回につきプレゼントする特典の処理を書く
 
           // ガチャ券プレゼント処理
-          val skull = GachaSkullData.gachaForVoting
+          val skull = BukkitGachaSkullData.gachaForVoting
           for { _ <- 0 to 9 } {
             if (
               player.getInventory.contains(skull) || !InventoryOperations.isPlayerInventoryFull(

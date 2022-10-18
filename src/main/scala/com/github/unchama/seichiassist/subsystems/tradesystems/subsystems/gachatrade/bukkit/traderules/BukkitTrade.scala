@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.traderules
 
 import com.github.unchama.generic.ListExtra
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.GachaSkullData
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.BukkitGachaSkullData
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity._
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
@@ -48,9 +48,9 @@ class BukkitTrade(owner: String, gachaPrizeTable: Vector[GachaPrize[ItemStack]])
      */
     TradeResult[ItemStack](
       tradable.map {
-        case BigOrRegular.Big => TradeSuccessResult(GachaSkullData.gachaForExchanging, 12)
+        case BigOrRegular.Big => TradeSuccessResult(BukkitGachaSkullData.gachaForExchanging, 12)
         case BigOrRegular.Regular =>
-          TradeSuccessResult(GachaSkullData.gachaForExchanging, 3)
+          TradeSuccessResult(BukkitGachaSkullData.gachaForExchanging, 3)
       },
       nonTradable
     )

@@ -5,7 +5,7 @@ import org.bukkit.ChatColor._
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
-object GachaSkullData {
+object BukkitGachaSkullData {
 
   import scala.jdk.CollectionConverters._
   import scala.util.chaining._
