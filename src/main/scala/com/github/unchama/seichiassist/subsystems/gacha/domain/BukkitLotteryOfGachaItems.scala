@@ -1,9 +1,8 @@
-package com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions
+package com.github.unchama.seichiassist.subsystems.gacha.domain
 
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.LotteryOfGachaItems
-import com.github.unchama.seichiassist.subsystems.gacha.domain.{GachaPrize, GachaPrizeId, GachaProbability, StaticGachaPrizeFactory}
 
 import scala.annotation.tailrec
 
