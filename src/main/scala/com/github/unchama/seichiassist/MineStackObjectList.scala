@@ -12,7 +12,7 @@ import com.github.unchama.seichiassist.minestack.{
   MineStackObjectCategory,
   MineStackObjectWithColorVariants
 }
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.BukkitStaticGachaPrizeFactory
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.BukkitStaticGachaPrizeFactory
 import com.github.unchama.seichiassist.util.ItemInformation.itemStackContainsOwnerName
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack

@@ -4,7 +4,7 @@ import cats.effect.IO
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.BukkitStaticGachaPrizeFactory.getMaxRingo
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.BukkitStaticGachaPrizeFactory.getMaxRingo
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary.{
   ANNIVERSARY_COUNT,
   blogArticleUrl,

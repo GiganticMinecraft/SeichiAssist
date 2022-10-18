@@ -9,15 +9,13 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.minecraft.bukkit.algebra.BukkitItemStackSerializeAndDeserialize
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.{
-  BukkitItemStackCanBeSignedAsGachaPrize,
-  BukkitStaticGachaPrizeFactory
-}
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.BukkitItemStackCanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.{
   BukkitDrawGacha,
   BukkitGrantGachaPrize
 }
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.command.GachaCommand
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.BukkitStaticGachaPrizeFactory
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.listeners.PlayerPullGachaListener
 import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{GachaPrize, GachaPrizeId}
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{LotteryOfGachaItems, CanBeSignedAsGachaPrize, GachaPrizeListPersistence, StaticGachaPrizeFactory}

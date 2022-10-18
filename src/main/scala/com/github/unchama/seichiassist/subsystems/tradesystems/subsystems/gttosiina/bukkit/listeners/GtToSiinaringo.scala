@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttos
 import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.BukkitStaticGachaPrizeFactory
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.BukkitStaticGachaPrizeFactory
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.GachaPrize
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.bukkit.traderules.BukkitTrade
