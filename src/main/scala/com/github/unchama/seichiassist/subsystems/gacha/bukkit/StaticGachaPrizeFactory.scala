@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaprizefactory.bukkit
+package com.github.unchama.seichiassist.subsystems.gacha.bukkit
 
 import org.bukkit.ChatColor._
 import org.bukkit.Material

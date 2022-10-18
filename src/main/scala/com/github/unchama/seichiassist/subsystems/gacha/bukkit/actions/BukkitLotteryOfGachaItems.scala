@@ -3,12 +3,12 @@ package com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.LotteryOfGachaItems
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.StaticGachaPrizeFactory
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   GachaPrize,
   GachaPrizeId,
   GachaProbability
 }
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaprizefactory.bukkit.StaticGachaPrizeFactory
 import org.bukkit.inventory.ItemStack
 
 import scala.annotation.tailrec

@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.commands
 import cats.effect.IO
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaprizefactory.bukkit.StaticGachaPrizeFactory
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.StaticGachaPrizeFactory
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
