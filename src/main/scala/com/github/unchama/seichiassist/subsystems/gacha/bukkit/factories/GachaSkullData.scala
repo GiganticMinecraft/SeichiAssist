@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaskull.bukkit
+package com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories
 
 import com.github.unchama.seichiassist.util.ItemMetaFactory
 import org.bukkit.ChatColor._

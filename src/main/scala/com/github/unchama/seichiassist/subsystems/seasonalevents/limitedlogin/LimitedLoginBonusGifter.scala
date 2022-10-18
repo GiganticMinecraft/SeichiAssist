@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin
 
 import cats.effect.IO
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaskull.bukkit.GachaSkullData
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.GachaSkullData
 import com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin.LimitedLoginEvent.{
   START_DATE,
   isInEvent
