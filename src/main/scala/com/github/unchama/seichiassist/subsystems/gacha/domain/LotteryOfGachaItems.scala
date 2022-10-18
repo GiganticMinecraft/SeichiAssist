@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.gacha.domain
 
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
-import com.github.unchama.seichiassist.subsystems.gacha.application.actions.LotteryOfGachaItems
+import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{GachaPrize, GachaPrizeId}
 
 import scala.annotation.tailrec
 
@@ -39,7 +39,7 @@ class LotteryOfGachaItems[F[_]: Sync, ItemStack](
     gachaPrizes: Vector[GachaPrize[ItemStack]]
   ): GachaPrize[ItemStack] = {
     if (gachaPrizes.isEmpty) {
-      GachaPrize(
+      gachaprize.GachaPrize(
         staticGachaPrizeFactory.gachaRingo,
         GachaProbability(1.0),
         signOwner = false,

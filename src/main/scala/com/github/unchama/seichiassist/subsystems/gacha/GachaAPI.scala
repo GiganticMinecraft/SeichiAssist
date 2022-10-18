@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.gacha
 
 import cats.Functor
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.domain.{GachaPrize, GachaPrizeId}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{GachaPrize, GachaPrizeId}
 
 trait GachaDrawAPI[F[_], Player] {
 

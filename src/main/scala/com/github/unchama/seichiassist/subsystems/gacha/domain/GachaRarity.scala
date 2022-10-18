@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gacha.domain
 
+import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.GachaPrize
+
 object GachaRarity {
 
   import enumeratum._

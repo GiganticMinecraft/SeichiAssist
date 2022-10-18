@@ -1,4 +1,6 @@
-package com.github.unchama.seichiassist.subsystems.gacha.domain
+package com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize
+
+import com.github.unchama.seichiassist.subsystems.gacha.domain.{CanBeSignedAsGachaPrize, GachaProbability}
 
 /**
  * @param itemStack ガチャで排出されるアイテム。

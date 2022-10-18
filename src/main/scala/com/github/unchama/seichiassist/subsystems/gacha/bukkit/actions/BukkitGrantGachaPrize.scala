@@ -5,9 +5,9 @@ import cats.data.Kleisli
 import cats.effect.Sync
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
+import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.GachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   CanBeSignedAsGachaPrize,
-  GachaPrize,
   GrantState
 }
 import com.github.unchama.seichiassist.util.{BreakUtil, InventoryOperations}
