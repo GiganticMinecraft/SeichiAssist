@@ -26,7 +26,7 @@ class BukkitTrade(owner: String, gachaPrizeTable: Vector[GachaPrize[ItemStack]])
       .map(gachaPrize => canBeSignedAsGachaPrize.signWith(owner)(gachaPrize))
 
     val nonTradableItems =
-      contents.filter(itemStack => giganticItemStacks.exists(_.isSimilar(itemStack)))
+      contents.filterNot(itemStack => giganticItemStacks.exists(_.isSimilar(itemStack)))
 
     TradeResult[ItemStack](
       contents
