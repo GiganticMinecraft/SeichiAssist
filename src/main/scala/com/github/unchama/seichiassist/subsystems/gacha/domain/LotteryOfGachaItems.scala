@@ -2,13 +2,16 @@ package com.github.unchama.seichiassist.subsystems.gacha.domain
 
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
-import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{GachaPrize, GachaPrizeId}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{
+  GachaPrize,
+  GachaPrizeId
+}
 
 import scala.annotation.tailrec
 
 class LotteryOfGachaItems[F[_]: Sync, ItemStack](
   implicit staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack]
-) extends LotteryOfGachaItems[F, ItemStack] {
+) {
 
   import cats.implicits._
 
