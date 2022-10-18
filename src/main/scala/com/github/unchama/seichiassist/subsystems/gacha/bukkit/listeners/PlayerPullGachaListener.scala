@@ -84,7 +84,7 @@ class PlayerPullGachaListener[F[_]: ConcurrentEffect: OnMinecraftServerThread](
     }
 
     // ガチャの実行
-    gachaAPI.drawGacha(player, count).toIO.unsafeRunSync()
+    gachaAPI.drawGacha(player, count).toIO.unsafeRunAsyncAndForget()
   }
 
 }
