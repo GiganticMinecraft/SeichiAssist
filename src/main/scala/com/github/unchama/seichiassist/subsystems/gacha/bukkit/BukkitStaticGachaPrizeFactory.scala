@@ -6,7 +6,7 @@ import org.bukkit.inventory.{ItemFlag, ItemStack}
 
 import java.util
 
-object StaticGachaPrizeFactory {
+object BukkitStaticGachaPrizeFactory {
 
   /**
    * がちゃりんごの名前

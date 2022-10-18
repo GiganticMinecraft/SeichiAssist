@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.LotteryOfGachaItems
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.StaticGachaPrizeFactory
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.BukkitStaticGachaPrizeFactory
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   GachaPrize,
   GachaPrizeId,
@@ -45,7 +45,7 @@ class BukkitLotteryOfGachaItems[F[_]: Sync] extends LotteryOfGachaItems[F, ItemS
   ): GachaPrize[ItemStack] = {
     if (gachaPrizes.isEmpty) {
       GachaPrize(
-        StaticGachaPrizeFactory.gachaRingo,
+        BukkitStaticGachaPrizeFactory.gachaRingo,
         GachaProbability(1.0),
         signOwner = false,
         GachaPrizeId(0)

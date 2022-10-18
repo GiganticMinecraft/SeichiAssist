@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.bukkit.traderules
 
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.StaticGachaPrizeFactory
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.BukkitStaticGachaPrizeFactory
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity.Gigantic
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
@@ -40,7 +40,7 @@ class BukkitTrade(owner: String, gachaPrizeTable: Vector[GachaPrize[ItemStack]])
               ことが前提となっている。
            */
           TradeSuccessResult(
-            StaticGachaPrizeFactory.getMaxRingo(owner),
+            BukkitStaticGachaPrizeFactory.getMaxRingo(owner),
             SeichiAssist.seichiAssistConfig.rateGiganticToRingo
           )
         ),
