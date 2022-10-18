@@ -1,12 +1,13 @@
 package com.github.unchama.seichiassist.subsystems.gacha.bukkit
 
+import com.github.unchama.seichiassist.subsystems.gacha.domain.StaticGachaPrizeFactory
 import org.bukkit.ChatColor._
 import org.bukkit.Material
 import org.bukkit.inventory.{ItemFlag, ItemStack}
 
 import java.util
 
-object BukkitStaticGachaPrizeFactory {
+object BukkitStaticGachaPrizeFactory extends StaticGachaPrizeFactory[ItemStack] {
 
   /**
    * がちゃりんごの名前
@@ -23,21 +24,16 @@ object BukkitStaticGachaPrizeFactory {
   import scala.jdk.CollectionConverters._
   import scala.util.chaining.scalaUtilChainingOps
 
-  /**
-   * がちゃりんごの[[ItemStack]]を返す
-   */
-  val gachaRingo: ItemStack = new ItemStack(Material.GOLDEN_APPLE, 1).tap { itemStack =>
-    import itemStack._
-    val meta = getItemMeta
-    meta.setDisplayName(s"$GOLD${BOLD}がちゃりんご")
-    meta.setLore(gachaRingoLore)
-    setItemMeta(meta)
+  override val gachaRingo: ItemStack = new ItemStack(Material.GOLDEN_APPLE, 1).tap {
+    itemStack =>
+      import itemStack._
+      val meta = getItemMeta
+      meta.setDisplayName(s"$GOLD${BOLD}がちゃりんご")
+      meta.setLore(gachaRingoLore)
+      setItemMeta(meta)
   }
 
-  /**
-   * 所有者名を渡して椎名林檎の[[ItemStack]]を返す
-   */
-  val getMaxRingo: String => ItemStack = (name: String) =>
+  override val getMaxRingo: String => ItemStack = (name: String) =>
     new ItemStack(Material.GOLDEN_APPLE, 1).tap { itemStack =>
       import itemStack._
       setDurability(1.toShort)
@@ -54,13 +50,8 @@ object BukkitStaticGachaPrizeFactory {
       setItemMeta(meta)
     }
 
-  /**
-   * 死神の鎌の[[ItemStack]]を返す
-   * TODO: これはここに書かれるべきではなさそう？
-   *  ガチャアイテムとして排出されていないため。
-   */
-  val mineHeadItem: ItemStack = new ItemStack(Material.CARROT_STICK, 1, 1.toShort).tap {
-    itemStack =>
+  override val mineHeadItem: ItemStack =
+    new ItemStack(Material.CARROT_STICK, 1, 1.toShort).tap { itemStack =>
       import itemStack._
       val meta = getItemMeta
       meta.setDisplayName(s"${DARK_RED}死神の鎌")
@@ -76,6 +67,6 @@ object BukkitStaticGachaPrizeFactory {
       meta.setUnbreakable(true)
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
       setItemMeta(meta)
-  }
+    }
 
 }
