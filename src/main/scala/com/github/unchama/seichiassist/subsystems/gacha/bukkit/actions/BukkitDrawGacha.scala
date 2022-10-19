@@ -3,14 +3,16 @@ package com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions
 import cats.effect.{IO, Sync}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
-import com.github.unchama.seichiassist.subsystems.gacha.application.actions.DrawGacha
+import com.github.unchama.seichiassist.subsystems.gacha.application.actions.{
+  DrawGacha,
+  GrantGachaPrize
+}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity._
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
-  CanBeSignedAsGachaPrize,
   GlobalGachaPrizeList,
   GrantState,
   LotteryOfGachaItems
 }
-import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity._
 import com.github.unchama.seichiassist.util.SendMessageEffect.sendMessageToEveryone
 import com.github.unchama.seichiassist.util._
 import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
@@ -23,7 +25,7 @@ class BukkitDrawGacha[F[_]: Sync: OnMinecraftServerThread](
   gachaPrizesRepository: GlobalGachaPrizeList[F, ItemStack]
 )(
   implicit lotteryOfGachaItems: LotteryOfGachaItems[F, ItemStack],
-  canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
+  grantGachaPrize: GrantGachaPrize[F, ItemStack]
 ) extends DrawGacha[F, Player] {
 
   import PlayerSendable._
@@ -35,7 +37,7 @@ class BukkitDrawGacha[F[_]: Sync: OnMinecraftServerThread](
     for {
       gachaPrizes <- lotteryOfGachaItems.runLottery(count, gachaPrizesRepository)
       states <- gachaPrizes.traverse(gachaPrize =>
-        new BukkitGrantGachaPrize().grantGachaPrize(gachaPrize)(player)
+        grantGachaPrize.grantGachaPrize(gachaPrize)(player)
       )
       _ <- Sync[F].delay {
         (gachaPrizes zip states).foreach {

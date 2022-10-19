@@ -59,6 +59,8 @@ object System {
       BukkitStaticGachaPrizeFactory
     implicit val _lotteryOfGachaItems: LotteryOfGachaItems[F, ItemStack] =
       new LotteryOfGachaItems[F, ItemStack]
+    implicit val _grantGachaPrize: GrantGachaPrize[F, ItemStack] =
+      new BukkitGrantGachaPrize[F]
 
     val system: F[System[F]] = {
       for {
