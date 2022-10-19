@@ -17,7 +17,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.BukkitGrantGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain._
 import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{GachaPrize, GachaPrizeId}
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{GachaTicketFromAdminTeamRepository, ReceiptResultOfGachaTicketFromAdminTeam}
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{GachaTicketAmount, GachaTicketFromAdminTeamRepository, ReceiptResultOfGachaTicketFromAdminTeam}
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
 import org.bukkit.ChatColor._
@@ -144,7 +144,7 @@ class GachaCommand[
         args.head.toString match {
           case "all" =>
             Kleisli
-              .liftF(gachaTicketPersistence.addToAllKnownPlayers(amount))
+              .liftF(gachaTicketPersistence.addToAllKnownPlayers(GachaTicketAmount(amount)))
               .flatMap(_ => MessageEffectF(s"${GREEN}全プレイヤーへガチャ券${amount}枚加算成功"))
           case value =>
             val uuidRegex =
