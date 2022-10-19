@@ -83,44 +83,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     supplier
   }
 
-  // 最新のnumofsorryforbug値を返してmysqlのnumofsorrybug値を初期化する処理
-  def givePlayerBug(player: Player): Int = {
-    val uuid = player.getUniqueId.toString
-    val numberToGrant = {
-      val command = s"select numofsorryforbug from $tableReference where uuid = '$uuid'"
-      val rawMaximum =
-        try {
-          gateway
-            .executeQuery(command)
-            .recordIteration {
-              _.getInt("numofsorryforbug")
-            }
-            .head
-        } catch {
-          case e: Exception =>
-            println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
-            e.printStackTrace()
-            player.sendMessage(RED.toString + "ガチャ券の受け取りに失敗しました")
-            return 0
-        }
-
-      Math.min(rawMaximum, 576)
-    }
-
-    {
-      val updateCommand =
-        s"update $tableReference " +
-          s"set numofsorryforbug = numofsorryforbug - $numberToGrant where uuid = '$uuid'"
-
-      if (gateway.executeUpdate(updateCommand) == ActionStatus.Fail) {
-        player.sendMessage(RED.toString + "ガチャ券の受け取りに失敗しました")
-        return 0
-      }
-    }
-
-    numberToGrant
-  }
-
   /**
    * 投票ポイントをインクリメントするメソッド。
    *
