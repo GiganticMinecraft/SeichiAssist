@@ -20,8 +20,9 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 class BukkitDrawGacha[F[_]: Sync: OnMinecraftServerThread](
+  gachaPrizesRepository: GlobalGachaPrizeList[F, ItemStack]
+)(
   implicit lotteryOfGachaItems: LotteryOfGachaItems[F, ItemStack],
-  gachaPrizesRepository: GlobalGachaPrizeList[F, ItemStack],
   canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
 ) extends DrawGacha[F, Player] {
 

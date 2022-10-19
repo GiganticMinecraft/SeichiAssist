@@ -60,54 +60,58 @@ object System {
     implicit val _lotteryOfGachaItems: LotteryOfGachaItems[F, ItemStack] =
       new LotteryOfGachaItems[F, ItemStack]
 
-    val system: System[F] = new System[F] {
-      override implicit val api: GachaAPI[F, ItemStack, Player] =
-        new GachaAPI[F, ItemStack, Player] {
+    val system: F[System[F]] = {
+      for {
+        gachaPrizesListReference <- Ref.of[F, Vector[GachaPrize[ItemStack]]](Vector.empty)
+      } yield {
+        new System[F] {
+          override implicit val api: GachaAPI[F, ItemStack, Player] =
+            new GachaAPI[F, ItemStack, Player] {
+              override protected implicit val F: Functor[F] = implicitly
 
-          override protected implicit val F: Functor[F] = implicitly
+              override def load: F[Unit] = _gachaPersistence.list.flatMap { gachaPrizes =>
+                gachaPrizesListReference.set(gachaPrizes)
+              }
 
-          override def load: F[Unit] = _gachaPersistence.list.flatMap { gachaPrizes =>
-            gachaPrizesListReference.set(gachaPrizes)
-          }
+              override def replace(gachaPrizesList: Vector[GachaPrize[ItemStack]]): F[Unit] =
+                gachaPrizesListReference.set(gachaPrizesList)
 
-          override def replace(gachaPrizesList: Vector[GachaPrize[ItemStack]]): F[Unit] =
-            gachaPrizesListReference.set(gachaPrizesList)
+              override def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Unit] =
+                gachaPrizesListReference.update { prizes =>
+                  prizes.filter(_.id == gachaPrizeId)
+                }
 
-          override def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Unit] =
-            gachaPrizesListReference.update { prizes => prizes.filter(_.id == gachaPrizeId) }
+              override def addGachaPrize(gachaPrize: GachaPrizeByGachaPrizeId): F[Unit] =
+                gachaPrizesListReference.update { prizes =>
+                  gachaPrize(
+                    GachaPrizeId(if (prizes.nonEmpty) prizes.map(_.id.id).max + 1 else 1)
+                  ) +: prizes
+                }
 
-          override def addGachaPrize(gachaPrize: GachaPrizeByGachaPrizeId): F[Unit] =
-            gachaPrizesListReference.update { prizes =>
-              gachaPrize(
-                GachaPrizeId(if (prizes.nonEmpty) prizes.map(_.id.id).max + 1 else 1)
-              ) +: prizes
+              override val grantGachaPrize: GrantGachaPrize[F, ItemStack] =
+                new BukkitGrantGachaPrize[F]
+
+              override def list: F[Vector[GachaPrize[ItemStack]]] = gachaPrizesListReference.get
+
+              override def drawGacha(player: Player, draws: Int): F[Unit] =
+                new BukkitDrawGacha[F](gachaPrizesListReference).draw(player, draws)
+
+              override def staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack] =
+                _staticGachaPrizeFactory
+
+              override def canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
+                _canBeSignedAsGachaPrize
             }
-
-          protected implicit val gachaPrizesListReference
-            : Ref[F, Vector[GachaPrize[ItemStack]]] =
-            Ref.unsafe[F, Vector[GachaPrize[ItemStack]]](Vector.empty)
-
-          override val grantGachaPrize: GrantGachaPrize[F, ItemStack] =
-            new BukkitGrantGachaPrize[F]
-
-          override def list: F[Vector[GachaPrize[ItemStack]]] = gachaPrizesListReference.get
-
-          override def drawGacha(player: Player, draws: Int): F[Unit] =
-            new BukkitDrawGacha[F].draw(player, draws)
-
-          override def staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack] =
-            _staticGachaPrizeFactory
-
-          override def canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
-            _canBeSignedAsGachaPrize
+          override val commands: Map[String, TabExecutor] = Map(
+            "gacha" -> new GachaCommand[F]().executor
+          )
+          override val listeners: Seq[Listener] = Seq(new PlayerPullGachaListener[F]())
         }
-      override val commands: Map[String, TabExecutor] = Map(
-        "gacha" -> new GachaCommand[F]().executor
-      )
-      override val listeners: Seq[Listener] = Seq(new PlayerPullGachaListener[F]())
+      }
     }
 
     for {
+      system <- system
       _ <- system.api.load
     } yield system
   }
