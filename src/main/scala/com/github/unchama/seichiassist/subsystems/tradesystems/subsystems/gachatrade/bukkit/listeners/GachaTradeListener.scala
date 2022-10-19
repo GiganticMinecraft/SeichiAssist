@@ -56,7 +56,7 @@ class GachaTradeListener[F[_]: ConcurrentEffect](
           .fill(tradeAmount)(skull): _*
       )
       .apply(player)
-      .unsafeRunSync()
+      .unsafeRunAsyncAndForget()
 
     /*
      * お知らせする
