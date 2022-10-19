@@ -15,7 +15,7 @@ trait GachaTicketFromAdminTeamRepository[F[_]] {
    * @return 指定されたプレイヤー名の「運営からのガチャ券」の枚数を増加させる作用
    */
   def addByPlayerName(
-    amount: Int,
+    amount: GachaTicketAmount,
     playerName: PlayerName
   ): F[ReceiptResultOfGachaTicketFromAdminTeam]
 

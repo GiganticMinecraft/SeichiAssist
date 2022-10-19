@@ -35,13 +35,13 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
    * @return 指定されたプレイヤー名の「運営からのガチャ券」の枚数を増加させる作用
    */
   override def addByPlayerName(
-    amount: Int,
+    amount: GachaTicketAmount,
     playerName: PlayerName
   ): F[ReceiptResultOfGachaTicketFromAdminTeam] = {
     NonServerThreadContextShift[F].shift >> Sync[F].delay {
       DB.localTx { implicit session =>
         val affectedRows =
-          sql"UPDATE playerdata SET numofsorryforbug = numofsorryforbug + $amount WHERE name = ${playerName.name}"
+          sql"UPDATE playerdata SET numofsorryforbug = numofsorryforbug + ${amount.value} WHERE name = ${playerName.name}"
             .update
             .apply()
 

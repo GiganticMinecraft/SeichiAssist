@@ -156,7 +156,7 @@ class GachaCommand[
                )
              } else {
                Kleisli.liftF[F, CommandSender, ReceiptResultOfGachaTicketFromAdminTeam](
-                 gachaTicketPersistence.addByPlayerName(amount, PlayerName(value))
+                 gachaTicketPersistence.addByPlayerName(GachaTicketAmount(amount), PlayerName(value))
                )
              }).flatMap {
               case ReceiptResultOfGachaTicketFromAdminTeam.Success =>
