@@ -54,13 +54,13 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
    *  @return 指定されたUUIDの「運営からのガチャ券」の枚数を増加させる作用
    */
   override def addByUUID(
-    amount: Int,
+    amount: GachaTicketAmount,
     uuid: UUID
   ): F[ReceiptResultOfGachaTicketFromAdminTeam] = {
     NonServerThreadContextShift[F].shift >> Sync[F].delay {
       DB.localTx { implicit session =>
         val affectedRows =
-          sql"UPDATE playerdata SET numofsorryforbug = numofsorryforbug + $amount WHERE uuid = ${uuid.toString}"
+          sql"UPDATE playerdata SET numofsorryforbug = numofsorryforbug + ${amount.value} WHERE uuid = ${uuid.toString}"
             .update()
             .apply()
 
