@@ -4,7 +4,6 @@ import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.BukkitGachaSkullData
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.traderules.BukkitTrade
 import com.github.unchama.seichiassist.util.InventoryOperations
@@ -45,17 +44,17 @@ class GachaTradeListener[F[_]: ConcurrentEffect](
     val tradeAmount = tradedInformation.tradedSuccessResult.map(_.amount).sum
 
     /*
-     * ガチャ券を付与する
-     */
-    val skull = BukkitGachaSkullData.gachaForExchanging
-
-    /*
      * ガチャ券と交換できなかったアイテムをインベントリに
      */
+    val nonTradableItemStacksToReturn =
+      tradedInformation.nonTradableItemStacks.filterNot(_ == null)
+    val tradableItemStacksToReturn = tradedInformation
+      .tradedSuccessResult
+      .flatMap(result => Seq.fill(result.amount)(result.itemStack))
+
     InventoryOperations
       .grantItemStacksEffect[IO](
-        tradedInformation.nonTradableItemStacks.filterNot(_ == null) ++ Seq
-          .fill(tradeAmount)(skull): _*
+        nonTradableItemStacksToReturn ++ tradableItemStacksToReturn: _*
       )
       .apply(player)
       .unsafeRunAsyncAndForget()
