@@ -53,15 +53,10 @@ class BukkitDrawGacha[F[_]: Sync: OnMinecraftServerThread](
 
             GachaRarity.of(gachaPrize) match {
               case GachaRarity.Gigantic =>
-                val givenItem = gachaPrize.itemStack
-
-                val loreWithoutOwnerName =
-                  givenItem.getItemMeta.getLore.asScala.toList.filterNot {
-                    _ == s"$RESET${DARK_GREEN}所有者：${player.getName}"
-                  }
+                val prizeItem = gachaPrize.itemStack
 
                 val localizedEnchantmentList =
-                  givenItem.getItemMeta.getEnchants.asScala.toSeq.map {
+                  prizeItem.getItemMeta.getEnchants.asScala.toSeq.map {
                     case (enchantment, level) =>
                       s"$GRAY${EnchantNameToJapanese.getEnchantName(enchantment.getName, level)}"
                   }
@@ -71,16 +66,17 @@ class BukkitDrawGacha[F[_]: Sync: OnMinecraftServerThread](
                   new TextComponent().tap { c =>
                     import c._
                     setText(
-                      s"$AQUA${givenItem.getItemMeta.getDisplayName}${GOLD}を引きました！おめでとうございます！"
+                      s"$AQUA${prizeItem.getItemMeta.getDisplayName}${GOLD}を引きました！おめでとうございます！"
                     )
                     setHoverEvent {
                       new HoverEvent(
                         HoverEvent.Action.SHOW_TEXT,
                         Array(
                           new TextComponent(
-                            s" ${givenItem.getItemMeta.getDisplayName}\n" +
+                            s" ${prizeItem.getItemMeta.getDisplayName}\n" +
                               ListFormatters.getDescFormat(localizedEnchantmentList.toList) +
-                              ListFormatters.getDescFormat(loreWithoutOwnerName)
+                              ListFormatters
+                                .getDescFormat(prizeItem.getItemMeta.getLore.asScala.toList)
                           )
                         )
                       )
