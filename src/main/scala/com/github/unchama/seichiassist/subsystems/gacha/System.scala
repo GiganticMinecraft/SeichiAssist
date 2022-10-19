@@ -28,6 +28,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   StaticGachaPrizeFactory
 }
 import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.JdbcGachaPrizeListPersistence
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketFromAdminTeamRepository
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.infrastructure.JdbcGachaTicketFromAdminTeamRepository
 import org.bukkit.command.TabExecutor
@@ -43,8 +44,9 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_]: OnMinecraftServerThread: NonServerThreadContextShift: ConcurrentEffect]
-    : F[System[F]] = {
+  def wired[F[_]: OnMinecraftServerThread: NonServerThreadContextShift: ConcurrentEffect](
+    implicit gachaTicketAPI: GachaTicketAPI[F]
+  ): F[System[F]] = {
     implicit val _serializeAndDeserialize: SerializeAndDeserialize[Nothing, ItemStack] =
       BukkitItemStackSerializeAndDeserialize
     implicit val _gachaPersistence: GachaPrizeListPersistence[F, ItemStack] =
