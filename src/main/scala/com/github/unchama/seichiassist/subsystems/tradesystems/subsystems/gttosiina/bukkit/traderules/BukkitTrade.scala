@@ -30,7 +30,7 @@ class BukkitTrade(owner: String, gachaPrizeTable: Vector[GachaPrize[ItemStack]])
 
     TradeResult[ItemStack](
       tradableItems.map(_ =>
-        /* NOTE: 2022/08/16現在、交換できるあたり、大当たりのアイテムは
+        /* NOTE: 2022/10/19現在、交換できるギガンティックアイテムは
               スタックできるアイテムではない。
               すなわち、この実装は交換できるアイテムが必ず単一のアイテムである
               ことが前提となっている。
