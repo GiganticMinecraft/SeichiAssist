@@ -2,7 +2,11 @@ package com.github.unchama.seichiassist.subsystems.gacha
 
 import cats.Functor
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{GachaPrize, GachaPrizeId}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.StaticGachaPrizeFactory
+import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{
+  GachaPrize,
+  GachaPrizeId
+}
 
 trait GachaDrawAPI[F[_], Player] {
 
@@ -45,6 +49,11 @@ trait GachaReadAPI[F[_], ItemStack] {
     F.map(fetch(gachaPrizeId))(_.nonEmpty)
 
   val grantGachaPrize: GrantGachaPrize[F, ItemStack]
+
+  /**
+   * @return [[StaticGachaPrizeFactory]]を返す
+   */
+  def staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack]
 
 }
 

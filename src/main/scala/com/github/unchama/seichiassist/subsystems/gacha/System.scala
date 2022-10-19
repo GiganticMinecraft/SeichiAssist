@@ -17,8 +17,16 @@ import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.{
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.command.GachaCommand
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.BukkitStaticGachaPrizeFactory
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.listeners.PlayerPullGachaListener
-import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{GachaPrize, GachaPrizeId}
-import com.github.unchama.seichiassist.subsystems.gacha.domain.{LotteryOfGachaItems, CanBeSignedAsGachaPrize, GachaPrizeListPersistence, StaticGachaPrizeFactory}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{
+  GachaPrize,
+  GachaPrizeId
+}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.{
+  CanBeSignedAsGachaPrize,
+  GachaPrizeListPersistence,
+  LotteryOfGachaItems,
+  StaticGachaPrizeFactory
+}
 import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.JdbcGachaPrizeListPersistence
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketFromAdminTeamRepository
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.infrastructure.JdbcGachaTicketFromAdminTeamRepository
@@ -37,17 +45,17 @@ object System {
 
   def wired[F[_]: OnMinecraftServerThread: NonServerThreadContextShift: ConcurrentEffect]
     : F[System[F]] = {
-    implicit val serializeAndDeserialize: SerializeAndDeserialize[Nothing, ItemStack] =
+    implicit val _serializeAndDeserialize: SerializeAndDeserialize[Nothing, ItemStack] =
       BukkitItemStackSerializeAndDeserialize
-    implicit val gachaPersistence: GachaPrizeListPersistence[F, ItemStack] =
+    implicit val _gachaPersistence: GachaPrizeListPersistence[F, ItemStack] =
       new JdbcGachaPrizeListPersistence[F, ItemStack]()
-    implicit val gachaTicketPersistence: GachaTicketFromAdminTeamRepository[F] =
+    implicit val _gachaTicketPersistence: GachaTicketFromAdminTeamRepository[F] =
       new JdbcGachaTicketFromAdminTeamRepository[F]
-    implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
+    implicit val _canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
       BukkitItemStackCanBeSignedAsGachaPrize
-    implicit val staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack] =
+    implicit val _staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack] =
       BukkitStaticGachaPrizeFactory
-    implicit val lotteryOfGachaItems: LotteryOfGachaItems[F, ItemStack] =
+    implicit val _lotteryOfGachaItems: LotteryOfGachaItems[F, ItemStack] =
       new LotteryOfGachaItems[F, ItemStack]
 
     val system: System[F] = new System[F] {
@@ -56,7 +64,7 @@ object System {
 
           override protected implicit val F: Functor[F] = implicitly
 
-          override def load: F[Unit] = gachaPersistence.list.flatMap { gachaPrizes =>
+          override def load: F[Unit] = _gachaPersistence.list.flatMap { gachaPrizes =>
             gachaPrizesListReference.set(gachaPrizes)
           }
 
@@ -84,6 +92,9 @@ object System {
 
           override def drawGacha(player: Player, draws: Int): F[Unit] =
             new BukkitDrawGacha[F].draw(player, draws)
+
+          override def staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack] =
+            _staticGachaPrizeFactory
         }
       override val commands: Map[String, TabExecutor] = Map(
         "gacha" -> new GachaCommand[F]().executor

@@ -7,7 +7,8 @@ import com.github.unchama.seichiassist.subsystems.gacha.application.actions.Draw
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   CanBeSignedAsGachaPrize,
   GlobalGachaPrizeList,
-  GrantState
+  GrantState,
+  LotteryOfGachaItems
 }
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity._
 import com.github.unchama.seichiassist.util.SendMessageEffect.sendMessageToEveryone

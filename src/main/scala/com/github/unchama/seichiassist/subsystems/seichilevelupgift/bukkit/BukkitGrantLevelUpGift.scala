@@ -27,7 +27,7 @@ class BukkitGrantLevelUpGift[F[_]: Sync: OnMinecraftServerThread, G[_]: ContextC
   override def grantGiftItem(item: Gift.Item): Kleisli[F, Player, Unit] = {
     val itemStack = item match {
       case Gift.Item.SuperPickaxe => ItemData.getSuperPickaxe(1)
-      case Gift.Item.GachaApple   => ItemData.getGachaApple(1)
+      case Gift.Item.GachaApple   => gachaAPI.staticGachaPrizeFactory.gachaRingo
       case Gift.Item.Elsa         => ItemData.getElsa(1)
     }
 
