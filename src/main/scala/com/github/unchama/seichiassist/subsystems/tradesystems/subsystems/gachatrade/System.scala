@@ -18,7 +18,7 @@ object System {
     implicit gachaAPI: GachaAPI[F, ItemStack, Player]
   ): F[Subsystem[F]] = {
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
-      BukkitItemStackCanBeSignedAsGachaPrize
+      gachaAPI.canBeSignedAsGachaPrize
 
     for {
       gachaPrizeTable <- gachaAPI.list
