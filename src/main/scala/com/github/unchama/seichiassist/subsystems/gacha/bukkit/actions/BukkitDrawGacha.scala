@@ -39,8 +39,8 @@ class BukkitDrawGacha[F[_]: Sync: OnMinecraftServerThread](
       states <- gachaPrizes.traverse(gachaPrize =>
         grantGachaPrize.grantGachaPrize(gachaPrize)(player)
       )
-      _ <- Sync[F].delay {
-        (gachaPrizes zip states).foreach {
+      _ <-
+        (gachaPrizes zip states).traverse {
           case (gachaPrize, state) =>
             val additionalMessage = state match {
               case GrantState.GrantedMineStack =>
@@ -82,32 +82,41 @@ class BukkitDrawGacha[F[_]: Sync: OnMinecraftServerThread](
                       )
                     }
                   }
-                player.sendMessage(s"${RED}おめでとう！！！！！Gigantic☆大当たり！$additionalMessage")
-                player.spigot().sendMessage(message)
-                sendMessageToEveryone(s"$GOLD${player.getName}がガチャでGigantic☆大当たり！")(
-                  forString[IO]
-                )
-                sendMessageToEveryone(message)(forTextComponent[IO])
-                SendSoundEffect.sendEverySoundWithoutIgnore(
-                  Sound.ENTITY_ENDERDRAGON_DEATH,
-                  0.5f,
-                  2f
-                )
+                Sync[F].delay {
+                  player.sendMessage(s"${RED}おめでとう！！！！！Gigantic☆大当たり！$additionalMessage")
+                  player.spigot().sendMessage(message)
+                  sendMessageToEveryone(s"$GOLD${player.getName}がガチャでGigantic☆大当たり！")(
+                    forString[IO]
+                  )
+                  sendMessageToEveryone(message)(forTextComponent[IO])
+                  SendSoundEffect.sendEverySoundWithoutIgnore(
+                    Sound.ENTITY_ENDERDRAGON_DEATH,
+                    0.5f,
+                    2f
+                  )
+                }
               case GachaRarity.Big =>
-                player.playSound(player.getLocation, Sound.ENTITY_WITHER_SPAWN, 0.8f, 1f)
-                if (count == 1) player.sendMessage(s"${GOLD}おめでとう！！大当たり！$additionalMessage")
+                Sync[F].delay {
+                  player.playSound(player.getLocation, Sound.ENTITY_WITHER_SPAWN, 0.8f, 1f)
+                  if (count == 1) player.sendMessage(s"${GOLD}おめでとう！！大当たり！$additionalMessage")
+                }
               case GachaRarity.Regular if count == 1 =>
-                player.sendMessage(s"${YELLOW}おめでとう！当たり！$additionalMessage")
+                Sync[F].delay {
+                  player.sendMessage(s"${YELLOW}おめでとう！当たり！$additionalMessage")
+                }
               case GachaRarity.GachaRingoOrExpBottle if count == 1 =>
-                player.sendMessage(s"${WHITE}はずれ！また遊んでね！$additionalMessage")
-              case _ =>
+                Sync[F].delay {
+                  player.sendMessage(s"${WHITE}はずれ！また遊んでね！$additionalMessage")
+                }
+              case _ => Sync[F].unit
             }
 
             if (count > 1) {
-              player.sendMessage(s"$AQUA${count}回ガチャを回しました。")
-            }
+              Sync[F].delay {
+                player.sendMessage(s"$AQUA${count}回ガチャを回しました。")
+              }
+            } else Sync[F].unit
         }
-      }
     } yield ()
   }
 }
