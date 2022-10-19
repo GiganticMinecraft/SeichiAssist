@@ -3,7 +3,11 @@ package com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.
 import cats.effect.Sync
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.seichiassist.subsystems.gacha.domain.PlayerName
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{GachaTicketFromAdminTeamRepository, ReceiptResultOfGachaTicketFromAdminTeam}
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{
+  GachaTicketAmount,
+  GachaTicketFromAdminTeamRepository,
+  ReceiptResultOfGachaTicketFromAdminTeam
+}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID
@@ -61,6 +65,29 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
             .apply()
 
         getReceiptResult(affectedRows)
+      }
+    }
+  }
+
+  override def receive(uuid: UUID): F[GachaTicketAmount] = {
+    NonServerThreadContextShift[F].shift >> Sync[F].delay {
+      DB.localTx { implicit session =>
+        val hasAmount =
+          sql"SELECT numofsorryforbug FROM playerdata WHERE uuid = ${uuid.toString}"
+            .map(_.int("numofsorryforbug"))
+            .toList()
+            .apply()
+            .headOption
+            .getOrElse(0)
+
+        val nineStackAmount = 576
+        val receiveAmount = Math.min(hasAmount, nineStackAmount)
+
+        sql"UPDATE playerdata numofsorryforbug = $receiveAmount WHERE uuid = ${uuid.toString}"
+          .execute()
+          .apply()
+
+        GachaTicketAmount(receiveAmount)
       }
     }
   }
