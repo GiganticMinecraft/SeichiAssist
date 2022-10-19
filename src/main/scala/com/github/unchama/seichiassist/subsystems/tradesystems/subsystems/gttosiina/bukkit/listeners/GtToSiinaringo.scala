@@ -39,9 +39,9 @@ class GtToSiinaringo[F[_]: ConcurrentEffect](gachaPrizeTable: Vector[GachaPrize[
     val tradedInformation =
       new BukkitTrade(name, gachaPrizeTable).trade(inventory.getContents.toList)
 
-    val tradedAmount = tradedInformation.tradedSuccessResult.map(result => result.amount).sum
+    val totalAmountOfTradeResult = tradedInformation.tradedSuccessResult.map(result => result.amount).sum
 
-    if (tradedAmount == 0) {
+    if (totalAmountOfTradeResult == 0) {
       player.sendMessage(s"${YELLOW}ギガンティック大当たり景品を認識しませんでした。すべてのアイテムを返却します")
     } else {
       player.sendMessage(
@@ -55,15 +55,15 @@ class GtToSiinaringo[F[_]: ConcurrentEffect](gachaPrizeTable: Vector[GachaPrize[
     val siinaringo = BukkitStaticGachaPrizeFactory.getMaxRingo(name)
     InventoryOperations.grantItemStacksEffect[IO](
       tradedInformation.nonTradableItemStacks.filterNot(_ == null) ++ Seq
-        .fill(tradedAmount)(siinaringo): _*
+        .fill(totalAmountOfTradeResult)(siinaringo): _*
     )
 
     /*
      * お知らせする
      */
-    if (tradedAmount > 0) {
+    if (totalAmountOfTradeResult > 0) {
       player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-      player.sendMessage(s"$GREEN${tradedAmount}個の${GOLD}椎名林檎${WHITE}を受け取りました。")
+      player.sendMessage(s"$GREEN${totalAmountOfTradeResult}個の${GOLD}椎名林檎${WHITE}を受け取りました。")
     }
   }
 
