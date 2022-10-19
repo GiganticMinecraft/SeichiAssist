@@ -387,6 +387,9 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val gachaSystem: subsystems.gacha.System[IO] =
     subsystems.gacha.System.wired.unsafeRunSync()
 
+  private lazy val gachaTicketSystem: subsystems.gacha.subsystems.gachaticket.System[IO] =
+    subsystems.gacha.subsystems.gachaticket.System.wired[IO]
+
   private lazy val gtToSiinaSystem: Subsystem[IO] =
     subsystems.tradesystems.subsystems.gttosiina.System.wired[IO]
 
@@ -417,6 +420,7 @@ class SeichiAssist extends JavaPlugin() {
     presentSystem,
     anywhereEnderSystem,
     gachaSystem,
+    gachaTicketSystem,
     gtToSiinaSystem,
     gachaTradeSystem,
     sharedInventorySystem
