@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.gacha.domain
+package com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain
 
 sealed trait ReceiptResultOfGachaTicketFromAdminTeam
 
