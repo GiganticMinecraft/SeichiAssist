@@ -11,10 +11,7 @@ import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.bungeesemaphoreresponder.{System => BungeeSemaphoreResponderSystem}
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.concurrent.RepeatingRoutine
-import com.github.unchama.datarepository.bukkit.player.{
-  BukkitRepositoryControls,
-  PlayerDataRepository
-}
+import com.github.unchama.datarepository.bukkit.player.{BukkitRepositoryControls, PlayerDataRepository}
 import com.github.unchama.datarepository.definitions.SessionMutexRepositoryDefinition
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
@@ -26,27 +23,18 @@ import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.MenuHandler
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.{GetConnectedPlayers, SendMinecraftMessage}
-import com.github.unchama.minecraft.bukkit.actions.{
-  GetConnectedBukkitPlayers,
-  SendBukkitMessage
-}
+import com.github.unchama.minecraft.bukkit.actions.{GetConnectedBukkitPlayers, SendBukkitMessage}
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
 import com.github.unchama.seichiassist.SeichiAssist.seichiAssistConfig
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
 import com.github.unchama.seichiassist.commands.legacy.DonationCommand
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
-  asyncShift,
-  onMainThread
-}
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, onMainThread}
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
-import com.github.unchama.seichiassist.domain.actions.{
-  GetNetworkConnectionCount,
-  UuidToLastSeenName
-}
+import com.github.unchama.seichiassist.domain.actions.{GetNetworkConnectionCount, UuidToLastSeenName}
 import com.github.unchama.seichiassist.domain.configuration.RedisBungeeRedisConfiguration
 import com.github.unchama.seichiassist.infrastructure.akka.ConfiguredActorSystemProvider
 import com.github.unchama.seichiassist.infrastructure.logging.jul.NamedJULLogger
@@ -64,12 +52,10 @@ import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
-  FastDiggingEffectApi,
-  FastDiggingSettingsApi
-}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository
@@ -577,6 +563,8 @@ class SeichiAssist extends JavaPlugin() {
       anywhereEnderSystem.accessApi
     implicit val sharedInventoryAPI: SharedInventoryAPI[IO, Player] =
       sharedInventorySystem.api
+    implicit val gachaTicketAPI: GachaTicketAPI[IO] =
+      gachaTicketSystem.api
 
     val menuRouter = TopLevelRouter.apply
     import menuRouter.{canOpenStickMenu, ioCanOpenCategorizedMineStackMenu}
