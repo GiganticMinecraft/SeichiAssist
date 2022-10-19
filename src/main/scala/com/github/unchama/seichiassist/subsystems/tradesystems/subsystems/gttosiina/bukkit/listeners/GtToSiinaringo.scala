@@ -1,9 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.bukkit.listeners
 
+import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
+import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.GachaPrize
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.bukkit.traderules.BukkitTrade
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.util.InventoryUtil.InventoryOps
@@ -14,8 +15,9 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 
-class GtToSiinaringo[F[_]: ConcurrentEffect](gachaPrizeTable: Vector[GachaPrize[ItemStack]])(
-  implicit canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
+class GtToSiinaringo[F[_]: ConcurrentEffect](
+  implicit canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack],
+  gachaAPI: GachaAPI[F, ItemStack, Player]
 ) extends Listener {
 
   @EventHandler
@@ -35,7 +37,8 @@ class GtToSiinaringo[F[_]: ConcurrentEffect](gachaPrizeTable: Vector[GachaPrize[
     if (inventory.getTitle != s"$GOLD${BOLD}椎名林檎と交換したい景品を入れてネ") return
     // 交換後の情報
     val tradedInformation =
-      new BukkitTrade(name, gachaPrizeTable).trade(inventory.getContents.toList)
+      new BukkitTrade(name, gachaAPI.list.toIO.unsafeRunSync())
+        .trade(inventory.getContents.toList)
 
     val totalAmountOfTradeResult =
       tradedInformation.tradedSuccessResult.map(result => result.amount).sum

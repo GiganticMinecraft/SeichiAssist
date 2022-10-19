@@ -388,7 +388,7 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.gacha.System.wired.unsafeRunSync()
 
   private lazy val gtToSiinaSystem: Subsystem[IO] =
-    subsystems.tradesystems.subsystems.gttosiina.System.wired[IO].unsafeRunSync()
+    subsystems.tradesystems.subsystems.gttosiina.System.wired[IO]
 
   private lazy val gachaTradeSystem: Subsystem[IO] =
     subsystems.tradesystems.subsystems.gachatrade.System.wired[IO].unsafeRunSync()
