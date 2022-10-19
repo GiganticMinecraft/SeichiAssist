@@ -7,12 +7,21 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.Gacha
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.GachaPrize
 import com.github.unchama.seichiassist.subsystems.tradesystems.domain.{
-  BigOrRegular,
   TradeResult,
   TradeRule,
   TradeSuccessResult
 }
 import org.bukkit.inventory.ItemStack
+
+private sealed trait BigOrRegular
+
+object BigOrRegular {
+
+  case object Big extends BigOrRegular
+
+  case object Regular extends BigOrRegular
+
+}
 
 class BukkitTrade(owner: String, gachaPrizeTable: Vector[GachaPrize[ItemStack]])(
   implicit canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
