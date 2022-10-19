@@ -2,7 +2,10 @@ package com.github.unchama.seichiassist.subsystems.gacha
 
 import cats.Functor
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.domain.StaticGachaPrizeFactory
+import com.github.unchama.seichiassist.subsystems.gacha.domain.{
+  CanBeSignedAsGachaPrize,
+  StaticGachaPrizeFactory
+}
 import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{
   GachaPrize,
   GachaPrizeId
@@ -54,6 +57,11 @@ trait GachaReadAPI[F[_], ItemStack] {
    * @return [[StaticGachaPrizeFactory]]を返す
    */
   def staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack]
+
+  /**
+   * @return [[CanBeSignedAsGachaPrize]]を返す
+   */
+  def canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
 
 }
 

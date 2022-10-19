@@ -95,6 +95,9 @@ object System {
 
           override def staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack] =
             _staticGachaPrizeFactory
+
+          override def canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
+            _canBeSignedAsGachaPrize
         }
       override val commands: Map[String, TabExecutor] = Map(
         "gacha" -> new GachaCommand[F]().executor
