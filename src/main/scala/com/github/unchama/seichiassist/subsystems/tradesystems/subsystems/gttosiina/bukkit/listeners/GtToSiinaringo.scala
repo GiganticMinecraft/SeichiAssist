@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.bukkit.listeners
 
 import cats.effect.{ConcurrentEffect, IO}
-import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.BukkitStaticGachaPrizeFactory
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
@@ -39,13 +38,14 @@ class GtToSiinaringo[F[_]: ConcurrentEffect](gachaPrizeTable: Vector[GachaPrize[
     val tradedInformation =
       new BukkitTrade(name, gachaPrizeTable).trade(inventory.getContents.toList)
 
-    val totalAmountOfTradeResult = tradedInformation.tradedSuccessResult.map(result => result.amount).sum
+    val totalAmountOfTradeResult =
+      tradedInformation.tradedSuccessResult.map(result => result.amount).sum
 
     if (totalAmountOfTradeResult == 0) {
       player.sendMessage(s"${YELLOW}ギガンティック大当たり景品を認識しませんでした。すべてのアイテムを返却します")
     } else {
       player.sendMessage(
-        s"${GREEN}ギガンティック大当たり景品を${tradedInformation.tradedSuccessResult.map(_.amount / SeichiAssist.seichiAssistConfig.rateGiganticToRingo).sum}個認識しました"
+        s"${GREEN}ギガンティック大当たり景品を${tradedInformation.tradedSuccessResult.length}個認識しました"
       )
     }
 
