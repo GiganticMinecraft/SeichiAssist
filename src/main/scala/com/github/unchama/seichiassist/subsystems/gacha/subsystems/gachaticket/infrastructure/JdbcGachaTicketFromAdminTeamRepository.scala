@@ -72,6 +72,7 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
     updatedRows match {
       case 0 => ReceiptResultOfGachaTicketFromAdminTeam.NotExists
       case 1 => ReceiptResultOfGachaTicketFromAdminTeam.Success
+      case _ => ReceiptResultOfGachaTicketFromAdminTeam.MultipleFound
     }
 
 }

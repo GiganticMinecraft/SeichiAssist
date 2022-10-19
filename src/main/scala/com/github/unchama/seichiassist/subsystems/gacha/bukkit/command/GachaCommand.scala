@@ -166,6 +166,8 @@ class GachaCommand[
                 MessageEffectF(s"${GREEN}ガチャ券${amount}枚加算成功")
               case ReceiptResultOfGachaTicketFromAdminTeam.NotExists =>
                 MessageEffectF(s"${RED}プレイヤーが存在しません。")
+              case ReceiptResultOfGachaTicketFromAdminTeam.MultipleFound =>
+                MessageEffectF(s"${RED}加算は成功しましたが、複数プレイヤーが存在しました。")
             }
         }
       }
