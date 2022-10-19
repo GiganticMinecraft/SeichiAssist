@@ -57,9 +57,12 @@ class GtToSiinaringo[F[_]: ConcurrentEffect](gachaPrizeTable: Vector[GachaPrize[
       .tradedSuccessResult
       .flatMap(result => Seq.fill(result.amount)(result.itemStack))
 
-    InventoryOperations.grantItemStacksEffect[IO](
-      nonTradableItemStacksToReturn ++ tradableItemStacksToReturn: _*
-    )
+    InventoryOperations
+      .grantItemStacksEffect[IO](
+        nonTradableItemStacksToReturn ++ tradableItemStacksToReturn: _*
+      )
+      .apply(player)
+      .unsafeRunAsyncAndForget()
 
     /*
      * お知らせする
