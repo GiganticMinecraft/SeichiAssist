@@ -6,6 +6,7 @@ import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gacha.domain.PlayerName
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{
   GachaTicketAmount,
+  GachaTicketFromAdminTeamRepository,
   ReceiptResultOfGachaTicketFromAdminTeam
 }
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.infrastructure.JdbcGachaTicketFromAdminTeamRepository
@@ -21,7 +22,8 @@ trait System[F[_]] extends Subsystem[F] {
 object System {
 
   def wired[F[_]: Sync: NonServerThreadContextShift]: System[F] = {
-    val gachaTicketFromAdminTeamRepository = new JdbcGachaTicketFromAdminTeamRepository[F]
+    val gachaTicketFromAdminTeamRepository: GachaTicketFromAdminTeamRepository[F] =
+      new JdbcGachaTicketFromAdminTeamRepository[F]
 
     new System[F] {
       override val api: GachaTicketAPI[F] = new GachaTicketAPI[F] {

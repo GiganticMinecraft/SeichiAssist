@@ -20,6 +20,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{
   GachaPrize,
   GachaPrizeId
 }
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{
   GachaTicketAmount,
   GachaTicketFromAdminTeamRepository,
@@ -41,7 +42,8 @@ class GachaCommand[
   implicit gachaTicketPersistence: GachaTicketFromAdminTeamRepository[F],
   gachaPersistence: GachaPrizeListPersistence[F, ItemStack],
   gachaAPI: GachaAPI[F, ItemStack, Player],
-  canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
+  canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack],
+  gachaTicketAPI: GachaTicketAPI[F]
 ) {
 
   import cats.implicits._
@@ -152,7 +154,7 @@ class GachaCommand[
         args.head.toString match {
           case "all" =>
             Kleisli
-              .liftF(gachaTicketPersistence.addToAllKnownPlayers(gachaTicketAmount))
+              .liftF(gachaTicketAPI.addToAllKnownPlayers(gachaTicketAmount))
               .flatMap(_ => MessageEffectF(s"${GREEN}全プレイヤーへガチャ券${amount}枚加算成功"))
           case value =>
             val uuidRegex =
@@ -160,11 +162,11 @@ class GachaCommand[
 
             (if (uuidRegex.matches(value)) {
                Kleisli.liftF[F, CommandSender, ReceiptResultOfGachaTicketFromAdminTeam](
-                 gachaTicketPersistence.addByUUID(gachaTicketAmount, UUID.fromString(value))
+                 gachaTicketAPI.addByUUID(gachaTicketAmount, UUID.fromString(value))
                )
              } else {
                Kleisli.liftF[F, CommandSender, ReceiptResultOfGachaTicketFromAdminTeam](
-                 gachaTicketPersistence.addByPlayerName(gachaTicketAmount, PlayerName(value))
+                 gachaTicketAPI.addByPlayerName(gachaTicketAmount, PlayerName(value))
                )
              }).flatMap {
               case ReceiptResultOfGachaTicketFromAdminTeam.Success =>
