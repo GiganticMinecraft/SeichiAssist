@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttos
 
 import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.BukkitStaticGachaPrizeFactory
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.GachaPrize
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.bukkit.traderules.BukkitTrade
@@ -52,10 +51,14 @@ class GtToSiinaringo[F[_]: ConcurrentEffect](gachaPrizeTable: Vector[GachaPrize[
     /*
      * 椎名林檎と非対象アイテムをインベントリへ
      */
-    val siinaringo = BukkitStaticGachaPrizeFactory.getMaxRingo(name)
+    val nonTradableItemStacksToReturn =
+      tradedInformation.nonTradableItemStacks.filterNot(_ == null)
+    val tradableItemStacksToReturn = tradedInformation
+      .tradedSuccessResult
+      .flatMap(result => Seq.fill(result.amount)(result.itemStack))
+
     InventoryOperations.grantItemStacksEffect[IO](
-      tradedInformation.nonTradableItemStacks.filterNot(_ == null) ++ Seq
-        .fill(totalAmountOfTradeResult)(siinaringo): _*
+      nonTradableItemStacksToReturn ++ tradableItemStacksToReturn: _*
     )
 
     /*
