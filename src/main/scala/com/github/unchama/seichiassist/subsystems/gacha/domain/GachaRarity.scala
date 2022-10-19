@@ -23,9 +23,7 @@ object GachaRarity {
     def of[ItemStack](gachaPrize: GachaPrize[ItemStack]): GachaRarity =
       GachaRarity
         .values
-        .find { gachaRarities =>
-          gachaRarities.maxProbability.value >= gachaPrize.probability.value
-        }
+        .filter { rarity => rarity.maxProbability.value >= gachaPrize.probability.value }
         .minByOption(_.maxProbability.value)
         .getOrElse(GachaRingoOrExpBottle)
 
