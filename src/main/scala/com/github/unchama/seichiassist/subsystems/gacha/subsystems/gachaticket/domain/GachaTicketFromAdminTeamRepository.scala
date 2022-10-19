@@ -22,7 +22,10 @@ trait GachaTicketFromAdminTeamRepository[F[_]] {
   /**
    * @return 指定されたUUIDの「運営からのガチャ券」の枚数を増加させる作用
    */
-  def addByUUID(amount: GachaTicketAmount, uuid: UUID): F[ReceiptResultOfGachaTicketFromAdminTeam]
+  def addByUUID(
+    amount: GachaTicketAmount,
+    uuid: UUID
+  ): F[ReceiptResultOfGachaTicketFromAdminTeam]
 
   /**
    * @return 運営からのガチャ券を受け取った枚数

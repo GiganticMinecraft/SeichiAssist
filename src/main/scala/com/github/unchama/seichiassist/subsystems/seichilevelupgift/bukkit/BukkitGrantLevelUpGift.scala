@@ -8,7 +8,10 @@ import com.github.unchama.seichiassist.data.ItemData
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.GachaPoint
-import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.{Gift, GrantLevelUpGiftAlgebra}
+import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.{
+  Gift,
+  GrantLevelUpGiftAlgebra
+}
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
