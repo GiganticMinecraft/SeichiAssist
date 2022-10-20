@@ -13,7 +13,7 @@ import com.github.unchama.seichiassist.subsystems.tradesystems.domain.{
 }
 import org.bukkit.inventory.ItemStack
 
-protected sealed trait BigOrRegular
+sealed trait BigOrRegular
 
 object BigOrRegular {
 

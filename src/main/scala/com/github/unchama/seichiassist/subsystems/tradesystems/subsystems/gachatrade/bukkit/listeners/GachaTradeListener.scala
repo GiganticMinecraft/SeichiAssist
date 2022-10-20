@@ -3,12 +3,9 @@ package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gacha
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
-import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
-import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.traderules.{
-  BigOrRegular,
-  BukkitTrade
-}
+import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.traderules.BigOrRegular
+import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.domain.{GachaListProvider, GachaTradeRule}
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.util.InventoryUtil.InventoryOps
 import org.bukkit.ChatColor._
@@ -18,9 +15,9 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 
-class GachaTradeListener[F[_]: ConcurrentEffect](
+class GachaTradeListener[F[_]: ConcurrentEffect](rule: GachaTradeRule[ItemStack])(
   implicit canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack],
-  gachaAPI: GachaAPI[F, ItemStack, Player]
+  gachaListProvider: GachaListProvider[F, ItemStack]
 ) extends Listener {
 
   @EventHandler
@@ -41,7 +38,8 @@ class GachaTradeListener[F[_]: ConcurrentEffect](
 
     // 交換後の情報
     val tradedInformation =
-      new BukkitTrade(name, gachaAPI.list.toIO.unsafeRunSync())
+      rule
+        .ruleFor(name, gachaListProvider.readGachaList.toIO.unsafeRunSync())
         .trade(inventory.getContents.toList)
 
     val tradeAmount = tradedInformation.tradedSuccessResult.map(_.amount).sum
