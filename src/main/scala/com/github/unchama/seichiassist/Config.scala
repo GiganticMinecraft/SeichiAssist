@@ -77,9 +77,6 @@ final class Config private (val config: FileConfiguration) {
 
   def chunkSearchCommandBase: String = config.getString("chunk-search-command-base")
 
-  // サブホーム最大数取得
-  def getSubHomeMax: Int = getIntFailFast("subhomemax")
-
   def getDebugMode: Int = getIntFailFast("debugmode")
 
   def rateGiganticToRingo: Int = getIntFailFast("rategigantictoringo")

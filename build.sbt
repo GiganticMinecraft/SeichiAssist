@@ -8,7 +8,7 @@ import java.io._
 ThisBuild / scalaVersion := "2.13.4"
 // ThisBuild / version はGitHub Actionsによって取得/自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
-ThisBuild / version := "52"
+ThisBuild / version := "56"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
@@ -21,9 +21,6 @@ ThisBuild / semanticdbEnabled := true
 
 // kind-projector 構文を使いたいため
 addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.2" cross CrossVersion.full)
-
-// Scalafixがsemanticdbを必要とするため
-ThisBuild / semanticdbEnabled := true
 
 // CIビルドで詳細なログを確認するため
 ThisBuild / logLevel := {
@@ -174,7 +171,7 @@ Compile / PB.targets := Seq(scalapb.gen() -> (Compile / sourceManaged).value / "
 
 lazy val root = (project in file(".")).settings(
   name := "SeichiAssist",
-  assembly / assemblyOutputPath := baseDirectory.value / "target" / "build" / s"SeichiAssist.jar",
+  assembly / assemblyOutputPath := baseDirectory.value / "target" / "build" / "SeichiAssist.jar",
   libraryDependencies := providedDependencies ++ testDependencies ++ dependenciesToEmbed,
   excludeDependencies := Seq(ExclusionRule(organization = "org.bukkit", name = "bukkit")),
   unmanagedBase := baseDirectory.value / "localDependencies",
