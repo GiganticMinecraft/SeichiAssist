@@ -5,7 +5,10 @@ import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
-import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.traderules.BukkitTrade
+import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.traderules.{
+  BigOrRegular,
+  BukkitTrade
+}
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.util.InventoryUtil.InventoryOps
 import org.bukkit.ChatColor._
@@ -67,8 +70,10 @@ class GachaTradeListener[F[_]: ConcurrentEffect](
       player.sendMessage(s"${YELLOW}景品を認識しませんでした。すべてのアイテムを返却します")
     } else {
       player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-      player.sendMessage(s"${GREEN}大当たり景品を${tradableItemStacks
-          .count(_.amount == 12)}個、あたり景品を${tradableItemStacks.count(_.amount == 3)}個認識しました。")
+      player.sendMessage(
+        s"${GREEN}大当たり景品を${tradableItemStacks.count(_.transactionInfo == BigOrRegular.Big)}個、あたり景品を${tradableItemStacks
+            .count(_.transactionInfo == BigOrRegular.Regular)}個認識しました。"
+      )
       player.sendMessage(s"$GREEN${tradeAmount}枚の${GOLD}ガチャ券${WHITE}を受け取りました。")
     }
   }
