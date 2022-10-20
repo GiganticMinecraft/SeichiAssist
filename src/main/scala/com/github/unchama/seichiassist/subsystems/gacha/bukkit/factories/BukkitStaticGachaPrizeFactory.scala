@@ -10,11 +10,6 @@ import java.util
 object BukkitStaticGachaPrizeFactory extends StaticGachaPrizeFactory[ItemStack] {
 
   /**
-   * がちゃりんごの名前
-   */
-  val gachaRingoName = s"$GOLD${BOLD}がちゃりんご"
-
-  /**
    * がちゃりんごのロール
    * TODO: `ItemData.java`がScalaに置き換えられたら[[ List[String] ]]にしてしまって良さそう
    */
