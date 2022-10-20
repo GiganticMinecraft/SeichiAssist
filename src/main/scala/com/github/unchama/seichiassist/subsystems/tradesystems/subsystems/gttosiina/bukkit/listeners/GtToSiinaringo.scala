@@ -6,6 +6,7 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMain
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.bukkit.traderules.BukkitTrade
+import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.domain.StaticTradeItemFactory
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.util.InventoryUtil.InventoryOps
 import org.bukkit.ChatColor._
@@ -17,7 +18,8 @@ import org.bukkit.inventory.ItemStack
 
 class GtToSiinaringo[F[_]: ConcurrentEffect](
   implicit canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack],
-  gachaAPI: GachaAPI[F, ItemStack, Player]
+  gachaAPI: GachaAPI[F, ItemStack, Player],
+  tradeItemFactory: StaticTradeItemFactory[ItemStack]
 ) extends Listener {
 
   @EventHandler
