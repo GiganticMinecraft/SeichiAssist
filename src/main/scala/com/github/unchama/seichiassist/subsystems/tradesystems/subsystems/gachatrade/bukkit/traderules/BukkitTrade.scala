@@ -25,12 +25,12 @@ object BigOrRegular {
 
 class BukkitTrade(owner: String, gachaPrizeTable: Vector[GachaPrize[ItemStack]])(
   implicit canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
-) extends TradeRule[ItemStack] {
+) extends TradeRule[ItemStack, BigOrRegular] {
 
   /**
    * プレーヤーが入力したアイテムから、交換結果を計算する
    */
-  override def trade(contents: List[ItemStack]): TradeResult[ItemStack] = {
+  override def trade(contents: List[ItemStack]): TradeResult[ItemStack, BigOrRegular] = {
     // 大当たりのアイテム
     val bigList = gachaPrizeTable.filter(GachaRarity.of[ItemStack](_) == Big).map {
       gachaPrize => canBeSignedAsGachaPrize.signWith(owner)(gachaPrize)
@@ -55,11 +55,12 @@ class BukkitTrade(owner: String, gachaPrizeTable: Vector[GachaPrize[ItemStack]])
         すなわち、この実装は交換できるアイテムが必ず単一のアイテムである
         ことが前提となっている。
      */
-    TradeResult[ItemStack](
+    TradeResult(
       tradable.map {
-        case BigOrRegular.Big => TradeSuccessResult(BukkitGachaSkullData.gachaForExchanging, 12)
+        case BigOrRegular.Big =>
+          TradeSuccessResult(BukkitGachaSkullData.gachaForExchanging, 12, Big)
         case BigOrRegular.Regular =>
-          TradeSuccessResult(BukkitGachaSkullData.gachaForExchanging, 3)
+          TradeSuccessResult(BukkitGachaSkullData.gachaForExchanging, 3, Regular)
       },
       nonTradable
     )
