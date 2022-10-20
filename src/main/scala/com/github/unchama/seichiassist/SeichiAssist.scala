@@ -393,7 +393,8 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val gachaTicketSystem: subsystems.gacha.subsystems.gachaticket.System[IO] =
     subsystems.gacha.subsystems.gachaticket.System.wired[IO]
 
-  private lazy val gtToSiinaSystem: Subsystem[IO] =
+  private lazy val gtToSiinaSystem
+    : subsystems.tradesystems.subsystems.gttosiina.System[IO, ItemStack] =
     subsystems.tradesystems.subsystems.gttosiina.System.wired[IO]
 
   private lazy val gachaTradeSystem: Subsystem[IO] =
