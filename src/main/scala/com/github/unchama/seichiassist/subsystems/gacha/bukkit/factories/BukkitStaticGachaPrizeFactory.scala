@@ -28,23 +28,6 @@ object BukkitStaticGachaPrizeFactory extends StaticGachaPrizeFactory[ItemStack] 
       setItemMeta(meta)
   }
 
-  override val getMaxRingo: String => ItemStack = (name: String) =>
-    new ItemStack(Material.GOLDEN_APPLE, 1).tap { itemStack =>
-      import itemStack._
-      setDurability(1.toShort)
-      val meta = getItemMeta
-      meta.setDisplayName(s"$YELLOW$BOLD${ITALIC}椎名林檎")
-      meta.setLore(
-        List(
-          s"$RESET${GRAY}使用するとマナが全回復します",
-          s"$RESET${AQUA}マナ完全回復",
-          s"$RESET${DARK_GREEN}所有者:$name",
-          s"$RESET${GRAY}ガチャ景品と交換しました。"
-        ).asJava
-      )
-      setItemMeta(meta)
-    }
-
   override val mineHeadItem: ItemStack =
     new ItemStack(Material.CARROT_STICK, 1, 1.toShort).tap { itemStack =>
       import itemStack._
