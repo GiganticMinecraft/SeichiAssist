@@ -5,7 +5,10 @@ import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.traderules.BigOrRegular
-import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.domain.{GachaListProvider, GachaTradeRule}
+import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.domain.{
+  GachaListProvider,
+  GachaTradeRule
+}
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.util.InventoryUtil.InventoryOps
 import org.bukkit.ChatColor._

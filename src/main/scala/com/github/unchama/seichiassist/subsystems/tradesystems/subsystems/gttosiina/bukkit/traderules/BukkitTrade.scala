@@ -5,7 +5,11 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGach
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity.Gigantic
 import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.GachaPrize
-import com.github.unchama.seichiassist.subsystems.tradesystems.domain.{TradeResult, TradeRule, TradeSuccessResult}
+import com.github.unchama.seichiassist.subsystems.tradesystems.domain.{
+  TradeResult,
+  TradeRule,
+  TradeSuccessResult
+}
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.domain.StaticTradeItemFactory
 import org.bukkit.inventory.ItemStack
 
