@@ -76,9 +76,9 @@ commands:
     description: Event command.
     permission: seichiassist.event
     permission-message: *denied
-  subhome:
-    description: Subhome operation command.
-    permission: seichiassist.subhome
+  home:
+    description: Home operation command.
+    permission: seichiassist.home
     permission-message: *denied
   gtfever:
     description: GiganticFever start command.
@@ -146,7 +146,7 @@ permissions:
       - seichiassist.achievenemt
       - seichiassist.halfguard
       - seichiassist.event
-      - seichiassist.subhome
+      - seichiassist.home
       - seichiassist.gtfever
       - seichiassist.minehead
       - seichiassist.x-transfer

@@ -8,6 +8,7 @@ import com.github.unchama.seichiassist.util.TimeUtils
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
+import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.{Bukkit, Sound}
 
 object VotingFairyTask {
@@ -29,6 +30,11 @@ object VotingFairyTask {
       speak(p, s"じゃーねー！${p.getName}", b = true)
       p.sendMessage(s"$RESET$YELLOW${BOLD}妖精はどこかへ行ってしまった")
       playerdata.usingVotingFairy_$eq(false)
+    } else {
+      // ハロウィンイベントのメッセージを送信(普通のメッセージと同時に送信されないように15秒ずらす)
+      new BukkitRunnable {
+        override def run(): Unit = VotingFairyListener.sendHalloweenEventMessage(p)
+      }.runTaskLater(SeichiAssist.instance, 15 * 20L)
     }
   }
 

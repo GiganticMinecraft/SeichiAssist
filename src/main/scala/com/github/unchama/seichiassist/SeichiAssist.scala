@@ -72,6 +72,7 @@ import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDime
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
+import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository
 import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaReadApi}
@@ -79,7 +80,6 @@ import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.present.infrastructure.GlobalPlayerAccessor
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
-import com.github.unchama.seichiassist.subsystems.subhome.SubHomeReadAPI
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.GtToSiinaAPI
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global._
@@ -359,11 +359,11 @@ class SeichiAssist extends JavaPlugin() {
       .wired[IO](seichiAssistConfig.discordNotificationConfiguration)
   }
 
-  lazy val subhomeSystem: subhome.System[IO] = {
+  lazy val homeSystem: home.System[IO] = {
     import PluginExecutionContexts.{asyncShift, onMainThread}
 
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-    subhome.System.wired
+    home.System.wired
   }
 
   lazy val presentSystem: Subsystem[IO] = {
@@ -422,7 +422,7 @@ class SeichiAssist extends JavaPlugin() {
     fourDimensionalPocketSystem,
     gachaPointSystem,
     discordNotificationSystem,
-    subhomeSystem,
+    homeSystem,
     presentSystem,
     anywhereEnderSystem,
     gachaSystem,
@@ -578,7 +578,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
     implicit val globalNotification: DiscordNotificationAPI[IO] =
       discordNotificationSystem.globalNotification
-    implicit val subHomeReadApi: SubHomeReadAPI[IO] = subhomeSystem.api
+    implicit val subHomeReadApi: HomeReadAPI[IO] = homeSystem.api
     implicit val everywhereEnderChestApi: AnywhereEnderChestAPI[IO] =
       anywhereEnderSystem.accessApi
     implicit val sharedInventoryAPI: SharedInventoryAPI[IO, Player] =

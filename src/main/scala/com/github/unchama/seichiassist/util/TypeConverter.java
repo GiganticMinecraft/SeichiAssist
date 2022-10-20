@@ -6,14 +6,14 @@ public final class TypeConverter {
 
     }
 
-    public static int toSecond(int _tick) {
-        return _tick / 20;
+    public static long toSecond(long _tick) {
+        return _tick / 20L;
     }
 
-    public static String toTimeString(int seconds) {
-        final int totalMinutes = seconds / 60;
-        final int hours = totalMinutes / 60;
-        final int minutes = totalMinutes % 60;
+    public static String toTimeString(long seconds) {
+        final long totalMinutes = seconds / 60L;
+        final long hours = totalMinutes / 60L;
+        final long minutes = totalMinutes % 60L;
 
         return (hours == 0 ? "" : hours + "時間") + minutes + "分";
     }
