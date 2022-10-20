@@ -82,8 +82,9 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
 
         val nineStackAmount = 576
         val receiveAmount = Math.min(hasAmount, nineStackAmount)
+        val updatedAmount = hasAmount - receiveAmount
 
-        sql"UPDATE playerdata numofsorryforbug = $receiveAmount WHERE uuid = ${uuid.toString}"
+        sql"UPDATE playerdata SET numofsorryforbug = $updatedAmount WHERE uuid = ${uuid.toString}"
           .execute()
           .apply()
 
