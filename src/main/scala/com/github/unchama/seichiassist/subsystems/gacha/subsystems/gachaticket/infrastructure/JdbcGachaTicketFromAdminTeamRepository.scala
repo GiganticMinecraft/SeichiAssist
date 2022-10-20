@@ -73,7 +73,7 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
     NonServerThreadContextShift[F].shift >> Sync[F].delay {
       DB.localTx { implicit session =>
         val hasAmount =
-          sql"SELECT numofsorryforbug FROM playerdata WHERE uuid = ${uuid.toString}"
+          sql"SELECT numofsorryforbug FROM playerdata WHERE uuid = ${uuid.toString} FOR UPDATE"
             .map(_.int("numofsorryforbug"))
             .toList()
             .apply()
