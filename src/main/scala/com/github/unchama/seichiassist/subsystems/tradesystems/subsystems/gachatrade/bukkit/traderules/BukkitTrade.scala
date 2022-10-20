@@ -55,12 +55,12 @@ class BukkitTrade(owner: String, gachaPrizeTable: Vector[GachaPrize[ItemStack]])
         すなわち、この実装は交換できるアイテムが必ず単一のアイテムである
         ことが前提となっている。
      */
-    TradeResult(
+    TradeResult[ItemStack, BigOrRegular](
       tradable.map {
         case BigOrRegular.Big =>
-          TradeSuccessResult(BukkitGachaSkullData.gachaForExchanging, 12, Big)
+          TradeSuccessResult(BukkitGachaSkullData.gachaForExchanging, 12, BigOrRegular.Big)
         case BigOrRegular.Regular =>
-          TradeSuccessResult(BukkitGachaSkullData.gachaForExchanging, 3, Regular)
+          TradeSuccessResult(BukkitGachaSkullData.gachaForExchanging, 3, BigOrRegular.Regular)
       },
       nonTradable
     )
