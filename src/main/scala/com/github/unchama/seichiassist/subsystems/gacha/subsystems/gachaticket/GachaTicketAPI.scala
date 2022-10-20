@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket
 import com.github.unchama.seichiassist.subsystems.gacha.domain.PlayerName
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{
   GachaTicketAmount,
-  ReceiptResultOfGachaTicketFromAdminTeam
+  GrantResultOfGachaTicketFromAdminTeam
 }
 
 import java.util.UUID
@@ -21,7 +21,7 @@ trait GachaTicketAPI[F[_]] {
   def addByPlayerName(
     amount: GachaTicketAmount,
     playerName: PlayerName
-  ): F[ReceiptResultOfGachaTicketFromAdminTeam]
+  ): F[GrantResultOfGachaTicketFromAdminTeam]
 
   /**
    * @return 指定されたUUIDの「運営からのガチャ券」の枚数を増加させる作用
@@ -29,7 +29,7 @@ trait GachaTicketAPI[F[_]] {
   def addByUUID(
     amount: GachaTicketAmount,
     uuid: UUID
-  ): F[ReceiptResultOfGachaTicketFromAdminTeam]
+  ): F[GrantResultOfGachaTicketFromAdminTeam]
 
   /**
    * @return 運営からのガチャ券を受け取った枚数

@@ -23,7 +23,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{
   GachaTicketAmount,
-  ReceiptResultOfGachaTicketFromAdminTeam
+  GrantResultOfGachaTicketFromAdminTeam
 }
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
@@ -159,19 +159,19 @@ class GachaCommand[
               "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}".r
 
             (if (uuidRegex.matches(value)) {
-               Kleisli.liftF[F, CommandSender, ReceiptResultOfGachaTicketFromAdminTeam](
+               Kleisli.liftF[F, CommandSender, GrantResultOfGachaTicketFromAdminTeam](
                  gachaTicketAPI.addByUUID(gachaTicketAmount, UUID.fromString(value))
                )
              } else {
-               Kleisli.liftF[F, CommandSender, ReceiptResultOfGachaTicketFromAdminTeam](
+               Kleisli.liftF[F, CommandSender, GrantResultOfGachaTicketFromAdminTeam](
                  gachaTicketAPI.addByPlayerName(gachaTicketAmount, PlayerName(value))
                )
              }).flatMap {
-              case ReceiptResultOfGachaTicketFromAdminTeam.Success =>
+              case GrantResultOfGachaTicketFromAdminTeam.Success =>
                 MessageEffectF(s"${GREEN}ガチャ券${amount}枚加算成功")
-              case ReceiptResultOfGachaTicketFromAdminTeam.NotExists =>
+              case GrantResultOfGachaTicketFromAdminTeam.NotExists =>
                 MessageEffectF(s"${RED}プレイヤーが存在しません。")
-              case ReceiptResultOfGachaTicketFromAdminTeam.MultipleFound =>
+              case GrantResultOfGachaTicketFromAdminTeam.MultipleFound =>
                 MessageEffectF(s"${RED}加算は成功しましたが、複数プレイヤーが存在しました。")
             }
         }

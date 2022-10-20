@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.PlayerName
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{
   GachaTicketAmount,
   GachaTicketFromAdminTeamRepository,
-  ReceiptResultOfGachaTicketFromAdminTeam
+  GrantResultOfGachaTicketFromAdminTeam
 }
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
@@ -37,7 +37,7 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
   override def addByPlayerName(
     amount: GachaTicketAmount,
     playerName: PlayerName
-  ): F[ReceiptResultOfGachaTicketFromAdminTeam] = {
+  ): F[GrantResultOfGachaTicketFromAdminTeam] = {
     NonServerThreadContextShift[F].shift >> Sync[F].delay {
       DB.localTx { implicit session =>
         val affectedRows =
@@ -56,7 +56,7 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
   override def addByUUID(
     amount: GachaTicketAmount,
     uuid: UUID
-  ): F[ReceiptResultOfGachaTicketFromAdminTeam] = {
+  ): F[GrantResultOfGachaTicketFromAdminTeam] = {
     NonServerThreadContextShift[F].shift >> Sync[F].delay {
       DB.localTx { implicit session =>
         val affectedRows =
@@ -92,11 +92,11 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
     }
   }
 
-  private def getReceiptResult(updatedRows: Int): ReceiptResultOfGachaTicketFromAdminTeam =
+  private def getReceiptResult(updatedRows: Int): GrantResultOfGachaTicketFromAdminTeam =
     updatedRows match {
-      case 0 => ReceiptResultOfGachaTicketFromAdminTeam.NotExists
-      case 1 => ReceiptResultOfGachaTicketFromAdminTeam.Success
-      case _ => ReceiptResultOfGachaTicketFromAdminTeam.MultipleFound
+      case 0 => GrantResultOfGachaTicketFromAdminTeam.NotExists
+      case 1 => GrantResultOfGachaTicketFromAdminTeam.Success
+      case _ => GrantResultOfGachaTicketFromAdminTeam.MultipleFound
     }
 
 }

@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.PlayerName
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{
   GachaTicketAmount,
   GachaTicketFromAdminTeamRepository,
-  ReceiptResultOfGachaTicketFromAdminTeam
+  GrantResultOfGachaTicketFromAdminTeam
 }
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.infrastructure.JdbcGachaTicketFromAdminTeamRepository
 
@@ -34,13 +34,13 @@ object System {
         override def addByPlayerName(
           amount: GachaTicketAmount,
           playerName: PlayerName
-        ): F[ReceiptResultOfGachaTicketFromAdminTeam] =
+        ): F[GrantResultOfGachaTicketFromAdminTeam] =
           gachaTicketFromAdminTeamRepository.addByPlayerName(amount, playerName)
 
         override def addByUUID(
           amount: GachaTicketAmount,
           uuid: UUID
-        ): F[ReceiptResultOfGachaTicketFromAdminTeam] =
+        ): F[GrantResultOfGachaTicketFromAdminTeam] =
           gachaTicketFromAdminTeamRepository.addByUUID(amount, uuid)
 
         override def receive(uuid: UUID): F[GachaTicketAmount] =
