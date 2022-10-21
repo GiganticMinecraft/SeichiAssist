@@ -15,8 +15,8 @@ object GrantResultOfGachaTicketFromAdminTeam {
   case object NotExists extends GrantResultOfGachaTicketFromAdminTeam
 
   /**
-   * 複数見つかった
+   * 付与対象が複数見つかり、全員に付与した
    */
-  case object MultipleFound extends GrantResultOfGachaTicketFromAdminTeam
+  case object GrantedToMultiplePlayers extends GrantResultOfGachaTicketFromAdminTeam
 
 }

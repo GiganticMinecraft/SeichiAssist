@@ -99,7 +99,7 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
     updatedRows match {
       case 0 => GrantResultOfGachaTicketFromAdminTeam.NotExists
       case 1 => GrantResultOfGachaTicketFromAdminTeam.Success
-      case _ => GrantResultOfGachaTicketFromAdminTeam.MultipleFound
+      case _ => GrantResultOfGachaTicketFromAdminTeam.GrantedToMultiplePlayers
     }
 
 }
