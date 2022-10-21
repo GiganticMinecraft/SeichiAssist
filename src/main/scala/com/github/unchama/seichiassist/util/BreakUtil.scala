@@ -492,6 +492,21 @@ object BreakUtil {
   }
 
   /**
+   * 重力値計算対象のブロックかどうかを判定します。
+   * 対象ブロック：以下のいずれかを満たす
+   *  - Material.isSolid == true になるブロック（ただし岩盤を除く）
+   *  - 液体ブロック（水,溶岩）
+   * ref: [バージョン1.12.x時の最新記事アーカイブ](https://minecraft.fandom.com/wiki/Solid_block?oldid=1132868)
+   */
+  private def isAffectedByGravity(material: Material): Boolean = {
+    material match {
+      case Material.BEDROCK                                          => false
+      case m if MaterialSets.fluidMaterials.contains(m) || m.isSolid => true
+      case _                                                         => false
+    }
+  }
+
+  /**
    * @param player
    *   破壊プレイヤー
    * @param block
@@ -570,7 +585,7 @@ object BreakUtil {
 
     // 3. 重力値計算
     /**
-     * MaterialSets.transparentMaterialsに入っているMaterialを持つブロックが
+     * isAffectedByGravityを満たさないMaterialを持つブロックが
      * この回数以上連続したとき、重力値のカウントをストップする。
      */
     val surfaceThreshold = 3
@@ -595,8 +610,8 @@ object BreakUtil {
        * 確認対象ブロック
        */
       val target = block.getRelative(0, blockRelativeHeight + offsetY, 0)
-      // 対象ブロックが地上判定ブロックの場合
-      if (MaterialSets.transparentMaterials.contains(target.getType)) {
+      // 対象ブロックが重力値に影響を与えるブロックではない場合
+      if (!isAffectedByGravity(target.getType)) {
         // カウンタを加算
         surfaceCandidateCount += 1
         if (surfaceCandidateCount >= surfaceThreshold) {

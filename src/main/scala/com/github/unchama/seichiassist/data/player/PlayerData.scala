@@ -83,7 +83,7 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
 
   var minestack = new MineStack()
   // プレイ時間
-  var playTick = 0
+  var playTick = 0L
   // 合計経験値
   var totalexp = 0L
   // 特典受け取り済み投票数
@@ -106,7 +106,8 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
 
   // 二つ名関連用にp_vote(投票数)を引っ張る。(予期せぬエラー回避のため名前を複雑化)
   // TODO: Achievementシステムが再実装させたら速攻でこれを消すべき
-  var p_vote_forT: Int = SeichiAssist.instance.voteSystem.api.voteCounter(uuid).unsafeRunSync().value
+  var p_vote_forT: Int =
+    SeichiAssist.instance.voteSystem.api.voteCounter(uuid).unsafeRunSync().value
   // 二つ名配布予約NOの保存
   var giveachvNo = 0
   // 実績ポイント用
@@ -118,8 +119,8 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
   var giganticBerserk: GiganticBerserk = GiganticBerserk()
   // ハーフブロック破壊抑制用
 
-  // プレイ時間差分計算用int
-  private var totalPlayTick: Option[Int] = None
+  // プレイ時間の差分を計算するための変数
+  private var totalPlayTick: Option[Long] = None
 
   // region calculated
   // TODO many properties here may be inlined and deleted
@@ -269,7 +270,7 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
   // 総プレイ時間を更新する
   def updatePlayTick(): Unit = {
     // WARN: 1分毎にupdatePlayTickが呼び出されるというコンテクストに依存している.
-    val nowTotalPlayTick = player.getStatistic(Statistic.PLAY_ONE_TICK)
+    val nowTotalPlayTick = player.getStatistic(Statistic.PLAY_ONE_TICK).toLong
     val diff = nowTotalPlayTick - totalPlayTick.getOrElse(nowTotalPlayTick)
 
     totalPlayTick = Some(nowTotalPlayTick)
