@@ -110,13 +110,13 @@ class BukkitDrawGacha[F[_]: Sync: OnMinecraftServerThread](
                 }
               case _ => Sync[F].unit
             }
-
-            if (count > 1) {
-              Sync[F].delay {
-                player.sendMessage(s"$AQUA${count}回ガチャを回しました。")
-              }
-            } else Sync[F].unit
         }
+      _ <-
+        if (count > 1) {
+          Sync[F].delay {
+            player.sendMessage(s"$AQUA${count}回ガチャを回しました。")
+          }
+        } else Sync[F].unit
     } yield ()
   }
 }
