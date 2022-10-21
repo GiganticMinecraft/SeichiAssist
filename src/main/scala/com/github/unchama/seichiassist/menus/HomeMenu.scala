@@ -8,7 +8,7 @@ import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.subsystems.subhome.SubHomeReadAPI
 import com.github.unchama.seichiassist.subsystems.subhome.domain.{SubHome, SubHomeId}
-import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
+import com.github.unchama.seichiassist.ManagedWorld
 import com.github.unchama.targetedeffect._
 import com.github.unchama.targetedeffect.player.PlayerEffects._
 import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
@@ -55,7 +55,7 @@ object HomeMenu extends Menu {
     import buttonComputations._
 
     val subHomePointPart = for {
-      subHomeNumber <- 1 to SeichiAssist.seichiAssistConfig.getSubHomeMax
+      subHomeNumber <- 1 to SubHome.maxSubHomePerPlayer
     } yield {
       val column = refineV[Interval.ClosedOpen[0, 9]](subHomeNumber - 1)
       column match {
@@ -72,7 +72,7 @@ object HomeMenu extends Menu {
     import cats.implicits._
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
     val dynamicPartComputation = (for {
-      subHomeNumber <- 1 to SeichiAssist.seichiAssistConfig.getSubHomeMax
+      subHomeNumber <- 1 to SubHome.maxSubHomePerPlayer
     } yield {
       val column = refineV[Interval.ClosedOpen[0, 9]](subHomeNumber - 1)
       implicit val ioCanReadSubHome: SubHomeReadAPI[IO] = environment.ioCanReadSubHome
