@@ -303,7 +303,7 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
 
   def convertEffectPointToAchievePoint(implicit voteAPI: VoteAPI[IO, Player]): Unit = {
     achievePoint = achievePoint.copy(conversionCount = achievePoint.conversionCount + 1)
-    voteAPI.decreaseEffectPoint(uuid, EffectPoint(10))
+    voteAPI.decreaseEffectPoint(uuid, EffectPoint(10)).unsafeRunAsyncAndForget()
   }
 
   // パッシブスキルの獲得量表示
