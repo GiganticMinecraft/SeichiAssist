@@ -3,8 +3,9 @@ package com.github.unchama.seichiassist.subsystems.vote.bukkit.actions
 import cats.effect.{Sync, SyncEffect}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.data.{GachaSkullData, ItemData}
+import com.github.unchama.seichiassist.data.ItemData
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.BukkitGachaSkullData
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.application.actions.ReceiveVoteBenefits
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
@@ -31,7 +32,7 @@ class BukkitReceiveVoteBenefits[F[_]: OnMinecraftServerThread: Sync, G[
         _.levelCorrespondingToExp.level
       })
       items =
-        Seq.fill(10 * notReceivedBenefits.value)(GachaSkullData.gachaForVoting) ++
+        Seq.fill(10 * notReceivedBenefits.value)(BukkitGachaSkullData.gachaForVoting) ++
           Seq.fill(notReceivedBenefits.value)(
             if (playerLevel < 50) ItemData.getSuperPickaxe(1)
             else ItemData.getVotingGift(1)

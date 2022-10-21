@@ -12,7 +12,6 @@ import com.github.unchama.menuinventory.slot.button.action.{
 }
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.seichiassist.data.descrptions.PlayerStatsLoreGenerator
-import com.github.unchama.seichiassist.data.GachaSkullData
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
@@ -39,6 +38,8 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
 }
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.PocketSize
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.BukkitGachaSkullData
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.ranking.api.RankingProvider
 import com.github.unchama.seichiassist.task.CoolDownTask
@@ -89,7 +90,8 @@ object FirstPage extends Menu {
     val ioCanOpenPassiveSkillMenu: IO CanOpen PassiveSkillMenu.type,
     val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type,
     val ioCanOpenVoteMenu: IO CanOpen VoteMenu.type,
-    val enderChestAccessApi: AnywhereEnderChestAPI[IO]
+    val enderChestAccessApi: AnywhereEnderChestAPI[IO],
+    val gachaTicketAPI: GachaTicketAPI[IO]
   )
 
   override val frame: MenuFrame =
@@ -426,14 +428,11 @@ object FirstPage extends Menu {
           if (playerData.gachacooldownflag) {
             new CoolDownTask(player, false, true).runTaskLater(SeichiAssist.instance, 20)
 
-            // NOTE: playerData.unclaimedApologyItemsは信頼できる値ではない
-            // プレーヤーがログインしている最中に配布処理が行われた場合DB上の値とメモリ上の値に差分が出る。
-            // よって配布処理はすべてバックエンドと協調しながら行わなければならない。
             val numberOfItemsToGive =
-              SeichiAssist.databaseGateway.playerDataManipulator.givePlayerBug(player)
+              environment.gachaTicketAPI.receive(player.getUniqueId).unsafeRunSync().value
 
             if (numberOfItemsToGive > 0) {
-              val itemToGive = GachaSkullData.gachaSkull
+              val itemToGive = BukkitGachaSkullData.gachaSkull
               val itemStacksToGive = Seq.fill(numberOfItemsToGive)(itemToGive)
 
               SequentialEffect(
