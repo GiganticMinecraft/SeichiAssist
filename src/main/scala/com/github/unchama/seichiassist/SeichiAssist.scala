@@ -34,14 +34,14 @@ import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
 import com.github.unchama.seichiassist.SeichiAssist.seichiAssistConfig
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
-import com.github.unchama.seichiassist.commands.legacy.{DonationCommand, GachaCommand}
+import com.github.unchama.seichiassist.commands.legacy.DonationCommand
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
   asyncShift,
   onMainThread
 }
 import com.github.unchama.seichiassist.data.player.PlayerData
-import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
+import com.github.unchama.seichiassist.data.{MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.domain.actions.{
   GetNetworkConnectionCount,
@@ -69,6 +69,8 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
   FastDiggingSettingsApi
 }
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
+import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
@@ -78,12 +80,14 @@ import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.present.infrastructure.GlobalPlayerAccessor
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
+import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.GtToSiinaAPI
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global._
 import com.github.unchama.util.{ActionStatus, ClassUtils}
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import org.bukkit.ChatColor._
 import org.bukkit.entity.{Entity, Player, Projectile}
+import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.{Bukkit, Material}
 import org.flywaydb.core.Flyway
@@ -272,6 +276,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
+    implicit val gtToSiinaAPI: GtToSiinaAPI[ItemStack] = gtToSiinaSystem.api
 
     subsystems.seasonalevents.System.wired[IO, SyncIO, IO](this)
   }
@@ -380,6 +385,23 @@ class SeichiAssist extends JavaPlugin() {
       .wired[SyncIO, IO](seichiAssistConfig.getAnywhereEnderConfiguration)
   }
 
+  private lazy implicit val gachaAPI: GachaAPI[IO, ItemStack, Player] = gachaSystem.api
+
+  private lazy val gachaSystem: subsystems.gacha.System[IO] = {
+    implicit val gachaTicketAPI: GachaTicketAPI[IO] = gachaTicketSystem.api
+    subsystems.gacha.System.wired.unsafeRunSync()
+  }
+
+  private lazy val gachaTicketSystem: subsystems.gacha.subsystems.gachaticket.System[IO] =
+    subsystems.gacha.subsystems.gachaticket.System.wired[IO]
+
+  private lazy val gtToSiinaSystem
+    : subsystems.tradesystems.subsystems.gttosiina.System[IO, ItemStack] =
+    subsystems.tradesystems.subsystems.gttosiina.System.wired[IO]
+
+  private lazy val gachaTradeSystem: Subsystem[IO] =
+    subsystems.tradesystems.subsystems.gachatrade.System.wired[IO]
+
   private lazy val sharedInventorySystem: subsystems.sharedinventory.System[IO] =
     subsystems.sharedinventory.System.wired[IO]
 
@@ -403,6 +425,10 @@ class SeichiAssist extends JavaPlugin() {
     homeSystem,
     presentSystem,
     anywhereEnderSystem,
+    gachaSystem,
+    gachaTicketSystem,
+    gtToSiinaSystem,
+    gachaTradeSystem,
     sharedInventorySystem
   )
 
@@ -534,11 +560,6 @@ class SeichiAssist extends JavaPlugin() {
       SeichiAssist.seichiAssistConfig.getPW
     )
 
-    // mysqlからガチャデータ読み込み
-    if (!SeichiAssist.databaseGateway.gachaDataManipulator.loadGachaData()) {
-      throw new Exception("ガチャデータのロードに失敗しました。サーバーを停止します…")
-    }
-
     // mysqlからMineStack用ガチャデータ読み込み
     if (!SeichiAssist.databaseGateway.mineStackGachaDataManipulator.loadMineStackGachaData()) {
       throw new Exception("MineStack用ガチャデータのロードに失敗しました。サーバーを停止します…")
@@ -562,6 +583,8 @@ class SeichiAssist extends JavaPlugin() {
       anywhereEnderSystem.accessApi
     implicit val sharedInventoryAPI: SharedInventoryAPI[IO, Player] =
       sharedInventorySystem.api
+    implicit val gachaTicketAPI: GachaTicketAPI[IO] =
+      gachaTicketSystem.api
 
     val menuRouter = TopLevelRouter.apply
     import menuRouter.{canOpenStickMenu, ioCanOpenCategorizedMineStackMenu}
@@ -581,7 +604,6 @@ class SeichiAssist extends JavaPlugin() {
 
     // コマンドの登録
     Map(
-      "gacha" -> new GachaCommand(),
       "vote" -> VoteCommand.executor,
       "donation" -> new DonationCommand,
       "map" -> MapCommand.executor,
@@ -779,8 +801,6 @@ class SeichiAssist extends JavaPlugin() {
 }
 
 object SeichiAssist {
-  // Gachadataに依存するデータリスト
-  val gachadatalist: mutable.ArrayBuffer[GachaPrize] = mutable.ArrayBuffer()
   // Playerdataに依存するデータリスト
   val playermap: mutable.HashMap[UUID, PlayerData] = mutable.HashMap()
   // プレイ時間ランキング表示用データリスト
