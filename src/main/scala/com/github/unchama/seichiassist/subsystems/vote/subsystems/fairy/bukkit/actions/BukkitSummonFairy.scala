@@ -34,7 +34,7 @@ class BukkitSummonFairy[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
       _ <- voteAPI.decreaseEffectPoint(uuid, EffectPoint(fairySummonCost.value * 2))
       _ <- fairyAPI.updateFairyRecoveryManaAmount(uuid, recoveryManaAmount)
       _ <- fairyAPI.updateFairyEndTime(player, fairySummonCost.endTime)
-      _ <- new BukkitFairySpeech[F, G].summonSpeech(player)
+      _ <- fairyAPI.summonSpeech(player)
       _ <- MessageEffectF(
         List(
           s"$RESET$YELLOW${BOLD}妖精を呼び出しました！",

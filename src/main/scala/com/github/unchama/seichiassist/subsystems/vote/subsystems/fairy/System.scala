@@ -162,6 +162,9 @@ object System {
 
             override def speechEndTime(player: Player): IO[Unit] =
               fairySpeech.speechEndTime(player)
+
+            override def summonSpeech(player: Player): IO[Unit] =
+              fairySpeech.summonSpeech(player)
           }
 
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[IO, _]] =
