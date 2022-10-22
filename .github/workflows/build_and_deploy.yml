@@ -31,6 +31,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+      - name: Fetch develop
+        run: git fetch origin develop
+      - name: Merge develop
+        run: git merge --no-ff origin/develop
       - name: Check SQL migration files
         run: |
           ls src/main/resources/db/migration | grep -o -E "^V([0-9]+\.)?([0-9]+\.)?([0-9]+)" | awk 'a[$0]++ {print $0 > "result.txt"}'
