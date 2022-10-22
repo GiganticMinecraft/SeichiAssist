@@ -7,21 +7,20 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.FairyRoutine
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions.BukkitRecoveryMana
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairySpeech
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{FairyPersistence, FairySpeech}
 import org.bukkit.entity.Player
 
 import scala.concurrent.duration.FiniteDuration
 
 class BukkitFairyRoutine(
   implicit breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
-  fairyAPI: FairyAPI[IO, SyncIO, Player],
   voteAPI: VoteAPI[IO, Player],
   manaApi: ManaApi[IO, SyncIO, Player],
   context: RepeatingTaskContext,
-  fairySpeech: FairySpeech[IO, Player]
+  fairySpeech: FairySpeech[IO, Player],
+  fairyPersistence: FairyPersistence[IO]
 ) extends FairyRoutine[IO, SyncIO, Player] {
 
   override def start(player: Player): IO[Nothing] = {

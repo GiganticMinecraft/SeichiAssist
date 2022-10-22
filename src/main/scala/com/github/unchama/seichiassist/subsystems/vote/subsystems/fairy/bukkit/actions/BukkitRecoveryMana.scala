@@ -6,10 +6,9 @@ import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.RecoveryMana
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairySpeech
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{AppleAmount, FairyAppleConsumeStrategy, FairyManaRecoveryState}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{FairyPersistence, FairySpeech}
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffectF
@@ -24,10 +23,10 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
   player: Player
 )(
   implicit breakCountAPI: BreakCountAPI[F, G, Player],
-  fairyAPI: FairyAPI[F, G, Player],
   voteAPI: VoteAPI[F, Player],
   manaApi: ManaApi[F, G, Player],
-  fairySpeech: FairySpeech[F, Player]
+  fairySpeech: FairySpeech[F, Player],
+  fairyPersistence: FairyPersistence[F]
 ) extends RecoveryMana[F] {
 
   private val uuid: UUID = player.getUniqueId
@@ -37,11 +36,11 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
 
   override def recovery: F[Unit] =
     for {
-      isFairyUsing <- fairyAPI.isFairyUsing(player)
-      fairyEndTimeOpt <- fairyAPI.fairyEndTime(player)
+      isFairyUsing <- fairyPersistence.isFairyUsing(uuid)
+      fairyEndTimeOpt <- fairyPersistence.fairyEndTime(uuid)
       endTime = fairyEndTimeOpt.get.endTimeOpt.get
       _ <- {
-        fairySpeech.bye(player) >> fairyAPI.updateIsFairyUsing(player, isFairyUsing = false)
+        fairySpeech.bye(player) >> fairyPersistence.updateIsFairyUsing(uuid, isFairyUsing = false)
       }.whenA(
         // 終了時間が今よりも過去だったとき(つまり有効時間終了済み)
         isFairyUsing && endTime.isBefore(LocalDateTime.now())
@@ -72,7 +71,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
         )
 
       _ <- {
-        fairyAPI.increaseAppleAteByFairy(uuid, AppleAmount(finallyAppleConsumptionAmount)) >>
+        fairyPersistence.increaseAppleAteByFairy(uuid, AppleAmount(finallyAppleConsumptionAmount)) >>
           ContextCoercion(
             manaApi.manaAmount(player).restoreAbsolute(ManaAmount(recoveryManaAmount))
           ) >>
@@ -100,7 +99,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
   private def computeAppleConsumptionAmount: F[Int] = for {
     seichiAmountData <- ContextCoercion(breakCountAPI.seichiAmountDataRepository(player).read)
     chainVoteNumber <- voteAPI.chainVoteDayNumber(uuid)
-    appleOpenState <- fairyAPI.appleOpenState(uuid)
+    appleOpenState <- fairyPersistence.appleOpenState(uuid)
     oldManaAmount <- ContextCoercion {
       manaApi.readManaAmount(player)
     }
@@ -149,7 +148,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
    * がちゃりんごの消費量を計算します。
    */
   private def computeFinallyAppleConsumptionAmount(appleConsumptionAmount: Int): F[Int] = for {
-    appleOpenState <- fairyAPI.appleOpenState(uuid)
+    appleOpenState <- fairyPersistence.appleOpenState(uuid)
     gachaRingoObject <- LiftIO[F].liftIO {
       MineStackObjectList.findByName("gachaimo")
     }
@@ -169,8 +168,8 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
    * マナの回復量を計算します。
    */
   private def computeManaRecoveryAmount(appleConsumptionAmount: Int): F[Int] = for {
-    defaultRecoveryManaAmount <- fairyAPI.fairyRecoveryMana(uuid)
-    appleOpenState <- fairyAPI.appleOpenState(uuid)
+    defaultRecoveryManaAmount <- fairyPersistence.fairyRecoveryMana(uuid)
+    appleOpenState <- fairyPersistence.appleOpenState(uuid)
     oldManaAmount <- ContextCoercion {
       manaApi.readManaAmount(player)
     }
