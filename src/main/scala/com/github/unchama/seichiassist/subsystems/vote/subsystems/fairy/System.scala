@@ -11,7 +11,6 @@ import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.FairyRoutine
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.repository.{
   FairyManaRecoveryRoutineFiberRepositoryDefinition,
   SpeechServiceRepositoryDefinitions
@@ -63,12 +62,25 @@ object System {
             SpeechServiceRepositoryDefinitions.finalization[SyncIO, Player]
           )
       )
+      _fairyRoutine = new BukkitFairyRoutine(
+        fairySpeechProvider(speechServiceRepositoryControls.repository)
+      )
+      fairyRecoveryRoutineFiberRepositoryControls <- BukkitRepositoryControls.createHandles(
+        RepositoryDefinition
+          .Phased
+          .TwoPhased(
+            FairyManaRecoveryRoutineFiberRepositoryDefinition
+              .initialization[Player](_fairyRoutine),
+            FairyManaRecoveryRoutineFiberRepositoryDefinition.finalization[SyncIO, Player]
+          )
+      )
     } yield {
       new System[IO, SyncIO, Player] {
-        implicit val fairySpeechServiceRepository
-          : PlayerDataRepository[FairySpeechService[SyncIO]] =
+        val fairySpeechServiceRepository: PlayerDataRepository[FairySpeechService[SyncIO]] =
           speechServiceRepositoryControls.repository
-        implicit val fairySpeech: FairySpeech[IO, Player] = fairySpeechProvider(fairySpeechServiceRepository)
+        val fairySpeech: FairySpeech[IO, Player] = fairySpeechProvider(
+          fairySpeechServiceRepository
+        )
 
         override implicit val api: FairyAPI[IO, SyncIO, Player] =
           new FairyAPI[IO, SyncIO, Player] {
@@ -152,25 +164,11 @@ object System {
               fairySpeech.speechEndTime(player)
           }
 
-        implicit val fairyRoutine: FairyRoutine[IO, SyncIO, Player] =
-          new BukkitFairyRoutine
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[IO, _]] =
+          Seq(speechServiceRepositoryControls, fairyRecoveryRoutineFiberRepositoryControls).map(
+            _.coerceFinalizationContextTo[IO]
+          )
 
-        override val managedRepositoryControls: Seq[BukkitRepositoryControls[IO, _]] = {
-          BukkitRepositoryControls
-            .createHandles(
-              RepositoryDefinition
-                .Phased
-                .TwoPhased(
-                  FairyManaRecoveryRoutineFiberRepositoryDefinition.initialization[Player],
-                  FairyManaRecoveryRoutineFiberRepositoryDefinition.finalization[SyncIO, Player]
-                )
-            )
-            .map { fairyRecoveryRoutineFiberRepositoryControls =>
-              Seq(speechServiceRepositoryControls, fairyRecoveryRoutineFiberRepositoryControls)
-                .map(_.coerceFinalizationContextTo[IO])
-            }
-            .unsafeRunSync()
-        }
         override val listeners: Seq[Listener] = Seq(new FairyPlayerJoinGreeter)
       }
     }

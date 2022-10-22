@@ -14,12 +14,11 @@ import org.bukkit.entity.Player
 
 import scala.concurrent.duration.FiniteDuration
 
-class BukkitFairyRoutine(
+class BukkitFairyRoutine(fairySpeech: FairySpeech[IO, Player])(
   implicit breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
   voteAPI: VoteAPI[IO, Player],
   manaApi: ManaApi[IO, SyncIO, Player],
   context: RepeatingTaskContext,
-  fairySpeech: FairySpeech[IO, Player],
   fairyPersistence: FairyPersistence[IO]
 ) extends FairyRoutine[IO, SyncIO, Player] {
 
