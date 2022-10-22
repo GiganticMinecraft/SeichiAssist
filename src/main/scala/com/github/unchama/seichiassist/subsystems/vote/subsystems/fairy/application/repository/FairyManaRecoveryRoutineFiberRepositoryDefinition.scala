@@ -7,9 +7,6 @@ import com.github.unchama.datarepository.template.finalization.RepositoryFinaliz
 import com.github.unchama.datarepository.template.initialization.TwoPhasedRepositoryInitialization
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
-import com.github.unchama.seichiassist.subsystems.mana.ManaApi
-import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.FairyRoutine
 
 object FairyManaRecoveryRoutineFiberRepositoryDefinition {
@@ -18,10 +15,7 @@ object FairyManaRecoveryRoutineFiberRepositoryDefinition {
     IO.ioConcurrentEffect(PluginExecutionContexts.asyncShift)
 
   def initialization[Player](fairyRoutine: FairyRoutine[IO, SyncIO, Player])(
-    implicit breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
-    voteAPI: VoteAPI[IO, Player],
-    manaApi: ManaApi[IO, SyncIO, Player],
-    context: RepeatingTaskContext
+    implicit context: RepeatingTaskContext
   ): TwoPhasedRepositoryInitialization[SyncIO, Player, Deferred[IO, Fiber[IO, Nothing]]] =
     TwoPhasedRepositoryInitialization
       .withoutPrefetching[SyncIO, Player, Deferred[IO, Fiber[IO, Nothing]]] { player =>
