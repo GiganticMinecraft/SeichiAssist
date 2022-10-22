@@ -22,17 +22,26 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
 
   import cats.implicits._
 
+  /**
+   * @return 時間から妖精の召喚メッセージを返す
+   */
+  private def getSummonMessagesByStartHour(
+    startHour: Int,
+    nameCalledByFairy: NameCalledByFairy
+  ): FairyMessages = {
+    if (4 <= startHour && startHour < 10)
+      FairyMessageTable.morningMessages(nameCalledByFairy)
+    else if (10 <= startHour && startHour < 18)
+      FairyMessageTable.dayMessages(nameCalledByFairy)
+    else
+      FairyMessageTable.nightMessages(nameCalledByFairy)
+  }
+
   override def summonSpeech(player: Player): F[Unit] =
     for {
       startHour <- Sync[F].delay(LocalTime.now().getHour)
       nameCalledByFairy = NameCalledByFairy(player.getName)
-      fairyMessages =
-        if (4 <= startHour && startHour < 10)
-          FairyMessageTable.morningMessages(nameCalledByFairy)
-        else if (10 <= startHour && startHour < 18)
-          FairyMessageTable.dayMessages(nameCalledByFairy)
-        else
-          FairyMessageTable.nightMessages(nameCalledByFairy)
+      fairyMessages = getSummonMessagesByStartHour(startHour, nameCalledByFairy)
       message <- randomMessage(fairyMessages)
 
       serviceRepository = fairySpeechServiceRepository(player)
