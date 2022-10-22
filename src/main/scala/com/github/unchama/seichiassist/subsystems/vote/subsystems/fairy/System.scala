@@ -24,6 +24,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.p
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.resources.bukkit.FairyLoreTable
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
   FairyPersistence,
+  FairySpeech,
   FairySpeechGateway
 }
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.infrastructure.JdbcFairyPersistence
@@ -49,6 +50,9 @@ object System {
     implicit val persistence: FairyPersistence[IO] = new JdbcFairyPersistence[IO]
     implicit val fairySpeechGatewayProvider: Player => FairySpeechGateway[SyncIO] =
       new BukkitFairySpeechGateway[SyncIO](_)
+    val fairySpeechProvider
+      : PlayerDataRepository[FairySpeechService[SyncIO]] => FairySpeech[IO, Player] =
+      fairySpeechService => new BukkitFairySpeech[IO, SyncIO](fairySpeechService, persistence)
 
     for {
       speechServiceRepositoryControls <- BukkitRepositoryControls.createHandles(
@@ -61,13 +65,13 @@ object System {
       )
     } yield {
       new System[IO, SyncIO, Player] {
+        implicit val fairySpeechServiceRepository
+          : PlayerDataRepository[FairySpeechService[SyncIO]] =
+          speechServiceRepositoryControls.repository
+        implicit val fairySpeech: FairySpeech[IO, Player] = fairySpeechProvider(fairySpeechServiceRepository)
+
         override implicit val api: FairyAPI[IO, SyncIO, Player] =
           new FairyAPI[IO, SyncIO, Player] {
-            implicit val fairySpeechServiceRepository
-              : PlayerDataRepository[FairySpeechService[SyncIO]] =
-              speechServiceRepositoryControls.repository
-            val fairySpeech = new BukkitFairySpeech[IO, SyncIO]
-
             override def appleOpenState(uuid: UUID): IO[FairyAppleConsumeStrategy] =
               persistence.appleOpenState(uuid)
 

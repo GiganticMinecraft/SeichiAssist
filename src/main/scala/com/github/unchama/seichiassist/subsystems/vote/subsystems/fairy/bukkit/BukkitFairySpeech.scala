@@ -5,7 +5,10 @@ import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property._
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.resources.FairyMessageTable
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{FairyPersistence, FairySpeech}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
+  FairyPersistence,
+  FairySpeech
+}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.service.FairySpeechService
 import org.bukkit.entity.Player
 
@@ -13,7 +16,7 @@ import java.time.LocalTime
 import scala.util.Random
 
 class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
-  implicit fairySpeechServiceRepository: PlayerDataRepository[FairySpeechService[G]],
+  fairySpeechServiceRepository: PlayerDataRepository[FairySpeechService[G]],
   fairyPersistence: FairyPersistence[F]
 ) extends FairySpeech[F, Player] {
 

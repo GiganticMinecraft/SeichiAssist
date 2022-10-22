@@ -10,6 +10,7 @@ import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.FairyRoutine
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions.BukkitRecoveryMana
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairySpeech
 import org.bukkit.entity.Player
 
 import scala.concurrent.duration.FiniteDuration
@@ -19,7 +20,8 @@ class BukkitFairyRoutine(
   fairyAPI: FairyAPI[IO, SyncIO, Player],
   voteAPI: VoteAPI[IO, Player],
   manaApi: ManaApi[IO, SyncIO, Player],
-  context: RepeatingTaskContext
+  context: RepeatingTaskContext,
+  fairySpeech: FairySpeech[IO, Player]
 ) extends FairyRoutine[IO, SyncIO, Player] {
 
   override def start(player: Player): IO[Nothing] = {
