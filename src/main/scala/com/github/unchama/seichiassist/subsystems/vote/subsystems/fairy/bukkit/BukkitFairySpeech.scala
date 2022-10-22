@@ -1,18 +1,21 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit
 
 import cats.effect.Sync
+import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairySpeech
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property._
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.resources.FairyMessageTable
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.service.FairySpeechService
 import org.bukkit.entity.Player
 
 import java.time.LocalTime
 import scala.util.Random
 
 class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
-  implicit fairyAPI: FairyAPI[F, G, Player]
+  implicit fairyAPI: FairyAPI[F, G, Player],
+  fairySpeechServiceRepository: PlayerDataRepository[FairySpeechService[G]]
 ) extends FairySpeech[F, Player] {
 
   import cats.implicits._
@@ -30,7 +33,7 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
           FairyMessageTable.nightMessages(nameCalledByFairy)
       message <- randomMessage(fairyMessages)
 
-      serviceRepository = fairyAPI.fairySpeechServiceRepository(player)
+      serviceRepository = fairySpeechServiceRepository(player)
       fairySpeechSound <- ContextCoercion {
         fairyAPI.fairySpeechSound(player.getUniqueId)
       }
@@ -56,7 +59,7 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
       message <- randomMessage(messages(nameCalledByFairy))
       fairyPlaySound <- fairyAPI.fairySpeechSound(player.getUniqueId)
       _ <- ContextCoercion {
-        fairyAPI.fairySpeechServiceRepository(player).makeSpeech(message, fairyPlaySound)
+        fairySpeechServiceRepository(player).makeSpeech(message, fairyPlaySound)
       }
     } yield ()
   }
@@ -67,12 +70,10 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
       playSound <- fairyAPI.fairySpeechSound(player.getUniqueId)
       endTime = endTimeOpt.get.endTimeOpt.get
       _ <- ContextCoercion {
-        fairyAPI
-          .fairySpeechServiceRepository(player)
-          .makeSpeech(
-            FairyMessage(s"僕は${endTime.getHour}:${endTime.getMinute}には帰るよー。"),
-            playSound
-          )
+        fairySpeechServiceRepository(player).makeSpeech(
+          FairyMessage(s"僕は${endTime.getHour}:${endTime.getMinute}には帰るよー。"),
+          playSound
+        )
       }
     } yield ()
   }
@@ -80,15 +81,14 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
   override def welcomeBack(player: Player): F[Unit] = for {
     playSound <- fairyAPI.fairySpeechSound(player.getUniqueId)
     _ <- ContextCoercion {
-      fairyAPI
-        .fairySpeechServiceRepository(player)
+      fairySpeechServiceRepository(player)
         .makeSpeech(FairyMessage(s"おかえり！${player.getName}"), playSound)
     }
   } yield ()
 
   override def bye(player: Player): F[Unit] = for {
     playSound <- fairyAPI.fairySpeechSound(player.getUniqueId)
-    repository = fairyAPI.fairySpeechServiceRepository(player)
+    repository = fairySpeechServiceRepository(player)
     _ <- ContextCoercion {
       repository.makeSpeech(FairyMessage(s"あっ、もうこんな時間だ！"), fairyPlaySound = false)
     } >> ContextCoercion {

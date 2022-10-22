@@ -41,8 +41,6 @@ object System {
     implicit val fairySpeechGatewayProvider: Player => FairySpeechGateway[SyncIO] =
       new BukkitFairySpeechGateway[SyncIO](_)
 
-    val fairySpeech: FairySpeech[IO, Player] = new BukkitFairySpeech[IO, IO]
-
     for {
       speechServiceRepositoryControls <- BukkitRepositoryControls.createHandles(
         RepositoryDefinition
