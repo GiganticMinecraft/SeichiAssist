@@ -117,7 +117,7 @@ object FairyReadAPI {
 
 }
 
-trait FairySpeechAPI[F[_]] {
+trait FairySpeechAPI[F[_], Player] {
 
   /**
    * 妖精が喋るときに音をだすかをトグルする
@@ -129,15 +129,21 @@ trait FairySpeechAPI[F[_]] {
    */
   def fairySpeechSound(uuid: UUID): F[Boolean]
 
+  /**
+   * @return 妖精がいつ帰るのかを[[Player]]に送信する作用
+   */
+  def speechEndTime(player: Player): F[Unit]
+
 }
 
 object FairySpeechAPI {
 
-  def apply[F[_]](implicit ev: FairySpeechAPI[F]): FairySpeechAPI[F] = ev
+  def apply[F[_], Player](implicit ev: FairySpeechAPI[F, Player]): FairySpeechAPI[F, Player] =
+    ev
 
 }
 
 trait FairyAPI[F[_], G[_], Player]
     extends FairyReadAPI[F, G, Player]
     with FairyWriteAPI[F, G, Player]
-    with FairySpeechAPI[F]
+    with FairySpeechAPI[F, Player]
