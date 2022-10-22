@@ -135,6 +135,11 @@ trait FairySpeechAPI[F[_], Player] {
    */
   def summonSpeech(player: Player): F[Unit]
 
+  /**
+   * @return 妖精召喚中に[[Player]]が再ログインした際のメッセージを[[Player]]に送信する作用
+   */
+  def welcomeBack(player: Player): F[Unit]
+
 }
 
 object FairySpeechAPI {
