@@ -149,7 +149,24 @@ object FairySpeechAPI {
 
 }
 
+trait FairySummonAPI[F[_], Player] {
+
+  /**
+   * @return 妖精を召喚する作用
+   */
+  def fairySummon(player: Player): F[Unit]
+
+}
+
+object FairySummonAPI {
+
+  def apply[F[_], Player](implicit ev: FairySummonAPI[F, Player]): FairySummonAPI[F, Player] =
+    ev
+
+}
+
 trait FairyAPI[F[_], G[_], Player]
     extends FairyReadAPI[F, G, Player]
     with FairyWriteAPI[F, G, Player]
     with FairySpeechAPI[F, Player]
+    with FairySummonAPI[F, Player]
