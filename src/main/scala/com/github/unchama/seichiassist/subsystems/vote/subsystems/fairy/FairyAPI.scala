@@ -130,6 +130,11 @@ trait FairySpeechAPI[F[_], Player] {
    */
   def speechEndTime(player: Player): F[Unit]
 
+  /**
+   * @return 妖精が召喚された際のメッセージを[[Player]]に送信する作用
+   */
+  def summonSpeech(player: Player): F[Unit]
+
 }
 
 object FairySpeechAPI {
