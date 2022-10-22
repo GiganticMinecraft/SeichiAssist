@@ -165,6 +165,9 @@ object System {
 
             override def summonSpeech(player: Player): IO[Unit] =
               fairySpeech.summonSpeech(player)
+
+            override def welcomeBack(player: Player): IO[Unit] =
+              fairySpeech.welcomeBack(player)
           }
 
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[IO, _]] =

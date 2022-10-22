@@ -31,7 +31,7 @@ class FairyPlayerJoinGreeter(implicit fairyAPI: FairyAPI[IO, SyncIO, Player]) ex
           implicit val ioCE: ConcurrentEffect[IO] =
             IO.ioConcurrentEffect(PluginExecutionContexts.asyncShift)
 
-          new BukkitFairySpeech[IO, SyncIO]().welcomeBack(player).unsafeRunSync()
+          fairyAPI.welcomeBack(player).unsafeRunSync()
         }
       } else SyncIO.unit
     }
