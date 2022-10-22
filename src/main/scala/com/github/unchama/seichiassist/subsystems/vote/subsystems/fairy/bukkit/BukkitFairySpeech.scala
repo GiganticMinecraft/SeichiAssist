@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit
 import cats.effect.Sync
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairySpeech
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property._
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.resources.FairyMessageTable
 import org.bukkit.entity.Player
@@ -12,11 +13,11 @@ import scala.util.Random
 
 class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
   implicit fairyAPI: FairyAPI[F, G, Player]
-) {
+) extends FairySpeech[F, Player] {
 
   import cats.implicits._
 
-  def summonSpeech(player: Player): F[Unit] =
+  override def summonSpeech(player: Player): F[Unit] =
     for {
       startHour <- Sync[F].delay(LocalTime.now().getHour)
       nameCalledByFairy = NameCalledByFairy(player.getName)
@@ -38,7 +39,7 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
       }
     } yield ()
 
-  def speechRandomly(
+  override def speechRandomly(
     player: Player,
     fairyManaRecoveryState: FairyManaRecoveryState
   ): F[Unit] = {
@@ -60,7 +61,7 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
     } yield ()
   }
 
-  def speechEndTime(player: Player): F[Unit] = {
+  override def speechEndTime(player: Player): F[Unit] = {
     for {
       endTimeOpt <- fairyAPI.fairyEndTime(player)
       playSound <- fairyAPI.fairySpeechSound(player.getUniqueId)
@@ -76,7 +77,7 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
     } yield ()
   }
 
-  def welcomeBack(player: Player): F[Unit] = for {
+  override def welcomeBack(player: Player): F[Unit] = for {
     playSound <- fairyAPI.fairySpeechSound(player.getUniqueId)
     _ <- ContextCoercion {
       fairyAPI
@@ -85,7 +86,7 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
     }
   } yield ()
 
-  def bye(player: Player): F[Unit] = for {
+  override def bye(player: Player): F[Unit] = for {
     playSound <- fairyAPI.fairySpeechSound(player.getUniqueId)
     repository = fairyAPI.fairySpeechServiceRepository(player)
     _ <- ContextCoercion {

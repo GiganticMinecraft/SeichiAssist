@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain
 
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairyManaRecoveryState
+
 trait FairySpeech[F[_], Player] {
 
   /**
@@ -8,9 +10,10 @@ trait FairySpeech[F[_], Player] {
   def summonSpeech(player: Player): F[Unit]
 
   /**
-   * @return 妖精のメッセージをランダムに[[Player]]へ送信する作用
+   * @return [[FairyManaRecoveryState]]に応じた
+   *         妖精のメッセージをランダムに[[Player]]へ送信する作用
    */
-  def speechRandomly(player: Player): F[Unit]
+  def speechRandomly(player: Player, fairyManaRecoveryState: FairyManaRecoveryState): F[Unit]
 
   /**
    * @return 妖精がいつ帰るのかを[[Player]]へ送信する作用
