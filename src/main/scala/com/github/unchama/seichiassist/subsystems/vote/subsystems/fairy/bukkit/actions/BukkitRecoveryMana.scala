@@ -7,8 +7,15 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.RecoveryMana
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{AppleAmount, FairyAppleConsumeStrategy, FairyManaRecoveryState}
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{FairyPersistence, FairySpeech}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
+  AppleAmount,
+  FairyAppleConsumeStrategy,
+  FairyManaRecoveryState
+}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
+  FairyPersistence,
+  FairySpeech
+}
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffectF
@@ -20,12 +27,12 @@ import java.util.UUID
 import scala.util.Random
 
 class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
-  player: Player
+  player: Player,
+  fairySpeech: FairySpeech[F, Player]
 )(
   implicit breakCountAPI: BreakCountAPI[F, G, Player],
   voteAPI: VoteAPI[F, Player],
   manaApi: ManaApi[F, G, Player],
-  fairySpeech: FairySpeech[F, Player],
   fairyPersistence: FairyPersistence[F]
 ) extends RecoveryMana[F] {
 
@@ -40,7 +47,8 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
       fairyEndTimeOpt <- fairyPersistence.fairyEndTime(uuid)
       endTime = fairyEndTimeOpt.get.endTimeOpt.get
       _ <- {
-        fairySpeech.bye(player) >> fairyPersistence.updateIsFairyUsing(uuid, isFairyUsing = false)
+        fairySpeech
+          .bye(player) >> fairyPersistence.updateIsFairyUsing(uuid, isFairyUsing = false)
       }.whenA(
         // 終了時間が今よりも過去だったとき(つまり有効時間終了済み)
         isFairyUsing && endTime.isBefore(LocalDateTime.now())
@@ -71,7 +79,10 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
         )
 
       _ <- {
-        fairyPersistence.increaseAppleAteByFairy(uuid, AppleAmount(finallyAppleConsumptionAmount)) >>
+        fairyPersistence.increaseAppleAteByFairy(
+          uuid,
+          AppleAmount(finallyAppleConsumptionAmount)
+        ) >>
           ContextCoercion(
             manaApi.manaAmount(player).restoreAbsolute(ManaAmount(recoveryManaAmount))
           ) >>

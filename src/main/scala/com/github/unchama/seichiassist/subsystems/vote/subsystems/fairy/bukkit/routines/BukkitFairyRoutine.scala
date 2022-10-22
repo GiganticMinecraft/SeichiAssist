@@ -9,7 +9,10 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.FairyRoutine
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions.BukkitRecoveryMana
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{FairyPersistence, FairySpeech}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
+  FairyPersistence,
+  FairySpeech
+}
 import org.bukkit.entity.Player
 
 import scala.concurrent.duration.FiniteDuration
@@ -41,7 +44,7 @@ class BukkitFairyRoutine(fairySpeech: FairySpeech[IO, Player])(
     RepeatingRoutine.permanentRoutine(
       repeatInterval,
       onMainThread.runAction {
-        new BukkitRecoveryMana[IO, SyncIO](player).recovery.runAsync(_ => IO.unit)
+        new BukkitRecoveryMana[IO, SyncIO](player, fairySpeech).recovery.runAsync(_ => IO.unit)
       }
     )
   }
