@@ -1,8 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy
 
-import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property._
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.service.FairySpeechService
 
 import java.util.UUID
 
@@ -84,8 +82,6 @@ trait FairyReadAPI[F[_], G[_], Player] {
    * 妖精が食べたりんごの量を取得する
    */
   def appleAteByFairy(uuid: UUID): F[Option[AppleAmount]]
-
-  val fairySpeechServiceRepository: PlayerDataRepository[FairySpeechService[G]]
 
   /**
    * 妖精が有効な時間を返す

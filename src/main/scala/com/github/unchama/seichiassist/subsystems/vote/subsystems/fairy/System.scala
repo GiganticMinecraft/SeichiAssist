@@ -2,24 +2,19 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy
 
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
 import com.github.unchama.concurrent.RepeatingTaskContext
-import com.github.unchama.datarepository.bukkit.player.{
-  BukkitRepositoryControls,
-  PlayerDataRepository
-}
+import com.github.unchama.datarepository.bukkit.player.{BukkitRepositoryControls, PlayerDataRepository}
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.FairyRoutine
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.repository.{
-  FairyManaRecoveryRoutineFiberRepositoryDefinition,
-  SpeechServiceRepositoryDefinitions
-}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.repository.{FairyManaRecoveryRoutineFiberRepositoryDefinition, SpeechServiceRepositoryDefinitions}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.BukkitFairySpeech
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.gateway.BukkitFairySpeechGateway
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.listeners.FairyPlayerJoinGreeter
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.routines.BukkitFairyRoutine
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairySpeechGateway
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{FairySpeech, FairySpeechGateway}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property._
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.resources.bukkit.FairyLoreTable
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.infrastructure.JdbcFairyPersistence
@@ -46,6 +41,8 @@ object System {
     implicit val fairySpeechGatewayProvider: Player => FairySpeechGateway[SyncIO] =
       new BukkitFairySpeechGateway[SyncIO](_)
 
+    val fairySpeech: FairySpeech[IO, Player] = new BukkitFairySpeech[IO, IO]
+
     for {
       speechServiceRepositoryControls <- BukkitRepositoryControls.createHandles(
         RepositoryDefinition
@@ -55,6 +52,7 @@ object System {
             SpeechServiceRepositoryDefinitions.finalization[SyncIO, Player]
           )
       )
+      fairySpeechServiceRepository = speechServiceRepositoryControls.repository
     } yield {
       new System[IO, SyncIO, Player] {
         override implicit val api: FairyAPI[IO, SyncIO, Player] =
@@ -104,10 +102,6 @@ object System {
               fairyRecoveryMana: FairyRecoveryMana
             ): IO[Unit] = persistence.updateFairyRecoveryMana(uuid, fairyRecoveryMana)
 
-            override val fairySpeechServiceRepository
-              : PlayerDataRepository[FairySpeechService[SyncIO]] =
-              speechServiceRepositoryControls.repository
-
             override def increaseAppleAteByFairy(
               uuid: UUID,
               appleAmount: AppleAmount
@@ -138,6 +132,8 @@ object System {
 
             override def createPlayerData(uuid: UUID): IO[Unit] =
               persistence.createPlayerData(uuid)
+
+            override def speechEndTime(player: Player): IO[Unit] =
           }
 
         implicit val fairyRoutine: FairyRoutine[IO, SyncIO, Player] =
