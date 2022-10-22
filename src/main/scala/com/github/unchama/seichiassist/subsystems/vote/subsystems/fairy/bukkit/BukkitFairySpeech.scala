@@ -10,7 +10,7 @@ import org.bukkit.entity.Player
 import java.time.LocalTime
 import scala.util.Random
 
-class FairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
+class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
   implicit fairyAPI: FairyAPI[F, G, Player]
 ) {
 

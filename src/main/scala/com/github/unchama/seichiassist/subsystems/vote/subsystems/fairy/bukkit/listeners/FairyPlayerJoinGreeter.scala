@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.FairySpeech
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.BukkitFairySpeech
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
@@ -31,7 +31,7 @@ class FairyPlayerJoinGreeter(implicit fairyAPI: FairyAPI[IO, SyncIO, Player]) ex
           implicit val ioCE: ConcurrentEffect[IO] =
             IO.ioConcurrentEffect(PluginExecutionContexts.asyncShift)
 
-          new FairySpeech[IO, SyncIO]().welcomeBack(player).unsafeRunSync()
+          new BukkitFairySpeech[IO, SyncIO]().welcomeBack(player).unsafeRunSync()
         }
       } else SyncIO.unit
     }

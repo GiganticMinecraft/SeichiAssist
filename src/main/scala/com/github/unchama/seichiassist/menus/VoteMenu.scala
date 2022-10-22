@@ -18,7 +18,7 @@ import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.bukkit.actions.BukkitReceiveVoteBenefits
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.SummonFairy
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.FairySpeech
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.BukkitFairySpeech
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions.BukkitSummonFairy
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairySpawnRequest
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairySpawnRequestError.{
@@ -322,7 +322,7 @@ object VoteMenu extends Menu {
         LeftClickButtonEffect {
           SequentialEffect(
             UnfocusedEffect {
-              new FairySpeech[IO, SyncIO]().speechEndTime(player).unsafeRunAsyncAndForget()
+              new BukkitFairySpeech[IO, SyncIO]().speechEndTime(player).unsafeRunAsyncAndForget()
             },
             closeInventoryEffect
           )

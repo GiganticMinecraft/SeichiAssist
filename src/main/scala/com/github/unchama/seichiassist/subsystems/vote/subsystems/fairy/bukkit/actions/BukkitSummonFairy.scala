@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.domain.EffectPoint
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.SummonFairy
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.FairySpeech
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.BukkitFairySpeech
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairyRecoveryManaAmount
 import com.github.unchama.targetedeffect.commandsender.MessageEffectF
 import org.bukkit.ChatColor._
@@ -34,7 +34,7 @@ class BukkitSummonFairy[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
       _ <- voteAPI.decreaseEffectPoint(uuid, EffectPoint(fairySummonCost.value * 2))
       _ <- fairyAPI.updateFairyRecoveryManaAmount(uuid, recoveryManaAmount)
       _ <- fairyAPI.updateFairyEndTime(player, fairySummonCost.endTime)
-      _ <- new FairySpeech[F, G].summonSpeech(player)
+      _ <- new BukkitFairySpeech[F, G].summonSpeech(player)
       _ <- MessageEffectF(
         List(
           s"$RESET$YELLOW${BOLD}妖精を呼び出しました！",
