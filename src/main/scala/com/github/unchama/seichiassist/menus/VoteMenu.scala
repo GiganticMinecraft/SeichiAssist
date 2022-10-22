@@ -20,8 +20,15 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.SummonFairy
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions.BukkitSummonFairy
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairySpawnRequest
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairySpawnRequestError.{AlreadyFairySpawned, NotEnoughEffectPoint, NotEnoughSeichiLevel}
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{AppleOpenStateDependency, FairySummonCost}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairySpawnRequestError.{
+  AlreadyFairySpawned,
+  NotEnoughEffectPoint,
+  NotEnoughSeichiLevel
+}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
+  AppleOpenStateDependency,
+  FairySummonCost
+}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects.closeInventoryEffect
