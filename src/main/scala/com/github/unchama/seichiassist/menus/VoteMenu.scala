@@ -136,7 +136,7 @@ object VoteMenu extends Menu {
           LeftClickButtonEffect {
             SequentialEffect(
               TargetedEffect.delay { player =>
-                new BukkitReceiveVoteBenefits[IO, SyncIO].receive(player).unsafeRunSync()
+                new BukkitReceiveVoteBenefits[IO, SyncIO].receive(player).unsafeRunAsyncAndForget()
               },
               MessageEffect(
                 s"${GOLD}投票特典$WHITE(${voteCounter.value - benefits.value}票分)を受け取りました"
@@ -202,7 +202,7 @@ object VoteMenu extends Menu {
                     player.getUniqueId,
                     FairySummonCost(fairySummonCost.value % 4 + 1)
                   )
-                  .unsafeRunSync()
+                  .unsafeRunAsyncAndForget()
               )
             )
           }
@@ -226,7 +226,7 @@ object VoteMenu extends Menu {
                     AppleOpenStateDependency
                       .dependency(fairyAPI.appleOpenState(uuid).unsafeRunSync())
                   )
-                  .unsafeRunSync()
+                  .unsafeRunAsyncAndForget()
               },
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
             )
@@ -254,7 +254,7 @@ object VoteMenu extends Menu {
             SequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
               UnfocusedEffect {
-                fairyAPI.toggleFairySpeechSound(player.getUniqueId).unsafeRunSync()
+                fairyAPI.toggleFairySpeechSound(player.getUniqueId).unsafeRunAsyncAndForget()
               }
             )
           }
@@ -296,7 +296,7 @@ object VoteMenu extends Menu {
                 }
               case Right(process) =>
                 UnfocusedEffect {
-                  process.unsafeRunSync()
+                  process.unsafeRunAsyncAndForget()
                 }
             },
             closeInventoryEffect
@@ -322,7 +322,7 @@ object VoteMenu extends Menu {
         LeftClickButtonEffect {
           SequentialEffect(
             UnfocusedEffect {
-              new FairySpeech[IO, SyncIO]().speechEndTime(player).unsafeRunSync()
+              new FairySpeech[IO, SyncIO]().speechEndTime(player).unsafeRunAsyncAndForget()
             },
             closeInventoryEffect
           )
