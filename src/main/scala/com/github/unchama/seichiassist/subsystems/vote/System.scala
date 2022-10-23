@@ -24,12 +24,6 @@ object System {
 
     new System[F, Player] {
       override implicit val api: VoteAPI[F, Player] = new VoteAPI[F, Player] {
-        override def voteCounterIncrement(playerName: PlayerName): F[Unit] =
-          votePersistence.voteCounterIncrement(playerName)
-
-        override def updateChainVote(playerName: PlayerName): F[Unit] =
-          votePersistence.updateChainVote(playerName)
-
         override def voteCounter(uuid: UUID): F[VoteCounter] =
           votePersistence.voteCounter(uuid)
 
