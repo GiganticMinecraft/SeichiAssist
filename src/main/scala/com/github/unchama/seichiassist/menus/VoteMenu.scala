@@ -254,9 +254,10 @@ object VoteMenu extends Menu {
       })
     }
 
-    val fairySummonButton: IO[Button] = IO {
-      val fairySummonState =
-        fairyAPI.fairySummonCost(player).unsafeRunSync()
+    val fairySummonButton: IO[Button] = for {
+      fairySummonState <- fairyAPI.fairySummonCost(player)
+      fairySummonRequestResult <- fairyAPI.fairySummonRequest(player)
+    } yield {
       Button(
         new IconItemStackBuilder(Material.GHAST_TEAR)
           .title(s"$LIGHT_PURPLE$UNDERLINE${BOLD}マナ妖精 召喚")
@@ -272,7 +273,7 @@ object VoteMenu extends Menu {
           .build(),
         LeftClickButtonEffect {
           SequentialEffect(
-            fairyAPI.fairySummonRequest(player).unsafeRunSync() match {
+            fairySummonRequestResult match {
               case Left(errorResult) =>
                 errorResult match {
                   case NotEnoughSeichiLevel =>
