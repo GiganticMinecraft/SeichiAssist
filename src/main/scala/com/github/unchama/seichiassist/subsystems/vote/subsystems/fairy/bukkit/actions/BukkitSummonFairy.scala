@@ -18,7 +18,7 @@ class BukkitSummonFairy[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
   manaApi: ManaApi[F, G, Player],
   fairyPersistence: FairyPersistence[F],
   fairySpeech: FairySpeech[F, Player]
-) extends SummonFairy[F, G, Player] {
+) extends SummonFairy[F, Player] {
 
   import cats.implicits._
 

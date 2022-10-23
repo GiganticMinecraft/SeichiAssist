@@ -17,7 +17,7 @@ class BukkitFairySummonRequest[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
   implicit breakCountAPI: BreakCountAPI[F, G, Player],
   voteAPI: VoteAPI[F, Player],
   fairyPersistence: FairyPersistence[F],
-  summonFairy: SummonFairy[F, G, Player]
+  summonFairy: SummonFairy[F, Player]
 ) extends FairySummonRequest[F, Player] {
 
   import cats.implicits._

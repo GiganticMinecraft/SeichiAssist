@@ -90,7 +90,7 @@ object System {
         implicit val fairySpeech: FairySpeech[IO, Player] = fairySpeechProvider(
           fairySpeechServiceRepository
         )
-        implicit val summonFairy: SummonFairy[IO, SyncIO, Player] =
+        implicit val summonFairy: SummonFairy[IO, Player] =
           new BukkitSummonFairy[IO, SyncIO]
         val summonRequest: FairySummonRequest[IO, Player] =
           new BukkitFairySummonRequest[IO, SyncIO]

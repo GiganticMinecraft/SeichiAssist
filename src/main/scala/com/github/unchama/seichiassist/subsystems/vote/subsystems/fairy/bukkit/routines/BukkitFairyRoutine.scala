@@ -21,7 +21,7 @@ class BukkitFairyRoutine(fairySpeech: FairySpeech[IO, Player])(
   manaApi: ManaApi[IO, SyncIO, Player],
   context: RepeatingTaskContext,
   fairyPersistence: FairyPersistence[IO]
-) extends FairyRoutine[IO, SyncIO, Player] {
+) extends FairyRoutine[IO, Player] {
 
   override def start(player: Player): IO[Nothing] = {
 

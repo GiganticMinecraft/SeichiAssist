@@ -14,7 +14,7 @@ object FairyManaRecoveryRoutineFiberRepositoryDefinition {
   implicit val ioCE: ConcurrentEffect[IO] =
     IO.ioConcurrentEffect(PluginExecutionContexts.asyncShift)
 
-  def initialization[Player](fairyRoutine: FairyRoutine[IO, SyncIO, Player])(
+  def initialization[Player](fairyRoutine: FairyRoutine[IO, Player])(
     implicit context: RepeatingTaskContext
   ): TwoPhasedRepositoryInitialization[SyncIO, Player, Deferred[IO, Fiber[IO, Nothing]]] =
     TwoPhasedRepositoryInitialization
