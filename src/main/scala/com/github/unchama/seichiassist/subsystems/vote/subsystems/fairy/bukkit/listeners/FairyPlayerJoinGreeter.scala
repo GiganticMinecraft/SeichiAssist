@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.listeners
 
-import cats.effect.{ConcurrentEffect, IO, SyncIO}
+import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyPersistence
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.FairySpeech
 import org.bukkit.ChatColor._
@@ -16,6 +16,8 @@ class FairyPlayerJoinGreeter(
   concurrentEffect: ConcurrentEffect[IO]
 ) extends Listener {
 
+  import cats.implicits._
+
   @EventHandler
   def onJoin(e: PlayerJoinEvent): Unit = {
     val player = e.getPlayer
@@ -24,18 +26,15 @@ class FairyPlayerJoinGreeter(
       _ <- fairyPersistence.createPlayerData(uuid)
       isUsing <- fairyPersistence.isFairyUsing(uuid)
       endTime <- fairyPersistence.fairyEndTime(uuid)
-    } yield {
-      if (isUsing) {
-        if (endTime.get.endTimeOpt.get.isBefore(LocalDateTime.now())) {
-          // 終了時間が今よりも過去だったとき(つまり有効時間終了済み)
+      isEnd = endTime.get.endTimeOpt.get.isBefore(LocalDateTime.now())
+      _ <- {
+        fairyPersistence.updateIsFairyUsing(uuid, isFairyUsing = false) >> IO(
           player.sendMessage(s"$LIGHT_PURPLE${BOLD}妖精は何処かへ行ってしまったようだ...")
-          fairyPersistence.updateIsFairyUsing(uuid, isFairyUsing = false).unsafeRunSync()
-        } else {
-          // まだ終了時間ではない(つまり有効時間内)
-          fairySpeech.welcomeBack(player).unsafeRunSync()
-        }
-      } else SyncIO.unit
-    }
+        )
+        // 終了時間が今よりも過去だったとき(つまり有効時間終了済み)
+      }.whenA(isUsing && isEnd)
+      _ <- fairySpeech.welcomeBack(player).whenA(isUsing && !isEnd)
+    } yield ()
     eff.unsafeRunSync()
   }
 
