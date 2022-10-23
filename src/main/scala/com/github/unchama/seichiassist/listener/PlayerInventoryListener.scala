@@ -1,16 +1,14 @@
 package com.github.unchama.seichiassist.listener
 
-import cats.effect.{IO, SyncIO}
+import cats.effect.IO
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist._
-import com.github.unchama.seichiassist.data.player.GiganticBerserk
 import com.github.unchama.seichiassist.data.MenuInventoryData
+import com.github.unchama.seichiassist.data.player.GiganticBerserk
 import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
-import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
-import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -25,9 +23,7 @@ import org.bukkit.{Bukkit, Material, Sound}
 
 class PlayerInventoryListener(
   implicit effectEnvironment: EffectEnvironment,
-  manaApi: ManaApi[IO, SyncIO, Player],
   voteAPI: VoteAPI[IO, Player],
-  ioCanOpenFirstPage: IO CanOpen FirstPage.type,
   ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type,
   ioOnMainThread: OnMinecraftServerThread[IO]
 ) extends Listener {

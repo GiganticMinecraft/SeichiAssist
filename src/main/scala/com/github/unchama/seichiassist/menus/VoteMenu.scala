@@ -12,20 +12,10 @@ import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlot
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
-import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
-import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
-import com.github.unchama.seichiassist.subsystems.vote.bukkit.actions.BukkitReceiveVoteBenefits
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairySpawnRequestError.{
-  AlreadyFairySpawned,
-  NotEnoughEffectPoint,
-  NotEnoughSeichiLevel
-}
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
-  AppleOpenStateDependency,
-  FairySummonCost
-}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairySpawnRequestError.{AlreadyFairySpawned, NotEnoughEffectPoint, NotEnoughSeichiLevel}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{AppleOpenStateDependency, FairySummonCost}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects.closeInventoryEffect
@@ -39,8 +29,6 @@ object VoteMenu extends Menu {
   class Environment(
     implicit val voteAPI: VoteAPI[IO, Player],
     val fairyAPI: FairyAPI[IO, SyncIO, Player],
-    val breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
-    val manaApi: ManaApi[IO, SyncIO, Player],
     val ioCanOpenFirstPage: IO CanOpen FirstPage.type
   )
 
@@ -96,9 +84,7 @@ object VoteMenu extends Menu {
 
   private case class ConstantButtons(player: Player)(
     implicit voteAPI: VoteAPI[IO, Player],
-    fairyAPI: FairyAPI[IO, SyncIO, Player],
-    breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
-    manaApi: ManaApi[IO, SyncIO, Player]
+    fairyAPI: FairyAPI[IO, SyncIO, Player]
   ) {
 
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
