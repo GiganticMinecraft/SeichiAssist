@@ -20,7 +20,8 @@ class BukkitFairyRoutine(fairySpeech: FairySpeech[IO, Player])(
   voteAPI: VoteAPI[IO, Player],
   manaApi: ManaApi[IO, SyncIO, Player],
   context: RepeatingTaskContext,
-  fairyPersistence: FairyPersistence[IO]
+  fairyPersistence: FairyPersistence[IO],
+  concurrentEffect: ConcurrentEffect[IO]
 ) extends FairyRoutine[IO, Player] {
 
   override def start(player: Player): IO[Nothing] = {
@@ -35,9 +36,6 @@ class BukkitFairyRoutine(fairySpeech: FairySpeech[IO, Player])(
 
     implicit val onMainThread: OnMinecraftServerThread[IO] =
       PluginExecutionContexts.onMainThread
-
-    implicit val ioCE: ConcurrentEffect[IO] =
-      IO.ioConcurrentEffect(PluginExecutionContexts.asyncShift)
 
     RepeatingRoutine.permanentRoutine(
       repeatInterval,
