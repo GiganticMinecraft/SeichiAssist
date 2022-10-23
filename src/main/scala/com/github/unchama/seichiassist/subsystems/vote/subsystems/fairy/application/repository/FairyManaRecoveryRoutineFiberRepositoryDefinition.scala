@@ -6,16 +6,13 @@ import com.github.unchama.concurrent.RepeatingTaskContext
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
 import com.github.unchama.datarepository.template.initialization.TwoPhasedRepositoryInitialization
 import com.github.unchama.generic.effect.EffectExtra
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.FairyRoutine
 
 object FairyManaRecoveryRoutineFiberRepositoryDefinition {
 
-  implicit val ioCE: ConcurrentEffect[IO] =
-    IO.ioConcurrentEffect(PluginExecutionContexts.asyncShift)
-
   def initialization[Player](fairyRoutine: FairyRoutine[IO, Player])(
-    implicit context: RepeatingTaskContext
+    implicit context: RepeatingTaskContext,
+    concurrentEffect: ConcurrentEffect[IO]
   ): TwoPhasedRepositoryInitialization[SyncIO, Player, Deferred[IO, Fiber[IO, Nothing]]] =
     TwoPhasedRepositoryInitialization
       .withoutPrefetching[SyncIO, Player, Deferred[IO, Fiber[IO, Nothing]]] { player =>
