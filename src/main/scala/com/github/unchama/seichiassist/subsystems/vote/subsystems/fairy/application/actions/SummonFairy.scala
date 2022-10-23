@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions
 
-trait SummonFairy[F[_], G[_], Player] {
+trait SummonFairy[F[_], Player] {
 
   /**
    * 妖精を召喚する作用
@@ -11,9 +11,9 @@ trait SummonFairy[F[_], G[_], Player] {
 
 object SummonFairy {
 
-  def apply[F[_], G[_], Player](
-    implicit ev: SummonFairy[F, G, Player]
-  ): SummonFairy[F, G, Player] =
+  def apply[F[_], Player](
+    implicit ev: SummonFairy[F, Player]
+  ): SummonFairy[F, Player] =
     ev
 
 }
