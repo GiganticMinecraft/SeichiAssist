@@ -40,24 +40,11 @@ object System {
         override def decreaseEffectPoint(uuid: UUID, effectPoint: EffectPoint): F[Unit] =
           _votePersistence.decreaseEffectPoints(uuid, effectPoint)
 
-        override def increaseEffectPointsByTen(uuid: UUID): F[Unit] =
-          _votePersistence.increaseEffectPointsByTen(uuid)
-
         override def effectPoints(player: Player): F[EffectPoint] =
           _votePersistence.effectPoints(player.getUniqueId)
 
-        override def increaseVoteBenefits(uuid: UUID, benefit: VoteBenefit): F[Unit] =
-          _votePersistence.increaseVoteBenefits(uuid, benefit)
-
         override def receivedVoteBenefits(uuid: UUID): F[VoteBenefit] =
           _votePersistence.receivedVoteBenefits(uuid)
-
-        import cats.implicits._
-
-        override def restVoteBenefits(uuid: UUID): F[VoteBenefit] = for {
-          voteCounter <- voteCounter(uuid)
-          receivedVote <- receivedVoteBenefits(uuid)
-        } yield VoteBenefit(voteCounter.value - receivedVote.value)
 
         override def receiveVoteBenefits(player: Player): F[Unit] =
           _receiveVoteBenefits.receive(player)
