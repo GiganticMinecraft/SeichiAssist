@@ -11,16 +11,6 @@ trait VoteWriteAPI[F[_]] {
    */
   def decreaseEffectPoint(uuid: UUID, effectPoint: EffectPoint): F[Unit]
 
-  /**
-   * effectPointを増加させる作用
-   */
-  def increaseEffectPointsByTen(uuid: UUID): F[Unit]
-
-  /**
-   * 投票特典を受け取った回数を増加させる作用
-   */
-  def increaseVoteBenefits(uuid: UUID, benefit: VoteBenefit): F[Unit]
-
 }
 
 object VoteWriteAPI {
@@ -50,11 +40,6 @@ trait VoteReadAPI[F[_], Player] {
    * 投票特典を受け取った回数を返す作用
    */
   def receivedVoteBenefits(uuid: UUID): F[VoteBenefit]
-
-  /**
-   * 投票特典を受け取っていない回数を返す作用
-   */
-  def restVoteBenefits(uuid: UUID): F[VoteBenefit]
 
 }
 
