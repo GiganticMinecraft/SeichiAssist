@@ -17,7 +17,7 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.bukkit.actions.BukkitReceiveVoteBenefits
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairySpawnRequest
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.BukkitFairySpawnRequest
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairySpawnRequestError.{AlreadyFairySpawned, NotEnoughEffectPoint, NotEnoughSeichiLevel}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{AppleOpenStateDependency, FairySummonCost}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -272,7 +272,7 @@ object VoteMenu extends Menu {
           .build(),
         LeftClickButtonEffect {
           SequentialEffect(
-            new FairySpawnRequest[IO, SyncIO, Player]
+            new BukkitFairySpawnRequest[IO, SyncIO, Player]
               .spawnRequest(player)
               .unsafeRunSync() match {
               case Left(errorResult) =>
