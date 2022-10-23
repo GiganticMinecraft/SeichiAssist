@@ -165,9 +165,9 @@ object VoteMenu extends Menu {
     )
 
     val fairySummonTimeToggleButton: IO[Button] = {
-      RecomputedButton(IO {
-        val fairySummonCost = fairyAPI.fairySummonCost(player).unsafeRunSync()
-
+      RecomputedButton(for {
+        fairySummonCost <- fairyAPI.fairySummonCost(player)
+      } yield {
         Button(
           new IconItemStackBuilder(Material.WATCH)
             .title(s"$AQUA$UNDERLINE${BOLD}マナ妖精 時間設定")
