@@ -9,7 +9,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.service.
 
 object SpeechServiceRepositoryDefinitions {
 
-  def initialization[F[_]: Applicative: Sync, Player](
+  def initialization[F[_]: Sync, Player](
     implicit gatewayProvider: Player => FairySpeechGateway[F]
   ): TwoPhasedRepositoryInitialization[F, Player, FairySpeechService[F]] =
     TwoPhasedRepositoryInitialization.withoutPrefetching[F, Player, FairySpeechService[F]] {
