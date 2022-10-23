@@ -190,6 +190,7 @@ object ActiveSkillEffectMenu extends Menu {
           .databaseGateway
           .donateDataManipulator
           .currentPremiumPointFor(player)
+        effectPoints <- voteAPI.effectPoints(player)
         button <-
           IO {
             val playerData = SeichiAssist.playermap(getUniqueId)
@@ -201,7 +202,7 @@ object ActiveSkillEffectMenu extends Menu {
                   .lore(
                     List(
                       s"$RESET${GREEN}現在選択しているエフェクト：${playerData.skillEffectState.selection.nameOnUI}",
-                      s"$RESET${YELLOW}使えるエフェクトポイント：${voteAPI.effectPoints(player).unsafeRunSync().value}",
+                      s"$RESET${YELLOW}使えるエフェクトポイント：${effectPoints.value}",
                       s"$RESET$DARK_GRAY※投票すると獲得できます",
                       s"$RESET${LIGHT_PURPLE}使えるプレミアムポイント$premiumEffectPoint",
                       s"$RESET$DARK_GRAY※寄付をすると獲得できます"
