@@ -4,7 +4,7 @@ trait FairySummonRequest[F[_], Player] {
 
   /**
    * 妖精の召喚をリクエストする
-   * 召喚に失敗した場合はエラーを返す
+   * 召喚に失敗した場合は[[FairySpawnRequestError]]を返す
    * 成功した場合は召喚する作用を返す
    */
   def summonRequest(player: Player): F[FairySpawnRequestErrorOrSpawn[F]]
