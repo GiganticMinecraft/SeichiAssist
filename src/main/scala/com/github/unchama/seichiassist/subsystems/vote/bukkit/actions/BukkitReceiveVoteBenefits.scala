@@ -6,15 +6,15 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.data.ItemData
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.BukkitGachaSkullData
-import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.application.actions.ReceiveVoteBenefits
+import com.github.unchama.seichiassist.subsystems.vote.domain.{VoteBenefit, VotePersistence}
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
 import org.bukkit.entity.Player
 
 class BukkitReceiveVoteBenefits[F[_]: OnMinecraftServerThread: Sync, G[
   _
 ]: SyncEffect: ContextCoercion[*[_], F]](
-  implicit voteAPI: VoteAPI[F, Player],
+  implicit votePersistence: VotePersistence[F],
   breakCountAPI: BreakCountAPI[F, G, Player]
 ) extends ReceiveVoteBenefits[F, G, Player] {
 
@@ -26,8 +26,13 @@ class BukkitReceiveVoteBenefits[F[_]: OnMinecraftServerThread: Sync, G[
   override def receive(player: Player): F[Unit] = {
     val uuid = player.getUniqueId
     for {
-      notReceivedBenefits <- voteAPI.restVoteBenefits(uuid)
-      _ <- voteAPI.increaseVoteBenefits(uuid, notReceivedBenefits) // 受け取ってない分を受け取ったことにする
+      voteCounter <- votePersistence.voteCounter(uuid)
+      receivedVote <- votePersistence.receivedVoteBenefits(uuid)
+      notReceivedBenefits = VoteBenefit(voteCounter.value - receivedVote.value)
+      _ <- votePersistence.increaseVoteBenefits(
+        uuid,
+        notReceivedBenefits
+      ) // 受け取ってない分を受け取ったことにする
       playerLevel <- ContextCoercion(breakCountAPI.seichiAmountDataRepository(player).read.map {
         _.levelCorrespondingToExp.level
       })
@@ -38,7 +43,7 @@ class BukkitReceiveVoteBenefits[F[_]: OnMinecraftServerThread: Sync, G[
             else ItemData.getVotingGift(1)
           )
       _ <- {
-        ContextCoercion(voteAPI.increaseEffectPointsByTen(uuid))
+        ContextCoercion(votePersistence.increaseEffectPointsByTen(uuid))
           .replicateA(notReceivedBenefits.value) >>
           grantItemStacksEffect[F](items: _*).apply(player)
       }.whenA(notReceivedBenefits.value != 0)
