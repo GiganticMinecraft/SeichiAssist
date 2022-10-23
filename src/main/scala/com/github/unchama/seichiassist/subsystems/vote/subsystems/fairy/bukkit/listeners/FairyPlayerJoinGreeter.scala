@@ -22,7 +22,7 @@ class FairyPlayerJoinGreeter(
   def onJoin(e: PlayerJoinEvent): Unit = {
     val player = e.getPlayer
     val uuid = player.getUniqueId
-    val eff = for {
+    val program = for {
       _ <- fairyPersistence.createPlayerData(uuid)
       isUsing <- fairyPersistence.isFairyUsing(uuid)
       endTime <- fairyPersistence.fairyEndTime(uuid)
@@ -35,7 +35,7 @@ class FairyPlayerJoinGreeter(
       }.whenA(isUsing && isEnd)
       _ <- fairySpeech.welcomeBack(player).whenA(isUsing && !isEnd)
     } yield ()
-    eff.unsafeRunSync()
+    program.unsafeRunSync()
   }
 
 }
