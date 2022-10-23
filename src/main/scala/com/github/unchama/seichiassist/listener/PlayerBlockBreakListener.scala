@@ -208,7 +208,6 @@ class PlayerBlockBreakListener(
           cachedThreadPool
         }
 
-        // lazyZipで実装したかったがイテレートが発生しなかったので仕方なくzipをネストした
         val effectPrograms = for {
           (((blocks, lavas), waters), chunkIndex) <- multiBreakList
             .zip(multiLavaList)
