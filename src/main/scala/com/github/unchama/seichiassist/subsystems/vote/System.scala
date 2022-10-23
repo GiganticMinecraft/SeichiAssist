@@ -25,32 +25,32 @@ object System {
   def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread, G[_]: SyncEffect](
     implicit breakCountAPI: BreakCountAPI[F, G, Player]
   ): System[F, Player] = {
-    implicit val votePersistence: VotePersistence[F] = new JdbcVotePersistence[F]
-    val receiveVoteBenefits: ReceiveVoteBenefits[F, Player] =
+    implicit val _votePersistence: VotePersistence[F] = new JdbcVotePersistence[F]
+    val _receiveVoteBenefits: ReceiveVoteBenefits[F, Player] =
       new BukkitReceiveVoteBenefits[F, G]()
 
     new System[F, Player] {
       override implicit val api: VoteAPI[F, Player] = new VoteAPI[F, Player] {
         override def voteCounter(uuid: UUID): F[VoteCounter] =
-          votePersistence.voteCounter(uuid)
+          _votePersistence.voteCounter(uuid)
 
         override def chainVoteDayNumber(uuid: UUID): F[ChainVoteDayNumber] =
-          votePersistence.chainVoteDays(uuid)
+          _votePersistence.chainVoteDays(uuid)
 
         override def decreaseEffectPoint(uuid: UUID, effectPoint: EffectPoint): F[Unit] =
-          votePersistence.decreaseEffectPoints(uuid, effectPoint)
+          _votePersistence.decreaseEffectPoints(uuid, effectPoint)
 
         override def increaseEffectPointsByTen(uuid: UUID): F[Unit] =
-          votePersistence.increaseEffectPointsByTen(uuid)
+          _votePersistence.increaseEffectPointsByTen(uuid)
 
         override def effectPoints(player: Player): F[EffectPoint] =
-          votePersistence.effectPoints(player.getUniqueId)
+          _votePersistence.effectPoints(player.getUniqueId)
 
         override def increaseVoteBenefits(uuid: UUID, benefit: VoteBenefit): F[Unit] =
-          votePersistence.increaseVoteBenefits(uuid, benefit)
+          _votePersistence.increaseVoteBenefits(uuid, benefit)
 
         override def receivedVoteBenefits(uuid: UUID): F[VoteBenefit] =
-          votePersistence.receivedVoteBenefits(uuid)
+          _votePersistence.receivedVoteBenefits(uuid)
 
         import cats.implicits._
 
@@ -60,7 +60,7 @@ object System {
         } yield VoteBenefit(voteCounter.value - receivedVote.value)
 
         override def receiveVoteBenefits(player: Player): F[Unit] =
-          receiveVoteBenefits.receive(player)
+          _receiveVoteBenefits.receive(player)
       }
 
       override val commands: Map[String, TabExecutor] = Map(
