@@ -179,7 +179,7 @@ class PlayerBlockBreakListener(
           // 減る耐久値の計算(１マス溶岩、水を破壊するのにはブロック１０個分の耐久が必要)
           toolDamageToSet += BreakUtil.calcDurability(
             tool.getEnchantmentLevel(Enchantment.DURABILITY),
-            breakBlocks.size + 10 * lavaBlocks.size + 10 * waterBlocks.size
+            breakBlocks.size + 10 * (lavaBlocks.size + waterBlocks.size)
           )
 
           // 実際に耐久値を減らせるか判定
