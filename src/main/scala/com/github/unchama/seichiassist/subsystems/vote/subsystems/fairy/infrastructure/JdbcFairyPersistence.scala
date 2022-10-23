@@ -14,6 +14,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
    */
   def createPlayerData(uuid: UUID): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
+      // ここでIGNOREするのは、作成するデータが既に存在していた場合に発生するエラーを無視するため
       sql"INSERT IGNORE INTO vote_fairy (uuid) VALUES (${uuid.toString})".execute().apply()
     }
   }
