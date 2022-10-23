@@ -408,8 +408,11 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.sharedinventory.System.wired[IO]
 
   // TODO: これはprivateであるべきだが、Achievementシステムが再実装されるまでやむを得ずpublicにする
-  lazy val voteSystem: subsystems.vote.System[IO, Player] =
-    subsystems.vote.System.wired[IO]
+  lazy val voteSystem: subsystems.vote.System[IO, Player] = {
+    implicit val breakCountAPI: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
+
+    subsystems.vote.System.wired[IO, SyncIO]
+  }
 
   private lazy val fairySystem: subsystems.vote.subsystems.fairy.System[IO, SyncIO, Player] = {
     import PluginExecutionContexts.{asyncShift, sleepAndRoutineContext}
