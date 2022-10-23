@@ -33,16 +33,18 @@ class BukkitReceiveVoteBenefits[F[_]: OnMinecraftServerThread: Sync, G[
       playerLevel <- ContextCoercion(breakCountAPI.seichiAmountDataRepository(player).read.map {
         _.levelCorrespondingToExp.level
       })
-      items =
-        Seq.fill(10 * notReceivedBenefits.value)(BukkitGachaSkullData.gachaForVoting) ++
-          Seq.fill(notReceivedBenefits.value)(
-            if (playerLevel < 50) ItemData.getSuperPickaxe(1)
-            else ItemData.getVotingGift(1)
-          )
+      gachaSkulls = Seq.fill(10 * notReceivedBenefits.value)(
+        BukkitGachaSkullData.gachaForVoting
+      )
+      elseVoteBenefits = Seq.fill(notReceivedBenefits.value)(
+        if (playerLevel < 50) ItemData.getSuperPickaxe(1)
+        else ItemData.getVotingGift(1)
+      )
+      grantItems = gachaSkulls ++ elseVoteBenefits
       _ <- {
         ContextCoercion(votePersistence.increaseEffectPointsByTen(uuid))
           .replicateA(notReceivedBenefits.value) >>
-          grantItemStacksEffect[F](items: _*).apply(player)
+          grantItemStacksEffect[F](grantItems: _*).apply(player)
       }.whenA(notReceivedBenefits.value != 0)
     } yield ()
   }
