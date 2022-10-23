@@ -4,15 +4,13 @@ import cats.effect.ConcurrentEffect
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
-import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
-import com.github.unchama.seichiassist.subsystems.vote.domain.PlayerName
+import com.github.unchama.seichiassist.subsystems.vote.domain.{PlayerName, VotePersistence}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
-import org.bukkit.entity.Player
 
-class VoteCommand[F[_]: ConcurrentEffect](implicit voteAPI: VoteAPI[F, Player]) {
+class VoteCommand[F[_]: ConcurrentEffect](implicit votePersistence: VotePersistence[F]) {
 
   private val usageEchoExecutor: EchoExecutor = EchoExecutor(
     MessageEffect(List(s"$RED/vote record <プレイヤー名>", "投票特典配布用コマンドです"))
@@ -31,8 +29,8 @@ class VoteCommand[F[_]: ConcurrentEffect](implicit voteAPI: VoteAPI[F, Player]) 
           UnfocusedEffect {
             val playerName = PlayerName(lowerCasePlayerName)
             val eff = for {
-              _ <- voteAPI.voteCounterIncrement(playerName)
-              _ <- voteAPI.updateChainVote(playerName)
+              _ <- votePersistence.voteCounterIncrement(playerName)
+              _ <- votePersistence.updateChainVote(playerName)
             } yield ()
             eff.toIO.unsafeRunSync()
           }
