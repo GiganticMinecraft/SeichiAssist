@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.repository
 
 import cats.effect.concurrent.Deferred
-import cats.effect.{ConcurrentEffect, Fiber, IO, Sync, SyncIO}
+import cats.effect.{ConcurrentEffect, Fiber, IO, SyncIO}
 import com.github.unchama.concurrent.RepeatingTaskContext
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
 import com.github.unchama.datarepository.template.initialization.TwoPhasedRepositoryInitialization
@@ -28,7 +28,7 @@ object FairyManaRecoveryRoutineFiberRepositoryDefinition {
         } yield promise
       }
 
-  def finalization[F[_]: Sync, Player]
+  def finalization[Player]
     : RepositoryFinalization[SyncIO, Player, Deferred[IO, Fiber[IO, Nothing]]] =
     RepositoryFinalization
       .withoutAnyPersistence[SyncIO, Player, Deferred[IO, Fiber[IO, Nothing]]] { (_, promise) =>

@@ -82,7 +82,7 @@ object System {
           .TwoPhased(
             FairyManaRecoveryRoutineFiberRepositoryDefinition
               .initialization[Player](_fairyRoutine),
-            FairyManaRecoveryRoutineFiberRepositoryDefinition.finalization[SyncIO, Player]
+            FairyManaRecoveryRoutineFiberRepositoryDefinition.finalization[Player]
           )
       )
     } yield {
