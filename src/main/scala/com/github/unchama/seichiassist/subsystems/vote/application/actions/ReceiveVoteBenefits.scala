@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote.application.actions
 
-trait ReceiveVoteBenefits[F[_], G[_], Player] {
+trait ReceiveVoteBenefits[F[_], Player] {
 
   /**
    * @return 投票特典を受け取る作用
@@ -11,8 +11,8 @@ trait ReceiveVoteBenefits[F[_], G[_], Player] {
 
 object ReceiveVoteBenefits {
 
-  def apply[F[_], G[_], Player](
-    implicit ev: ReceiveVoteBenefits[F, G, Player]
-  ): ReceiveVoteBenefits[F, G, Player] = ev
+  def apply[F[_], Player](
+    implicit ev: ReceiveVoteBenefits[F, Player]
+  ): ReceiveVoteBenefits[F, Player] = ev
 
 }

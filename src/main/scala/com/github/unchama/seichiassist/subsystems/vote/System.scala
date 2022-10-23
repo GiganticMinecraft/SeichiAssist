@@ -1,8 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.vote
 
-import cats.effect.ConcurrentEffect
+import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
+import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
+import com.github.unchama.seichiassist.subsystems.vote.application.actions.ReceiveVoteBenefits
+import com.github.unchama.seichiassist.subsystems.vote.bukkit.actions.BukkitReceiveVoteBenefits
 import com.github.unchama.seichiassist.subsystems.vote.bukkit.command.VoteCommand
 import com.github.unchama.seichiassist.subsystems.vote.bukkit.listeners.PlayerDataCreator
 import com.github.unchama.seichiassist.subsystems.vote.domain._
@@ -19,8 +22,12 @@ trait System[F[_], Player] extends Subsystem[F] {
 
 object System {
 
-  def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread]: System[F, Player] = {
+  def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread, G[_]: SyncEffect](
+    implicit breakCountAPI: BreakCountAPI[F, G, Player]
+  ): System[F, Player] = {
     implicit val votePersistence: VotePersistence[F] = new JdbcVotePersistence[F]
+    val receiveVoteBenefits: ReceiveVoteBenefits[F, Player] =
+      new BukkitReceiveVoteBenefits[F, G]()
 
     new System[F, Player] {
       override implicit val api: VoteAPI[F, Player] = new VoteAPI[F, Player] {
@@ -51,6 +58,9 @@ object System {
           voteCounter <- voteCounter(uuid)
           receivedVote <- receivedVoteBenefits(uuid)
         } yield VoteBenefit(voteCounter.value - receivedVote.value)
+
+        override def receiveVotePrivilege(player: Player): F[Unit] =
+          receiveVoteBenefits.receive(player)
       }
 
       override val commands: Map[String, TabExecutor] = Map(
