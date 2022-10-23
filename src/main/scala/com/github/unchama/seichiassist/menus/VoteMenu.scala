@@ -132,9 +132,7 @@ object VoteMenu extends Menu {
           LeftClickButtonEffect {
             SequentialEffect(
               TargetedEffect.delay { player =>
-                new BukkitReceiveVoteBenefits[IO, SyncIO]
-                  .receive(player)
-                  .unsafeRunAsyncAndForget()
+                voteAPI.receiveVoteBenefits(player).unsafeRunAsyncAndForget()
               },
               MessageEffect(
                 s"${GOLD}投票特典$WHITE(${voteCounter.value - benefits.value}票分)を受け取りました"
