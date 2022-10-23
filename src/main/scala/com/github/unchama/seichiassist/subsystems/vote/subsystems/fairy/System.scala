@@ -137,11 +137,11 @@ object System {
             override def allEatenAppleAmount: IO[AppleAmount] =
               persistence.allEatenAppleAmount
 
-            override def fairySpeechSound(uuid: UUID): IO[Boolean] =
+            override def isPlayFairySpeechSound(uuid: UUID): IO[Boolean] =
               persistence.fairySpeechSound(uuid)
 
             override def toggleFairySpeechSound(uuid: UUID): IO[Unit] =
-              persistence.toggleFairySpeechSound(uuid, !fairySpeechSound(uuid).unsafeRunSync())
+              persistence.toggleFairySpeechSound(uuid, !isPlayFairySpeechSound(uuid).unsafeRunSync())
 
             override def speechEndTime(player: Player): IO[Unit] =
               fairySpeech.speechEndTime(player)

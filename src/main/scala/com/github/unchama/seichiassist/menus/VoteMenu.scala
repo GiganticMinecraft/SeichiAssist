@@ -232,7 +232,7 @@ object VoteMenu extends Menu {
       val playSoundOffLore = List(s"$RESET${RED}現在音が鳴らない設定になっています。") ++ description
 
       RecomputedButton(for {
-        fairySpeechSound <- fairyAPI.fairySpeechSound(player.getUniqueId)
+        fairySpeechSound <- fairyAPI.isPlayFairySpeechSound(player.getUniqueId)
       } yield {
         Button(
           new IconItemStackBuilder(Material.JUKEBOX)

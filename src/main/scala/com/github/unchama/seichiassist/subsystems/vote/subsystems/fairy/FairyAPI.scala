@@ -84,7 +84,7 @@ trait FairySpeechAPI[F[_], Player] {
   /**
    * 妖精が喋ったときに音を再生するか取得する
    */
-  def fairySpeechSound(uuid: UUID): F[Boolean]
+  def isPlayFairySpeechSound(uuid: UUID): F[Boolean]
 
   /**
    * @return 妖精がいつ帰るのかを[[Player]]に送信する作用
