@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy
 
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairySpawnRequestErrorOrSpawn
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property._
 
 import java.util.UUID
@@ -156,6 +157,12 @@ trait FairySummonAPI[F[_], Player] {
    */
   def fairySummon(player: Player): F[Unit]
 
+  /**
+   * 妖精の召喚をリクエストする
+   * 召喚に失敗した場合はエラーを返す
+   * 成功した場合は召喚する作用を返す
+   */
+  def fairySpawnRequest(player: Player): F[FairySpawnRequestErrorOrSpawn[F]]
 }
 
 object FairySummonAPI {
