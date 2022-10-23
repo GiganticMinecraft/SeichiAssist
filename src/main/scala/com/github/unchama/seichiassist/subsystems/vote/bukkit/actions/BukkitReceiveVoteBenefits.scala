@@ -20,9 +20,6 @@ class BukkitReceiveVoteBenefits[F[_]: OnMinecraftServerThread: Sync, G[
 
   import cats.implicits._
 
-  /**
-   * 投票特典を配布する
-   */
   override def receive(player: Player): F[Unit] = {
     val uuid = player.getUniqueId
     for {
