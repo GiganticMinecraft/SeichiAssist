@@ -5,7 +5,7 @@ import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.SummonFairy
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairySpawnRequestError
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairySummonRequestError
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
   FairyPersistence,
   FairySpawnRequestErrorOrSpawn,
@@ -34,11 +34,11 @@ class BukkitFairySummonRequest[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
       seichiLevel = seichiAmountRepository.levelCorrespondingToExp.level
     } yield {
       if (seichiLevel < 10)
-        Left(FairySpawnRequestError.NotEnoughSeichiLevel)
+        Left(FairySummonRequestError.NotEnoughSeichiLevel)
       else if (usingState)
-        Left(FairySpawnRequestError.AlreadyFairySpawned)
+        Left(FairySummonRequestError.AlreadyFairySpawned)
       else if (effectPoints.value < fairySummonCost.value * 2)
-        Left(FairySpawnRequestError.NotEnoughEffectPoint)
+        Left(FairySummonRequestError.NotEnoughEffectPoint)
       else
         Right(summonFairy.summon(player))
     }

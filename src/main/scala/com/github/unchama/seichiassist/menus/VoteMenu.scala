@@ -14,7 +14,7 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMain
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairySpawnRequestError.{
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairySummonRequestError.{
   AlreadyFairySpawned,
   NotEnoughEffectPoint,
   NotEnoughSeichiLevel
