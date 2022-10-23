@@ -200,11 +200,14 @@ object VoteMenu extends Menu {
     }
 
     val fairyContractSettingToggle: IO[Button] =
-      RecomputedButton(IO {
+      RecomputedButton(for {
+        fairyLore <- fairyAPI.getFairyLore(uuid)
+        appleOpenState <- fairyAPI.appleOpenState(uuid)
+      } yield {
         Button(
           new IconItemStackBuilder(Material.PAPER)
             .title(s"$GOLD$UNDERLINE${BOLD}妖精とのお約束")
-            .lore(fairyAPI.getFairyLore(uuid).unsafeRunSync().lore.toList)
+            .lore(fairyLore.lore.toList)
             .build(),
           LeftClickButtonEffect {
             SequentialEffect(
@@ -212,8 +215,7 @@ object VoteMenu extends Menu {
                 fairyAPI
                   .updateAppleOpenState(
                     uuid,
-                    AppleOpenStateDependency
-                      .dependency(fairyAPI.appleOpenState(uuid).unsafeRunSync())
+                    AppleOpenStateDependency.dependency(appleOpenState)
                   )
                   .unsafeRunAsyncAndForget()
               },
