@@ -7,7 +7,11 @@ import com.github.unchama.seichiassist.data.ItemData
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.BukkitGachaSkullData
 import com.github.unchama.seichiassist.subsystems.vote.application.actions.ReceiveVoteBenefits
-import com.github.unchama.seichiassist.subsystems.vote.domain.{VoteBenefit, VotePersistence}
+import com.github.unchama.seichiassist.subsystems.vote.domain.{
+  EffectPoint,
+  VoteBenefit,
+  VotePersistence
+}
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
 import org.bukkit.entity.Player
 
@@ -42,7 +46,7 @@ class BukkitReceiveVoteBenefits[F[_]: OnMinecraftServerThread: Sync, G[
       )
       grantItems = gachaSkulls ++ elseVoteBenefits
       _ <- {
-        ContextCoercion(votePersistence.increaseEffectPoints(uuid))
+        ContextCoercion(votePersistence.increaseEffectPoints(uuid, EffectPoint(10)))
           .replicateA(notReceivedBenefits.value) >>
           grantItemStacksEffect[F](grantItems: _*).apply(player)
       }.whenA(notReceivedBenefits.value != 0)
