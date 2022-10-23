@@ -2,12 +2,24 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.
 
 sealed trait FairySummonRequestError
 
+/**
+ * 妖精の召喚をする際に発生する可能性がある一覧を定義したobject
+ */
 object FairySummonRequestError {
 
+  /**
+   * 整地レベルが足りなかった
+   */
   case object NotEnoughSeichiLevel extends FairySummonRequestError
 
+  /**
+   * 妖精がすでに召喚されている
+   */
   case object AlreadyFairySpawned extends FairySummonRequestError
 
+  /**
+   * 妖精の召喚ポイントが足りなかった
+   */
   case object NotEnoughEffectPoint extends FairySummonRequestError
 
 }
