@@ -9,9 +9,6 @@ import java.util.UUID
 
 class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
 
-  /**
-   * プレイヤーデータを作成する
-   */
   def createPlayerData(uuid: UUID): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
       // ここでIGNOREするのは、作成するデータが既に存在していた場合に発生するエラーを無視するため
@@ -19,9 +16,6 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
     }
   }
 
-  /**
-   * 妖精に開放するりんごの状態を変更する
-   */
   override def changeAppleOpenState(uuid: UUID, openState: FairyAppleConsumeStrategy): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
@@ -31,9 +25,6 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
       }
     }
 
-  /**
-   * 妖精に開放するりんごの状態を取得する
-   */
   override def appleOpenState(uuid: UUID): F[FairyAppleConsumeStrategy] =
     Sync[F].delay {
       val serializedValue = DB.readOnly { implicit session =>
@@ -46,9 +37,6 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
       FairyAppleConsumeStrategy.values.find(_.serializedValue == serializedValue).get
     }
 
-  /**
-   * 妖精を召喚するためのコストを更新する
-   */
   override def updateFairySummonCost(uuid: UUID, fairySummonCost: FairySummonCost): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
@@ -58,9 +46,6 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
       }
     }
 
-  /**
-   * 妖精を召喚するためのコストを取得する
-   */
   override def fairySummonCost(uuid: UUID): F[FairySummonCost] = Sync[F].delay {
     DB.readOnly { implicit session =>
       val fairySummonCost =
@@ -73,9 +58,6 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
     }
   }
 
-  /**
-   * 妖精の召喚状態を更新します
-   */
   override def updateIsFairyUsing(uuid: UUID, isFairyUsing: Boolean): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
@@ -87,9 +69,6 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
       }
     }
 
-  /**
-   * 妖精が召喚されているかを取得します
-   */
   override def isFairyUsing(uuid: UUID): F[Boolean] = Sync[F].delay {
     DB.readOnly { implicit session =>
       sql"SELECT is_fairy_using FROM vote_fairy WHERE uuid = ${uuid.toString}"
@@ -99,9 +78,6 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
     }.get
   }
 
-  /**
-   * 妖精が回復するマナの量を変更する
-   */
   override def updateFairyRecoveryMana(
     uuid: UUID,
     fairyRecoveryMana: FairyRecoveryMana
@@ -113,9 +89,6 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
     }
   }
 
-  /**
-   * 妖精が回復するマナの量を取得する
-   */
   override def fairyRecoveryMana(uuid: UUID): F[FairyRecoveryMana] = Sync[F].delay {
     DB.readOnly { implicit session =>
       val recoveryMana =
@@ -128,9 +101,6 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
     }
   }
 
-  /**
-   * 妖精の効果が終了する時刻を変更する
-   */
   override def updateFairyEndTime(uuid: UUID, fairyEndTime: FairyEndTime): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
@@ -140,9 +110,6 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
       }
     }
 
-  /**
-   * 妖精の効果が終了する時刻を取得する
-   */
   override def fairyEndTime(uuid: UUID): F[Option[FairyEndTime]] = Sync[F].delay {
     DB.readOnly { implicit session =>
       val dateOpt = sql"SELECT fairy_end_time FROM vote_fairy WHERE uuid = ${uuid.toString}"
@@ -153,9 +120,6 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
     }
   }
 
-  /**
-   * 妖精が食べたりんごの量を増加させる
-   */
   override def increaseAppleAteByFairy(uuid: UUID, appleAmount: AppleAmount): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
@@ -165,9 +129,6 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
       }
     }
 
-  /**
-   * 妖精が食べたりんごの量を取得する
-   */
   override def appleAteByFairy(uuid: UUID): F[Option[AppleAmount]] = Sync[F].delay {
     DB.readOnly { implicit session =>
       val appleAmountOpt =
@@ -179,9 +140,6 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
     }
   }
 
-  /**
-   * 自分の妖精に食べさせたりんごの量の順位を返す
-   */
   override def appleAteByFairyMyRanking(uuid: UUID): F[Option[AppleAteByFairyRank]] =
     Sync[F].delay {
       DB.readOnly { implicit session =>
@@ -205,9 +163,6 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
       }
     }
 
-  /**
-   * 妖精に食べさせたりんごの量の順位上位`number`件を返す
-   */
   override def appleAteByFairyRanking(number: Int): F[Vector[Option[AppleAteByFairyRank]]] =
     Sync[F].delay {
       DB.readOnly { implicit session =>
@@ -227,9 +182,6 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
       }
     }
 
-  /**
-   * 妖精が食べたりんごの合計数を返す
-   */
   override def allEatenAppleAmount: F[AppleAmount] = Sync[F].delay {
     DB.readOnly { implicit session =>
       val amount = sql"SELECT SUM(given_apple_amount) AS allAppleAmount FROM vote_fairy;"
@@ -241,9 +193,6 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
     }
   }
 
-  /**
-   * 妖精が喋るときに音をだすかをトグルする
-   */
   override def toggleFairySpeechSound(uuid: UUID, fairyPlaySound: Boolean): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
@@ -253,9 +202,6 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
       }
     }
 
-  /**
-   * 妖精が喋ったときに音を再生するか取得する
-   */
   override def fairySpeechSound(uuid: UUID): F[Boolean] =
     Sync[F].delay {
       DB.readOnly { implicit session =>
