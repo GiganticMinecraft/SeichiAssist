@@ -75,7 +75,7 @@ object System {
           fairySpeechServiceRepository
         )
         val summonFairy: SummonFairy[IO, SyncIO, Player] = new BukkitSummonFairy[IO, SyncIO]
-        val summonRequest: FairySummonRequest[IO, Player] = new BukkitFairySummonRequest[IO,SyncIO, Player]
+        val summonRequest: FairySummonRequest[IO, Player] = new BukkitFairySummonRequest[IO,SyncIO]
 
         override implicit val api: FairyAPI[IO, SyncIO, Player] =
           new FairyAPI[IO, SyncIO, Player] {
