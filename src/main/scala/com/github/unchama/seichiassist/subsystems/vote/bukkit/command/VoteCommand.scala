@@ -32,7 +32,7 @@ class VoteCommand[F[_]: ConcurrentEffect](implicit votePersistence: VotePersiste
               _ <- votePersistence.voteCounterIncrement(playerName)
               _ <- votePersistence.updateChainVote(playerName)
             } yield ()
-            eff.toIO.unsafeRunSync()
+            eff.toIO.unsafeRunAsyncAndForget()
           }
         )
       }
