@@ -11,9 +11,7 @@ trait SummonFairy[F[_], Player] {
 
 object SummonFairy {
 
-  def apply[F[_], Player](
-    implicit ev: SummonFairy[F, Player]
-  ): SummonFairy[F, Player] =
+  def apply[F[_], Player](implicit ev: SummonFairy[F, Player]): SummonFairy[F, Player] =
     ev
 
 }
