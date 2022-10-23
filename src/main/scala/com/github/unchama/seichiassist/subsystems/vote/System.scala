@@ -59,7 +59,7 @@ object System {
           receivedVote <- receivedVoteBenefits(uuid)
         } yield VoteBenefit(voteCounter.value - receivedVote.value)
 
-        override def receiveVotePrivilege(player: Player): F[Unit] =
+        override def receiveVoteBenefits(player: Player): F[Unit] =
           receiveVoteBenefits.receive(player)
       }
 

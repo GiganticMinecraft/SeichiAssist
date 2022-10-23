@@ -69,7 +69,7 @@ trait VoteReceiveAPI[F[_], Player] {
   /**
    * @return 投票特典を受け取る作用
    */
-  def receiveVotePrivilege(player: Player): F[Unit]
+  def receiveVoteBenefits(player: Player): F[Unit]
 
 }
 
