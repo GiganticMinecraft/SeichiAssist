@@ -13,7 +13,8 @@ import java.time.LocalDateTime
 
 class FairyPlayerJoinGreeter(
   implicit fairyPersistence: FairyPersistence[IO],
-  fairySpeech: FairySpeech[IO, Player]
+  fairySpeech: FairySpeech[IO, Player],
+  concurrentEffect: ConcurrentEffect[IO]
 ) extends Listener {
 
   @EventHandler
@@ -32,9 +33,6 @@ class FairyPlayerJoinGreeter(
           fairyPersistence.updateIsFairyUsing(uuid, isFairyUsing = false).unsafeRunSync()
         } else {
           // まだ終了時間ではない(つまり有効時間内)
-          implicit val ioCE: ConcurrentEffect[IO] =
-            IO.ioConcurrentEffect(PluginExecutionContexts.asyncShift)
-
           fairySpeech.welcomeBack(player).unsafeRunSync()
         }
       } else SyncIO.unit
