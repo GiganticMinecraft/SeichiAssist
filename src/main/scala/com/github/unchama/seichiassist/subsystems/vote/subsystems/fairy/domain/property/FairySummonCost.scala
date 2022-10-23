@@ -24,13 +24,4 @@ case class FairySummonCost(value: Int) {
     validTime
   }
 
-  def finiteDuration: String = {
-    value match {
-      case 1 => "30分"
-      case 2 => "1時間"
-      case 3 => "1時間30分"
-      case 4 => "2時間"
-    }
-  }
-
 }

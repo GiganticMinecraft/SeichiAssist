@@ -173,7 +173,7 @@ object VoteMenu extends Menu {
             .title(s"$AQUA$UNDERLINE${BOLD}マナ妖精 時間設定")
             .lore(
               List(
-                s"$RESET$GREEN$BOLD${fairySummonCost.finiteDuration}",
+                s"$RESET$GREEN$BOLD${fairySummonCostToString(fairySummonCost)}",
                 "",
                 s"$RESET${GRAY}コスト",
                 s"$RESET$RED$BOLD${fairySummonCost.value * 2}投票pt",
@@ -261,7 +261,7 @@ object VoteMenu extends Menu {
             List(
               s"$RESET$GRAY${fairySummonState.value * 2}投票ptを消費して",
               s"$RESET${GRAY}マナ妖精を呼びます",
-              s"$RESET${GRAY}時間: ${fairySummonState.finiteDuration}",
+              s"$RESET${GRAY}時間: ${fairySummonCostToString(fairySummonState)}",
               s"$RESET${DARK_RED}Lv.10以上で開放"
             )
           )
@@ -288,6 +288,15 @@ object VoteMenu extends Menu {
           )
         }
       )
+    }
+
+    private def fairySummonCostToString(fairySummonCost: FairySummonCost): String = {
+      fairySummonCost.value match {
+        case 1 => "30分"
+        case 2 => "1時間"
+        case 3 => "1時間30分"
+        case 4 => "2時間"
+      }
     }
 
     private def spawnFailedEffect(message: String): Kleisli[IO, Player, Unit] = {
