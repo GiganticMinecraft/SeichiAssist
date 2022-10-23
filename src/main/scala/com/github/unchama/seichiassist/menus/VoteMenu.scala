@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.menus
 
 import cats.data.Kleisli
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
-import cats.implicits.toTraverseOps
+import cats.implicits._
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
