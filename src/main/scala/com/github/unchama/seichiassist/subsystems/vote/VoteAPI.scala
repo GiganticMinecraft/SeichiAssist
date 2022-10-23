@@ -64,4 +64,23 @@ object VoteReadAPI {
 
 }
 
-trait VoteAPI[F[_], Player] extends VoteReadAPI[F, Player] with VoteWriteAPI[F]
+trait VoteReceiveAPI[F[_], Player] {
+
+  /**
+   * @return 投票特典を受け取る作用
+   */
+  def receiveVotePrivilege(player: Player): F[Unit]
+
+}
+
+object VoteReceiveAPI {
+
+  def apply[F[_], Player](implicit ev: VoteReceiveAPI[F, Player]): VoteReceiveAPI[F, Player] =
+    ev
+
+}
+
+trait VoteAPI[F[_], Player]
+    extends VoteReadAPI[F, Player]
+    with VoteWriteAPI[F]
+    with VoteReceiveAPI[F, Player]
