@@ -119,37 +119,8 @@ object System {
             override def fairySummonCost(player: Player): IO[FairySummonCost] =
               persistence.fairySummonCost(player.getUniqueId)
 
-            override def fairyEndTime(player: Player): IO[Option[FairyEndTime]] =
-              persistence.fairyEndTime(player.getUniqueId)
-
-            override def updateFairyEndTime(
-              player: Player,
-              fairyEndTime: FairyEndTime
-            ): IO[Unit] =
-              persistence.updateFairyEndTime(player.getUniqueId, fairyEndTime)
-
             override def isFairyUsing(player: Player): IO[Boolean] =
               persistence.isFairyUsing(player.getUniqueId)
-
-            override def updateIsFairyUsing(player: Player, isFairyUsing: Boolean): IO[Unit] =
-              persistence.updateIsFairyUsing(player.getUniqueId, isFairyUsing)
-
-            override def fairyRecoveryMana(uuid: UUID): IO[FairyRecoveryMana] =
-              persistence.fairyRecoveryMana(uuid)
-
-            override def updateFairyRecoveryManaAmount(
-              uuid: UUID,
-              fairyRecoveryMana: FairyRecoveryMana
-            ): IO[Unit] = persistence.updateFairyRecoveryMana(uuid, fairyRecoveryMana)
-
-            override def increaseAppleAteByFairy(
-              uuid: UUID,
-              appleAmount: AppleAmount
-            ): IO[Unit] =
-              persistence.increaseAppleAteByFairy(uuid, appleAmount)
-
-            override def appleAteByFairy(uuid: UUID): IO[Option[AppleAmount]] =
-              persistence.appleAteByFairy(uuid)
 
             override def appleAteByFairyMyRanking(
               player: Player
@@ -170,17 +141,8 @@ object System {
             override def toggleFairySpeechSound(uuid: UUID): IO[Unit] =
               persistence.toggleFairySpeechSound(uuid, !fairySpeechSound(uuid).unsafeRunSync())
 
-            override def createPlayerData(uuid: UUID): IO[Unit] =
-              persistence.createPlayerData(uuid)
-
             override def speechEndTime(player: Player): IO[Unit] =
               fairySpeech.speechEndTime(player)
-
-            override def summonSpeech(player: Player): IO[Unit] =
-              fairySpeech.summonSpeech(player)
-
-            override def welcomeBack(player: Player): IO[Unit] =
-              fairySpeech.welcomeBack(player)
 
             override def fairySummonRequest(
               player: Player
