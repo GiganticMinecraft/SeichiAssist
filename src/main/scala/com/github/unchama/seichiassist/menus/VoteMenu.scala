@@ -328,7 +328,11 @@ object VoteMenu extends Menu {
       )
     }
 
-    val gachaRingoInformation: IO[Button] = IO {
+    val gachaRingoInformation: IO[Button] = for {
+      myRank <- fairyAPI.appleAteByFairyMyRanking(player)
+      topFourRanking <- fairyAPI.appleAteByFairyRanking(4)
+      allEatenAppleAmount <- fairyAPI.allEatenAppleAmount
+    } yield {
       val staticLore = List(
         s"$RESET$RED$BOLD※ﾆﾝｹﾞﾝに見られないように気を付けること！",
         s"$RESET$RED$BOLD  毎日大妖精からデータを更新すること！",
@@ -337,25 +341,27 @@ object VoteMenu extends Menu {
         s"$RESET$GOLD${BOLD}たくさんくれたﾆﾝｹﾞﾝたち",
         s"$RESET${DARK_GRAY}召喚されたらラッキーだよ！"
       )
-      val topFour = fairyAPI.appleAteByFairyRanking(4).unsafeRunSync()
       val topFourRankingLore =
-        List(topFour.headOption, topFour.lift(1), topFour.lift(2), topFour.lift(3)).flatMap {
-          rankDataOpt =>
-            if (rankDataOpt.nonEmpty) {
-              val rankData = rankDataOpt.get.get
-              List(
-                s"${GRAY}たくさんくれたﾆﾝｹﾞﾝ第${rankData.rank}位！",
-                s"${GRAY}なまえ：${rankData.name} りんご：${rankData.appleAmount.amount}個"
-              )
-            } else Nil
+        List(
+          topFourRanking.headOption,
+          topFourRanking.lift(1),
+          topFourRanking.lift(2),
+          topFourRanking.lift(3)
+        ).flatMap { rankDataOpt =>
+          if (rankDataOpt.nonEmpty) {
+            val rankData = rankDataOpt.get.get
+            List(
+              s"${GRAY}たくさんくれたﾆﾝｹﾞﾝ第${rankData.rank}位！",
+              s"${GRAY}なまえ：${rankData.name} りんご：${rankData.appleAmount.amount}個"
+            )
+          } else Nil
         }
-      val myRank = fairyAPI.appleAteByFairyMyRanking(player).unsafeRunSync().get
       val statistics = List(
-        s"${AQUA}ぜーんぶで${fairyAPI.allEatenAppleAmount.unsafeRunSync().amount}個もらえた！",
+        s"${AQUA}ぜーんぶで${allEatenAppleAmount.amount}個もらえた！",
         "",
         s"$GREEN↓呼び出したﾆﾝｹﾞﾝの情報↓",
-        s"${GREEN}今までに${myRank.appleAmount.amount}個もらった",
-        s"${GREEN}ﾆﾝｹﾞﾝの中では${myRank.rank}番目にたくさんくれる！"
+        s"${GREEN}今までに${myRank.get.appleAmount.amount}個もらった",
+        s"${GREEN}ﾆﾝｹﾞﾝの中では${myRank.get.rank}番目にたくさんくれる！"
       )
 
       Button(
