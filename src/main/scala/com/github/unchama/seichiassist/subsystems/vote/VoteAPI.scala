@@ -35,7 +35,7 @@ trait VoteWriteAPI[F[_]] {
 
 object VoteWriteAPI {
 
-  def apply[F[_]](implicit voteWriteAPI: VoteWriteAPI[F]): VoteWriteAPI[F] = implicitly
+  def apply[F[_]](implicit ev: VoteWriteAPI[F]): VoteWriteAPI[F] = ev
 
 }
 
@@ -70,9 +70,7 @@ trait VoteReadAPI[F[_], Player] {
 
 object VoteReadAPI {
 
-  def apply[F[_], Player](
-    implicit voteReadAPI: VoteReadAPI[F, Player]
-  ): VoteReadAPI[F, Player] = implicitly
+  def apply[F[_], Player](implicit ev: VoteReadAPI[F, Player]): VoteReadAPI[F, Player] = ev
 
 }
 
