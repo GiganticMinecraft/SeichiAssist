@@ -209,10 +209,10 @@ class PlayerBlockBreakListener(
         }
 
         val effectPrograms = for {
-          (((blocks, lavas), waters), chunkIndex) <- multiBreakList
-            .zip(multiLavaList)
-            .zip(multiWaterList)
-            .zipWithIndex
+          ((blocks, lavas, waters), chunkIndex) <-
+            (multiBreakList lazyZip
+              multiLavaList lazyZip
+              multiWaterList).zipWithIndex.toMap
           blockChunk = BukkitResources.vanishingBlockSetResource[IO, BlockBreakableBySkill](
             blocks
           )
@@ -224,8 +224,7 @@ class PlayerBlockBreakListener(
               for {
                 _ <- IO.sleep((chunkIndex * 4).ticks)(IO.timer(cachedThreadPool))
                 _ <- ioOnMainThread.runAction(SyncIO {
-                  lavas.foreach(_.setType(Material.AIR))
-                  waters.foreach(_.setType(Material.AIR))
+                  (lavas ++ waters).foreach(_.setType(Material.AIR))
                 })
                 _ <- playerData
                   .skillEffectState

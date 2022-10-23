@@ -133,9 +133,10 @@ class EntityListener(
       val durabilityEnchantment = tool.getEnchantmentLevel(Enchantment.DURABILITY)
 
       tool.getDurability +
-        BreakUtil.calcDurability(durabilityEnchantment, breakBlocks.size) +
-        BreakUtil.calcDurability(durabilityEnchantment, 10 * lavaBlocks.size) +
-        BreakUtil.calcDurability(durabilityEnchantment, 10 * waterBlocks.size)
+        BreakUtil.calcDurability(
+          durabilityEnchantment,
+          breakBlocks.size + 10 * (lavaBlocks.size + waterBlocks.size)
+        )
     }.toShort
 
     // 重力値の判定
@@ -159,10 +160,8 @@ class EntityListener(
     if (!tool.getItemMeta.isUnbreakable) tool.setDurability(nextDurability)
 
     // 以降破壊する処理
-    // 溶岩を破壊する処理
-    lavaBlocks.foreach(_.setType(Material.AIR))
-    // 水を破壊する処理
-    waterBlocks.foreach(_.setType(Material.AIR))
+    // 溶岩と水を破壊する
+    (lavaBlocks ++ waterBlocks).foreach(_.setType(Material.AIR))
 
     // 元ブロックの真ん中の位置
     val centerOfBlock = hitBlock.getLocation.add(0.5, 0.5, 0.5)
