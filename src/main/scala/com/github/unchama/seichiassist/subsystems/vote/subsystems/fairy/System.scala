@@ -140,8 +140,9 @@ object System {
             override def isPlayFairySpeechSound(uuid: UUID): IO[Boolean] =
               persistence.fairySpeechSound(uuid)
 
-            override def toggleFairySpeechSound(uuid: UUID): IO[Unit] =
-              persistence.toggleFairySpeechSound(uuid, !isPlayFairySpeechSound(uuid).unsafeRunSync())
+            override def toggleFairySpeechSound(uuid: UUID): IO[Unit] = for {
+              isPlayFairySpeechSound <- isPlayFairySpeechSound(uuid)
+            } yield persistence.toggleFairySpeechSound(uuid, !isPlayFairySpeechSound)
 
             override def speechEndTime(player: Player): IO[Unit] =
               fairySpeech.speechEndTime(player)
