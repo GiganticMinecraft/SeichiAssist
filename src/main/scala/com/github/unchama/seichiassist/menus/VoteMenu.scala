@@ -231,13 +231,14 @@ object VoteMenu extends Menu {
       val playSoundOnLore = List(s"$RESET${GREEN}現在音が鳴る設定になっています。") ++ description
       val playSoundOffLore = List(s"$RESET${RED}現在音が鳴らない設定になっています。") ++ description
 
-      RecomputedButton(IO {
+      RecomputedButton(for {
+        fairySpeechSound <- fairyAPI.fairySpeechSound(player.getUniqueId)
+      } yield {
         Button(
           new IconItemStackBuilder(Material.JUKEBOX)
             .title(s"$GOLD$UNDERLINE${BOLD}マナ妖精の音トグル")
             .lore(
-              if (fairyAPI.fairySpeechSound(player.getUniqueId).unsafeRunSync())
-                playSoundOnLore
+              if (fairySpeechSound) playSoundOnLore
               else playSoundOffLore
             )
             .build(),
