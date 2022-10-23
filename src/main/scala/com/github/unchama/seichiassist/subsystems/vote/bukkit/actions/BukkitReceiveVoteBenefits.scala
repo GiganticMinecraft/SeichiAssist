@@ -42,7 +42,7 @@ class BukkitReceiveVoteBenefits[F[_]: OnMinecraftServerThread: Sync, G[
       )
       grantItems = gachaSkulls ++ elseVoteBenefits
       _ <- {
-        ContextCoercion(votePersistence.increaseEffectPointsByTen(uuid))
+        ContextCoercion(votePersistence.increaseEffectPoints(uuid))
           .replicateA(notReceivedBenefits.value) >>
           grantItemStacksEffect[F](grantItems: _*).apply(player)
       }.whenA(notReceivedBenefits.value != 0)

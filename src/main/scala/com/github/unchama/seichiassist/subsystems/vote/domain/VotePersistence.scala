@@ -30,17 +30,17 @@ trait VotePersistence[F[_]] {
   def chainVoteDays(uuid: UUID): F[ChainVoteDayNumber]
 
   /**
-   * effectPointを10増加させる作用
+   * [[EffectPoint]]を指定分だけ増加させる作用
    */
-  def increaseEffectPointsByTen(uuid: UUID): F[Unit]
+  def increaseEffectPoints(uuid: UUID, effectPoint: EffectPoint): F[Unit]
 
   /**
-   * effectPointを減少させる作用
+   * [[EffectPoint]]を減少させる作用
    */
   def decreaseEffectPoints(uuid: UUID, effectPoint: EffectPoint): F[Unit]
 
   /**
-   * effectPointを返す作用
+   * 指定プレイヤーの[[EffectPoint]]を返す作用
    */
   def effectPoints(uuid: UUID): F[EffectPoint]
 
