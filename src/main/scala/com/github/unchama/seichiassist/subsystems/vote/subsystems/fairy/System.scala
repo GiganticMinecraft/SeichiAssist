@@ -182,9 +182,6 @@ object System {
             override def welcomeBack(player: Player): IO[Unit] =
               fairySpeech.welcomeBack(player)
 
-            override def fairySummon(player: Player): IO[Unit] =
-              summonFairy.summon(player)
-
             override def fairySummonRequest(
               player: Player
             ): IO[FairySpawnRequestErrorOrSpawn[IO]] =

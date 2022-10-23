@@ -153,11 +153,6 @@ object FairySpeechAPI {
 trait FairySummonAPI[F[_], Player] {
 
   /**
-   * @return 妖精を召喚する作用
-   */
-  def fairySummon(player: Player): F[Unit]
-
-  /**
    * 妖精の召喚をリクエストする
    * 召喚に失敗した場合はエラーを返す
    * 成功した場合は召喚する作用を返す
