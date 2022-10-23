@@ -6,20 +6,20 @@ import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
-  FairySpawnRequest,
+  FairySummonRequest,
   FairySpawnRequestErrorOrSpawn
 }
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairySpawnRequestError
 
-class BukkitFairySpawnRequest[F[_]: Sync, G[_]: ContextCoercion[*[_], F], Player](
+class BukkitFairySummonRequest[F[_]: Sync, G[_]: ContextCoercion[*[_], F], Player](
   implicit breakCountAPI: BreakCountAPI[F, G, Player],
   fairyAPI: FairyAPI[F, G, Player],
   voteAPI: VoteAPI[F, Player]
-) extends FairySpawnRequest[F, Player] {
+) extends FairySummonRequest[F, Player] {
 
   import cats.implicits._
 
-  override def spawnRequest(player: Player): F[FairySpawnRequestErrorOrSpawn[F]] = {
+  override def summonRequest(player: Player): F[FairySpawnRequestErrorOrSpawn[F]] = {
     for {
       usingState <- fairyAPI.isFairyUsing(player)
       effectPoints <- voteAPI.effectPoints(player)

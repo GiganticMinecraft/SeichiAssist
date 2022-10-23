@@ -162,7 +162,7 @@ trait FairySummonAPI[F[_], Player] {
    * 召喚に失敗した場合はエラーを返す
    * 成功した場合は召喚する作用を返す
    */
-  def fairySpawnRequest(player: Player): F[FairySpawnRequestErrorOrSpawn[F]]
+  def fairySummonRequest(player: Player): F[FairySpawnRequestErrorOrSpawn[F]]
 }
 
 object FairySummonAPI {
