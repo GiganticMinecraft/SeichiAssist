@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.gateway
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairySpeechGateway
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairyMessage
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.FairySpeechGateway
 import com.github.unchama.targetedeffect.commandsender.MessageEffectF
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor.{AQUA, BOLD, RESET}

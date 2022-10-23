@@ -23,11 +23,8 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.l
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.routines.BukkitFairyRoutine
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property._
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.resources.bukkit.FairyLoreTable
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
-  FairyPersistence,
-  FairySpeech,
-  FairySpeechGateway
-}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.{FairySpeech, FairySpeechGateway}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyPersistence
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.infrastructure.JdbcFairyPersistence
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.service.FairySpeechService
 import org.bukkit.entity.Player

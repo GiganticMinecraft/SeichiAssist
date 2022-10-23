@@ -9,10 +9,8 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.FairyRoutine
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions.BukkitRecoveryMana
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
-  FairyPersistence,
-  FairySpeech
-}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyPersistence
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.FairySpeech
 import org.bukkit.entity.Player
 
 import scala.concurrent.duration.FiniteDuration

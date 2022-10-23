@@ -12,10 +12,8 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.p
   FairyAppleConsumeStrategy,
   FairyManaRecoveryState
 }
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
-  FairyPersistence,
-  FairySpeech
-}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyPersistence
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.FairySpeech
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffectF
