@@ -7,16 +7,6 @@ import java.util.UUID
 trait VoteWriteAPI[F[_]] {
 
   /**
-   * 投票ポイントをインクリメントする作用
-   */
-  def voteCounterIncrement(playerName: PlayerName): F[Unit]
-
-  /**
-   * 連続投票を更新する作用
-   */
-  def updateChainVote(playerName: PlayerName): F[Unit]
-
-  /**
    * effectPointを減少させる作用
    */
   def decreaseEffectPoint(uuid: UUID, effectPoint: EffectPoint): F[Unit]
