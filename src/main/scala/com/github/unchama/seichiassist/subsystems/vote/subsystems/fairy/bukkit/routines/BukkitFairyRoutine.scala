@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.
 import cats.effect.{ConcurrentEffect, IO, SyncIO, Timer}
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
@@ -21,7 +20,8 @@ class BukkitFairyRoutine(fairySpeech: FairySpeech[IO, Player])(
   manaApi: ManaApi[IO, SyncIO, Player],
   context: RepeatingTaskContext,
   fairyPersistence: FairyPersistence[IO],
-  concurrentEffect: ConcurrentEffect[IO]
+  concurrentEffect: ConcurrentEffect[IO],
+  minecraftServerThread: OnMinecraftServerThread[IO]
 ) extends FairyRoutine[IO, Player] {
 
   override def start(player: Player): IO[Nothing] = {
@@ -34,12 +34,9 @@ class BukkitFairyRoutine(fairySpeech: FairySpeech[IO, Player])(
 
     implicit val timer: Timer[IO] = IO.timer(context)
 
-    implicit val onMainThread: OnMinecraftServerThread[IO] =
-      PluginExecutionContexts.onMainThread
-
     RepeatingRoutine.permanentRoutine(
       repeatInterval,
-      onMainThread.runAction {
+      minecraftServerThread.runAction {
         new BukkitRecoveryMana[IO, SyncIO](player, fairySpeech).recovery.runAsync(_ => IO.unit)
       }
     )

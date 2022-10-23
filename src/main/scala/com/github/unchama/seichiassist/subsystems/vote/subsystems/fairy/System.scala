@@ -2,39 +2,24 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy
 
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
 import com.github.unchama.concurrent.RepeatingTaskContext
-import com.github.unchama.datarepository.bukkit.player.{
-  BukkitRepositoryControls,
-  PlayerDataRepository
-}
+import com.github.unchama.datarepository.bukkit.player.{BukkitRepositoryControls, PlayerDataRepository}
 import com.github.unchama.datarepository.template.RepositoryDefinition
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.SummonFairy
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.repository.{
-  FairyManaRecoveryRoutineFiberRepositoryDefinition,
-  SpeechServiceRepositoryDefinitions
-}
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.{
-  BukkitFairySummonRequest,
-  BukkitFairySpeech
-}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.repository.{FairyManaRecoveryRoutineFiberRepositoryDefinition, SpeechServiceRepositoryDefinitions}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.{BukkitFairySpeech, BukkitFairySummonRequest}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions.BukkitSummonFairy
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.gateway.BukkitFairySpeechGateway
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.listeners.FairyPlayerJoinGreeter
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.routines.BukkitFairyRoutine
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property._
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.resources.bukkit.FairyLoreTable
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.{
-  FairySpeech,
-  FairySpeechGateway
-}
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
-  FairyPersistence,
-  FairySummonRequest,
-  FairySpawnRequestErrorOrSpawn
-}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.{FairySpeech, FairySpeechGateway}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{FairyPersistence, FairySpawnRequestErrorOrSpawn, FairySummonRequest}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.infrastructure.JdbcFairyPersistence
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.service.FairySpeechService
 import org.bukkit.entity.Player
@@ -53,7 +38,8 @@ object System {
     voteAPI: VoteAPI[IO, Player],
     manaApi: ManaApi[IO, SyncIO, Player],
     repeatingTaskContext: RepeatingTaskContext,
-    concurrentEffect: ConcurrentEffect[IO]
+    concurrentEffect: ConcurrentEffect[IO],
+    minecraftServerThread: OnMinecraftServerThread[IO]
   ): SyncIO[System[IO, SyncIO, Player]] = {
     implicit val persistence: FairyPersistence[IO] = new JdbcFairyPersistence[IO]
     implicit val fairySpeechGatewayProvider: Player => FairySpeechGateway[SyncIO] =

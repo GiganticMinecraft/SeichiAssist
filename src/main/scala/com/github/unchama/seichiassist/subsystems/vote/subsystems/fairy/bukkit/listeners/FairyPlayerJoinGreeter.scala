@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.listeners
 
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyPersistence
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.FairySpeech
 import org.bukkit.ChatColor._
