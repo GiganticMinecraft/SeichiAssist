@@ -87,10 +87,10 @@ object System {
               persistence.appleOpenState(uuid)
 
             override def updateAppleOpenState(
-              uuid: UUID,
-              appleOpenState: FairyAppleConsumeStrategy
+                                               uuid: UUID,
+                                               appleConsumeStrategy: FairyAppleConsumeStrategy
             ): IO[Unit] =
-              persistence.changeAppleOpenState(uuid, appleOpenState)
+              persistence.changeAppleOpenState(uuid, appleConsumeStrategy)
 
             override def getFairyLore(uuid: UUID): IO[FairyLore] = for {
               state <- appleOpenState(uuid)
