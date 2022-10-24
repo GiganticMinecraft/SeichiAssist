@@ -110,7 +110,7 @@ class EntityListener(
       BreakUtil.performsMultipleIDBlockBreakWhenUsingSkills(player).unsafeRunSync()
 
     import com.github.unchama.seichiassist.data.syntax._
-    val BlockSearching.Result(breakBlocks, _, lavaBlocks) =
+    val BlockSearching.Result(breakBlocks, waterBlocks, lavaBlocks) =
       BlockSearching
         .searchForBlocksBreakableWithSkill(player, breakArea.gridPoints(), hitBlock)
         .unsafeRunSync()
@@ -128,13 +128,15 @@ class EntityListener(
       breakBlocks.size.toDouble * (gravity + 1) * selectedSkill.manaCost / breakAreaVolume
 
     // セットする耐久値の計算
-    // １マス溶岩を破壊するのにはブロック１０個分の耐久が必要
+    // １マス溶岩、水を破壊するのにはブロック１０個分の耐久が必要
     val nextDurability = {
       val durabilityEnchantment = tool.getEnchantmentLevel(Enchantment.DURABILITY)
 
       tool.getDurability +
-        BreakUtil.calcDurability(durabilityEnchantment, breakBlocks.size) +
-        BreakUtil.calcDurability(durabilityEnchantment, 10 * lavaBlocks.size)
+        BreakUtil.calcDurability(
+          durabilityEnchantment,
+          breakBlocks.size + 10 * (lavaBlocks.size + waterBlocks.size)
+        )
     }.toShort
 
     // 重力値の判定
@@ -158,8 +160,8 @@ class EntityListener(
     if (!tool.getItemMeta.isUnbreakable) tool.setDurability(nextDurability)
 
     // 以降破壊する処理
-    // 溶岩を破壊する処理
-    lavaBlocks.foreach(_.setType(Material.AIR))
+    // 溶岩と水を破壊する
+    (lavaBlocks ++ waterBlocks).foreach(_.setType(Material.AIR))
 
     // 元ブロックの真ん中の位置
     val centerOfBlock = hitBlock.getLocation.add(0.5, 0.5, 0.5)
