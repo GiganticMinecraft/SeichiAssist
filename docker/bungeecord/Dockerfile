@@ -1,7 +1,6 @@
 FROM maven:3.6.3-jdk-8 as redisbungee-provider
 WORKDIR /
-RUN apt update
-RUN apt install patch -y
+RUN apt-get update && apt-get install patch -y
 RUN git clone https://github.com/minecrafter/RedisBungee.git
 WORKDIR /RedisBungee
 # version 0.5.1
