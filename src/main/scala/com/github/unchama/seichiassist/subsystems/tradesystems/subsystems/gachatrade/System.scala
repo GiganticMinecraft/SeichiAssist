@@ -9,8 +9,14 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.GachaP
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.tradesystems.domain.TradeRule
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.listeners.GachaTradeListener
-import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.traderules.{BigOrRegular, BukkitTrade}
-import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.domain.{GachaListProvider, GachaTradeRule}
+import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.traderules.{
+  BigOrRegular,
+  BukkitTrade
+}
+import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.domain.{
+  GachaListProvider,
+  GachaTradeRule
+}
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import org.bukkit.inventory.ItemStack
