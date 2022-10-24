@@ -212,7 +212,7 @@ class PlayerBlockBreakListener(
           ((blocks, lavas, waters), chunkIndex) <-
             (multiBreakList lazyZip
               multiLavaList lazyZip
-              multiWaterList).zipWithIndex.toMap
+              multiWaterList).zipWithIndex.toList
           blockChunk = BukkitResources.vanishingBlockSetResource[IO, BlockBreakableBySkill](
             blocks
           )
