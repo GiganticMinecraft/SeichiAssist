@@ -7,7 +7,7 @@ trait FairySpeechGateway[F[_]] {
   /**
    * @return 妖精からメッセージを送信する作用
    */
-  def sendMessage(fairyMessage: FairyMessage): F[Unit]
+  def sendMessage(fairyMessages: Seq[FairyMessage]): F[Unit]
 
   /**
    * @return 妖精がメッセージを送信した時の音を再生する作用

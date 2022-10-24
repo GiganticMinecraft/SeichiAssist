@@ -47,7 +47,7 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
         fairyPersistence.fairySpeechSound(player.getUniqueId)
       }
       _ <- ContextCoercion {
-        serviceRepository.makeSpeech(message, fairySpeechSound)
+        serviceRepository.makeSpeech(Seq(message), fairySpeechSound)
       }
     } yield ()
 
@@ -68,7 +68,7 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
       message <- randomMessage(messages(nameCalledByFairy))
       fairyPlaySound <- fairyPersistence.fairySpeechSound(player.getUniqueId)
       _ <- ContextCoercion {
-        fairySpeechServiceRepository(player).makeSpeech(message, fairyPlaySound)
+        fairySpeechServiceRepository(player).makeSpeech(Seq(message), fairyPlaySound)
       }
     } yield ()
   }
@@ -80,7 +80,7 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
       endTime = endTimeOpt.get.endTimeOpt.get
       _ <- ContextCoercion {
         fairySpeechServiceRepository(player).makeSpeech(
-          FairyMessage(s"僕は${endTime.getHour}:${endTime.getMinute}には帰るよー。"),
+          Seq(FairyMessage(s"僕は${endTime.getHour}:${endTime.getMinute}には帰るよー。")),
           playSound
         )
       }
@@ -91,7 +91,7 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
     playSound <- fairyPersistence.fairySpeechSound(player.getUniqueId)
     _ <- ContextCoercion {
       fairySpeechServiceRepository(player)
-        .makeSpeech(FairyMessage(s"おかえり！${player.getName}"), playSound)
+        .makeSpeech(Seq(FairyMessage(s"おかえり！${player.getName}")), playSound)
     }
   } yield ()
 
@@ -99,9 +99,10 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
     playSound <- fairyPersistence.fairySpeechSound(player.getUniqueId)
     repository = fairySpeechServiceRepository(player)
     _ <- ContextCoercion {
-      repository.makeSpeech(FairyMessage(s"あっ、もうこんな時間だ！"), fairyPlaySound = false)
-    } >> ContextCoercion {
-      repository.makeSpeech(FairyMessage(s"じゃーねー！${player.getName}"), playSound)
+      repository.makeSpeech(
+        Seq(FairyMessage(s"あっ、もうこんな時間だ！"), FairyMessage(s"じゃーねー！${player.getName}")),
+        playSound
+      )
     }
   } yield ()
 
