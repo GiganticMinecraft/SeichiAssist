@@ -1,9 +1,13 @@
 FROM maven:3.6.3-jdk-8 as redisbungee-provider
 WORKDIR /
+RUN apt update
+RUN apt install patch -y
 RUN git clone https://github.com/minecrafter/RedisBungee.git
 WORKDIR /RedisBungee
 # version 0.5.1
 RUN git checkout 934e4543d695f1e79f6690ac4ee435e3fa5d50d4
+COPY docker/bungeecord/removal-username-history-api-20220913.patch .
+RUN patch -p1 < removal-username-history-api-20220913.patch
 RUN mvn clean install
 
 FROM ghcr.io/giganticminecraft/bungeesemaphore/bungeesemaphore-jar:b61f4e1de9d5 as bungeesemaphore-provider
