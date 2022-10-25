@@ -1,3 +1,7 @@
+# Date: 25 Oct 2022
+# This patch is provided to you under the terms and conditions of the Eclipse Public License Version 1.0 ("EPL"). 
+# A copy of the EPL is available at http://www.eclipse.org/legal/epl-v10.html. For purposes of the EPL, "Program" will mean this patch.
+
 diff --git a/src/main/java/com/imaginarycode/minecraft/redisbungee/util/uuid/NameFetcher.java b/src/main/java/com/imaginarycode/minecraft/redisbungee/util/uuid/NameFetcher.java
 index b7c035f..e2e5c38 100644
 --- a/src/main/java/com/imaginarycode/minecraft/redisbungee/util/uuid/NameFetcher.java
