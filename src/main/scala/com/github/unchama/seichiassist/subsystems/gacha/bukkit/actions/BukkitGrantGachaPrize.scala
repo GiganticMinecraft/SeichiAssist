@@ -22,7 +22,10 @@ class BukkitGrantGachaPrize[F[_]: Sync: OnMinecraftServerThread](
     prize: GachaPrize[ItemStack]
   ): Kleisli[F, Player, Boolean] =
     Kleisli { player =>
-      Sync[F].delay { BreakUtil.tryAddItemIntoMineStack(player, prize.itemStack) }
+      Sync[F].delay {
+        val signedItemStack = prize.materializeWithOwnerSignature(player.getName)
+        BreakUtil.tryAddItemIntoMineStack(player, signedItemStack)
+      }
     }
 
   override def insertIntoPlayerInventoryOrDrop(
