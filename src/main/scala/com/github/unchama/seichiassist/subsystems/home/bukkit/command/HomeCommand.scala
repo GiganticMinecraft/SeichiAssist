@@ -3,24 +3,37 @@ package com.github.unchama.seichiassist.subsystems.home.bukkit.command
 import cats.Monad
 import cats.data.Kleisli
 import cats.effect.implicits._
-import cats.effect.{ConcurrentEffect, Effect, IO}
+import cats.effect.{ConcurrentEffect, Effect, IO, SyncEffect}
 import com.github.unchama.chatinterceptor.CancellationReason.Overridden
 import com.github.unchama.chatinterceptor.ChatInterceptionScope
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
+import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
+import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.home.bukkit.{LocationCodec, TeleportEffect}
 import com.github.unchama.seichiassist.subsystems.home.{HomeAPI, HomeReadAPI, HomeWriteAPI}
 import com.github.unchama.seichiassist.subsystems.home.domain.{Home, HomeId}
 import com.github.unchama.seichiassist.subsystems.home.domain.OperationResult.RenameResult
+import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.ContentModelContainer
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
+import org.bukkit.entity.Player
 
-object HomeCommand {
+class HomeCommand[F[
+  _
+]: OnMinecraftServerThread: ConcurrentEffect: NonServerThreadContextShift: HomeAPI, G[
+  _
+]: SyncEffect: ContextCoercion[*[_], F]](
+  implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player],
+  buildCountReadAPI: BuildCountAPI[F, G, Player]
+) {
 
   import cats.implicits._
 
@@ -122,10 +135,28 @@ object HomeCommand {
 
         val homeLocation = LocationCodec.fromBukkitLocation(player.getLocation)
 
+        // APIから整地量、建築量を取得しレベルからホームポイントに使用できるidの最大値を取得する
+        // 取得結果と引数のhomeIdを比較し処理分岐を行う
         val eff = for {
-          _ <- NonServerThreadContextShift[F].shift
-          _ <- HomeWriteAPI[F].upsertLocation(player.getUniqueId, homeId)(homeLocation)
-        } yield MessageEffect(s"現在位置をホームポイント${homeId}に設定しました")
+          seichiAmount <- ContextCoercion(
+            breakCountReadAPI.seichiAmountDataRepository(player).read
+          )
+          buildAmount <- ContextCoercion(
+            buildCountReadAPI.playerBuildAmountRepository(player).read
+          )
+          homeIdLimit = Home.maxHomePerPlayer + HomeId.maxNumberByPlayerOf(
+            seichiAmount,
+            buildAmount
+          )
+//          canUseHomeId = homeIdLimit <= homeId.value
+          _ <- MessageEffectF[F](s"このホーム番号は現在のレベルでは使用できません").apply(player)
+          _ <- {
+            NonServerThreadContextShift[F].shift >> HomeWriteAPI[F].upsertLocation(
+              player.getUniqueId,
+              homeId
+            )(homeLocation) >> MessageEffectF[F](s"現在位置をホームポイント${homeId}に設定しました").apply(player)
+          }
+        } yield TargetedEffect.emptyEffect
 
         eff.toIO
       }
