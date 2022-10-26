@@ -3,26 +3,38 @@
 # A copy of the EPL is available at http://www.eclipse.org/legal/epl-v10.html. For purposes of the EPL, "Program" will mean this patch.
 
 diff --git a/src/main/java/com/imaginarycode/minecraft/redisbungee/util/uuid/NameFetcher.java b/src/main/java/com/imaginarycode/minecraft/redisbungee/util/uuid/NameFetcher.java
-index b7c035f..e2e5c38 100644
+index b7c035f..bae60c5 100644
 --- a/src/main/java/com/imaginarycode/minecraft/redisbungee/util/uuid/NameFetcher.java
 +++ b/src/main/java/com/imaginarycode/minecraft/redisbungee/util/uuid/NameFetcher.java
-@@ -12,6 +12,7 @@ import lombok.Setter;
+@@ -1,17 +1,13 @@
+ package com.imaginarycode.minecraft.redisbungee.util.uuid;
+ 
+-import com.google.gson.reflect.TypeToken;
+-import com.imaginarycode.minecraft.redisbungee.RedisBungee;
+ import com.squareup.okhttp.OkHttpClient;
+-import com.squareup.okhttp.Request;
+-import com.squareup.okhttp.ResponseBody;
+ import lombok.AccessLevel;
+ import lombok.NoArgsConstructor;
+ import lombok.Setter;
+ 
  import java.io.IOException;
- import java.lang.reflect.Type;
- import java.util.ArrayList;
+-import java.lang.reflect.Type;
+-import java.util.ArrayList;
 +import java.util.Arrays;
++import java.util.Collections;
  import java.util.List;
  import java.util.UUID;
  
-@@ -20,7 +21,15 @@ public class NameFetcher {
+@@ -20,7 +16,15 @@ public class NameFetcher {
      @Setter
      private static OkHttpClient httpClient;
  
 +    /**
-+     * The API https://api.mojang.com/user/profiles/ has removed at 13 SEP 2022.
-+     * So now this method doesn't access the API, but returns empty list.
-+     * @param uuid
-+     * @return Empty List
++     * Note: This method has been patched.
++     * This method is used to get user's IGN history from https://api.mojang.com/user/profiles/ , however Mojang removed public access in 13 Sep 2022. Please see https://help.minecraft.net/hc/en-us/articles/8969841895693-Username-History-API-Removal-FAQ- for more info.
++     * @param uuid the target player
++     * @return empty list.
 +     * @throws IOException
 +     */
      public static List<String> nameHistoryFromUuid(UUID uuid) throws IOException {
@@ -30,18 +42,13 @@ index b7c035f..e2e5c38 100644
          String url = "https://api.mojang.com/user/profiles/" + uuid.toString().replace("-", "") + "/names";
          Request request = new Request.Builder().url(url).get().build();
          ResponseBody body = httpClient.newCall(request).execute().body();
-@@ -36,6 +45,14 @@ public class NameFetcher {
+@@ -36,6 +40,9 @@ public class NameFetcher {
              humanNames.add(name.name);
          }
          return humanNames;
 +
 +         */
-+        // To pass the test, returns non-empty list for specific UUIDs
-+        List<UUID> uuids = Arrays.asList(UUIDFetcher.getUUID("68ec43f7234b41b48764dfb38b9ffe8c"), UUIDFetcher.getUUID("652a2bc4e8cd405db7b698156ee2dc09"));
-+        if(uuids.contains(uuid))
-+            return Arrays.asList("DummyUserName");
-+        else
-+            return new ArrayList<String>();
++        return Collections.emptyList();
      }
  
      public static class Name {
