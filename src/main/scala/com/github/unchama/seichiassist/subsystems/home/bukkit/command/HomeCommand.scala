@@ -127,7 +127,7 @@ class HomeCommand[F[
       }
       .build()
 
-  private def setExecutor[F[_]: ConcurrentEffect: NonServerThreadContextShift: HomeWriteAPI] =
+  private def setExecutor =
     argsAndSenderConfiguredBuilder
       .execution { context =>
         val homeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
@@ -148,14 +148,14 @@ class HomeCommand[F[
             seichiAmount,
             buildAmount
           )
-//          canUseHomeId = homeIdLimit <= homeId.value
-          _ <- MessageEffectF[F](s"このホーム番号は現在のレベルでは使用できません").apply(player)
+          canUseHomeId = homeIdLimit <= homeId.value
+          _ <- MessageEffectF[F](s"このホーム番号は現在のレベルでは使用できません").apply(player).whenA(!canUseHomeId)
           _ <- {
             NonServerThreadContextShift[F].shift >> HomeWriteAPI[F].upsertLocation(
               player.getUniqueId,
               homeId
             )(homeLocation) >> MessageEffectF[F](s"現在位置をホームポイント${homeId}に設定しました").apply(player)
-          }
+          }.whenA(canUseHomeId)
         } yield TargetedEffect.emptyEffect
 
         eff.toIO
