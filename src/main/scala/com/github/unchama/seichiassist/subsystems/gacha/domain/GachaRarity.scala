@@ -9,7 +9,8 @@ object GachaRarity {
   /**
    * `probabilityUpperLimit`は[[GachaRarity]]になるガチャアイテムの出現確率の最大値である。
    */
-  sealed abstract class GachaRarity(val probabilityUpperLimit: GachaProbability) extends EnumEntry
+  sealed abstract class GachaRarity(val probabilityUpperLimit: GachaProbability)
+      extends EnumEntry
 
   case object GachaRarity extends Enum[GachaRarity] {
 
