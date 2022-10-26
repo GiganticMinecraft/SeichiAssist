@@ -6,7 +6,10 @@ object GachaRarity {
 
   import enumeratum._
 
-  sealed abstract class GachaRarity(val maxProbability: GachaProbability) extends EnumEntry
+  /**
+   * `probabilityUpperLimit`は[[GachaRarity]]になるガチャアイテムの出現確率の最大値である。
+   */
+  sealed abstract class GachaRarity(val probabilityUpperLimit: GachaProbability) extends EnumEntry
 
   case object GachaRarity extends Enum[GachaRarity] {
 
@@ -23,8 +26,8 @@ object GachaRarity {
     def of[ItemStack](gachaPrize: GachaPrize[ItemStack]): GachaRarity =
       GachaRarity
         .values
-        .filter { rarity => rarity.maxProbability.value > gachaPrize.probability.value }
-        .minByOption(_.maxProbability.value)
+        .filter { rarity => rarity.probabilityUpperLimit.value > gachaPrize.probability.value }
+        .minByOption(_.probabilityUpperLimit.value)
         .getOrElse(GachaRingoOrExpBottle)
 
   }
