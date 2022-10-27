@@ -208,7 +208,7 @@ class PlayerJoinListener extends Listener {
     if (SeichiAssist.seichiAssistConfig.getServerNum == 2) {
       player.sendMessage(
         Seq(
-          s"${RED}${BOLD}${UNDERLINE}【警告】${RESET}",
+          s"${RED}${BOLD}${UNDERLINE}【ご注意ください】${RESET}",
           s"${YELLOW}${BOLD}エデンサーバーは現在、管理者の意図しないタイミングでシャットダウン（いわゆる「鯖落ち」）が起こることがあります。",
           s"${YELLOW}${BOLD}もし鯖落ちによりアイテムの消失等が発生しても、補償はできかねます。",
           s"${YELLOW}${BOLD}当サーバーは以上の内容をご理解の上ご利用ください。",
