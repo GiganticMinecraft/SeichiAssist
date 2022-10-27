@@ -18,10 +18,8 @@ import com.github.unchama.seichiassist.subsystems.home.bukkit.{LocationCodec, Te
 import com.github.unchama.seichiassist.subsystems.home.{HomeAPI, HomeReadAPI, HomeWriteAPI}
 import com.github.unchama.seichiassist.subsystems.home.domain.{Home, HomeId}
 import com.github.unchama.seichiassist.subsystems.home.domain.OperationResult.RenameResult
-import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
-import com.sun.xml.internal.bind.v2.schemagen.xmlschema.ContentModelContainer
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
@@ -72,9 +70,9 @@ class HomeCommand[F[
   def executor: TabExecutor = BranchedExecutor(
     Map(
       "warp" -> warpExecutor,
-      "set" -> setExecutor,
+      "set" -> setExecutor(),
       "name" -> nameExecutor,
-      "remove" -> removeExecutor
+      "remove" -> removeExecutor()
     ),
     whenArgInsufficient = Some(printDescriptionExecutor),
     whenBranchNotFound = Some(printDescriptionExecutor)
@@ -121,6 +119,11 @@ class HomeCommand[F[
       }
       .build()
 
+  /**
+   * 引数のhomeIdがそのplayerの現在レベル（整地レベル、建築レベル）で使用できるかどうかをBooleanで返す
+   * 戻り値はGの文脈で返るので、必要に応じて戻り先でContextCoercion等を行うこと。
+   * @return 使用可能ならtrue, そうでなければfalseをGの文脈で返す
+   */
   private def canUseThisHomeId(player: Player, homeId: HomeId): G[Boolean] = {
     for {
       seichiAmount <- breakCountReadAPI.seichiAmountDataRepository(player).read
@@ -129,7 +132,7 @@ class HomeCommand[F[
         seichiAmount,
         buildAmount
       )
-    } yield homeIdLimit <= homeId.value
+    } yield homeIdLimit >= homeId.value
   }
 
   private def setExecutor() =
@@ -140,22 +143,10 @@ class HomeCommand[F[
 
         val homeLocation = LocationCodec.fromBukkitLocation(player.getLocation)
 
-        // APIから整地量、建築量を取得しレベルからホームポイントに使用できるidの最大値を取得する
+        // canUseThisHomeIdメソッドでレベルからホームポイントに使用できるidの最大値を取得する
         // 取得結果と引数のhomeIdを比較し処理分岐を行う
+        // TODO: レベルチェックはargmentParsarで行えば個別のメソッドにチェックを実装しなくても良い
         val eff = for {
-          /*
-          seichiAmount <- ContextCoercion(
-            breakCountReadAPI.seichiAmountDataRepository(player).read
-          )
-          buildAmount <- ContextCoercion(
-            buildCountReadAPI.playerBuildAmountRepository(player).read
-          )
-          homeIdLimit = Home.maxHomePerPlayer + HomeId.maxNumberByPlayerOf(
-            seichiAmount,
-            buildAmount
-          )
-          canUseHomeId = homeIdLimit <= homeId.value
-           */
           canUseHomeId <- ContextCoercion(canUseThisHomeId(player, homeId))
           _ <- MessageEffectF[F](s"このホーム番号は現在のレベルでは使用できません").apply(player).whenA(!canUseHomeId)
           _ <- {

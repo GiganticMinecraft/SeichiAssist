@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.subsystems.home.domain
 
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
-import org.bukkit.entity.Player
 
 case class HomeId(value: Int) {
   require(
