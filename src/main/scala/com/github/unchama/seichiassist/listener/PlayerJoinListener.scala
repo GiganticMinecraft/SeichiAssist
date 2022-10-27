@@ -207,7 +207,12 @@ class PlayerJoinListener extends Listener {
     // TODO: エデンサーバーの不具合が解消されたら削除すること
     if (SeichiAssist.seichiAssistConfig.getServerNum == 2) {
       player.sendMessage(
-        s"${BOLD}${RED}【警告】${RESET}\n${YELLOW}エデンサーバーは時々予定されておらず、かつ意図されないシャットダウン（いわゆる「鯖落ち」）が起こることがあります。\n鯖落ちによりアイテム等の消失が発生しても補償はできかねます。\n当サーバーは以上の内容をご理解の上ご利用ください。"
+        Seq(
+          s"${RED}${BOLD}${UNDERLINE}【警告】${RESET}",
+          s"${YELLOW}${BOLD}エデンサーバーは時々予定されておらず、かつ意図されないシャットダウン（いわゆる「鯖落ち」）が起こることがあります",
+          s"${YELLOW}${BOLD}鯖落ちによりアイテム等の消失が発生しても補償はできかねます",
+          s"${YELLOW}${BOLD}当サーバーは以上の内容をご理解の上ご利用ください"
+        ).toArray
       )
     }
   }
