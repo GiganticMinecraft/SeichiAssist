@@ -363,7 +363,10 @@ class SeichiAssist extends JavaPlugin() {
     import PluginExecutionContexts.{asyncShift, onMainThread}
 
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-    home.System.wired
+    implicit val breakCountReadAPI: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
+    implicit val buildCountReadAPI: BuildCountAPI[IO, SyncIO, Player] = buildCountSystem.api
+
+    home.System.wired[IO, SyncIO]
   }
 
   lazy val presentSystem: Subsystem[IO] = {

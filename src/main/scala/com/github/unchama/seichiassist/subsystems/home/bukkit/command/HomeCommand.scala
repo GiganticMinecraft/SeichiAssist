@@ -31,7 +31,8 @@ class HomeCommand[F[
 ]: OnMinecraftServerThread: ConcurrentEffect: NonServerThreadContextShift: HomeAPI, G[
   _
 ]: SyncEffect: ContextCoercion[*[_], F]](
-  implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player],
+  implicit scope: ChatInterceptionScope,
+  breakCountReadAPI: BreakCountReadAPI[F, G, Player],
   buildCountReadAPI: BuildCountAPI[F, G, Player]
 ) {
 
@@ -53,6 +54,7 @@ class HomeCommand[F[
     )
   )
 
+  // TODO: この中にhomeIdチェックを行えば一発
   private val argsAndSenderConfiguredBuilder = playerCommandBuilder.argumentsParsers(
     List(
       Parsers.closedRangeInt(
@@ -67,11 +69,7 @@ class HomeCommand[F[
 
   private def homeNotSetMessage: List[String] = List(s"${YELLOW}指定されたホームポイントが設定されていません。")
 
-  def executor[F[
-    _
-  ]: HomeAPI: ConcurrentEffect: NonServerThreadContextShift: OnMinecraftServerThread](
-    implicit scope: ChatInterceptionScope
-  ): TabExecutor = BranchedExecutor(
+  def executor: TabExecutor = BranchedExecutor(
     Map(
       "warp" -> warpExecutor,
       "set" -> setExecutor,
@@ -82,9 +80,7 @@ class HomeCommand[F[
     whenBranchNotFound = Some(printDescriptionExecutor)
   ).asNonBlockingTabExecutor()
 
-  private def removeExecutor[F[
-    _
-  ]: ConcurrentEffect: NonServerThreadContextShift: OnMinecraftServerThread: HomeWriteAPI] =
+  private def removeExecutor() =
     argsAndSenderConfiguredBuilder
       .executionCSEffect { context =>
         val homeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
@@ -96,9 +92,7 @@ class HomeCommand[F[
       }
       .build()
 
-  private def warpExecutor[F[
-    _
-  ]: ConcurrentEffect: NonServerThreadContextShift: OnMinecraftServerThread: HomeReadAPI] =
+  private def warpExecutor =
     argsAndSenderConfiguredBuilder
       .execution { context =>
         val homeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
@@ -127,7 +121,18 @@ class HomeCommand[F[
       }
       .build()
 
-  private def setExecutor =
+  private def canUseThisHomeId(player: Player, homeId: HomeId): G[Boolean] = {
+    for {
+      seichiAmount <- breakCountReadAPI.seichiAmountDataRepository(player).read
+      buildAmount <- buildCountReadAPI.playerBuildAmountRepository(player).read
+      homeIdLimit = Home.maxHomePerPlayer + HomeId.maxNumberByPlayerOf(
+        seichiAmount,
+        buildAmount
+      )
+    } yield homeIdLimit <= homeId.value
+  }
+
+  private def setExecutor() =
     argsAndSenderConfiguredBuilder
       .execution { context =>
         val homeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
@@ -138,6 +143,7 @@ class HomeCommand[F[
         // APIから整地量、建築量を取得しレベルからホームポイントに使用できるidの最大値を取得する
         // 取得結果と引数のhomeIdを比較し処理分岐を行う
         val eff = for {
+          /*
           seichiAmount <- ContextCoercion(
             breakCountReadAPI.seichiAmountDataRepository(player).read
           )
@@ -149,6 +155,8 @@ class HomeCommand[F[
             buildAmount
           )
           canUseHomeId = homeIdLimit <= homeId.value
+           */
+          canUseHomeId <- ContextCoercion(canUseThisHomeId(player, homeId))
           _ <- MessageEffectF[F](s"このホーム番号は現在のレベルでは使用できません").apply(player).whenA(!canUseHomeId)
           _ <- {
             NonServerThreadContextShift[F].shift >> HomeWriteAPI[F].upsertLocation(
@@ -162,40 +170,39 @@ class HomeCommand[F[
       }
       .build()
 
-  private def nameExecutor[F[_]: ConcurrentEffect: NonServerThreadContextShift: HomeAPI](
-    implicit scope: ChatInterceptionScope
-  ) = argsAndSenderConfiguredBuilder
-    .execution { context =>
-      val homeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
+  private def nameExecutor(implicit scope: ChatInterceptionScope) =
+    argsAndSenderConfiguredBuilder
+      .execution { context =>
+        val homeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
 
-      val player = context.sender
-      val uuid = player.getUniqueId
+        val player = context.sender
+        val uuid = player.getUniqueId
 
-      val instruction =
-        List(s"ホームポイント${homeId}に設定する名前をチャットで入力してください", s"$YELLOW※入力されたチャット内容は他のプレイヤーには見えません")
+        val instruction =
+          List(s"ホームポイント${homeId}に設定する名前をチャットで入力してください", s"$YELLOW※入力されたチャット内容は他のプレイヤーには見えません")
 
-      def doneMessage(inputName: String): List[String] =
-        List(s"${GREEN}ホームポイント${homeId}の名前を", s"$GREEN${inputName}に更新しました")
+        def doneMessage(inputName: String): List[String] =
+          List(s"${GREEN}ホームポイント${homeId}の名前を", s"$GREEN${inputName}に更新しました")
 
-      val cancelledInputMessage = List(s"${YELLOW}入力がキャンセルされました。")
+        val cancelledInputMessage = List(s"${YELLOW}入力がキャンセルされました。")
 
-      for {
-        _ <- Monad[IO].ifM(HomeReadAPI[F].configured(uuid, homeId).toIO)(
-          MessageEffect(instruction)(player) >>
-            scope.interceptFrom(uuid).flatMap {
-              case Left(newName) =>
-                HomeWriteAPI[F].rename(uuid, homeId)(newName).toIO.flatMap {
-                  case RenameResult.Done =>
-                    MessageEffect(doneMessage(newName))(player)
-                  case RenameResult.NotFound =>
-                    MessageEffect(homeNotSetMessage)(player)
-                }
-              case Right(Overridden) => MessageEffect(cancelledInputMessage)(player)
-              case Right(_)          => IO.unit
-            },
-          MessageEffect(homeNotSetMessage)(player)
-        )
-      } yield TargetedEffect.emptyEffect
-    }
-    .build()
+        for {
+          _ <- Monad[IO].ifM(HomeReadAPI[F].configured(uuid, homeId).toIO)(
+            MessageEffect(instruction)(player) >>
+              scope.interceptFrom(uuid).flatMap {
+                case Left(newName) =>
+                  HomeWriteAPI[F].rename(uuid, homeId)(newName).toIO.flatMap {
+                    case RenameResult.Done =>
+                      MessageEffect(doneMessage(newName))(player)
+                    case RenameResult.NotFound =>
+                      MessageEffect(homeNotSetMessage)(player)
+                  }
+                case Right(Overridden) => MessageEffect(cancelledInputMessage)(player)
+                case Right(_)          => IO.unit
+              },
+            MessageEffect(homeNotSetMessage)(player)
+          )
+        } yield TargetedEffect.emptyEffect
+      }
+      .build()
 }
