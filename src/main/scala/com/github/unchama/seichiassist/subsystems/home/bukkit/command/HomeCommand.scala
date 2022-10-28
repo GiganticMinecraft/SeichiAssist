@@ -92,13 +92,25 @@ class HomeCommand[F[
 
   private def removeExecutor() =
     argsAndSenderConfiguredBuilder
-      .executionCSEffect { context =>
+      .execution { context =>
         val homeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
         val player = context.sender
 
-        Kleisli
-          .liftF(HomeWriteAPI[F].remove(player.getUniqueId, homeId))
-          .flatMap(_ => MessageEffectF(s"ホームポイント${homeId}を削除しました。"))
+        val eff = for {
+          maxHomeIdCanBeUsed <- maxHomeIdCanBeUsedF(player)
+          canUseHomeId = maxHomeIdCanBeUsed >= homeId.value
+          _ <- MessageEffectF[F](s"ホームポイント${homeId}は現在のレベルでは使用できません")
+            .apply(player)
+            .whenA(!canUseHomeId)
+          _ <- {
+            NonServerThreadContextShift[F].shift >> HomeWriteAPI[F].remove(
+              player.getUniqueId,
+              homeId
+            ) >> MessageEffectF[F](s"ホームポイント${homeId}を削除しました。").apply(player)
+          }.whenA(canUseHomeId)
+        } yield TargetedEffect.emptyEffect
+
+        eff.toIO
       }
       .build()
 
