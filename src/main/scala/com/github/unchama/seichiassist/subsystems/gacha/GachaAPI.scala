@@ -162,8 +162,12 @@ trait GachaWriteAPI[F[_], ItemStack] {
 
   /**
    * ガチャ景品リストにGachaPrizeを追加する
+   * `gachaEventName`がNoneの場合は常時排出アイテムとして扱う。
    */
-  def addGachaPrize(gachaPrize: GachaPrizeByGachaPrizeId): F[Unit]
+  def addGachaPrize(
+    gachaPrize: GachaPrizeByGachaPrizeId,
+    gachaEventName: Option[GachaEventName]
+  ): F[Unit]
 
 }
 
