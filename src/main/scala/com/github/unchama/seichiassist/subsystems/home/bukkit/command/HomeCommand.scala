@@ -7,7 +7,7 @@ import cats.effect.{ConcurrentEffect, Effect, IO, SyncEffect}
 import com.github.unchama.chatinterceptor.CancellationReason.Overridden
 import com.github.unchama.chatinterceptor.ChatInterceptionScope
 import com.github.unchama.concurrent.NonServerThreadContextShift
-import com.github.unchama.contextualexecutor.builder.Parsers
+import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
@@ -52,7 +52,6 @@ class HomeCommand[F[
     )
   )
 
-  // TODO: この中にhomeIdチェックを行えば一発
   private val argsAndSenderConfiguredBuilder = playerCommandBuilder.argumentsParsers(
     List(
       Parsers.closedRangeInt(
@@ -66,6 +65,19 @@ class HomeCommand[F[
   )
 
   private def homeNotSetMessage: List[String] = List(s"${YELLOW}指定されたホームポイントが設定されていません。")
+
+  /**
+   * プレイヤーの現在レベル（整地レベル、建築レベル）で利用可能なホームポイントIDの最大値を取得する作用
+   * Fの文脈で返される（Gの文脈でないことに注意）
+   * このメソッドはargsAndSenderConfiguredBuilder.execution内で合成して使用することを想定している
+   * @param player 対象のプレイヤー
+   */
+  private def maxHomeIdCanBeUsedF(player: Player): F[Int] = {
+    for {
+      seichiAmount <- ContextCoercion(breakCountReadAPI.seichiAmountDataRepository(player).read)
+      buildAmount <- ContextCoercion(buildCountReadAPI.playerBuildAmountRepository(player).read)
+    } yield Home.maxHomePerPlayer + HomeId.maxNumberByPlayerOf(seichiAmount, buildAmount)
+  }
 
   def executor: TabExecutor = BranchedExecutor(
     Map(
@@ -119,22 +131,6 @@ class HomeCommand[F[
       }
       .build()
 
-  /**
-   * 引数のhomeIdがそのplayerの現在レベル（整地レベル、建築レベル）で使用できるかどうかをBooleanで返す
-   * 戻り値はGの文脈で返るので、必要に応じて戻り先でContextCoercion等を行うこと。
-   * @return 使用可能ならtrue, そうでなければfalseをGの文脈で返す
-   */
-  private def canUseThisHomeId(player: Player, homeId: HomeId): G[Boolean] = {
-    for {
-      seichiAmount <- breakCountReadAPI.seichiAmountDataRepository(player).read
-      buildAmount <- buildCountReadAPI.playerBuildAmountRepository(player).read
-      homeIdLimit = Home.maxHomePerPlayer + HomeId.maxNumberByPlayerOf(
-        seichiAmount,
-        buildAmount
-      )
-    } yield homeIdLimit >= homeId.value
-  }
-
   private def setExecutor() =
     argsAndSenderConfiguredBuilder
       .execution { context =>
@@ -144,11 +140,13 @@ class HomeCommand[F[
         val homeLocation = LocationCodec.fromBukkitLocation(player.getLocation)
 
         // canUseThisHomeIdメソッドでレベルからホームポイントに使用できるidの最大値を取得する
-        // 取得結果と引数のhomeIdを比較し処理分岐を行う
-        // TODO: レベルチェックはargmentParsarで行えば個別のメソッドにチェックを実装しなくても良い
+        // 取得結果と引数のhomeIdを比較しwhenAで処理分岐を行う
         val eff = for {
-          canUseHomeId <- ContextCoercion(canUseThisHomeId(player, homeId))
-          _ <- MessageEffectF[F](s"このホーム番号は現在のレベルでは使用できません").apply(player).whenA(!canUseHomeId)
+          maxHomeIdCanBeUsed <- maxHomeIdCanBeUsedF(player)
+          canUseHomeId = maxHomeIdCanBeUsed >= homeId.value
+          _ <- MessageEffectF[F](s"ホームポイント${homeId}は現在のレベルでは使用できません")
+            .apply(player)
+            .whenA(!canUseHomeId)
           _ <- {
             NonServerThreadContextShift[F].shift >> HomeWriteAPI[F].upsertLocation(
               player.getUniqueId,
