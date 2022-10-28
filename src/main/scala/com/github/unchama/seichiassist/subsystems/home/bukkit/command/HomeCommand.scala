@@ -109,22 +109,27 @@ class HomeCommand[F[
         val player = context.sender
 
         val eff = for {
+          maxHomeIdCanBeUsed <- maxHomeIdCanBeUsedF(player)
+          canUseHomeId = maxHomeIdCanBeUsed >= homeId.value
           _ <- NonServerThreadContextShift[F].shift
           homeLocation <- HomeReadAPI[F].get(player.getUniqueId, homeId)
         } yield {
-          homeLocation match {
-            case None => MessageEffect(s"ホームポイント${homeId}が設定されてません")
-            case Some(Home(_, location)) =>
-              LocationCodec.toBukkitLocation(location) match {
-                case Some(bukkitLocation) =>
-                  TeleportEffect.to[F](bukkitLocation).mapK(Effect.toIOK[F]) >>
-                    MessageEffect(s"ホームポイント${homeId}にワープしました")
-                case None =>
-                  MessageEffect(
-                    List(s"${RED}ホームポイントへのワープに失敗しました", s"${RED}登録先のワールドが削除された可能性があります")
-                  )
-              }
-          }
+          if (canUseHomeId)
+            homeLocation match {
+              case None => MessageEffect(s"ホームポイント${homeId}が設定されてません")
+              case Some(Home(_, location)) =>
+                LocationCodec.toBukkitLocation(location) match {
+                  case Some(bukkitLocation) =>
+                    TeleportEffect.to[F](bukkitLocation).mapK(Effect.toIOK[F]) >>
+                      MessageEffect(s"ホームポイント${homeId}にワープしました")
+                  case None =>
+                    MessageEffect(
+                      List(s"${RED}ホームポイントへのワープに失敗しました", s"${RED}登録先のワールドが削除された可能性があります")
+                    )
+                }
+            }
+          else
+            MessageEffect(s"ホームポイント${homeId}は現在のレベルでは使用できません")
         }
 
         eff.toIO
