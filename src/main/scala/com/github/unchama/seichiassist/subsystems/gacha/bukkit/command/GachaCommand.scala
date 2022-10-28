@@ -52,8 +52,9 @@ class GachaCommand[
         "ガチャ券配布コマンドです。allを指定で全員に配布(マルチ鯖対応済)",
         s"$RED/gacha get <ID> (<名前>)",
         "指定したガチャリストのIDを入手 (所有者付きにもできます) IDを0に指定するとガチャリンゴを入手できます",
-        s"$RED/gacha add <確率>",
+        s"$RED/gacha add <確率> <イベント名>",
         "現在のメインハンドをガチャリストに追加。確率は1.0までで指定",
+        s"$DARK_GRAY※イベント名を入力しなかった場合は常時排出アイテムとして登録されます。",
         s"$RED/gacha addms2 <確率> <名前>",
         "現在のメインハンドをMineStack用ガチャリストに追加。確率は1.0までで指定",
         s"$RED/gacha addms <名前>  <ID>",
@@ -199,7 +200,7 @@ class GachaCommand[
 
     val add: ContextualExecutor =
       playerCommandBuilder
-        .argumentsParsers(List(probabilityParser))
+        .argumentsParsers(List(probabilityParser, Parsers.identity))
         .execution { context =>
           val player = context.sender
           val probability = context.args.parsed.head.asInstanceOf[Double]
