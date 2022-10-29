@@ -85,6 +85,8 @@ class GachaCommand[
         s"$DARK_GRAY※onEnable時と同じ処理",
         s"$RED/gacha create-event <イベント名> <開始日> <終了日>",
         "日付はyyyy-MM-ddの形式で指定をしてください。",
+        s"$DARK_GRAY※通常排出のガチャ景品リストがコピーされます。",
+        s"${DARK_GRAY}置き換えたいアイテムを置き換えてイベント排出景品を設定してください。",
         s"$RED/gacha delete-event <イベント名>",
         "イベントを削除します。(間違ってイベントを作成した時以外に使わないでください。)",
         s"$RED/gacha list-event",
