@@ -173,7 +173,7 @@ class HomeCommand[F[
       }
       .build()
 
-  private def nameExecutor(implicit scope: ChatInterceptionScope) =
+  private def nameExecutor() =
     argsAndSenderConfiguredBuilder
       .execution { context =>
         val homeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
