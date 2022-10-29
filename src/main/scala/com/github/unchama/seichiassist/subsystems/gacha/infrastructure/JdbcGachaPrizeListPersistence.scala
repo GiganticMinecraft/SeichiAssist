@@ -2,13 +2,9 @@ package com.github.unchama.seichiassist.subsystems.gacha.infrastructure
 
 import cats.effect.Sync
 import com.github.unchama.generic.serialization.SerializeAndDeserialize
-import com.github.unchama.seichiassist.subsystems.gacha.domain._
 import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent.GachaEventName
-import com.github.unchama.seichiassist.subsystems.gacha.domain.{gachaprize, _}
-import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{
-  GachaPrize,
-  GachaPrizeId
-}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{GachaPrize, GachaPrizeId}
+import com.github.unchama.seichiassist.subsystems.gacha.domain._
 import scalikejdbc._
 
 class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack](
