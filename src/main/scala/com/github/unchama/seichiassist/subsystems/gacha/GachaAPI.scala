@@ -45,6 +45,7 @@ trait GachaEventWriteAPI[F[_]] {
 
   /**
    * @return ガチャイベントを作成する作用
+   *         ガチャイベントを作成すると、常時排出アイテムが自動コピーされます。
    */
   def createGachaEvent(gachaEvent: GachaEvent): F[Unit]
 
@@ -142,9 +143,7 @@ trait GachaWriteAPI[F[_], ItemStack] {
    * ガチャ景品リストにGachaPrizeを追加する
    * `gachaEventName`がNoneの場合は常時排出アイテムとして扱う。
    */
-  def addGachaPrize(
-    gachaPrize: GachaPrizeByGachaPrizeId
-  ): F[Unit]
+  def addGachaPrize(gachaPrize: GachaPrizeByGachaPrizeId): F[Unit]
 
 }
 

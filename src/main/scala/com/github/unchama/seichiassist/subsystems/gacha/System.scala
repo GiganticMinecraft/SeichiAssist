@@ -89,9 +89,7 @@ object System {
             _ <- replace(prizes.diff(targetPrize))
           } yield ()
 
-          override def addGachaPrize(
-            gachaPrize: GachaPrizeByGachaPrizeId
-          ): F[Unit] =
+          override def addGachaPrize(gachaPrize: GachaPrizeByGachaPrizeId): F[Unit] =
             for {
               prizes <- list
               newList = gachaPrize(
@@ -116,8 +114,15 @@ object System {
           override def createdGachaEvents: F[Vector[GachaEvent]] =
             gachaEventPersistence.gachaEvents
 
-          override def createGachaEvent(gachaEvent: GachaEvent): F[Unit] =
-            gachaEventPersistence.createGachaEvent(gachaEvent)
+          override def createGachaEvent(gachaEvent: GachaEvent): F[Unit] = {
+            gachaEventPersistence.createGachaEvent(gachaEvent) >> (for {
+              prizes <- list
+              defaultGachaPrizes = prizes
+                .filter(_.gachaEventName.isEmpty)
+                .map(_.copy(gachaEventName = Some(gachaEvent.eventName)))
+              _ <- replace(defaultGachaPrizes ++ prizes)
+            } yield ())
+          }
 
           override def deleteGachaEvent(gachaEventName: GachaEventName): F[Unit] =
             gachaEventPersistence.deleteGachaEvent(gachaEventName)
