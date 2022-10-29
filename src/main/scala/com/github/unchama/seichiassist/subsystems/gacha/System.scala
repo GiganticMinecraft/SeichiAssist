@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gacha
 
 import cats.Monad
-import cats.effect.ConcurrentEffect
+import cats.effect.{ConcurrentEffect, Sync}
 import cats.effect.concurrent.Ref
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.serialization.SerializeAndDeserialize
@@ -71,14 +71,16 @@ object System {
           override def load: F[Unit] = for {
             gachaPrizes <- gachaPersistence.list
             createdEvents <- gachaEventPersistence.gachaEvents
-          } yield {
-            createdEvents.find(_.isHolding) match {
-              case Some(value) =>
-                gachaPrizes.filter(_.gachaEventName = value.eventName)
-              case None => ???
+            targetGachaPrizes <- Sync[F].delay {
+              createdEvents.find(_.isHolding) match {
+                case Some(value) =>
+                  gachaPrizes.filter(_.gachaEventName.contains(value.eventName))
+                case None =>
+                  gachaPrizes.filter(_.gachaEventName.isEmpty)
+              }
             }
-            gachaPrizesListRepository.set(gachaPrizes)
-          }
+            _ <- gachaPrizesListRepository.set(targetGachaPrizes)
+          } yield ()
 
           override def replace(gachaPrizesList: Vector[GachaPrize[ItemStack]]): F[Unit] =
             gachaPrizesListRepository.set(gachaPrizesList)
