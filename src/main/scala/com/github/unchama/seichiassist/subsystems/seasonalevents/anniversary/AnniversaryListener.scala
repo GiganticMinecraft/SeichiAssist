@@ -4,13 +4,13 @@ import cats.effect.IO
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaprizefactory.bukkit.StaticGachaPrizeFactory.getMaxRingo
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary.{
   ANNIVERSARY_COUNT,
   blogArticleUrl,
   isInEvent
 }
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData._
+import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.GtToSiinaAPI
 import com.github.unchama.seichiassist.util.EnemyEntity.isEnemy
 import com.github.unchama.seichiassist.util.InventoryOperations.{
   grantItemStacksEffect,
@@ -26,7 +26,7 @@ import org.bukkit.event.block.{Action, BlockBreakEvent, BlockPlaceEvent}
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.{PlayerInteractEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, Listener}
-import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.{EquipmentSlot, ItemStack}
 import org.bukkit.{Material, Sound, TreeType}
 
 import scala.jdk.CollectionConverters._
@@ -34,7 +34,8 @@ import scala.util.Random
 
 class AnniversaryListener(
   implicit effectEnvironment: EffectEnvironment,
-  ioOnMainThread: OnMinecraftServerThread[IO]
+  ioOnMainThread: OnMinecraftServerThread[IO],
+  gtToSiinaAPI: GtToSiinaAPI[ItemStack]
 ) extends Listener {
 
   @EventHandler
@@ -135,7 +136,9 @@ class AnniversaryListener(
     if (new Random().nextDouble() <= strangeSaplingSiinaRate) {
       block.setType(Material.CHEST)
       val chest = block.getState.asInstanceOf[Chest]
-      chest.getBlockInventory.addItem(List.fill(5)(getMaxRingo(playerName)): _*)
+      chest
+        .getBlockInventory
+        .addItem(List.fill(5)(gtToSiinaAPI.getMaxSiinaRingo(playerName)): _*)
     } else {
       val random = new Random().nextInt(strangeSaplingBlockSet.size)
       block.setType(strangeSaplingBlockSet.toVector(random))

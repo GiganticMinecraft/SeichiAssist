@@ -34,12 +34,13 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
   FastDiggingSettingsApi
 }
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
+import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.ranking.api.AssortedRankingApi
 import com.github.unchama.seichiassist.subsystems.ranking.domain.values.{LoginTime, VoteCount}
 import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
-import com.github.unchama.seichiassist.subsystems.subhome.SubHomeReadAPI
 import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.entity.Player
 
@@ -68,9 +69,10 @@ object TopLevelRouter {
     fastDiggingSettingsApi: FastDiggingSettingsApi[IO, Player],
     fourDimensionalPocketApi: FourDimensionalPocketApi[IO, Player],
     globalNotification: DiscordNotificationAPI[IO],
-    subHomeReadApi: SubHomeReadAPI[IO],
+    homeReadApi: HomeReadAPI[IO],
     enderChestAccessApi: AnywhereEnderChestAPI[IO],
-    sharedInventoryAPI: SharedInventoryAPI[IO, Player]
+    sharedInventoryAPI: SharedInventoryAPI[IO, Player],
+    gachaTicketAPI: GachaTicketAPI[IO]
   ): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     import assortedRankingApi._
 
@@ -123,7 +125,7 @@ object TopLevelRouter {
       _.open
     implicit lazy val ioCanOpenAchievementGroupMenu: IO CanOpen AchievementGroupMenu = _.open
     implicit lazy val ioCanOpenHomeConfirmationMenu
-      : IO CanOpen HomeMenu.SubHomeChangeConfirmationMenu =
+      : IO CanOpen HomeMenu.HomeChangeConfirmationMenu =
       _.open
     implicit lazy val ioCanOpenAchievementCategoryMenu: IO CanOpen AchievementCategoryMenu =
       _.open
@@ -140,8 +142,8 @@ object TopLevelRouter {
     implicit lazy val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type = _.open
     implicit lazy val ioCanOpenServerSwitchMenu: IO CanOpen ServerSwitchMenu.type = _.open
     implicit lazy val ioCanOpenHomeMenu: IO CanOpen HomeMenu.type = _.open
-    implicit lazy val ioCanOpenHomeConfirmMenu
-      : IO CanOpen HomeMenu.SubHomeRemoveConfirmationMenu = _.open
+    implicit lazy val ioCanOpenHomeConfirmMenu: IO CanOpen HomeMenu.HomeRemoveConfirmationMenu =
+      _.open
     implicit lazy val ioCanOpenPassiveSkillMenu: IO CanOpen PassiveSkillMenu.type = _.open
 
     implicit lazy val ioCanOpenSeichiRankingMenu: IO CanOpen RankingMenu[SeichiAmountData] =

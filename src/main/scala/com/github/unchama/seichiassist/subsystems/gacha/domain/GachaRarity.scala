@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gacha.domain
 
+import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.GachaPrize
+
 object GachaRarity {
 
   import enumeratum._
@@ -21,7 +23,8 @@ object GachaRarity {
     def of[ItemStack](gachaPrize: GachaPrize[ItemStack]): GachaRarity =
       GachaRarity
         .values
-        .find(_.maxProbability == gachaPrize.probability)
+        .filter { rarity => rarity.maxProbability.value >= gachaPrize.probability.value }
+        .minByOption(_.maxProbability.value)
         .getOrElse(GachaRingoOrExpBottle)
 
   }

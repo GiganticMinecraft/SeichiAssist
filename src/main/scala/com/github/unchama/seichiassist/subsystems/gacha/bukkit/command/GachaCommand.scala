@@ -21,6 +21,15 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent.{
   GachaEventName
 }
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketFromAdminTeamRepository
+import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{
+  GachaPrize,
+  GachaPrizeId
+}
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{
+  GachaTicketAmount,
+  GrantResultOfGachaTicketFromAdminTeam
+}
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
 import org.bukkit.ChatColor._
@@ -36,10 +45,10 @@ import scala.util.chaining.scalaUtilChainingOps
 class GachaCommand[
   F[_]: OnMinecraftServerThread: NonServerThreadContextShift: ConcurrentEffect
 ](
-  implicit gachaTicketPersistence: GachaTicketFromAdminTeamRepository[F],
-  gachaPersistence: GachaPrizeListPersistence[F, ItemStack],
+  implicit gachaPersistence: GachaPrizeListPersistence[F, ItemStack],
   gachaAPI: GachaAPI[F, ItemStack, Player],
-  canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
+  canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack],
+  gachaTicketAPI: GachaTicketAPI[F]
 ) {
 
   import cats.implicits._
@@ -159,28 +168,31 @@ class GachaCommand[
       .executionCSEffect { context =>
         val args = context.args.parsed
         val amount = args(1).asInstanceOf[Int]
+        val gachaTicketAmount = GachaTicketAmount(amount)
         args.head.toString match {
           case "all" =>
             Kleisli
-              .liftF(gachaTicketPersistence.addToAllKnownPlayers(amount))
+              .liftF(gachaTicketAPI.addToAllKnownPlayers(gachaTicketAmount))
               .flatMap(_ => MessageEffectF(s"${GREEN}全プレイヤーへガチャ券${amount}枚加算成功"))
           case value =>
             val uuidRegex =
               "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}".r
 
             (if (uuidRegex.matches(value)) {
-               Kleisli.liftF[F, CommandSender, ReceiptResultOfGachaTicketFromAdminTeam](
-                 gachaTicketPersistence.addByUUID(amount, UUID.fromString(value))
+               Kleisli.liftF[F, CommandSender, GrantResultOfGachaTicketFromAdminTeam](
+                 gachaTicketAPI.addByUUID(gachaTicketAmount, UUID.fromString(value))
                )
              } else {
-               Kleisli.liftF[F, CommandSender, ReceiptResultOfGachaTicketFromAdminTeam](
-                 gachaTicketPersistence.addByPlayerName(amount, PlayerName(value))
+               Kleisli.liftF[F, CommandSender, GrantResultOfGachaTicketFromAdminTeam](
+                 gachaTicketAPI.addByPlayerName(gachaTicketAmount, PlayerName(value))
                )
              }).flatMap {
-              case ReceiptResultOfGachaTicketFromAdminTeam.Success =>
+              case GrantResultOfGachaTicketFromAdminTeam.Success =>
                 MessageEffectF(s"${GREEN}ガチャ券${amount}枚加算成功")
-              case ReceiptResultOfGachaTicketFromAdminTeam.NotExists =>
+              case GrantResultOfGachaTicketFromAdminTeam.NotExists =>
                 MessageEffectF(s"${RED}プレイヤーが存在しません。")
+              case GrantResultOfGachaTicketFromAdminTeam.GrantedToMultiplePlayers =>
+                MessageEffectF(s"${RED}加算は成功しましたが、複数プレイヤーが存在しました。")
             }
         }
       }

@@ -6,7 +6,6 @@ import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.data.ItemData
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
-import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.GachaPoint
 import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.{
@@ -21,13 +20,12 @@ class BukkitGrantLevelUpGift[F[_]: Sync: OnMinecraftServerThread, G[_]: ContextC
   _
 ], F]](
   implicit gachaPointApi: GachaPointApi[F, G, Player],
-  gachaAPI: GachaAPI[F, ItemStack, Player],
-  canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
+  gachaAPI: GachaAPI[F, ItemStack, Player]
 ) extends GrantLevelUpGiftAlgebra[F, Player] {
   override def grantGiftItem(item: Gift.Item): Kleisli[F, Player, Unit] = {
     val itemStack = item match {
       case Gift.Item.SuperPickaxe => ItemData.getSuperPickaxe(1)
-      case Gift.Item.GachaApple   => ItemData.getGachaApple(1)
+      case Gift.Item.GachaApple   => gachaAPI.staticGachaPrizeFactory.gachaRingo
       case Gift.Item.Elsa         => ItemData.getElsa(1)
     }
 
@@ -46,8 +44,7 @@ object BukkitGrantLevelUpGift {
 
   implicit def apply[F[_]: Sync: OnMinecraftServerThread, G[_]: ContextCoercion[*[_], F]](
     implicit gachaAPI: GachaAPI[F, ItemStack, Player],
-    gachaPointApi: GachaPointApi[F, G, Player],
-    canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
+    gachaPointApi: GachaPointApi[F, G, Player]
   ): GrantLevelUpGiftAlgebra[F, Player] =
     new BukkitGrantLevelUpGift[F, G]
 

@@ -6,7 +6,14 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent.{
   GachaEvent,
   GachaEventName
 }
-import com.github.unchama.seichiassist.subsystems.gacha.domain.{GachaPrize, GachaPrizeId}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.{
+  CanBeSignedAsGachaPrize,
+  StaticGachaPrizeFactory
+}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{
+  GachaPrize,
+  GachaPrizeId
+}
 
 trait GachaEventReadAPI[F[_]] {
 
@@ -71,7 +78,7 @@ trait GachaDrawAPI[F[_], Player] {
 
 }
 
-object GachaLotteryAPI {
+object GachaDrawAPI {
 
   def apply[F[_], Player](implicit ev: GachaDrawAPI[F, Player]): GachaDrawAPI[F, Player] =
     ev
@@ -99,11 +106,20 @@ trait GachaReadAPI[F[_], ItemStack] {
   /**
    * 指定された[[GachaPrizeId]]に対応する[[GachaPrize]]が存在するか確認する
    */
-  final def existsGachaPrize(gachaPrizeId: GachaPrizeId): F[Boolean] = for {
-    prizes <- list
-  } yield prizes.exists(_.id == gachaPrizeId)
+  final def existsGachaPrize(gachaPrizeId: GachaPrizeId): F[Boolean] =
+    F.map(fetch(gachaPrizeId))(_.nonEmpty)
 
   val grantGachaPrize: GrantGachaPrize[F, ItemStack]
+
+  /**
+   * @return [[StaticGachaPrizeFactory]]を返す
+   */
+  def staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack]
+
+  /**
+   * @return [[CanBeSignedAsGachaPrize]]を返す
+   */
+  def canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
 
 }
 

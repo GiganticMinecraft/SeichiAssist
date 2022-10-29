@@ -1,37 +1,24 @@
 package com.github.unchama.seichiassist.subsystems.gacha
 
 import cats.Monad
-import cats.effect.{ConcurrentEffect, Sync}
 import cats.effect.concurrent.Ref
+import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.serialization.SerializeAndDeserialize
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.minecraft.bukkit.algebra.BukkitItemStackSerializeAndDeserialize
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.BukkitCanBeSignedAsGachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.{
-  BukkitDrawGacha,
-  BukkitGrantGachaPrize,
-  BukkitLotteryOfGachaItems
-}
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.BukkitItemStackCanBeSignedAsGachaPrize
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.{BukkitDrawGacha, BukkitGrantGachaPrize}
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.command.GachaCommand
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.BukkitStaticGachaPrizeFactory
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.listeners.PlayerPullGachaListener
-import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent.{
-  GachaEvent,
-  GachaEventName,
-  GachaEventPersistence
-}
-import com.github.unchama.seichiassist.subsystems.gacha.domain.{
-  CanBeSignedAsGachaPrize,
-  GachaPrize,
-  GachaPrizeId,
-  GachaPrizeListPersistence
-}
-import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.{
-  JdbcGachaEventPersistence,
-  JdbcGachaPrizeListPersistence
-}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent.{GachaEvent, GachaEventName, GachaEventPersistence}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{GachaPrize, GachaPrizeId}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.{CanBeSignedAsGachaPrize, GachaPrizeListPersistence, LotteryOfGachaItems, StaticGachaPrizeFactory}
+import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.{JdbcGachaEventPersistence, JdbcGachaPrizeListPersistence}
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketFromAdminTeamRepository
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.infrastructure.JdbcGachaTicketFromAdminTeamRepository
 import org.bukkit.command.TabExecutor
@@ -47,95 +34,104 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_]: OnMinecraftServerThread: NonServerThreadContextShift: ConcurrentEffect]
-    : F[System[F]] = {
-    implicit val serializeAndDeserialize: SerializeAndDeserialize[Nothing, ItemStack] =
+  def wired[F[_]: OnMinecraftServerThread: NonServerThreadContextShift: ConcurrentEffect](
+    implicit gachaTicketAPI: GachaTicketAPI[F]
+  ): F[System[F]] = {
+    implicit val _serializeAndDeserialize: SerializeAndDeserialize[Nothing, ItemStack] =
       BukkitItemStackSerializeAndDeserialize
-    implicit val gachaPersistence: GachaPrizeListPersistence[F, ItemStack] =
+    implicit val _gachaPersistence: GachaPrizeListPersistence[F, ItemStack] =
       new JdbcGachaPrizeListPersistence[F, ItemStack]()
-    implicit val gachaTicketPersistence: GachaTicketFromAdminTeamRepository[F] =
+    implicit val _gachaTicketPersistence: GachaTicketFromAdminTeamRepository[F] =
       new JdbcGachaTicketFromAdminTeamRepository[F]
-    implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
-      BukkitCanBeSignedAsGachaPrize
-    implicit val lotteryOfGachaItems: BukkitLotteryOfGachaItems[F] =
-      new BukkitLotteryOfGachaItems[F]
+    implicit val _canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
+      BukkitItemStackCanBeSignedAsGachaPrize
+    implicit val _staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack] =
+      BukkitStaticGachaPrizeFactory
+    implicit val _lotteryOfGachaItems: LotteryOfGachaItems[F, ItemStack] =
+      new LotteryOfGachaItems[F, ItemStack]
+    implicit val _grantGachaPrize: GrantGachaPrize[F, ItemStack] =
+      new BukkitGrantGachaPrize[F]
+    val _gachaEventPersistence: GachaEventPersistence[F] = new JdbcGachaEventPersistence[F]
 
-    val gachaEventPersistence: GachaEventPersistence[F] = new JdbcGachaEventPersistence[F]
+    val system: F[System[F]] = {
+      for {
+        gachaPrizesListReference <- Ref.of[F, Vector[GachaPrize[ItemStack]]](Vector.empty)
+      } yield {
+        new System[F] {
+          override implicit val api: GachaAPI[F, ItemStack, Player] =
+            new GachaAPI[F, ItemStack, Player] {
+              override protected implicit val F: Monad[F] = implicitly
 
-    val system: System[F] = new System[F] {
-      override implicit val api: GachaAPI[F, ItemStack, Player] =
-        new GachaAPI[F, ItemStack, Player] {
+              override def load: F[Unit] = for {
+                gachaPrizes <- _gachaPersistence.list
+                createdEvents <- _gachaEventPersistence.gachaEvents
+                targetGachaPrizes <- Sync[F].delay {
+                  createdEvents.find(_.isHolding) match {
+                    case Some(value) =>
+                      gachaPrizes.filter(_.gachaEventName.contains(value.eventName))
+                    case None =>
+                      gachaPrizes.filter(_.gachaEventName.isEmpty)
+                  }
+                }
+                _ <- gachaPrizesListReference.set(targetGachaPrizes)
+              } yield ()
 
-          override protected implicit val F: Monad[F] = implicitly
+              override def replace(gachaPrizesList: Vector[GachaPrize[ItemStack]]): F[Unit] =
+                gachaPrizesListReference.set(gachaPrizesList)
 
-          override def load: F[Unit] = for {
-            gachaPrizes <- gachaPersistence.list
-            createdEvents <- gachaEventPersistence.gachaEvents
-            targetGachaPrizes <- Sync[F].delay {
-              createdEvents.find(_.isHolding) match {
-                case Some(value) =>
-                  gachaPrizes.filter(_.gachaEventName.contains(value.eventName))
-                case None =>
-                  gachaPrizes.filter(_.gachaEventName.isEmpty)
+              override def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Unit] =
+                gachaPrizesListReference.update { prizes =>
+                  prizes.filter(_.id == gachaPrizeId)
+                }
+
+              override def addGachaPrize(gachaPrize: GachaPrizeByGachaPrizeId): F[Unit] =
+                gachaPrizesListReference.update { prizes =>
+                  gachaPrize(
+                    GachaPrizeId(if (prizes.nonEmpty) prizes.map(_.id.id).max + 1 else 1)
+                  ) +: prizes
+                }
+
+              override val grantGachaPrize: GrantGachaPrize[F, ItemStack] =
+                new BukkitGrantGachaPrize[F]
+
+              override def list: F[Vector[GachaPrize[ItemStack]]] = gachaPrizesListReference.get
+
+              override def drawGacha(player: Player, draws: Int): F[Unit] =
+                new BukkitDrawGacha[F](gachaPrizesListReference).draw(player, draws)
+
+              override def staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack] =
+                _staticGachaPrizeFactory
+
+              override def createdGachaEvents: F[Vector[GachaEvent]] =
+                _gachaEventPersistence.gachaEvents
+
+              override def createGachaEvent(gachaEvent: GachaEvent): F[Unit] = {
+                _gachaEventPersistence.createGachaEvent(gachaEvent) >> (for {
+                  prizes <- list
+                  defaultGachaPrizes = prizes
+                    .filter(_.gachaEventName.isEmpty)
+                    .map(_.copy(gachaEventName = Some(gachaEvent.eventName)))
+                  _ <- replace(defaultGachaPrizes ++ prizes)
+                } yield ())
               }
+
+              override def deleteGachaEvent(gachaEventName: GachaEventName): F[Unit] =
+                _gachaEventPersistence.deleteGachaEvent(gachaEventName)
+
+              override def canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
+                _canBeSignedAsGachaPrize
             }
-            _ <- gachaPrizesListRepository.set(targetGachaPrizes)
-          } yield ()
+          override val commands: Map[String, TabExecutor] = Map(
+            "gacha" -> new GachaCommand[F]().executor
+          )
+          override val listeners: Seq[Listener] = Seq(new PlayerPullGachaListener[F]())
 
-          override def replace(gachaPrizesList: Vector[GachaPrize[ItemStack]]): F[Unit] =
-            gachaPrizesListRepository.set(gachaPrizesList)
-
-          override def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Unit] = for {
-            prizes <- list
-            targetPrize = prizes.filter(_.id == gachaPrizeId)
-            _ <- replace(prizes.diff(targetPrize))
-          } yield ()
-
-          override def addGachaPrize(gachaPrize: GachaPrizeByGachaPrizeId): F[Unit] =
-            for {
-              prizes <- list
-              newList = gachaPrize(
-                GachaPrizeId(if (prizes.nonEmpty) prizes.map(_.id.id).max + 1 else 1)
-              ) +: prizes
-
-              _ <- replace(newList)
-            } yield ()
-
-          protected implicit val gachaPrizesListRepository
-            : Ref[F, Vector[GachaPrize[ItemStack]]] =
-            Ref.unsafe[F, Vector[GachaPrize[ItemStack]]](Vector.empty)
-
-          override val grantGachaPrize: GrantGachaPrize[F, ItemStack] =
-            new BukkitGrantGachaPrize[F]
-
-          override def list: F[Vector[GachaPrize[ItemStack]]] = gachaPrizesListRepository.get
-
-          override def drawGacha(player: Player, draws: Int): F[Unit] =
-            new BukkitDrawGacha[F].draw(player, draws)
-
-          override def createdGachaEvents: F[Vector[GachaEvent]] =
-            gachaEventPersistence.gachaEvents
-
-          override def createGachaEvent(gachaEvent: GachaEvent): F[Unit] = {
-            gachaEventPersistence.createGachaEvent(gachaEvent) >> (for {
-              prizes <- list
-              defaultGachaPrizes = prizes
-                .filter(_.gachaEventName.isEmpty)
-                .map(_.copy(gachaEventName = Some(gachaEvent.eventName)))
-              _ <- replace(defaultGachaPrizes ++ prizes)
-            } yield ())
-          }
-
-          override def deleteGachaEvent(gachaEventName: GachaEventName): F[Unit] =
-            gachaEventPersistence.deleteGachaEvent(gachaEventName)
         }
-      override val commands: Map[String, TabExecutor] = Map(
-        "gacha" -> new GachaCommand[F]().executor
-      )
-      override val listeners: Seq[Listener] = Seq(new PlayerPullGachaListener[F]())
+      }
     }
 
     for {
+      system <- system
       _ <- system.api.load
     } yield system
   }

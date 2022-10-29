@@ -5,6 +5,7 @@ import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
+import com.github.unchama.util.time.LunisolarDate
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -120,6 +121,29 @@ object AchievementConditions {
     val predicate: PlayerPredicate = _ => IO { LocalDate.now().getMonth == month }
 
     AchievementCondition(predicate, _ + "月にプレイ", month.getValue.toString)
+  }
+
+  /**
+   * 現在日付に対応する旧暦が引数の日付と一致するかどうかの判定
+   * @param monthLunisolar 旧暦の月数(1～12)
+   * @param isLeapMonth 閏月かどうか
+   * @param dayOfMonthLunisolar 旧暦の日数(1～30)
+   */
+  def playedOnLunisolar(
+    monthLunisolar: Int,
+    isLeapMonth: Boolean,
+    dayOfMonthLunisolar: Int,
+    dateSpecification: String
+  ): AchievementCondition[String] = {
+    val predicate: PlayerPredicate = _ =>
+      IO {
+        val lunisolarDate = LunisolarDate.now()
+        lunisolarDate.month == monthLunisolar &&
+        lunisolarDate.isLeapMonth == isLeapMonth &&
+        lunisolarDate.dayOfMonth == dayOfMonthLunisolar
+      }
+
+    AchievementCondition(predicate, _ + "にプレイ", dateSpecification)
   }
 
   def playedOn(

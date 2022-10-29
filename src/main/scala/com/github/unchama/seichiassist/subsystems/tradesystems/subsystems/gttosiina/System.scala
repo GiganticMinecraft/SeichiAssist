@@ -3,29 +3,35 @@ package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttos
 import cats.effect.ConcurrentEffect
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.BukkitCanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
+import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.bukkit.BukkitStaticTradeItemFactory
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.bukkit.listeners.GtToSiinaringo
+import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.domain.StaticTradeItemFactory
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import org.bukkit.inventory.ItemStack
 
-object System {
+trait System[F[_], ItemStack] extends Subsystem[F] {
 
-  import cats.implicits._
+  val api: GtToSiinaAPI[ItemStack]
+
+}
+
+object System {
 
   def wired[F[_]: ConcurrentEffect](
     implicit gachaAPI: GachaAPI[F, ItemStack, Player]
-  ): F[Subsystem[F]] = {
+  ): System[F, ItemStack] = {
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
-      BukkitCanBeSignedAsGachaPrize
+      gachaAPI.canBeSignedAsGachaPrize
+    implicit val tradeItemFactory: StaticTradeItemFactory[ItemStack] =
+      BukkitStaticTradeItemFactory
 
-    for {
-      gachaPrizeTable <- gachaAPI.list
-    } yield {
-      new Subsystem[F] {
-        override val listeners: Seq[Listener] = Seq(new GtToSiinaringo[F](gachaPrizeTable))
-      }
+    new System[F, ItemStack] {
+      override val api: GtToSiinaAPI[ItemStack] = (name: String) =>
+        tradeItemFactory.getMaxRingo(name)
+
+      override val listeners: Seq[Listener] = Seq(new GtToSiinaringo[F])
     }
   }
 

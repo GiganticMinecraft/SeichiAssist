@@ -25,6 +25,25 @@ on:
       - .github/workflows/*.yml
 
 jobs:
+  check_whether_some_sql_migration_files_have_duplicated_ver:
+    name: SQLマイグレーションファイルのバージョンに重複がないかを確認する
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: '0'
+      - name: Fetch and merge develop
+        run: git fetch origin develop && git merge --no-ff origin/develop
+      - name: Check SQL migration files
+        run: |
+          ls src/main/resources/db/migration | grep -o -E "^V([0-9]+\.)?([0-9]+\.)?([0-9]+)" | awk 'a[$0]++ {print $0 > "result.txt"}'
+          if [ -s result.txt ]; then
+            echo "Some migration files have duplicated ver:"
+            cat result.txt
+            exit 1
+          fi
+
   build_test_and_upload:
     env:
       BUILD_ENVIRONMENT_IS_CI_OR_LOCAL: "CI"
@@ -32,12 +51,12 @@ jobs:
     container: ghcr.io/giganticminecraft/seichiassist-builder:1a64049
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: 'recursive'
 
       - name: Prepare build dependencies cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-build-dependencies
           cache-version: v-4
@@ -61,7 +80,7 @@ jobs:
 
       - name: Prepare build cache
         if: github.ref != 'refs/heads/master'
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-build
           cache-version: v-4
@@ -106,7 +125,7 @@ jobs:
         run: sbt assembly
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: SeichiAssist-build
           path: target/build/SeichiAssist.jar
@@ -127,7 +146,9 @@ jobs:
   push_artifact_to_debug_server_definition:
     runs-on: ubuntu-20.04
     if: github.ref == 'refs/heads/develop'
-    needs: build_test_and_upload
+    needs:
+      - build_test_and_upload
+      - check_whether_some_sql_migration_files_have_duplicated_ver
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
@@ -201,7 +222,9 @@ jobs:
   deploy_artifact_to_production:
     runs-on: ubuntu-20.04
     if: github.ref == 'refs/heads/master'
-    needs: build_test_and_upload
+    needs:
+      - build_test_and_upload
+      - check_whether_some_sql_migration_files_have_duplicated_ver
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
@@ -233,4 +256,3 @@ jobs:
           description: "s1、s2等の本番環境にプラグインを配置する"
           username: GitHub Actions
           avatar_url: ${{ secrets.DISCORD_AVATAR_URL }}
-

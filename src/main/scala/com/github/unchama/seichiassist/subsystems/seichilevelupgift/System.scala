@@ -6,8 +6,6 @@ import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.minecraft.actions.{OnMinecraftServerThread, SendMinecraftMessage}
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.BukkitCanBeSignedAsGachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.seichilevelupgift.bukkit.BukkitGrantLevelUpGift
 import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.GrantLevelUpGiftAlgebra
@@ -26,8 +24,6 @@ object System {
     gachaAPI: GachaAPI[F, ItemStack, Player],
     gachaPointApi: GachaPointApi[F, G, Player]
   ): F[Nothing] = {
-    implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
-      BukkitCanBeSignedAsGachaPrize
     implicit val grantLevelUpGiftAlgebra: GrantLevelUpGiftAlgebra[F, Player] =
       new BukkitGrantLevelUpGift
     StreamExtra.compileToRestartingStream("[SeichiLevelUpGift]") {

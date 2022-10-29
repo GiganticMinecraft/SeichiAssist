@@ -5,9 +5,9 @@ import cats.data.Kleisli
 import cats.effect.Sync
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
+import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.GachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   CanBeSignedAsGachaPrize,
-  GachaPrize,
   GrantState
 }
 import com.github.unchama.seichiassist.util.{BreakUtil, InventoryOperations}
@@ -22,7 +22,10 @@ class BukkitGrantGachaPrize[F[_]: Sync: OnMinecraftServerThread](
     prize: GachaPrize[ItemStack]
   ): Kleisli[F, Player, Boolean] =
     Kleisli { player =>
-      Sync[F].delay { BreakUtil.tryAddItemIntoMineStack(player, prize.itemStack) }
+      Sync[F].delay {
+        val signedItemStack = prize.materializeWithOwnerSignature(player.getName)
+        BreakUtil.tryAddItemIntoMineStack(player, signedItemStack)
+      }
     }
 
   override def insertIntoPlayerInventoryOrDrop(

@@ -1,29 +1,36 @@
 package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.traderules
 
 import com.github.unchama.generic.ListExtra
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.BukkitGachaSkullData
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity._
-import com.github.unchama.seichiassist.subsystems.gacha.domain.{
-  CanBeSignedAsGachaPrize,
-  GachaPrize
-}
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaskull.bukkit.GachaSkullData
+import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
+import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.GachaPrize
 import com.github.unchama.seichiassist.subsystems.tradesystems.domain.{
-  BigOrRegular,
   TradeResult,
   TradeRule,
   TradeSuccessResult
 }
 import org.bukkit.inventory.ItemStack
 
+sealed trait BigOrRegular
+
+object BigOrRegular {
+
+  case object Big extends BigOrRegular
+
+  case object Regular extends BigOrRegular
+
+}
+
 class BukkitTrade(owner: String, gachaPrizeTable: Vector[GachaPrize[ItemStack]])(
   implicit canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
-) extends TradeRule[ItemStack] {
+) extends TradeRule[ItemStack, BigOrRegular] {
 
   /**
    * プレーヤーが入力したアイテムから、交換結果を計算する
    */
-  override def trade(contents: List[ItemStack]): TradeResult[ItemStack] = {
+  override def trade(contents: List[ItemStack]): TradeResult[ItemStack, BigOrRegular] = {
     // 大当たりのアイテム
     val bigList = gachaPrizeTable.filter(GachaRarity.of[ItemStack](_) == Big).map {
       gachaPrize => canBeSignedAsGachaPrize.signWith(owner)(gachaPrize)
@@ -48,11 +55,12 @@ class BukkitTrade(owner: String, gachaPrizeTable: Vector[GachaPrize[ItemStack]])
         すなわち、この実装は交換できるアイテムが必ず単一のアイテムである
         ことが前提となっている。
      */
-    TradeResult[ItemStack](
+    TradeResult[ItemStack, BigOrRegular](
       tradable.map {
-        case BigOrRegular.Big => TradeSuccessResult(GachaSkullData.gachaForExchanging, 12)
+        case BigOrRegular.Big =>
+          TradeSuccessResult(BukkitGachaSkullData.gachaForExchanging, 12, BigOrRegular.Big)
         case BigOrRegular.Regular =>
-          TradeSuccessResult(GachaSkullData.gachaForExchanging, 3)
+          TradeSuccessResult(BukkitGachaSkullData.gachaForExchanging, 3, BigOrRegular.Regular)
       },
       nonTradable
     )

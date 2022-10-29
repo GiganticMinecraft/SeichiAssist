@@ -4,7 +4,12 @@ import cats.effect.Sync
 import com.github.unchama.generic.serialization.SerializeAndDeserialize
 import com.github.unchama.seichiassist.subsystems.gacha.domain._
 import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent.GachaEventName
-import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.{gachaprize, _}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{
+  GachaPrize,
+  GachaPrizeId
+}
+import scalikejdbc._
 
 class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack](
   implicit serializeAndDeserialize: SerializeAndDeserialize[Nothing, ItemStack]
@@ -23,7 +28,7 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack](
             serializeAndDeserialize
               .deserialize(rs.string("itemstack"))
               .map { itemStack =>
-                GachaPrize(
+                gachaprize.GachaPrize(
                   itemStack,
                   GachaProbability(probability),
                   probability < 0.1,
