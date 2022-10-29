@@ -89,28 +89,6 @@ trait GachaReadAPI[F[_], ItemStack] {
   def list: F[Vector[GachaPrize[ItemStack]]]
 
   /**
-   * @return 特定のガチャイベントに左右されないガチャ景品リストを取得する
-   */
-  def alwaysDischargeGachaPrizes: F[Vector[GachaPrize[ItemStack]]]
-
-  /**
-   * @return 指定されたイベント名で排出されるガチャ景品のみを取得する
-   */
-  def getOnlyGachaEventDischargeGachaPrizes(
-    gachaEventName: GachaEventName
-  ): F[Vector[GachaPrize[ItemStack]]]
-
-  /**
-   * @return イベントで排出されるガチャ景品と常に排出されるガチャ景品の合成リストを取得する
-   */
-  final def getGachaEventDischargeGachaPrizes(
-    gachaEventName: GachaEventName
-  ): F[Vector[GachaPrize[ItemStack]]] = for {
-    alwaysGachaPrizes <- alwaysDischargeGachaPrizes
-    onlyGachaEvent <- getOnlyGachaEventDischargeGachaPrizes(gachaEventName)
-  } yield alwaysGachaPrizes ++ onlyGachaEvent
-
-  /**
    * @return [[GachaPrizeId]]に対応する[[GachaPrize]]
    */
   final def fetch(gachaPrizeId: GachaPrizeId): F[Option[GachaPrize[ItemStack]]] = for {

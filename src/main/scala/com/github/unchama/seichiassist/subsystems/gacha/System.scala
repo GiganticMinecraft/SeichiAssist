@@ -105,14 +105,6 @@ object System {
           override def drawGacha(player: Player, draws: Int): F[Unit] =
             new BukkitDrawGacha[F].draw(player, draws)
 
-          override def alwaysDischargeGachaPrizes: F[Vector[GachaPrize[ItemStack]]] =
-            gachaPersistence.alwaysDischargeGachaPrizes
-
-          override def getOnlyGachaEventDischargeGachaPrizes(
-            gachaEventName: GachaEventName
-          ): F[Vector[GachaPrize[ItemStack]]] =
-            gachaPersistence.getOnlyGachaEventDischargeGachaPrizes(gachaEventName)
-
           override def createdGachaEvents: F[Vector[GachaEvent]] =
             gachaEventPersistence.gachaEvents
 
