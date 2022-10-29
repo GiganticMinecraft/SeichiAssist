@@ -1,13 +1,12 @@
 package com.github.unchama.seichiassist.subsystems.home.bukkit.command
 
 import cats.Monad
-import cats.data.Kleisli
 import cats.effect.implicits._
 import cats.effect.{ConcurrentEffect, Effect, IO, SyncEffect}
 import com.github.unchama.chatinterceptor.CancellationReason.Overridden
 import com.github.unchama.chatinterceptor.ChatInterceptionScope
 import com.github.unchama.concurrent.NonServerThreadContextShift
-import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
+import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
@@ -15,10 +14,9 @@ import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTempla
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.home.bukkit.{LocationCodec, TeleportEffect}
-import com.github.unchama.seichiassist.subsystems.home.{HomeAPI, HomeReadAPI, HomeWriteAPI}
-import com.github.unchama.seichiassist.subsystems.home.domain.{Home, HomeId}
 import com.github.unchama.seichiassist.subsystems.home.domain.OperationResult.RenameResult
-import com.github.unchama.targetedeffect
+import com.github.unchama.seichiassist.subsystems.home.domain.{Home, HomeId}
+import com.github.unchama.seichiassist.subsystems.home.{HomeAPI, HomeReadAPI, HomeWriteAPI}
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
 import org.bukkit.ChatColor._
@@ -157,8 +155,6 @@ class HomeCommand[F[
 
         val homeLocation = LocationCodec.fromBukkitLocation(player.getLocation)
 
-        // canUseThisHomeIdメソッドでレベルからホームポイントに使用できるidの最大値を取得する
-        // 取得結果と引数のhomeIdを比較しwhenAで処理分岐を行う
         val eff = for {
           maxHomeIdCanBeUsed <- maxHomeIdCanBeUsedF(player)
           canUseHomeId = maxHomeIdCanBeUsed >= homeId.value
