@@ -144,7 +144,7 @@ class ActiveSessionReferenceSpec
       awaitForProgram(runConcurrent(program)(100), 1.minute)
     }
 
-    "be able to rePrepend a session" in {
+    "be able to replace a session" in {
       // given
       implicit val configuration: SystemConfiguration =
         SystemConfiguration(expConsumptionAmount = 0)
