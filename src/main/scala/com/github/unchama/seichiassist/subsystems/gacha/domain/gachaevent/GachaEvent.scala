@@ -15,4 +15,14 @@ case class GachaEvent(eventName: GachaEventName, startDate: LocalDate, endDate: 
 
   def getEndDateString: String = toTimeString(endDate)
 
+  /**
+   * 今このイベントが開催中かどうか確認する
+   * @return 開催中(true) / 開催中じゃない(false)
+   */
+  def isHolding: Boolean = {
+    val now = LocalDate.now()
+
+    now.isAfter(startDate) && now.isBefore(endDate)
+  }
+
 }

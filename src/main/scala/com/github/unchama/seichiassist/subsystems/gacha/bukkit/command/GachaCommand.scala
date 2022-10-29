@@ -52,16 +52,17 @@ class GachaCommand[
         "ガチャ券配布コマンドです。allを指定で全員に配布(マルチ鯖対応済)",
         s"$RED/gacha get <ID> (<名前>)",
         "指定したガチャリストのIDを入手 (所有者付きにもできます) IDを0に指定するとガチャリンゴを入手できます",
-        s"$RED/gacha add <確率> <イベント名>",
+        s"$RED/gacha add <確率> (<イベント名>)",
         "現在のメインハンドをガチャリストに追加。確率は1.0までで指定",
-        s"$DARK_GRAY※イベント名を入力しなかった場合は常時排出アイテムとして登録されます。",
+        s"$DARK_GRAY※イベント名を入力しなかった場合は通常排出アイテムとして登録されます。",
         s"$RED/gacha addms2 <確率> <名前>",
         "現在のメインハンドをMineStack用ガチャリストに追加。確率は1.0までで指定",
         s"$RED/gacha addms <名前>  <ID>",
         "指定したガチャリストのIDを指定した名前でMineStack用ガチャリストに追加",
         s"$DARK_GRAY※ゲーム内でのみ実行できます",
-        s"$RED/gacha list",
-        "現在のガチャリストを表示",
+        s"$RED/gacha list (<イベント>)",
+        "指定したイベントのガチャリストを表示",
+        s"$DARK_GRAY※イベント名を指定しなかった場合は通常排出アイテムを表示します",
         s"$RED/gacha listms",
         "現在のMineStack用ガチャリストを表示",
         s"$RED/gacha remove <番号>",
@@ -229,11 +230,17 @@ class GachaCommand[
     val list: ContextualExecutor =
       ContextualExecutorBuilder
         .beginConfiguration()
-        .execution { _ =>
+        .execution { context =>
+          val eventName = context.args.yetToBeParsed.headOption.map(GachaEventName)
           val eff = for {
             gachaPrizes <- gachaAPI.list
           } yield {
             val gachaPrizeInformation = gachaPrizes
+              .filter { gachaPrize =>
+                if (eventName.isEmpty) gachaPrize.gachaEventName.isEmpty
+                else
+                  gachaPrize.gachaEventName.nonEmpty && gachaPrize.gachaEventName == eventName
+              }
               .sortBy(_.id.id)
               .map { gachaPrize =>
                 val itemStack = gachaPrize.itemStack

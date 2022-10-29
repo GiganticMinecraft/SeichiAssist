@@ -68,7 +68,15 @@ object System {
 
           override protected implicit val F: Monad[F] = implicitly
 
-          override def load: F[Unit] = gachaPersistence.list.flatMap { gachaPrizes =>
+          override def load: F[Unit] = for {
+            gachaPrizes <- gachaPersistence.list
+            createdEvents <- gachaEventPersistence.gachaEvents
+          } yield {
+            createdEvents.find(_.isHolding) match {
+              case Some(value) =>
+                gachaPrizes.filter(_.gachaEventName = value.eventName)
+              case None => ???
+            }
             gachaPrizesListRepository.set(gachaPrizes)
           }
 
