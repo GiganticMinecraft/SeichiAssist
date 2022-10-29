@@ -427,7 +427,7 @@ class GachaCommand[
     val eventList: ContextualExecutor =
       ContextualExecutorBuilder
         .beginConfiguration()
-        .execution { values =>
+        .execution { _ =>
           val eff = for {
             events <- gachaAPI.createdGachaEvents
           } yield {
