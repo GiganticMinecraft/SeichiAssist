@@ -50,7 +50,7 @@ object WorldChunkSaving {
       lazy val loadedToAChunk: AnyRef => Boolean = {
         // NOTE: it is not clear what this field is doing, but given that this field is used in
         // switching chunk processing, it seems to indicate if the entity is loaded into a chunk
-        val field = clazz.getDeclaredField("computeDoubleList")
+        val field = clazz.getDeclaredField("aa")
         field.getBoolean(_)
       }
     }
