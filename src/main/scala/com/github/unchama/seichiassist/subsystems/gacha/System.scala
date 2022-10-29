@@ -82,8 +82,7 @@ object System {
           } yield ()
 
           override def addGachaPrize(
-            gachaPrize: GachaPrizeByGachaPrizeId,
-            gachaEventName: Option[GachaEventName]
+            gachaPrize: GachaPrizeByGachaPrizeId
           ): F[Unit] =
             for {
               prizes <- list

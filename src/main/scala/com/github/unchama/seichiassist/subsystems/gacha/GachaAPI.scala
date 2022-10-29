@@ -165,8 +165,7 @@ trait GachaWriteAPI[F[_], ItemStack] {
    * `gachaEventName`がNoneの場合は常時排出アイテムとして扱う。
    */
   def addGachaPrize(
-    gachaPrize: GachaPrizeByGachaPrizeId,
-    gachaEventName: Option[GachaEventName]
+    gachaPrize: GachaPrizeByGachaPrizeId
   ): F[Unit]
 
 }

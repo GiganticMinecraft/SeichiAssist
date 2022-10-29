@@ -16,7 +16,7 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack](
   override def list: F[Vector[GachaPrize[ItemStack]]] = {
     Sync[F].delay {
       DB.readOnly { implicit session =>
-        sql"select id,itemstack,probability from gachadata"
+        sql"select id,itemstack,probability,event_name from gachadata"
           .map { rs =>
             val probability = rs.double("probability")
             // TODO ガチャアイテムに対して記名を行うかどうかを確率に依存すべきではない
@@ -27,7 +27,8 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack](
                   itemStack,
                   GachaProbability(probability),
                   probability < 0.1,
-                  GachaPrizeId(rs.int("id"))
+                  GachaPrizeId(rs.int("id")),
+                  rs.stringOpt("event_name").map(GachaEventName)
                 )
               }
               .merge
@@ -50,10 +51,11 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack](
           Seq(
             gachaPrize.id.id,
             gachaPrize.probability.value,
-            serializeAndDeserialize.serialize(gachaPrize.itemStack)
+            serializeAndDeserialize.serialize(gachaPrize.itemStack),
+            gachaPrize.gachaEventName.map(_.name)
           )
         }
-        sql"insert into gachadata values (?,?,?)".batch(batchParams).apply[List]()
+        sql"insert into gachadata values (?,?,?,?)".batch(batchParams).apply[List]()
       }
     }
   }
@@ -74,7 +76,8 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack](
                 itemStack,
                 GachaProbability(probability),
                 probability < 0.1,
-                GachaPrizeId(rs.int("id"))
+                GachaPrizeId(rs.int("id")),
+                None
               )
             }
             .merge
@@ -92,7 +95,7 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack](
     gachaEventName: GachaEventName
   ): F[Vector[GachaPrize[ItemStack]]] = Sync[F].delay {
     DB.readOnly { implicit session =>
-      sql"SELECT id,itemstack,probability FROM gachadata WHERE event_name = ${gachaEventName.name}"
+      sql"SELECT id,itemstack,probability,event_name FROM gachadata WHERE event_name = ${gachaEventName.name}"
         .map { rs =>
           val probability = rs.double("probability")
           // TODO ガチャアイテムに対して記名を行うかどうかを確率に依存すべきではない
@@ -103,7 +106,8 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack](
                 itemStack,
                 GachaProbability(probability),
                 probability < 0.1,
-                GachaPrizeId(rs.int("id"))
+                GachaPrizeId(rs.int("id")),
+                rs.stringOpt("event_name").map(GachaEventName)
               )
             }
             .merge

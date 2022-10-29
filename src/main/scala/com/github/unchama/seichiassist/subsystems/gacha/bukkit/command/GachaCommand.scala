@@ -203,11 +203,20 @@ class GachaCommand[
         .argumentsParsers(List(probabilityParser, Parsers.identity))
         .execution { context =>
           val player = context.sender
-          val probability = context.args.parsed.head.asInstanceOf[Double]
+          val args = context.args.parsed
+          val probability = args.head.asInstanceOf[Double]
+          val eventName =
+            Option.when(args(1).toString != null)(GachaEventName(args(1).toString))
           val mainHandItem = player.getInventory.getItemInMainHand
           val eff = for {
             _ <- gachaAPI.addGachaPrize(
-              GachaPrize(mainHandItem, GachaProbability(probability), probability < 0.1, _)
+              GachaPrize(
+                mainHandItem,
+                GachaProbability(probability),
+                probability < 0.1,
+                _,
+                eventName
+              )
             )
           } yield MessageEffect(
             List("ガチャアイテムを追加しました！", "ガチャアイテムを保存するためには/gacha saveを実行してください。")
