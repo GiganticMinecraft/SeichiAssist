@@ -81,7 +81,10 @@ object System {
             _ <- replace(prizes.diff(targetPrize))
           } yield ()
 
-          override def addGachaPrize(gachaPrize: GachaPrizeByGachaPrizeId): F[Unit] =
+          override def addGachaPrize(
+            gachaPrize: GachaPrizeByGachaPrizeId,
+            gachaEventName: Option[GachaEventName]
+          ): F[Unit] =
             for {
               prizes <- list
               newList = gachaPrize(
