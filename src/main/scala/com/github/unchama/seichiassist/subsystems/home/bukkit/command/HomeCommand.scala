@@ -18,6 +18,7 @@ import com.github.unchama.seichiassist.subsystems.home.bukkit.{LocationCodec, Te
 import com.github.unchama.seichiassist.subsystems.home.{HomeAPI, HomeReadAPI, HomeWriteAPI}
 import com.github.unchama.seichiassist.subsystems.home.domain.{Home, HomeId}
 import com.github.unchama.seichiassist.subsystems.home.domain.OperationResult.RenameResult
+import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
 import org.bukkit.ChatColor._
@@ -193,21 +194,29 @@ class HomeCommand[F[
         val cancelledInputMessage = List(s"${YELLOW}入力がキャンセルされました。")
 
         for {
-          _ <- Monad[IO].ifM(HomeReadAPI[F].configured(uuid, homeId).toIO)(
-            MessageEffect(instruction)(player) >>
-              scope.interceptFrom(uuid).flatMap {
-                case Left(newName) =>
-                  HomeWriteAPI[F].rename(uuid, homeId)(newName).toIO.flatMap {
-                    case RenameResult.Done =>
-                      MessageEffect(doneMessage(newName))(player)
-                    case RenameResult.NotFound =>
-                      MessageEffect(homeNotSetMessage)(player)
-                  }
-                case Right(Overridden) => MessageEffect(cancelledInputMessage)(player)
-                case Right(_)          => IO.unit
-              },
-            MessageEffect(homeNotSetMessage)(player)
-          )
+          maxHomeIdCanBeUsed <- maxHomeIdCanBeUsedF(player).toIO
+          canUseHomeId = maxHomeIdCanBeUsed >= homeId.value
+          _ <- MessageEffectF[F](s"ホームポイント${homeId}は現在のレベルでは使用できません")
+            .apply(player)
+            .toIO
+            .whenA(!canUseHomeId)
+          _ <- Monad[IO]
+            .ifM(HomeReadAPI[F].configured(uuid, homeId).toIO)(
+              MessageEffect(instruction)(player) >>
+                scope.interceptFrom(uuid).flatMap {
+                  case Left(newName) =>
+                    HomeWriteAPI[F].rename(uuid, homeId)(newName).toIO.flatMap {
+                      case RenameResult.Done =>
+                        MessageEffect(doneMessage(newName))(player)
+                      case RenameResult.NotFound =>
+                        MessageEffect(homeNotSetMessage)(player)
+                    }
+                  case Right(Overridden) => MessageEffect(cancelledInputMessage)(player)
+                  case Right(_)          => IO.unit
+                },
+              MessageEffect(homeNotSetMessage)(player)
+            )
+            .whenA(canUseHomeId)
         } yield TargetedEffect.emptyEffect
       }
       .build()
