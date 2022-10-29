@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject
 
-case class MineStackObjectWithAmount[ItemStack](
+case class MineStackObjectWithAmount[ItemStack <: Cloneable](
   mineStackObject: MineStackObject[ItemStack],
   amount: Long
 ) {

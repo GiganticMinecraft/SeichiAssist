@@ -9,7 +9,7 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
 }
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
-class JdbcMineStackObjectPersistenceByMineStackGachaData[F[_]: Sync, ItemStack](
+class JdbcMineStackObjectPersistenceByMineStackGachaData[F[_]: Sync, ItemStack <: Cloneable](
   implicit serializeAndDeserialize: SerializeAndDeserialize[Nothing, ItemStack]
 ) extends MineStackObjectPersistenceByMineStackGachaData[F, ItemStack] {
 

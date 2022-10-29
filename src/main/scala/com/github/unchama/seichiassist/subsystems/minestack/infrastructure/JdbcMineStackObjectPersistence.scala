@@ -11,7 +11,7 @@ import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 import java.util.UUID
 import scala.collection.IndexedSeq.iterableFactory
 
-class JdbcMineStackObjectPersistence[F[_]: Sync, ItemStack](allMineStackObjects: List[MineStackObject[ItemStack]])
+class JdbcMineStackObjectPersistence[F[_]: Sync, ItemStack <: Cloneable](allMineStackObjects: List[MineStackObject[ItemStack]])
     extends MineStackObjectPersistence[F, ItemStack] {
 
   override def read(key: UUID): F[Option[List[MineStackObjectWithAmount[ItemStack]]]] = Sync[F].delay {

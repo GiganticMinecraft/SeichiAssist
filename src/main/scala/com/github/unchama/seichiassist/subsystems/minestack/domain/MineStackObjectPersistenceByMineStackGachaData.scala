@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.minestack.domain
 
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject
 
-trait MineStackObjectPersistenceByMineStackGachaData[F[_], ItemStack] {
+trait MineStackObjectPersistenceByMineStackGachaData[F[_], ItemStack <: Cloneable] {
 
   /**
    * @return MineStackGachaDataから[[MineStackObject]]のListを取得する
