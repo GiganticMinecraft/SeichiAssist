@@ -9,16 +9,19 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.menus.minestack.CategorizedMineStackMenu
+import com.github.unchama.seichiassist.subsystems.minestack.domain.TryIntoMineStack
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory
-import com.github.unchama.seichiassist.util.BreakUtil
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
+import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 
 object MineStackCommand {
   def executor(
-    implicit ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu
+    implicit ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu,
+    tryIntoMineStack: TryIntoMineStack[IO, Player, ItemStack]
   ): TabExecutor =
     BranchedExecutor(
       Map(
@@ -80,25 +83,24 @@ object MineStackCommand {
         }
         .build()
 
-    def storeEverythingInInventory: ContextualExecutor =
+    import cats.implicits._
+
+    def storeEverythingInInventory(
+      implicit tryIntoMineStack: TryIntoMineStack[IO, Player, ItemStack]
+    ): ContextualExecutor =
       playerCommandBuilder
         .execution { context =>
-          IO {
-            val player = context.sender
-            val inventory = player.getInventory
-            SequentialEffect(
-              UnfocusedEffect {
-                inventory.getContents.toList.zipWithIndex.foreach {
-                  case (itemStack, index) =>
-                    if (
-                      itemStack != null && BreakUtil.tryAddItemIntoMineStack(player, itemStack)
-                    )
-                      inventory.clear(index)
-                }
-              },
-              MessageEffect(s"${YELLOW}インベントリの中身をすべてマインスタックに収納しました。")
-            )
-          }
+          for {
+            player <- IO(context.sender)
+            inventory <- IO(player.getInventory)
+            targetIndexes <- inventory.getContents.toList.zipWithIndex.traverse {
+              case (itemStack, index) =>
+                tryIntoMineStack
+                  .apply(player, itemStack, itemStack.getAmount)
+                  .map(isSucceed => if (itemStack != null && isSucceed) Some(index) else None)
+            }
+            _ <- IO(targetIndexes.foreach(_.foreach(index => inventory.clear(index))))
+          } yield MessageEffect(s"${YELLOW}インベントリの中身をすべてマインスタックに収納しました。")
         }
         .build()
 
