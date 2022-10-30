@@ -10,22 +10,21 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   CanBeSignedAsGachaPrize,
   GrantState
 }
-import com.github.unchama.seichiassist.util.{BreakUtil, InventoryOperations}
+import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
+import com.github.unchama.seichiassist.util.InventoryOperations
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 class BukkitGrantGachaPrize[F[_]: Sync: OnMinecraftServerThread](
-  implicit canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
+  implicit canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack],
+  mineStackAPI: MineStackAPI[F, Player, ItemStack]
 ) extends GrantGachaPrize[F, ItemStack] {
 
   override def tryInsertIntoMineStack(
     prize: GachaPrize[ItemStack]
   ): Kleisli[F, Player, Boolean] =
     Kleisli { player =>
-      Sync[F].delay {
-        val signedItemStack = prize.materializeWithOwnerSignature(player.getName)
-        BreakUtil.tryAddItemIntoMineStack(player, signedItemStack)
-      }
+      mineStackAPI.tryIntoMineStack.apply(player, prize.itemStack, prize.itemStack.getAmount)
     }
 
   override def insertIntoPlayerInventoryOrDrop(
