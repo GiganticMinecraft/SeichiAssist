@@ -4,6 +4,7 @@ import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.ApplicativeExtra.whenAOrElse
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.minestack.domain.{
   MineStackSettings,
@@ -16,8 +17,8 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{GameMode, Sound}
 
-class PlayerPickupItemListener[F[_]: ConcurrentEffect](
-  implicit mineStackSettingRepository: PlayerDataRepository[MineStackSettings[F]],
+class PlayerPickupItemListener[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
+  implicit mineStackSettingRepository: PlayerDataRepository[MineStackSettings[G]],
   tryIntoMineStack: TryIntoMineStack[F, Player, ItemStack]
 ) extends Listener {
 
@@ -33,7 +34,9 @@ class PlayerPickupItemListener[F[_]: ConcurrentEffect](
         val itemStack = item.getItemStack
 
         val program = for {
-          currentAutoMineStackState <- mineStackSettingRepository(player).currentState
+          currentAutoMineStackState <- ContextCoercion(
+            mineStackSettingRepository(player).currentState
+          )
           isSucceedTryIntoMineStack <- whenAOrElse(currentAutoMineStackState)(
             tryIntoMineStack(player, itemStack, itemStack.getAmount),
             false

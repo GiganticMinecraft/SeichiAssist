@@ -19,9 +19,13 @@ import com.github.unchama.seichiassist.subsystems.minestack.application.reposito
 }
 import com.github.unchama.seichiassist.subsystems.minestack.bukkit.{
   BukkitMineStackObjectList,
-  MineStackCommand
+  MineStackCommand,
+  PlayerPickupItemListener
 }
-import com.github.unchama.seichiassist.subsystems.minestack.domain.TryIntoMineStack
+import com.github.unchama.seichiassist.subsystems.minestack.domain.{
+  MineStackSettings,
+  TryIntoMineStack
+}
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
   MineStackObject,
   MineStackObjectWithAmount
@@ -30,6 +34,7 @@ import com.github.unchama.seichiassist.subsystems.minestack.infrastructure.JdbcM
 import org.bukkit.Material
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
+import org.bukkit.event.Listener
 import org.bukkit.inventory.ItemStack
 
 trait System[F[_], Player, ItemStack <: Cloneable] extends Subsystem[F] {
@@ -85,7 +90,8 @@ object System {
         : PlayerDataRepository[Ref[F, List[MineStackObjectWithAmount[ItemStack]]]] =
         mineStackObjectRepositoryControls.repository.map(_.mapK(ContextCoercion.asFunctionK))
       val mineStackUsageHistoryRepository = mineStackUsageHistoryRepositoryControls.repository
-      val mineStackSettingRepository = mineStackSettingsRepositoryControls.repository
+      implicit val mineStackSettingRepository: PlayerDataRepository[MineStackSettings[G]] =
+        mineStackSettingsRepositoryControls.repository
       implicit val _tryIntoMineStack: TryIntoMineStack[F, Player, ItemStack] =
         new TryIntoMineStack[F, Player, ItemStack]
 
@@ -157,6 +163,8 @@ object System {
         override val commands: Map[String, TabExecutor] = Map(
           "minestack" -> MineStackCommand.executor[F]
         )
+
+        override val listeners: Seq[Listener] = Seq(new PlayerPickupItemListener[F, G]())
       }
 
     }
