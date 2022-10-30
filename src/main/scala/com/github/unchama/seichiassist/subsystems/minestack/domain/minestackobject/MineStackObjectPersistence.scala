@@ -4,5 +4,5 @@ import com.github.unchama.generic.RefDict
 
 import java.util.UUID
 
-trait MineStackObjectPersistence[F[_], ItemStack]
+trait MineStackObjectPersistence[F[_], ItemStack <: Cloneable]
     extends RefDict[F, UUID, List[MineStackObjectWithAmount[ItemStack]]]
