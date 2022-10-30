@@ -1,7 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.minestack
 
+import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, Sync, SyncEffect}
-import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
+import com.github.unchama.datarepository.bukkit.player.{
+  BukkitRepositoryControls,
+  PlayerDataRepository
+}
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.{ContextCoercion, ListExtra}
 import com.github.unchama.minecraft.bukkit.objects.BukkitMaterial
@@ -14,6 +18,7 @@ import com.github.unchama.seichiassist.subsystems.minestack.application.reposito
   MineStackUsageHistoryRepositoryDefinitions
 }
 import com.github.unchama.seichiassist.subsystems.minestack.bukkit.BukkitMineStackObjectList
+import com.github.unchama.seichiassist.subsystems.minestack.domain.TryIntoMineStack
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
   MineStackObject,
   MineStackObjectWithAmount
@@ -37,6 +42,7 @@ object System {
     implicit gachaAPI: GachaAPI[F, ItemStack, Player]
   ): F[System[F, Player, ItemStack]] = {
     implicit val minecraftMaterial: MinecraftMaterial[Material, ItemStack] = new BukkitMaterial
+
     for {
       allMineStackObjects <- new BukkitMineStackObjectList[F]().getAllMineStackObjects
       mineStackObjectPersistence =
@@ -71,7 +77,8 @@ object System {
         )
       )
     } yield {
-      val mineStackObjectRepository =
+      implicit val mineStackObjectRepository
+        : PlayerDataRepository[Ref[F, List[MineStackObjectWithAmount[ItemStack]]]] =
         mineStackObjectRepositoryControls.repository.map(_.mapK(ContextCoercion.asFunctionK))
       val mineStackUsageHistoryRepository = mineStackUsageHistoryRepositoryControls.repository
       val mineStackSettingRepository = mineStackSettingsRepositoryControls.repository
@@ -136,6 +143,9 @@ object System {
             override def autoMineStack(player: Player): F[Boolean] = for {
               currentState <- ContextCoercion(mineStackSettingRepository(player).currentState)
             } yield currentState
+
+            override def tryIntoMineStack: TryIntoMineStack[F, Player, ItemStack] =
+              new TryIntoMineStack[F, Player, ItemStack]
           }
       }
 
