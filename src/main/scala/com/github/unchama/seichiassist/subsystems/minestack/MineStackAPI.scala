@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.minestack
 
+import com.github.unchama.seichiassist.subsystems.minestack.domain.TryIntoMineStack
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject
 
 trait MineStackWriteAPI[F[_], Player, ItemStack <: Cloneable] {
@@ -23,6 +24,10 @@ trait MineStackWriteAPI[F[_], Player, ItemStack <: Cloneable] {
    */
   def toggleAutoMineStack(player: Player): F[Unit]
 
+  /**
+   * @return [[TryIntoMineStack]]を返す
+   */
+  def tryIntoMineStack: TryIntoMineStack[F, Player, ItemStack]
 }
 
 object MineStackWriteAPI {
