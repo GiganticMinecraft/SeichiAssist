@@ -15,6 +15,8 @@ case class MineStackObject[ItemStack <: Cloneable](
 
   def itemStack: ItemStack = _itemStack.clone[ItemStack]
 
+  import cats.implicits._
+
   /**
    * 記名済みの[[ItemStack]]へ変換することを試みます
    */
@@ -24,8 +26,6 @@ case class MineStackObject[ItemStack <: Cloneable](
     if (
       category != MineStackObjectCategory.GACHA_PRIZES || category == MineStackObjectCategory.BUILTIN_GACHA_PRIZES
     ) return Sync[F].pure(None)
-
-    import cats.implicits._
 
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
       gachaAPI.canBeSignedAsGachaPrize
