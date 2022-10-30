@@ -11,11 +11,7 @@ import com.github.unchama.menuinventory.slot.button.{Button, ReloadingButton}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.menus.{BuildMainMenu, ColorScheme, CommonButtons}
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
-import com.github.unchama.seichiassist.subsystems.minestack.bukkit.BukkitMineStackObjectList
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
-  MineStackObject,
-  MineStackObjectList
-}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -29,10 +25,7 @@ import java.util.Locale
 
 object MineStackMassCraftMenu {
 
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
-    layoutPreparationContext,
-    onMainThread
-  }
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, onMainThread}
 
   type MineStackItemId = String
 
@@ -183,7 +176,10 @@ object MineStackMassCraftMenu {
                       }
                       productObjects.toList.foreach {
                         case (obj, amount) =>
-                          mineStack.addStackedAmountOf(obj, amount)
+                          environment
+                            .mineStackAPI
+                            .addStackedAmountOf(player, obj, amount)
+                            .unsafeRunAsyncAndForget()
                       }
                     } >> {
                       val message =
