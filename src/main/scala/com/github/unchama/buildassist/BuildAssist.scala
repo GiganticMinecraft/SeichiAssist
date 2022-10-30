@@ -10,8 +10,10 @@ import com.github.unchama.seichiassist.listener.BuildMainMenuOpener
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
+import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.{DefaultEffectEnvironment, subsystems}
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 import org.bukkit.{Bukkit, Material}
 
@@ -22,7 +24,8 @@ import scala.collection.mutable
 class BuildAssist(plugin: Plugin)(
   implicit flyApi: ManagedFlyApi[SyncIO, Player],
   buildCountAPI: subsystems.buildcount.BuildCountAPI[IO, SyncIO, Player],
-  manaApi: ManaApi[IO, SyncIO, Player]
+  manaApi: ManaApi[IO, SyncIO, Player],
+  mineStackAPI: MineStackAPI[IO, Player, ItemStack]
 ) {
 
   // TODO この辺のフィールドを整理する

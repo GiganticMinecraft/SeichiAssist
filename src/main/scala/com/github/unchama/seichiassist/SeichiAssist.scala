@@ -449,6 +449,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val flyApi: ManagedFlyApi[SyncIO, Player] = managedFlySystem.api
     implicit val buildCountAPI: BuildCountAPI[IO, SyncIO, Player] = buildCountSystem.api
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
+    implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack] = mineStackSystem.api
 
     new BuildAssist(this)
   }
