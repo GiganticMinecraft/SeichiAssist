@@ -117,6 +117,11 @@ trait GachaReadAPI[F[_], ItemStack] {
   def staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack]
 
   /**
+   * @return [[ItemStack]]から[[GachaPrize]]を取得する
+   */
+  def findByItemStack(itemStack: ItemStack): F[Option[GachaPrize[ItemStack]]]
+
+  /**
    * @return [[CanBeSignedAsGachaPrize]]を返す
    */
   def canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]

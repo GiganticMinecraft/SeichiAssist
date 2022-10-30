@@ -24,6 +24,7 @@ case class MineStackObject[ItemStack <: Cloneable](
       category != MineStackObjectCategory.GACHA_PRIZES || category == MineStackObjectCategory.BUILTIN_GACHA_PRIZES
     ) return None
 
+
     // TODO ガチャAPIからcanBeSigned..を取得して記名して返す
     None
   }
