@@ -9,16 +9,10 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
+import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory.{
-  AGRICULTURAL,
-  BUILDING,
-  GACHA_PRIZES,
-  MOB_DROP,
-  ORES,
-  REDSTONE_AND_TRANSPORTATION
-}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory.{AGRICULTURAL, BUILDING, GACHA_PRIZES, MOB_DROP, ORES, REDSTONE_AND_TRANSPORTATION}
 import org.bukkit.ChatColor._
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -32,7 +26,9 @@ object MineStackMainMenu extends Menu {
   class Environment(
     implicit val ioCanOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu,
     val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
-    val ioOnMainThread: OnMinecraftServerThread[IO]
+    val ioOnMainThread: OnMinecraftServerThread[IO],
+    implicit val gachaAPI: GachaAPI[IO, ItemStack, Player],
+    implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack]
   )
 
   override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}MineStackメインメニュー")
@@ -99,7 +95,8 @@ object MineStackMainMenu extends Menu {
     def computeHistoricalMineStackLayout(
       implicit ioOnMainThread: OnMinecraftServerThread[IO],
       canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu,
-      mineStackAPI: MineStackAPI[IO, Player, ItemStack]
+      mineStackAPI: MineStackAPI[IO, Player, ItemStack],
+      gachaAPI: GachaAPI[IO, ItemStack, Player]
     ): IO[MenuSlotLayout] = {
       val usageHistory = mineStackAPI.getUsageHistory(player)
       for {
