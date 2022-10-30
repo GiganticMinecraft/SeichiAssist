@@ -178,7 +178,7 @@ object MineStackMassCraftMenu {
                         case (obj, amount) =>
                           environment
                             .mineStackAPI
-                            .trySubtractStackedAmountOf(player, obj, amount)
+                            .subtractStackedAmountOf(player, obj, amount)
                             .unsafeRunAsyncAndForget()
                       }
                       productObjects.toList.foreach {

@@ -101,7 +101,7 @@ object System {
       new System[F, Player, ItemStack] {
         override val api: MineStackAPI[F, Player, ItemStack] =
           new MineStackAPI[F, Player, ItemStack] {
-            override def trySubtractStackedAmountOf(
+            override def subtractStackedAmountOf(
               player: Player,
               mineStackObject: MineStackObject[ItemStack],
               amount: Int

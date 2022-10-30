@@ -8,7 +8,7 @@ trait MineStackWriteAPI[F[_], Player, ItemStack <: Cloneable] {
   /**
    * @return [[Player]]の[[MineStackObject]]を指定された量だけ減少させ、実際に減少させた量を返す
    */
-  def trySubtractStackedAmountOf(
+  def subtractStackedAmountOf(
     player: Player,
     mineStackObject: MineStackObject[ItemStack],
     amount: Int

@@ -176,7 +176,7 @@ private[minestack] case class MineStackButtons(player: Player)(
       pair <- Kleisli((player: Player) =>
         for {
           grantAmount <- mineStackAPI
-            .trySubtractStackedAmountOf(player, mineStackObject, amount)
+            .subtractStackedAmountOf(player, mineStackObject, amount)
           soundEffectPitch = if (grantAmount == amount) 1.0f else 0.5f
           signedItemStack <- mineStackObject.tryToSignedItemStack[IO, Player](player.getName)
           itemStackToGrant = signedItemStack.getOrElse(mineStackObject.itemStack)
