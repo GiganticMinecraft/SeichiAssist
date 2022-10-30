@@ -144,11 +144,6 @@ object MineStackMassCraftMenu {
         Kleisli { player =>
           for {
             buildLevel <- BuildAssist.instance.buildAmountDataRepository(player).read.toIO
-            seichiAssistPlayerData <- IO {
-              SeichiAssist.playermap(player.getUniqueId)
-            }
-            mineStack = seichiAssistPlayerData.minestack
-
             _ <-
               if (buildLevel.levelCorrespondingToExp.level < requiredBuildLevel) {
                 MessageEffect(s"${RED}建築Lvが足りません")(player)
