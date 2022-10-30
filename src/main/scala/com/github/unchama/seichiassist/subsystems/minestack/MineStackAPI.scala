@@ -5,15 +5,6 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
 trait MineStackWriteAPI[F[_], Player, ItemStack <: Cloneable] {
 
   /**
-   * @return [[Player]]の[[MineStackObject]]を指定された量だけ増加させる作用
-   */
-  def addStackedAmountOf(
-    player: Player,
-    mineStackObject: MineStackObject[ItemStack],
-    amount: Int
-  ): F[Unit]
-
-  /**
    * @return [[Player]]の[[MineStackObject]]を指定された量だけ減少させ、実際に減少させた量を返す
    */
   def trySubtractStackedAmountOf(

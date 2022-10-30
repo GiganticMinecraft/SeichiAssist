@@ -79,21 +79,6 @@ object System {
       new System[F, Player, ItemStack] {
         override val api: MineStackAPI[F, Player, ItemStack] =
           new MineStackAPI[F, Player, ItemStack] {
-            override def addStackedAmountOf(
-              player: Player,
-              mineStackObject: MineStackObject[ItemStack],
-              amount: Int
-            ): F[Unit] =
-              mineStackObjectRepository(player).update { mineStackObjects =>
-                ListExtra.rePrependOrAdd(mineStackObjects)(
-                  _.mineStackObject == mineStackObject,
-                  {
-                    case Some(value) => value.increase(amount)
-                    case None        => MineStackObjectWithAmount(mineStackObject, amount)
-                  }
-                )
-              }
-
             override def trySubtractStackedAmountOf(
               player: Player,
               mineStackObject: MineStackObject[ItemStack],
