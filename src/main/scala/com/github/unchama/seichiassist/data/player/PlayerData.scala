@@ -79,7 +79,6 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
     this.regionCount += 1
   }
 
-  var minestack = new MineStack()
   // プレイ時間
   var playTick = 0L
   // 合計経験値
