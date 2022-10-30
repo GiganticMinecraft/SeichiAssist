@@ -23,7 +23,7 @@ trait MineStackWriteAPI[F[_], Player, ItemStack <: Cloneable] {
   def subtractStackedAmountOf(
     player: Player,
     mineStackObject: MineStackObject[ItemStack],
-    amount: Int
+    amount: Long
   ): F[Int]
 
   /**
