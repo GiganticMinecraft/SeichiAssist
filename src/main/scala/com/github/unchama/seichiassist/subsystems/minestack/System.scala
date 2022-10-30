@@ -127,6 +127,18 @@ object System {
               }
             }
 
+            override def addStackedAmountOf(
+              player: Player,
+              mineStackObject: MineStackObject[ItemStack],
+              amount: Int
+            ): F[Unit] =
+              mineStackObjectRepository(player).update { mineStackObjects =>
+                ListExtra.rePrepend(mineStackObjects)(
+                  _.mineStackObject == mineStackObject,
+                  _.increase(amount)
+                )
+              }
+
             override def getStackedAmountOf(
               player: Player,
               mineStackObject: MineStackObject[ItemStack]
