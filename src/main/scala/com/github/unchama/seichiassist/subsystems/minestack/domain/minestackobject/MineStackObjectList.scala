@@ -7,4 +7,9 @@ trait MineStackObjectList[F[_], ItemStack <: Cloneable] {
    */
   def allMineStackObjects: F[Vector[MineStackObject[ItemStack]]]
 
+  /**
+   * @return [[ItemStack]]から[[MineStackObject]]を取得します
+   */
+  def findByItemStack(itemStack: ItemStack): F[Option[MineStackObject[ItemStack]]]
+
 }
