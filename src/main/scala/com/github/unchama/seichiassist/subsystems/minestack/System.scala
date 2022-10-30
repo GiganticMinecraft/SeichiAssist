@@ -28,6 +28,7 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.{
 }
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
   MineStackObject,
+  MineStackObjectList,
   MineStackObjectWithAmount
 }
 import com.github.unchama.seichiassist.subsystems.minestack.infrastructure.JdbcMineStackObjectPersistence
@@ -94,6 +95,8 @@ object System {
         mineStackSettingsRepositoryControls.repository
       implicit val _tryIntoMineStack: TryIntoMineStack[F, Player, ItemStack] =
         new TryIntoMineStack[F, Player, ItemStack]
+      implicit val _mineStackObjectList: MineStackObjectList[F, ItemStack] =
+        new BukkitMineStackObjectList[F]()
 
       new System[F, Player, ItemStack] {
         override val api: MineStackAPI[F, Player, ItemStack] =
@@ -158,6 +161,9 @@ object System {
 
             override def tryIntoMineStack: TryIntoMineStack[F, Player, ItemStack] =
               _tryIntoMineStack
+
+            override def mineStackObjectList: MineStackObjectList[F, ItemStack] =
+              _mineStackObjectList
           }
 
         override val commands: Map[String, TabExecutor] = Map(
