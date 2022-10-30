@@ -21,7 +21,7 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-class MineStackObjectList[F[_]: Sync](
+class BukkitMineStackObjectList[F[_]: Sync](
   implicit minecraftMaterial: MinecraftMaterial[Material, ItemStack],
   gachaAPI: GachaAPI[F, ItemStack, Player]
 ) {

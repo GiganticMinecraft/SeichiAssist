@@ -77,7 +77,7 @@ import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.m
 import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaReadApi}
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
-import com.github.unchama.seichiassist.subsystems.minestack.bukkit.MineStackObjectList
+import com.github.unchama.seichiassist.subsystems.minestack.bukkit.BukkitMineStackObjectList
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
   MineStackObject,
   MineStackObjectCategory

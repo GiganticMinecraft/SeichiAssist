@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.subsystems.buildcount.application.actions
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.subsystems.minestack.bukkit.MineStackObjectList
+import com.github.unchama.seichiassist.subsystems.minestack.bukkit.BukkitMineStackObjectList
 import com.github.unchama.util.external.ExternalPlugins
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action

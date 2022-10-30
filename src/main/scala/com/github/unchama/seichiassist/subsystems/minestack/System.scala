@@ -8,7 +8,7 @@ import com.github.unchama.minecraft.bukkit.objects.BukkitMaterial
 import com.github.unchama.minecraft.objects.MinecraftMaterial
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.minestack.application.repository.{MineStackObjectRepositoryDefinition, MineStackSettingsRepositoryDefinition, MineStackUsageHistoryRepositoryDefinitions}
-import com.github.unchama.seichiassist.subsystems.minestack.bukkit.MineStackObjectList
+import com.github.unchama.seichiassist.subsystems.minestack.bukkit.BukkitMineStackObjectList
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{MineStackObject, MineStackObjectWithAmount}
 import com.github.unchama.seichiassist.subsystems.minestack.infrastructure.JdbcMineStackObjectPersistence
 import org.bukkit.Material
@@ -29,7 +29,7 @@ object System {
     : F[System[F, Player, ItemStack]] = {
     implicit val minecraftMaterial: MinecraftMaterial[Material, ItemStack] = new BukkitMaterial
     for {
-      allMineStackObjects <- new MineStackObjectList[F]().getAllMineStackObjects
+      allMineStackObjects <- new BukkitMineStackObjectList[F]().getAllMineStackObjects
       mineStackObjectPersistence =
         new JdbcMineStackObjectPersistence[G, ItemStack](allMineStackObjects)
 

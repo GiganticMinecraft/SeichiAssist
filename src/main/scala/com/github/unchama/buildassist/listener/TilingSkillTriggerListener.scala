@@ -5,7 +5,7 @@ import com.github.unchama.buildassist.{BuildAssist, Util}
 import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.IncrementBuildExpWhenBuiltWithSkill
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.subsystems.minestack.bukkit.MineStackObjectList
+import com.github.unchama.seichiassist.subsystems.minestack.bukkit.BukkitMineStackObjectList
 import org.bukkit.ChatColor.RED
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
