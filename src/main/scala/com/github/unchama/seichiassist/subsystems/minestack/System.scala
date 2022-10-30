@@ -165,6 +165,12 @@ object System {
         )
 
         override val listeners: Seq[Listener] = Seq(new PlayerPickupItemListener[F, G]())
+
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
+          mineStackObjectRepositoryControls,
+          mineStackUsageHistoryRepositoryControls,
+          mineStackSettingsRepositoryControls
+        ).map(_.coerceFinalizationContextTo[F])
       }
 
     }
