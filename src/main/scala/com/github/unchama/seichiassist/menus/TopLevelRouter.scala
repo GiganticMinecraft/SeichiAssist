@@ -34,15 +34,18 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
   FastDiggingSettingsApi
 }
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
+import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
+import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.ranking.api.AssortedRankingApi
 import com.github.unchama.seichiassist.subsystems.ranking.domain.values.{LoginTime, VoteCount}
 import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
 import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 
 trait TopLevelRouter[F[_]] {
 
@@ -72,7 +75,9 @@ object TopLevelRouter {
     homeReadApi: HomeReadAPI[IO],
     enderChestAccessApi: AnywhereEnderChestAPI[IO],
     sharedInventoryAPI: SharedInventoryAPI[IO, Player],
-    gachaTicketAPI: GachaTicketAPI[IO]
+    gachaTicketAPI: GachaTicketAPI[IO],
+    gachaAPI: GachaAPI[IO, ItemStack, Player],
+    mineStackAPI: MineStackAPI[IO, Player, ItemStack]
   ): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     import assortedRankingApi._
 
