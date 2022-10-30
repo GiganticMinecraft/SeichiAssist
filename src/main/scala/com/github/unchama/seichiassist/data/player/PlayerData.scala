@@ -8,7 +8,6 @@ import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiStarLevel
-import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackUsageHistory
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.exp.{ExperienceManager, IExperienceManager}
 import com.github.unchama.seichiassist.util.{RelativeDirection, TimeUtils}
@@ -32,9 +31,6 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
 
   // region session-specific data
   // TODO many properties here might not be right to belong here
-
-  // MineStackの履歴
-  val hisotryData: MineStackUsageHistory = new MineStackUsageHistory()
 
   // 現在座標
   var loc: Option[Location] = None
