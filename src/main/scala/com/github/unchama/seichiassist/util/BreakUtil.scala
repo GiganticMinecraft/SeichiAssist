@@ -340,6 +340,8 @@ object BreakUtil {
     shouldPlayBreakSound: Boolean,
     toMaterial: Material = Material.AIR
   ): IO[Unit] = {
+    import cats.implicits._
+
     for {
       // 非同期実行ではワールドに触れないので必要な情報をすべて抜く
       targetBlocksInformation <- PluginExecutionContexts
@@ -365,8 +367,6 @@ object BreakUtil {
         })
 
       breakResults = {
-        import cats.implicits._
-
         val plainBreakResult = targetBlocksInformation.flatMap(dropItemOnTool(miningTool))
         val drops = plainBreakResult.mapFilter {
           case BlockBreakResult.ItemDrop(itemStack) => Some(itemStack)
@@ -382,16 +382,18 @@ object BreakUtil {
         (ItemStackUtil.amalgamate(drops), silverFishLocations)
       }
 
-      itemsToBeDropped <- IO {
+      itemsToBeDropped <-
         // アイテムのマインスタック自動格納を試みる
         // 格納できなかったらドロップするアイテムとしてリストに入れる
-        breakResults._1.flatMap { itemStack =>
-          if (!tryAddItemIntoMineStack(player, itemStack))
-            Some(itemStack)
-          else
-            None
+        breakResults._1.toList.traverse { itemStack =>
+          SeichiAssist
+            .instance
+            .mineStackSystem
+            .api
+            .tryIntoMineStack
+            .apply(player, itemStack, itemStack.getAmount)
+            .map(if (_) Some(itemStack) else None)
         }
-      }
 
       _ <- IO {
         // 壊した時の音を再生する
@@ -420,7 +422,7 @@ object BreakUtil {
         .onMainThread
         .runAction(SyncIO {
           // アイテムドロップは非同期スレッドで行ってはならない
-          itemsToBeDropped.foreach(dropLocation.getWorld.dropItemNaturally(dropLocation, _))
+          itemsToBeDropped.flatten.foreach(dropLocation.getWorld.dropItemNaturally(dropLocation, _))
           breakResults._2.foreach { location =>
             location.getWorld.spawnEntity(location, EntityType.SILVERFISH)
           }
