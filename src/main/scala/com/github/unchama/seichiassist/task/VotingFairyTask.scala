@@ -4,16 +4,21 @@ import cats.effect.{IO, SyncIO}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.listener.VotingFairyListener
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
+import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.util.TimeUtils
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.{Bukkit, Sound}
 
 object VotingFairyTask {
   // MinuteTaskRunnableから、妖精召喚中のプレイヤーを対象に毎分実行される
-  def run(p: Player)(implicit manaApi: ManaApi[IO, SyncIO, Player]): Unit = {
+  def run(p: Player)(
+    implicit manaApi: ManaApi[IO, SyncIO, Player],
+    mineStackAPI: MineStackAPI[IO, Player, ItemStack]
+  ): Unit = {
     val playermap = SeichiAssist.playermap
     val uuid = p.getUniqueId
     val playerdata = playermap.apply(uuid)

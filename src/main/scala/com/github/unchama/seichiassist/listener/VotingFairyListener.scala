@@ -1,16 +1,17 @@
 package com.github.unchama.seichiassist.listener
 
 import cats.effect.{IO, SyncIO}
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaReadApi}
+import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.TimeUtils
-import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.subsystems.minestack.bukkit.BukkitMineStackObjectList
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
+import org.bukkit.inventory.ItemStack
 
 import java.util.{Calendar, GregorianCalendar}
 import scala.util.Random
@@ -122,7 +123,10 @@ object VotingFairyListener {
     }
   }
 
-  def regeneMana(player: Player)(implicit manaApi: ManaApi[IO, SyncIO, Player]): Unit = {
+  def regeneMana(player: Player)(
+    implicit manaApi: ManaApi[IO, SyncIO, Player],
+    mineStackAPI: MineStackAPI[IO, Player, ItemStack]
+  ): Unit = {
     val playermap = SeichiAssist.playermap
     val uuid = player.getUniqueId
     val playerdata = playermap.apply(uuid)
@@ -180,8 +184,9 @@ object VotingFairyListener {
       }
 
       // りんご所持数で値変更
-      val gachaimoObject = MineStackObjectList.findByName("gachaimo").unsafeRunSync().get
-      val l = playerdata.minestack.getStackedAmountOf(gachaimoObject)
+      val gachaimoObject =
+        mineStackAPI.mineStackObjectList.findByName("gachaimo").unsafeRunSync().get
+      val l = mineStackAPI.getStackedAmountOf(player, gachaimoObject).unsafeRunSync()
       if (m > l) {
         if (l == 0) {
           n /= 2
@@ -205,12 +210,7 @@ object VotingFairyListener {
       manaApi.manaAmount(player).restoreAbsolute(ManaAmount(n)).unsafeRunSync()
 
       // りんごを減らす
-      playerdata
-        .minestack
-        .subtractStackedAmountOf(
-          MineStackObjectList.findByName("gachaimo").unsafeRunSync().get,
-          m
-        )
+      mineStackAPI.subtractStackedAmountOf(player, gachaimoObject, m).unsafeRunAsyncAndForget()
 
       // 減ったりんごの数をplayerdataに加算
       playerdata.p_apple += m

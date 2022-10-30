@@ -714,6 +714,7 @@ class SeichiAssist extends JavaPlugin() {
       val dataRecalculationRoutine = {
         import PluginExecutionContexts._
         implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
+        implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack] = mineStackSystem.api
         PlayerDataRecalculationRoutine()
       }
 
