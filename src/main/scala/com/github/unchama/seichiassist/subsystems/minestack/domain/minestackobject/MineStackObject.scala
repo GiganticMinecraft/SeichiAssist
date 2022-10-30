@@ -1,8 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject
 
+import cats.effect.Sync
 import com.github.unchama.minecraft.objects.MinecraftMaterial
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
-import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaPrize
+import com.github.unchama.seichiassist.subsystems.gacha.domain.{
+  CanBeSignedAsGachaPrize
+}
 
 case class MineStackObject[ItemStack <: Cloneable](
   mineStackObjectName: String,
@@ -15,18 +18,23 @@ case class MineStackObject[ItemStack <: Cloneable](
   def itemStack: ItemStack = _itemStack.clone[ItemStack]
 
   /**
-   * [[GachaPrize]]への変換した後、記名済みの[[ItemStack]]へ変換することを試みます
+   * 記名済みの[[ItemStack]]へ変換することを試みます
    */
-  def tryToSignedItemStack[F[_], Player](
+  def tryToSignedItemStack[F[_]: Sync, Player](
     name: String
-  )(implicit gachaAPI: GachaAPI[F, ItemStack, Player]): Option[ItemStack] = {
+  )(implicit gachaAPI: GachaAPI[F, ItemStack, Player]): F[Option[ItemStack]] = {
     if (
       category != MineStackObjectCategory.GACHA_PRIZES || category == MineStackObjectCategory.BUILTIN_GACHA_PRIZES
-    ) return None
+    ) return Sync[F].pure(None)
 
+    import cats.implicits._
 
-    // TODO ガチャAPIからcanBeSigned..を取得して記名して返す
-    None
+    implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
+      gachaAPI.canBeSignedAsGachaPrize
+
+    for {
+      foundGachaPrize <- gachaAPI.findByItemStack(itemStack)
+    } yield foundGachaPrize.map { gachaPrize => gachaPrize.materializeWithOwnerSignature(name) }
   }
 
 }
