@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.commands
+package com.github.unchama.seichiassist.subsystems.minestack.bukkit
 
 import cats.effect.IO
 import com.github.unchama.contextualexecutor.ContextualExecutor
