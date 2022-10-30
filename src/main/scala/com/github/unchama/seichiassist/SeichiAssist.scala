@@ -645,7 +645,6 @@ class SeichiAssist extends JavaPlugin() {
       new PlayerBlockBreakListener(),
       new PlayerInventoryListener(),
       new EntityListener(),
-      new PlayerPickupItemListener(),
       new PlayerDeathEventListener(),
       new GachaItemListener(),
       new RegionInventoryListener(),
