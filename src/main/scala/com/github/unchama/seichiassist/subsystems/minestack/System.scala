@@ -17,7 +17,10 @@ import com.github.unchama.seichiassist.subsystems.minestack.application.reposito
   MineStackSettingsRepositoryDefinition,
   MineStackUsageHistoryRepositoryDefinitions
 }
-import com.github.unchama.seichiassist.subsystems.minestack.bukkit.BukkitMineStackObjectList
+import com.github.unchama.seichiassist.subsystems.minestack.bukkit.{
+  BukkitMineStackObjectList,
+  MineStackCommand
+}
 import com.github.unchama.seichiassist.subsystems.minestack.domain.TryIntoMineStack
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
   MineStackObject,
@@ -25,6 +28,7 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
 }
 import com.github.unchama.seichiassist.subsystems.minestack.infrastructure.JdbcMineStackObjectPersistence
 import org.bukkit.Material
+import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -82,6 +86,8 @@ object System {
         mineStackObjectRepositoryControls.repository.map(_.mapK(ContextCoercion.asFunctionK))
       val mineStackUsageHistoryRepository = mineStackUsageHistoryRepositoryControls.repository
       val mineStackSettingRepository = mineStackSettingsRepositoryControls.repository
+      implicit val _tryIntoMineStack: TryIntoMineStack[F, Player, ItemStack] =
+        new TryIntoMineStack[F, Player, ItemStack]
 
       new System[F, Player, ItemStack] {
         override val api: MineStackAPI[F, Player, ItemStack] =
@@ -145,8 +151,12 @@ object System {
             } yield currentState
 
             override def tryIntoMineStack: TryIntoMineStack[F, Player, ItemStack] =
-              new TryIntoMineStack[F, Player, ItemStack]
+              _tryIntoMineStack
           }
+
+        override val commands: Map[String, TabExecutor] = Map(
+          "minestack" -> MineStackCommand.executor[F]
+        )
       }
 
     }

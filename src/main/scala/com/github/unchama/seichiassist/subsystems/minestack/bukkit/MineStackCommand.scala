@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.minestack.bukkit
 
-import cats.effect.IO
+import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
+import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.ParserResponse.{failWith, succeedWith}
 import com.github.unchama.contextualexecutor.builder.Parsers
@@ -19,9 +20,9 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 object MineStackCommand {
-  def executor(
+  def executor[F[_]: ConcurrentEffect](
     implicit ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu,
-    tryIntoMineStack: TryIntoMineStack[IO, Player, ItemStack]
+    tryIntoMineStack: TryIntoMineStack[F, Player, ItemStack]
   ): TabExecutor =
     BranchedExecutor(
       Map(
@@ -85,8 +86,8 @@ object MineStackCommand {
 
     import cats.implicits._
 
-    def storeEverythingInInventory(
-      implicit tryIntoMineStack: TryIntoMineStack[IO, Player, ItemStack]
+    def storeEverythingInInventory[F[_]: ConcurrentEffect](
+      implicit tryIntoMineStack: TryIntoMineStack[F, Player, ItemStack]
     ): ContextualExecutor =
       playerCommandBuilder
         .execution { context =>
@@ -97,6 +98,7 @@ object MineStackCommand {
               case (itemStack, index) =>
                 tryIntoMineStack
                   .apply(player, itemStack, itemStack.getAmount)
+                  .toIO
                   .map(isSucceed => if (itemStack != null && isSucceed) Some(index) else None)
             }
             _ <- IO(targetIndexes.foreach(_.foreach(index => inventory.clear(index))))
