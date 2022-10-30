@@ -3,8 +3,12 @@ package com.github.unchama.seichiassist.subsystems.minestack.bukkit
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
+import com.github.unchama.generic.ApplicativeExtra.whenAOrElse
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.subsystems.minestack.domain.{MineStackSettings, TryIntoMineStack}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.{
+  MineStackSettings,
+  TryIntoMineStack
+}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityPickupItemEvent
@@ -30,21 +34,21 @@ class PlayerPickupItemListener[F[_]: ConcurrentEffect](
 
         val program = for {
           currentAutoMineStackState <- mineStackSettingRepository(player).currentState
-          isSucceedTryIntoMineStack <- {
-            if (currentAutoMineStackState)
-              tryIntoMineStack(player, itemStack, itemStack.getAmount)
-            else
-              Sync[F].pure(false)
-          }
-          _ <- Sync[F].delay {
-            event.setCancelled(true)
-            player.playSound(player.getLocation, Sound.ENTITY_ITEM_PICKUP, 1f, 1f)
-            item.remove()
-            if (SeichiAssist.DEBUG) {
-              player.sendMessage(RED.toString + "pick:" + itemStack.toString)
-              player.sendMessage(RED.toString + "pickDurability:" + itemStack.getDurability)
+          isSucceedTryIntoMineStack <- whenAOrElse(currentAutoMineStackState)(
+            tryIntoMineStack(player, itemStack, itemStack.getAmount),
+            false
+          )
+          _ <- Sync[F]
+            .delay {
+              event.setCancelled(true)
+              player.playSound(player.getLocation, Sound.ENTITY_ITEM_PICKUP, 1f, 1f)
+              item.remove()
+              if (SeichiAssist.DEBUG) {
+                player.sendMessage(RED.toString + "pick:" + itemStack.toString)
+                player.sendMessage(RED.toString + "pickDurability:" + itemStack.getDurability)
+              }
             }
-          }.whenA(isSucceedTryIntoMineStack)
+            .whenA(isSucceedTryIntoMineStack)
         } yield ()
 
         program.toIO.unsafeRunAsyncAndForget()
