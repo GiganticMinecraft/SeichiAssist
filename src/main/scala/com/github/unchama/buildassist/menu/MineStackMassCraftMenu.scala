@@ -10,14 +10,19 @@ import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, ReloadingButton}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.menus.{BuildMainMenu, ColorScheme, CommonButtons}
+import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.bukkit.BukkitMineStackObjectList
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
+  MineStackObject,
+  MineStackObjectList
+}
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 
 import java.text.NumberFormat
 import java.util.Locale
@@ -33,7 +38,8 @@ object MineStackMassCraftMenu {
 
   class Environment(
     implicit val canOpenBuildMainMenu: CanOpen[IO, BuildMainMenu.type],
-    val canOpenItself: CanOpen[IO, MineStackMassCraftMenu]
+    val canOpenItself: CanOpen[IO, MineStackMassCraftMenu],
+    val mineStackAPI: MineStackAPI[IO, Player, ItemStack]
   )
 
   case class MassCraftRecipe(
@@ -68,14 +74,18 @@ object MineStackMassCraftMenu {
     ): IO[Button] = {
       import cats.implicits._
 
-      def queryAmountOf(mineStackObj: MineStackObject): IO[Long] = IO {
+      def queryAmountOf(mineStackObj: MineStackObject[ItemStack]): IO[Long] = IO {
         SeichiAssist.playermap(player.getUniqueId).minestack.getStackedAmountOf(mineStackObj)
       }
 
-      def toMineStackObjectChunk(chunk: (MineStackItemId, Int)): (MineStackObject, Int) =
-        chunk.leftMap(id => MineStackObjectList.findByName(id).unsafeRunSync().get)
+      def toMineStackObjectChunk(
+        chunk: (MineStackItemId, Int)
+      ): (MineStackObject[ItemStack], Int) =
+        chunk.leftMap(id => environment.findByName(id).unsafeRunSync().get)
 
-      def enumerateChunkDetails(chunks: NonEmptyList[(MineStackObject, Int)]): String =
+      def enumerateChunkDetails(
+        chunks: NonEmptyList[(MineStackObject[ItemStack], Int)]
+      ): String =
         chunks.map { case (obj, amount) => s"${obj.uiName.get}${amount}個" }.mkString_("+")
 
       val requiredBuildLevel =
@@ -86,7 +96,9 @@ object MineStackMassCraftMenu {
 
       val iconComputation = {
         val title = {
-          def enumerateChunkNames(chunks: NonEmptyList[(MineStackObject, Int)]): String =
+          def enumerateChunkNames(
+            chunks: NonEmptyList[(MineStackObject[ItemStack], Int)]
+          ): String =
             chunks.map(_._1.uiName.get).mkString_("と")
 
           s"$YELLOW$UNDERLINE$BOLD" +
