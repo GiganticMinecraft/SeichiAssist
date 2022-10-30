@@ -7,9 +7,17 @@ import com.github.unchama.generic.{ContextCoercion, ListExtra}
 import com.github.unchama.minecraft.bukkit.objects.BukkitMaterial
 import com.github.unchama.minecraft.objects.MinecraftMaterial
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.minestack.application.repository.{MineStackObjectRepositoryDefinition, MineStackSettingsRepositoryDefinition, MineStackUsageHistoryRepositoryDefinitions}
+import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
+import com.github.unchama.seichiassist.subsystems.minestack.application.repository.{
+  MineStackObjectRepositoryDefinition,
+  MineStackSettingsRepositoryDefinition,
+  MineStackUsageHistoryRepositoryDefinitions
+}
 import com.github.unchama.seichiassist.subsystems.minestack.bukkit.BukkitMineStackObjectList
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{MineStackObject, MineStackObjectWithAmount}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
+  MineStackObject,
+  MineStackObjectWithAmount
+}
 import com.github.unchama.seichiassist.subsystems.minestack.infrastructure.JdbcMineStackObjectPersistence
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -25,8 +33,9 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_]: ConcurrentEffect, G[_]: SyncEffect: ContextCoercion[*[_], F]]
-    : F[System[F, Player, ItemStack]] = {
+  def wired[F[_]: ConcurrentEffect, G[_]: SyncEffect: ContextCoercion[*[_], F]](
+    implicit gachaAPI: GachaAPI[F, ItemStack, Player]
+  ): F[System[F, Player, ItemStack]] = {
     implicit val minecraftMaterial: MinecraftMaterial[Material, ItemStack] = new BukkitMaterial
     for {
       allMineStackObjects <- new BukkitMineStackObjectList[F]().getAllMineStackObjects
