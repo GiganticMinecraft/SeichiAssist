@@ -74,14 +74,15 @@ object MineStackMassCraftMenu {
     ): IO[Button] = {
       import cats.implicits._
 
-      def queryAmountOf(mineStackObj: MineStackObject[ItemStack]): IO[Long] = IO {
-        SeichiAssist.playermap(player.getUniqueId).minestack.getStackedAmountOf(mineStackObj)
-      }
+      def queryAmountOf(mineStackObj: MineStackObject[ItemStack]): IO[Long] =
+        environment.mineStackAPI.getStackedAmountOf(player, mineStackObj)
 
       def toMineStackObjectChunk(
         chunk: (MineStackItemId, Int)
       ): (MineStackObject[ItemStack], Int) =
-        chunk.leftMap(id => environment.findByName(id).unsafeRunSync().get)
+        chunk.leftMap(id =>
+          environment.mineStackAPI.mineStackObjectList.findByName(id).unsafeRunSync().get
+        )
 
       def enumerateChunkDetails(
         chunks: NonEmptyList[(MineStackObject[ItemStack], Int)]
@@ -163,7 +164,10 @@ object MineStackMassCraftMenu {
                   val allIngredientsAvailable =
                     ingredientObjects.forall {
                       case (obj, amount) =>
-                        mineStack.getStackedAmountOf(obj) >= amount
+                        environment
+                          .mineStackAPI
+                          .getStackedAmountOf(player, obj)
+                          .unsafeRunSync() >= amount
                     }
 
                   if (!allIngredientsAvailable)
@@ -172,7 +176,10 @@ object MineStackMassCraftMenu {
                     SyncIO {
                       ingredientObjects.toList.foreach {
                         case (obj, amount) =>
-                          mineStack.subtractStackedAmountOf(obj, amount)
+                          environment
+                            .mineStackAPI
+                            .trySubtractStackedAmountOf(player, obj, amount)
+                            .unsafeRunAsyncAndForget()
                       }
                       productObjects.toList.foreach {
                         case (obj, amount) =>
