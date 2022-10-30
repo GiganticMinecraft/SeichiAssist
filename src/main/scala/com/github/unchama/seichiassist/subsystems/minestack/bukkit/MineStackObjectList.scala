@@ -4,6 +4,7 @@ import cats.effect.Sync
 import cats.effect.concurrent.Ref
 import com.github.unchama.minecraft.objects.MinecraftMaterial
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaprizefactory.bukkit.StaticGachaPrizeFactory
 import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObjectGroup
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject.{
@@ -18,10 +19,12 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
 }
 import com.github.unchama.seichiassist.util.ItemInformation.itemStackContainsOwnerName
 import org.bukkit.Material
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 class MineStackObjectList[F[_]: Sync](
-  implicit minecraftMaterial: MinecraftMaterial[Material, ItemStack]
+  implicit minecraftMaterial: MinecraftMaterial[Material, ItemStack],
+  gachaAPI: GachaAPI[F, ItemStack, Player]
 ) {
 
   private def leftElems[A](elems: A*): List[Either[A, Nothing]] = elems.toList.map(Left.apply)
@@ -598,7 +601,7 @@ class MineStackObjectList[F[_]: Sync](
    * デフォルトでガチャの内容に含まれている景品。
    */
   private val minestackBuiltinGachaPrizes: List[MineStackObjectGroup[ItemStack]] = leftElems(
-    MineStackObjectByItemStack(BUILTIN_GACHA_PRIZES,"gachaimo",None,hasNameLore = true,StaticGachaPrizeFactory.gachaRingo),
+    MineStackObjectByItemStack(BUILTIN_GACHA_PRIZES,"gachaimo",None,hasNameLore = true, gachaAPI.staticGachaPrizeFactory.gachaRingo),
     MineStackObjectByItemStack(BUILTIN_GACHA_PRIZES,"exp_bottle",Some("エンチャントの瓶"),hasNameLore = false,new ItemStack(Material.EXP_BOTTLE,1))
   )
 
