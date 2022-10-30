@@ -3,9 +3,7 @@ package com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobj
 import cats.effect.Sync
 import com.github.unchama.minecraft.objects.MinecraftMaterial
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
-import com.github.unchama.seichiassist.subsystems.gacha.domain.{
-  CanBeSignedAsGachaPrize
-}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
 
 case class MineStackObject[ItemStack <: Cloneable](
   mineStackObjectName: String,

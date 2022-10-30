@@ -7,6 +7,7 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackObjectGroup
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
@@ -24,7 +25,8 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.{Material, Sound}
 
 private[minestack] case class MineStackButtons(player: Player)(
-  implicit mineStackAPI: MineStackAPI[IO, Player, ItemStack]
+  implicit mineStackAPI: MineStackAPI[IO, Player, ItemStack],
+  gachaAPI: GachaAPI[IO, ItemStack, Player]
 ) {
 
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
@@ -180,10 +182,8 @@ private[minestack] case class MineStackButtons(player: Player)(
           grantAmount <- mineStackAPI
             .trySubtractStackedAmountOf(player, mineStackObject, amount)
           soundEffectPitch = if (grantAmount == amount) 1.0f else 0.5f
-          itemStackToGrant = mineStackObject
-            .tryToSignedItemStack(player.getName)
-            .getOrElse(mineStackObject.itemStack)
-            .clone()
+          signedItemStack <- mineStackObject.tryToSignedItemStack[IO, Player](player.getName)
+          itemStackToGrant = signedItemStack.getOrElse(mineStackObject.itemStack)
           _ = itemStackToGrant.setAmount(amount)
         } yield (soundEffectPitch, itemStackToGrant)
       )
