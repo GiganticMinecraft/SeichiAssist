@@ -20,4 +20,11 @@ trait MineStackObjectList[F[_], ItemStack <: Cloneable, Player] {
    */
   def findByName(name: String): F[Option[MineStackObject[ItemStack]]]
 
+  /**
+   * `category`を指定してすべての[[MineStackObjectGroup]]を取得します。
+   */
+  def getAllObjectGroupsInCategory(
+    category: MineStackObjectCategory
+  ): F[List[MineStackObjectGroup[ItemStack]]]
+
 }

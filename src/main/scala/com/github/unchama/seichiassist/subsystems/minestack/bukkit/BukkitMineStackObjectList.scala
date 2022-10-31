@@ -642,7 +642,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
       case Right(group) => List(group.representative) ++ group.coloredVariants
     })
 
-  def getAllObjectGroupsInCategory(
+  override def getAllObjectGroupsInCategory(
     category: MineStackObjectCategory
   ): F[List[MineStackObjectGroup[ItemStack]]] = {
     def categoryOf(group: MineStackObjectGroup[ItemStack]): MineStackObjectCategory = {
