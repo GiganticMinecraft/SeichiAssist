@@ -82,7 +82,7 @@ class HomeCommand[F[
     Map(
       "warp" -> warpExecutor,
       "set" -> setExecutor(),
-      "name" -> nameExecutor,
+      "name" -> nameExecutor(),
       "remove" -> removeExecutor()
     ),
     whenArgInsufficient = Some(printDescriptionExecutor),
