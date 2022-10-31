@@ -9,7 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: yu-iskw/action-sqlfluff@v3
+      - name: Run linter
+        uses: yu-iskw/action-sqlfluff@v3
+        id: lint
         with:
           id: lint
           github_token: ${{ secrets.github_token }}
