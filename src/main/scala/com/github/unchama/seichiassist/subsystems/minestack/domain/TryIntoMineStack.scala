@@ -11,7 +11,7 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
 }
 
 class TryIntoMineStack[F[_]: Sync, Player, ItemStack <: Cloneable](
-  implicit mineStackObjectList: MineStackObjectList[F, ItemStack],
+  implicit mineStackObjectList: MineStackObjectList[F, ItemStack, Player],
   mineStackObjectRepository: KeyedDataRepository[Player, Ref[F, List[
     MineStackObjectWithAmount[ItemStack]
   ]]]
@@ -24,7 +24,7 @@ class TryIntoMineStack[F[_]: Sync, Player, ItemStack <: Cloneable](
    * @return 格納ができたかどうか
    */
   def apply(player: Player, itemStack: ItemStack, amount: Int): F[Boolean] = for {
-    foundMineStackObject <- mineStackObjectList.findByItemStack(itemStack)
+    foundMineStackObject <- mineStackObjectList.findByItemStack(itemStack, player)
     _ <- addStackedAmountOf(player, foundMineStackObject.get, amount)
       .whenA(foundMineStackObject.nonEmpty)
   } yield foundMineStackObject.nonEmpty

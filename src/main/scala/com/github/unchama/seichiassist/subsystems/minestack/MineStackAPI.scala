@@ -70,7 +70,7 @@ trait MineStackReadAPI[F[_], Player, ItemStack <: Cloneable] {
   /**
    * @return [[MineStackObjectList]]を返す
    */
-  def mineStackObjectList: MineStackObjectList[F, ItemStack]
+  def mineStackObjectList: MineStackObjectList[F, ItemStack, Player]
 }
 
 object MineStackReadAPI {

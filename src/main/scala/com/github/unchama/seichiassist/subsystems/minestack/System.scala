@@ -104,7 +104,7 @@ object System {
             override def subtractStackedAmountOf(
               player: Player,
               mineStackObject: MineStackObject[ItemStack],
-              amount: Int
+              amount: Long
             ): F[Int] = {
               for {
                 oldMineStackObjects <- mineStackObjectRepository(player).get
@@ -174,7 +174,7 @@ object System {
             override def tryIntoMineStack: TryIntoMineStack[F, Player, ItemStack] =
               _tryIntoMineStack
 
-            override def mineStackObjectList: MineStackObjectList[F, ItemStack] =
+            override def mineStackObjectList: MineStackObjectList[F, ItemStack, Player] =
               _mineStackObjectList
           }
 

@@ -10,7 +10,10 @@ trait MineStackObjectList[F[_], ItemStack <: Cloneable, Player] {
   /**
    * @return [[ItemStack]]から[[MineStackObject]]を取得します
    */
-  def findByItemStack(itemStack: ItemStack, player: Player): F[Option[MineStackObject[ItemStack]]]
+  def findByItemStack(
+    itemStack: ItemStack,
+    player: Player
+  ): F[Option[MineStackObject[ItemStack]]]
 
   /**
    * @return `name`から[[MineStackObject]]を取得します
