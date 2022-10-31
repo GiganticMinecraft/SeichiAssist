@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - src/main/resources/db/migration/**/*.sql
+      - .github/workflows/lint_sql.yml
 jobs:
   lint:
     runs-on: ubuntu-latest
