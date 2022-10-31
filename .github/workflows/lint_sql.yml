@@ -1,0 +1,15 @@
+name: Lint SQL files
+on:
+  pull_request:
+    paths:
+      - src/main/resources/db/migration/**/*.sql
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+      - name: Install SQLFluff
+        run: pip install sqlfluff
+      - name: Lint models
+        run: sqlfluff lint src/main/resources/db/migration --dialect mysql
