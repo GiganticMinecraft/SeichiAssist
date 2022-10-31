@@ -1,14 +1,16 @@
 package com.github.unchama.seichiassist.menus.home
 
 import cats.effect.{ConcurrentEffect, IO}
-import com.github.unchama.itemstackbuilder.IconItemStackBuilder
+import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
-import com.github.unchama.seichiassist.ManagedWorld
+import com.github.unchama.seichiassist.{ManagedWorld, SkullOwners}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
+import com.github.unchama.seichiassist.menus.CommonButtons
+import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
 import com.github.unchama.seichiassist.subsystems.home.domain.{Home, HomeId}
 import com.github.unchama.targetedeffect._
@@ -28,18 +30,22 @@ object HomeMenu {
 
   class Environment(
     implicit val ioCanOpenConfirmationMenu: IO CanOpen HomeChangeConfirmationMenu,
+    implicit val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
+    implicit val ioCanOpenHome: IO CanOpen HomeMenu,
     val ioCanOpenHomeRemoveConfirmationMenu: IO CanOpen HomeRemoveConfirmationMenu,
     val ioCanReadHome: HomeReadAPI[IO]
   )
 }
 case class HomeMenu(pageIndex: Int = 0) extends Menu {
 
+  private val pageIndexMax = 0 max (HomeId.maxNumber - 1) / 9
   override type Environment = HomeMenu.Environment
 
   /**
    * メニューのサイズとタイトルに関する情報
    */
-  override val frame: MenuFrame = MenuFrame(4.chestRows, s"$DARK_PURPLE${BOLD}ホームメニュー")
+  override val frame: MenuFrame =
+    MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}ホームメニュー ${pageIndex + 1}/${pageIndexMax + 1}")
 
   /**
    * @return
@@ -56,9 +62,9 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
     import buttonComputations._
 
     val homePointPart = for {
-      homeNumber <- 1 to Home.maxHomePerPlayer
+      homeNumber <- 1 + (9 * pageIndex) to HomeId.maxNumber - 9 * (pageIndexMax - pageIndex)
     } yield {
-      val column = refineV[Interval.ClosedOpen[0, 9]](homeNumber - 1)
+      val column = refineV[Interval.ClosedOpen[0, 9]](homeNumber - 9 * pageIndex - 1)
       column match {
         case Right(value) =>
           Map(
@@ -70,12 +76,41 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
       }
     }
 
+    import environment._
+    // 5スロット目のページ遷移メニュー定義
+    val paginationPartMap = {
+      val stickButtonMap = Map(ChestSlotRef(4, 0) -> CommonButtons.openStickMenu)
+      val prevButtonMap = {
+        if (pageIndex - 1 >= 0)
+          Map(
+            ChestSlotRef(4, 7) -> CommonButtons.transferButton(
+              new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
+              s"${pageIndex}ページ目へ",
+              HomeMenu(pageIndex - 1)
+            )
+          )
+        else Map()
+      }
+      val nextButtonMap = {
+        if (pageIndex + 1 <= pageIndexMax)
+          Map(
+            ChestSlotRef(4, 8) -> CommonButtons.transferButton(
+              new SkullItemStackBuilder(SkullOwners.MHF_ArrowRight),
+              s"${pageIndex + 2}ページ目へ",
+              HomeMenu(pageIndex + 1)
+            )
+          )
+        else Map()
+      }
+      stickButtonMap ++ prevButtonMap ++ nextButtonMap
+    }
+
     import cats.implicits._
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
     val dynamicPartComputation = (for {
-      homeNumber <- 1 to Home.maxHomePerPlayer
+      homeNumber <- 1 + (9 * pageIndex) to HomeId.maxNumber - 9 * (pageIndexMax - pageIndex)
     } yield {
-      val column = refineV[Interval.ClosedOpen[0, 9]](homeNumber - 1)
+      val column = refineV[Interval.ClosedOpen[0, 9]](homeNumber - 9 * pageIndex - 1)
       implicit val ioCanReadHome: HomeReadAPI[IO] = environment.ioCanReadHome
       column match {
         case Right(value) => ChestSlotRef(1, value) -> setHomeNameButton[IO](homeNumber)
@@ -85,7 +120,8 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
 
     for {
       dynamicPart <- dynamicPartComputation
-    } yield MenuSlotLayout(homePointPart.flatten ++ dynamicPart.toMap: _*)
+      paginationPart = paginationPartMap
+    } yield MenuSlotLayout(homePointPart.flatten ++ dynamicPart.toMap ++ paginationPart: _*)
   }
 
   private object ConstantButtons {
