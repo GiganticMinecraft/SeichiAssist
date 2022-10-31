@@ -97,7 +97,11 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
 
     for {
       categoryGroupCount <-
-        getAllObjectGroupsInCategory(category).map(_.length)
+        environment
+          .mineStackAPI
+          .mineStackObjectList
+          .getAllObjectGroupsInCategory(category)
+          .map(_.length)
     } yield {
       val totalNumberOfPages = Math.ceil(categoryGroupCount / 45.0).toInt
 
@@ -125,7 +129,7 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
       List(ChestSlotRef(5, 4) -> computeAutoMineStackToggleButton).traverse(_.sequence)
 
     for {
-      categoryGroups <- getAllObjectGroupsInCategory(category)
+      categoryGroups <- mineStackAPI.mineStackObjectList.getAllObjectGroupsInCategory(category)
       totalNumberOfPages = Math.ceil(categoryGroups.length / 45.0).toInt
       categorizedItemSection <-
         categoryGroups // カテゴリ内のMineStackアイテム取り出しボタンを含むセクションの計算
