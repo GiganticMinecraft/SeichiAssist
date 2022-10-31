@@ -3,12 +3,14 @@ package com.github.unchama.seichiassist.subsystems.minestack.bukkit
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
 import com.github.unchama.minecraft.objects.MinecraftMaterial
-import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject.{MineStackObjectByItemStack, MineStackObjectByMaterial}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject.{
+  MineStackObjectByItemStack,
+  MineStackObjectByMaterial
+}
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory._
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{MineStackObject, MineStackObjectCategory, MineStackObjectGroup, MineStackObjectList, MineStackObjectWithColorVariants}
-import com.github.unchama.seichiassist.util.ItemInformation.itemStackContainsOwnerName
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject._
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -16,7 +18,7 @@ import org.bukkit.inventory.ItemStack
 class BukkitMineStackObjectList[F[_]: Sync](
   implicit minecraftMaterial: MinecraftMaterial[Material, ItemStack],
   gachaAPI: GachaAPI[F, ItemStack, Player]
-) extends MineStackObjectList[F, ItemStack] {
+) extends MineStackObjectList[F, ItemStack, Player] {
 
   private def leftElems[A](elems: A*): List[Either[A, Nothing]] = elems.toList.map(Left.apply)
   private def rightElems[B](elems: B*): List[Either[Nothing, B]] = elems.toList.map(Right.apply)
@@ -634,11 +636,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     }
   }
 
-  /**
-   * すべてのMineStackObjectを返す
-   * 可変であるガチャ景品リストに依存しているため、定数ではない
-   */
-  def getAllMineStackObjects: F[List[MineStackObject[ItemStack]]] =
+  override def allMineStackObjects: F[Vector[MineStackObject[ItemStack]]] =
     allMineStackGroups.map(_.flatMap {
       case Left(mineStackObject: MineStackObject[ItemStack]) => List(mineStackObject)
       case Right(group) => List(group.representative) ++ group.coloredVariants
@@ -656,69 +654,24 @@ class BukkitMineStackObjectList[F[_]: Sync](
     allMineStackGroups.map(_.filter { group => categoryOf(group) == category })
   }
 
-  /**
-   * @param itemStack 検索対象のItemStack
-   * @param playerName 検索を行うプレイヤーの名前
-   * @return itemStackに対応するMineStackObjectのOption
-   */
-  def findByItemStack(
+  override def findByItemStack(
     itemStack: ItemStack,
-    playerName: String
-  ): F[Option[MineStackObject[ItemStack]]] = {
-    getAllMineStackObjects.map {
-      _.find { mineStackObj =>
-        val material = itemStack.getType
-        val isSameItem = material == mineStackObj.itemStack.getType && itemStack
-          .getDurability
-          .toInt == mineStackObj.durability
-        if (isSameItem) {
-          val hasMineStackObjLore = mineStackObj.hasNameLore
-          val hasItemStackLore = itemStack.getItemMeta.hasLore
-          val hasItemStackDisplayName = itemStack.getItemMeta.hasDisplayName
-          val itemNotInfoExists =
-            !hasMineStackObjLore && !hasItemStackLore && !hasItemStackDisplayName
-          val itemInfoExists =
-            hasMineStackObjLore && hasItemStackLore && hasItemStackDisplayName
-          if (itemNotInfoExists) {
-            true
-          } else if (itemInfoExists) {
-            if (itemStack.isSimilar(StaticGachaPrizeFactory.gachaRingo)) {
-              true
-            } else {
-              // ガチャ品
-              (for {
-                gachaData <- SeichiAssist
-                  .msgachadatalist
-                  .find(_.itemStack.isSimilar(mineStackObj.itemStack))
-              } yield {
-                // 名前が記入されているはずのアイテムで名前がなければ
-                if (
-                  gachaData.probability < 0.1 && !itemStackContainsOwnerName(
-                    itemStack,
-                    playerName
-                  )
-                ) {
-                  false
-                } else {
-                  gachaData.itemStackEquals(itemStack)
-                }
-              }).getOrElse(false)
-            }
-          } else {
-            false
-          }
-        } else {
-          false
-        }
-      }
+    player: Player
+  ): F[Option[MineStackObject[ItemStack]]] = for {
+    foundGachaPrizeOpt <- gachaAPI.findByItemStack(itemStack)
+    isGachaPrize = foundGachaPrizeOpt.nonEmpty
+    mineStackObjects <- allMineStackObjects
+  } yield {
+    val targetItemStack = if (isGachaPrize && foundGachaPrizeOpt.get.signOwner) {
+      implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
+        gachaAPI.canBeSignedAsGachaPrize
+      foundGachaPrizeOpt.get.materializeWithOwnerSignature(player.getName)
+    } else {
+      itemStack
     }
+    mineStackObjects.find(_.itemStack.isSimilar(targetItemStack))
   }
 
-  /**
-   * 指定した名前のマインスタックオブジェクトを返す
-   * @param name internal name
-   * @return Some if the associated object was found, otherwise None
-   */
-  def findByName(name: String): F[Option[MineStackObject[ItemStack]]] =
-    getAllMineStackObjects.map(_.find(_.mineStackObjectName == name))
+  override def findByName(name: String): F[Option[MineStackObject[ItemStack]]] =
+    allMineStackObjects.map(_.find(_.mineStackObjectName == name))
 }

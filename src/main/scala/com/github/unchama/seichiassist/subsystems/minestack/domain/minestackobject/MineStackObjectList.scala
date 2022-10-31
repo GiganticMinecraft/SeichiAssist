@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject
 
-trait MineStackObjectList[F[_], ItemStack <: Cloneable] {
+trait MineStackObjectList[F[_], ItemStack <: Cloneable, Player] {
 
   /**
    * @return [[MineStackObject]]をすべて返します
@@ -10,7 +10,7 @@ trait MineStackObjectList[F[_], ItemStack <: Cloneable] {
   /**
    * @return [[ItemStack]]から[[MineStackObject]]を取得します
    */
-  def findByItemStack(itemStack: ItemStack): F[Option[MineStackObject[ItemStack]]]
+  def findByItemStack(itemStack: ItemStack, player: Player): F[Option[MineStackObject[ItemStack]]]
 
   /**
    * @return `name`から[[MineStackObject]]を取得します
