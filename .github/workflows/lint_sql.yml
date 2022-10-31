@@ -13,7 +13,6 @@ jobs:
         uses: yu-iskw/action-sqlfluff@v3
         id: lint
         with:
-          id: lint
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-review
           sqlfluff_command: lint
