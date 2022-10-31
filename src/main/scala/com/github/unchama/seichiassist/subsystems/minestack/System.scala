@@ -52,9 +52,11 @@ object System {
     implicit gachaAPI: GachaAPI[F, ItemStack, Player]
   ): F[System[F, Player, ItemStack]] = {
     implicit val minecraftMaterial: MinecraftMaterial[Material, ItemStack] = new BukkitMaterial
+    implicit val _mineStackObjectList: MineStackObjectList[F, ItemStack, Player] =
+      new BukkitMineStackObjectList[F]()
 
     for {
-      allMineStackObjects <- new BukkitMineStackObjectList[F]().getAllMineStackObjects
+      allMineStackObjects <- _mineStackObjectList.allMineStackObjects
       mineStackObjectPersistence =
         new JdbcMineStackObjectPersistence[G, ItemStack](allMineStackObjects)
 
@@ -95,8 +97,6 @@ object System {
         mineStackSettingsRepositoryControls.repository
       implicit val _tryIntoMineStack: TryIntoMineStack[F, Player, ItemStack] =
         new TryIntoMineStack[F, Player, ItemStack]
-      implicit val _mineStackObjectList: MineStackObjectList[F, ItemStack] =
-        new BukkitMineStackObjectList[F]()
 
       new System[F, Player, ItemStack] {
         override val api: MineStackAPI[F, Player, ItemStack] =
