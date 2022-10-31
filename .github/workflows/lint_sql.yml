@@ -15,5 +15,6 @@ jobs:
           reporter: github-pr-review
           sqlfluff_command: lint
           dialect: mysql
+          fail_on_error: true
           config: ./.sqlfluff
           paths: ./src/main/resources/db/migration
