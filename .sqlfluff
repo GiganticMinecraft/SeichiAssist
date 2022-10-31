@@ -1,4 +1,5 @@
 [sqlfluff]
+rules = core
 # 「インデントと空行のエラーはstyle guideが存在しない現状ただただうざいだけなので黙らせたほうが良さそう」
 # https://github.com/GiganticMinecraft/SeichiAssist/pulls#issuecomment-1297019121
 exclude_rules = L003, L009, L016
