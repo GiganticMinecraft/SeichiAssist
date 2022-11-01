@@ -17,7 +17,7 @@ case class Home(name: Option[String], location: HomeLocation)
 object Home {
 
   /**
-   * プレイヤーが持つことができるホームの最大個数
+   * プレイヤーが初期状態で持つことができるホームポイントの個数
    */
-  val maxHomePerPlayer: 9 = 9
+  val initialHomePerPlayer: 10 = 10
 }

@@ -75,7 +75,7 @@ class HomeCommand[F[
     for {
       seichiAmount <- ContextCoercion(breakCountReadAPI.seichiAmountDataRepository(player).read)
       buildAmount <- ContextCoercion(buildCountReadAPI.playerBuildAmountRepository(player).read)
-    } yield Home.maxHomePerPlayer + HomeId.maxNumberByPlayerOf(seichiAmount, buildAmount)
+    } yield Home.initialHomePerPlayer + HomeId.maxNumberByPlayerOf(seichiAmount, buildAmount)
   }
 
   def executor: TabExecutor = BranchedExecutor(
