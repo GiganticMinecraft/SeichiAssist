@@ -108,7 +108,7 @@ object System {
               player: Player,
               mineStackObject: MineStackObject[ItemStack],
               amount: Long
-            ): F[Int] = {
+            ): F[Long] = {
               for {
                 oldMineStackObjects <- mineStackObjectRepository(player).get
                 updatedMineStackObjects <- mineStackObjectRepository(player).updateAndGet {
@@ -124,7 +124,7 @@ object System {
                   {
                     case Some((oldMineStackObject, updatedMineStackObject)) =>
                       Math.abs(oldMineStackObject.amount - updatedMineStackObject.amount)
-                    case None => 0L
+                    case None => 0
                   }
                 )
               }

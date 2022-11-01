@@ -24,7 +24,7 @@ trait MineStackWriteAPI[F[_], Player, ItemStack <: Cloneable] {
     player: Player,
     mineStackObject: MineStackObject[ItemStack],
     amount: Long
-  ): F[Int]
+  ): F[Long]
 
   /**
    * @return [[Player]]のMineStackUsageHistoryに[[MineStackObject]]を追加する
