@@ -95,12 +95,13 @@ class HomeCommand[F[
           _ <- MessageEffectF[F](s"ホームポイント${homeId}は現在のレベルでは使用できません")
             .apply(player)
             .whenA(!isHomeAvailable)
-          _ <- {
+          _ <-
             NonServerThreadContextShift[F].shift >> HomeWriteAPI[F].remove(
               player.getUniqueId,
               homeId
-            ) >> MessageEffectF[F](s"ホームポイント${homeId}を削除しました。").apply(player)
-          }.whenA(isHomeAvailable)
+            ) >> MessageEffectF[F](s"ホームポイント${homeId}を削除しました。")
+              .apply(player)
+              .whenA(isHomeAvailable)
         } yield TargetedEffect.emptyEffect
 
         eff.toIO
