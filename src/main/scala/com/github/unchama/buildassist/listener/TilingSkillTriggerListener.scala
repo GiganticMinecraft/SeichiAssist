@@ -17,10 +17,9 @@ import org.bukkit.{Location, Material}
 import scala.util.chaining._
 import scala.util.control.Breaks
 
-class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[_]: IncrementBuildExpWhenBuiltWithSkill[
-  *[_],
-  Player
-]: SyncEffect](
+class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[
+  _
+]: IncrementBuildExpWhenBuiltWithSkill[*[_], Player]: SyncEffect](
   implicit mineStackAPI: MineStackAPI[G, Player, ItemStack]
 ) extends Listener {
 
@@ -188,7 +187,10 @@ class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[_]: IncrementBuildExp
               minestackObjectToUse match {
                 case Some(mineStackObject) =>
                   if (
-                    mineStackAPI.getStackedAmountOf(player, mineStackObject).toIO.unsafeRunSync() > 0
+                    mineStackAPI
+                      .getStackedAmountOf(player, mineStackObject)
+                      .toIO
+                      .unsafeRunSync() > 0
                   ) {
                     mineStackAPI.subtractStackedAmountOf(player, mineStackObject, 1)
 

@@ -9,7 +9,11 @@ import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, a
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{MineStackObject, MineStackObjectGroup, MineStackObjectWithColorVariants}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
+  MineStackObject,
+  MineStackObjectGroup,
+  MineStackObjectWithColorVariants
+}
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
 import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
@@ -175,8 +179,7 @@ private[minestack] case class MineStackButtons(player: Player)(
     for {
       pair <- Kleisli((player: Player) =>
         for {
-          grantAmount <- mineStackAPI
-            .subtractStackedAmountOf(player, mineStackObject, amount)
+          grantAmount <- mineStackAPI.subtractStackedAmountOf(player, mineStackObject, amount)
           soundEffectPitch = if (grantAmount == amount) 1.0f else 0.5f
           signedItemStack <- mineStackObject.tryToSignedItemStack[IO, Player](player.getName)
           itemStackToGrant = signedItemStack.getOrElse(mineStackObject.itemStack)

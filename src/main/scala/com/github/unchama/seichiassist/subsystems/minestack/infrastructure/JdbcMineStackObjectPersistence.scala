@@ -11,30 +11,32 @@ import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 import java.util.UUID
 import scala.collection.IndexedSeq.iterableFactory
 
-class JdbcMineStackObjectPersistence[F[_]: Sync, ItemStack](allMineStackObjects: Vector[MineStackObject[ItemStack]])
-    extends MineStackObjectPersistence[F, ItemStack] {
+class JdbcMineStackObjectPersistence[F[_]: Sync, ItemStack](
+  allMineStackObjects: Vector[MineStackObject[ItemStack]]
+) extends MineStackObjectPersistence[F, ItemStack] {
 
-  override def read(key: UUID): F[Option[List[MineStackObjectWithAmount[ItemStack]]]] = Sync[F].delay {
-    val mineStackObjectsWithAmount = DB.readOnly { implicit session =>
-      sql"SELECT object_name, amount FROM mine_stack WHERE player_uuid = ${key.toString}"
-        .map { rs =>
-          val objectName = rs.string("object_name")
-          val amount = rs.long("amount")
-          allMineStackObjects.find(_.mineStackObjectName == objectName) match {
-            case Some(mineStackObject) =>
-              Some(MineStackObjectWithAmount(mineStackObject, amount))
-            case None =>
-              None
+  override def read(key: UUID): F[Option[List[MineStackObjectWithAmount[ItemStack]]]] =
+    Sync[F].delay {
+      val mineStackObjectsWithAmount = DB.readOnly { implicit session =>
+        sql"SELECT object_name, amount FROM mine_stack WHERE player_uuid = ${key.toString}"
+          .map { rs =>
+            val objectName = rs.string("object_name")
+            val amount = rs.long("amount")
+            allMineStackObjects.find(_.mineStackObjectName == objectName) match {
+              case Some(mineStackObject) =>
+                Some(MineStackObjectWithAmount(mineStackObject, amount))
+              case None =>
+                None
+            }
           }
-        }
-        .toList()
-        .apply()
-        .filterNot(_.isEmpty)
-        .map(_.get)
-    }
+          .toList()
+          .apply()
+          .filterNot(_.isEmpty)
+          .map(_.get)
+      }
 
-    Some(mineStackObjectsWithAmount)
-  }
+      Some(mineStackObjectsWithAmount)
+    }
 
   override def write(key: UUID, value: List[MineStackObjectWithAmount[ItemStack]]): F[Unit] =
     Sync[F].delay {

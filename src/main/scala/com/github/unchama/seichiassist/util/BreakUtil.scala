@@ -422,7 +422,9 @@ object BreakUtil {
         .onMainThread
         .runAction(SyncIO {
           // アイテムドロップは非同期スレッドで行ってはならない
-          itemsToBeDropped.flatten.foreach(dropLocation.getWorld.dropItemNaturally(dropLocation, _))
+          itemsToBeDropped
+            .flatten
+            .foreach(dropLocation.getWorld.dropItemNaturally(dropLocation, _))
           breakResults._2.foreach { location =>
             location.getWorld.spawnEntity(location, EntityType.SILVERFISH)
           }

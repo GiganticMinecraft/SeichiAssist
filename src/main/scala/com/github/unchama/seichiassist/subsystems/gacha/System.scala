@@ -10,14 +10,32 @@ import com.github.unchama.minecraft.bukkit.algebra.BukkitItemStackSerializeAndDe
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.BukkitItemStackCanBeSignedAsGachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.{BukkitDrawGacha, BukkitGrantGachaPrize}
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.{
+  BukkitDrawGacha,
+  BukkitGrantGachaPrize
+}
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.command.GachaCommand
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.BukkitStaticGachaPrizeFactory
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.listeners.PlayerPullGachaListener
-import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent.{GachaEvent, GachaEventName, GachaEventPersistence}
-import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{GachaPrize, GachaPrizeId}
-import com.github.unchama.seichiassist.subsystems.gacha.domain.{CanBeSignedAsGachaPrize, GachaPrizeListPersistence, LotteryOfGachaItems, StaticGachaPrizeFactory}
-import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.{JdbcGachaEventPersistence, JdbcGachaPrizeListPersistence}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent.{
+  GachaEvent,
+  GachaEventName,
+  GachaEventPersistence
+}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{
+  GachaPrize,
+  GachaPrizeId
+}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.{
+  CanBeSignedAsGachaPrize,
+  GachaPrizeListPersistence,
+  LotteryOfGachaItems,
+  StaticGachaPrizeFactory
+}
+import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.{
+  JdbcGachaEventPersistence,
+  JdbcGachaPrizeListPersistence
+}
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketFromAdminTeamRepository
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.infrastructure.JdbcGachaTicketFromAdminTeamRepository

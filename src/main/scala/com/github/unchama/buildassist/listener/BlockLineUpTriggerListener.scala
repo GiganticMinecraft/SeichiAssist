@@ -206,7 +206,9 @@ class BlockLineUpTriggerListener[
         val mineStackAmount = mineStackAPI.getStackedAmountOf(player, obj).unsafeRunSync()
         val consumptionFromMineStack = Math.min(placedBlockCount.toLong, mineStackAmount)
 
-        mineStackAPI.subtractStackedAmountOf(player, obj, consumptionFromMineStack).unsafeRunSync()
+        mineStackAPI
+          .subtractStackedAmountOf(player, obj, consumptionFromMineStack)
+          .unsafeRunSync()
 
         placedBlockCount - consumptionFromMineStack.toInt
       case _ => placedBlockCount

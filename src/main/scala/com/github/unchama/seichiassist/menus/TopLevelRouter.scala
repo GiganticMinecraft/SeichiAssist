@@ -7,10 +7,22 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.menus.HomeMenu.ConfirmationMenuEnvironment
 import com.github.unchama.seichiassist.menus.achievement.group.AchievementGroupMenu
-import com.github.unchama.seichiassist.menus.achievement.{AchievementCategoryMenu, AchievementMenu}
-import com.github.unchama.seichiassist.menus.minestack.{CategorizedMineStackMenu, MineStackMainMenu, MineStackSelectItemColorMenu}
+import com.github.unchama.seichiassist.menus.achievement.{
+  AchievementCategoryMenu,
+  AchievementMenu
+}
+import com.github.unchama.seichiassist.menus.minestack.{
+  CategorizedMineStackMenu,
+  MineStackMainMenu,
+  MineStackSelectItemColorMenu
+}
 import com.github.unchama.seichiassist.menus.ranking.{RankingMenu, RankingRootMenu}
-import com.github.unchama.seichiassist.menus.skill.{ActiveSkillEffectMenu, ActiveSkillMenu, PassiveSkillMenu, PremiumPointTransactionHistoryMenu}
+import com.github.unchama.seichiassist.menus.skill.{
+  ActiveSkillEffectMenu,
+  ActiveSkillMenu,
+  PassiveSkillMenu,
+  PremiumPointTransactionHistoryMenu
+}
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, SecondPage}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData

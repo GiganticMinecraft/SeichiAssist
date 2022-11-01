@@ -25,7 +25,10 @@ import java.util.Locale
 
 object MineStackMassCraftMenu {
 
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, onMainThread}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
+    layoutPreparationContext,
+    onMainThread
+  }
 
   type MineStackItemId = String
 
