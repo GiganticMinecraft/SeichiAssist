@@ -155,12 +155,13 @@ class HomeCommand[F[
           _ <- MessageEffectF[F](s"ホームポイント${homeId}は現在のレベルでは使用できません")
             .apply(player)
             .whenA(!canUseHome)
-          _ <- {
+          _ <-
             NonServerThreadContextShift[F].shift >> HomeWriteAPI[F].upsertLocation(
               player.getUniqueId,
               homeId
-            )(homeLocation) >> MessageEffectF[F](s"現在位置をホームポイント${homeId}に設定しました").apply(player)
-          }.whenA(canUseHome)
+            )(homeLocation) >> MessageEffectF[F](s"現在位置をホームポイント${homeId}に設定しました")
+              .apply(player)
+              .whenA(canUseHome)
         } yield TargetedEffect.emptyEffect
 
         eff.toIO
