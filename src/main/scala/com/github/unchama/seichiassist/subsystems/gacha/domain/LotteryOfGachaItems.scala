@@ -46,7 +46,8 @@ class LotteryOfGachaItems[F[_]: Sync, ItemStack](
         staticGachaPrizeFactory.gachaRingo,
         GachaProbability(1.0),
         signOwner = false,
-        GachaPrizeId(0)
+        GachaPrizeId(0),
+        None
       )
     } else {
       val prizeAtHead = gachaPrizes.head

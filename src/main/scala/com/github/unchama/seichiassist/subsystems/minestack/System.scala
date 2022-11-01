@@ -124,7 +124,7 @@ object System {
                   {
                     case Some((oldMineStackObject, updatedMineStackObject)) =>
                       Math.abs(oldMineStackObject.amount - updatedMineStackObject.amount)
-                    case None => 0
+                    case None => 0L
                   }
                 )
               }
@@ -148,7 +148,7 @@ object System {
             ): F[Long] = for {
               mineStackObjects <- mineStackObjectRepository(player).get
             } yield {
-              mineStackObjects.find(_.mineStackObject == mineStackObject).getOrElse(0)
+              mineStackObjects.find(_.mineStackObject == mineStackObject).getOrElse(0L)
             }
 
             override def getUsageHistory(player: Player): Vector[MineStackObject[ItemStack]] =
