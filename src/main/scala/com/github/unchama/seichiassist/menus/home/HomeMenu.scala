@@ -21,11 +21,6 @@ import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
 
-/**
- * ホームメニュー
- *
- * Created by karayuu on 2019/12/14
- */
 object HomeMenu {
 
   class Environment(
