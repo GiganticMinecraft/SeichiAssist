@@ -62,15 +62,15 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
       homeNumber <- 1 + (9 * pageIndex) to HomeId.maxNumber - 9 * (pageIndexMax - pageIndex)
     } yield {
       val column = refineV[Interval.ClosedOpen[0, 9]](homeNumber - 9 * pageIndex - 1)
-      column match {
-        case Right(value) =>
+      column.fold(
+        _ => throw new RuntimeException("This branch should not be reached."),
+        value =>
           Map(
             ChestSlotRef(0, value) -> ConstantButtons.warpToHomePointButton(homeNumber),
             ChestSlotRef(2, value) -> ConstantButtons.setHomeButton(homeNumber),
             ChestSlotRef(3, value) -> ConstantButtons.removeHomeButton(homeNumber)
           )
-        case Left(_) => throw new RuntimeException("This branch should not be reached.")
-      }
+      )
     }
 
     import environment._
@@ -107,10 +107,10 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
       homeNumber <- 1 + (9 * pageIndex) to HomeId.maxNumber - 9 * (pageIndexMax - pageIndex)
     } yield {
       val column = refineV[Interval.ClosedOpen[0, 9]](homeNumber - 9 * pageIndex - 1)
-      column match {
-        case Right(value) => ChestSlotRef(1, value) -> setHomeNameButton[IO](homeNumber)
-        case Left(_)      => throw new RuntimeException("This branch should not be reached.")
-      }
+      column.fold(
+        _ => throw new RuntimeException("This branch should not be reached."),
+        value => ChestSlotRef(1, value) -> setHomeNameButton[IO](homeNumber)
+      )
     }.sequence).toList.sequence
 
     for {
@@ -197,32 +197,27 @@ case class HomeMenuButtonComputations(player: Player) {
     val program = for {
       homeOpt <- HomeReadAPI[F].get(player.getUniqueId, homeId)
     } yield {
-      val lore = homeOpt match {
-        case None => List(s"${GRAY}ホームポイント$homeId", s"${GRAY}ポイント未設定")
-        case Some(Home(optionName, location)) =>
-          val worldName =
-            ManagedWorld
-              .fromName(location.worldName)
-              .map(_.japaneseName)
-              .getOrElse(location.worldName)
+      val lore = homeOpt.fold(List(s"${GRAY}ホームポイント$homeId", s"${GRAY}ポイント未設定"))(home => {
+        val location = home.location
+        val optionName = home.name
+        val worldName =
+          ManagedWorld
+            .fromName(location.worldName)
+            .map(_.japaneseName)
+            .getOrElse(location.worldName)
 
-          val nameStatus = optionName match {
-            case Some(name) =>
-              List(s"${GRAY}ホームポイント${homeId}は", s"$GRAY$name", s"${GRAY}と名付けられています")
-            case None => List(s"${GRAY}ホームポイント${homeId}は", s"${GRAY}名前が未設定です")
-          }
-
-          val commandInfo = List(
-            s"$DARK_RED${UNDERLINE}クリックで名称変更",
-            s"${DARK_GRAY}command->[/home name $homeId]"
+        val nameStatus =
+          optionName.fold(List(s"${GRAY}ホームポイント${homeId}は", s"${GRAY}名前が未設定です"))(name =>
+            List(s"${GRAY}ホームポイント${homeId}は", s"$GRAY$name", s"${GRAY}と名付けられています")
           )
 
-          val coordinates = List(s"$GRAY$worldName x:${Math.floor(location.x)} y:${Math
-              .floor(location.y)} z:${Math.floor(location.z)}")
+        val commandInfo =
+          List(s"$DARK_RED${UNDERLINE}クリックで名称変更", s"${DARK_GRAY}command->[/home name $homeId]")
 
-          nameStatus ++ commandInfo ++ coordinates
-      }
-
+        val coordinates = List(s"$GRAY$worldName x:${Math.floor(location.x)} y:${Math
+            .floor(location.y)} z:${Math.floor(location.z)}")
+        nameStatus ++ commandInfo ++ coordinates
+      })
       Button(
         new IconItemStackBuilder(Material.PAPER)
           .title(s"$YELLOW$UNDERLINE${BOLD}ホームポイント${homeNumber}の情報")
