@@ -78,7 +78,7 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
     val paginationPartMap = {
       val stickButtonMap = Map(ChestSlotRef(4, 0) -> CommonButtons.openStickMenu)
       val prevButtonMap = {
-        if (pageIndex - 1 >= 0)
+        if (pageIndex >= 1)
           Map(
             ChestSlotRef(4, 7) -> CommonButtons.transferButton(
               new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
