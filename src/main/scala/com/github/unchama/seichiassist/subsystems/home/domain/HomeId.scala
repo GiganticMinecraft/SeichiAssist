@@ -60,7 +60,7 @@ object HomeId {
   /**
    * プレイヤーの現在レベル（整地レベル、建築レベル）で利用可能なホームポイントIDの最大値を取得する作用
    */
-  def maxHomeIdCanBeUsedF[F[_]: ConcurrentEffect, G[_]: SyncEffect: ContextCoercion[*[_], F]](
+  def maxAvailableHomeCountF[F[_]: ConcurrentEffect, G[_]: SyncEffect: ContextCoercion[*[_], F]](
     player: Player
   )(
     implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player],

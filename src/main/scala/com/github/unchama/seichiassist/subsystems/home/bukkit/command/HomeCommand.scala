@@ -90,8 +90,8 @@ class HomeCommand[F[
         val player = context.sender
 
         val eff = for {
-          maxHomeIdCanBeUsed <- HomeId.maxHomeIdCanBeUsedF(player)
-          canUseHome = maxHomeIdCanBeUsed >= homeId.value
+          maxAvailableHomeCount <- HomeId.maxAvailableHomeCountF(player)
+          canUseHome = maxAvailableHomeCount >= homeId.value
           _ <- MessageEffectF[F](s"ホームポイント${homeId}は現在のレベルでは使用できません")
             .apply(player)
             .whenA(!canUseHome)
@@ -114,8 +114,8 @@ class HomeCommand[F[
         val player = context.sender
 
         val eff = for {
-          maxHomeIdCanBeUsed <- HomeId.maxHomeIdCanBeUsedF(player)
-          canUseHome = maxHomeIdCanBeUsed >= homeId.value
+          maxAvailableHomeCount <- HomeId.maxAvailableHomeCountF(player)
+          canUseHome = maxAvailableHomeCount >= homeId.value
           _ <- NonServerThreadContextShift[F].shift
           homeLocation <- HomeReadAPI[F].get(player.getUniqueId, homeId)
         } yield {
@@ -150,8 +150,8 @@ class HomeCommand[F[
         val homeLocation = LocationCodec.fromBukkitLocation(player.getLocation)
 
         val eff = for {
-          maxHomeIdCanBeUsed <- HomeId.maxHomeIdCanBeUsedF(player)
-          canUseHome = maxHomeIdCanBeUsed >= homeId.value
+          maxAvailableHomeCount <- HomeId.maxAvailableHomeCountF(player)
+          canUseHome = maxAvailableHomeCount >= homeId.value
           _ <- MessageEffectF[F](s"ホームポイント${homeId}は現在のレベルでは使用できません")
             .apply(player)
             .whenA(!canUseHome)
@@ -184,8 +184,8 @@ class HomeCommand[F[
         val cancelledInputMessage = List(s"${YELLOW}入力がキャンセルされました。")
 
         for {
-          maxHomeIdCanBeUsed <- HomeId.maxHomeIdCanBeUsedF(player).toIO
-          canUseHome = maxHomeIdCanBeUsed >= homeId.value
+          maxAvailableHomeCount <- HomeId.maxAvailableHomeCountF(player).toIO
+          canUseHome = maxAvailableHomeCount >= homeId.value
           _ <- MessageEffectF[F](s"ホームポイント${homeId}は現在のレベルでは使用できません")
             .apply(player)
             .toIO
