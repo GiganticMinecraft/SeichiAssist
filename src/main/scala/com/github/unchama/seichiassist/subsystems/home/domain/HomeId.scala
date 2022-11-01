@@ -28,7 +28,7 @@ object HomeId {
   /**
    * プレイヤーのレベルに応じて追加で持つことができる[[HomeId]]の数
    */
-  private val maxNumberExtra: 8 = 8
+  private val maxNumberExtra = 8
 
   /**
    * [[HomeId]]が持つことができる最大値
