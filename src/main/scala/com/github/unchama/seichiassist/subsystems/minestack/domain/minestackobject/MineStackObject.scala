@@ -15,7 +15,7 @@ case class MineStackObject[ItemStack <: Cloneable](
 
   import cats.implicits._
 
-  def itemStack: ItemStack = _itemStack.clone[ItemStack]
+  def itemStack: ItemStack = _itemStack.clone().asInstanceOf[ItemStack]
 
   /**
    * 記名済みの[[ItemStack]]へ変換することを試みます

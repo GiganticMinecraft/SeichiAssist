@@ -148,7 +148,10 @@ object System {
             ): F[Long] = for {
               mineStackObjects <- mineStackObjectRepository(player).get
             } yield {
-              mineStackObjects.find(_.mineStackObject == mineStackObject).getOrElse(0L)
+              mineStackObjects
+                .find(_.mineStackObject == mineStackObject)
+                .map(_.amount)
+                .getOrElse(0L)
             }
 
             override def getUsageHistory(player: Player): Vector[MineStackObject[ItemStack]] =
