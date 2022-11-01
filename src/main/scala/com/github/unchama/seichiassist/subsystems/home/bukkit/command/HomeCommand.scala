@@ -65,18 +65,12 @@ class HomeCommand[F[
 
   private def homeNotSetMessage: List[String] = List(s"${YELLOW}指定されたホームポイントが設定されていません。")
 
-  /**
-   * プレイヤーの現在レベル（整地レベル、建築レベル）で利用可能なホームポイントIDの最大値を取得する作用
-   * Fの文脈で返される（Gの文脈でないことに注意）
-   * このメソッドはargsAndSenderConfiguredBuilder.execution内で合成して使用することを想定している
-   * @param player 対象のプレイヤー
-   */
-  private def maxHomeIdCanBeUsedF(player: Player): F[Int] = {
-    for {
-      seichiAmount <- ContextCoercion(breakCountReadAPI.seichiAmountDataRepository(player).read)
-      buildAmount <- ContextCoercion(buildCountReadAPI.playerBuildAmountRepository(player).read)
-    } yield Home.initialHomePerPlayer + HomeId.maxNumberByExpOf(seichiAmount, buildAmount)
-  }
+//  private def maxHomeIdCanBeUsedF(player: Player): F[Int] = {
+//    for {
+//      seichiAmount <- ContextCoercion(breakCountReadAPI.seichiAmountDataRepository(player).read)
+//      buildAmount <- ContextCoercion(buildCountReadAPI.playerBuildAmountRepository(player).read)
+//    } yield Home.initialHomePerPlayer + HomeId.maxNumberByExpOf(seichiAmount, buildAmount)
+//  }
 
   def executor: TabExecutor = BranchedExecutor(
     Map(
@@ -96,7 +90,7 @@ class HomeCommand[F[
         val player = context.sender
 
         val eff = for {
-          maxHomeIdCanBeUsed <- maxHomeIdCanBeUsedF(player)
+          maxHomeIdCanBeUsed <- HomeId.maxHomeIdCanBeUsedF(player)
           availableThisHomeId = maxHomeIdCanBeUsed >= homeId.value
           _ <- MessageEffectF[F](s"ホームポイント${homeId}は現在のレベルでは使用できません")
             .apply(player)
@@ -120,7 +114,7 @@ class HomeCommand[F[
         val player = context.sender
 
         val eff = for {
-          maxHomeIdCanBeUsed <- maxHomeIdCanBeUsedF(player)
+          maxHomeIdCanBeUsed <- HomeId.maxHomeIdCanBeUsedF(player)
           availableThisHomeId = maxHomeIdCanBeUsed >= homeId.value
           _ <- NonServerThreadContextShift[F].shift
           homeLocation <- HomeReadAPI[F].get(player.getUniqueId, homeId)
@@ -156,7 +150,7 @@ class HomeCommand[F[
         val homeLocation = LocationCodec.fromBukkitLocation(player.getLocation)
 
         val eff = for {
-          maxHomeIdCanBeUsed <- maxHomeIdCanBeUsedF(player)
+          maxHomeIdCanBeUsed <- HomeId.maxHomeIdCanBeUsedF(player)
           availableThisHomeId = maxHomeIdCanBeUsed >= homeId.value
           _ <- MessageEffectF[F](s"ホームポイント${homeId}は現在のレベルでは使用できません")
             .apply(player)
@@ -190,7 +184,7 @@ class HomeCommand[F[
         val cancelledInputMessage = List(s"${YELLOW}入力がキャンセルされました。")
 
         for {
-          maxHomeIdCanBeUsed <- maxHomeIdCanBeUsedF(player).toIO
+          maxHomeIdCanBeUsed <- HomeId.maxHomeIdCanBeUsedF(player).toIO
           availableThisHomeId = maxHomeIdCanBeUsed >= homeId.value
           _ <- MessageEffectF[F](s"ホームポイント${homeId}は現在のレベルでは使用できません")
             .apply(player)

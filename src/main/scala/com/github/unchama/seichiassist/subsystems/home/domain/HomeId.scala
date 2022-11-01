@@ -1,7 +1,12 @@
 package com.github.unchama.seichiassist.subsystems.home.domain
 
+import cats.effect.{ConcurrentEffect, SyncEffect}
+import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
+import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
+import org.bukkit.entity.Player
 
 case class HomeId(value: Int) {
   require(
@@ -21,14 +26,14 @@ object HomeId {
   val minimumNumber: 1 = 1
 
   /**
-   * [[HomeId]]が持つことができる最大値
-   */
-  val maxNumber = Home.initialHomePerPlayer + maxNumberExtra
-
-  /**
    * プレイヤーのレベルに応じて追加で持つことができる[[HomeId]]の数
    */
   private val maxNumberExtra: 8 = 8
+
+  /**
+   * [[HomeId]]が持つことができる最大値
+   */
+  val maxNumber = Home.initialHomePerPlayer + maxNumberExtra
 
   /**
    * 追加ホームポイント
@@ -51,4 +56,21 @@ object HomeId {
 
     additionalHomePointBySeichiLevel + additionalHomePointByStarLevel + additionalHomePointByBuildLevel
   }
+
+  /**
+   * プレイヤーの現在レベル（整地レベル、建築レベル）で利用可能なホームポイントIDの最大値を取得する作用
+   */
+  def maxHomeIdCanBeUsedF[F[_]: ConcurrentEffect, G[_]: SyncEffect: ContextCoercion[*[_], F]](
+    player: Player
+  )(
+    implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player],
+    buildCountReadAPI: BuildCountAPI[F, G, Player]
+  ): F[Int] = {
+    import cats.implicits._
+    for {
+      seichiAmount <- ContextCoercion(breakCountReadAPI.seichiAmountDataRepository(player).read)
+      buildAmount <- ContextCoercion(buildCountReadAPI.playerBuildAmountRepository(player).read)
+    } yield Home.initialHomePerPlayer + maxNumberByExpOf(seichiAmount, buildAmount)
+  }
+
 }
