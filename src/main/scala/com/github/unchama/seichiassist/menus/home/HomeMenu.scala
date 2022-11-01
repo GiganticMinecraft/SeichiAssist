@@ -33,7 +33,7 @@ object HomeMenu {
     implicit val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
     implicit val ioCanOpenHome: IO CanOpen HomeMenu,
     val ioCanOpenHomeRemoveConfirmationMenu: IO CanOpen HomeRemoveConfirmationMenu,
-    val ioCanReadHome: HomeReadAPI[IO]
+    implicit val homeReadAPI: HomeReadAPI[IO]
   )
 }
 case class HomeMenu(pageIndex: Int = 0) extends Menu {
@@ -89,7 +89,7 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
               HomeMenu(pageIndex - 1)
             )
           )
-        else Map()
+        else Map.empty
       }
       val nextButtonMap = {
         if (pageIndex + 1 <= pageIndexMax)
@@ -100,7 +100,7 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
               HomeMenu(pageIndex + 1)
             )
           )
-        else Map()
+        else Map.empty
       }
       stickButtonMap ++ prevButtonMap ++ nextButtonMap
     }
@@ -111,7 +111,6 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
       homeNumber <- 1 + (9 * pageIndex) to HomeId.maxNumber - 9 * (pageIndexMax - pageIndex)
     } yield {
       val column = refineV[Interval.ClosedOpen[0, 9]](homeNumber - 9 * pageIndex - 1)
-      implicit val ioCanReadHome: HomeReadAPI[IO] = environment.ioCanReadHome
       column match {
         case Right(value) => ChestSlotRef(1, value) -> setHomeNameButton[IO](homeNumber)
         case Left(_)      => throw new RuntimeException("This branch should not be reached.")
@@ -205,12 +204,11 @@ case class HomeMenuButtonComputations(player: Player) {
       val lore = homeOpt match {
         case None => List(s"${GRAY}ホームポイント$homeId", s"${GRAY}ポイント未設定")
         case Some(Home(optionName, location)) =>
-          val worldName = {
+          val worldName =
             ManagedWorld
               .fromName(location.worldName)
               .map(_.japaneseName)
               .getOrElse(location.worldName)
-          }
 
           val nameStatus = optionName match {
             case Some(name) =>
