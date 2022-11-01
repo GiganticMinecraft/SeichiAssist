@@ -47,12 +47,12 @@ object HomeId {
     val buildLevelThreshold = Set(20, 40, 60, 100)
     val seichiLevel = seichiAmount.levelCorrespondingToExp.level
     val additionalHomePointBySeichiLevel =
-      seichiLevelThreshold.foldLeft(0)((acm, elem) => if (seichiLevel >= elem) acm + 1 else acm)
+      seichiLevelThreshold.count(rawLevel => seichiLevel >= rawLevel)
     val additionalHomePointByStarLevel =
       if (seichiAmount.starLevelCorrespondingToExp.level >= 5) 1 else 0
     val buildLevel = buildAmount.levelCorrespondingToExp.level
     val additionalHomePointByBuildLevel =
-      buildLevelThreshold.foldLeft(0)((acm, elem) => if (buildLevel >= elem) acm + 1 else acm)
+      buildLevelThreshold.count(rawLevel => buildLevel >= rawLevel)
 
     additionalHomePointBySeichiLevel + additionalHomePointByStarLevel + additionalHomePointByBuildLevel
   }
