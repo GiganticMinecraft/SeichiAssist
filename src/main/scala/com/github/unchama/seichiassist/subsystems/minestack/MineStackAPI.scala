@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
   MineStackObjectList
 }
 
-trait MineStackWriteAPI[F[_], Player, ItemStack <: Cloneable] {
+trait MineStackWriteAPI[F[_], Player, ItemStack] {
 
   /**
    * @return [[Player]]の[[MineStackObject]]を指定した量だけ増加させる作用
@@ -44,13 +44,13 @@ trait MineStackWriteAPI[F[_], Player, ItemStack <: Cloneable] {
 
 object MineStackWriteAPI {
 
-  def apply[F[_], Player, ItemStack <: Cloneable](
+  def apply[F[_], Player, ItemStack](
     implicit ev: MineStackWriteAPI[F, Player, ItemStack]
   ): MineStackWriteAPI[F, Player, ItemStack] = ev
 
 }
 
-trait MineStackReadAPI[F[_], Player, ItemStack <: Cloneable] {
+trait MineStackReadAPI[F[_], Player, ItemStack] {
 
   /**
    * @return [[Player]]が持っている[[MineStackObject]]の量を取得する
@@ -75,12 +75,12 @@ trait MineStackReadAPI[F[_], Player, ItemStack <: Cloneable] {
 
 object MineStackReadAPI {
 
-  def apply[F[_], Player, ItemStack <: Cloneable](
+  def apply[F[_], Player, ItemStack](
     implicit ev: MineStackReadAPI[F, Player, ItemStack]
   ): MineStackReadAPI[F, Player, ItemStack] = ev
 
 }
 
-trait MineStackAPI[F[_], Player, ItemStack <: Cloneable]
+trait MineStackAPI[F[_], Player, ItemStack]
     extends MineStackWriteAPI[F, Player, ItemStack]
     with MineStackReadAPI[F, Player, ItemStack]

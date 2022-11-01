@@ -5,7 +5,7 @@ import com.github.unchama.minecraft.objects.MinecraftMaterial
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
 
-case class MineStackObject[ItemStack <: Cloneable](
+case class MineStackObject[ItemStack](
   mineStackObjectName: String,
   uiName: Option[String],
   private val _itemStack: ItemStack,
@@ -15,7 +15,7 @@ case class MineStackObject[ItemStack <: Cloneable](
 
   import cats.implicits._
 
-  def itemStack: ItemStack = _itemStack.clone().asInstanceOf[ItemStack]
+  def itemStack: ItemStack = this.copy()._itemStack
 
   /**
    * 記名済みの[[ItemStack]]へ変換することを試みます
@@ -39,7 +39,7 @@ case class MineStackObject[ItemStack <: Cloneable](
 
 object MineStackObject {
 
-  def MineStackObjectByMaterial[ItemStack <: Cloneable, Material](
+  def MineStackObjectByMaterial[ItemStack, Material](
     category: MineStackObjectCategory,
     mineStackObjectName: String,
     japaneseName: String,
@@ -57,7 +57,7 @@ object MineStackObject {
     )
   }
 
-  def MineStackObjectByItemStack[ItemStack <: Cloneable](
+  def MineStackObjectByItemStack[ItemStack](
     category: MineStackObjectCategory,
     mineStackObjectName: String,
     japaneseName: Option[String],

@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject
 
-trait MineStackObjectList[F[_], ItemStack <: Cloneable, Player] {
+trait MineStackObjectList[F[_], ItemStack, Player] {
 
   /**
    * @return [[MineStackObject]]をすべて返します

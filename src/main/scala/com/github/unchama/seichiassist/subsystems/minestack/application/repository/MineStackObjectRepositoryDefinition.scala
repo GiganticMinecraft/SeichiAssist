@@ -11,7 +11,7 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
 
 object MineStackObjectRepositoryDefinition {
 
-  def withContext[F[_]: Sync, Player, ItemStack <: Cloneable](
+  def withContext[F[_]: Sync, Player, ItemStack](
     persistence: MineStackObjectPersistence[F, ItemStack]
   ): RepositoryDefinition[F, Player, Ref[F, List[MineStackObjectWithAmount[ItemStack]]]] =
     RefDictBackedRepositoryDefinition

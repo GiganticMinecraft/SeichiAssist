@@ -40,7 +40,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import org.bukkit.inventory.ItemStack
 
-trait System[F[_], Player, ItemStack <: Cloneable] extends Subsystem[F] {
+trait System[F[_], Player, ItemStack] extends Subsystem[F] {
 
   val api: MineStackAPI[F, Player, ItemStack]
 

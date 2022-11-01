@@ -7,14 +7,14 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackUsag
 
 object MineStackUsageHistoryRepositoryDefinitions {
 
-  def initialization[F[_]: Applicative, Player, ItemStack <: Cloneable]
+  def initialization[F[_]: Applicative, Player, ItemStack]
     : TwoPhasedRepositoryInitialization[F, Player, MineStackUsageHistory[ItemStack]] =
     TwoPhasedRepositoryInitialization
       .withoutPrefetching[F, Player, MineStackUsageHistory[ItemStack]] { _ =>
         Applicative[F].pure(new MineStackUsageHistory[ItemStack])
       }
 
-  def finalization[F[_]: Applicative, Player, ItemStack <: Cloneable]
+  def finalization[F[_]: Applicative, Player, ItemStack]
     : RepositoryFinalization[F, Player, MineStackUsageHistory[ItemStack]] =
     RepositoryFinalization.trivial
 

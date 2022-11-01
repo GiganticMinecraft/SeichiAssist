@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject
 
-case class MineStackObjectWithColorVariants[ItemStack <: Cloneable](
+case class MineStackObjectWithColorVariants[ItemStack](
   representative: MineStackObject[ItemStack],
   coloredVariants: List[MineStackObject[ItemStack]]
 ) {

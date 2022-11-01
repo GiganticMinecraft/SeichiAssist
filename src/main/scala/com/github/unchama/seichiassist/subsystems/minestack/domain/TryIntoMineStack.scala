@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
   MineStackObjectWithAmount
 }
 
-class TryIntoMineStack[F[_]: Sync, Player, ItemStack <: Cloneable](
+class TryIntoMineStack[F[_]: Sync, Player, ItemStack](
   implicit mineStackObjectList: MineStackObjectList[F, ItemStack, Player],
   mineStackObjectRepository: KeyedDataRepository[Player, Ref[F, List[
     MineStackObjectWithAmount[ItemStack]
