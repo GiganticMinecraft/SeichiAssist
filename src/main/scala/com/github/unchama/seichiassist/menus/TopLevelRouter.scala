@@ -4,13 +4,12 @@ import cats.effect.{IO, SyncIO}
 import com.github.unchama.menuinventory.LayoutPreparationContext
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.menus.home.ConfirmationMenuEnvironment
 import com.github.unchama.seichiassist.menus.achievement.group.AchievementGroupMenu
 import com.github.unchama.seichiassist.menus.achievement.{
   AchievementCategoryMenu,
   AchievementMenu
 }
-import com.github.unchama.seichiassist.menus.home.{HomeMenu}
+import com.github.unchama.seichiassist.menus.home.{ConfirmationMenuEnvironment, HomeMenu}
 import com.github.unchama.seichiassist.menus.minestack.{
   CategorizedMineStackMenu,
   MineStackMainMenu,

@@ -10,8 +10,8 @@ import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.home.bukkit.command.HomeCommand
 import com.github.unchama.seichiassist.subsystems.home.bukkit.listeners.RespawnLocationOverwriter
-import com.github.unchama.seichiassist.subsystems.home.domain.{Home, HomeId, HomeLocation}
 import com.github.unchama.seichiassist.subsystems.home.domain.OperationResult.RenameResult
+import com.github.unchama.seichiassist.subsystems.home.domain.{Home, HomeId, HomeLocation}
 import com.github.unchama.seichiassist.subsystems.home.infrastructure.JdbcHomePersistence
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
