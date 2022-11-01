@@ -45,7 +45,7 @@ import com.github.unchama.seichiassist.menus.{BuildMainMenu, TopLevelRouter}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems._
 import com.github.unchama.seichiassist.subsystems.anywhereender.AnywhereEnderChestAPI
-import com.github.unchama.seichiassist.subsystems.breakcount.{BreakCountAPI, BreakCountReadAPI}
+import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
@@ -259,8 +259,7 @@ class SeichiAssist extends JavaPlugin() {
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-    implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
-    implicit val gtToSiinaAPI: GtToSiinaAPI[ItemStack] = gtToSiinaSystem.api
+    import Apis.{gtToSiinaAPI, manaApi}
 
     subsystems.seasonalevents.System.wired[IO, SyncIO, IO](this)
   }
@@ -294,12 +293,12 @@ class SeichiAssist extends JavaPlugin() {
 
   private lazy val fastDiggingEffectSystem
     : subsystems.fastdiggingeffect.System[IO, IO, Player] = {
+    import Apis.breakCountApi
     import PluginExecutionContexts.{asyncShift, onMainThread, timer}
 
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val configuration: Configuration =
       seichiAssistConfig.getFastDiggingEffectSystemConfiguration
-    implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
     implicit val getConnectedPlayers: GetConnectedPlayers[IO, Player] =
       new GetConnectedBukkitPlayers[IO]
     implicit val redisBungeeConfig: RedisBungeeRedisConfiguration =
@@ -324,9 +323,7 @@ class SeichiAssist extends JavaPlugin() {
     import PluginExecutionContexts.{onMainThread, sleepAndRoutineContext, timer}
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
-    implicit val syncClock: Clock[SyncIO] = Clock.create[SyncIO]
-    implicit val syncSeasonalEventsSystemAPI: SeasonalEventsAPI[SyncIO] =
-      seasonalEventsSystem.api[SyncIO]
+    import Apis.syncSeasonalEventsSystemAPI
 
     subsystems.mebius.System.wired[IO, SyncIO].unsafeRunSync()
   }
@@ -360,20 +357,17 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val anywhereEnderSystem: subsystems.anywhereender.System[IO] = {
+    import Apis.breakCountApi
     import PluginExecutionContexts.onMainThread
 
-    implicit val seichiAmountReadApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
     subsystems
       .anywhereender
       .System
       .wired[SyncIO, IO](seichiAssistConfig.getAnywhereEnderConfiguration)
   }
 
-  private lazy implicit val gachaAPI: GachaAPI[IO, ItemStack, Player] = gachaSystem.api
-
   private lazy val gachaSystem: subsystems.gacha.System[IO] = {
-    implicit val gachaTicketAPI: GachaTicketAPI[IO] = gachaTicketSystem.api
-    implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack] = mineStackSystem.api
+    import Apis.{gachaTicketAPI, mineStackAPI}
     subsystems.gacha.System.wired.unsafeRunSync()
   }
 
@@ -381,11 +375,14 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.gacha.subsystems.gachaticket.System.wired[IO]
 
   private lazy val gtToSiinaSystem
-    : subsystems.tradesystems.subsystems.gttosiina.System[IO, ItemStack] =
+    : subsystems.tradesystems.subsystems.gttosiina.System[IO, ItemStack] = {
+    import Apis.gachaAPI
+
     subsystems.tradesystems.subsystems.gttosiina.System.wired[IO]
+  }
 
   private lazy val gachaTradeSystem: Subsystem[IO] = {
-    implicit val gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
+    import Apis.{gachaAPI, gachaPointApi}
     subsystems.tradesystems.subsystems.gachatrade.System.wired[IO, SyncIO]
   }
 
@@ -395,6 +392,8 @@ class SeichiAssist extends JavaPlugin() {
   /* TODO: mineStackSystemは本来privateであるべきだが、mineStackにアイテムを格納するというAPIを現状の実装だと
       BreakUtilから呼び出されている都合上publicやむを得ずになっている。*/
   lazy val mineStackSystem: subsystems.minestack.System[IO, Player, ItemStack] = {
+    import Apis.gachaAPI
+    import menuRouter.ioCanOpenCategorizedMineStackMenu
 
     subsystems.minestack.System.wired[IO, SyncIO].unsafeRunSync()
   }
@@ -428,10 +427,7 @@ class SeichiAssist extends JavaPlugin() {
   )
 
   private lazy val buildAssist: BuildAssist = {
-    implicit val flyApi: ManagedFlyApi[SyncIO, Player] = managedFlySystem.api
-    implicit val buildCountAPI: BuildCountAPI[IO, SyncIO, Player] = buildCountSystem.api
-    implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
-    implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack] = mineStackSystem.api
+    import Apis.{buildCountAPI, manaApi, managedFlyApi, mineStackAPI}
 
     new BuildAssist(this)
   }
@@ -469,6 +465,40 @@ class SeichiAssist extends JavaPlugin() {
 
   private implicit val _akkaSystem: ActorSystem =
     ConfiguredActorSystemProvider("reference.conf").provide()
+
+  object Apis {
+    implicit val syncClock: Clock[SyncIO] = Clock.create[SyncIO]
+    implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
+    implicit val breakCountBarApi: BreakCountBarAPI[SyncIO, Player] = breakCountBarSystem.api
+    implicit val fastDiggingEffectApi: FastDiggingEffectApi[IO, Player] =
+      fastDiggingEffectSystem.effectApi
+    implicit val fastDiggingSettingsApi: FastDiggingSettingsApi[IO, Player] =
+      fastDiggingEffectSystem.settingsApi
+    implicit val fourDimensionalPocketApi: FourDimensionalPocketApi[IO, Player] =
+      fourDimensionalPocketSystem.api
+    implicit val gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
+    implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
+    implicit val globalNotification: DiscordNotificationAPI[IO] =
+      discordNotificationSystem.globalNotification
+    implicit val subHomeReadApi: HomeReadAPI[IO] = homeSystem.api
+    implicit val everywhereEnderChestApi: AnywhereEnderChestAPI[IO] =
+      anywhereEnderSystem.accessApi
+    implicit val sharedInventoryAPI: SharedInventoryAPI[IO, Player] =
+      sharedInventorySystem.api
+    implicit val gachaTicketAPI: GachaTicketAPI[IO] =
+      gachaTicketSystem.api
+    implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack] = mineStackSystem.api
+    implicit val managedFlyApi: ManagedFlyApi[SyncIO, Player] = managedFlySystem.api
+    implicit val buildCountAPI: BuildCountAPI[IO, SyncIO, Player] = buildCountSystem.api
+    implicit val syncSeasonalEventsSystemAPI: SeasonalEventsAPI[SyncIO] =
+      seasonalEventsSystem.api[SyncIO]
+    implicit val gtToSiinaAPI: GtToSiinaAPI[ItemStack] = gtToSiinaSystem.api
+    implicit val gachaAPI: GachaAPI[IO, ItemStack, Player] = gachaSystem.api
+  }
+
+  import PluginExecutionContexts._
+
+  private val menuRouter = TopLevelRouter.apply
 
   /**
    * プラグインを初期化する。ここで例外が投げられるとBukkitがシャットダウンされる。
@@ -561,35 +591,12 @@ class SeichiAssist extends JavaPlugin() {
       throw new Exception("MineStack用ガチャデータのロードに失敗しました。サーバーを停止します…")
     }
 
-    import PluginExecutionContexts._
-    implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
-    implicit val breakCountBarApi: BreakCountBarAPI[SyncIO, Player] = breakCountBarSystem.api
-    implicit val fastDiggingEffectApi: FastDiggingEffectApi[IO, Player] =
-      fastDiggingEffectSystem.effectApi
-    implicit val fastDiggingSettingsApi: FastDiggingSettingsApi[IO, Player] =
-      fastDiggingEffectSystem.settingsApi
-    implicit val fourDimensionalPocketApi: FourDimensionalPocketApi[IO, Player] =
-      fourDimensionalPocketSystem.api
-    implicit val gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
-    implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
-    implicit val globalNotification: DiscordNotificationAPI[IO] =
-      discordNotificationSystem.globalNotification
-    implicit val subHomeReadApi: HomeReadAPI[IO] = homeSystem.api
-    implicit val everywhereEnderChestApi: AnywhereEnderChestAPI[IO] =
-      anywhereEnderSystem.accessApi
-    implicit val sharedInventoryAPI: SharedInventoryAPI[IO, Player] =
-      sharedInventorySystem.api
-    implicit val gachaTicketAPI: GachaTicketAPI[IO] =
-      gachaTicketSystem.api
-    implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack] = mineStackSystem.api
-
-    val menuRouter = TopLevelRouter.apply
     import SeichiAssist.Scopes.globalChatInterceptionScope
     import menuRouter.canOpenStickMenu
 
     buildAssist.onEnable()
 
-    implicit val managedFlyApi: ManagedFlyApi[SyncIO, Player] = managedFlySystem.api
+    import Apis._
     // 本来は曖昧さ回避のためにRouterのインスタンスを生成するべきではないが、生成を回避しようとすると
     // 巨大な変更が必要となる。そのため、Routerのインスタンスを新しく生成することで、それまでの間
     // 機能を果たそうとするものである。
@@ -702,13 +709,9 @@ class SeichiAssist extends JavaPlugin() {
         PlayerDataBackupRoutine()
       }
 
+      import Apis.{breakCountApi, fastDiggingEffectApi, gachaPointApi, manaApi}
       import PluginExecutionContexts._
 
-      implicit val breakCountApi: BreakCountReadAPI[IO, SyncIO, Player] = breakCountSystem.api
-      implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
-      implicit val gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
-      implicit val fastDiggingEffectApi: FastDiggingEffectApi[IO, Player] =
-        fastDiggingEffectSystem.effectApi
       implicit val ioConcurrent: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
       implicit val sendMessages: SendMinecraftMessage[IO, Player] = new SendBukkitMessage[IO]
 
@@ -720,6 +723,8 @@ class SeichiAssist extends JavaPlugin() {
         Option.unless(Set(7, 8).contains(SeichiAssist.seichiAssistConfig.getServerNum)) {
           subsystems.halfhourranking.System.backgroundProcess[IO, SyncIO]
         }
+
+      import Apis.gachaAPI
 
       val levelUpGiftProcess: IO[Nothing] =
         subsystems.seichilevelupgift.System.backGroundProcess[IO, SyncIO]

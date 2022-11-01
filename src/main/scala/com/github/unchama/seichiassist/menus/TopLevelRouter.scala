@@ -1,51 +1,22 @@
 package com.github.unchama.seichiassist.menus
 
-import cats.effect.{IO, SyncIO}
+import cats.effect.IO
 import com.github.unchama.menuinventory.LayoutPreparationContext
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.menus.HomeMenu.ConfirmationMenuEnvironment
 import com.github.unchama.seichiassist.menus.achievement.group.AchievementGroupMenu
-import com.github.unchama.seichiassist.menus.achievement.{
-  AchievementCategoryMenu,
-  AchievementMenu
-}
-import com.github.unchama.seichiassist.menus.minestack.{
-  CategorizedMineStackMenu,
-  MineStackMainMenu,
-  MineStackSelectItemColorMenu
-}
+import com.github.unchama.seichiassist.menus.achievement.{AchievementCategoryMenu, AchievementMenu}
+import com.github.unchama.seichiassist.menus.minestack.{CategorizedMineStackMenu, MineStackMainMenu, MineStackSelectItemColorMenu}
 import com.github.unchama.seichiassist.menus.ranking.{RankingMenu, RankingRootMenu}
-import com.github.unchama.seichiassist.menus.skill.{
-  ActiveSkillEffectMenu,
-  ActiveSkillMenu,
-  PassiveSkillMenu,
-  PremiumPointTransactionHistoryMenu
-}
+import com.github.unchama.seichiassist.menus.skill.{ActiveSkillEffectMenu, ActiveSkillMenu, PassiveSkillMenu, PremiumPointTransactionHistoryMenu}
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, SecondPage}
-import com.github.unchama.seichiassist.subsystems.anywhereender.AnywhereEnderChestAPI
-import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
-import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
-import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
-  FastDiggingEffectApi,
-  FastDiggingSettingsApi
-}
-import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
-import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
-import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
-import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
-import com.github.unchama.seichiassist.subsystems.mana.ManaApi
-import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.ranking.api.AssortedRankingApi
 import com.github.unchama.seichiassist.subsystems.ranking.domain.values.{LoginTime, VoteCount}
-import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
 import io.chrisdavenport.cats.effect.time.JavaTime
-import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 
 trait TopLevelRouter[F[_]] {
 
@@ -63,23 +34,11 @@ object TopLevelRouter {
     implicit javaTime: JavaTime[IO],
     layoutPreparationContext: LayoutPreparationContext,
     onMainThread: OnMinecraftServerThread[IO],
-    breakCountApi: BreakCountAPI[IO, SyncIO, Player],
-    breakCountBarAPI: BreakCountBarAPI[SyncIO, Player],
-    manaApi: ManaApi[IO, SyncIO, Player],
-    assortedRankingApi: AssortedRankingApi[IO],
-    gachaPointApi: GachaPointApi[IO, SyncIO, Player],
-    fastDiggingEffectApi: FastDiggingEffectApi[IO, Player],
-    fastDiggingSettingsApi: FastDiggingSettingsApi[IO, Player],
-    fourDimensionalPocketApi: FourDimensionalPocketApi[IO, Player],
-    globalNotification: DiscordNotificationAPI[IO],
-    homeReadApi: HomeReadAPI[IO],
-    enderChestAccessApi: AnywhereEnderChestAPI[IO],
-    sharedInventoryAPI: SharedInventoryAPI[IO, Player],
-    gachaTicketAPI: GachaTicketAPI[IO],
-    gachaAPI: GachaAPI[IO, ItemStack, Player],
-    mineStackAPI: MineStackAPI[IO, Player, ItemStack]
+    assortedRankingApi: AssortedRankingApi[IO]
   ): TopLevelRouter[IO] = new TopLevelRouter[IO] {
+    val seichiAssist = SeichiAssist.instance
     import assortedRankingApi._
+    import seichiAssist.Apis._
 
     implicit lazy val secondPageEnv: SecondPage.Environment = new SecondPage.Environment
     implicit lazy val mineStackMainMenuEnv: MineStackMainMenu.Environment =
