@@ -20,6 +20,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent.{Gacha
 import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{GachaPrize, GachaPrizeId}
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{GachaTicketAmount, GrantResultOfGachaTicketFromAdminTeam}
+import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
 import org.bukkit.ChatColor._
@@ -38,7 +39,8 @@ class GachaCommand[
   implicit gachaPersistence: GachaPrizeListPersistence[F, ItemStack],
   gachaAPI: GachaAPI[F, ItemStack, Player],
   canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack],
-  gachaTicketAPI: GachaTicketAPI[F]
+  gachaTicketAPI: GachaTicketAPI[F],
+  mineStackAPI: MineStackAPI[F, Player, ItemStack]
 ) {
 
   import cats.implicits._
