@@ -38,14 +38,16 @@ object HomeId {
    * @return 引数の整地量、建築量の状態で現在扱える[[HomeId]]の最大値
    */
   def maxNumberByExpOf(seichiAmount: SeichiAmountData, buildAmount: BuildAmountData): Int = {
+    val seichiLevelThreshold = Set(50, 100, 200)
+    val buildLevelThreshold = Set(20, 40, 60, 100)
     val seichiLevel = seichiAmount.levelCorrespondingToExp.level
     val additionalHomePointBySeichiLevel =
-      Seq(50, 100, 200).foldLeft(0)((acm, elem) => if (seichiLevel >= elem) acm + 1 else acm)
+      seichiLevelThreshold.foldLeft(0)((acm, elem) => if (seichiLevel >= elem) acm + 1 else acm)
     val additionalHomePointByStarLevel =
       if (seichiAmount.starLevelCorrespondingToExp.level >= 5) 1 else 0
     val buildLevel = buildAmount.levelCorrespondingToExp.level
     val additionalHomePointByBuildLevel =
-      Seq(20, 40, 60, 100).foldLeft(0)((acm, elem) => if (buildLevel >= elem) acm + 1 else acm)
+      buildLevelThreshold.foldLeft(0)((acm, elem) => if (buildLevel >= elem) acm + 1 else acm)
 
     additionalHomePointBySeichiLevel + additionalHomePointByStarLevel + additionalHomePointByBuildLevel
   }
