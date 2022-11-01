@@ -97,16 +97,16 @@ class HomeCommand[F[
 
         val eff = for {
           maxHomeIdCanBeUsed <- maxHomeIdCanBeUsedF(player)
-          canUseHomeId = maxHomeIdCanBeUsed >= homeId.value
+          availableThisHomeId = maxHomeIdCanBeUsed >= homeId.value
           _ <- MessageEffectF[F](s"ホームポイント${homeId}は現在のレベルでは使用できません")
             .apply(player)
-            .whenA(!canUseHomeId)
+            .whenA(!availableThisHomeId)
           _ <- {
             NonServerThreadContextShift[F].shift >> HomeWriteAPI[F].remove(
               player.getUniqueId,
               homeId
             ) >> MessageEffectF[F](s"ホームポイント${homeId}を削除しました。").apply(player)
-          }.whenA(canUseHomeId)
+          }.whenA(availableThisHomeId)
         } yield TargetedEffect.emptyEffect
 
         eff.toIO
@@ -121,11 +121,11 @@ class HomeCommand[F[
 
         val eff = for {
           maxHomeIdCanBeUsed <- maxHomeIdCanBeUsedF(player)
-          canUseHomeId = maxHomeIdCanBeUsed >= homeId.value
+          availableThisHomeId = maxHomeIdCanBeUsed >= homeId.value
           _ <- NonServerThreadContextShift[F].shift
           homeLocation <- HomeReadAPI[F].get(player.getUniqueId, homeId)
         } yield {
-          if (canUseHomeId)
+          if (availableThisHomeId)
             homeLocation match {
               case None => MessageEffect(s"ホームポイント${homeId}が設定されてません")
               case Some(Home(_, location)) =>
@@ -157,16 +157,16 @@ class HomeCommand[F[
 
         val eff = for {
           maxHomeIdCanBeUsed <- maxHomeIdCanBeUsedF(player)
-          canUseHomeId = maxHomeIdCanBeUsed >= homeId.value
+          availableThisHomeId = maxHomeIdCanBeUsed >= homeId.value
           _ <- MessageEffectF[F](s"ホームポイント${homeId}は現在のレベルでは使用できません")
             .apply(player)
-            .whenA(!canUseHomeId)
+            .whenA(!availableThisHomeId)
           _ <- {
             NonServerThreadContextShift[F].shift >> HomeWriteAPI[F].upsertLocation(
               player.getUniqueId,
               homeId
             )(homeLocation) >> MessageEffectF[F](s"現在位置をホームポイント${homeId}に設定しました").apply(player)
-          }.whenA(canUseHomeId)
+          }.whenA(availableThisHomeId)
         } yield TargetedEffect.emptyEffect
 
         eff.toIO
@@ -191,11 +191,11 @@ class HomeCommand[F[
 
         for {
           maxHomeIdCanBeUsed <- maxHomeIdCanBeUsedF(player).toIO
-          canUseHomeId = maxHomeIdCanBeUsed >= homeId.value
+          availableThisHomeId = maxHomeIdCanBeUsed >= homeId.value
           _ <- MessageEffectF[F](s"ホームポイント${homeId}は現在のレベルでは使用できません")
             .apply(player)
             .toIO
-            .whenA(!canUseHomeId)
+            .whenA(!availableThisHomeId)
           _ <- Monad[IO]
             .ifM(HomeReadAPI[F].configured(uuid, homeId).toIO)(
               MessageEffect(instruction)(player) >>
@@ -212,7 +212,7 @@ class HomeCommand[F[
                 },
               MessageEffect(homeNotSetMessage)(player)
             )
-            .whenA(canUseHomeId)
+            .whenA(availableThisHomeId)
         } yield TargetedEffect.emptyEffect
       }
       .build()
