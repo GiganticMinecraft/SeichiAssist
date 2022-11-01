@@ -12,7 +12,7 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMain
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
-import com.github.unchama.seichiassist.subsystems.home.domain.{Home, HomeId}
+import com.github.unchama.seichiassist.subsystems.home.domain.HomeId
 import com.github.unchama.seichiassist.{ManagedWorld, SkullOwners}
 import com.github.unchama.targetedeffect._
 import com.github.unchama.targetedeffect.player.PlayerEffects._
