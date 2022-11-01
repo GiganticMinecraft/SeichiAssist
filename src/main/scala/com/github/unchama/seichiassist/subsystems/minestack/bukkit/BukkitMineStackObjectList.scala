@@ -640,7 +640,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     allMineStackGroups.map(_.flatMap {
       case Left(mineStackObject: MineStackObject[ItemStack]) => List(mineStackObject)
       case Right(group) => List(group.representative) ++ group.coloredVariants
-    })
+    }.toVector)
 
   override def getAllObjectGroupsInCategory(
     category: MineStackObjectCategory

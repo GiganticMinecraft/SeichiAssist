@@ -11,10 +11,7 @@ import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.bungeesemaphoreresponder.{System => BungeeSemaphoreResponderSystem}
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.concurrent.RepeatingRoutine
-import com.github.unchama.datarepository.bukkit.player.{
-  BukkitRepositoryControls,
-  PlayerDataRepository
-}
+import com.github.unchama.datarepository.bukkit.player.{BukkitRepositoryControls, PlayerDataRepository}
 import com.github.unchama.datarepository.definitions.SessionMutexRepositoryDefinition
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
@@ -26,27 +23,18 @@ import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.MenuHandler
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.{GetConnectedPlayers, SendMinecraftMessage}
-import com.github.unchama.minecraft.bukkit.actions.{
-  GetConnectedBukkitPlayers,
-  SendBukkitMessage
-}
+import com.github.unchama.minecraft.bukkit.actions.{GetConnectedBukkitPlayers, SendBukkitMessage}
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
 import com.github.unchama.seichiassist.SeichiAssist.seichiAssistConfig
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
 import com.github.unchama.seichiassist.commands.legacy.DonationCommand
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
-  asyncShift,
-  onMainThread
-}
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, onMainThread}
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
-import com.github.unchama.seichiassist.domain.actions.{
-  GetNetworkConnectionCount,
-  UuidToLastSeenName
-}
+import com.github.unchama.seichiassist.domain.actions.{GetNetworkConnectionCount, UuidToLastSeenName}
 import com.github.unchama.seichiassist.domain.configuration.RedisBungeeRedisConfiguration
 import com.github.unchama.seichiassist.infrastructure.akka.ConfiguredActorSystemProvider
 import com.github.unchama.seichiassist.infrastructure.logging.jul.NamedJULLogger
@@ -55,7 +43,6 @@ import com.github.unchama.seichiassist.infrastructure.scalikejdbc.ScalikeJDBCCon
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.menus.{BuildMainMenu, TopLevelRouter}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject.MineStackObjectByItemStack
 import com.github.unchama.seichiassist.subsystems._
 import com.github.unchama.seichiassist.subsystems.anywhereender.AnywhereEnderChestAPI
 import com.github.unchama.seichiassist.subsystems.breakcount.{BreakCountAPI, BreakCountReadAPI}
@@ -63,10 +50,7 @@ import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
-  FastDiggingEffectApi,
-  FastDiggingSettingsApi
-}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
@@ -77,11 +61,6 @@ import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.m
 import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaReadApi}
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
-import com.github.unchama.seichiassist.subsystems.minestack.bukkit.BukkitMineStackObjectList
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
-  MineStackObject,
-  MineStackObjectCategory
-}
 import com.github.unchama.seichiassist.subsystems.present.infrastructure.GlobalPlayerAccessor
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
@@ -90,11 +69,11 @@ import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global._
 import com.github.unchama.util.{ActionStatus, ClassUtils}
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.entity.{Entity, Player, Projectile}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
-import org.bukkit.{Bukkit, Material}
 import org.flywaydb.core.Flyway
 import org.slf4j.Logger
 import org.slf4j.impl.JDK14LoggerFactory
@@ -414,8 +393,10 @@ class SeichiAssist extends JavaPlugin() {
 
   /* TODO: mineStackSystemは本来privateであるべきだが、mineStackにアイテムを格納するというAPIを現状の実装だと
       BreakUtilから呼び出されている都合上publicやむを得ずになっている。*/
-  lazy val mineStackSystem: subsystems.minestack.System[IO, Player, ItemStack] =
+  lazy val mineStackSystem: subsystems.minestack.System[IO, Player, ItemStack] = {
+
     subsystems.minestack.System.wired[IO, SyncIO].unsafeRunSync()
+  }
 
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
@@ -602,11 +583,8 @@ class SeichiAssist extends JavaPlugin() {
     implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack] = mineStackSystem.api
 
     val menuRouter = TopLevelRouter.apply
-    import menuRouter.{canOpenStickMenu, ioCanOpenCategorizedMineStackMenu}
-
-    MineStackObjectList.setGachaPrizesList(SeichiAssist.generateGachaPrizes()).unsafeRunSync()
-
     import SeichiAssist.Scopes.globalChatInterceptionScope
+    import menuRouter.canOpenStickMenu
 
     buildAssist.onEnable()
 
@@ -842,18 +820,4 @@ object SeichiAssist {
       new InterceptionScope[UUID, String]()
     }
   }
-
-  private def generateGachaPrizes(): List[MineStackObject] =
-    msgachadatalist
-      .toList
-      .filter(_.itemStack.getType != Material.EXP_BOTTLE) // 経験値瓶だけはすでにリストにあるので除外
-      .map { g =>
-        MineStackObjectByItemStack(
-          MineStackObjectCategory.GACHA_PRIZES,
-          g.objName,
-          None,
-          hasNameLore = true,
-          g.itemStack
-        )
-      }
 }

@@ -1,15 +1,17 @@
 package com.github.unchama.seichiassist.subsystems.minestack
 
 import cats.effect.concurrent.Ref
-import cats.effect.{ConcurrentEffect, Sync, SyncEffect}
+import cats.effect.{ConcurrentEffect, IO, Sync, SyncEffect}
 import com.github.unchama.datarepository.bukkit.player.{
   BukkitRepositoryControls,
   PlayerDataRepository
 }
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.{ContextCoercion, ListExtra}
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.bukkit.objects.BukkitMaterial
 import com.github.unchama.minecraft.objects.MinecraftMaterial
+import com.github.unchama.seichiassist.menus.minestack.CategorizedMineStackMenu
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.minestack.application.repository.{
@@ -49,7 +51,8 @@ object System {
   import cats.implicits._
 
   def wired[F[_]: ConcurrentEffect, G[_]: SyncEffect: ContextCoercion[*[_], F]](
-    implicit gachaAPI: GachaAPI[F, ItemStack, Player]
+    implicit gachaAPI: GachaAPI[F, ItemStack, Player],
+    ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu
   ): F[System[F, Player, ItemStack]] = {
     implicit val minecraftMaterial: MinecraftMaterial[Material, ItemStack] = new BukkitMaterial
     implicit val _mineStackObjectList: MineStackObjectList[F, ItemStack, Player] =
