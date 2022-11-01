@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.menus.home
 
 import cats.effect.{ConcurrentEffect, IO}
+import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
@@ -28,7 +29,8 @@ object HomeMenu {
     implicit val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
     implicit val ioCanOpenHome: IO CanOpen HomeMenu,
     val ioCanOpenHomeRemoveConfirmationMenu: IO CanOpen HomeRemoveConfirmationMenu,
-    implicit val homeReadAPI: HomeReadAPI[IO]
+    implicit val homeReadAPI: HomeReadAPI[IO],
+    implicit val asyncShift: NonServerThreadContextShift[IO]
   )
 }
 case class HomeMenu(pageIndex: Int = 0) extends Menu {
@@ -101,7 +103,6 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
     }
 
     import cats.implicits._
-    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
     val dynamicPartComputation = (for {
       homeNumber <- 1 + (9 * pageIndex) to HomeId.maxNumber - 9 * (pageIndexMax - pageIndex)
     } yield {
