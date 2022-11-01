@@ -41,7 +41,7 @@ object HomeId {
   def maxNumberByPlayerOf(seichiAmount: SeichiAmountData, buildAmount: BuildAmountData): Int = {
     val seichiLevel = seichiAmount.levelCorrespondingToExp.level
     val additionalHomePointBySeichiLevel =
-      Seq(50, 100, 200).foldLeft(0)((acm, elem) => if (seichiLevel >= elem) acm + 1 else acm)
+      Seq(50, 100, 200).count(rawLevel => seichiLevel >= rawLevel)
     val additionalHomePointByStarLevel =
       if (seichiAmount.starLevelCorrespondingToExp.level >= 5) 1 else 0
     val buildLevel = buildAmount.levelCorrespondingToExp.level
