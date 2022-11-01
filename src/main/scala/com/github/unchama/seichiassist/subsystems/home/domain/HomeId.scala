@@ -35,9 +35,9 @@ object HomeId {
    * - 整地レベルが増加することに1つ（50、100、200、星5）、計4つ
    * - 建築レベルが増加することに1つ（20、40、60、100）、計4つ
    *
-   * @return そのプレイヤーが現在扱える[[HomeId]]の最大値
+   * @return 引数の整地量、建築量の状態で現在扱える[[HomeId]]の最大値
    */
-  def maxNumberByPlayerOf(seichiAmount: SeichiAmountData, buildAmount: BuildAmountData): Int = {
+  def maxNumberByExpOf(seichiAmount: SeichiAmountData, buildAmount: BuildAmountData): Int = {
     val seichiLevel = seichiAmount.levelCorrespondingToExp.level
     val additionalHomePointBySeichiLevel =
       Seq(50, 100, 200).foldLeft(0)((acm, elem) => if (seichiLevel >= elem) acm + 1 else acm)
