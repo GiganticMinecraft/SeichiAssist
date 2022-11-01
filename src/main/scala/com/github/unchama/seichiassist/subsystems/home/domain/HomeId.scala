@@ -46,7 +46,7 @@ object HomeId {
       if (seichiAmount.starLevelCorrespondingToExp.level >= 5) 1 else 0
     val buildLevel = buildAmount.levelCorrespondingToExp.level
     val additionalHomePointByBuildLevel =
-      Seq(20, 40, 60, 100).foldLeft(0)((acm, elem) => if (buildLevel >= elem) acm + 1 else acm)
+      Seq(20, 40, 60, 100).count(rawLevel => buildLevel >= rawLevel)
 
     1 + additionalHomePointBySeichiLevel + additionalHomePointByStarLevel + additionalHomePointByBuildLevel
   }
