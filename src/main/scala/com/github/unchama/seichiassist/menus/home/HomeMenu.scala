@@ -38,16 +38,9 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
   private val pageIndexMax = 0 max (HomeId.maxNumber - 1) / 9
   override type Environment = HomeMenu.Environment
 
-  /**
-   * メニューのサイズとタイトルに関する情報
-   */
   override val frame: MenuFrame =
     MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}ホームメニュー ${pageIndex + 1}/${pageIndexMax + 1}")
 
-  /**
-   * @return
-   * `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
-   */
   override def computeMenuLayout(
     player: Player
   )(implicit environment: Environment): IO[MenuSlotLayout] = {
@@ -242,15 +235,8 @@ case class HomeChangeConfirmationMenu(changeHomeNumber: Int, homeName: String = 
     extends Menu {
   override type Environment = ConfirmationMenuEnvironment.Environment
 
-  /**
-   * メニューのサイズとタイトルに関する情報
-   */
   override val frame: MenuFrame = MenuFrame(3.chestRows, s"$RED${BOLD}ホームポイントを変更しますか")
 
-  /**
-   * @return
-   *   `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
-   */
   override def computeMenuLayout(
     player: Player
   )(implicit environment: Environment): IO[MenuSlotLayout] = {
@@ -299,20 +285,10 @@ object ConfirmationMenuEnvironment {
 case class HomeRemoveConfirmationMenu(removeHomeNumber: Int, homeName: String = "")
     extends Menu {
 
-  /**
-   * メニューを開く操作に必要な環境情報の型。 例えば、メニューが利用するAPIなどをここを通して渡すことができる。
-   */
   override type Environment = ConfirmationMenuEnvironment.Environment
 
-  /**
-   * メニューのサイズとタイトルに関する情報
-   */
   override val frame: MenuFrame = MenuFrame(3.chestRows, s"$RED${BOLD}ホームポイントを削除しますか")
 
-  /**
-   * @return
-   * `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
-   */
   override def computeMenuLayout(
     player: Player
   )(implicit environment: Environment): IO[MenuSlotLayout] = {
