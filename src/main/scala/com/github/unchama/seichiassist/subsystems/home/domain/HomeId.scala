@@ -1,10 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.home.domain
 
-import cats.effect.{ConcurrentEffect, SyncEffect}
-import com.github.unchama.generic.ContextCoercion
-import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
-import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
 
 case class HomeId(value: Int) {
@@ -54,22 +50,5 @@ object HomeId {
       buildLevelThreshold.count(buildLevel >= _)
 
     additionalHomePointBySeichiLevel + additionalHomePointByStarLevel + additionalHomePointByBuildLevel
-  }
-
-  /**
-   * プレイヤーの現在レベル（整地レベル、建築レベル）で利用可能なホームポイント数を取得する作用
-   */
-  def maxAvailableHomeCountF[F[_]: ConcurrentEffect, G[_]: SyncEffect: ContextCoercion[
-    *[_],
-    F
-  ], Player](player: Player)(
-    implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player],
-    buildCountReadAPI: BuildCountAPI[F, G, Player]
-  ): F[Int] = {
-    import cats.implicits._
-    for {
-      seichiAmount <- ContextCoercion(breakCountReadAPI.seichiAmountDataRepository(player).read)
-      buildAmount <- ContextCoercion(buildCountReadAPI.playerBuildAmountRepository(player).read)
-    } yield Home.initialHomePerPlayer + maxNumberByExpOf(seichiAmount, buildAmount)
   }
 }

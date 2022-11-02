@@ -14,8 +14,8 @@ import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTempla
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.home.bukkit.{LocationCodec, TeleportEffect}
-import com.github.unchama.seichiassist.subsystems.home.domain.HomeId
 import com.github.unchama.seichiassist.subsystems.home.domain.OperationResult.RenameResult
+import com.github.unchama.seichiassist.subsystems.home.domain.{Home, HomeId}
 import com.github.unchama.seichiassist.subsystems.home.{HomeAPI, HomeReadAPI, HomeWriteAPI}
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
@@ -83,7 +83,7 @@ class HomeCommand[F[
         val player = context.sender
 
         val eff = for {
-          maxAvailableHomeCount <- HomeId.maxAvailableHomeCountF(player)
+          maxAvailableHomeCount <- Home.maxAvailableHomeCountF(player)
           isHomeAvailable = maxAvailableHomeCount >= homeId.value
           _ <- MessageEffectF[F](s"ホームポイント${homeId}は現在のレベルでは使用できません")
             .apply(player)
@@ -108,7 +108,7 @@ class HomeCommand[F[
         val player = context.sender
 
         val eff = for {
-          maxAvailableHomeCount <- HomeId.maxAvailableHomeCountF(player)
+          maxAvailableHomeCount <- Home.maxAvailableHomeCountF(player)
           isHomeAvailable = maxAvailableHomeCount >= homeId.value
           _ <- NonServerThreadContextShift[F].shift
           homeLocation <- HomeReadAPI[F].get(player.getUniqueId, homeId)
@@ -144,7 +144,7 @@ class HomeCommand[F[
         val homeLocation = LocationCodec.fromBukkitLocation(player.getLocation)
 
         val eff = for {
-          maxAvailableHomeCount <- HomeId.maxAvailableHomeCountF(player)
+          maxAvailableHomeCount <- Home.maxAvailableHomeCountF(player)
           isHomeAvailable = maxAvailableHomeCount >= homeId.value
           _ <- MessageEffectF[F](s"ホームポイント${homeId}は現在のレベルでは使用できません")
             .apply(player)
@@ -179,7 +179,7 @@ class HomeCommand[F[
         val cancelledInputMessage = List(s"${YELLOW}入力がキャンセルされました。")
 
         for {
-          maxAvailableHomeCount <- HomeId.maxAvailableHomeCountF(player).toIO
+          maxAvailableHomeCount <- Home.maxAvailableHomeCountF(player).toIO
           isHomeAvailable = maxAvailableHomeCount >= homeId.value
           _ <- MessageEffectF[F](s"ホームポイント${homeId}は現在のレベルでは使用できません")
             .apply(player)
