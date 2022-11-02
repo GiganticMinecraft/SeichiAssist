@@ -14,8 +14,8 @@ import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTempla
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.home.bukkit.{LocationCodec, TeleportEffect}
+import com.github.unchama.seichiassist.subsystems.home.domain.HomeId
 import com.github.unchama.seichiassist.subsystems.home.domain.OperationResult.RenameResult
-import com.github.unchama.seichiassist.subsystems.home.domain.{Home, HomeId}
 import com.github.unchama.seichiassist.subsystems.home.{HomeAPI, HomeReadAPI, HomeWriteAPI}
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
@@ -64,7 +64,6 @@ class HomeCommand[F[
   )
 
   private def homeNotSetMessage: List[String] = List(s"${YELLOW}指定されたホームポイントが設定されていません。")
-
 
   def executor: TabExecutor = BranchedExecutor(
     Map(
@@ -115,19 +114,19 @@ class HomeCommand[F[
           homeLocation <- HomeReadAPI[F].get(player.getUniqueId, homeId)
         } yield {
           if (isHomeAvailable)
-            homeLocation match {
-              case None => MessageEffect(s"ホームポイント${homeId}が設定されてません")
-              case Some(Home(_, location)) =>
-                LocationCodec.toBukkitLocation(location) match {
-                  case Some(bukkitLocation) =>
-                    TeleportEffect.to[F](bukkitLocation).mapK(Effect.toIOK[F]) >>
-                      MessageEffect(s"ホームポイント${homeId}にワープしました")
-                  case None =>
-                    MessageEffect(
-                      List(s"${RED}ホームポイントへのワープに失敗しました", s"${RED}登録先のワールドが削除された可能性があります")
-                    )
-                }
-            }
+            homeLocation.fold(MessageEffect(s"ホームポイント${homeId}が設定されてません"))(home => {
+              val location = home.location
+              LocationCodec
+                .toBukkitLocation(location)
+                .fold(
+                  MessageEffect(
+                    List(s"${RED}ホームポイントへのワープに失敗しました", s"${RED}登録先のワールドが削除された可能性があります")
+                  )
+                )(bukkitLocation =>
+                  TeleportEffect.to[F](bukkitLocation).mapK(Effect.toIOK[F]) >>
+                    MessageEffect(s"ホームポイント${homeId}にワープしました")
+                )
+            })
           else
             MessageEffect(s"ホームポイント${homeId}は現在のレベルでは使用できません")
         }
