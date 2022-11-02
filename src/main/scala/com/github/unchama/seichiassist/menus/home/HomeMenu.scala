@@ -71,29 +71,23 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
     import environment._
     // 5スロット目のページ遷移メニュー定義
     val paginationPartMap = {
+      val prevTransferButton = CommonButtons.transferButton(
+        new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
+        s"${pageIndex}ページ目へ",
+        HomeMenu(pageIndex - 1)
+      )
+      val nextTransferButton = CommonButtons.transferButton(
+        new SkullItemStackBuilder(SkullOwners.MHF_ArrowRight),
+        s"${pageIndex + 2}ページ目へ",
+        HomeMenu(pageIndex + 1)
+      )
       val stickButtonMap = Map(ChestSlotRef(4, 0) -> CommonButtons.openStickMenu)
-      val prevButtonMap = {
-        MapExtra.when(pageIndex >= 1)(
-          Map(
-            ChestSlotRef(4, 7) -> CommonButtons.transferButton(
-              new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
-              s"${pageIndex}ページ目へ",
-              HomeMenu(pageIndex - 1)
-            )
-          )
-        )
-      }
-      val nextButtonMap = {
+      val prevButtonMap =
+        MapExtra.when(pageIndex >= 1)(Map(ChestSlotRef(4, 7) -> prevTransferButton))
+      val nextButtonMap =
         MapExtra.when(pageIndex + 1 <= pageIndexMax)(
-          Map(
-            ChestSlotRef(4, 8) -> CommonButtons.transferButton(
-              new SkullItemStackBuilder(SkullOwners.MHF_ArrowRight),
-              s"${pageIndex + 2}ページ目へ",
-              HomeMenu(pageIndex + 1)
-            )
-          )
+          Map(ChestSlotRef(4, 8) -> nextTransferButton)
         )
-      }
       stickButtonMap ++ prevButtonMap ++ nextButtonMap
     }
 
