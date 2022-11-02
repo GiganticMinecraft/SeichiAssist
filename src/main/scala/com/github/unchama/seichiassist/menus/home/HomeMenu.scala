@@ -33,7 +33,7 @@ object HomeMenu {
     implicit val homeReadAPI: HomeReadAPI[IO],
     implicit val asyncShift: NonServerThreadContextShift[IO]
   )
-  
+
 }
 case class HomeMenu(pageIndex: Int = 0) extends Menu {
 
@@ -73,7 +73,7 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
     val paginationPartMap = {
       val stickButtonMap = Map(ChestSlotRef(4, 0) -> CommonButtons.openStickMenu)
       val prevButtonMap = {
-        MapExtra.whenOrEmpty(pageIndex >= 1)(
+        MapExtra.when(pageIndex >= 1)(
           Map(
             ChestSlotRef(4, 7) -> CommonButtons.transferButton(
               new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
@@ -84,7 +84,7 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
         )
       }
       val nextButtonMap = {
-        MapExtra.whenOrEmpty(pageIndex + 1 <= pageIndexMax)(
+        MapExtra.when(pageIndex + 1 <= pageIndexMax)(
           Map(
             ChestSlotRef(4, 8) -> CommonButtons.transferButton(
               new SkullItemStackBuilder(SkullOwners.MHF_ArrowRight),
