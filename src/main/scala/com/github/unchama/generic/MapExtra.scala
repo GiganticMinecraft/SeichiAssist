@@ -52,7 +52,7 @@ object MapExtra {
   }
 
   /**
-   * cond が真であればvalueを、偽であれば空のMap(Map.empty)を返す
+   * `cond`がtrueであれば`value`を、falseであれば空のMapを返す
    */
   def when[K, V](cond: Boolean)(value: => Map[K, V]): Map[K, V] =
     if (cond) value else Map.empty
