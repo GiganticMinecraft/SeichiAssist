@@ -191,6 +191,7 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
 case class HomeMenuButtonComputations(player: Player) {
   def setHomeNameButton[F[_]: HomeReadAPI: ConcurrentEffect](homeNumber: Int): IO[Button] = {
     import cats.implicits._
+    import cats.effect.implicits._
 
     val homeId = HomeId(homeNumber)
 
@@ -232,8 +233,6 @@ case class HomeMenuButtonComputations(player: Player) {
         }
       )
     }
-
-    import cats.effect.implicits._
 
     program.toIO
   }
