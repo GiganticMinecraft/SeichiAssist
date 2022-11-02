@@ -62,9 +62,9 @@ object HomeId {
   def maxAvailableHomeCountF[F[_]: ConcurrentEffect, G[_]: SyncEffect: ContextCoercion[
     *[_],
     F
-  ], P](player: P)(
-    implicit breakCountReadAPI: BreakCountReadAPI[F, G, P],
-    buildCountReadAPI: BuildCountAPI[F, G, P]
+  ], Player](player: Player)(
+    implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player],
+    buildCountReadAPI: BuildCountAPI[F, G, Player]
   ): F[Int] = {
     import cats.implicits._
     for {
@@ -72,5 +72,4 @@ object HomeId {
       buildAmount <- ContextCoercion(buildCountReadAPI.playerBuildAmountRepository(player).read)
     } yield Home.initialHomePerPlayer + maxNumberByExpOf(seichiAmount, buildAmount)
   }
-
 }
