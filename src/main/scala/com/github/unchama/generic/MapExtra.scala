@@ -2,7 +2,6 @@ package com.github.unchama.generic
 
 import cats.kernel.CommutativeSemigroup
 
-
 object MapExtra {
 
   import cats.implicits._
@@ -55,6 +54,6 @@ object MapExtra {
   /**
    * cond が真であればvalueを、偽であれば空のMap(Map.empty)を返す
    */
-  def whenOrEmpty[K, V](cond: Boolean)(value: Map[K, V]): Map[K, V] =
+  def when[K, V](cond: Boolean)(value: => Map[K, V]): Map[K, V] =
     if (cond) value else Map.empty
 }
