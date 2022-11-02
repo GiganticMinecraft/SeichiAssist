@@ -65,12 +65,6 @@ class HomeCommand[F[
 
   private def homeNotSetMessage: List[String] = List(s"${YELLOW}指定されたホームポイントが設定されていません。")
 
-//  private def maxHomeIdCanBeUsedF(player: Player): F[Int] = {
-//    for {
-//      seichiAmount <- ContextCoercion(breakCountReadAPI.seichiAmountDataRepository(player).read)
-//      buildAmount <- ContextCoercion(buildCountReadAPI.playerBuildAmountRepository(player).read)
-//    } yield Home.initialHomePerPlayer + HomeId.maxNumberByExpOf(seichiAmount, buildAmount)
-//  }
 
   def executor: TabExecutor = BranchedExecutor(
     Map(
