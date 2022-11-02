@@ -6,7 +6,6 @@ import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
-import org.bukkit.entity.Player
 
 case class HomeId(value: Int) {
   require(
@@ -60,11 +59,12 @@ object HomeId {
   /**
    * プレイヤーの現在レベル（整地レベル、建築レベル）で利用可能なホームポイント数を取得する作用
    */
-  def maxAvailableHomeCountF[F[_]: ConcurrentEffect, G[_]: SyncEffect: ContextCoercion[*[
-    _
-  ], F]](player: Player)(
-    implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player],
-    buildCountReadAPI: BuildCountAPI[F, G, Player]
+  def maxAvailableHomeCountF[F[_]: ConcurrentEffect, G[_]: SyncEffect: ContextCoercion[
+    *[_],
+    F
+  ], P](player: P)(
+    implicit breakCountReadAPI: BreakCountReadAPI[F, G, P],
+    buildCountReadAPI: BuildCountAPI[F, G, P]
   ): F[Int] = {
     import cats.implicits._
     for {
