@@ -124,8 +124,3 @@ masterブランチは本番環境に反映されます。
 - [GPLv3ライセンス](https://github.com/GiganticMinecraft/SeichiAssist/blob/develop/LICENSE) での公開です。ソースコードの使用規約等はGPLv3ライセンスに従います。
 - 当リポジトリのコードの著作権はunchamaが所有しています。
 - 独自機能の追加やバグの修正等、ギガンティック☆整地鯖(以下、当サーバー)の発展への寄与を目的としたコードの修正・改変を歓迎しています。その場合、当サーバーのDiscordコミュニティに参加して、当コードに関する詳細なサポートを受けることが出来ます。
-
-## ライセンス
-このプラグインは、[Apache 2.0ライセンス](https://www.apache.org/licenses/LICENSE-2.0)で配布されている以下の製作物が含まれています。
-
-- [AJD4JP 日本用カレンダー処理 Javaクラスライブラリ](https://osdn.net/projects/ajd4jp/)
