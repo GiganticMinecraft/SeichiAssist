@@ -2,7 +2,6 @@ package com.github.unchama.generic
 
 import cats.kernel.CommutativeSemigroup
 
-import scala.collection.mutable
 
 object MapExtra {
 
