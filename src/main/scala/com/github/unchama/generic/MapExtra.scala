@@ -2,6 +2,8 @@ package com.github.unchama.generic
 
 import cats.kernel.CommutativeSemigroup
 
+import scala.collection.mutable
+
 object MapExtra {
 
   import cats.implicits._
@@ -50,4 +52,10 @@ object MapExtra {
     require(keys.subsetOf(base))
     map ++ (base -- keys).map(a => a -> default)
   }
+
+  /**
+   * cond が真であればvalueを、偽であれば空のMap(Map.empty)を返す
+   */
+  def whenOrEmpty[K, V](cond: Boolean)(value: Map[K, V]): Map[K, V] =
+    if (cond) value else Map.empty
 }
