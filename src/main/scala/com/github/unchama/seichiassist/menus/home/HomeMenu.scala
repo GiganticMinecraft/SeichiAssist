@@ -32,6 +32,7 @@ object HomeMenu {
     implicit val homeReadAPI: HomeReadAPI[IO],
     implicit val asyncShift: NonServerThreadContextShift[IO]
   )
+  
 }
 case class HomeMenu(pageIndex: Int = 0) extends Menu {
 
