@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.menus.home
 
 import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
+import com.github.unchama.generic.MapExtra
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
@@ -71,7 +72,7 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
     val paginationPartMap = {
       val stickButtonMap = Map(ChestSlotRef(4, 0) -> CommonButtons.openStickMenu)
       val prevButtonMap = {
-        if (pageIndex >= 1)
+        MapExtra.whenOrEmpty(pageIndex >= 1)(
           Map(
             ChestSlotRef(4, 7) -> CommonButtons.transferButton(
               new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
@@ -79,10 +80,10 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
               HomeMenu(pageIndex - 1)
             )
           )
-        else Map.empty
+        )
       }
       val nextButtonMap = {
-        if (pageIndex + 1 <= pageIndexMax)
+        MapExtra.whenOrEmpty(pageIndex + 1 <= pageIndexMax)(
           Map(
             ChestSlotRef(4, 8) -> CommonButtons.transferButton(
               new SkullItemStackBuilder(SkullOwners.MHF_ArrowRight),
@@ -90,7 +91,7 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
               HomeMenu(pageIndex + 1)
             )
           )
-        else Map.empty
+        )
       }
       stickButtonMap ++ prevButtonMap ++ nextButtonMap
     }
@@ -183,8 +184,8 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
 }
 case class HomeMenuButtonComputations(player: Player) {
   def setHomeNameButton[F[_]: HomeReadAPI: ConcurrentEffect](homeNumber: Int): IO[Button] = {
-    import cats.implicits._
     import cats.effect.implicits._
+    import cats.implicits._
 
     val homeId = HomeId(homeNumber)
 
