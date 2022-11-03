@@ -13,7 +13,7 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMain
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
-import com.github.unchama.seichiassist.subsystems.home.domain.HomeId
+import com.github.unchama.seichiassist.subsystems.home.domain.{Home, HomeId}
 import com.github.unchama.seichiassist.{ManagedWorld, SkullOwners}
 import com.github.unchama.targetedeffect._
 import com.github.unchama.targetedeffect.player.PlayerEffects._
@@ -52,6 +52,7 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
 
     val buttonComputations = HomeMenuButtonComputations(player)
     import buttonComputations._
+    import environment._
 
     val homePointPart = for {
       homeNumber <- 1 + (9 * pageIndex) to HomeId.maxNumber - 9 * (pageIndexMax - pageIndex)
@@ -60,15 +61,10 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
       column.fold(
         _ => throw new RuntimeException("This branch should not be reached."),
         value =>
-          Map(
-            ChestSlotRef(0, value) -> ConstantButtons.warpToHomePointButton(homeNumber),
-            ChestSlotRef(2, value) -> ConstantButtons.setHomeButton(homeNumber),
-            ChestSlotRef(3, value) -> ConstantButtons.removeHomeButton(homeNumber)
-          )
+          Map(ChestSlotRef(0, value) -> ConstantButtons.warpToHomePointButton(homeNumber))
       )
     }
 
-    import environment._
     // 5スロット目のページ遷移メニュー定義
     val paginationPartMap = {
       val prevTransferButton = CommonButtons.transferButton(
@@ -92,7 +88,7 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
     }
 
     import cats.implicits._
-    val dynamicPartComputation = (for {
+    val setHomeNamePartComputation = (for {
       homeNumber <- 1 + (9 * pageIndex) to HomeId.maxNumber - 9 * (pageIndexMax - pageIndex)
     } yield {
       val column = refineV[Interval.ClosedOpen[0, 9]](homeNumber - 9 * pageIndex - 1)
@@ -102,10 +98,34 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
       )
     }.sequence).toList.sequence
 
+    val setHomePartComputation = (for {
+      homeNumber <- 1 + (9 * pageIndex) to HomeId.maxNumber - 9 * (pageIndexMax - pageIndex)
+    } yield {
+      val column = refineV[Interval.ClosedOpen[0, 9]](homeNumber - 9 * pageIndex - 1)
+      column.fold(
+        _ => throw new RuntimeException("This branch should not be reached."),
+        value => ChestSlotRef(2, value) -> buttonComputations.setHomeButton[IO](homeNumber)
+      )
+    }.sequence).toList.sequence
+
+    val removeHomePartComputation = (for {
+      homeNumber <- 1 + (9 * pageIndex) to HomeId.maxNumber - 9 * (pageIndexMax - pageIndex)
+    } yield {
+      val column = refineV[Interval.ClosedOpen[0, 9]](homeNumber - 9 * pageIndex - 1)
+      column.fold(
+        _ => throw new RuntimeException("This branch should not be reached."),
+        value => ChestSlotRef(3, value) -> buttonComputations.removeHomeButton[IO](homeNumber)
+      )
+    }.sequence).toList.sequence
+
     for {
-      dynamicPart <- dynamicPartComputation
+      setHomeNamePart <- setHomeNamePartComputation
+      setHomePart <- setHomePartComputation
+      removeHomePart <- removeHomePartComputation
       paginationPart = paginationPartMap
-    } yield MenuSlotLayout(homePointPart.flatten ++ dynamicPart.toMap ++ paginationPart: _*)
+    } yield MenuSlotLayout(
+      homePointPart.flatten ++ setHomeNamePart.toMap ++ setHomePart.toMap ++ removeHomePart ++ paginationPart: _*
+    )
   }
 
   private object ConstantButtons {
@@ -131,53 +151,11 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
           )
         }
       )
-
-    def setHomeButton(homeNumber: Int)(implicit environment: Environment): Button =
-      Button(
-        new IconItemStackBuilder(Material.BED)
-          .title(s"$YELLOW$UNDERLINE${BOLD}ホームポイント${homeNumber}を設定")
-          .lore(
-            List(
-              s"${GRAY}現在位置をホームポイント$homeNumber",
-              s"${GRAY}として設定します",
-              s"$DARK_GRAY※確認メニューが開きます",
-              s"$DARK_RED${UNDERLINE}クリックで設定",
-              s"${DARK_GRAY}command->[/home set $homeNumber]"
-            )
-          )
-          .build(),
-        LeftClickButtonEffect {
-          SequentialEffect(
-            FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
-            environment.ioCanOpenConfirmationMenu.open(HomeChangeConfirmationMenu(homeNumber))
-          )
-        }
-      )
-
-    def removeHomeButton(homeNumber: Int)(implicit environment: Environment): Button =
-      Button(
-        new IconItemStackBuilder(Material.WOOL, 14)
-          .title(s"$RED$UNDERLINE${BOLD}ホームポイント${homeNumber}を削除")
-          .lore(
-            List(
-              s"${GRAY}ホームポイント${homeNumber}を削除します。",
-              s"$DARK_GRAY※確認メニューが開きます。",
-              s"$DARK_RED${UNDERLINE}クリックで設定"
-            )
-          )
-          .build(),
-        LeftClickButtonEffect {
-          FocusedSoundEffect(Sound.BLOCK_ENDERCHEST_CLOSE, 1f, 0.1f)
-          SequentialEffect(
-            environment
-              .ioCanOpenHomeRemoveConfirmationMenu
-              .open(HomeRemoveConfirmationMenu(homeNumber))
-          )
-        }
-      )
   }
 }
-case class HomeMenuButtonComputations(player: Player) {
+case class HomeMenuButtonComputations(player: Player)(
+  private implicit val environment: HomeMenu.Environment
+) {
   def setHomeNameButton[F[_]: HomeReadAPI: ConcurrentEffect](homeNumber: Int): IO[Button] = {
     import cats.effect.implicits._
     import cats.implicits._
@@ -223,6 +201,74 @@ case class HomeMenuButtonComputations(player: Player) {
       )
     }
 
+    program.toIO
+  }
+
+  private def honeNameForConfirmMenu(homeOpt: Option[Home]): String =
+    homeOpt.fold("ホームポイント未設定")(_.name.getOrElse("名称未設定"))
+
+  def setHomeButton[F[_]: HomeReadAPI: ConcurrentEffect](homeNumber: Int): IO[Button] = {
+    import cats.effect.implicits._
+    import cats.implicits._
+    val homeId = HomeId(homeNumber)
+
+    val program = for {
+      homeOpt <- HomeReadAPI[F].get(player.getUniqueId, homeId)
+    } yield {
+      Button(
+        new IconItemStackBuilder(Material.BED)
+          .title(s"$YELLOW$UNDERLINE${BOLD}ホームポイント${homeNumber}を設定")
+          .lore(
+            List(
+              s"${GRAY}現在位置をホームポイント$homeNumber",
+              s"${GRAY}として設定します",
+              s"$DARK_GRAY※確認メニューが開きます",
+              s"$DARK_RED${UNDERLINE}クリックで設定",
+              s"${DARK_GRAY}command->[/home set $homeNumber]"
+            )
+          )
+          .build(),
+        LeftClickButtonEffect {
+          SequentialEffect(
+            FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
+            environment
+              .ioCanOpenConfirmationMenu
+              .open(HomeChangeConfirmationMenu(homeNumber, honeNameForConfirmMenu(homeOpt)))
+          )
+        }
+      )
+    }
+    program.toIO
+  }
+
+  def removeHomeButton[F[_]: HomeReadAPI: ConcurrentEffect](homeNumber: Int): IO[Button] = {
+    import cats.effect.implicits._
+    import cats.implicits._
+    val homeId = HomeId(homeNumber)
+    val program = for {
+      homeOpt <- HomeReadAPI[F].get(player.getUniqueId, homeId)
+    } yield {
+      Button(
+        new IconItemStackBuilder(Material.WOOL, 14)
+          .title(s"$RED$UNDERLINE${BOLD}ホームポイント${homeNumber}を削除")
+          .lore(
+            List(
+              s"${GRAY}ホームポイント${homeNumber}を削除します。",
+              s"$DARK_GRAY※確認メニューが開きます。",
+              s"$DARK_RED${UNDERLINE}クリックで設定"
+            )
+          )
+          .build(),
+        LeftClickButtonEffect {
+          FocusedSoundEffect(Sound.BLOCK_ENDERCHEST_CLOSE, 1f, 0.1f)
+          SequentialEffect(
+            environment
+              .ioCanOpenHomeRemoveConfirmationMenu
+              .open(HomeRemoveConfirmationMenu(homeNumber, honeNameForConfirmMenu(homeOpt)))
+          )
+        }
+      )
+    }
     program.toIO
   }
 }
