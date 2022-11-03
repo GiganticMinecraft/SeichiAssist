@@ -69,22 +69,6 @@ object GachaEventWriteAPI {
 
 }
 
-trait GachaDrawAPI[F[_], Player] {
-
-  /**
-   * @return ガチャを実行する作用
-   */
-  def drawGacha(player: Player, draws: Int): F[Unit]
-
-}
-
-object GachaDrawAPI {
-
-  def apply[F[_], Player](implicit ev: GachaDrawAPI[F, Player]): GachaDrawAPI[F, Player] =
-    ev
-
-}
-
 trait GachaPrizeReadAPI[F[_], ItemStack] {
 
   import cats.implicits._
@@ -179,6 +163,5 @@ object GachaPrizeWriteAPI {
 trait GachaPrizePrizePrizeAPI[F[_], ItemStack, Player]
     extends GachaPrizeReadAPI[F, ItemStack]
     with GachaPrizeWriteAPI[F, ItemStack]
-    with GachaDrawAPI[F, Player]
     with GachaEventReadAPI[F]
     with GachaEventWriteAPI[F]
