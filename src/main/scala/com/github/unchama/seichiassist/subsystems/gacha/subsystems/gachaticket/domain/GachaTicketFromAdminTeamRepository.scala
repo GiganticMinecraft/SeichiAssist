@@ -1,7 +1,6 @@
-package com.github.unchama.seichiassist.subsystems.gachaprize.subsystems.gachaticket.domain
+package com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain
 
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.PlayerName
-
+import com.github.unchama.seichiassist.subsystems.gacha.domain.PlayerName
 import java.util.UUID
 
 trait GachaTicketFromAdminTeamRepository[F[_]] {

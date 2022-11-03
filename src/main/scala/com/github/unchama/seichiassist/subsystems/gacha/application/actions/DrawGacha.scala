@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.gachaprize.application.actions
+package com.github.unchama.seichiassist.subsystems.gacha.application.actions
 
 trait DrawGacha[F[_], Player] {
 

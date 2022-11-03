@@ -1,15 +1,13 @@
-package com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.actions
+package com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions
 
 import cats.Monad
 import cats.data.Kleisli
 import cats.effect.Sync
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.subsystems.gachaprize.application.actions.GrantGachaPrize
+import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
+import com.github.unchama.seichiassist.subsystems.gacha.domain.GrantState
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.GachaPrize
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
-  CanBeSignedAsGachaPrize,
-  GrantState
-}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.util.InventoryOperations
 import org.bukkit.entity.Player

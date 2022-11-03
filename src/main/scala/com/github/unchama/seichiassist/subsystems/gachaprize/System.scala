@@ -8,15 +8,15 @@ import com.github.unchama.generic.serialization.SerializeAndDeserialize
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.minecraft.bukkit.algebra.BukkitItemStackSerializeAndDeserialize
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.gachaprize.application.actions.GrantGachaPrize
+import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.{BukkitDrawGacha, BukkitGrantGachaPrize}
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.{GachaCommand, PlayerPullGachaListener}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.LotteryOfGachaItems
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketFromAdminTeamRepository
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.infrastructure.JdbcGachaTicketFromAdminTeamRepository
 import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.BukkitItemStackCanBeSignedAsGachaPrize
-import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.actions.{
-  BukkitDrawGacha,
-  BukkitGrantGachaPrize
-}
-import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.command.GachaCommand
 import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.factories.BukkitStaticGachaPrizeFactory
-import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.listeners.PlayerPullGachaListener
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
   GachaEvent,
   GachaEventName,
@@ -29,16 +29,12 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
   CanBeSignedAsGachaPrize,
   GachaPrizeListPersistence,
-  LotteryOfGachaItems,
   StaticGachaPrizeFactory
 }
 import com.github.unchama.seichiassist.subsystems.gachaprize.infrastructure.{
   JdbcGachaEventPersistence,
   JdbcGachaPrizeListPersistence
 }
-import com.github.unchama.seichiassist.subsystems.gachaprize.subsystems.gachaticket.GachaTicketAPI
-import com.github.unchama.seichiassist.subsystems.gachaprize.subsystems.gachaticket.domain.GachaTicketFromAdminTeamRepository
-import com.github.unchama.seichiassist.subsystems.gachaprize.subsystems.gachaticket.infrastructure.JdbcGachaTicketFromAdminTeamRepository
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player

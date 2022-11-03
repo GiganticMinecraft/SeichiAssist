@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gachaprize
 
 import cats.Monad
-import com.github.unchama.seichiassist.subsystems.gachaprize.application.actions.GrantGachaPrize
+import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
   GachaEvent,
   GachaEventName

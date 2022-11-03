@@ -1,11 +1,9 @@
-package com.github.unchama.seichiassist.subsystems.gachaprize.domain
+package com.github.unchama.seichiassist.subsystems.gacha.domain
 
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
-  GachaPrize,
-  GachaPrizeId
-}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{GachaPrize, GachaPrizeId}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{GachaProbability, StaticGachaPrizeFactory, gachaprize}
 
 import scala.annotation.tailrec
 

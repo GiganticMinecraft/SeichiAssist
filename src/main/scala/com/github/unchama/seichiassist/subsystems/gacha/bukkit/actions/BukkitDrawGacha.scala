@@ -1,18 +1,12 @@
-package com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.actions
+package com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions
 
 import cats.effect.{IO, Sync}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
-import com.github.unchama.seichiassist.subsystems.gachaprize.application.actions.{
-  DrawGacha,
-  GrantGachaPrize
-}
+import com.github.unchama.seichiassist.subsystems.gacha.application.actions.{DrawGacha, GrantGachaPrize}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.{GrantState, LotteryOfGachaItems}
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaRarity._
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
-  GlobalGachaPrizeList,
-  GrantState,
-  LotteryOfGachaItems
-}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GlobalGachaPrizeList
 import com.github.unchama.seichiassist.util.SendMessageEffect.sendMessageToEveryone
 import com.github.unchama.seichiassist.util._
 import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}

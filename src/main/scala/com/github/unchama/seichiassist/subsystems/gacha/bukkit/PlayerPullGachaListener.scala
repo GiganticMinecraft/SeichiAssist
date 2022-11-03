@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.listeners
+package com.github.unchama.seichiassist.subsystems.gacha.bukkit
 
 import cats.effect.ConcurrentEffect
 import cats.effect.Effect.ops.toAllEffectOps
