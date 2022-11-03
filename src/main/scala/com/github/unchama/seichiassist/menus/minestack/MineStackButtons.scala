@@ -183,7 +183,8 @@ private[minestack] case class MineStackButtons(player: Player)(
           soundEffectPitch = if (grantAmount == amount) 1.0f else 0.5f
           signedItemStack <- mineStackObject.tryToSignedItemStack[IO, Player](player.getName)
           itemStackToGrant = signedItemStack.getOrElse(mineStackObject.itemStack)
-          _ = itemStackToGrant.setAmount(amount)
+          // NOTE: grantAmountが64を超えることはないので、Intで問題ない
+          _ = itemStackToGrant.setAmount(grantAmount.toInt)
         } yield (soundEffectPitch, itemStackToGrant)
       )
       _ <- SequentialEffect(
