@@ -1,9 +1,18 @@
 package com.github.unchama.seichiassist.subsystems.gachaprize
 
 import cats.Monad
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{GachaEvent, GachaEventName}
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{GachaPrize, GachaPrizeId}
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{CanBeSignedAsGachaPrize, StaticGachaPrizeFactory}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
+  GachaEvent,
+  GachaEventName
+}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
+  GachaPrize,
+  GachaPrizeId
+}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
+  CanBeSignedAsGachaPrize,
+  StaticGachaPrizeFactory
+}
 
 trait GachaEventReadAPI[F[_]] {
 

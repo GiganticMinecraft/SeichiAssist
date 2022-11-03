@@ -4,7 +4,11 @@ import cats.effect.Sync
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gacha.domain.PlayerName
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{GachaTicketAmount, GachaTicketFromAdminTeamRepository, GrantResultOfGachaTicketFromAdminTeam}
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{
+  GachaTicketAmount,
+  GachaTicketFromAdminTeamRepository,
+  GrantResultOfGachaTicketFromAdminTeam
+}
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.infrastructure.JdbcGachaTicketFromAdminTeamRepository
 
 import java.util.UUID

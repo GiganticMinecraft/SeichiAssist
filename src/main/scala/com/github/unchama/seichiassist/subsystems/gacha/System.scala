@@ -56,7 +56,8 @@ object System {
     for {
       gachaPrizesListReference <- gachaPrizeAPI.list
     } yield {
-      implicit val drawGacha: DrawGacha[F, Player] = new BukkitDrawGacha[F](gachaPrizesListReference)
+      implicit val drawGacha: DrawGacha[F, Player] =
+        new BukkitDrawGacha[F](gachaPrizesListReference)
 
       new System[F, Player] {
         override val api: GachaDrawAPI[F, Player] = (player: Player, draws: Int) => {

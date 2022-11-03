@@ -1,7 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket
 
 import com.github.unchama.seichiassist.subsystems.gacha.domain.PlayerName
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{GachaTicketAmount, GrantResultOfGachaTicketFromAdminTeam}
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{
+  GachaTicketAmount,
+  GrantResultOfGachaTicketFromAdminTeam
+}
 
 import java.util.UUID
 

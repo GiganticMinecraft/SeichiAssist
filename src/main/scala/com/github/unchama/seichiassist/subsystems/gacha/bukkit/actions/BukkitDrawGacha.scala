@@ -3,7 +3,10 @@ package com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions
 import cats.effect.{IO, Sync}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
-import com.github.unchama.seichiassist.subsystems.gacha.application.actions.{DrawGacha, GrantGachaPrize}
+import com.github.unchama.seichiassist.subsystems.gacha.application.actions.{
+  DrawGacha,
+  GrantGachaPrize
+}
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{GrantState, LotteryOfGachaItems}
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaRarity._
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.GachaPrize
