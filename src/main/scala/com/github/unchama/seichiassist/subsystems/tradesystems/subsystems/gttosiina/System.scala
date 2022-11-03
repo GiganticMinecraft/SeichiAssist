@@ -2,8 +2,8 @@ package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttos
 
 import cats.effect.ConcurrentEffect
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
-import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.bukkit.BukkitStaticTradeItemFactory
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.bukkit.listeners.GtToSiinaringo
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.domain.StaticTradeItemFactory

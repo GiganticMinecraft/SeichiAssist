@@ -68,8 +68,8 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
   FastDiggingSettingsApi
 }
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
-import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gachaprize.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
@@ -392,15 +392,15 @@ class SeichiAssist extends JavaPlugin() {
   private implicit lazy val mineStackAPI: MineStackAPI[IO, Player, ItemStack] =
     mineStackSystem.api
 
-  private lazy val gachaSystem: subsystems.gacha.System[IO] = {
+  private lazy val gachaSystem: subsystems.gachaprize.System[IO] = {
     implicit val gachaTicketAPI: GachaTicketAPI[IO] = gachaTicketSystem.api
-    subsystems.gacha.System.wired.unsafeRunSync()
+    subsystems.gachaprize.System.wired.unsafeRunSync()
   }
 
   private implicit lazy val gachaAPI: GachaAPI[IO, ItemStack, Player] = gachaSystem.api
 
-  private lazy val gachaTicketSystem: subsystems.gacha.subsystems.gachaticket.System[IO] =
-    subsystems.gacha.subsystems.gachaticket.System.wired[IO]
+  private lazy val gachaTicketSystem: subsystems.gachaprize.subsystems.gachaticket.System[IO] =
+    subsystems.gachaprize.subsystems.gachaticket.System.wired[IO]
 
   private lazy val gtToSiinaSystem
     : subsystems.tradesystems.subsystems.gttosiina.System[IO, ItemStack] =

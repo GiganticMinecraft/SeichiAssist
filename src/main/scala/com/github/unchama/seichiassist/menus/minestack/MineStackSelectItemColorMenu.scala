@@ -8,7 +8,7 @@ import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlot
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.menus.CommonButtons
-import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaAPI
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectWithColorVariants
 import eu.timepit.refined.auto._

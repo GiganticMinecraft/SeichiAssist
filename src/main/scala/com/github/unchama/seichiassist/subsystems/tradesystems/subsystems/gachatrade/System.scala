@@ -3,9 +3,9 @@ package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gacha
 import cats.effect.ConcurrentEffect
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
-import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.GachaPrize
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.CanBeSignedAsGachaPrize
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.GachaPrize
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.tradesystems.domain.TradeRule
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.listeners.GachaTradeListener

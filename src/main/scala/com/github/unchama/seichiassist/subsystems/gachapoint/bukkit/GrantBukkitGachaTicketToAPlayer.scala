@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.gachapoint.bukkit
 
 import cats.effect.{IO, LiftIO}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.BukkitGachaSkullData
+import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.factories.BukkitGachaSkullData
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.GrantGachaTicketToAPlayer
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.targetedeffect.SequentialEffect

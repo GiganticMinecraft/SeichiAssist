@@ -9,7 +9,7 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
-import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaAPI
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory.{

@@ -6,11 +6,23 @@ import com.github.unchama.menuinventory.LayoutPreparationContext
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.menus.achievement.group.AchievementGroupMenu
-import com.github.unchama.seichiassist.menus.achievement.{AchievementCategoryMenu, AchievementMenu}
+import com.github.unchama.seichiassist.menus.achievement.{
+  AchievementCategoryMenu,
+  AchievementMenu
+}
 import com.github.unchama.seichiassist.menus.home.{ConfirmationMenuEnvironment, HomeMenu}
-import com.github.unchama.seichiassist.menus.minestack.{CategorizedMineStackMenu, MineStackMainMenu, MineStackSelectItemColorMenu}
+import com.github.unchama.seichiassist.menus.minestack.{
+  CategorizedMineStackMenu,
+  MineStackMainMenu,
+  MineStackSelectItemColorMenu
+}
 import com.github.unchama.seichiassist.menus.ranking.{RankingMenu, RankingRootMenu}
-import com.github.unchama.seichiassist.menus.skill.{ActiveSkillEffectMenu, ActiveSkillMenu, PassiveSkillMenu, PremiumPointTransactionHistoryMenu}
+import com.github.unchama.seichiassist.menus.skill.{
+  ActiveSkillEffectMenu,
+  ActiveSkillMenu,
+  PassiveSkillMenu,
+  PremiumPointTransactionHistoryMenu
+}
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, SecondPage}
 import com.github.unchama.seichiassist.subsystems.anywhereender.AnywhereEnderChestAPI
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
@@ -18,10 +30,13 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmount
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
+  FastDiggingEffectApi,
+  FastDiggingSettingsApi
+}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
-import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gachaprize.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi

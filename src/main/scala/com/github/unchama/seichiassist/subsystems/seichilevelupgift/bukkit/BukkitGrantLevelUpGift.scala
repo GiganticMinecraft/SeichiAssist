@@ -5,7 +5,7 @@ import cats.effect.Sync
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.data.ItemData
-import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.GachaPoint
 import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.{

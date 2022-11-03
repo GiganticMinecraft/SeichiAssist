@@ -7,7 +7,7 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaAPI
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
   MineStackObject,

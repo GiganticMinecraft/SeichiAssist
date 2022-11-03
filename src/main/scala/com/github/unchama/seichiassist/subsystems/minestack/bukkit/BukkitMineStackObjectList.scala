@@ -3,8 +3,8 @@ package com.github.unchama.seichiassist.subsystems.minestack.bukkit
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
 import com.github.unchama.minecraft.objects.MinecraftMaterial
-import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
-import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject.{
   MineStackObjectByItemStack,
   MineStackObjectByMaterial
