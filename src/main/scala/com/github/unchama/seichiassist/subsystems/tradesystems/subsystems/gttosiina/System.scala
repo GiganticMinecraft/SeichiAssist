@@ -20,10 +20,10 @@ trait System[F[_], ItemStack] extends Subsystem[F] {
 object System {
 
   def wired[F[_]: ConcurrentEffect](
-    implicit gachaAPI: GachaPrizeAPI[F, ItemStack, Player]
+    implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player]
   ): System[F, ItemStack] = {
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
-      gachaAPI.canBeSignedAsGachaPrize
+      gachaPrizeAPI.canBeSignedAsGachaPrize
     implicit val tradeItemFactory: StaticTradeItemFactory[ItemStack] =
       BukkitStaticTradeItemFactory
 

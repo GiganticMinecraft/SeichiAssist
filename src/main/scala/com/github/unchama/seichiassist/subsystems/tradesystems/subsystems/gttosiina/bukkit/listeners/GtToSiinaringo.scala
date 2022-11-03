@@ -17,9 +17,9 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 
 class GtToSiinaringo[F[_]: ConcurrentEffect](
-                                              implicit canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack],
-                                              gachaAPI: GachaPrizeAPI[F, ItemStack, Player],
-                                              tradeItemFactory: StaticTradeItemFactory[ItemStack]
+  implicit canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack],
+  gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
+  tradeItemFactory: StaticTradeItemFactory[ItemStack]
 ) extends Listener {
 
   @EventHandler
@@ -39,7 +39,7 @@ class GtToSiinaringo[F[_]: ConcurrentEffect](
     if (inventory.getTitle != s"$GOLD${BOLD}椎名林檎と交換したい景品を入れてネ") return
     // 交換後の情報
     val tradedInformation =
-      new BukkitTrade(name, gachaAPI.list.toIO.unsafeRunSync())
+      new BukkitTrade(name, gachaPrizeAPI.list.toIO.unsafeRunSync())
         .trade(inventory.getContents.toList)
 
     val totalAmountOfTradeResult =

@@ -17,14 +17,14 @@ import org.bukkit.inventory.ItemStack
 
 class BukkitMineStackObjectList[F[_]: Sync](
   implicit minecraftMaterial: MinecraftMaterial[Material, ItemStack],
-  gachaAPI: GachaPrizeAPI[F, ItemStack, Player]
+  gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player]
 ) extends MineStackObjectList[F, ItemStack, Player] {
 
   private def leftElems[A](elems: A*): List[Either[A, Nothing]] = elems.toList.map(Left.apply)
   private def rightElems[B](elems: B*): List[Either[Nothing, B]] = elems.toList.map(Right.apply)
 
   // @formatter:off
-  
+
   // 採掘可能ブロック
   private val minestacklistmine: List[MineStackObjectGroup[ItemStack]] = leftElems(
     MineStackObjectByMaterial(ORES, "coal_ore", "石炭鉱石", Material.COAL_ORE, 0),
@@ -172,7 +172,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(AGRICULTURAL, "bowl", "ボウル", Material.BOWL, 0),
     MineStackObjectByMaterial(AGRICULTURAL, "milk_bucket", "牛乳", Material.MILK_BUCKET, 0)
   )
-  
+
   // 建築系ブロック
   private val minestacklistbuild: List[MineStackObjectGroup[ItemStack]] = leftElems(
     MineStackObjectByMaterial(BUILDING, "log", "オークの原木", Material.LOG, 0),
@@ -594,7 +594,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
    * デフォルトでガチャの内容に含まれている景品。
    */
   private val minestackBuiltinGachaPrizes: List[MineStackObjectGroup[ItemStack]] = leftElems(
-    MineStackObjectByItemStack(BUILTIN_GACHA_PRIZES,"gachaimo",None,hasNameLore = true, gachaAPI.staticGachaPrizeFactory.gachaRingo),
+    MineStackObjectByItemStack(BUILTIN_GACHA_PRIZES,"gachaimo",None,hasNameLore = true, gachaPrizeAPI.staticGachaPrizeFactory.gachaRingo),
     MineStackObjectByItemStack(BUILTIN_GACHA_PRIZES,"exp_bottle",Some("エンチャントの瓶"),hasNameLore = false,new ItemStack(Material.EXP_BOTTLE,1))
   )
 
@@ -658,13 +658,13 @@ class BukkitMineStackObjectList[F[_]: Sync](
     itemStack: ItemStack,
     player: Player
   ): F[Option[MineStackObject[ItemStack]]] = for {
-    foundGachaPrizeOpt <- gachaAPI.findByItemStack(itemStack)
+    foundGachaPrizeOpt <- gachaPrizeAPI.findByItemStack(itemStack)
     isGachaPrize = foundGachaPrizeOpt.nonEmpty
     mineStackObjects <- allMineStackObjects
   } yield {
     val targetItemStack = if (isGachaPrize && foundGachaPrizeOpt.get.signOwner) {
       implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
-        gachaAPI.canBeSignedAsGachaPrize
+        gachaPrizeAPI.canBeSignedAsGachaPrize
       foundGachaPrizeOpt.get.materializeWithOwnerSignature(player.getName)
     } else {
       itemStack

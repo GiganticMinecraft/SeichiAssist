@@ -20,12 +20,12 @@ class BukkitGrantLevelUpGift[F[_]: Sync: OnMinecraftServerThread, G[_]: ContextC
   _
 ], F]](
   implicit gachaPointApi: GachaPointApi[F, G, Player],
-  gachaAPI: GachaPrizeAPI[F, ItemStack, Player]
+  gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player]
 ) extends GrantLevelUpGiftAlgebra[F, Player] {
   override def grantGiftItem(item: Gift.Item): Kleisli[F, Player, Unit] = {
     val itemStack = item match {
       case Gift.Item.SuperPickaxe => ItemData.getSuperPickaxe(1)
-      case Gift.Item.GachaApple   => gachaAPI.staticGachaPrizeFactory.gachaRingo
+      case Gift.Item.GachaApple   => gachaPrizeAPI.staticGachaPrizeFactory.gachaRingo
       case Gift.Item.Elsa         => ItemData.getElsa(1)
     }
 
@@ -36,15 +36,15 @@ class BukkitGrantLevelUpGift[F[_]: Sync: OnMinecraftServerThread, G[_]: ContextC
     gachaPointApi.addGachaPoint(gachaPoint).mapK[F](ContextCoercion.asFunctionK)
 
   override def runGachaForPlayer: Kleisli[F, Player, Unit] = Kleisli { player =>
-    gachaAPI.drawGacha(player, 1)
+    gachaPrizeAPI.drawGacha(player, 1)
   }
 }
 
 object BukkitGrantLevelUpGift {
 
   implicit def apply[F[_]: Sync: OnMinecraftServerThread, G[_]: ContextCoercion[*[_], F]](
-                                                                                           implicit gachaAPI: GachaPrizeAPI[F, ItemStack, Player],
-                                                                                           gachaPointApi: GachaPointApi[F, G, Player]
+    implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
+    gachaPointApi: GachaPointApi[F, G, Player]
   ): GrantLevelUpGiftAlgebra[F, Player] =
     new BukkitGrantLevelUpGift[F, G]
 

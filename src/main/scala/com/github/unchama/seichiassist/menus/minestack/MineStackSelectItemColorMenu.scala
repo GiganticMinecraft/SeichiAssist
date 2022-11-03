@@ -21,7 +21,7 @@ object MineStackSelectItemColorMenu {
   class Environment(
     implicit val canOpenCategorizedMineStackMenu: CanOpen[IO, CategorizedMineStackMenu],
     implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack],
-    implicit val gachaAPI: GachaPrizeAPI[IO, ItemStack, Player]
+    implicit val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player]
   )
 
 }

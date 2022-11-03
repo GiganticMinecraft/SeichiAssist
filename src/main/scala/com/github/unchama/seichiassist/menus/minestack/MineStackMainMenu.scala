@@ -31,11 +31,11 @@ object MineStackMainMenu extends Menu {
   import eu.timepit.refined.auto._
 
   class Environment(
-                     implicit val ioCanOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu,
-                     val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
-                     val ioOnMainThread: OnMinecraftServerThread[IO],
-                     implicit val gachaAPI: GachaPrizeAPI[IO, ItemStack, Player],
-                     implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack]
+    implicit val ioCanOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu,
+    val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
+    val ioOnMainThread: OnMinecraftServerThread[IO],
+    implicit val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
+    implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack]
   )
 
   override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}MineStackメインメニュー")
@@ -103,7 +103,7 @@ object MineStackMainMenu extends Menu {
       implicit ioOnMainThread: OnMinecraftServerThread[IO],
       canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu,
       mineStackAPI: MineStackAPI[IO, Player, ItemStack],
-      gachaAPI: GachaPrizeAPI[IO, ItemStack, Player]
+      gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player]
     ): IO[MenuSlotLayout] = {
       val usageHistory = mineStackAPI.getUsageHistory(player)
       for {

@@ -47,7 +47,7 @@ object System {
   import cats.implicits._
 
   def wired[F[_]: ConcurrentEffect, G[_]: SyncEffect: ContextCoercion[*[_], F]](
-    implicit gachaAPI: GachaPrizeAPI[F, ItemStack, Player]
+    implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player]
   ): F[System[F, Player, ItemStack]] = {
     implicit val minecraftMaterial: MinecraftMaterial[Material, ItemStack] = new BukkitMaterial
     implicit val _mineStackObjectList: MineStackObjectList[F, ItemStack, Player] =

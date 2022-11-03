@@ -22,16 +22,16 @@ case class MineStackObject[ItemStack](
    */
   def tryToSignedItemStack[F[_]: Sync, Player](
     name: String
-  )(implicit gachaAPI: GachaPrizeAPI[F, ItemStack, Player]): F[Option[ItemStack]] = {
+  )(implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player]): F[Option[ItemStack]] = {
     if (
       category != MineStackObjectCategory.GACHA_PRIZES || category == MineStackObjectCategory.BUILTIN_GACHA_PRIZES
     ) return Sync[F].pure(None)
 
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
-      gachaAPI.canBeSignedAsGachaPrize
+      gachaPrizeAPI.canBeSignedAsGachaPrize
 
     for {
-      foundGachaPrize <- gachaAPI.findByItemStack(itemStack)
+      foundGachaPrize <- gachaPrizeAPI.findByItemStack(itemStack)
     } yield foundGachaPrize.map { gachaPrize => gachaPrize.materializeWithOwnerSignature(name) }
   }
 

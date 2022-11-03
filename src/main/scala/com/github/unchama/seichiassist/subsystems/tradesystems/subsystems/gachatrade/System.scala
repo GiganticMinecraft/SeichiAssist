@@ -24,14 +24,14 @@ import org.bukkit.inventory.ItemStack
 object System {
 
   def wired[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
-                                                                     implicit gachaAPI: GachaPrizeAPI[F, ItemStack, Player],
-                                                                     gachaPointApi: GachaPointApi[F, G, Player]
+    implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
+    gachaPointApi: GachaPointApi[F, G, Player]
   ): Subsystem[F] = {
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
-      gachaAPI.canBeSignedAsGachaPrize
+      gachaPrizeAPI.canBeSignedAsGachaPrize
     implicit val gachaListProvider: GachaListProvider[F, ItemStack] =
       new GachaListProvider[F, ItemStack] {
-        override def readGachaList: F[Vector[GachaPrize[ItemStack]]] = gachaAPI.list
+        override def readGachaList: F[Vector[GachaPrize[ItemStack]]] = gachaPrizeAPI.list
       }
     val gachaTradeRule: GachaTradeRule[ItemStack] = new GachaTradeRule[ItemStack] {
       override def ruleFor(

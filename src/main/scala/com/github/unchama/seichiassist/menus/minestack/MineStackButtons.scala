@@ -26,7 +26,7 @@ import org.bukkit.{Material, Sound}
 
 private[minestack] case class MineStackButtons(player: Player)(
   implicit mineStackAPI: MineStackAPI[IO, Player, ItemStack],
-  gachaAPI: GachaPrizeAPI[IO, ItemStack, Player]
+  gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player]
 ) {
 
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext

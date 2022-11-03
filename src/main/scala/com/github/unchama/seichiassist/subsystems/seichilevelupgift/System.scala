@@ -19,10 +19,10 @@ object System {
   def backGroundProcess[F[_]: OnMinecraftServerThread: ErrorLogger: Async, G[
     _
   ]: ContextCoercion[*[_], F]](
-                                                                                                           implicit breakCountReadApi: BreakCountReadAPI[F, G, Player],
-                                                                                                           send: SendMinecraftMessage[F, Player],
-                                                                                                           gachaAPI: GachaPrizeAPI[F, ItemStack, Player],
-                                                                                                           gachaPointApi: GachaPointApi[F, G, Player]
+    implicit breakCountReadApi: BreakCountReadAPI[F, G, Player],
+    send: SendMinecraftMessage[F, Player],
+    gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
+    gachaPointApi: GachaPointApi[F, G, Player]
   ): F[Nothing] = {
     implicit val grantLevelUpGiftAlgebra: GrantLevelUpGiftAlgebra[F, Player] =
       new BukkitGrantLevelUpGift

@@ -24,7 +24,7 @@ object CategorizedMineStackMenu {
     val ioCanOpenSelectItemColorMenu: IO CanOpen MineStackSelectItemColorMenu,
     val onMainThread: OnMinecraftServerThread[IO],
     val mineStackAPI: MineStackAPI[IO, Player, ItemStack],
-    implicit val gachaAPI: GachaPrizeAPI[IO, ItemStack, Player]
+    implicit val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player]
   )
 
 }

@@ -17,7 +17,7 @@ import org.bukkit.inventory.{EquipmentSlot, ItemStack}
 import org.bukkit.{GameMode, Material}
 
 class PlayerPullGachaListener[F[_]: ConcurrentEffect: OnMinecraftServerThread](
-  implicit gachaAPI: GachaPrizeAPI[F, ItemStack, Player]
+  implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player]
 ) extends Listener {
 
   @EventHandler
@@ -60,7 +60,7 @@ class PlayerPullGachaListener[F[_]: ConcurrentEffect: OnMinecraftServerThread](
     ) return
 
     // ガチャデータが設定されていない場合
-    if (gachaAPI.list.toIO.unsafeRunSync().isEmpty) {
+    if (gachaPrizeAPI.list.toIO.unsafeRunSync().isEmpty) {
       player.sendMessage("ガチャデータがありません")
       return
     }
@@ -82,7 +82,7 @@ class PlayerPullGachaListener[F[_]: ConcurrentEffect: OnMinecraftServerThread](
     }
 
     // ガチャの実行
-    gachaAPI.drawGacha(player, count).toIO.unsafeRunAsyncAndForget()
+    gachaPrizeAPI.drawGacha(player, count).toIO.unsafeRunAsyncAndForget()
   }
 
 }
