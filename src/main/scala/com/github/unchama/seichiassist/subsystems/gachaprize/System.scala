@@ -8,22 +8,14 @@ import com.github.unchama.generic.serialization.SerializeAndDeserialize
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.minecraft.bukkit.algebra.BukkitItemStackSerializeAndDeserialize
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.BukkitGrantGachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.{GachaCommand, PlayerPullGachaListener}
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketFromAdminTeamRepository
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.infrastructure.JdbcGachaTicketFromAdminTeamRepository
 import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.BukkitItemStackCanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.factories.BukkitStaticGachaPrizeFactory
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{GachaEvent, GachaEventName, GachaEventPersistence}
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{GachaPrize, GachaPrizeId}
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{CanBeSignedAsGachaPrize, GachaPrizeListPersistence, StaticGachaPrizeFactory}
 import com.github.unchama.seichiassist.subsystems.gachaprize.infrastructure.{JdbcGachaEventPersistence, JdbcGachaPrizeListPersistence}
-import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
-import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
-import org.bukkit.event.Listener
 import org.bukkit.inventory.ItemStack
 
 trait System[F[_]] extends Subsystem[F] {
@@ -35,15 +27,12 @@ object System {
   import cats.implicits._
 
   def wired[F[_]: OnMinecraftServerThread: NonServerThreadContextShift: ConcurrentEffect](
-    implicit gachaTicketAPI: GachaTicketAPI[F],
-    mineStackAPI: MineStackAPI[F, Player, ItemStack]
+    implicit gachaTicketAPI: GachaTicketAPI[F]
   ): F[System[F]] = {
     implicit val _serializeAndDeserialize: SerializeAndDeserialize[Nothing, ItemStack] =
       BukkitItemStackSerializeAndDeserialize
     implicit val _gachaPersistence: GachaPrizeListPersistence[F, ItemStack] =
       new JdbcGachaPrizeListPersistence[F, ItemStack]()
-    implicit val _gachaTicketPersistence: GachaTicketFromAdminTeamRepository[F] =
-      new JdbcGachaTicketFromAdminTeamRepository[F]
     implicit val _canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
       BukkitItemStackCanBeSignedAsGachaPrize
     implicit val _staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack] =
@@ -87,9 +76,6 @@ object System {
                     GachaPrizeId(if (prizes.nonEmpty) prizes.map(_.id.id).max + 1 else 1)
                   ) +: prizes
                 }
-
-              override val grantGachaPrize: GrantGachaPrize[F, ItemStack] =
-                new BukkitGrantGachaPrize[F]
 
               override def list: F[Vector[GachaPrize[ItemStack]]] = gachaPrizesListReference.get
 

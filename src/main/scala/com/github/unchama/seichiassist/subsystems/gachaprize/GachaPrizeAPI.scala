@@ -1,19 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.gachaprize
 
 import cats.Monad
-import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
-  GachaEvent,
-  GachaEventName
-}
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
-  GachaPrize,
-  GachaPrizeId
-}
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
-  CanBeSignedAsGachaPrize,
-  StaticGachaPrizeFactory
-}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{GachaEvent, GachaEventName}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{GachaPrize, GachaPrizeId}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{CanBeSignedAsGachaPrize, StaticGachaPrizeFactory}
 
 trait GachaEventReadAPI[F[_]] {
 
@@ -92,8 +82,6 @@ trait GachaPrizeReadAPI[F[_], ItemStack] {
    */
   final def existsGachaPrize(gachaPrizeId: GachaPrizeId): F[Boolean] =
     F.map(fetch(gachaPrizeId))(_.nonEmpty)
-
-  val grantGachaPrize: GrantGachaPrize[F, ItemStack]
 
   /**
    * @return [[StaticGachaPrizeFactory]]を返す
