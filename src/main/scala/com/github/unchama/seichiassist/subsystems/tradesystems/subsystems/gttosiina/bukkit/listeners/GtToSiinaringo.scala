@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttos
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
-import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizePrizePrizeAPI
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.bukkit.traderules.BukkitTrade
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.domain.StaticTradeItemFactory
@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack
 
 class GtToSiinaringo[F[_]: ConcurrentEffect](
                                               implicit canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack],
-                                              gachaAPI: GachaPrizePrizePrizeAPI[F, ItemStack, Player],
+                                              gachaAPI: GachaPrizeAPI[F, ItemStack, Player],
                                               tradeItemFactory: StaticTradeItemFactory[ItemStack]
 ) extends Listener {
 

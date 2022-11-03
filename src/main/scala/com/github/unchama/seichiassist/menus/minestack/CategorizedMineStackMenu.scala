@@ -8,7 +8,7 @@ import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.CommonButtons
-import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizePrizePrizeAPI
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory
 import com.github.unchama.targetedeffect.{DeferredEffect, TargetedEffect}
@@ -24,7 +24,7 @@ object CategorizedMineStackMenu {
     val ioCanOpenSelectItemColorMenu: IO CanOpen MineStackSelectItemColorMenu,
     val onMainThread: OnMinecraftServerThread[IO],
     val mineStackAPI: MineStackAPI[IO, Player, ItemStack],
-    implicit val gachaAPI: GachaPrizePrizePrizeAPI[IO, ItemStack, Player]
+    implicit val gachaAPI: GachaPrizeAPI[IO, ItemStack, Player]
   )
 
 }

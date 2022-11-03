@@ -9,7 +9,7 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
-import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizePrizePrizeAPI
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory.{
@@ -34,7 +34,7 @@ object MineStackMainMenu extends Menu {
                      implicit val ioCanOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu,
                      val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
                      val ioOnMainThread: OnMinecraftServerThread[IO],
-                     implicit val gachaAPI: GachaPrizePrizePrizeAPI[IO, ItemStack, Player],
+                     implicit val gachaAPI: GachaPrizeAPI[IO, ItemStack, Player],
                      implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack]
   )
 
@@ -103,7 +103,7 @@ object MineStackMainMenu extends Menu {
       implicit ioOnMainThread: OnMinecraftServerThread[IO],
       canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu,
       mineStackAPI: MineStackAPI[IO, Player, ItemStack],
-      gachaAPI: GachaPrizePrizePrizeAPI[IO, ItemStack, Player]
+      gachaAPI: GachaPrizeAPI[IO, ItemStack, Player]
     ): IO[MenuSlotLayout] = {
       val usageHistory = mineStackAPI.getUsageHistory(player)
       for {

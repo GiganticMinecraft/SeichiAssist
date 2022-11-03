@@ -36,7 +36,7 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
 }
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
-import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizePrizePrizeAPI
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
@@ -78,7 +78,7 @@ object TopLevelRouter {
              enderChestAccessApi: AnywhereEnderChestAPI[IO],
              sharedInventoryAPI: SharedInventoryAPI[IO, Player],
              gachaTicketAPI: GachaTicketAPI[IO],
-             gachaAPI: GachaPrizePrizePrizeAPI[IO, ItemStack, Player],
+             gachaAPI: GachaPrizeAPI[IO, ItemStack, Player],
              mineStackAPI: MineStackAPI[IO, Player, ItemStack]
   ): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     import assortedRankingApi._

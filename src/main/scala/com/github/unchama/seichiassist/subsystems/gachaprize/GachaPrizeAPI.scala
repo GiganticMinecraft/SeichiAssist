@@ -160,7 +160,7 @@ object GachaPrizeWriteAPI {
 
 }
 
-trait GachaPrizePrizePrizeAPI[F[_], ItemStack, Player]
+trait GachaPrizeAPI[F[_], ItemStack, Player]
     extends GachaPrizeReadAPI[F, ItemStack]
     with GachaPrizeWriteAPI[F, ItemStack]
     with GachaEventReadAPI[F]

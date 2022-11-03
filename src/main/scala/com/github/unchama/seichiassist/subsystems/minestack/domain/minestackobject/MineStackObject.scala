@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobj
 
 import cats.effect.Sync
 import com.github.unchama.minecraft.objects.MinecraftMaterial
-import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizePrizePrizeAPI
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.CanBeSignedAsGachaPrize
 
 case class MineStackObject[ItemStack](
@@ -22,7 +22,7 @@ case class MineStackObject[ItemStack](
    */
   def tryToSignedItemStack[F[_]: Sync, Player](
     name: String
-  )(implicit gachaAPI: GachaPrizePrizePrizeAPI[F, ItemStack, Player]): F[Option[ItemStack]] = {
+  )(implicit gachaAPI: GachaPrizeAPI[F, ItemStack, Player]): F[Option[ItemStack]] = {
     if (
       category != MineStackObjectCategory.GACHA_PRIZES || category == MineStackObjectCategory.BUILTIN_GACHA_PRIZES
     ) return Sync[F].pure(None)

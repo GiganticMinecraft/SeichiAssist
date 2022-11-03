@@ -16,11 +16,20 @@ import com.github.unchama.seichiassist.data.MineStackGachaData
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.BukkitGrantGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.PlayerName
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{GachaTicketAmount, GrantResultOfGachaTicketFromAdminTeam}
-import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizePrizePrizeAPI
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{
+  GachaTicketAmount,
+  GrantResultOfGachaTicketFromAdminTeam
+}
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain._
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{GachaEvent, GachaEventName}
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{GachaPrize, GachaPrizeId}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
+  GachaEvent,
+  GachaEventName
+}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
+  GachaPrize,
+  GachaPrizeId
+}
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
@@ -37,11 +46,10 @@ import scala.util.chaining.scalaUtilChainingOps
 class GachaCommand[
   F[_]: OnMinecraftServerThread: NonServerThreadContextShift: ConcurrentEffect
 ](
-   implicit gachaPersistence: GachaPrizeListPersistence[F, ItemStack],
-   gachaAPI: GachaPrizePrizePrizeAPI[F, ItemStack, Player],
-   canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack],
-   gachaTicketAPI: GachaTicketAPI[F],
-   mineStackAPI: MineStackAPI[F, Player, ItemStack]
+  implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
+  canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack],
+  gachaTicketAPI: GachaTicketAPI[F],
+  mineStackAPI: MineStackAPI[F, Player, ItemStack]
 ) {
 
   import cats.implicits._
@@ -131,7 +139,7 @@ class GachaCommand[
       .closedRangeInt(1, Int.MaxValue, MessageEffect("IDは正の値を指定してください。"))
       .andThen(_.flatMap { id =>
         val intId = id.asInstanceOf[Int]
-        if (gachaAPI.existsGachaPrize(GachaPrizeId(intId)).toIO.unsafeRunSync()) {
+        if (gachaPrizeAPI.existsGachaPrize(GachaPrizeId(intId)).toIO.unsafeRunSync()) {
           succeedWith(intId)
         } else {
           failWith("指定されたIDのアイテムは存在しません！")
@@ -196,7 +204,7 @@ class GachaCommand[
         .argumentsParsers(List(gachaPrizeIdExistsParser))
         .execution { context =>
           val eff = for {
-            gachaPrize <- gachaAPI.fetch(
+            gachaPrize <- gachaPrizeAPI.fetch(
               GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
             )
             _ <- new BukkitGrantGachaPrize[F]().grantGachaPrize(gachaPrize.get)(context.sender)
@@ -217,7 +225,7 @@ class GachaCommand[
             Option.when(args(1).toString != null)(GachaEventName(args(1).toString))
           val mainHandItem = player.getInventory.getItemInMainHand
           val eff = for {
-            _ <- gachaAPI.addGachaPrize(
+            _ <- gachaPrizeAPI.addGachaPrize(
               GachaPrize(
                 mainHandItem,
                 GachaProbability(probability),
@@ -240,7 +248,7 @@ class GachaCommand[
         .execution { context =>
           val eventName = context.args.yetToBeParsed.headOption.map(GachaEventName)
           val eff = for {
-            gachaPrizes <- gachaAPI.list
+            gachaPrizes <- gachaPrizeAPI.list
           } yield {
             val gachaPrizeInformation = gachaPrizes
               .filter { gachaPrize =>
@@ -277,7 +285,7 @@ class GachaCommand[
       .argumentsParsers(List(gachaPrizeIdExistsParser))
       .execution { context =>
         val eff = for {
-          _ <- gachaAPI.removeByGachaPrizeId(
+          _ <- gachaPrizeAPI.removeByGachaPrizeId(
             GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
           )
         } yield MessageEffect(
@@ -302,10 +310,10 @@ class GachaCommand[
           val targetId = GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
           val amount = context.args.parsed(1).asInstanceOf[Int]
           val eff = for {
-            existingGachaPrize <- gachaAPI.fetch(targetId)
-            _ <- gachaAPI.removeByGachaPrizeId(targetId)
+            existingGachaPrize <- gachaPrizeAPI.fetch(targetId)
+            _ <- gachaPrizeAPI.removeByGachaPrizeId(targetId)
             itemStack = existingGachaPrize.get.itemStack
-            _ <- gachaAPI.addGachaPrize(_ =>
+            _ <- gachaPrizeAPI.addGachaPrize(_ =>
               existingGachaPrize
                 .get
                 .copy(itemStack = itemStack.tap {
@@ -328,9 +336,9 @@ class GachaCommand[
         val targetId = GachaPrizeId(args.head.asInstanceOf[Int])
         val newProb = args(1).asInstanceOf[Double]
         val eff = for {
-          existingGachaPrize <- gachaAPI.fetch(targetId)
-          _ <- gachaAPI.removeByGachaPrizeId(targetId)
-          _ <- gachaAPI.addGachaPrize(_ =>
+          existingGachaPrize <- gachaPrizeAPI.fetch(targetId)
+          _ <- gachaPrizeAPI.removeByGachaPrizeId(targetId)
+          _ <- gachaPrizeAPI.addGachaPrize(_ =>
             existingGachaPrize.get.copy(probability = GachaProbability(newProb))
           )
           itemStack = existingGachaPrize.get.itemStack
@@ -347,7 +355,7 @@ class GachaCommand[
         .beginConfiguration()
         .execution { _ =>
           val eff = for {
-            _ <- gachaAPI.clear
+            _ <- gachaPrizeAPI.clear
           } yield MessageEffect(
             List(
               "すべて削除しました。",
@@ -365,8 +373,8 @@ class GachaCommand[
         .beginConfiguration()
         .execution { _ =>
           val eff = for {
-            gachaPrizes <- gachaAPI.list
-            _ <- gachaPersistence.set(gachaPrizes)
+            gachaPrizes <- gachaPrizeAPI.list
+            _ <- gachaPrizeAPI.replace(gachaPrizes)
           } yield MessageEffect("ガチャデータをmysqlに保存しました。")
 
           eff.toIO
@@ -377,7 +385,7 @@ class GachaCommand[
       .beginConfiguration()
       .execution { _ =>
         val eff = for {
-          _ <- gachaAPI.load
+          _ <- gachaPrizeAPI.load
         } yield MessageEffect("ガチャデータをmysqlから読み込みました。")
 
         eff.toIO
@@ -403,8 +411,8 @@ class GachaCommand[
             IO(MessageEffect(s"${RED}開始日/終了日はyyyy-MM-ddの形式で指定してください。"))
           } else {
             val eff = for {
-              isExistsEvent <- gachaAPI.isExistsGachaEvent(eventName)
-              _ <- gachaAPI
+              isExistsEvent <- gachaPrizeAPI.isExistsGachaEvent(eventName)
+              _ <- gachaPrizeAPI
                 .createGachaEvent(
                   GachaEvent(
                     eventName,
@@ -431,7 +439,7 @@ class GachaCommand[
         .execution { values =>
           val eventName = GachaEventName(values.args.parsed.head.toString)
           val eff = for {
-            _ <- gachaAPI.deleteGachaEvent(eventName)
+            _ <- gachaPrizeAPI.deleteGachaEvent(eventName)
           } yield MessageEffect(s"ガチャイベント: ${eventName.name}を削除しました。")
 
           eff.toIO
@@ -443,7 +451,7 @@ class GachaCommand[
         .beginConfiguration()
         .execution { _ =>
           val eff = for {
-            events <- gachaAPI.createdGachaEvents
+            events <- gachaPrizeAPI.createdGachaEvents
           } yield {
             val messages = "イベント名 | 開始日 | 終了日" +: events.map { event =>
               s"${event.eventName} | ${event.getStartDateString} | ${event.getEndDateString}"
@@ -465,7 +473,7 @@ class GachaCommand[
       .execution { context =>
         val args = context.args.parsed
         val eff = for {
-          gachaPrize <- gachaAPI.fetch(GachaPrizeId(args(1).asInstanceOf[Int]))
+          gachaPrize <- gachaPrizeAPI.fetch(GachaPrizeId(args(1).asInstanceOf[Int]))
         } yield {
           val _gachaPrize = gachaPrize.get // ParserによりGachaPrizeの存在は確認されている
           val mineStackGachaData = new MineStackGachaData(
