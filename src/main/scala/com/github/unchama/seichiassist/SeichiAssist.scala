@@ -389,13 +389,15 @@ class SeichiAssist extends JavaPlugin() {
       .wired[SyncIO, IO](seichiAssistConfig.getAnywhereEnderConfiguration)
   }
 
-  private lazy implicit val gachaAPI: GachaAPI[IO, ItemStack, Player] = gachaSystem.api
+  private implicit lazy val mineStackAPI: MineStackAPI[IO, Player, ItemStack] =
+    mineStackSystem.api
 
   private lazy val gachaSystem: subsystems.gacha.System[IO] = {
     implicit val gachaTicketAPI: GachaTicketAPI[IO] = gachaTicketSystem.api
-    implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack] = mineStackSystem.api
     subsystems.gacha.System.wired.unsafeRunSync()
   }
+
+  private implicit lazy val gachaAPI: GachaAPI[IO, ItemStack, Player] = gachaSystem.api
 
   private lazy val gachaTicketSystem: subsystems.gacha.subsystems.gachaticket.System[IO] =
     subsystems.gacha.subsystems.gachaticket.System.wired[IO]
@@ -451,7 +453,6 @@ class SeichiAssist extends JavaPlugin() {
     implicit val flyApi: ManagedFlyApi[SyncIO, Player] = managedFlySystem.api
     implicit val buildCountAPI: BuildCountAPI[IO, SyncIO, Player] = buildCountSystem.api
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
-    implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack] = mineStackSystem.api
 
     new BuildAssist(this)
   }
@@ -601,7 +602,6 @@ class SeichiAssist extends JavaPlugin() {
       sharedInventorySystem.api
     implicit val gachaTicketAPI: GachaTicketAPI[IO] =
       gachaTicketSystem.api
-    implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack] = mineStackSystem.api
 
     val menuRouter = TopLevelRouter.apply
     import SeichiAssist.Scopes.globalChatInterceptionScope
@@ -716,7 +716,6 @@ class SeichiAssist extends JavaPlugin() {
       val dataRecalculationRoutine = {
         import PluginExecutionContexts._
         implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
-        implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack] = mineStackSystem.api
         PlayerDataRecalculationRoutine()
       }
 
