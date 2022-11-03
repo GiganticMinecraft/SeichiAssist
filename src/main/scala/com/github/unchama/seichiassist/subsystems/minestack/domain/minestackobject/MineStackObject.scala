@@ -24,7 +24,7 @@ case class MineStackObject[ItemStack](
     name: String
   )(implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player]): F[Option[ItemStack]] = {
     if (
-      category != MineStackObjectCategory.GACHA_PRIZES || category == MineStackObjectCategory.BUILTIN_GACHA_PRIZES
+      category != MineStackObjectCategory.GACHA_PRIZES
     ) return Sync[F].pure(None)
 
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =

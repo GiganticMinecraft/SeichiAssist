@@ -32,6 +32,4 @@ case object MineStackObjectCategory extends Enum[MineStackObjectCategory] {
 
   case object GACHA_PRIZES extends MineStackObjectCategory(5, "ガチャ品")
 
-  case object BUILTIN_GACHA_PRIZES extends MineStackObjectCategory(5, "ガチャ品")
-
 }

@@ -594,8 +594,8 @@ class BukkitMineStackObjectList[F[_]: Sync](
    * デフォルトでガチャの内容に含まれている景品。
    */
   private val minestackBuiltinGachaPrizes: List[MineStackObjectGroup[ItemStack]] = leftElems(
-    MineStackObjectByItemStack(BUILTIN_GACHA_PRIZES,"gachaimo",None,hasNameLore = true, gachaPrizeAPI.staticGachaPrizeFactory.gachaRingo),
-    MineStackObjectByItemStack(BUILTIN_GACHA_PRIZES,"exp_bottle",Some("エンチャントの瓶"),hasNameLore = false,new ItemStack(Material.EXP_BOTTLE,1))
+    MineStackObjectByItemStack(GACHA_PRIZES,"gachaimo",None,hasNameLore = true, gachaPrizeAPI.staticGachaPrizeFactory.gachaRingo),
+    MineStackObjectByItemStack(GACHA_PRIZES,"exp_bottle",Some("エンチャントの瓶"),hasNameLore = false,new ItemStack(Material.EXP_BOTTLE,1))
   )
 
   // @formatter:on
