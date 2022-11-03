@@ -8,13 +8,26 @@ import com.github.unchama.generic.serialization.SerializeAndDeserialize
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.minecraft.bukkit.algebra.BukkitItemStackSerializeAndDeserialize
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.BukkitItemStackCanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.factories.BukkitStaticGachaPrizeFactory
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{GachaEvent, GachaEventName, GachaEventPersistence}
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{GachaPrize, GachaPrizeId}
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{CanBeSignedAsGachaPrize, GachaPrizeListPersistence, StaticGachaPrizeFactory}
-import com.github.unchama.seichiassist.subsystems.gachaprize.infrastructure.{JdbcGachaEventPersistence, JdbcGachaPrizeListPersistence}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
+  GachaEvent,
+  GachaEventName,
+  GachaEventPersistence
+}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
+  GachaPrize,
+  GachaPrizeId
+}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
+  CanBeSignedAsGachaPrize,
+  GachaPrizeListPersistence,
+  StaticGachaPrizeFactory
+}
+import com.github.unchama.seichiassist.subsystems.gachaprize.infrastructure.{
+  JdbcGachaEventPersistence,
+  JdbcGachaPrizeListPersistence
+}
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -26,9 +39,8 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_]: OnMinecraftServerThread: NonServerThreadContextShift: ConcurrentEffect](
-    implicit gachaTicketAPI: GachaTicketAPI[F]
-  ): F[System[F]] = {
+  def wired[F[_]: OnMinecraftServerThread: NonServerThreadContextShift: ConcurrentEffect]
+    : F[System[F]] = {
     implicit val _serializeAndDeserialize: SerializeAndDeserialize[Nothing, ItemStack] =
       BukkitItemStackSerializeAndDeserialize
     implicit val _gachaPersistence: GachaPrizeListPersistence[F, ItemStack] =
