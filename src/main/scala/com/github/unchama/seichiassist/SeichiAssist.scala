@@ -516,7 +516,7 @@ class SeichiAssist extends JavaPlugin() {
 
   import PluginExecutionContexts._
 
-  private val menuRouter = TopLevelRouter.apply
+  private lazy val menuRouter = TopLevelRouter.apply
 
   /**
    * プラグインを初期化する。ここで例外が投げられるとBukkitがシャットダウンされる。
