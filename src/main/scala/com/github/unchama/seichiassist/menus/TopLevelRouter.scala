@@ -1,28 +1,17 @@
 package com.github.unchama.seichiassist.menus
 
 import cats.effect.IO
+import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.menuinventory.LayoutPreparationContext
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.menus.HomeMenu.ConfirmationMenuEnvironment
 import com.github.unchama.seichiassist.menus.achievement.group.AchievementGroupMenu
-import com.github.unchama.seichiassist.menus.achievement.{
-  AchievementCategoryMenu,
-  AchievementMenu
-}
-import com.github.unchama.seichiassist.menus.minestack.{
-  CategorizedMineStackMenu,
-  MineStackMainMenu,
-  MineStackSelectItemColorMenu
-}
+import com.github.unchama.seichiassist.menus.achievement.{AchievementCategoryMenu, AchievementMenu}
+import com.github.unchama.seichiassist.menus.home.{ConfirmationMenuEnvironment, HomeMenu}
+import com.github.unchama.seichiassist.menus.minestack.{CategorizedMineStackMenu, MineStackMainMenu, MineStackSelectItemColorMenu}
 import com.github.unchama.seichiassist.menus.ranking.{RankingMenu, RankingRootMenu}
-import com.github.unchama.seichiassist.menus.skill.{
-  ActiveSkillEffectMenu,
-  ActiveSkillMenu,
-  PassiveSkillMenu,
-  PremiumPointTransactionHistoryMenu
-}
+import com.github.unchama.seichiassist.menus.skill.{ActiveSkillEffectMenu, ActiveSkillMenu, PassiveSkillMenu, PremiumPointTransactionHistoryMenu}
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, SecondPage}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
@@ -46,7 +35,8 @@ object TopLevelRouter {
     implicit javaTime: JavaTime[IO],
     layoutPreparationContext: LayoutPreparationContext,
     onMainThread: OnMinecraftServerThread[IO],
-    assortedRankingApi: AssortedRankingApi[IO]
+    assortedRankingApi: AssortedRankingApi[IO],
+    nonServerThreadContextShift: NonServerThreadContextShift[IO]
   ): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     val seichiAssist = SeichiAssist.instance
     import assortedRankingApi._
@@ -70,8 +60,7 @@ object TopLevelRouter {
     implicit lazy val achievementMenuEnv: AchievementMenu.Environment =
       new AchievementMenu.Environment
     implicit lazy val homeMenuEnv: HomeMenu.Environment = new HomeMenu.Environment
-    implicit lazy val homeConfirmationMenuEnv
-      : HomeMenu.ConfirmationMenuEnvironment.Environment =
+    implicit lazy val homeConfirmationMenuEnv: home.ConfirmationMenuEnvironment.Environment =
       new ConfirmationMenuEnvironment.Environment
     implicit lazy val achievementCategoryMenuEnv: AchievementCategoryMenu.Environment =
       new AchievementCategoryMenu.Environment
@@ -101,7 +90,7 @@ object TopLevelRouter {
       _.open
     implicit lazy val ioCanOpenAchievementGroupMenu: IO CanOpen AchievementGroupMenu = _.open
     implicit lazy val ioCanOpenHomeConfirmationMenu
-      : IO CanOpen HomeMenu.HomeChangeConfirmationMenu =
+      : IO CanOpen home.HomeChangeConfirmationMenu =
       _.open
     implicit lazy val ioCanOpenAchievementCategoryMenu: IO CanOpen AchievementCategoryMenu =
       _.open
@@ -117,8 +106,8 @@ object TopLevelRouter {
     implicit lazy val ioCanOpenRegionMenu: IO CanOpen RegionMenu.type = _.open
     implicit lazy val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type = _.open
     implicit lazy val ioCanOpenServerSwitchMenu: IO CanOpen ServerSwitchMenu.type = _.open
-    implicit lazy val ioCanOpenHomeMenu: IO CanOpen HomeMenu.type = _.open
-    implicit lazy val ioCanOpenHomeConfirmMenu: IO CanOpen HomeMenu.HomeRemoveConfirmationMenu =
+    implicit lazy val ioCanOpenHomeMenu: IO CanOpen home.HomeMenu = _.open
+    implicit lazy val ioCanOpenHomeConfirmMenu: IO CanOpen home.HomeRemoveConfirmationMenu =
       _.open
     implicit lazy val ioCanOpenPassiveSkillMenu: IO CanOpen PassiveSkillMenu.type = _.open
 
