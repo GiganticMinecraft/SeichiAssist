@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.minestack.bukkit
 
-import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
-import cats.effect.{ConcurrentEffect, IO}
+import cats.effect.IO
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.ParserResponse.{failWith, succeedWith}
 import com.github.unchama.contextualexecutor.builder.Parsers
@@ -10,7 +9,7 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.menus.minestack.CategorizedMineStackMenu
-import com.github.unchama.seichiassist.subsystems.minestack.domain.TryIntoMineStack
+import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
@@ -20,9 +19,9 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 object MineStackCommand {
-  def executor[F[_]: ConcurrentEffect](
+  def executor(
     implicit ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu,
-    tryIntoMineStack: TryIntoMineStack[F, Player, ItemStack]
+    mineStackAPI: MineStackAPI[IO, Player, ItemStack]
   ): TabExecutor =
     BranchedExecutor(
       Map(
@@ -86,8 +85,8 @@ object MineStackCommand {
 
     import cats.implicits._
 
-    def storeEverythingInInventory[F[_]: ConcurrentEffect](
-      implicit tryIntoMineStack: TryIntoMineStack[F, Player, ItemStack]
+    def storeEverythingInInventory(
+      implicit mineStackAPI: MineStackAPI[IO, Player, ItemStack]
     ): ContextualExecutor =
       playerCommandBuilder
         .execution { context =>
@@ -96,9 +95,9 @@ object MineStackCommand {
             inventory <- IO(player.getInventory)
             targetIndexes <- inventory.getContents.toList.zipWithIndex.traverse {
               case (itemStack, index) =>
+                mineStackAPI.
                 tryIntoMineStack
                   .apply(player, itemStack, itemStack.getAmount)
-                  .toIO
                   .map(isSucceed => if (itemStack != null && isSucceed) Some(index) else None)
             }
             _ <- IO(targetIndexes.foreach(_.foreach(index => inventory.clear(index))))

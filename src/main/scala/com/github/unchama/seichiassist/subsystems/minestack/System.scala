@@ -1,41 +1,20 @@
 package com.github.unchama.seichiassist.subsystems.minestack
 
 import cats.effect.concurrent.Ref
-import cats.effect.{ConcurrentEffect, IO, Sync, SyncEffect}
-import com.github.unchama.datarepository.bukkit.player.{
-  BukkitRepositoryControls,
-  PlayerDataRepository
-}
+import cats.effect.{ConcurrentEffect, Sync, SyncEffect}
+import com.github.unchama.datarepository.bukkit.player.{BukkitRepositoryControls, PlayerDataRepository}
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.{ContextCoercion, ListExtra}
-import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.bukkit.objects.BukkitMaterial
 import com.github.unchama.minecraft.objects.MinecraftMaterial
-import com.github.unchama.seichiassist.menus.minestack.CategorizedMineStackMenu
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
-import com.github.unchama.seichiassist.subsystems.minestack.application.repository.{
-  MineStackObjectRepositoryDefinition,
-  MineStackSettingsRepositoryDefinition,
-  MineStackUsageHistoryRepositoryDefinitions
-}
-import com.github.unchama.seichiassist.subsystems.minestack.bukkit.{
-  BukkitMineStackObjectList,
-  MineStackCommand,
-  PlayerPickupItemListener
-}
-import com.github.unchama.seichiassist.subsystems.minestack.domain.{
-  MineStackSettings,
-  TryIntoMineStack
-}
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
-  MineStackObject,
-  MineStackObjectList,
-  MineStackObjectWithAmount
-}
+import com.github.unchama.seichiassist.subsystems.minestack.application.repository.{MineStackObjectRepositoryDefinition, MineStackSettingsRepositoryDefinition, MineStackUsageHistoryRepositoryDefinitions}
+import com.github.unchama.seichiassist.subsystems.minestack.bukkit.{BukkitMineStackObjectList, PlayerPickupItemListener}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{MineStackObject, MineStackObjectList, MineStackObjectWithAmount}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.{MineStackSettings, TryIntoMineStack}
 import com.github.unchama.seichiassist.subsystems.minestack.infrastructure.JdbcMineStackObjectPersistence
 import org.bukkit.Material
-import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import org.bukkit.inventory.ItemStack
@@ -51,8 +30,7 @@ object System {
   import cats.implicits._
 
   def wired[F[_]: ConcurrentEffect, G[_]: SyncEffect: ContextCoercion[*[_], F]](
-    implicit gachaAPI: GachaAPI[F, ItemStack, Player],
-    ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu
+    implicit gachaAPI: GachaAPI[F, ItemStack, Player]
   ): F[System[F, Player, ItemStack]] = {
     implicit val minecraftMaterial: MinecraftMaterial[Material, ItemStack] = new BukkitMaterial
     implicit val _mineStackObjectList: MineStackObjectList[F, ItemStack, Player] =
@@ -183,10 +161,6 @@ object System {
             override def mineStackObjectList: MineStackObjectList[F, ItemStack, Player] =
               _mineStackObjectList
           }
-
-        override val commands: Map[String, TabExecutor] = Map(
-          "minestack" -> MineStackCommand.executor[F]
-        )
 
         override val listeners: Seq[Listener] = Seq(new PlayerPickupItemListener[F, G]())
 

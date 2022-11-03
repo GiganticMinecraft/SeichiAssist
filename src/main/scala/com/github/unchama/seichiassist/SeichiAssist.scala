@@ -53,6 +53,7 @@ import com.github.unchama.seichiassist.infrastructure.logging.jul.NamedJULLogger
 import com.github.unchama.seichiassist.infrastructure.redisbungee.RedisBungeeNetworkConnectionCount
 import com.github.unchama.seichiassist.infrastructure.scalikejdbc.ScalikeJDBCConfiguration
 import com.github.unchama.seichiassist.listener._
+import com.github.unchama.seichiassist.menus.minestack.CategorizedMineStackMenu
 import com.github.unchama.seichiassist.menus.{BuildMainMenu, TopLevelRouter}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems._
@@ -76,6 +77,7 @@ import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.m
 import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaReadApi}
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
+import com.github.unchama.seichiassist.subsystems.minestack.bukkit.MineStackCommand
 import com.github.unchama.seichiassist.subsystems.present.infrastructure.GlobalPlayerAccessor
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
@@ -613,6 +615,8 @@ class SeichiAssist extends JavaPlugin() {
     // 機能を果たそうとするものである。
     implicit val canOpenBuildMainMenu: CanOpen[IO, BuildMainMenu.type] =
       BuildAssistMenuRouter.apply.canOpenBuildMainMenu
+    implicit val ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu =
+      menuRouter.ioCanOpenCategorizedMineStackMenu
 
     // コマンドの登録
     Map(
@@ -629,7 +633,8 @@ class SeichiAssist extends JavaPlugin() {
       "minehead" -> new MineHeadCommand().executor,
       "x-transfer" -> RegionOwnerTransferCommand.executor,
       "stickmenu" -> StickMenuCommand.executor,
-      "hat" -> HatCommand.executor
+      "hat" -> HatCommand.executor,
+      "minestack" -> MineStackCommand.executor // FIXME: 現在のsubsystemだと、ioCanOpen...を要求できないのでやむを得ずこうしている
     ).concat(wiredSubsystems.flatMap(_.commands)).foreach {
       case (commandName, executor) => getCommand(commandName).setExecutor(executor)
     }
