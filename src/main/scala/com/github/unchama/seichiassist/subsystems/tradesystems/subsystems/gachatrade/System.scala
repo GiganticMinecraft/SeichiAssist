@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gacha
 import cats.effect.ConcurrentEffect
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.gachaprize.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizePrizePrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.GachaPrize
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
@@ -24,8 +24,8 @@ import org.bukkit.inventory.ItemStack
 object System {
 
   def wired[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
-    implicit gachaAPI: GachaAPI[F, ItemStack, Player],
-    gachaPointApi: GachaPointApi[F, G, Player]
+                                                                     implicit gachaAPI: GachaPrizePrizePrizeAPI[F, ItemStack, Player],
+                                                                     gachaPointApi: GachaPointApi[F, G, Player]
   ): Subsystem[F] = {
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
       gachaAPI.canBeSignedAsGachaPrize

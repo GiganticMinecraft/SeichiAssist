@@ -55,7 +55,7 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDigging
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
-import com.github.unchama.seichiassist.subsystems.gachaprize.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizePrizePrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
@@ -383,7 +383,7 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.gachaprize.System.wired.unsafeRunSync()
   }
 
-  private implicit lazy val gachaAPI: GachaAPI[IO, ItemStack, Player] = gachaSystem.api
+  private implicit lazy val gachaAPI: GachaPrizePrizePrizeAPI[IO, ItemStack, Player] = gachaSystem.api
 
   private lazy val gachaTicketSystem: gachaticket.System[IO] =
     gachaticket.System.wired[IO]

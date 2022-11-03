@@ -36,7 +36,7 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
 }
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
-import com.github.unchama.seichiassist.subsystems.gachaprize.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizePrizePrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
@@ -61,25 +61,25 @@ trait TopLevelRouter[F[_]] {
 object TopLevelRouter {
 
   def apply(
-    implicit javaTime: JavaTime[IO],
-    layoutPreparationContext: LayoutPreparationContext,
-    onMainThread: OnMinecraftServerThread[IO],
-    nonServerThreadContextShift: NonServerThreadContextShift[IO],
-    breakCountApi: BreakCountAPI[IO, SyncIO, Player],
-    breakCountBarAPI: BreakCountBarAPI[SyncIO, Player],
-    manaApi: ManaApi[IO, SyncIO, Player],
-    assortedRankingApi: AssortedRankingApi[IO],
-    gachaPointApi: GachaPointApi[IO, SyncIO, Player],
-    fastDiggingEffectApi: FastDiggingEffectApi[IO, Player],
-    fastDiggingSettingsApi: FastDiggingSettingsApi[IO, Player],
-    fourDimensionalPocketApi: FourDimensionalPocketApi[IO, Player],
-    globalNotification: DiscordNotificationAPI[IO],
-    homeReadApi: HomeReadAPI[IO],
-    enderChestAccessApi: AnywhereEnderChestAPI[IO],
-    sharedInventoryAPI: SharedInventoryAPI[IO, Player],
-    gachaTicketAPI: GachaTicketAPI[IO],
-    gachaAPI: GachaAPI[IO, ItemStack, Player],
-    mineStackAPI: MineStackAPI[IO, Player, ItemStack]
+             implicit javaTime: JavaTime[IO],
+             layoutPreparationContext: LayoutPreparationContext,
+             onMainThread: OnMinecraftServerThread[IO],
+             nonServerThreadContextShift: NonServerThreadContextShift[IO],
+             breakCountApi: BreakCountAPI[IO, SyncIO, Player],
+             breakCountBarAPI: BreakCountBarAPI[SyncIO, Player],
+             manaApi: ManaApi[IO, SyncIO, Player],
+             assortedRankingApi: AssortedRankingApi[IO],
+             gachaPointApi: GachaPointApi[IO, SyncIO, Player],
+             fastDiggingEffectApi: FastDiggingEffectApi[IO, Player],
+             fastDiggingSettingsApi: FastDiggingSettingsApi[IO, Player],
+             fourDimensionalPocketApi: FourDimensionalPocketApi[IO, Player],
+             globalNotification: DiscordNotificationAPI[IO],
+             homeReadApi: HomeReadAPI[IO],
+             enderChestAccessApi: AnywhereEnderChestAPI[IO],
+             sharedInventoryAPI: SharedInventoryAPI[IO, Player],
+             gachaTicketAPI: GachaTicketAPI[IO],
+             gachaAPI: GachaPrizePrizePrizeAPI[IO, ItemStack, Player],
+             mineStackAPI: MineStackAPI[IO, Player, ItemStack]
   ): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     import assortedRankingApi._
 

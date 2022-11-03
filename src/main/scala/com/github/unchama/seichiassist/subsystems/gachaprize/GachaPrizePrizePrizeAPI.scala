@@ -85,7 +85,7 @@ object GachaDrawAPI {
 
 }
 
-trait GachaReadAPI[F[_], ItemStack] {
+trait GachaPrizeReadAPI[F[_], ItemStack] {
 
   import cats.implicits._
 
@@ -128,15 +128,15 @@ trait GachaReadAPI[F[_], ItemStack] {
 
 }
 
-object GachaReadAPI {
+object GachaPrizeReadAPI {
 
   def apply[F[_], ItemStack](
-    implicit ev: GachaReadAPI[F, ItemStack]
-  ): GachaReadAPI[F, ItemStack] = ev
+    implicit ev: GachaPrizeReadAPI[F, ItemStack]
+  ): GachaPrizeReadAPI[F, ItemStack] = ev
 
 }
 
-trait GachaWriteAPI[F[_], ItemStack] {
+trait GachaPrizeWriteAPI[F[_], ItemStack] {
 
   /**
    * ガチャの景品リストを何らかの方法でロードする
@@ -168,17 +168,17 @@ trait GachaWriteAPI[F[_], ItemStack] {
 
 }
 
-object GachaWriteAPI {
+object GachaPrizeWriteAPI {
 
   def apply[F[_], ItemStack](
-    implicit ev: GachaWriteAPI[F, ItemStack]
-  ): GachaWriteAPI[F, ItemStack] = ev
+    implicit ev: GachaPrizeWriteAPI[F, ItemStack]
+  ): GachaPrizeWriteAPI[F, ItemStack] = ev
 
 }
 
-trait GachaAPI[F[_], ItemStack, Player]
-    extends GachaReadAPI[F, ItemStack]
-    with GachaWriteAPI[F, ItemStack]
+trait GachaPrizePrizePrizeAPI[F[_], ItemStack, Player]
+    extends GachaPrizeReadAPI[F, ItemStack]
+    with GachaPrizeWriteAPI[F, ItemStack]
     with GachaDrawAPI[F, Player]
     with GachaEventReadAPI[F]
     with GachaEventWriteAPI[F]

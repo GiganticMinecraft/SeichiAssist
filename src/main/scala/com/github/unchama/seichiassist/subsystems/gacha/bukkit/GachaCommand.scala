@@ -17,7 +17,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.BukkitGra
 import com.github.unchama.seichiassist.subsystems.gacha.domain.PlayerName
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{GachaTicketAmount, GrantResultOfGachaTicketFromAdminTeam}
-import com.github.unchama.seichiassist.subsystems.gachaprize.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizePrizePrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain._
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{GachaEvent, GachaEventName}
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{GachaPrize, GachaPrizeId}
@@ -37,11 +37,11 @@ import scala.util.chaining.scalaUtilChainingOps
 class GachaCommand[
   F[_]: OnMinecraftServerThread: NonServerThreadContextShift: ConcurrentEffect
 ](
-  implicit gachaPersistence: GachaPrizeListPersistence[F, ItemStack],
-  gachaAPI: GachaAPI[F, ItemStack, Player],
-  canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack],
-  gachaTicketAPI: GachaTicketAPI[F],
-  mineStackAPI: MineStackAPI[F, Player, ItemStack]
+   implicit gachaPersistence: GachaPrizeListPersistence[F, ItemStack],
+   gachaAPI: GachaPrizePrizePrizeAPI[F, ItemStack, Player],
+   canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack],
+   gachaTicketAPI: GachaTicketAPI[F],
+   mineStackAPI: MineStackAPI[F, Player, ItemStack]
 ) {
 
   import cats.implicits._

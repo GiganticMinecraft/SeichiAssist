@@ -11,7 +11,7 @@ import com.github.unchama.generic.{ContextCoercion, ListExtra}
 import com.github.unchama.minecraft.bukkit.objects.BukkitMaterial
 import com.github.unchama.minecraft.objects.MinecraftMaterial
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.gachaprize.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizePrizePrizeAPI
 import com.github.unchama.seichiassist.subsystems.minestack.application.repository.{
   MineStackObjectRepositoryDefinition,
   MineStackSettingsRepositoryDefinition,
@@ -47,7 +47,7 @@ object System {
   import cats.implicits._
 
   def wired[F[_]: ConcurrentEffect, G[_]: SyncEffect: ContextCoercion[*[_], F]](
-    implicit gachaAPI: GachaAPI[F, ItemStack, Player]
+    implicit gachaAPI: GachaPrizePrizePrizeAPI[F, ItemStack, Player]
   ): F[System[F, Player, ItemStack]] = {
     implicit val minecraftMaterial: MinecraftMaterial[Material, ItemStack] = new BukkitMaterial
     implicit val _mineStackObjectList: MineStackObjectList[F, ItemStack, Player] =

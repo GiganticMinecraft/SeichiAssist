@@ -42,7 +42,7 @@ import org.bukkit.event.Listener
 import org.bukkit.inventory.ItemStack
 
 trait System[F[_]] extends Subsystem[F] {
-  val api: GachaAPI[F, ItemStack, Player]
+  val api: GachaPrizePrizePrizeAPI[F, ItemStack, Player]
 }
 
 object System {
@@ -74,8 +74,8 @@ object System {
         gachaPrizesListReference <- Ref.of[F, Vector[GachaPrize[ItemStack]]](Vector.empty)
       } yield {
         new System[F] {
-          override implicit val api: GachaAPI[F, ItemStack, Player] =
-            new GachaAPI[F, ItemStack, Player] {
+          override implicit val api: GachaPrizePrizePrizeAPI[F, ItemStack, Player] =
+            new GachaPrizePrizePrizeAPI[F, ItemStack, Player] {
               override protected implicit val F: Monad[F] = implicitly
 
               override def load: F[Unit] = for {

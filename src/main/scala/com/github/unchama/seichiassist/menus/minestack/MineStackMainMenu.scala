@@ -9,7 +9,7 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
-import com.github.unchama.seichiassist.subsystems.gachaprize.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizePrizePrizeAPI
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory.{
@@ -31,11 +31,11 @@ object MineStackMainMenu extends Menu {
   import eu.timepit.refined.auto._
 
   class Environment(
-    implicit val ioCanOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu,
-    val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
-    val ioOnMainThread: OnMinecraftServerThread[IO],
-    implicit val gachaAPI: GachaAPI[IO, ItemStack, Player],
-    implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack]
+                     implicit val ioCanOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu,
+                     val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
+                     val ioOnMainThread: OnMinecraftServerThread[IO],
+                     implicit val gachaAPI: GachaPrizePrizePrizeAPI[IO, ItemStack, Player],
+                     implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack]
   )
 
   override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}MineStackメインメニュー")
@@ -103,7 +103,7 @@ object MineStackMainMenu extends Menu {
       implicit ioOnMainThread: OnMinecraftServerThread[IO],
       canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu,
       mineStackAPI: MineStackAPI[IO, Player, ItemStack],
-      gachaAPI: GachaAPI[IO, ItemStack, Player]
+      gachaAPI: GachaPrizePrizePrizeAPI[IO, ItemStack, Player]
     ): IO[MenuSlotLayout] = {
       val usageHistory = mineStackAPI.getUsageHistory(player)
       for {

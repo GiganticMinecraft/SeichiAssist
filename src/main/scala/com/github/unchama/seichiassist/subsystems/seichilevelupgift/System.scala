@@ -5,7 +5,7 @@ import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.minecraft.actions.{OnMinecraftServerThread, SendMinecraftMessage}
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
-import com.github.unchama.seichiassist.subsystems.gachaprize.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizePrizePrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.seichilevelupgift.bukkit.BukkitGrantLevelUpGift
 import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.GrantLevelUpGiftAlgebra
@@ -19,10 +19,10 @@ object System {
   def backGroundProcess[F[_]: OnMinecraftServerThread: ErrorLogger: Async, G[
     _
   ]: ContextCoercion[*[_], F]](
-    implicit breakCountReadApi: BreakCountReadAPI[F, G, Player],
-    send: SendMinecraftMessage[F, Player],
-    gachaAPI: GachaAPI[F, ItemStack, Player],
-    gachaPointApi: GachaPointApi[F, G, Player]
+                                                                                                           implicit breakCountReadApi: BreakCountReadAPI[F, G, Player],
+                                                                                                           send: SendMinecraftMessage[F, Player],
+                                                                                                           gachaAPI: GachaPrizePrizePrizeAPI[F, ItemStack, Player],
+                                                                                                           gachaPointApi: GachaPointApi[F, G, Player]
   ): F[Nothing] = {
     implicit val grantLevelUpGiftAlgebra: GrantLevelUpGiftAlgebra[F, Player] =
       new BukkitGrantLevelUpGift

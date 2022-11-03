@@ -8,7 +8,7 @@ import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlot
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.menus.CommonButtons
-import com.github.unchama.seichiassist.subsystems.gachaprize.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizePrizePrizeAPI
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectWithColorVariants
 import eu.timepit.refined.auto._
@@ -21,7 +21,7 @@ object MineStackSelectItemColorMenu {
   class Environment(
     implicit val canOpenCategorizedMineStackMenu: CanOpen[IO, CategorizedMineStackMenu],
     implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack],
-    implicit val gachaAPI: GachaAPI[IO, ItemStack, Player]
+    implicit val gachaAPI: GachaPrizePrizePrizeAPI[IO, ItemStack, Player]
   )
 
 }
