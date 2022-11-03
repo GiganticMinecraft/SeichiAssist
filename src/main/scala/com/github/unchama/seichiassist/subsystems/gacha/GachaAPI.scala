@@ -1,25 +1,16 @@
 package com.github.unchama.seichiassist.subsystems.gacha
 
-import cats.Monad
+import cats.{Functor, Monad}
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent.{
-  GachaEvent,
-  GachaEventName
-}
-import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{
-  GachaPrize,
-  GachaPrizeId
-}
-import com.github.unchama.seichiassist.subsystems.gacha.domain.{
-  CanBeSignedAsGachaPrize,
-  StaticGachaPrizeFactory
-}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.{CanBeSignedAsGachaPrize, StaticGachaPrizeFactory}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaevent.{GachaEvent, GachaEventName}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{GachaPrize, GachaPrizeId}
 
 trait GachaEventReadAPI[F[_]] {
 
   import cats.implicits._
 
-  protected implicit val F: Monad[F]
+  protected implicit val F: Functor[F]
 
   /**
    * @return 現在作成されているガチャイベントの一覧を取得する
