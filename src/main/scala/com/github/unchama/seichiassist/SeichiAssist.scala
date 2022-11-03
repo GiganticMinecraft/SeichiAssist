@@ -68,6 +68,7 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
   FastDiggingSettingsApi
 }
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
+import com.github.unchama.seichiassist.subsystems.gacha.GachaDrawAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
@@ -736,6 +737,7 @@ class SeichiAssist extends JavaPlugin() {
       implicit val gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
       implicit val fastDiggingEffectApi: FastDiggingEffectApi[IO, Player] =
         fastDiggingEffectSystem.effectApi
+      implicit val gachaDrawAPI: GachaDrawAPI[IO, Player] = gachaSystem.api
       implicit val ioConcurrent: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
       implicit val sendMessages: SendMinecraftMessage[IO, Player] = new SendBukkitMessage[IO]
 

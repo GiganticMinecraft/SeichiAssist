@@ -4,6 +4,7 @@ import cats.effect.ConcurrentEffect
 import cats.effect.Effect.ops.toAllEffectOps
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.subsystems.gacha.application.actions.DrawGacha
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util._
@@ -17,7 +18,8 @@ import org.bukkit.inventory.{EquipmentSlot, ItemStack}
 import org.bukkit.{GameMode, Material}
 
 class PlayerPullGachaListener[F[_]: ConcurrentEffect: OnMinecraftServerThread](
-  implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player]
+  implicit drawGacha: DrawGacha[F, Player],
+  gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player]
 ) extends Listener {
 
   @EventHandler
@@ -82,7 +84,7 @@ class PlayerPullGachaListener[F[_]: ConcurrentEffect: OnMinecraftServerThread](
     }
 
     // ガチャの実行
-    gachaPrizeAPI.drawGacha(player, count).toIO.unsafeRunAsyncAndForget()
+    drawGacha.draw(player, count).toIO.unsafeRunAsyncAndForget()
   }
 
 }
