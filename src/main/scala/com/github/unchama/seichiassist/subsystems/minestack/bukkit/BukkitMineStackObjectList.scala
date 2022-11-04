@@ -603,15 +603,8 @@ class BukkitMineStackObjectList[F[_]: Sync](
   private val gachaPrizesObjects: Ref[F, List[MineStackObject[ItemStack]]] =
     Ref.unsafe[F, List[MineStackObject[ItemStack]]](Nil)
 
-  def setGachaPrizesList(mineStackObject: List[MineStackObject[ItemStack]]): F[Unit] = {
-    gachaPrizesObjects.set(mineStackObject)
-  }
-
-  def getGachaPrizesList: F[List[MineStackObject[ItemStack]]] =
-    gachaPrizesObjects.get
-
   // ガチャアイテムを除外したMineStackGroups
-  val exceptGachaItemMineStackGroups: List[MineStackObjectGroup[ItemStack]] = List(
+  private val exceptGachaItemMineStackGroups: List[MineStackObjectGroup[ItemStack]] = List(
     minestacklistbuild,
     minestacklistdrop,
     minestacklistfarm,
@@ -620,18 +613,11 @@ class BukkitMineStackObjectList[F[_]: Sync](
     minestackBuiltinGachaPrizes
   ).flatten
 
-  val allMineStackGroups: F[List[MineStackObjectGroup[ItemStack]]] = for {
+  private val allMineStackGroups: F[List[MineStackObjectGroup[ItemStack]]] = for {
     gachaPrizes <- gachaPrizesObjects.get
     leftGachaPrizes = gachaPrizes.flatMap(leftElems(_))
   } yield {
     exceptGachaItemMineStackGroups ++ leftGachaPrizes
-  }
-
-  def getBuiltinGachaPrizes: List[MineStackObject[ItemStack]] = {
-    minestackBuiltinGachaPrizes.flatMap {
-      case Left(mineStackObj) => List(mineStackObj)
-      case Right(group)       => List(group.representative) ++ group.coloredVariants
-    }
   }
 
   override def allMineStackObjects: F[Vector[MineStackObject[ItemStack]]] =
