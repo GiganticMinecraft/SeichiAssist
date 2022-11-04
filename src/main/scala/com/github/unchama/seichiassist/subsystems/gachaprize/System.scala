@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.gachaprize
 
 import cats.Monad
+import cats.effect.ConcurrentEffect
 import cats.effect.concurrent.Ref
-import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.serialization.SerializeAndDeserialize
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
@@ -53,7 +53,9 @@ object System {
 
     val system: F[System[F]] = {
       for {
-        gachaPrizesListReference <- Ref.of[F, Vector[GachaPrize[ItemStack]]](Vector.empty)
+        gachaPrizes <- _gachaPersistence.list
+        gachaPrizesListReference <- Ref.of[F, Vector[GachaPrize[ItemStack]]](gachaPrizes)
+        allGachaPrizesListReference <- Ref.of[F, Vector[GachaPrize[ItemStack]]](gachaPrizes)
       } yield {
         new System[F] {
           override implicit val api: GachaPrizeAPI[F, ItemStack, Player] =
@@ -63,33 +65,36 @@ object System {
               override def load: F[Unit] = for {
                 gachaPrizes <- _gachaPersistence.list
                 createdEvents <- _gachaEventPersistence.gachaEvents
-                targetGachaPrizes <- Sync[F].delay {
+                _ <- gachaPrizesListReference.update { prizes =>
                   createdEvents.find(_.isHolding) match {
                     case Some(value) =>
-                      gachaPrizes.filter(_.gachaEventName.contains(value.eventName))
+                      prizes.filter(_.gachaEventName.contains(value.eventName))
                     case None =>
-                      gachaPrizes.filter(_.gachaEventName.isEmpty)
+                      prizes.filter(_.gachaEventName.isEmpty)
                   }
                 }
-                _ <- gachaPrizesListReference.set(targetGachaPrizes)
               } yield ()
 
               override def replace(gachaPrizesList: Vector[GachaPrize[ItemStack]]): F[Unit] =
-                gachaPrizesListReference.set(gachaPrizesList)
+                allGachaPrizesListReference.set(gachaPrizesList)
 
               override def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Unit] =
-                gachaPrizesListReference.update { prizes =>
+                allGachaPrizesListReference.update { prizes =>
                   prizes.filter(_.id == gachaPrizeId)
                 }
 
               override def addGachaPrize(gachaPrize: GachaPrizeByGachaPrizeId): F[Unit] =
-                gachaPrizesListReference.update { prizes =>
+                allGachaPrizesListReference.update { prizes =>
                   gachaPrize(
                     GachaPrizeId(if (prizes.nonEmpty) prizes.map(_.id.id).max + 1 else 1)
                   ) +: prizes
                 }
 
-              override def listOfNow: F[Vector[GachaPrize[ItemStack]]] = gachaPrizesListReference.get
+              override def listOfNow: F[Vector[GachaPrize[ItemStack]]] =
+                allGachaPrizesListReference.get
+
+              override def allGachaPrizeList: F[Vector[GachaPrize[ItemStack]]] =
+                allGachaPrizesListReference.get
 
               override def staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack] =
                 _staticGachaPrizeFactory
@@ -99,7 +104,7 @@ object System {
 
               override def createGachaEvent(gachaEvent: GachaEvent): F[Unit] = {
                 _gachaEventPersistence.createGachaEvent(gachaEvent) >> (for {
-                  prizes <- listOfNow
+                  prizes <- allGachaPrizesListReference.get
                   defaultGachaPrizes = prizes
                     .filter(_.gachaEventName.isEmpty)
                     .map(_.copy(gachaEventName = Some(gachaEvent.eventName)))
@@ -113,12 +118,14 @@ object System {
               override def canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
                 _canBeSignedAsGachaPrize
 
-              override def findByItemStack(
+              override def findOfRegularPrizesByItemStack(
                 itemStack: ItemStack
               ): F[Option[GachaPrize[ItemStack]]] = for {
-                prizes <- gachaPrizesListReference.get
-              } yield prizes.filter(_.gachaEventName.isEmpty).find(_.itemStack == itemStack)
-
+                prizes <- allGachaPrizesListReference.get
+                defaultGachaPrizes = prizes.filter(_.gachaEventName.isEmpty)
+              } yield defaultGachaPrizes
+                .filter(_.gachaEventName.isEmpty)
+                .find(_.itemStack == itemStack)
             }
 
         }

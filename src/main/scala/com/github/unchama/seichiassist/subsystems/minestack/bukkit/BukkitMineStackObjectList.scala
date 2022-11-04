@@ -642,7 +642,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     itemStack: ItemStack,
     player: Player
   ): F[Option[MineStackObject[ItemStack]]] = for {
-    foundGachaPrizeOpt <- gachaPrizeAPI.findByItemStack(itemStack)
+    foundGachaPrizeOpt <- gachaPrizeAPI.findOfRegularPrizesByItemStack(itemStack)
     isGachaPrize = foundGachaPrizeOpt.nonEmpty
     mineStackObjects <- allMineStackObjects
   } yield {

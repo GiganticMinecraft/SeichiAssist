@@ -80,6 +80,11 @@ trait GachaPrizeReadAPI[F[_], ItemStack] {
   def listOfNow: F[Vector[GachaPrize[ItemStack]]]
 
   /**
+   * @return すべてのガチャ景品を取得する
+   */
+  def allGachaPrizeList: F[Vector[GachaPrize[ItemStack]]]
+
+  /**
    * @return [[GachaPrizeId]]に対応する[[GachaPrize]]
    */
   final def fetch(gachaPrizeId: GachaPrizeId): F[Option[GachaPrize[ItemStack]]] = for {
@@ -98,9 +103,9 @@ trait GachaPrizeReadAPI[F[_], ItemStack] {
   def staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack]
 
   /**
-   * @return [[ItemStack]]から[[GachaPrize]]を取得する
+   * @return [[ItemStack]]から[[GachaPrize]]を通常排出アイテム一覧から取得する
    */
-  def findByItemStack(itemStack: ItemStack): F[Option[GachaPrize[ItemStack]]]
+  def findOfRegularPrizesByItemStack(itemStack: ItemStack): F[Option[GachaPrize[ItemStack]]]
 
   /**
    * @return [[CanBeSignedAsGachaPrize]]を返す
