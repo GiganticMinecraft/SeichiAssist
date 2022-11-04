@@ -63,7 +63,6 @@ object System {
               override protected implicit val F: Monad[F] = implicitly
 
               override def load: F[Unit] = for {
-                gachaPrizes <- _gachaPersistence.list
                 createdEvents <- _gachaEventPersistence.gachaEvents
                 _ <- gachaPrizesListReference.update { prizes =>
                   createdEvents.find(_.isHolding) match {

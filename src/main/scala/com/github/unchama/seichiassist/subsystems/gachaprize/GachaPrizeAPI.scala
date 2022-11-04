@@ -88,7 +88,7 @@ trait GachaPrizeReadAPI[F[_], ItemStack] {
    * @return [[GachaPrizeId]]に対応する[[GachaPrize]]
    */
   final def fetch(gachaPrizeId: GachaPrizeId): F[Option[GachaPrize[ItemStack]]] = for {
-    prizes <- listOfNow
+    prizes <- allGachaPrizeList
   } yield prizes.find(_.id == gachaPrizeId)
 
   /**
