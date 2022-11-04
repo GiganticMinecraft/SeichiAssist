@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.menus.home
 
-import cats.effect.{ConcurrentEffect, IO}
+import cats.effect.IO
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.MapExtra
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
@@ -77,9 +77,9 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
         _ => throw new RuntimeException("This branch should not be reached."),
         column => {
           List(
-            ChestSlotRef(1, column) -> setHomeNameButton[IO](homeNumber),
-            ChestSlotRef(2, column) -> buttonComputations.setHomeButton[IO](homeNumber),
-            ChestSlotRef(3, column) -> buttonComputations.removeHomeButton[IO](homeNumber)
+            ChestSlotRef(1, column) -> setHomeNameButton(homeNumber),
+            ChestSlotRef(2, column) -> buttonComputations.setHomeButton(homeNumber),
+            ChestSlotRef(3, column) -> buttonComputations.removeHomeButton(homeNumber)
           ).traverse(_.sequence)
         }
       )
@@ -142,14 +142,13 @@ case class HomeMenuButtonComputations(player: Player)(
   private implicit val environment: HomeMenu.Environment
 ) {
   import cats.effect.implicits._
-  import cats.implicits._
 
-  def setHomeNameButton[F[_]: HomeReadAPI: ConcurrentEffect](homeNumber: Int): IO[Button] = {
+  def setHomeNameButton(homeNumber: Int): IO[Button] = {
 
     val homeId = HomeId(homeNumber)
 
     val program = for {
-      homeOpt <- HomeReadAPI[F].get(player.getUniqueId, homeId)
+      homeOpt <- environment.homeReadAPI.get(player.getUniqueId, homeId)
     } yield {
       val lore = homeOpt.fold(List(s"${GRAY}ホームポイント$homeId", s"${GRAY}ポイント未設定"))(home => {
         val location = home.location
@@ -193,11 +192,11 @@ case class HomeMenuButtonComputations(player: Player)(
   private def homeNameForConfirmMenu(homeOpt: Option[Home]): String =
     homeOpt.fold("ホームポイント未設定")(_.name.getOrElse("名称未設定"))
 
-  def setHomeButton[F[_]: HomeReadAPI: ConcurrentEffect](homeNumber: Int): IO[Button] = {
+  def setHomeButton(homeNumber: Int): IO[Button] = {
     val homeId = HomeId(homeNumber)
 
     val program = for {
-      homeOpt <- HomeReadAPI[F].get(player.getUniqueId, homeId)
+      homeOpt <- environment.homeReadAPI.get(player.getUniqueId, homeId)
     } yield {
       Button(
         new IconItemStackBuilder(Material.BED)
@@ -225,10 +224,10 @@ case class HomeMenuButtonComputations(player: Player)(
     program.toIO
   }
 
-  def removeHomeButton[F[_]: HomeReadAPI: ConcurrentEffect](homeNumber: Int): IO[Button] = {
+  def removeHomeButton(homeNumber: Int): IO[Button] = {
     val homeId = HomeId(homeNumber)
     val program = for {
-      homeOpt <- HomeReadAPI[F].get(player.getUniqueId, homeId)
+      homeOpt <- environment.homeReadAPI.get(player.getUniqueId, homeId)
     } yield {
       Button(
         new IconItemStackBuilder(Material.WOOL, 14)
