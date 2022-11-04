@@ -53,7 +53,9 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
     val buttonComputations = HomeMenuButtonComputations(player)
     import buttonComputations._
     import environment._
+    import cats.implicits._
 
+    // ボタンの構築に副作用がない箇所のメニュー定義
     val homePointPart = for {
       homeNumber <- 1 + (9 * pageIndex) to HomeId.maxNumber - 9 * (pageIndexMax - pageIndex)
     } yield {
@@ -64,6 +66,27 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
           Map(ChestSlotRef(0, value) -> ConstantButtons.warpToHomePointButton(homeNumber))
       )
     }
+
+    // ボタンの構築に副作用がある箇所のメニュー定義
+    val dynamicPartComputation = (for {
+      homeNumber <- 1 + (9 * pageIndex) to HomeId.maxNumber - 9 * (pageIndexMax - pageIndex)
+    } yield {
+      val column = refineV[Interval.ClosedOpen[0, 9]](homeNumber - 9 * pageIndex - 1)
+      column.fold(
+        _ => throw new RuntimeException("This branch should not be reached."),
+        value => {
+          List(
+            (ChestSlotRef(1, value) -> setHomeNameButton[IO](homeNumber)).sequence,
+            (ChestSlotRef(2, value) -> buttonComputations.setHomeButton[IO](
+              homeNumber
+            )).sequence,
+            (ChestSlotRef(3, value) -> buttonComputations.removeHomeButton[IO](
+              homeNumber
+            )).sequence
+          )
+        }
+      )
+    }).flatten.toList.sequence
 
     // 5スロット目のページ遷移メニュー定義
     val paginationPartMap = {
@@ -87,45 +110,10 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
       stickButtonMap ++ prevButtonMap ++ nextButtonMap
     }
 
-    import cats.implicits._
-    val setHomeNamePartComputation = (for {
-      homeNumber <- 1 + (9 * pageIndex) to HomeId.maxNumber - 9 * (pageIndexMax - pageIndex)
-    } yield {
-      val column = refineV[Interval.ClosedOpen[0, 9]](homeNumber - 9 * pageIndex - 1)
-      column.fold(
-        _ => throw new RuntimeException("This branch should not be reached."),
-        value => ChestSlotRef(1, value) -> setHomeNameButton[IO](homeNumber)
-      )
-    }.sequence).toList.sequence
-
-    val setHomePartComputation = (for {
-      homeNumber <- 1 + (9 * pageIndex) to HomeId.maxNumber - 9 * (pageIndexMax - pageIndex)
-    } yield {
-      val column = refineV[Interval.ClosedOpen[0, 9]](homeNumber - 9 * pageIndex - 1)
-      column.fold(
-        _ => throw new RuntimeException("This branch should not be reached."),
-        value => ChestSlotRef(2, value) -> buttonComputations.setHomeButton[IO](homeNumber)
-      )
-    }.sequence).toList.sequence
-
-    val removeHomePartComputation = (for {
-      homeNumber <- 1 + (9 * pageIndex) to HomeId.maxNumber - 9 * (pageIndexMax - pageIndex)
-    } yield {
-      val column = refineV[Interval.ClosedOpen[0, 9]](homeNumber - 9 * pageIndex - 1)
-      column.fold(
-        _ => throw new RuntimeException("This branch should not be reached."),
-        value => ChestSlotRef(3, value) -> buttonComputations.removeHomeButton[IO](homeNumber)
-      )
-    }.sequence).toList.sequence
-
     for {
-      setHomeNamePart <- setHomeNamePartComputation
-      setHomePart <- setHomePartComputation
-      removeHomePart <- removeHomePartComputation
+      dynamicPart <- dynamicPartComputation
       paginationPart = paginationPartMap
-    } yield MenuSlotLayout(
-      homePointPart.flatten ++ setHomeNamePart.toMap ++ setHomePart.toMap ++ removeHomePart ++ paginationPart: _*
-    )
+    } yield MenuSlotLayout(homePointPart.flatten ++ dynamicPart.toMap ++ paginationPart: _*)
   }
 
   private object ConstantButtons {
