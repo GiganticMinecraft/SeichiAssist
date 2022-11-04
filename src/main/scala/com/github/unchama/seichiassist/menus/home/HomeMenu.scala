@@ -55,35 +55,34 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
     import environment._
     import cats.implicits._
 
+    val homeNumberRange =
+      1 + (9 * pageIndex) to HomeId.maxNumber - 9 * (pageIndexMax - pageIndex)
+
     // ボタンの構築に副作用がない箇所のメニュー定義
     val homePointPart = for {
-      homeNumber <- 1 + (9 * pageIndex) to HomeId.maxNumber - 9 * (pageIndexMax - pageIndex)
+      homeNumber <- homeNumberRange
     } yield {
-      val column = refineV[Interval.ClosedOpen[0, 9]](homeNumber - 9 * pageIndex - 1)
-      column.fold(
+      val columnEither = refineV[Interval.ClosedOpen[0, 9]](homeNumber - 9 * pageIndex - 1)
+      columnEither.fold(
         _ => throw new RuntimeException("This branch should not be reached."),
-        value =>
-          Map(ChestSlotRef(0, value) -> ConstantButtons.warpToHomePointButton(homeNumber))
+        column =>
+          Map(ChestSlotRef(0, column) -> ConstantButtons.warpToHomePointButton(homeNumber))
       )
     }
 
     // ボタンの構築に副作用がある箇所のメニュー定義
     val dynamicPartComputation = (for {
-      homeNumber <- 1 + (9 * pageIndex) to HomeId.maxNumber - 9 * (pageIndexMax - pageIndex)
+      homeNumber <- homeNumberRange
     } yield {
-      val column = refineV[Interval.ClosedOpen[0, 9]](homeNumber - 9 * pageIndex - 1)
-      column.fold(
+      val columnEither = refineV[Interval.ClosedOpen[0, 9]](homeNumber - 9 * pageIndex - 1)
+      columnEither.fold(
         _ => throw new RuntimeException("This branch should not be reached."),
-        value => {
+        column => {
           List(
-            (ChestSlotRef(1, value) -> setHomeNameButton[IO](homeNumber)).sequence,
-            (ChestSlotRef(2, value) -> buttonComputations.setHomeButton[IO](
-              homeNumber
-            )).sequence,
-            (ChestSlotRef(3, value) -> buttonComputations.removeHomeButton[IO](
-              homeNumber
-            )).sequence
-          )
+            ChestSlotRef(1, column) -> setHomeNameButton[IO](homeNumber),
+            ChestSlotRef(2, column) -> buttonComputations.setHomeButton[IO](homeNumber),
+            ChestSlotRef(3, column) -> buttonComputations.removeHomeButton[IO](homeNumber)
+          ).map(_.sequence)
         }
       )
     }).flatten.toList.sequence
