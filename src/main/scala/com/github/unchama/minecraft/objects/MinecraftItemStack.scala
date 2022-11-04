@@ -6,8 +6,8 @@ package com.github.unchama.minecraft.objects
 trait MinecraftItemStack[ItemStack] {
 
   /**
-   * @return [[ItemStack]]をクローンして返します。
+   * @return [[ItemStack]]をコピーして返します。
    */
-  def clone(): ItemStack
+  def copy(itemStack: ItemStack): ItemStack
 
 }

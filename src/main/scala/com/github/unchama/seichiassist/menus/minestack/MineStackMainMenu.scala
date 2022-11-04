@@ -6,20 +6,14 @@ import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.minecraft.objects.MinecraftItemStack
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory.{
-  AGRICULTURAL,
-  BUILDING,
-  GACHA_PRIZES,
-  MOB_DROP,
-  ORES,
-  REDSTONE_AND_TRANSPORTATION
-}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory.{AGRICULTURAL, BUILDING, GACHA_PRIZES, MOB_DROP, ORES, REDSTONE_AND_TRANSPORTATION}
 import org.bukkit.ChatColor._
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -35,7 +29,8 @@ object MineStackMainMenu extends Menu {
     val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
     val ioOnMainThread: OnMinecraftServerThread[IO],
     implicit val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
-    implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack]
+    implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack],
+    implicit val minecraftItemStack: MinecraftItemStack[ItemStack]
   )
 
   override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}MineStackメインメニュー")
@@ -103,7 +98,8 @@ object MineStackMainMenu extends Menu {
       implicit ioOnMainThread: OnMinecraftServerThread[IO],
       canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu,
       mineStackAPI: MineStackAPI[IO, Player, ItemStack],
-      gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player]
+      gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
+      minecraftItemStack: MinecraftItemStack[ItemStack]
     ): IO[MenuSlotLayout] = {
       val usageHistory = mineStackAPI.getUsageHistory(player)
       for {

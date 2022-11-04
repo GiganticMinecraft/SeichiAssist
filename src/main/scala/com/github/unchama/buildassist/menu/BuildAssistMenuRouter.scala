@@ -4,6 +4,7 @@ import cats.effect.{IO, SyncIO}
 import com.github.unchama.menuinventory.LayoutPreparationContext
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.minecraft.objects.MinecraftItemStack
 import com.github.unchama.seichiassist.menus.BuildMainMenu
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
@@ -19,7 +20,8 @@ object BuildAssistMenuRouter {
     implicit flyApi: ManagedFlyApi[SyncIO, Player],
     mineStackAPI: MineStackAPI[IO, Player, ItemStack],
     layoutPreparationContext: LayoutPreparationContext,
-    onMainThread: OnMinecraftServerThread[IO]
+    onMainThread: OnMinecraftServerThread[IO],
+    minecraftItemStack: MinecraftItemStack[ItemStack]
   ): BuildAssistMenuRouter[IO] = new BuildAssistMenuRouter[IO] {
     implicit lazy val blockPlacementSkillMenuEnvironment: BlockPlacementSkillMenu.Environment =
       new BlockPlacementSkillMenu.Environment

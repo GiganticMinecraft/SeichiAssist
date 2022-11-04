@@ -2,13 +2,10 @@ package com.github.unchama.seichiassist.subsystems.minestack.bukkit
 
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
-import com.github.unchama.minecraft.objects.MinecraftMaterial
+import com.github.unchama.minecraft.objects.{MinecraftItemStack, MinecraftMaterial}
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.CanBeSignedAsGachaPrize
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject.{
-  MineStackObjectByItemStack,
-  MineStackObjectByMaterial
-}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject.{MineStackObjectByItemStack, MineStackObjectByMaterial}
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory._
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject._
 import org.bukkit.Material
@@ -17,7 +14,8 @@ import org.bukkit.inventory.ItemStack
 
 class BukkitMineStackObjectList[F[_]: Sync](
   implicit minecraftMaterial: MinecraftMaterial[Material, ItemStack],
-  gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player]
+  gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
+  minecraftItemStack: MinecraftItemStack[ItemStack]
 ) extends MineStackObjectList[F, ItemStack, Player] {
 
   private def leftElems[A](elems: A*): List[Either[A, Nothing]] = elems.toList.map(Left.apply)

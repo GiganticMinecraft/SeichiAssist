@@ -8,8 +8,8 @@ import com.github.unchama.datarepository.bukkit.player.{
 }
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.{ContextCoercion, ListExtra}
-import com.github.unchama.minecraft.bukkit.objects.BukkitMaterial
-import com.github.unchama.minecraft.objects.MinecraftMaterial
+import com.github.unchama.minecraft.bukkit.objects.{BukkitItemStack, BukkitMaterial}
+import com.github.unchama.minecraft.objects.{MinecraftItemStack, MinecraftMaterial}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.minestack.application.repository.{
@@ -50,6 +50,7 @@ object System {
     implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player]
   ): F[System[F, Player, ItemStack]] = {
     implicit val minecraftMaterial: MinecraftMaterial[Material, ItemStack] = new BukkitMaterial
+    implicit val minecraftItemStack: MinecraftItemStack[ItemStack] = new BukkitItemStack
     implicit val _mineStackObjectList: MineStackObjectList[F, ItemStack, Player] =
       new BukkitMineStackObjectList[F]()
 

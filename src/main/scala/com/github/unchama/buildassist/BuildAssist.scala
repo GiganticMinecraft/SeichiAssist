@@ -6,6 +6,7 @@ import com.github.unchama.buildassist.menu.BuildAssistMenuRouter
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.minecraft.objects.MinecraftItemStack
 import com.github.unchama.seichiassist.listener.BuildMainMenuOpener
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
@@ -26,7 +27,8 @@ class BuildAssist(plugin: Plugin)(
   buildCountAPI: subsystems.buildcount.BuildCountAPI[IO, SyncIO, Player],
   manaApi: ManaApi[IO, SyncIO, Player],
   mineStackAPI: MineStackAPI[IO, Player, ItemStack],
-  ioConcurrentEffect: ConcurrentEffect[IO]
+  ioConcurrentEffect: ConcurrentEffect[IO],
+  minecraftItemStack: MinecraftItemStack[ItemStack]
 ) {
 
   // TODO この辺のフィールドを整理する

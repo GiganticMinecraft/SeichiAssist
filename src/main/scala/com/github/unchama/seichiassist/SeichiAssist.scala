@@ -30,6 +30,8 @@ import com.github.unchama.minecraft.bukkit.actions.{
   GetConnectedBukkitPlayers,
   SendBukkitMessage
 }
+import com.github.unchama.minecraft.bukkit.objects.BukkitItemStack
+import com.github.unchama.minecraft.objects.MinecraftItemStack
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
 import com.github.unchama.seichiassist.SeichiAssist.seichiAssistConfig
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
@@ -459,6 +461,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val flyApi: ManagedFlyApi[SyncIO, Player] = managedFlySystem.api
     implicit val buildCountAPI: BuildCountAPI[IO, SyncIO, Player] = buildCountSystem.api
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
+    implicit val minecraftItemStack: MinecraftItemStack[ItemStack] = new BukkitItemStack
 
     new BuildAssist(this)
   }
@@ -608,6 +611,8 @@ class SeichiAssist extends JavaPlugin() {
       sharedInventorySystem.api
     implicit val gachaTicketAPI: GachaTicketAPI[IO] =
       gachaTicketSystem.api
+
+    implicit val minecraftItemStack: MinecraftItemStack[ItemStack] = new BukkitItemStack
 
     val menuRouter = TopLevelRouter.apply
     import SeichiAssist.Scopes.globalChatInterceptionScope

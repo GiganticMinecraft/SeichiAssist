@@ -5,6 +5,7 @@ import cats.implicits.toTraverseOps
 import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.minecraft.objects.MinecraftItemStack
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.menus.CommonButtons
@@ -21,7 +22,8 @@ object MineStackSelectItemColorMenu {
   class Environment(
     implicit val canOpenCategorizedMineStackMenu: CanOpen[IO, CategorizedMineStackMenu],
     implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack],
-    implicit val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player]
+    implicit val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
+    implicit val minecraftItemStack: MinecraftItemStack[ItemStack]
   )
 
 }
