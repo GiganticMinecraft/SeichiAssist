@@ -54,7 +54,7 @@ object System {
       new LotteryOfGachaItems[F, ItemStack]
 
     for {
-      gachaPrizesListReference <- gachaPrizeAPI.list
+      gachaPrizesListReference <- gachaPrizeAPI.listOfNow
     } yield {
       implicit val drawGacha: DrawGacha[F, Player] =
         new BukkitDrawGacha[F](gachaPrizesListReference)

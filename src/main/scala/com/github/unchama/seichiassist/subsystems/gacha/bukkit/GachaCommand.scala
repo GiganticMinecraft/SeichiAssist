@@ -248,7 +248,7 @@ class GachaCommand[
         .execution { context =>
           val eventName = context.args.yetToBeParsed.headOption.map(GachaEventName)
           val eff = for {
-            gachaPrizes <- gachaPrizeAPI.list
+            gachaPrizes <- gachaPrizeAPI.listOfNow
           } yield {
             val gachaPrizeInformation = gachaPrizes
               .filter { gachaPrize =>
@@ -373,7 +373,7 @@ class GachaCommand[
         .beginConfiguration()
         .execution { _ =>
           val eff = for {
-            gachaPrizes <- gachaPrizeAPI.list
+            gachaPrizes <- gachaPrizeAPI.listOfNow
             _ <- gachaPrizeAPI.replace(gachaPrizes)
           } yield MessageEffect("ガチャデータをmysqlに保存しました。")
 

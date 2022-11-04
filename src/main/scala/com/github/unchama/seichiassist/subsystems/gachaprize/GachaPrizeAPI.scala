@@ -75,15 +75,15 @@ trait GachaPrizeReadAPI[F[_], ItemStack] {
   protected implicit val F: Monad[F]
 
   /**
-   * @return ガチャの景品リストをすべて取得する
+   * @return 今のガチャ景品リストをすべて取得する
    */
-  def list: F[Vector[GachaPrize[ItemStack]]]
+  def listOfNow: F[Vector[GachaPrize[ItemStack]]]
 
   /**
    * @return [[GachaPrizeId]]に対応する[[GachaPrize]]
    */
   final def fetch(gachaPrizeId: GachaPrizeId): F[Option[GachaPrize[ItemStack]]] = for {
-    prizes <- list
+    prizes <- listOfNow
   } yield prizes.find(_.id == gachaPrizeId)
 
   /**

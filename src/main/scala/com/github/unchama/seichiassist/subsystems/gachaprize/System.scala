@@ -89,7 +89,7 @@ object System {
                   ) +: prizes
                 }
 
-              override def list: F[Vector[GachaPrize[ItemStack]]] = gachaPrizesListReference.get
+              override def listOfNow: F[Vector[GachaPrize[ItemStack]]] = gachaPrizesListReference.get
 
               override def staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack] =
                 _staticGachaPrizeFactory
@@ -99,7 +99,7 @@ object System {
 
               override def createGachaEvent(gachaEvent: GachaEvent): F[Unit] = {
                 _gachaEventPersistence.createGachaEvent(gachaEvent) >> (for {
-                  prizes <- list
+                  prizes <- listOfNow
                   defaultGachaPrizes = prizes
                     .filter(_.gachaEventName.isEmpty)
                     .map(_.copy(gachaEventName = Some(gachaEvent.eventName)))
