@@ -52,8 +52,8 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
 
     val buttonComputations = HomeMenuButtonComputations(player)
     import buttonComputations._
-    import environment._
     import cats.implicits._
+    import environment._
 
     val homeNumberRange =
       1 + (9 * pageIndex) to HomeId.maxNumber - 9 * (pageIndexMax - pageIndex)
@@ -143,9 +143,10 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
 case class HomeMenuButtonComputations(player: Player)(
   private implicit val environment: HomeMenu.Environment
 ) {
+  import cats.effect.implicits._
+  import cats.implicits._
+
   def setHomeNameButton[F[_]: HomeReadAPI: ConcurrentEffect](homeNumber: Int): IO[Button] = {
-    import cats.effect.implicits._
-    import cats.implicits._
 
     val homeId = HomeId(homeNumber)
 
@@ -195,8 +196,6 @@ case class HomeMenuButtonComputations(player: Player)(
     homeOpt.fold("ホームポイント未設定")(_.name.getOrElse("名称未設定"))
 
   def setHomeButton[F[_]: HomeReadAPI: ConcurrentEffect](homeNumber: Int): IO[Button] = {
-    import cats.effect.implicits._
-    import cats.implicits._
     val homeId = HomeId(homeNumber)
 
     val program = for {
@@ -229,8 +228,6 @@ case class HomeMenuButtonComputations(player: Player)(
   }
 
   def removeHomeButton[F[_]: HomeReadAPI: ConcurrentEffect](homeNumber: Int): IO[Button] = {
-    import cats.effect.implicits._
-    import cats.implicits._
     val homeId = HomeId(homeNumber)
     val program = for {
       homeOpt <- HomeReadAPI[F].get(player.getUniqueId, homeId)
