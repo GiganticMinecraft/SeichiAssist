@@ -142,13 +142,14 @@ case class HomeMenuButtonComputations(player: Player)(
   private implicit val environment: HomeMenu.Environment
 ) {
   import cats.effect.implicits._
+  import environment._
 
   def setHomeNameButton(homeNumber: Int): IO[Button] = {
 
     val homeId = HomeId(homeNumber)
 
     val program = for {
-      homeOpt <- environment.homeReadAPI.get(player.getUniqueId, homeId)
+      homeOpt <- homeReadAPI.get(player.getUniqueId, homeId)
     } yield {
       val lore = homeOpt.fold(List(s"${GRAY}ホームポイント$homeId", s"${GRAY}ポイント未設定"))(home => {
         val location = home.location
@@ -196,7 +197,7 @@ case class HomeMenuButtonComputations(player: Player)(
     val homeId = HomeId(homeNumber)
 
     val program = for {
-      homeOpt <- environment.homeReadAPI.get(player.getUniqueId, homeId)
+      homeOpt <- homeReadAPI.get(player.getUniqueId, homeId)
     } yield {
       Button(
         new IconItemStackBuilder(Material.BED)
@@ -227,7 +228,7 @@ case class HomeMenuButtonComputations(player: Player)(
   def removeHomeButton(homeNumber: Int): IO[Button] = {
     val homeId = HomeId(homeNumber)
     val program = for {
-      homeOpt <- environment.homeReadAPI.get(player.getUniqueId, homeId)
+      homeOpt <- homeReadAPI.get(player.getUniqueId, homeId)
     } yield {
       Button(
         new IconItemStackBuilder(Material.WOOL, 14)
