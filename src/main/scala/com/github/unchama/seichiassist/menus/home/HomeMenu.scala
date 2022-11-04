@@ -71,9 +71,7 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
     }
 
     // ボタンの構築に副作用がある箇所のメニュー定義
-    val dynamicPartComputation = (for {
-      homeNumber <- homeNumberRange
-    } yield {
+    val dynamicPartComputation = homeNumberRange.toList.flatTraverse { homeNumber =>
       val columnEither = refineV[Interval.ClosedOpen[0, 9]](homeNumber - 9 * pageIndex - 1)
       columnEither.fold(
         _ => throw new RuntimeException("This branch should not be reached."),
@@ -82,10 +80,10 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
             ChestSlotRef(1, column) -> setHomeNameButton[IO](homeNumber),
             ChestSlotRef(2, column) -> buttonComputations.setHomeButton[IO](homeNumber),
             ChestSlotRef(3, column) -> buttonComputations.removeHomeButton[IO](homeNumber)
-          ).map(_.sequence)
+          ).traverse(_.sequence)
         }
       )
-    }).flatten.toList.sequence
+    }
 
     // 5スロット目のページ遷移メニュー定義
     val paginationPartMap = {
