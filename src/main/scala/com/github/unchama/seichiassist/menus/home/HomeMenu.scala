@@ -192,7 +192,7 @@ case class HomeMenuButtonComputations(player: Player)(
     program.toIO
   }
 
-  private def honeNameForConfirmMenu(homeOpt: Option[Home]): String =
+  private def homeNameForConfirmMenu(homeOpt: Option[Home]): String =
     homeOpt.fold("ホームポイント未設定")(_.name.getOrElse("名称未設定"))
 
   def setHomeButton[F[_]: HomeReadAPI: ConcurrentEffect](homeNumber: Int): IO[Button] = {
@@ -221,7 +221,7 @@ case class HomeMenuButtonComputations(player: Player)(
             FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
             environment
               .ioCanOpenConfirmationMenu
-              .open(HomeChangeConfirmationMenu(homeNumber, honeNameForConfirmMenu(homeOpt)))
+              .open(HomeChangeConfirmationMenu(homeNumber, homeNameForConfirmMenu(homeOpt)))
           )
         }
       )
@@ -252,7 +252,7 @@ case class HomeMenuButtonComputations(player: Player)(
           SequentialEffect(
             environment
               .ioCanOpenHomeRemoveConfirmationMenu
-              .open(HomeRemoveConfirmationMenu(homeNumber, honeNameForConfirmMenu(homeOpt)))
+              .open(HomeRemoveConfirmationMenu(homeNumber, homeNameForConfirmMenu(homeOpt)))
           )
         }
       )
