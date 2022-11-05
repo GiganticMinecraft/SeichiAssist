@@ -31,6 +31,6 @@ class JdbcMineStackGachaObjectPersistence[F[_]: Sync, ItemStack, Player](
           .collect { case Some(value) => value }
       }
     }
-  } yield mineStackGachaObjects
+  } yield mineStackGachaObjects.toVector
 
 }
