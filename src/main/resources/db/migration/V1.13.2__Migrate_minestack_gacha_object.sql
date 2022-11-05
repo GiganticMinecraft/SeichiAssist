@@ -14,6 +14,6 @@ SELECT
 FROM
 	gachadata
 WHERE
-	event_name = NULL;
+	event_name IS NULL;
 
 DROP TABLE msgachadata;
