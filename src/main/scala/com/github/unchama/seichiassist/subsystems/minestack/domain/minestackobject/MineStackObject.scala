@@ -31,7 +31,7 @@ case class MineStackObject[ItemStack](
       gachaPrizeAPI.canBeSignedAsGachaPrize
 
     for {
-      foundGachaPrize <- gachaPrizeAPI.findOfRegularPrizesByItemStack(itemStack)
+      foundGachaPrize <- gachaPrizeAPI.findOfRegularPrizesByItemStack(itemStack, name)
     } yield foundGachaPrize.map { gachaPrize => gachaPrize.materializeWithOwnerSignature(name) }
   }
 

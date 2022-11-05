@@ -89,10 +89,12 @@ object System {
                   ) +: prizes
                 }
                 newGachaPrizes <- allGachaPrizesListReference.get
-                _ <- _gachaPersistence.addMineStackGachaObject(
-                  newGachaPrizes.head.id,
-                  s"gachadata0_${newGachaPrizes.head.id.id - 1}"
-                ).whenA(newGachaPrizes.head.gachaEventName.isEmpty)
+                _ <- _gachaPersistence
+                  .addMineStackGachaObject(
+                    newGachaPrizes.head.id,
+                    s"gachadata0_${newGachaPrizes.head.id.id - 1}"
+                  )
+                  .whenA(newGachaPrizes.head.gachaEventName.isEmpty)
               } yield ()
 
               override def listOfNow: F[Vector[GachaPrize[ItemStack]]] =
@@ -124,13 +126,16 @@ object System {
                 _canBeSignedAsGachaPrize
 
               override def findOfRegularPrizesByItemStack(
-                itemStack: ItemStack
+                itemStack: ItemStack,
+                name: String
               ): F[Option[GachaPrize[ItemStack]]] = for {
                 prizes <- allGachaPrizesListReference.get
                 defaultGachaPrizes = prizes.filter(_.gachaEventName.isEmpty)
-              } yield defaultGachaPrizes
-                .filter(_.gachaEventName.isEmpty)
-                .find(_.itemStack == itemStack)
+              } yield defaultGachaPrizes.filter(_.gachaEventName.isEmpty).find { gachaPrize =>
+                if (gachaPrize.signOwner)
+                  gachaPrize.materializeWithOwnerSignature(name).isSimilar(itemStack)
+                else gachaPrize.itemStack.isSimilar(itemStack)
+              }
             }
 
         }

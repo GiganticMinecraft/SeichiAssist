@@ -4,12 +4,8 @@ import cats.effect.Sync
 import cats.effect.concurrent.Ref
 import com.github.unchama.minecraft.objects.{MinecraftItemStack, MinecraftMaterial}
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackGachaObjectPersistence
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject.{
-  MineStackObjectByItemStack,
-  MineStackObjectByMaterial
-}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject.{MineStackObjectByItemStack, MineStackObjectByMaterial}
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory._
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject._
 import org.bukkit.Material
@@ -660,14 +656,15 @@ class BukkitMineStackObjectList[F[_]: Sync](
     itemStack: ItemStack,
     player: Player
   ): F[Option[MineStackObject[ItemStack]]] = for {
-    foundGachaPrizeOpt <- gachaPrizeAPI.findOfRegularPrizesByItemStack(itemStack)
+    foundGachaPrizeOpt <- gachaPrizeAPI.findOfRegularPrizesByItemStack(
+      itemStack,
+      player.getName
+    )
     isGachaPrize = foundGachaPrizeOpt.nonEmpty
     mineStackObjects <- allMineStackObjects
   } yield {
     val targetItemStack = if (isGachaPrize && foundGachaPrizeOpt.get.signOwner) {
-      implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
-        gachaPrizeAPI.canBeSignedAsGachaPrize
-      foundGachaPrizeOpt.get.materializeWithOwnerSignature(player.getName)
+      foundGachaPrizeOpt.get.itemStack
     } else {
       itemStack
     }
