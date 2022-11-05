@@ -98,7 +98,8 @@ object System {
         : PlayerDataRepository[Ref[F, List[MineStackObjectWithAmount[ItemStack]]]] =
         mineStackObjectRepositoryControls.repository.map(_.mapK(ContextCoercion.asFunctionK))
       val mineStackUsageHistoryRepository = mineStackUsageHistoryRepositoryControls.repository
-      implicit val mineStackSettingRepository: PlayerDataRepository[MineStackSettings[G, Player]] =
+      implicit val mineStackSettingRepository
+        : PlayerDataRepository[MineStackSettings[G, Player]] =
         mineStackSettingsRepositoryControls.repository
       implicit val _tryIntoMineStack: TryIntoMineStack[F, Player, ItemStack] =
         new TryIntoMineStack[F, Player, ItemStack]
