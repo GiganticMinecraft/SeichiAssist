@@ -45,7 +45,6 @@ class JdbcMineStackObjectPersistence[F[_]: Sync, ItemStack, Player](
           val amount = mineStackObjectWithAmount.amount
           Seq(key.toString, objectName, amount)
         }
-        println(s"mineStackObjectDetails:$batchParams")
 
         sql"""INSERT INTO mine_stack 
              | (player_uuid, object_name, amount) 

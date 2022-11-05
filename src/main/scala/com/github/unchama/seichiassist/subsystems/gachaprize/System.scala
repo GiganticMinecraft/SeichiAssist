@@ -131,11 +131,7 @@ object System {
               ): F[Option[GachaPrize[ItemStack]]] = for {
                 prizes <- allGachaPrizesListReference.get
                 defaultGachaPrizes = prizes.filter(_.gachaEventName.isEmpty)
-              } yield defaultGachaPrizes.filter(_.gachaEventName.isEmpty).find { gachaPrize =>
-                if (gachaPrize.signOwner)
-                  gachaPrize.materializeWithOwnerSignature(name).isSimilar(itemStack)
-                else gachaPrize.itemStack.isSimilar(itemStack)
-              }
+              } yield defaultGachaPrizes.find(_.itemStack.isSimilar(itemStack))
             }
 
         }
