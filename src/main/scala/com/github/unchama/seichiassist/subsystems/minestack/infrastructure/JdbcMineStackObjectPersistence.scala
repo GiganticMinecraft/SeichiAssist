@@ -1,11 +1,14 @@
 package com.github.unchama.seichiassist.subsystems.minestack.infrastructure
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{MineStackObject, MineStackObjectPersistence, MineStackObjectWithAmount}
-import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
+  MineStackObject,
+  MineStackObjectPersistence,
+  MineStackObjectWithAmount
+}
+import scalikejdbc._
 
 import java.util.UUID
-import scala.collection.IndexedSeq.iterableFactory
 
 class JdbcMineStackObjectPersistence[F[_]: Sync, ItemStack, Player](
   allMineStackObjects: Vector[MineStackObject[ItemStack]]
@@ -36,18 +39,19 @@ class JdbcMineStackObjectPersistence[F[_]: Sync, ItemStack, Player](
 
   override def write(key: UUID, value: List[MineStackObjectWithAmount[ItemStack]]): F[Unit] =
     Sync[F].delay {
-      val mineStackObjectDetails = value.map { mineStackObjectWithAmount =>
-        val objectName = mineStackObjectWithAmount.mineStackObject.mineStackObjectName
-        val amount = mineStackObjectWithAmount.amount
-        Seq("object_name" -> objectName, "amount" -> amount)
-      }
       DB.localTx { implicit session =>
+        val mineStackObjectDetails = value.map { mineStackObjectWithAmount =>
+          val objectName = mineStackObjectWithAmount.mineStackObject.mineStackObjectName
+          val amount = mineStackObjectWithAmount.amount
+          Seq("mine_stack_object_name" -> objectName, "mine_stack_object_amount" -> amount)
+        }
+
         sql"""INSERT INTO mine_stack 
              | (player_uuid, object_name, amount) 
-             | VALUES (${key.toString}, {object_name}, {amount})
+             | VALUES (${key.toString}, {mine_stack_object_name}, {mine_stack_object_amount})
              | ON DUPLICATE KEY UPDATE
-             | amount = {amount}
-             """.stripMargin.batchByName(mineStackObjectDetails: _*).apply()
+             | amount = {mine_stack_object_amount}
+             """.stripMargin.batchByName(mineStackObjectDetails: _*).apply[List]
       }
     }
 

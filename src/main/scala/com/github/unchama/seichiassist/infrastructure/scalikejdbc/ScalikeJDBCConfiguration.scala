@@ -1,11 +1,6 @@
 package com.github.unchama.seichiassist.infrastructure.scalikejdbc
 
-import scalikejdbc.{
-  ConnectionPool,
-  ConnectionPoolSettings,
-  GlobalSettings,
-  LoggingSQLAndTimeSettings
-}
+import scalikejdbc._
 
 object ScalikeJDBCConfiguration {
 
@@ -27,6 +22,10 @@ object ScalikeJDBCConfiguration {
 
   def initializeGlobalConfigs(): Unit = {
     GlobalSettings.loggingSQLAndTime = loggingSettings
+    // 動的パラメータのため
+    GlobalSettings.nameBindingSQLValidator = NameBindingSQLValidatorSettings(
+      globalsettings.NoCheckForIgnoredParams
+    )
   }
 
 }
