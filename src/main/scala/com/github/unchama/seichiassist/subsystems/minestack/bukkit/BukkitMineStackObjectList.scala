@@ -600,8 +600,12 @@ class BukkitMineStackObjectList[F[_]: Sync](
 
   import cats.implicits._
 
-  private val gachaPrizesObjects: Ref[F, List[MineStackObject[ItemStack]]] =
-    Ref.unsafe[F, List[MineStackObject[ItemStack]]](Nil)
+  private val gachaPrizesObjects: Ref[F, Vector[MineStackObject[ItemStack]]] = for {
+    gachaPrizes <- gachaPrizeAPI.allGachaPrizeList
+    defaultGachaPrizes = gachaPrizes.filter(_.gachaEventName.isEmpty)
+    mineStackObjects = defaultGachaPrizes.map(prizes => MineStackObjectByItemStack(GACHA_PRIZES, prizes.))
+    prizes <- Ref.of[F, Vector[MineStackObject[ItemStack]]]()
+  } yield prizes
 
   // ガチャアイテムを除外したMineStackGroups
   private val exceptGachaItemMineStackGroups: List[MineStackObjectGroup[ItemStack]] = List(
