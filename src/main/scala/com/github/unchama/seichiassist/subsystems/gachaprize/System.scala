@@ -92,7 +92,7 @@ object System {
                 _ <- _gachaPersistence.addMineStackGachaObject(
                   newGachaPrizes.head.id,
                   s"gachadata0_${newGachaPrizes.head.id.id - 1}"
-                )
+                ).whenA(newGachaPrizes.head.gachaEventName.isEmpty)
               } yield ()
 
               override def listOfNow: F[Vector[GachaPrize[ItemStack]]] =
