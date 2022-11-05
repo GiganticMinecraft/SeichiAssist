@@ -96,9 +96,9 @@ class HomeCommand[F[
               val displayHomeName = home.name.getOrElse("名称未設定")
               val displayWorldName =
                 ManagedWorld.fromName(worldName).map(_.japaneseName).getOrElse(worldName)
-              f"${YELLOW}ID ${homeId.value}%2d: ${displayHomeName}, $displayWorldName(${toBlockPos(
-                  x
-                )}, ${toBlockPos(y)}, ${toBlockPos(z)})"
+              f"${YELLOW}ID ${homeId.value}%2d $displayWorldName(${toBlockPos(x)}, ${toBlockPos(
+                  y
+                )}, ${toBlockPos(z)}): ${displayHomeName}"
           }
           MessageEffect(messages)
         }
