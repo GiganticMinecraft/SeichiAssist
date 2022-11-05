@@ -10,6 +10,7 @@ import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.seichiassist.ManagedWorld
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
@@ -46,7 +47,9 @@ class HomeCommand[F[
         s"${GREEN}名前変更する場合",
         s"$GREEN/home name [名前変更したいホームの番号]",
         s"${GREEN}削除する場合",
-        s"$GREEN/home remove [削除したいホームの番号]"
+        s"$GREEN/home remove [削除したいホームの番号]",
+        s"${GREEN}一覧表示する場合",
+        s"$GREEN/home list"
       )
     )
   )
@@ -70,11 +73,39 @@ class HomeCommand[F[
       "warp" -> warpExecutor,
       "set" -> setExecutor(),
       "name" -> nameExecutor(),
-      "remove" -> removeExecutor()
+      "remove" -> removeExecutor(),
+      "list" -> listExecutor()
     ),
     whenArgInsufficient = Some(printDescriptionExecutor),
     whenBranchNotFound = Some(printDescriptionExecutor)
   ).asNonBlockingTabExecutor()
+
+  private def listExecutor() = {
+    // locationの座標は負の無限大方向へ切り捨て(Debug画面のBlock:で表示される座標と同じ丸め方)
+    def toBlockPos(pos: Double) = pos.floor.toInt
+    playerCommandBuilder
+      .execution { context =>
+        val player = context.sender
+        val eff = for {
+          homeMap <- HomeReadAPI[F].list(player.getUniqueId)
+        } yield {
+          val title = s"${RED}登録ホームポイント一覧:"
+          val messages = title +: homeMap.toList.sortBy(_._1.value).map {
+            case (homeId, home) =>
+              import home.location._
+              val displayHomeName = home.name.getOrElse("名称未設定")
+              val displayWorldName =
+                ManagedWorld.fromName(worldName).map(_.japaneseName).getOrElse(worldName)
+              f"${YELLOW}ID ${homeId.value}%2d $displayWorldName(${toBlockPos(x)}, ${toBlockPos(
+                  y
+                )}, ${toBlockPos(z)}): ${displayHomeName}"
+          }
+          MessageEffect(messages)
+        }
+        eff.toIO
+      }
+      .build()
+  }
 
   private def removeExecutor() =
     argsAndSenderConfiguredBuilder
