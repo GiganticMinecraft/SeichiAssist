@@ -1,25 +1,15 @@
 package com.github.unchama.seichiassist.subsystems.minestack.infrastructure
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.GachaPrizeId
-import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackGachaObject
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
-  MineStackObject,
-  MineStackObjectPersistence,
-  MineStackObjectWithAmount
-}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{MineStackObject, MineStackObjectPersistence, MineStackObjectWithAmount}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID
 import scala.collection.IndexedSeq.iterableFactory
 
 class JdbcMineStackObjectPersistence[F[_]: Sync, ItemStack, Player](
-  allMineStackObjects: Vector[MineStackObject[ItemStack]],
-  gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player]
+  allMineStackObjects: Vector[MineStackObject[ItemStack]]
 ) extends MineStackObjectPersistence[F, ItemStack] {
-
-  import cats.implicits._
 
   override def read(key: UUID): F[Option[List[MineStackObjectWithAmount[ItemStack]]]] =
     Sync[F].delay {
@@ -60,24 +50,5 @@ class JdbcMineStackObjectPersistence[F[_]: Sync, ItemStack, Player](
              """.stripMargin.batchByName(mineStackObjectDetails: _*).apply()
       }
     }
-
-  override def getAllMineStackGachaObjects: F[Vector[MineStackGachaObject[ItemStack]]] = for {
-    allGachaPrizeList <- gachaPrizeAPI.allGachaPrizeList
-    mineStackGachaObjects <- Sync[F].delay {
-      DB.readOnly { implicit session =>
-        sql"SELECT id, mine_stack_object_name FROM mine_stack_gacha_objects"
-          .toList()
-          .map { rs =>
-            val id = rs.int("id")
-            allGachaPrizeList
-              .find(_.id == GachaPrizeId(id))
-              .map(MineStackGachaObject(rs.string("mine_stack_object_name"), _))
-          }
-          .toList()
-          .apply()
-          .collect { case Some(value) => value }
-      }
-    }
-  } yield mineStackGachaObjects
 
 }

@@ -5,10 +5,8 @@ import cats.effect.concurrent.Ref
 import com.github.unchama.minecraft.objects.{MinecraftItemStack, MinecraftMaterial}
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.CanBeSignedAsGachaPrize
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject.{
-  MineStackObjectByItemStack,
-  MineStackObjectByMaterial
-}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackGachaObjectPersistence
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject.{MineStackObjectByItemStack, MineStackObjectByMaterial}
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory._
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject._
 import org.bukkit.Material
@@ -19,7 +17,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
   implicit minecraftMaterial: MinecraftMaterial[Material, ItemStack],
   gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
   minecraftItemStack: MinecraftItemStack[ItemStack],
-  mineStackObjectPersistence: MineStackObjectPersistence[F, ItemStack]
+  mineStackGachaObjectPersistence: MineStackGachaObjectPersistence[F, ItemStack]
 ) extends MineStackObjectList[F, ItemStack, Player] {
 
   private def leftElems[A](elems: A*): List[Either[A, Nothing]] = elems.toList.map(Left.apply)
@@ -605,7 +603,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
   import cats.implicits._
 
   private val gachaPrizesObjects: F[Ref[F, Vector[MineStackObject[ItemStack]]]] = for {
-    gachaObjects <- mineStackObjectPersistence.getAllMineStackGachaObjects
+    gachaObjects <- mineStackGachaObjectPersistence.getAllMineStackGachaObjects
     prizes <- Ref.of[F, Vector[MineStackObject[ItemStack]]](gachaObjects.map { gachaObject =>
       MineStackObjectByItemStack(
         GACHA_PRIZES,
