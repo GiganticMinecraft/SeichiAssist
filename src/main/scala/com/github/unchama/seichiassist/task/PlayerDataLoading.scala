@@ -153,8 +153,6 @@ object PlayerDataLoading {
           rs.getInt("displayTitle3No")
         )
 
-        playerData.settings.autoMineStack = rs.getBoolean("minestackflag")
-
         playerData.skillEffectState = {
           val selectedEffect =
             UnlockableActiveSkillEffect

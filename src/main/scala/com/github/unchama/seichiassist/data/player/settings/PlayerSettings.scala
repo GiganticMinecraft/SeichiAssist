@@ -10,7 +10,6 @@ import org.bukkit.entity.Player
 class PlayerSettings {
 
   import com.github.unchama.targetedeffect._
-  var autoMineStack = true
   // キルログ表示トグル
   var shouldDisplayDeathMessages = false
   // ワールドガード保護ログ表示トグル

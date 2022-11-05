@@ -97,8 +97,6 @@ object PlayerDataSaveTask {
         ("update seichiassist.playerdata set"
           + " name = '" + playerdata.name + "'"
 
-          + ",minestackflag = " + playerdata.settings.autoMineStack
-
           + ",serialized_usage_mode = " + skillState.usageMode.value
           + ",selected_effect = " + {
             playerdata.skillEffectState.selection match {

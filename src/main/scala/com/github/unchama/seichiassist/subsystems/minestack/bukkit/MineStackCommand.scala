@@ -6,7 +6,6 @@ import com.github.unchama.contextualexecutor.builder.ParserResponse.{failWith, s
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.menuinventory.router.CanOpen
-import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.menus.minestack.CategorizedMineStackMenu
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
@@ -34,15 +33,16 @@ object MineStackCommand {
 
   object ChildExecutors {
 
-    def setAutoCollectionExecutor(autoMineStack: Boolean): ContextualExecutor =
+    def setAutoCollectionExecutor(
+      autoMineStack: Boolean
+    )(implicit mineStackAPI: MineStackAPI[IO, Player, ItemStack]): ContextualExecutor =
       playerCommandBuilder
         .execution { context =>
           IO {
             val sender = context.sender
-            val pd = SeichiAssist.playermap(sender.getUniqueId).settings
             SequentialEffect(
               UnfocusedEffect {
-                pd.autoMineStack = autoMineStack
+                mineStackAPI.toggleAutoMineStack(sender).unsafeRunAsyncAndForget()
               },
               if (autoMineStack)
                 MessageEffect("mineStack自動収集をonにしました。")
