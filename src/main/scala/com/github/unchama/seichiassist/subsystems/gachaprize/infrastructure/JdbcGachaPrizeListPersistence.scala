@@ -2,21 +2,15 @@ package com.github.unchama.seichiassist.subsystems.gachaprize.infrastructure
 
 import cats.effect.Sync
 import com.github.unchama.generic.serialization.SerializeAndDeserialize
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.GachaEventName
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
-  GachaPrize,
-  GachaPrizeId
-}
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain._
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.GachaEventName
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{GachaPrize, GachaPrizeId}
 import scalikejdbc._
 
 class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack](
   implicit serializeAndDeserialize: SerializeAndDeserialize[Nothing, ItemStack]
 ) extends GachaPrizeListPersistence[F, ItemStack] {
 
-  /**
-   * ガチャアイテムとして登録されているアイテムリストをGachaPrizeのVectorとして返します。
-   */
   override def list: F[Vector[GachaPrize[ItemStack]]] = {
     Sync[F].delay {
       DB.readOnly { implicit session =>
@@ -44,9 +38,6 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack](
     }
   }
 
-  /**
-   * ガチャリストを更新します。
-   */
   override def set(gachaPrizesList: Vector[GachaPrize[ItemStack]]): F[Unit] = {
     Sync[F].delay {
       DB.localTx { implicit session =>
@@ -61,6 +52,21 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack](
         }
         sql"insert into gachadata values (?,?,?,?)".batch(batchParams).apply[List]()
       }
+    }
+  }
+
+  override def addMineStackGachaObject(id: GachaPrizeId, objectName: String): F[Unit] =
+    Sync[F].delay {
+      DB.localTx { implicit session =>
+        sql"INSERT INTO mine_stack_gacha_objects (id, mine_stack_object_name) VALUES (${id.id}, ${objectName})"
+          .execute()
+          .apply()
+      }
+    }
+
+  override def deleteMineStackGachaObject(id: GachaPrizeId): F[Unit] = Sync[F].delay {
+    DB.localTx { implicit session =>
+      sql"DELETE FROM mine_stack_gacha_objects WHERE id = ${id.id}".execute().apply()
     }
   }
 

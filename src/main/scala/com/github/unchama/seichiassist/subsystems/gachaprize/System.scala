@@ -80,14 +80,20 @@ object System {
               override def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Unit] =
                 allGachaPrizesListReference.update { prizes =>
                   prizes.filter(_.id == gachaPrizeId)
-                }
+                } >> _gachaPersistence.deleteMineStackGachaObject(gachaPrizeId)
 
-              override def addGachaPrize(gachaPrize: GachaPrizeByGachaPrizeId): F[Unit] =
-                allGachaPrizesListReference.update { prizes =>
+              override def addGachaPrize(gachaPrize: GachaPrizeByGachaPrizeId): F[Unit] = for {
+                _ <- allGachaPrizesListReference.update { prizes =>
                   gachaPrize(
                     GachaPrizeId(if (prizes.nonEmpty) prizes.map(_.id.id).max + 1 else 1)
                   ) +: prizes
                 }
+                newGachaPrizes <- allGachaPrizesListReference.get
+                _ <- _gachaPersistence.addMineStackGachaObject(
+                  newGachaPrizes.head.id,
+                  s"gachadata0_${newGachaPrizes.head.id.id - 1}"
+                )
+              } yield ()
 
               override def listOfNow: F[Vector[GachaPrize[ItemStack]]] =
                 allGachaPrizesListReference.get
