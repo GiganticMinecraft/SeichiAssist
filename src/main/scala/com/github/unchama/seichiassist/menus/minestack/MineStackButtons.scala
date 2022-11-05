@@ -169,7 +169,7 @@ private[minestack] case class MineStackButtons(player: Player)(
           mineStackAPI.addUsageHistory(
             player,
             getMineStackObjectFromMineStackObjectGroup(mineStackObjectGroup)
-          )
+          ).unsafeRunAsyncAndForget()
         }
       else emptyEffect
     )

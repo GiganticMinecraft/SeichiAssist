@@ -18,6 +18,7 @@ class MineStackSettings[F[_]: Sync, Player](player: Player)(
    * @return AutoMineStackをonに切り替えます
    */
   def toggleAutoMineStackTurnOn: F[Unit] = for {
+    _ <- playerSettingPersistence(player).turnOnAutoMineStack
     reference <- autoMineStack
   } yield reference.set(true)
 
@@ -25,6 +26,7 @@ class MineStackSettings[F[_]: Sync, Player](player: Player)(
    * @return AutoMineStackをoffに切り替えます
    */
   def toggleAutoMineStackTurnOff: F[Unit] = for {
+    _ <- playerSettingPersistence(player).turnOffAutoMineStack
     reference <- autoMineStack
   } yield reference.set(false)
 
