@@ -62,7 +62,7 @@ class PlayerPullGachaListener[F[_]: ConcurrentEffect: OnMinecraftServerThread](
     ) return
 
     // ガチャデータが設定されていない場合
-    if (gachaPrizeAPI.list.toIO.unsafeRunSync().isEmpty) {
+    if (gachaPrizeAPI.listOfNow.toIO.unsafeRunSync().isEmpty) {
       player.sendMessage("ガチャデータがありません")
       return
     }

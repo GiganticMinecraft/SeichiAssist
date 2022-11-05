@@ -31,7 +31,7 @@ object System {
       gachaPrizeAPI.canBeSignedAsGachaPrize
     implicit val gachaListProvider: GachaListProvider[F, ItemStack] =
       new GachaListProvider[F, ItemStack] {
-        override def readGachaList: F[Vector[GachaPrize[ItemStack]]] = gachaPrizeAPI.list
+        override def readGachaList: F[Vector[GachaPrize[ItemStack]]] = gachaPrizeAPI.listOfNow
       }
     val gachaTradeRule: GachaTradeRule[ItemStack] = new GachaTradeRule[ItemStack] {
       override def ruleFor(
