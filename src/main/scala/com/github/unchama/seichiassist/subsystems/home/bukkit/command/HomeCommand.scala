@@ -80,31 +80,32 @@ class HomeCommand[F[
     whenBranchNotFound = Some(printDescriptionExecutor)
   ).asNonBlockingTabExecutor()
 
-  private def listExecutor() =
+  private def listExecutor() = {
+    // locationの座標は負の無限大方向へ切り捨て(Debug画面のBlock:で表示される座標と同じ丸め方)
+    def toBlockPos(pos: Double) = pos.floor.toInt
     playerCommandBuilder
       .execution { context =>
         val player = context.sender
         val eff = for {
-          _ <- NonServerThreadContextShift[F].shift
           homeMap <- HomeReadAPI[F].list(player.getUniqueId)
         } yield {
           val title = s"${RED}登録ホームポイント一覧:"
-          val messages = title +: homeMap
-            .toList
-            .sortWith(_._1.value < _._1.value)
-            .map(tuple => {
-              val (homeId, home) = tuple
+          val messages = title +: homeMap.toList.sortBy(_._1.value).map {
+            case (homeId, home) =>
               import home.location._
               val displayHomeName = home.name.getOrElse("名称未設定")
               val displayWorldName =
                 ManagedWorld.fromName(worldName).map(_.japaneseName).getOrElse(worldName)
-              f"${YELLOW}ID ${homeId.value}%2d: ${displayHomeName}, $displayWorldName($xInt, $yInt, $zInt)"
-            })
+              f"${YELLOW}ID ${homeId.value}%2d: ${displayHomeName}, $displayWorldName(${toBlockPos(
+                  x
+                )}, ${toBlockPos(y)}, ${toBlockPos(z)})"
+          }
           MessageEffect(messages)
         }
         eff.toIO
       }
       .build()
+  }
 
   private def removeExecutor() =
     argsAndSenderConfiguredBuilder

@@ -13,12 +13,7 @@ case class HomeLocation(
   z: Double,
   pitch: Float,
   yaw: Float
-) {
-  // [x|y|z]Int は座標を負の無限大方向へ切り捨て(Debug画面のBlock:で表示される座標と同じ丸め方)
-  val xInt: Int = x.floor.toInt
-  val yInt: Int = y.floor.toInt
-  val zInt: Int = z.floor.toInt
-}
+)
 
 /**
  * ホームオブジェクトのクラス
