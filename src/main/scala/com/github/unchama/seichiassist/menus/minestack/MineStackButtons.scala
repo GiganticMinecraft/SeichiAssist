@@ -166,10 +166,12 @@ private[minestack] case class MineStackButtons(player: Player)(
       },
       if (mineStackObjectGroup.isLeft)
         targetedeffect.UnfocusedEffect {
-          mineStackAPI.addUsageHistory(
-            player,
-            getMineStackObjectFromMineStackObjectGroup(mineStackObjectGroup)
-          ).unsafeRunAsyncAndForget()
+          mineStackAPI
+            .addUsageHistory(
+              player,
+              getMineStackObjectFromMineStackObjectGroup(mineStackObjectGroup)
+            )
+            .unsafeRunAsyncAndForget()
         }
       else emptyEffect
     )

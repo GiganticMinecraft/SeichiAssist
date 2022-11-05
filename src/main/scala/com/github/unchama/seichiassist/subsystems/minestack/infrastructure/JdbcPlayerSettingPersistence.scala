@@ -21,14 +21,16 @@ class JdbcPlayerSettingPersistence[F[_]: Sync](uuid: UUID) extends PlayerSetting
   override def turnOnAutoMineStack: F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
       sql"UPDATE playerdata SET minestackflag = true WHERE uuid = ${uuid.toString}"
-        .execute().apply()
+        .execute()
+        .apply()
     }
   }
 
   override def turnOffAutoMineStack: F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
       sql"UPDATE playerdata SET minestackflag = false WHERE uuid = ${uuid.toString}"
-        .execute().apply()
+        .execute()
+        .apply()
     }
   }
 }
