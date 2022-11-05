@@ -16,4 +16,4 @@ FROM
 WHERE
 	event_name = NULL;
 
-DELETE FROM msgachadata;
+DROP TABLE msgachadata;
