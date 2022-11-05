@@ -27,10 +27,15 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
   MineStackObjectWithAmount
 }
 import com.github.unchama.seichiassist.subsystems.minestack.domain.{
+  MineStackGachaObjectId,
+  MineStackObjectPersistenceByMineStackGachaData,
   MineStackSettings,
   TryIntoMineStack
 }
-import com.github.unchama.seichiassist.subsystems.minestack.infrastructure.JdbcMineStackObjectPersistence
+import com.github.unchama.seichiassist.subsystems.minestack.infrastructure.{
+  JdbcMineStackObjectPersistence,
+  JdbcMineStackObjectPersistenceByMineStackGachaData
+}
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
@@ -96,6 +101,9 @@ object System {
         mineStackSettingsRepositoryControls.repository
       implicit val _tryIntoMineStack: TryIntoMineStack[F, Player, ItemStack] =
         new TryIntoMineStack[F, Player, ItemStack]
+      val mineStackObjectPersistenceByMineStackGachaData
+        : MineStackObjectPersistenceByMineStackGachaData[F, ItemStack] =
+        new JdbcMineStackObjectPersistenceByMineStackGachaData[F, ItemStack]()
 
       new System[F, Player, ItemStack] {
         override val api: MineStackAPI[F, Player, ItemStack] =
@@ -178,6 +186,18 @@ object System {
 
             override def mineStackObjectList: MineStackObjectList[F, ItemStack, Player] =
               _mineStackObjectList
+
+            override def addMineStackGachaObject(
+              id: MineStackGachaObjectId,
+              objectName: String
+            ): F[Unit] = mineStackObjectPersistenceByMineStackGachaData.addMineStackGachaObject(
+              id,
+              objectName
+            )
+
+            override def deleteMineStackGachaObject(id: MineStackGachaObjectId): F[Unit] =
+              mineStackObjectPersistenceByMineStackGachaData.deleteMineStackGachaObject(id)
+
           }
 
         override val listeners: Seq[Listener] = Seq(new PlayerPickupItemListener[F, G]())
