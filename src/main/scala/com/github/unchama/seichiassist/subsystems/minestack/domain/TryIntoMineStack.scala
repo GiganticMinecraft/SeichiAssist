@@ -25,8 +25,7 @@ class TryIntoMineStack[F[_]: Sync, Player, ItemStack](
    */
   def apply(player: Player, itemStack: ItemStack, amount: Int): F[Boolean] = for {
     foundMineStackObject <- mineStackObjectList.findByItemStack(itemStack, player)
-    _ <- addStackedAmountOf(player, foundMineStackObject.get, amount)
-      .whenA(foundMineStackObject.nonEmpty)
+    _ <- foundMineStackObject.traverse(addStackedAmountOf(player, _, amount))
   } yield foundMineStackObject.nonEmpty
 
   /**
