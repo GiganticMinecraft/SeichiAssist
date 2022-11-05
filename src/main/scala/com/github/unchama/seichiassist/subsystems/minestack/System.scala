@@ -26,15 +26,11 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
   MineStackObjectList,
   MineStackObjectWithAmount
 }
-import com.github.unchama.seichiassist.subsystems.minestack.domain.{
-  MineStackGachaObject,
-  MineStackGachaObjectPersistence,
-  MineStackSettings,
-  TryIntoMineStack
-}
+import com.github.unchama.seichiassist.subsystems.minestack.domain._
 import com.github.unchama.seichiassist.subsystems.minestack.infrastructure.{
   JdbcMineStackGachaObjectPersistence,
-  JdbcMineStackObjectPersistence
+  JdbcMineStackObjectPersistence,
+  JdbcPlayerSettingPersistence
 }
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -61,6 +57,8 @@ object System {
       new JdbcMineStackGachaObjectPersistence[F, ItemStack, Player]
     implicit val _mineStackObjectList: MineStackObjectList[F, ItemStack, Player] =
       new BukkitMineStackObjectList[F]
+    implicit val playerSettingPersistence: Player => PlayerSettingPersistence[G] =
+      player => new JdbcPlayerSettingPersistence[G](player.getUniqueId)
 
     for {
       allMineStackObjects <- _mineStackObjectList.allMineStackObjects
@@ -100,7 +98,7 @@ object System {
         : PlayerDataRepository[Ref[F, List[MineStackObjectWithAmount[ItemStack]]]] =
         mineStackObjectRepositoryControls.repository.map(_.mapK(ContextCoercion.asFunctionK))
       val mineStackUsageHistoryRepository = mineStackUsageHistoryRepositoryControls.repository
-      implicit val mineStackSettingRepository: PlayerDataRepository[MineStackSettings[G]] =
+      implicit val mineStackSettingRepository: PlayerDataRepository[MineStackSettings[G, Player]] =
         mineStackSettingsRepositoryControls.repository
       implicit val _tryIntoMineStack: TryIntoMineStack[F, Player, ItemStack] =
         new TryIntoMineStack[F, Player, ItemStack]

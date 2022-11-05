@@ -4,17 +4,23 @@ import cats.Applicative
 import cats.effect.Sync
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
 import com.github.unchama.datarepository.template.initialization.TwoPhasedRepositoryInitialization
-import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackSettings
+import com.github.unchama.seichiassist.subsystems.minestack.domain.{
+  MineStackSettings,
+  PlayerSettingPersistence
+}
 
 object MineStackSettingsRepositoryDefinition {
 
-  def initialization[F[_]: Sync, Player]
-    : TwoPhasedRepositoryInitialization[F, Player, MineStackSettings[F]] =
-    TwoPhasedRepositoryInitialization.withoutPrefetching[F, Player, MineStackSettings[F]] { _ =>
-      Sync[F].pure(new MineStackSettings[F])
-    }
+  def initialization[F[_]: Sync, Player](
+    implicit playerSettingPersistence: Player => PlayerSettingPersistence[F]
+  ): TwoPhasedRepositoryInitialization[F, Player, MineStackSettings[F, Player]] =
+    TwoPhasedRepositoryInitialization
+      .withoutPrefetching[F, Player, MineStackSettings[F, Player]] { player =>
+        Sync[F].pure(new MineStackSettings[F, Player](player))
+      }
 
   def finalization[F[_]: Applicative, Player]
-    : RepositoryFinalization[F, Player, MineStackSettings[F]] = RepositoryFinalization.trivial
+    : RepositoryFinalization[F, Player, MineStackSettings[F, Player]] =
+    RepositoryFinalization.trivial
 
 }

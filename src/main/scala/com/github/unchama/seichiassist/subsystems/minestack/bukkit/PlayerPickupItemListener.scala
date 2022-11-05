@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.{GameMode, Sound}
 
 class PlayerPickupItemListener[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
-  implicit mineStackSettingRepository: PlayerDataRepository[MineStackSettings[G]],
+  implicit mineStackSettingRepository: PlayerDataRepository[MineStackSettings[G, Player]],
   tryIntoMineStack: TryIntoMineStack[F, Player, ItemStack]
 ) extends Listener {
 

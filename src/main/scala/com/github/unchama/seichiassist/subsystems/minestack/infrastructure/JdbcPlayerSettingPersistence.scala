@@ -6,9 +6,9 @@ import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID
 
-class JdbcPlayerSettingPersistence[F[_]: Sync] extends PlayerSettingPersistence[F] {
+class JdbcPlayerSettingPersistence[F[_]: Sync](uuid: UUID) extends PlayerSettingPersistence[F] {
 
-  override def autoMineStackState(uuid: UUID): F[Boolean] = Sync[F].delay {
+  override def autoMineStackState: F[Boolean] = Sync[F].delay {
     DB.readOnly { implicit session =>
       sql"SELECT minestackflag FROM playerdata WHERE uuid = ${uuid.toString}"
         .map(_.boolean("minestackflag"))

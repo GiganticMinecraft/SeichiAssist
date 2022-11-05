@@ -3,23 +3,37 @@ package com.github.unchama.seichiassist.subsystems.minestack.domain
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
 
-class MineStackSettings[F[_]: Sync] {
+class MineStackSettings[F[_]: Sync, Player](player: Player)(
+  implicit playerSettingPersistence: Player => PlayerSettingPersistence[F]
+) {
 
-  private val autoMineStack: Ref[F, Boolean] = Ref.unsafe(false)
+  import cats.implicits._
+
+  private val autoMineStack: F[Ref[F, Boolean]] = for {
+    settingState <- playerSettingPersistence(player).autoMineStackState
+    reference <- Ref.of(settingState)
+  } yield reference
 
   /**
    * @return AutoMineStackをonに切り替えます
    */
-  def toggleAutoMineStackTurnOn: F[Unit] = autoMineStack.set(true)
+  def toggleAutoMineStackTurnOn: F[Unit] = for {
+    reference <- autoMineStack
+  } yield reference.set(true)
 
   /**
    * @return AutoMineStackをoffに切り替えます
    */
-  def toggleAutoMineStackTurnOff: F[Unit] = autoMineStack.set(false)
+  def toggleAutoMineStackTurnOff: F[Unit] = for {
+    reference <- autoMineStack
+  } yield reference.set(false)
 
   /**
    * @return 現在のステータスを取得します
    */
-  def currentState: F[Boolean] = autoMineStack.get
+  def currentState: F[Boolean] = for {
+    reference <- autoMineStack
+    state <- reference.get
+  } yield state
 
 }
