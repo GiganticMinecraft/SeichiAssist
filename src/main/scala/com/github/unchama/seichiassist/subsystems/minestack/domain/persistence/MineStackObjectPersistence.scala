@@ -1,6 +1,7 @@
-package com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject
+package com.github.unchama.seichiassist.subsystems.minestack.domain.persistence
 
 import com.github.unchama.generic.RefDict
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectWithAmount
 
 import java.util.UUID
 

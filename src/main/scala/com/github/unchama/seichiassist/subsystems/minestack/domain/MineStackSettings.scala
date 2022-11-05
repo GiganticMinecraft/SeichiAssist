@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.subsystems.minestack.domain
 
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
+import com.github.unchama.seichiassist.subsystems.minestack.domain.persistence.PlayerSettingPersistence
 
 class MineStackSettings[F[_]: Sync, Player](player: Player)(
   implicit playerSettingPersistence: Player => PlayerSettingPersistence[F]

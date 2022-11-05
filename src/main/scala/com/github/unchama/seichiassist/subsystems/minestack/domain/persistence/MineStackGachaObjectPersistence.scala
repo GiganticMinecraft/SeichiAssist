@@ -1,4 +1,6 @@
-package com.github.unchama.seichiassist.subsystems.minestack.domain
+package com.github.unchama.seichiassist.subsystems.minestack.domain.persistence
+
+import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackGachaObject
 
 trait MineStackGachaObjectPersistence[F[_], ItemStack] {
 

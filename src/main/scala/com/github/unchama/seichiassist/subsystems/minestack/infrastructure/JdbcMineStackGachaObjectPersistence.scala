@@ -3,10 +3,8 @@ package com.github.unchama.seichiassist.subsystems.minestack.infrastructure
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.GachaPrizeId
-import com.github.unchama.seichiassist.subsystems.minestack.domain.{
-  MineStackGachaObject,
-  MineStackGachaObjectPersistence
-}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackGachaObject
+import com.github.unchama.seichiassist.subsystems.minestack.domain.persistence.MineStackGachaObjectPersistence
 import scalikejdbc._
 
 class JdbcMineStackGachaObjectPersistence[F[_]: Sync, ItemStack, Player](

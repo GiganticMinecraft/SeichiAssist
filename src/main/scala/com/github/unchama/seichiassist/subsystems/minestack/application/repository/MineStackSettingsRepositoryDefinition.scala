@@ -4,10 +4,8 @@ import cats.Applicative
 import cats.effect.Sync
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
 import com.github.unchama.datarepository.template.initialization.TwoPhasedRepositoryInitialization
-import com.github.unchama.seichiassist.subsystems.minestack.domain.{
-  MineStackSettings,
-  PlayerSettingPersistence
-}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackSettings
+import com.github.unchama.seichiassist.subsystems.minestack.domain.persistence.PlayerSettingPersistence
 
 object MineStackSettingsRepositoryDefinition {
 

@@ -4,13 +4,13 @@ import cats.effect.Sync
 import cats.effect.concurrent.Ref
 import com.github.unchama.minecraft.objects.{MinecraftItemStack, MinecraftMaterial}
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
-import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackGachaObjectPersistence
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject.{
   MineStackObjectByItemStack,
   MineStackObjectByMaterial
 }
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory._
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject._
+import com.github.unchama.seichiassist.subsystems.minestack.domain.persistence.MineStackGachaObjectPersistence
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
