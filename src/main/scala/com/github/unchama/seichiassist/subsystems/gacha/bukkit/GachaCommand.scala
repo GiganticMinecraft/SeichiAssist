@@ -9,27 +9,15 @@ import com.github.unchama.contextualexecutor.builder.ParserResponse.{failWith, s
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.SeichiAssist.databaseGateway
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.seichiassist.data.MineStackGachaData
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.BukkitGrantGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.PlayerName
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{
-  GachaTicketAmount,
-  GrantResultOfGachaTicketFromAdminTeam
-}
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{GachaTicketAmount, GrantResultOfGachaTicketFromAdminTeam}
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain._
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
-  GachaEvent,
-  GachaEventName
-}
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
-  GachaPrize,
-  GachaPrizeId
-}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{GachaEvent, GachaEventName}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{GachaPrize, GachaPrizeId}
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
@@ -65,20 +53,11 @@ class GachaCommand[
         s"$RED/gacha add <確率> (<イベント名>)",
         "現在のメインハンドをガチャリストに追加。確率は1.0までで指定",
         s"$DARK_GRAY※イベント名を入力しなかった場合は通常排出アイテムとして登録されます。",
-        s"$RED/gacha addms2 <確率> <名前>",
-        "現在のメインハンドをMineStack用ガチャリストに追加。確率は1.0までで指定",
-        s"$RED/gacha addms <名前>  <ID>",
-        "指定したガチャリストのIDを指定した名前でMineStack用ガチャリストに追加",
-        s"$DARK_GRAY※ゲーム内でのみ実行できます",
         s"$RED/gacha list (<イベント>)",
         "指定したイベントのガチャリストを表示",
         s"$DARK_GRAY※イベント名を指定しなかった場合は通常排出アイテムを表示します",
-        s"$RED/gacha listms",
-        "現在のMineStack用ガチャリストを表示",
         s"$RED/gacha remove <番号>",
         "リスト該当番号のガチャ景品を削除",
-        s"$RED/gacha removems",
-        "リスト一番下のMineStackガチャ景品を削除(追加失敗した場合の修正用)",
         s"$RED/gacha setamount <番号> <個数>",
         "リスト該当番号のガチャ景品の個数変更。64まで",
         s"$RED/gacha setprob <番号> <確率>",
@@ -87,9 +66,6 @@ class GachaCommand[
         "ガチャリストを全消去する。取扱注意",
         s"$RED/gacha save",
         "コマンドによるガチャリストへの変更をmysqlに送信",
-        s"$RED/gacha savems",
-        "コマンドによるMineStack用ガチャリストへの変更をmysqlに送信",
-        s"$DARK_RED※変更したら必ずsaveコマンドを実行(セーブされません)",
         s"$RED/gacha reload",
         "ガチャリストをmysqlから読み込む",
         s"$DARK_GRAY※onEnable時と同じ処理",
@@ -121,12 +97,7 @@ class GachaCommand[
         "reload" -> reload,
         "create-event" -> createEvent,
         "delete-event" -> deleteEvent,
-        "list-event" -> eventList,
-        "addms" -> addms,
-        "addms2" -> addms2,
-        "listms" -> listms,
-        "removems" -> removems,
-        "savems" -> savems
+        "list-event" -> eventList
       ),
       whenBranchNotFound = Some(printDescriptionExecutor),
       whenArgInsufficient = Some(printDescriptionExecutor)
@@ -460,114 +431,6 @@ class GachaCommand[
           }
 
           eff.toIO
-        }
-        .build()
-
-    // TODO: ここから下のコマンドの実装はMineStackシステムがレガシーのときに行われているため、旧実装をそのままなぞらえて実装している。
-    //  そのため、MineStackシステムがsubsystemsに含まれるときが来たら書き換えることが望ましい。
-    //  というかそもそもこの実装はMineStack側で行われるべきであるかもしれない。
-
-    val addms: ContextualExecutor = ContextualExecutorBuilder
-      .beginConfiguration()
-      .argumentsParsers(List(Parsers.identity, gachaPrizeIdExistsParser))
-      .execution { context =>
-        val args = context.args.parsed
-        val eff = for {
-          gachaPrize <- gachaPrizeAPI.fetch(GachaPrizeId(args(1).asInstanceOf[Int]))
-        } yield {
-          val _gachaPrize = gachaPrize.get // ParserによりGachaPrizeの存在は確認されている
-          val mineStackGachaData = new MineStackGachaData(
-            args.head.toString,
-            _gachaPrize.itemStack,
-            _gachaPrize.probability.value,
-            1
-          )
-          SeichiAssist.msgachadatalist.addOne(mineStackGachaData)
-          MessageEffect(
-            List(
-              s"ガチャID:${_gachaPrize.id}のデータを変数名:${args.head.toString}でMineStack用ガチャリストに追加しました。",
-              "/gacha savemsでmysqlに保存してください"
-            )
-          )
-        }
-
-        eff.toIO
-      }
-      .build()
-
-    val addms2: ContextualExecutor =
-      playerCommandBuilder
-        .argumentsParsers(List(probabilityParser, Parsers.identity))
-        .execution { context =>
-          val args = context.args.parsed
-          val mainHand = context.sender.getInventory.getItemInMainHand
-          val probability = args.head.asInstanceOf[Double]
-          val mineStackGachaData =
-            new MineStackGachaData(args(1).toString, mainHand, probability, 1)
-          SeichiAssist.msgachadatalist.addOne(mineStackGachaData)
-          IO(
-            MessageEffect(
-              List(
-                s"${mainHand.getType.toString}/${mainHand.getItemMeta.getDisplayName}$RESET${mainHand.getAmount}個を確率${probability}としてMineStack用ガチャリストに追加しました。",
-                "/gacha savemsでmysqlに保存してください。"
-              )
-            )
-          )
-        }
-        .build()
-
-    val listms: ContextualExecutor =
-      ContextualExecutorBuilder
-        .beginConfiguration()
-        .execution { _ =>
-          IO {
-            val gachaDataListInformation = SeichiAssist.msgachadatalist.zipWithIndex.map {
-              case (gachaData, index) =>
-                s"$index|${gachaData.level}|${gachaData.objName}|${gachaData.itemStack.getType.toString}/${gachaData.itemStack.getItemMeta.getDisplayName}$RESET|${gachaData
-                    .itemStack
-                    .getAmount}|${gachaData.probability}(${gachaData.probability * 100}%)"
-            }
-            MessageEffect(
-              List(s"${RED}アイテム番号|レベル|変数名|アイテム名|アイテム数|出現確率") ++ gachaDataListInformation
-            )
-          }
-        }
-        .build()
-
-    val removems: ContextualExecutor =
-      ContextualExecutorBuilder
-        .beginConfiguration()
-        .execution { _ =>
-          IO {
-            if (SeichiAssist.msgachadatalist.isEmpty) {
-              MessageEffect("MineStack用ガチャリストが空です。")
-            } else {
-              val size = SeichiAssist.msgachadatalist.size
-              val mineStackGachaData = SeichiAssist.msgachadatalist(size - 1)
-              SeichiAssist.msgachadatalist.remove(size - 1)
-              MessageEffect(
-                List(
-                  s"$size|${mineStackGachaData.level}|${mineStackGachaData.objName}|${mineStackGachaData.itemStack.getType.toString}/${mineStackGachaData
-                      .itemStack
-                      .getItemMeta
-                      .getDisplayName}$RESET|${mineStackGachaData.itemStack.getAmount}|${mineStackGachaData.probability}を削除しました。",
-                  "/gacha savemsでmysqlに保存してください。"
-                )
-              )
-            }
-          }
-        }
-        .build()
-
-    val savems: ContextualExecutor =
-      ContextualExecutorBuilder
-        .beginConfiguration()
-        .execution { _ =>
-          IO {
-            if (!databaseGateway.mineStackGachaDataManipulator.saveMineStackGachaData)
-              MessageEffect("mysqlにMineStack用ガチャデータを保存できませんでした")
-            else MessageEffect("mysqlにMineStack用ガチャデータを保存しました")
-          }
         }
         .build()
 

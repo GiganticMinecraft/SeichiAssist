@@ -25,7 +25,6 @@ public class DatabaseGateway {
     final String databaseName;
     // TODO これらはこのクラスに入るべきではなさそう(プラグインクラスに入れるべき)
     public final PlayerDataManipulator playerDataManipulator;
-    public final MineStackGachaDataManipulator mineStackGachaDataManipulator;
     public final DonateDataManipulator donateDataManipulator;
     private @NotNull
     final String databaseUrl;
@@ -45,7 +44,6 @@ public class DatabaseGateway {
         this.password = password;
 
         this.playerDataManipulator = new PlayerDataManipulator(this);
-        this.mineStackGachaDataManipulator = new MineStackGachaDataManipulator(this);
         this.donateDataManipulator = new DonateDataManipulator(this);
     }
 

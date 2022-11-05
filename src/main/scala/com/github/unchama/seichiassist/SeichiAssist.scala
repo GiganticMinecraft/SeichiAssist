@@ -43,7 +43,7 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
   onMainThread
 }
 import com.github.unchama.seichiassist.data.player.PlayerData
-import com.github.unchama.seichiassist.data.{MineStackGachaData, RankData}
+import com.github.unchama.seichiassist.data.RankData
 import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.domain.actions.{
   GetNetworkConnectionCount,
@@ -586,11 +586,6 @@ class SeichiAssist extends JavaPlugin() {
       SeichiAssist.seichiAssistConfig.getPW
     )
 
-    // mysqlからMineStack用ガチャデータ読み込み
-//    if (!SeichiAssist.databaseGateway.mineStackGachaDataManipulator.loadMineStackGachaData()) {
-//      throw new Exception("MineStack用ガチャデータのロードに失敗しました。サーバーを停止します…")
-//    }
-
     import PluginExecutionContexts._
     implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
     implicit val breakCountBarApi: BreakCountBarAPI[SyncIO, Player] = breakCountBarSystem.api
@@ -844,8 +839,6 @@ object SeichiAssist {
   // TODO staticであるべきではない
   var databaseGateway: DatabaseGateway = _
   var seichiAssistConfig: Config = _
-  // (minestackに格納する)Gachadataに依存するデータリスト
-  val msgachadatalist: mutable.ArrayBuffer[MineStackGachaData] = mutable.ArrayBuffer()
   var allplayergiveapplelong = 0L
 
   object Scopes {
