@@ -105,7 +105,10 @@ trait GachaPrizeReadAPI[F[_], ItemStack] {
   /**
    * @return [[ItemStack]]から[[GachaPrize]]を通常排出アイテム一覧から取得する
    */
-  def findOfRegularPrizesByItemStack(itemStack: ItemStack, name: String): F[Option[GachaPrize[ItemStack]]]
+  def findOfRegularPrizesByItemStack(
+    itemStack: ItemStack,
+    name: String
+  ): F[Option[GachaPrize[ItemStack]]]
 
   /**
    * @return [[CanBeSignedAsGachaPrize]]を返す

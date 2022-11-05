@@ -29,10 +29,6 @@ class PlayerSettings {
   // ハーフブロック破壊抑制用
   private var allowBreakingHalfBlocks = false
 
-  val toggleAutoMineStack: TargetedEffect[Any] =
-    UnfocusedEffect {
-      this.autoMineStack = !this.autoMineStack
-    }
   val toggleWorldGuardLogEffect: TargetedEffect[Any] =
     UnfocusedEffect {
       this.shouldDisplayWorldGuardLogs = !this.shouldDisplayWorldGuardLogs

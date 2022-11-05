@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.database;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.database.manipulators.DonateDataManipulator;
-import com.github.unchama.seichiassist.database.manipulators.MineStackGachaDataManipulator;
 import com.github.unchama.seichiassist.database.manipulators.PlayerDataManipulator;
 import com.github.unchama.util.ActionStatus;
 import com.github.unchama.util.failable.FailableAction;

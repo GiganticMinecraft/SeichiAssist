@@ -1,7 +1,13 @@
 package com.github.unchama.seichiassist.subsystems.minestack
 
-import com.github.unchama.seichiassist.subsystems.minestack.domain.{MineStackGachaObject, TryIntoMineStack}
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{MineStackObject, MineStackObjectList}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.{
+  MineStackGachaObject,
+  TryIntoMineStack
+}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
+  MineStackObject,
+  MineStackObjectList
+}
 
 trait MineStackWriteAPI[F[_], Player, ItemStack] {
 
