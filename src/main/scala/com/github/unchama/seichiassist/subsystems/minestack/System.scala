@@ -2,34 +2,17 @@ package com.github.unchama.seichiassist.subsystems.minestack
 
 import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, Sync, SyncEffect}
-import com.github.unchama.datarepository.bukkit.player.{
-  BukkitRepositoryControls,
-  PlayerDataRepository
-}
+import com.github.unchama.datarepository.bukkit.player.{BukkitRepositoryControls, PlayerDataRepository}
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.{ContextCoercion, ListExtra}
 import com.github.unchama.minecraft.bukkit.objects.{BukkitItemStack, BukkitMaterial}
 import com.github.unchama.minecraft.objects.{MinecraftItemStack, MinecraftMaterial}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
-import com.github.unchama.seichiassist.subsystems.minestack.application.repository.{
-  MineStackObjectRepositoryDefinition,
-  MineStackSettingsRepositoryDefinition,
-  MineStackUsageHistoryRepositoryDefinitions
-}
-import com.github.unchama.seichiassist.subsystems.minestack.bukkit.{
-  BukkitMineStackObjectList,
-  PlayerPickupItemListener
-}
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
-  MineStackObject,
-  MineStackObjectList,
-  MineStackObjectWithAmount
-}
-import com.github.unchama.seichiassist.subsystems.minestack.domain.{
-  MineStackSettings,
-  TryIntoMineStack
-}
+import com.github.unchama.seichiassist.subsystems.minestack.application.repository.{MineStackObjectRepositoryDefinition, MineStackSettingsRepositoryDefinition, MineStackUsageHistoryRepositoryDefinitions}
+import com.github.unchama.seichiassist.subsystems.minestack.bukkit.{BukkitMineStackObjectList, PlayerPickupItemListener}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{MineStackObject, MineStackObjectList, MineStackObjectWithAmount}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.{MineStackGachaObject, MineStackSettings, TryIntoMineStack}
 import com.github.unchama.seichiassist.subsystems.minestack.infrastructure.JdbcMineStackObjectPersistence
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -178,6 +161,8 @@ object System {
 
             override def mineStackObjectList: MineStackObjectList[F, ItemStack, Player] =
               _mineStackObjectList
+
+            override def getAllMineStackGachaObjects: F[Vector[MineStackGachaObject[ItemStack]]] =
 
           }
 

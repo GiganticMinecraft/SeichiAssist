@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.minestack
 
-import com.github.unchama.seichiassist.subsystems.minestack.domain.TryIntoMineStack
+import com.github.unchama.seichiassist.subsystems.minestack.domain.{MineStackGachaObject, TryIntoMineStack}
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{MineStackObject, MineStackObjectList}
 
 trait MineStackWriteAPI[F[_], Player, ItemStack] {
@@ -69,6 +69,11 @@ trait MineStackReadAPI[F[_], Player, ItemStack] {
    * @return [[MineStackObjectList]]を返す
    */
   def mineStackObjectList: MineStackObjectList[F, ItemStack, Player]
+
+  /**
+   * @return mineStackGachaObjectをすべて取得する作用
+   */
+  def getAllMineStackGachaObjects: F[Vector[MineStackGachaObject[ItemStack]]]
 }
 
 object MineStackReadAPI {

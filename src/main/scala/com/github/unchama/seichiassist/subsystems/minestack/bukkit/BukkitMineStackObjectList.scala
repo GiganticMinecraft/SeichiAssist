@@ -5,7 +5,10 @@ import cats.effect.concurrent.Ref
 import com.github.unchama.minecraft.objects.{MinecraftItemStack, MinecraftMaterial}
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.CanBeSignedAsGachaPrize
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject.{MineStackObjectByItemStack, MineStackObjectByMaterial}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject.{
+  MineStackObjectByItemStack,
+  MineStackObjectByMaterial
+}
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory._
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject._
 import org.bukkit.Material
@@ -15,7 +18,8 @@ import org.bukkit.inventory.ItemStack
 class BukkitMineStackObjectList[F[_]: Sync](
   implicit minecraftMaterial: MinecraftMaterial[Material, ItemStack],
   gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
-  minecraftItemStack: MinecraftItemStack[ItemStack]
+  minecraftItemStack: MinecraftItemStack[ItemStack],
+  mineStackObjectPersistence: MineStackObjectPersistence[F, ItemStack]
 ) extends MineStackObjectList[F, ItemStack, Player] {
 
   private def leftElems[A](elems: A*): List[Either[A, Nothing]] = elems.toList.map(Left.apply)
@@ -600,11 +604,17 @@ class BukkitMineStackObjectList[F[_]: Sync](
 
   import cats.implicits._
 
-  private val gachaPrizesObjects: Ref[F, Vector[MineStackObject[ItemStack]]] = for {
-    gachaPrizes <- gachaPrizeAPI.allGachaPrizeList
-    defaultGachaPrizes = gachaPrizes.filter(_.gachaEventName.isEmpty)
-    mineStackObjects = defaultGachaPrizes.map(prizes => MineStackObjectByItemStack(GACHA_PRIZES, prizes.))
-    prizes <- Ref.of[F, Vector[MineStackObject[ItemStack]]]()
+  private val gachaPrizesObjects: F[Ref[F, Vector[MineStackObject[ItemStack]]]] = for {
+    gachaObjects <- mineStackObjectPersistence.getAllMineStackGachaObjects
+    prizes <- Ref.of[F, Vector[MineStackObject[ItemStack]]](gachaObjects.map { gachaObject =>
+      MineStackObjectByItemStack(
+        GACHA_PRIZES,
+        gachaObject.objectName,
+        None,
+        hasNameLore = true,
+        gachaObject.gachaPrize.itemStack
+      )
+    })
   } yield prizes
 
   // ガチャアイテムを除外したMineStackGroups
@@ -618,7 +628,8 @@ class BukkitMineStackObjectList[F[_]: Sync](
   ).flatten
 
   private val allMineStackGroups: F[List[MineStackObjectGroup[ItemStack]]] = for {
-    gachaPrizes <- gachaPrizesObjects.get
+    gachaPrizesReference <- gachaPrizesObjects
+    gachaPrizes <- gachaPrizesReference.get
     leftGachaPrizes = gachaPrizes.flatMap(leftElems(_))
   } yield {
     exceptGachaItemMineStackGroups ++ leftGachaPrizes
