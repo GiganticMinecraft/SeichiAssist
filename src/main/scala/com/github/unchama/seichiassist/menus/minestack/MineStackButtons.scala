@@ -10,7 +10,11 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.minecraft.objects.MinecraftItemStack
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{MineStackObject, MineStackObjectGroup, MineStackObjectWithColorVariants}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
+  MineStackObject,
+  MineStackObjectGroup,
+  MineStackObjectWithColorVariants
+}
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
 import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
@@ -219,7 +223,7 @@ private[minestack] case class MineStackButtons(player: Player)(
           _ <- mineStackAPI.toggleAutoMineStack(player)
         } yield {
           val (message, soundPitch) =
-            if (currentAutoMineStackState) {
+            if (!currentAutoMineStackState) { // NOTE: トグルした後なので反転させる必要がある
               (s"${GREEN}対象アイテム自動スタック機能:ON", 1.0f)
             } else {
               (s"${RED}対象アイテム自動スタック機能:OFF", 0.5f)
