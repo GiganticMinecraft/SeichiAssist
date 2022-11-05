@@ -63,9 +63,8 @@ DockerマシンのIPアドレス(Linux等なら`localhost`)を`DOCKER_IP`とし�
 コンソールからは `Ctrl+C` で抜けることができます(サーバーは停止されません)。
 
 ## DBの準備
-初回起動後、DBが作成されますが、ガチャ景品およびMineStackに格納可能なガチャ景品のデータがありません。その為、以下SQLdumpをインポートしてください。
+初回起動後、DBが作成されますが、ガチャ景品のデータがありません。その為、以下SQLdumpをインポートしてください。
 - [gachadata.sql](https://redmine.seichi.click/attachments/download/992/gachadata.sql) -> import to "gachadata" table.
-- [msgachadata.sql](https://redmine.seichi.click/attachments/download/993/msgachadata.sql) -> import to "msgachadata" table.
 
 ### どうしてもローカルにJavaとかsbtを入れたくない人のための救済策
 
