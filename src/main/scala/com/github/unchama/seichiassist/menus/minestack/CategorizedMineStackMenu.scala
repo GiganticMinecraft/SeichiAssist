@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.menus.minestack
 
 import cats.effect.IO
+import com.github.unchama.generic.MapExtra
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerReference}
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.router.CanOpen
@@ -77,16 +78,14 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
       )
 
     val previousPageButtonSection =
-      if (page > 0)
-        Seq(ChestSlotRef(5, 7) -> buttonToTransferTo(page - 1, SkullOwners.MHF_ArrowUp))
-      else
-        Seq()
+      MapExtra.when(page > 0)(
+        Map(ChestSlotRef(5, 7) -> buttonToTransferTo(page - 1, SkullOwners.MHF_ArrowUp))
+      )
 
     val nextPageButtonSection =
-      if (page + 1 < totalNumberOfPages)
-        Seq(ChestSlotRef(5, 8) -> buttonToTransferTo(page + 1, SkullOwners.MHF_ArrowDown))
-      else
-        Seq()
+      MapExtra.when(page + 1 < totalNumberOfPages)(
+        Map(ChestSlotRef(5, 8) -> buttonToTransferTo(page + 1, SkullOwners.MHF_ArrowDown))
+      )
 
     mineStackMainMenuButtonSection ++ previousPageButtonSection ++ nextPageButtonSection
   }
