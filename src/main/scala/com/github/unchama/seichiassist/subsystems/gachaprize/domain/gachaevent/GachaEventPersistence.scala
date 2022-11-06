@@ -8,7 +8,7 @@ trait GachaEventPersistence[F[_]] {
   def createGachaEvent(gachaEvent: GachaEvent): F[Unit]
 
   /**
-   * @return ガチャイベントを削除します
+   * @return ガチャイベントを削除する作用
    */
   def deleteGachaEvent(eventName: GachaEventName): F[Unit]
 
