@@ -1,7 +1,7 @@
 package com.github.unchama.minecraft.objects
 
 /**
- * Materialに対する抽象
+ * [[Material]]に対する抽象
  */
 trait MinecraftMaterial[Material, ItemStack] {
 
