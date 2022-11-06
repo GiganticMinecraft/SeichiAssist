@@ -11,8 +11,14 @@ case class GachaEvent(eventName: GachaEventName, startDate: LocalDate, endDate: 
     dateTimeFormatter.format(localDate)
   }
 
+  /**
+   * @return 開始日を文字列にして返す
+   */
   def getStartDateString: String = toTimeString(startDate)
 
+  /**
+   * @return 終了日を文字列にして返す
+   */
   def getEndDateString: String = toTimeString(endDate)
 
   /**
