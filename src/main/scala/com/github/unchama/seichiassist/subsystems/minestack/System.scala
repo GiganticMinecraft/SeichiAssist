@@ -198,10 +198,6 @@ object System {
             override def mineStackObjectList: MineStackObjectList[F, ItemStack, Player] =
               _mineStackObjectList
 
-            override def getAllMineStackGachaObjects
-              : F[Vector[MineStackGachaObject[ItemStack]]] =
-              mineStackGachaObjectPersistence.getAllMineStackGachaObjects
-
           }
 
         override val listeners: Seq[Listener] = Seq(new PlayerPickupItemListener[F, G])
