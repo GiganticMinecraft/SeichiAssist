@@ -16,7 +16,6 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
   MineStackObjectWithColorVariants
 }
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
-import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
@@ -158,25 +157,23 @@ private[minestack] case class MineStackButtons(player: Player)(
     implicit onMainThread: OnMinecraftServerThread[IO],
     canOpenMineStackSelectItemColorMenu: IO CanOpen MineStackSelectItemColorMenu
   ): Kleisli[IO, Player, Unit] = {
-    SequentialEffect(
-      mineStackObjectGroup match {
-        case Left(mineStackObject) =>
-          withDrawItemEffect(mineStackObject, amount)
-        case Right(mineStackObjectWithColorVariants) =>
-          canOpenMineStackSelectItemColorMenu.open(
-            MineStackSelectItemColorMenu(mineStackObjectWithColorVariants, oldPage)
-          )
-      },
-      if (mineStackObjectGroup.isLeft)
-        DeferredEffect {
-          IO {
-            mineStackAPI.addUsageHistory(
-              getMineStackObjectFromMineStackObjectGroup(mineStackObjectGroup)
-            )
+    mineStackObjectGroup match {
+      case Left(mineStackObject) =>
+        SequentialEffect(
+          withDrawItemEffect(mineStackObject, amount),
+          DeferredEffect {
+            IO {
+              mineStackAPI.addUsageHistory(
+                getMineStackObjectFromMineStackObjectGroup(mineStackObjectGroup)
+              )
+            }
           }
-        }
-      else emptyEffect
-    )
+        )
+      case Right(mineStackObjectWithColorVariants) =>
+        canOpenMineStackSelectItemColorMenu.open(
+          MineStackSelectItemColorMenu(mineStackObjectWithColorVariants, oldPage)
+        )
+    }
   }
 
   private def withDrawItemEffect(mineStackObject: MineStackObject[ItemStack], amount: Int)(
