@@ -28,7 +28,7 @@ trait GachaEventReadAPI[F[_]] {
   /**
    * @return 指定された[[GachaEventName]]のイベントが存在すれば返す。
    */
-  final def findGachaEvent(gachaEventName: GachaEventName): F[Option[GachaEvent]] = for {
+  private def findGachaEvent(gachaEventName: GachaEventName): F[Option[GachaEvent]] = for {
     gachaEvents <- createdGachaEvents
   } yield gachaEvents.find(_.eventName == gachaEventName)
 
