@@ -32,9 +32,9 @@ object MineStackMainMenu extends Menu {
   import eu.timepit.refined.auto._
 
   class Environment(
-    implicit val ioCanOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu,
-    val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
     implicit val ioOnMainThread: OnMinecraftServerThread[IO],
+    implicit val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
+    implicit val ioCanOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu,
     implicit val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
     implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack],
     implicit val minecraftItemStack: MinecraftItemStack[ItemStack]
@@ -101,7 +101,9 @@ object MineStackMainMenu extends Menu {
     /**
      * メインメニュー内の「履歴」機能部分のレイアウトを計算する
      */
-    def computeHistoricalMineStackLayout(implicit environment: Environment): IO[MenuSlotLayout] = {
+    def computeHistoricalMineStackLayout(
+      implicit environment: Environment
+    ): IO[MenuSlotLayout] = {
       import environment._
       val usageHistory = mineStackAPI.getUsageHistory(player)
       for {
