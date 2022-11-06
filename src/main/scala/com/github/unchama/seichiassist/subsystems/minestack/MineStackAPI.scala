@@ -62,7 +62,7 @@ trait MineStackReadAPI[F[_], Player, ItemStack] {
   def getStackedAmountOf(player: Player, mineStackObject: MineStackObject[ItemStack]): F[Long]
 
   /**
-   * @return [[Player]]のMineStackUsageHistoryを取得する
+   * @return `player`のMineStackUsageHistoryを取得する
    */
   def getUsageHistory(player: Player): Vector[MineStackObject[ItemStack]]
 
