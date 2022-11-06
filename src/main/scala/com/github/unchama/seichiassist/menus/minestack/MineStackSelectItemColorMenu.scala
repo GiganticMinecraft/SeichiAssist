@@ -41,7 +41,7 @@ case class MineStackSelectItemColorMenu(
 
   override def computeMenuLayout(
     player: Player
-  )(implicit environment: MineStackSelectItemColorMenu.Environment): IO[MenuSlotLayout] = {
+  )(implicit environment: Environment): IO[MenuSlotLayout] = {
     import environment._
     val buttonMapping = (List(group.representative) ++ group.coloredVariants).zipWithIndex.map {
       case (inListMineStackObj, index) =>
