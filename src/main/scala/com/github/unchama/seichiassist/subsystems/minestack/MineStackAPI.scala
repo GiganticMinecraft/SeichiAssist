@@ -38,7 +38,7 @@ trait MineStackWriteAPI[F[_], Player, ItemStack] {
   /**
    * @return AutoMineStackをステータスをトグルする作用
    */
-  def toggleAutoMineStack(player: Player): F[Unit]
+  def toggleAutoMineStack: Kleisli[F, Player, Unit]
 
   /**
    * @return [[TryIntoMineStack]]を返す

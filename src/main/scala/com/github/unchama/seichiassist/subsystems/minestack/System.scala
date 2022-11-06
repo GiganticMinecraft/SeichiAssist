@@ -3,19 +3,40 @@ package com.github.unchama.seichiassist.subsystems.minestack
 import cats.data.Kleisli
 import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, SyncEffect}
-import com.github.unchama.datarepository.bukkit.player.{BukkitRepositoryControls, PlayerDataRepository}
+import com.github.unchama.datarepository.bukkit.player.{
+  BukkitRepositoryControls,
+  PlayerDataRepository
+}
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.{ContextCoercion, ListExtra}
 import com.github.unchama.minecraft.bukkit.objects.{BukkitItemStack, BukkitMaterial}
 import com.github.unchama.minecraft.objects.{MinecraftItemStack, MinecraftMaterial}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
-import com.github.unchama.seichiassist.subsystems.minestack.application.repository.{MineStackObjectRepositoryDefinition, MineStackSettingsRepositoryDefinition, MineStackUsageHistoryRepositoryDefinitions}
-import com.github.unchama.seichiassist.subsystems.minestack.bukkit.{BukkitMineStackObjectList, PlayerPickupItemListener}
+import com.github.unchama.seichiassist.subsystems.minestack.application.repository.{
+  MineStackObjectRepositoryDefinition,
+  MineStackSettingsRepositoryDefinition,
+  MineStackUsageHistoryRepositoryDefinitions
+}
+import com.github.unchama.seichiassist.subsystems.minestack.bukkit.{
+  BukkitMineStackObjectList,
+  PlayerPickupItemListener
+}
 import com.github.unchama.seichiassist.subsystems.minestack.domain._
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{MineStackObject, MineStackObjectList, MineStackObjectWithAmount}
-import com.github.unchama.seichiassist.subsystems.minestack.domain.persistence.{MineStackGachaObjectPersistence, PlayerSettingPersistence}
-import com.github.unchama.seichiassist.subsystems.minestack.infrastructure.{JdbcMineStackGachaObjectPersistence, JdbcMineStackObjectPersistence, JdbcPlayerSettingPersistence}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
+  MineStackObject,
+  MineStackObjectList,
+  MineStackObjectWithAmount
+}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.persistence.{
+  MineStackGachaObjectPersistence,
+  PlayerSettingPersistence
+}
+import com.github.unchama.seichiassist.subsystems.minestack.infrastructure.{
+  JdbcMineStackGachaObjectPersistence,
+  JdbcMineStackObjectPersistence,
+  JdbcPlayerSettingPersistence
+}
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
@@ -155,14 +176,17 @@ object System {
               )
             }
 
-            override def toggleAutoMineStack(player: Player): F[Unit] = for {
-              currentState <- autoMineStack(player)
-              _ <- ContextCoercion {
-                if (currentState)
-                  mineStackSettingRepository(player).toggleAutoMineStackTurnOff
-                else mineStackSettingRepository(player).toggleAutoMineStackTurnOn
+            override def toggleAutoMineStack: Kleisli[F, Player, Unit] =
+              Kleisli { player =>
+                for {
+                  currentState <- autoMineStack(player)
+                  _ <- ContextCoercion {
+                    if (currentState)
+                      mineStackSettingRepository(player).toggleAutoMineStackTurnOff
+                    else mineStackSettingRepository(player).toggleAutoMineStackTurnOn
+                  }
+                } yield ()
               }
-            } yield ()
 
             override def autoMineStack(player: Player): F[Boolean] = for {
               currentState <- ContextCoercion(mineStackSettingRepository(player).currentState)

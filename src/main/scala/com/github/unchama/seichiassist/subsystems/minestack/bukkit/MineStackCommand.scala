@@ -11,7 +11,7 @@ import com.github.unchama.seichiassist.menus.minestack.CategorizedMineStackMenu
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
-import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
+import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
@@ -37,12 +37,11 @@ object MineStackCommand {
       autoMineStack: Boolean
     )(implicit mineStackAPI: MineStackAPI[IO, Player, ItemStack]): ContextualExecutor =
       playerCommandBuilder
-        .execution { context =>
+        .execution { _ =>
           IO {
-            val sender = context.sender
             SequentialEffect(
-              UnfocusedEffect {
-                mineStackAPI.toggleAutoMineStack(sender).unsafeRunAsyncAndForget()
+              DeferredEffect {
+                IO(mineStackAPI.toggleAutoMineStack)
               },
               if (autoMineStack)
                 MessageEffect("mineStack自動収集をonにしました。")
