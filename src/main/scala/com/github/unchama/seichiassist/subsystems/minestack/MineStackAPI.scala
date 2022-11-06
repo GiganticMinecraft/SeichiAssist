@@ -12,7 +12,7 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
 trait MineStackWriteAPI[F[_], Player, ItemStack] {
 
   /**
-   * @return [[Player]]の[[MineStackObject]]を指定した量だけ増加させる作用
+   * @return `player`の`mineStackObject`を`amount`だけさせる作用
    */
   def addStackedAmountOf(
     player: Player,
@@ -21,7 +21,7 @@ trait MineStackWriteAPI[F[_], Player, ItemStack] {
   ): F[Unit]
 
   /**
-   * @return [[Player]]の[[MineStackObject]]を指定された量だけ減少させ、実際に減少させた量を返す
+   * @return `player`の`mineStackObject`を`amount`だけ減少させ、実際に減少させた量を返す
    */
   def subtractStackedAmountOf(
     player: Player,
@@ -30,7 +30,7 @@ trait MineStackWriteAPI[F[_], Player, ItemStack] {
   ): F[Long]
 
   /**
-   * @return [[Player]]のMineStackUsageHistoryに[[MineStackObject]]を追加する
+   * @return `player`のMineStackUsageHistoryに`mineStackObject`を追加する
    */
   def addUsageHistory(player: Player, mineStackObject: MineStackObject[ItemStack]): F[Unit]
 
@@ -57,7 +57,7 @@ object MineStackWriteAPI {
 trait MineStackReadAPI[F[_], Player, ItemStack] {
 
   /**
-   * @return [[Player]]が持っている[[MineStackObject]]の量を取得する
+   * @return `player`が持っている`mineStackObject`の量を取得する
    */
   def getStackedAmountOf(player: Player, mineStackObject: MineStackObject[ItemStack]): F[Long]
 
