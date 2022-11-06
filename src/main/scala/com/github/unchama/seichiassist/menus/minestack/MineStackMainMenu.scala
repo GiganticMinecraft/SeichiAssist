@@ -105,8 +105,8 @@ object MineStackMainMenu extends Menu {
       implicit environment: Environment
     ): IO[MenuSlotLayout] = {
       import environment._
-      val usageHistory = mineStackAPI.getUsageHistory(player)
       for {
+        usageHistory <- mineStackAPI.getUsageHistory(player)
         buttonMapping <- usageHistory
           .zipWithIndex
           .map {
