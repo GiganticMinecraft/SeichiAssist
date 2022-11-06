@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent
 trait GachaEventPersistence[F[_]] {
 
   /**
-   * @return ガチャイベントを新規作成します
+   * @return ガチャイベントを作成する作用
    */
   def createGachaEvent(gachaEvent: GachaEvent): F[Unit]
 
