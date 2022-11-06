@@ -13,7 +13,7 @@ trait GachaEventPersistence[F[_]] {
   def deleteGachaEvent(eventName: GachaEventName): F[Unit]
 
   /**
-   * @return ガチャイベントの一覧を取得します
+   * @return ガチャイベントの一覧を取得する作用
    */
   def gachaEvents: F[Vector[GachaEvent]]
 
