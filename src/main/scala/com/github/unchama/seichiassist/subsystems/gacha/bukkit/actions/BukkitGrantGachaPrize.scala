@@ -22,7 +22,8 @@ class BukkitGrantGachaPrize[F[_]: Sync: OnMinecraftServerThread](
     prize: GachaPrize[ItemStack]
   ): Kleisli[F, Player, Boolean] =
     Kleisli { player =>
-      mineStackAPI.tryIntoMineStack.apply(player, prize.itemStack, prize.itemStack.getAmount)
+      val itemStack = prize.itemStack
+      mineStackAPI.tryIntoMineStack.apply(player, itemStack, itemStack.getAmount)
     }
 
   override def insertIntoPlayerInventoryOrDrop(
