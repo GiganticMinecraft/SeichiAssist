@@ -50,11 +50,12 @@ private[minestack] case class MineStackButtons(player: Player)(
   def getMineStackObjectButtonOf(mineStackObject: MineStackObject[ItemStack])(
     implicit onMainThread: OnMinecraftServerThread[IO],
     canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu
-  ): IO[Button] = RecomputedButton(IO {
+  ): IO[Button] = RecomputedButton {
     val mineStackObjectGroup: MineStackObjectGroup[ItemStack] = Left(mineStackObject)
-    val itemStack = getMineStackObjectIconItemStack(mineStackObjectGroup)
 
-    Button(
+    for {
+      itemStack <- getMineStackObjectIconItemStack(mineStackObjectGroup)
+    } yield Button(
       itemStack,
       action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
         objectClickEffect(mineStackObject, itemStack.getMaxStackSize)
@@ -63,11 +64,11 @@ private[minestack] case class MineStackButtons(player: Player)(
         objectClickEffect(mineStackObject, 1)
       }
     )
-  })
+  }
 
   def getMineStackObjectIconItemStack(
     mineStackObjectGroup: MineStackObjectGroup[ItemStack]
-  ): ItemStack = {
+  ): IO[ItemStack] = {
     import scala.util.chaining._
 
     val mineStackObject = mineStackObjectGroup match {
@@ -77,40 +78,45 @@ private[minestack] case class MineStackButtons(player: Player)(
         representative
     }
 
-    mineStackObject.itemStack.tap { itemStack =>
-      import itemStack._
-      setItemMeta {
-        getItemMeta.tap { itemMeta =>
-          import itemMeta._
-          setDisplayName {
-            val name = mineStackObject
-              .uiName
-              .getOrElse(if (hasDisplayName) getDisplayName else getType.toString)
-
-            s"$YELLOW$UNDERLINE$BOLD$name"
-          }
-
-          setLore {
-            val stackedAmount =
-              mineStackAPI.getStackedAmountOf(player, mineStackObject).unsafeRunSync()
-            val itemDetail = List(s"$RESET$GREEN${stackedAmount.formatted("%,d")}個")
-            val operationDetail = {
-              if (mineStackObjectGroup.isRight) {
-                List(s"$RESET${DARK_GREEN}クリックで色選択画面を開きます。")
-              } else {
-                List(
-                  s"$RESET$DARK_RED${UNDERLINE}左クリックで1スタック取り出し",
-                  s"$RESET$DARK_AQUA${UNDERLINE}右クリックで1個取り出し"
-                )
+    for {
+      stackedAmount <- mineStackAPI.getStackedAmountOf(player, mineStackObject)
+    } yield {
+      mineStackObject.itemStack.tap { itemStack =>
+        import itemStack._
+        setItemMeta {
+          getItemMeta.tap { itemMeta =>
+            import itemMeta._
+            setDisplayName {
+              val name = mineStackObject.uiName match {
+                case Some(value)            => value
+                case None if hasDisplayName => getDisplayName
+                case None                   => getType.toString
               }
-            }
-            (itemDetail ++ operationDetail).asJava
-          }
 
-          setAmount(1)
+              s"$YELLOW$UNDERLINE$BOLD$name"
+            }
+
+            setLore {
+              val itemDetail = List(s"$RESET$GREEN${stackedAmount.formatted("%,d")}個")
+              val operationDetail = {
+                if (mineStackObjectGroup.isRight) {
+                  List(s"$RESET${DARK_GREEN}クリックで色選択画面を開きます。")
+                } else {
+                  List(
+                    s"$RESET$DARK_RED${UNDERLINE}左クリックで1スタック取り出し",
+                    s"$RESET$DARK_AQUA${UNDERLINE}右クリックで1個取り出し"
+                  )
+                }
+              }
+              (itemDetail ++ operationDetail).asJava
+            }
+
+            setAmount(1)
+          }
         }
       }
     }
+
   }
 
   def getMineStackGroupButtonOf(
@@ -119,10 +125,10 @@ private[minestack] case class MineStackButtons(player: Player)(
   )(
     implicit onMainThread: OnMinecraftServerThread[IO],
     canOpenCategorizedMineStackMenu: IO CanOpen MineStackSelectItemColorMenu
-  ): IO[Button] = RecomputedButton(IO {
-    val itemStack = getMineStackObjectIconItemStack(mineStackObjectGroup)
-
-    Button(
+  ): IO[Button] = RecomputedButton {
+    for {
+      itemStack <- getMineStackObjectIconItemStack(mineStackObjectGroup)
+    } yield Button(
       itemStack,
       action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
         objectGroupClickEffect(mineStackObjectGroup, itemStack.getMaxStackSize, oldPage)
@@ -131,7 +137,7 @@ private[minestack] case class MineStackButtons(player: Player)(
         objectGroupClickEffect(mineStackObjectGroup, 1, oldPage)
       }
     )
-  })
+  }
 
   private def objectClickEffect(mineStackObject: MineStackObject[ItemStack], amount: Int)(
     implicit onMainThread: OnMinecraftServerThread[IO],
