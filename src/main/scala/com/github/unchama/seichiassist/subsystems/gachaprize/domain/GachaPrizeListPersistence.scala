@@ -8,7 +8,7 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
 trait GachaPrizeListPersistence[F[_], ItemStack] {
 
   /**
-   * ガチャアイテムとして登録されているアイテムリストをGachaPrizeのVectorとして返します。
+   * @return ガチャアイテムとして登録されているアイテムリストをGachaPrizeのVectorとして返す
    */
   def list: F[Vector[GachaPrize[ItemStack]]]
 
