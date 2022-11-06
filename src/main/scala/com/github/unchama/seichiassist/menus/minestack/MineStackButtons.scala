@@ -219,7 +219,7 @@ private[minestack] case class MineStackButtons(player: Player)(
       }.build()
 
       val buttonEffect = action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
-        SequentialEffect(DeferredEffect(for {
+        val toggleEffect = for {
           _ <- mineStackAPI.toggleAutoMineStack(player)
         } yield {
           val (message, soundPitch) =
@@ -233,7 +233,9 @@ private[minestack] case class MineStackButtons(player: Player)(
             MessageEffect(message),
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundPitch)
           )
-        }))
+        }
+
+        SequentialEffect(DeferredEffect(toggleEffect))
       }
 
       Button(iconItemStack, buttonEffect)
