@@ -99,8 +99,17 @@ object System {
                   .whenA(newGachaPrizes.head.gachaEventName.isEmpty)
               } yield ()
 
-              override def listOfNow: F[Vector[GachaPrize[ItemStack]]] =
-                allGachaPrizesListReference.get
+              override def listOfNow: F[Vector[GachaPrize[ItemStack]]] = for {
+                prizes <- allGachaPrizesListReference.get
+                createdEvents <- _gachaEventPersistence.gachaEvents
+              } yield {
+                createdEvents.find(_.isHolding) match {
+                  case Some(value) =>
+                    prizes.filter(_.gachaEventName.contains(value.eventName))
+                  case None =>
+                    prizes.filter(_.gachaEventName.isEmpty)
+                }
+              }
 
               override def allGachaPrizeList: F[Vector[GachaPrize[ItemStack]]] =
                 allGachaPrizesListReference.get
