@@ -71,7 +71,7 @@ private[minestack] case class MineStackButtons(player: Player)(
     import scala.util.chaining._
 
     val mineStackObject = mineStackObjectGroup match {
-      case Left(mineStackObject: MineStackObject[ItemStack]) =>
+      case Left(mineStackObject) =>
         mineStackObject
       case Right(MineStackObjectWithColorVariants(representative, _)) =>
         representative
