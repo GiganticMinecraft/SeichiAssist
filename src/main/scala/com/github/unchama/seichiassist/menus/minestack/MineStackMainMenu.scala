@@ -34,7 +34,7 @@ object MineStackMainMenu extends Menu {
   class Environment(
     implicit val ioCanOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu,
     val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
-    val ioOnMainThread: OnMinecraftServerThread[IO],
+    implicit val ioOnMainThread: OnMinecraftServerThread[IO],
     implicit val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
     implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack],
     implicit val minecraftItemStack: MinecraftItemStack[ItemStack]
@@ -101,13 +101,8 @@ object MineStackMainMenu extends Menu {
     /**
      * メインメニュー内の「履歴」機能部分のレイアウトを計算する
      */
-    def computeHistoricalMineStackLayout(
-      implicit ioOnMainThread: OnMinecraftServerThread[IO],
-      canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu,
-      mineStackAPI: MineStackAPI[IO, Player, ItemStack],
-      gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
-      minecraftItemStack: MinecraftItemStack[ItemStack]
-    ): IO[MenuSlotLayout] = {
+    def computeHistoricalMineStackLayout(implicit environment: Environment): IO[MenuSlotLayout] = {
+      import environment._
       val usageHistory = mineStackAPI.getUsageHistory(player)
       for {
         buttonMapping <- usageHistory
