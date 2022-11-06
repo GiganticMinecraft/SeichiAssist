@@ -155,7 +155,7 @@ private[minestack] case class MineStackButtons(player: Player)(
   ): Kleisli[IO, Player, Unit] = {
     SequentialEffect(
       mineStackObjectGroup match {
-        case Left(mineStackObject: MineStackObject[ItemStack]) =>
+        case Left(mineStackObject) =>
           withDrawItemEffect(mineStackObject, amount)
         case Right(
               mineStackObjectWithColorVariants: MineStackObjectWithColorVariants[ItemStack]
