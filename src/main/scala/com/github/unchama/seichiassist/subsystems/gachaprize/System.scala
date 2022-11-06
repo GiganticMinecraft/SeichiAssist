@@ -121,13 +121,14 @@ object System {
                 _gachaEventPersistence.gachaEvents
 
               override def createGachaEvent(gachaEvent: GachaEvent): F[Unit] = {
-                _gachaEventPersistence.createGachaEvent(gachaEvent) >> (for {
+                for {
+                  _ <- _gachaEventPersistence.createGachaEvent(gachaEvent)
                   prizes <- allGachaPrizesListReference.get
                   defaultGachaPrizes = prizes
                     .filter(_.gachaEventName.isEmpty)
                     .map(_.copy(gachaEventName = Some(gachaEvent.eventName)))
                   _ <- replace(defaultGachaPrizes ++ prizes)
-                } yield ())
+                } yield ()
               }
 
               override def deleteGachaEvent(gachaEventName: GachaEventName): F[Unit] =
