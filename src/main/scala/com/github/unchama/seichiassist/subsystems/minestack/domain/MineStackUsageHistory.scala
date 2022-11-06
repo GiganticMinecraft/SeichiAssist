@@ -11,7 +11,7 @@ class MineStackUsageHistory[F[_]: Sync, ItemStack] {
   import cats.implicits._
 
   private val _usageHistory: F[Ref[F, Vector[MineStackObject[ItemStack]]]] = for {
-    reference <- Ref.of(Vector.empty)
+    reference <- Ref.of[F, Vector[MineStackObject[ItemStack]]](Vector.empty)
   } yield reference
 
   /**
