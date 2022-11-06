@@ -60,7 +60,7 @@ trait MineStackReadAPI[F[_], Player, ItemStack] {
   /**
    * @return `player`が持っている`mineStackObject`の量を取得する
    */
-  def getStackedAmountOf(mineStackObject: MineStackObject[ItemStack]): Kleisli[F, Player, Long]
+  def getStackedAmountOf(player: Player, mineStackObject: MineStackObject[ItemStack]): F[Long]
 
   /**
    * @return `player`のMineStackUsageHistoryを取得する

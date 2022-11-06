@@ -1,16 +1,12 @@
 package com.github.unchama.buildassist.menu
 
-import cats.data.{Kleisli, NonEmptyList}
-import cats.effect.syntax.effect
-import cats.effect.{IO, SyncIO}
+import cats.data.NonEmptyList
+import cats.effect.IO
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerReference}
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.Slot
-import com.github.unchama.menuinventory.slot.button.action.{
-  FilteredButtonEffect,
-  LeftClickButtonEffect
-}
+import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, ReloadingButton}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.minecraft.objects.MinecraftItemStack
@@ -18,7 +14,7 @@ import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.{BuildMainMenu, ColorScheme, CommonButtons}
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject
-import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect}
+import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -26,17 +22,13 @@ import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import scalapb.options.ScalapbProto.message
 
 import java.text.NumberFormat
 import java.util.Locale
 
 object MineStackMassCraftMenu {
 
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
-    layoutPreparationContext,
-    onMainThread
-  }
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, onMainThread}
 
   type MineStackItemId = String
 
@@ -157,12 +149,13 @@ object MineStackMassCraftMenu {
         buildLevel <- BuildAssist.instance.buildAmountDataRepository(player).read.toIO
         allIngredientsAmount <- ingredientObjects.traverse {
           case (obj, _) =>
-            environment.mineStackAPI.getStackedAmountOf(obj)(player)
+            environment.mineStackAPI.getStackedAmountOf(player, obj)
         }
         allIngredientsAvailable = (allIngredientsAmount zip ingredientObjects.map(_._2))
           .forall { case (mineStackAmount, requireAmount) => mineStackAmount >= requireAmount }
+        isNotEnoughBuildLevel = buildLevel.levelCorrespondingToExp.level < requiredBuildLevel
         errorEffect =
-          if (buildLevel.levelCorrespondingToExp.level < requiredBuildLevel) {
+          if (isNotEnoughBuildLevel) {
             MessageEffect(s"${RED}建築Lvが足りません")
           } else if (!allIngredientsAvailable) {
             MessageEffect(s"${RED}クラフト材料が足りません")
@@ -178,7 +171,7 @@ object MineStackMassCraftMenu {
             s"${enumerateChunkDetails(productObjects)}変換"
 
           MessageEffectF[IO](successMessage).apply(player)
-        }
+        }.whenA(!isNotEnoughBuildLevel && allIngredientsAvailable)
       } yield LeftClickButtonEffect(
         SequentialEffect(
           errorEffect,
