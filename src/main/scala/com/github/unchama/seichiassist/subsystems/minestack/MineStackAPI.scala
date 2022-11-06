@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.minestack
 
+import cats.data.Kleisli
 import com.github.unchama.seichiassist.subsystems.minestack.domain.{
   MineStackGachaObject,
   TryIntoMineStack
@@ -32,7 +33,7 @@ trait MineStackWriteAPI[F[_], Player, ItemStack] {
   /**
    * @return `player`のMineStackUsageHistoryに`mineStackObject`を追加する
    */
-  def addUsageHistory(player: Player, mineStackObject: MineStackObject[ItemStack]): F[Unit]
+  def addUsageHistory(mineStackObject: MineStackObject[ItemStack]): Kleisli[F, Player, Unit]
 
   /**
    * @return AutoMineStackをステータスをトグルする作用

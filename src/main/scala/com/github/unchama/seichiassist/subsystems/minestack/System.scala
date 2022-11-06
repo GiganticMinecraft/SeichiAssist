@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.minestack
 
+import cats.data.Kleisli
 import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, Sync, SyncEffect}
 import com.github.unchama.datarepository.bukkit.player.{
@@ -165,10 +166,11 @@ object System {
               mineStackUsageHistoryRepository(player).usageHistory
 
             override def addUsageHistory(
-              player: Player,
               mineStackObject: MineStackObject[ItemStack]
-            ): F[Unit] = Sync[F].delay {
-              mineStackUsageHistoryRepository(player).addHistory(mineStackObject)
+            ): Kleisli[F, Player, Unit] = Kleisli { player =>
+              Sync[F].delay {
+                mineStackUsageHistoryRepository(player).addHistory(mineStackObject)
+              }
             }
 
             override def toggleAutoMineStack(player: Player): F[Unit] = for {

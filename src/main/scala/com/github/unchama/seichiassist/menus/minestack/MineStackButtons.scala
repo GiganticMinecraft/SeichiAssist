@@ -16,7 +16,6 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
   MineStackObjectWithColorVariants
 }
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
-import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -145,8 +144,8 @@ private[minestack] case class MineStackButtons(player: Player)(
   ): Kleisli[IO, Player, Unit] = {
     SequentialEffect(
       withDrawItemEffect(mineStackObject, amount),
-      targetedeffect.UnfocusedEffect {
-        mineStackAPI.addUsageHistory(player, mineStackObject).unsafeRunSync()
+      DeferredEffect {
+        IO(mineStackAPI.addUsageHistory(mineStackObject))
       }
     )
   }
@@ -169,13 +168,12 @@ private[minestack] case class MineStackButtons(player: Player)(
           )
       },
       if (mineStackObjectGroup.isLeft)
-        targetedeffect.UnfocusedEffect {
-          mineStackAPI
-            .addUsageHistory(
-              player,
+        DeferredEffect {
+          IO {
+            mineStackAPI.addUsageHistory(
               getMineStackObjectFromMineStackObjectGroup(mineStackObjectGroup)
             )
-            .unsafeRunAsyncAndForget()
+          }
         }
       else emptyEffect
     )
