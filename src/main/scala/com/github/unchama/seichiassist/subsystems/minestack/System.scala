@@ -151,15 +151,16 @@ object System {
               }
 
             override def getStackedAmountOf(
-              player: Player,
               mineStackObject: MineStackObject[ItemStack]
-            ): F[Long] = for {
-              mineStackObjects <- mineStackObjectRepository(player).get
-            } yield {
-              mineStackObjects
-                .find(_.mineStackObject == mineStackObject)
-                .map(_.amount)
-                .getOrElse(0L)
+            ): Kleisli[F, Player, Long] = Kleisli { player =>
+              for {
+                mineStackObjects <- mineStackObjectRepository(player).get
+              } yield {
+                mineStackObjects
+                  .find(_.mineStackObject == mineStackObject)
+                  .map(_.amount)
+                  .getOrElse(0L)
+              }
             }
 
             override def getUsageHistory(

@@ -1,12 +1,16 @@
 package com.github.unchama.buildassist.menu
 
 import cats.data.{Kleisli, NonEmptyList}
+import cats.effect.syntax.effect
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerReference}
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.Slot
-import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
+import com.github.unchama.menuinventory.slot.button.action.{
+  FilteredButtonEffect,
+  LeftClickButtonEffect
+}
 import com.github.unchama.menuinventory.slot.button.{Button, ReloadingButton}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.minecraft.objects.MinecraftItemStack
@@ -14,12 +18,15 @@ import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.{BuildMainMenu, ColorScheme, CommonButtons}
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject
+import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect}
+import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import scalapb.options.ScalapbProto.message
 
 import java.text.NumberFormat
 import java.util.Locale
@@ -146,60 +153,44 @@ object MineStackMassCraftMenu {
 
       }
 
-      val buttonEffect = LeftClickButtonEffect(
-        Kleisli { player =>
-          for {
-            buildLevel <- BuildAssist.instance.buildAmountDataRepository(player).read.toIO
-            _ <-
-              if (buildLevel.levelCorrespondingToExp.level < requiredBuildLevel) {
-                MessageEffect(s"${RED}建築Lvが足りません")(player)
-              } else {
-                onMainThread.runAction[SyncIO, Unit] {
-                  val allIngredientsAvailable =
-                    ingredientObjects.forall {
-                      case (obj, amount) =>
-                        environment
-                          .mineStackAPI
-                          .getStackedAmountOf(player, obj)
-                          .unsafeRunSync() >= amount
-                    }
+      val buttonEffect = for {
+        buildLevel <- BuildAssist.instance.buildAmountDataRepository(player).read.toIO
+        allIngredientsAmount <- ingredientObjects.traverse {
+          case (obj, _) =>
+            environment.mineStackAPI.getStackedAmountOf(obj)(player)
+        }
+        allIngredientsAvailable = (allIngredientsAmount zip ingredientObjects.map(_._2))
+          .forall { case (mineStackAmount, requireAmount) => mineStackAmount >= requireAmount }
+        errorEffect =
+          if (buildLevel.levelCorrespondingToExp.level < requiredBuildLevel) {
+            MessageEffect(s"${RED}建築Lvが足りません")
+          } else if (!allIngredientsAvailable) {
+            MessageEffect(s"${RED}クラフト材料が足りません")
+          } else emptyEffect
+        _ <- ingredientObjects.traverse {
+          case (mineStackObject, amount) =>
+            environment.mineStackAPI.subtractStackedAmountOf(player, mineStackObject, amount)
+        } >> productObjects.traverse {
+          case (mineStackObject, amount) =>
+            environment.mineStackAPI.addStackedAmountOf(player, mineStackObject, amount)
+        } >> {
+          val successMessage = s"$GREEN${enumerateChunkDetails(ingredientObjects)}→" +
+            s"${enumerateChunkDetails(productObjects)}変換"
 
-                  if (!allIngredientsAvailable)
-                    MessageEffectF[SyncIO](s"${RED}クラフト材料が足りません").apply(player)
-                  else
-                    SyncIO {
-                      ingredientObjects.toList.foreach {
-                        case (obj, amount) =>
-                          environment
-                            .mineStackAPI
-                            .subtractStackedAmountOf(player, obj, amount)
-                            .unsafeRunAsyncAndForget()
-                      }
-                      productObjects.toList.foreach {
-                        case (obj, amount) =>
-                          environment
-                            .mineStackAPI
-                            .addStackedAmountOf(player, obj, amount)
-                            .unsafeRunAsyncAndForget()
-                      }
-                    } >> {
-                      val message =
-                        s"$GREEN${enumerateChunkDetails(ingredientObjects)}→" +
-                          s"${enumerateChunkDetails(productObjects)}変換"
-
-                      MessageEffectF[SyncIO](message).apply(player)
-                    }
-                }
-              }
-          } yield ()
-        },
-        FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+          MessageEffectF[IO](successMessage).apply(player)
+        }
+      } yield LeftClickButtonEffect(
+        SequentialEffect(
+          errorEffect,
+          FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+        )
       )
 
       for {
         icon <- iconComputation
+        effect <- buttonEffect
       } yield {
-        val button = Button(icon, buttonEffect)
+        val button = Button(icon, effect)
         val reloadTargetMenu = MineStackMassCraftMenu(menuPageNumber)
 
         ReloadingButton(reloadTargetMenu)(button)
