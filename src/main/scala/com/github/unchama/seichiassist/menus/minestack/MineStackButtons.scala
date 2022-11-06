@@ -158,7 +158,7 @@ private[minestack] case class MineStackButtons(player: Player)(
         case Left(mineStackObject) =>
           withDrawItemEffect(mineStackObject, amount)
         case Right(
-              mineStackObjectWithColorVariants: MineStackObjectWithColorVariants[ItemStack]
+              mineStackObjectWithColorVariants
             ) =>
           canOpenMineStackSelectItemColorMenu.open(
             MineStackSelectItemColorMenu(mineStackObjectWithColorVariants, oldPage)
