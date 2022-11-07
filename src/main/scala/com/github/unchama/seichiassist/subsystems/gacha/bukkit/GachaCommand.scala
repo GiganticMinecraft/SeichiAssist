@@ -78,7 +78,7 @@ class GachaCommand[
         s"$RED/gacha reload",
         "ガチャリストをmysqlから読み込む",
         s"$DARK_GRAY※onEnable時と同じ処理",
-        s"$RED/gacha create-event <イベント名> <開始日> <終了日>",
+        s"$RED/gacha create-event <イベント名(30字以内、日本語可)> <開始日> <終了日>",
         "日付はyyyy-MM-ddの形式で指定をしてください。",
         s"$DARK_GRAY※通常排出のガチャ景品リストがコピーされます。",
         s"${DARK_GRAY}置き換えたいアイテムを置き換えてイベント排出景品を設定してください。",
@@ -389,6 +389,8 @@ class GachaCommand[
 
           if (!dateRegex.matches(startDate) || !dateRegex.matches(endDate)) {
             IO(MessageEffect(s"${RED}開始日/終了日はyyyy-MM-ddの形式で指定してください。"))
+          } else if (eventName.name.length <= 30) {
+            IO(MessageEffect(s"${RED}イベント名は30字以内で指定してください。"))
           } else {
             val eff = for {
               isExistsEvent <- gachaPrizeAPI.isExistsGachaEvent(eventName)
