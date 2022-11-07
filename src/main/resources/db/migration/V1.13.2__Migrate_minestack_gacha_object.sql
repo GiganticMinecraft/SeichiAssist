@@ -1,6 +1,6 @@
 USE seichiassist;
 
-CREATE TABLE mine_stack_gacha_objects(
+CREATE TABLE IF NOT EXISTS mine_stack_gacha_objects(
 	id INT,
 	mine_stack_object_name VARCHAR(20),
 	FOREIGN KEY fk_id(id) REFERENCES gachadata(id)
