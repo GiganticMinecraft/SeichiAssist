@@ -1,3 +1,3 @@
 USE seichiassist;
 
-ALTER TABLE gachadata ADD event_name VARCHAR(7) DEFAULT NULL;
+ALTER TABLE IF EXISTS gachadata ADD event_name IF NOT EXISTS VARCHAR(7) DEFAULT NULL;
