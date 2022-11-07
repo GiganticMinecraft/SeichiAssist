@@ -18,6 +18,7 @@ import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSetti
   ReceiveMessageOnly
 }
 import com.github.unchama.seichiassist.menus.CommonButtons
+import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData.anniversaryPlayerHead
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas
@@ -37,6 +38,7 @@ import com.github.unchama.targetedeffect.player.{
 }
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.{Material, Sound}
 
@@ -54,7 +56,8 @@ object SecondPage extends Menu {
 
   class Environment(
     implicit val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
-    val sharedInventoryAPI: SharedInventoryAPI[IO, Player]
+    val sharedInventoryAPI: SharedInventoryAPI[IO, Player],
+    val gachaAPI: GachaAPI[IO, ItemStack, Player]
   )
 
   override val frame: MenuFrame =
@@ -87,7 +90,8 @@ object SecondPage extends Menu {
       ChestSlotRef(1, 3) -> computeHeadSummoningButton,
       ChestSlotRef(1, 4) -> computeBroadcastMessageToggleButton,
       ChestSlotRef(1, 5) -> computeDeathMessageToggleButton,
-      ChestSlotRef(1, 6) -> computeWorldGuardMessageToggleButton
+      ChestSlotRef(1, 6) -> computeWorldGuardMessageToggleButton,
+      ChestSlotRef(2, 8) -> IO(massDrawGachaButton)
     ).toList.traverse(_.sequence)
 
     for {
@@ -528,6 +532,19 @@ object SecondPage extends Menu {
       LeftClickButtonEffect {
         CommandEffect("rtp")
       }
+    )
+
+    def massDrawGachaButton(implicit environment: Environment): Button = Button(
+      new IconItemStackBuilder(Material.PAPER)
+        .title("ガチャ券まとめ引き！")
+        .lore(List("現在の設定:", "左クリックで一度にひく枚数を変更します。", "右クリックでガチャを引きます。"))
+        .build(),
+      FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
+        environment.gachaAPI.toggleConsumeGachaTicketAmount
+      }
+//      FilteredButtonEffect(ClickEventFilter.RIGHT_CLICK) {
+//        () // TODO: ガチャ引く処理の実装
+//      }
     )
 
   }
