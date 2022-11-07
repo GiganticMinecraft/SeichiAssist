@@ -16,4 +16,4 @@ FROM
 WHERE
 	event_name IS NULL;
 
-DROP TABLE msgachadata;
+DROP TABLE IF EXISTS msgachadata;
