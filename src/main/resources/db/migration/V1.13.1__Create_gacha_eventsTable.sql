@@ -1,6 +1,6 @@
 USE seichiassist;
 
-CREATE TABLE gacha_events(
+CREATE TABLE IF NOT EXISTS gacha_events(
     id INT AUTO_INCREMENT,
     event_name VARCHAR(50),
     event_start_time DATETIME,
