@@ -4,9 +4,15 @@ import cats.effect.IO
 import com.github.unchama.seichiassist.ManagedWorld
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
-import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{SeichiExpAmount, SeichiStarLevel}
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{
+  SeichiExpAmount,
+  SeichiStarLevel
+}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.BreakCountBarVisibility
-import com.github.unchama.seichiassist.subsystems.ranking.domain.{Ranking, RankingRecordWithPosition}
+import com.github.unchama.seichiassist.subsystems.ranking.domain.{
+  Ranking,
+  RankingRecordWithPosition
+}
 import com.github.unchama.seichiassist.util.TypeConverter
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
