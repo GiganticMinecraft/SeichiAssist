@@ -10,16 +10,9 @@ object GridRegionMenu extends Menu {
 
   class Environment()
 
-  /**
-   * メニューのサイズとタイトルに関する情報
-   */
   override val frame: MenuFrame =
     MenuFrame(Right(InventoryType.DISPENSER), s"${LIGHT_PURPLE}グリッド式保護設定メニュー")
 
-  /**
-   * @return
-   * `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
-   */
   override def computeMenuLayout(player: Player)(
     implicit environment: Environment
   ): IO[MenuSlotLayout] = ???
