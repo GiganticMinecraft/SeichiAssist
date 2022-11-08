@@ -32,6 +32,7 @@ import com.github.unchama.seichiassist.subsystems.sharedinventory.domain.SharedF
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
+import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.{
   CommandEffect,
@@ -332,62 +333,60 @@ object SecondPage extends Menu {
       Button(iconItemStack, LeftClickButtonEffect(CommandEffect("shareinv")))
     })
 
-    def computeBulkDrawGachaButton(implicit environment: Environment): IO[Button] = {
-      val leftClickEffect = FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-        Kleisli { _ =>
-          for {
-            consumeGachaTicketAmount <- environment.gachaAPI.consumeGachaTicketAmount(player)
-          } yield SequentialEffect(
-            DeferredEffect(IO(environment.gachaAPI.toggleConsumeGachaTicketAmount)),
-            MessageEffect(s"まとめ引きするガチャ券の数を${consumeGachaTicketAmount}枚に変更しました。"),
-            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
-          )
-        }
-      }
-      val rightClickEffect = FilteredButtonEffect(ClickEventFilter.RIGHT_CLICK) { _ =>
-        Kleisli { _ =>
-          for {
-            consumeGachaTicketAmount <- environment.gachaAPI.consumeGachaTicketAmount(player)
-            gachaPoint <- environment.gachaPointAPI.gachaPoint(player).read.toIO
-          } yield {
-            val gachaTicketLeft = gachaPoint.availableTickets
-            // 残ガチャ券のストックがまとめ引き指定数に足りない場合は何もしない
-            if (gachaTicketLeft < consumeGachaTicketAmount.value) {
-              SequentialEffect(
-                MessageEffect(s"${RED}整地報酬ガチャ券のストックが足りません。"),
-                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
-              )
-            } else {
-              // ガチャ券をストックから減らす 新しいAPIが必要？
-              // 指定数ガチャを引く これすごい音が鳴るんじゃないかな？
-              Sync[IO].delay {
-                environment.gachaAPI.drawGacha(player, consumeGachaTicketAmount.value)
-              }
-//              SequentialEffect(MessageEffect(s"ガチャまとめ引き完了!"))
-            }
+    def computeBulkDrawGachaButton(implicit environment: Environment): IO[Button] =
+      RecomputedButton {
+        import environment._
+        val leftClickButtonEffect = for {
+          _ <- gachaAPI.toggleConsumeGachaTicketAmount.apply(player)
+          consumeGachaTicketAmount <- gachaAPI.consumeGachaTicketAmount(player)
+        } yield SequentialEffect(
+          MessageEffect(s"まとめ引きするガチャ券の数を${consumeGachaTicketAmount.value}枚に変更しました。"),
+          FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+        )
+
+        val rightClickButtonEffect = for {
+          currentConsumeGachaTicketAmount <- gachaAPI.consumeGachaTicketAmount(player)
+          currentGachaPoint <- gachaPointAPI.gachaPoint(player).read.toIO
+        } yield {
+          val gachaTicketLeft = currentGachaPoint.availableTickets
+          // 残ガチャ券のストックがまとめ引き指定数に足りない場合は何もしない
+          if (gachaTicketLeft < currentConsumeGachaTicketAmount.value) {
+            SequentialEffect(
+              MessageEffect(s"${RED}整地報酬ガチャ券のストックが足りません。"),
+              FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+            )
+          } else {
+            emptyEffect
+            //          DeferredEffect(
+            //            environment.gachaAPI.drawGacha(player, currentConsumeGachaTicketAmount.value) // 本来はこれがKleisliである必要がある
+            //          )
           }
         }
-      }
 
-      val computeItemStack: IO[ItemStack] =
-        environment.gachaAPI.consumeGachaTicketAmount(player).map { amount =>
-          val lore = List(
-            s"$RESET${GREEN}ガチャを一気に${YELLOW}${amount.value}回${GREEN}引きます!",
-            "左クリックで一度に引く枚数を変更します。",
-            "右クリックでガチャを引きます。",
-            "ガチャ券は整地報酬ガチャ券のストックから直接差し引かれます。"
-          )
-          new IconItemStackBuilder(Material.PAPER)
-            .title(s"$YELLOW$UNDERLINE${BOLD}ガチャ一括まとめ引き!")
-            .lore(lore)
-            .build()
-        }
-      val computeButton: IO[Button] = computeItemStack.map { itemStack =>
-        Button(itemStack, leftClickEffect, rightClickEffect)
-      }
+        val computeItemStack: IO[ItemStack] =
+          environment.gachaAPI.consumeGachaTicketAmount(player).map { amount =>
+            val lore = List(
+              s"$RESET${GREEN}ガチャを一気に${YELLOW}${amount.value}回${GREEN}引きます!",
+              "左クリックで一度に引く枚数を変更します。",
+              "右クリックでガチャを引きます。",
+              "ガチャ券は整地報酬ガチャ券のストックから直接差し引かれます。"
+            )
+            new IconItemStackBuilder(Material.PAPER)
+              .title(s"$YELLOW$UNDERLINE${BOLD}ガチャ一括まとめ引き!")
+              .lore(lore)
+              .build()
+          }
 
-      RecomputedButton(computeButton)
-    }
+        for {
+          itemStack <- computeItemStack
+          leftClickEffect <- leftClickButtonEffect
+          rightClickEffect <- rightClickButtonEffect
+        } yield Button(
+          itemStack,
+          action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ => leftClickEffect },
+          action.FilteredButtonEffect(ClickEventFilter.RIGHT_CLICK) { _ => rightClickEffect }
+        )
+      }
   }
 
   private object ConstantButtons {
