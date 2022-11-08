@@ -12,10 +12,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class ItemListSerialization {
+/**
+ * @deprecated
+ *  use BukkitItemStackSerializeAndDeserialize
+ */
+@Deprecated public final class ItemListSerialization {
     private ItemListSerialization() {
 
     }
+
 
     public static @Nullable String serializeToBase64(List<ItemStack> items) {
         if (items.isEmpty()) {
