@@ -13,8 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @deprecated
- *  use BukkitItemStackSerializeAndDeserialize
+ * @deprecated Please use BukkitItemStackSerializeAndDeserialize
  */
 @Deprecated public final class ItemListSerialization {
     private ItemListSerialization() {
