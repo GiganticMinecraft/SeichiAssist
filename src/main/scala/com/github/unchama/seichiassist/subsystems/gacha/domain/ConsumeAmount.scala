@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.gacha.domain
 
-abstract class ConsumeAmount(value: Int)
+abstract class ConsumeAmount(val value: Int)
 
 object ConsumeAmount {
   case object oneThousand extends ConsumeAmount(1000)
