@@ -15,7 +15,8 @@ import java.util.List;
 /**
  * @deprecated Please use BukkitItemStackSerializeAndDeserialize
  */
-@Deprecated public final class ItemListSerialization {
+@Deprecated
+public final class ItemListSerialization {
     private ItemListSerialization() {
 
     }
