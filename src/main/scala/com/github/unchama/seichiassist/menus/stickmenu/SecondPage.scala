@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.menus.stickmenu
 
-import cats.effect.IO
+import cats.data.Kleisli
+import cats.effect.{IO, Sync, SyncIO}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory._
@@ -19,6 +20,7 @@ import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSetti
 }
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData.anniversaryPlayerHead
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas
@@ -57,7 +59,8 @@ object SecondPage extends Menu {
   class Environment(
     implicit val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
     val sharedInventoryAPI: SharedInventoryAPI[IO, Player],
-    val gachaAPI: GachaAPI[IO, ItemStack, Player]
+    val gachaAPI: GachaAPI[IO, ItemStack, Player],
+    val gachaPointAPI: GachaPointApi[IO, SyncIO, Player]
   )
 
   override val frame: MenuFrame =
@@ -91,7 +94,7 @@ object SecondPage extends Menu {
       ChestSlotRef(1, 4) -> computeBroadcastMessageToggleButton,
       ChestSlotRef(1, 5) -> computeDeathMessageToggleButton,
       ChestSlotRef(1, 6) -> computeWorldGuardMessageToggleButton,
-      ChestSlotRef(2, 8) -> IO(massDrawGachaButton)
+      ChestSlotRef(2, 8) -> computeBulkDrawGachaButton
     ).toList.traverse(_.sequence)
 
     for {
@@ -328,6 +331,63 @@ object SecondPage extends Menu {
 
       Button(iconItemStack, LeftClickButtonEffect(CommandEffect("shareinv")))
     })
+
+    def computeBulkDrawGachaButton(implicit environment: Environment): IO[Button] = {
+      val leftClickEffect = FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
+        Kleisli { _ =>
+          for {
+            consumeGachaTicketAmount <- environment.gachaAPI.consumeGachaTicketAmount(player)
+          } yield SequentialEffect(
+            environment.gachaAPI.toggleConsumeGachaTicketAmount,
+            MessageEffect(s"まとめ引きするガチャ券の数を${consumeGachaTicketAmount}枚に変更しました。"),
+            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+          )
+        }
+      }
+      val rightClickEffect = FilteredButtonEffect(ClickEventFilter.RIGHT_CLICK) { _ =>
+        Kleisli { _ =>
+          for {
+            consumeGachaTicketAmount <- environment.gachaAPI.consumeGachaTicketAmount(player)
+            gachaPoint <- environment.gachaPointAPI.gachaPoint(player).read.toIO
+          } yield {
+            val gachaTicketLeft = gachaPoint.availableTickets
+            // 残ガチャ券のストックがまとめ引き指定数に足りない場合は何もしない
+            if (gachaTicketLeft < consumeGachaTicketAmount.value) {
+              SequentialEffect(
+                MessageEffect(s"${RED}整地報酬ガチャ券のストックが足りません。"),
+                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+              )
+            } else {
+              // ガチャ券をストックから減らす 新しいAPIが必要？
+              // 指定数ガチャを引く これすごい音が鳴るんじゃないかな？
+              Sync[IO].delay {
+                environment.gachaAPI.drawGacha(player, consumeGachaTicketAmount.value)
+              }
+//              SequentialEffect(MessageEffect(s"ガチャまとめ引き完了!"))
+            }
+          }
+        }
+      }
+
+      val computeItemStack: IO[ItemStack] =
+        environment.gachaAPI.consumeGachaTicketAmount(player).map { amount =>
+          val lore = List(
+            s"$RESET${GREEN}ガチャを一気に${YELLOW}${amount}回${GREEN}引きます!",
+            "左クリックで一度に引く枚数を変更します。",
+            "右クリックでガチャを引きます。",
+            "ガチャ券は整地報酬ガチャ券のストックから直接差し引かれます。"
+          )
+          new IconItemStackBuilder(Material.PAPER)
+            .title(s"$YELLOW$UNDERLINE${BOLD}ガチャ一括まとめ引き!")
+            .lore(lore)
+            .build()
+        }
+      val computeButton: IO[Button] = computeItemStack.map { itemStack =>
+        Button(itemStack, leftClickEffect, rightClickEffect)
+      }
+
+      RecomputedButton(computeButton)
+    }
   }
 
   private object ConstantButtons {
@@ -534,19 +594,5 @@ object SecondPage extends Menu {
       }
     )
 
-    def massDrawGachaButton(implicit environment: Environment): Button = Button(
-      new IconItemStackBuilder(Material.PAPER)
-        .title("ガチャ券まとめ引き！")
-        .lore(List("現在の設定:", "左クリックで一度にひく枚数を変更します。", "右クリックでガチャを引きます。"))
-        .build(),
-      FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-        environment.gachaAPI.toggleConsumeGachaTicketAmount
-      }
-//      FilteredButtonEffect(ClickEventFilter.RIGHT_CLICK) {
-//        () // TODO: ガチャ引く処理の実装
-//      }
-    )
-
   }
-
 }
