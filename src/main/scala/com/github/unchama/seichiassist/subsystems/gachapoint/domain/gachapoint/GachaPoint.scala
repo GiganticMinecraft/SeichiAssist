@@ -50,6 +50,8 @@ case class GachaPoint(exp: SeichiExpAmount) {
   }
 
   def add(point: GachaPoint): GachaPoint = GachaPoint(exp.add(point.exp))
+
+  def consume(point: GachaPoint): GachaPoint = GachaPoint(exp.add(point.exp))
 }
 
 object GachaPoint {

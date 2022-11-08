@@ -91,6 +91,15 @@ object System {
                 .traverse { value => value.pointRef.update(_.add(point)) }
                 .as(())
           }
+
+          override def consumeGachaPoint(point: GachaPoint): Kleisli[G, Player, Unit] =
+            Kleisli { player =>
+              gachaPointRepositoryControls
+                .repository
+                .lift(player)
+                .traverse { value => value.pointRef.update(_.consume(point)) }
+                .as(())
+            }
         }
 
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(

@@ -15,6 +15,8 @@ case class SeichiExpAmount private (amount: BigDecimal) extends AnyVal {
 
   def add(a: SeichiExpAmount): SeichiExpAmount = mapAmount(_ + a.amount)
 
+  def consume(a: SeichiExpAmount): SeichiExpAmount = mapAmount(_ - a.amount)
+
   def formatted: String = amount.toLong.formatted("%,d")
 }
 

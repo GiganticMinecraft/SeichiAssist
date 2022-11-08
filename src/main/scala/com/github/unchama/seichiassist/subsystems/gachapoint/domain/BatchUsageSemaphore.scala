@@ -35,7 +35,7 @@ class BatchUsageSemaphore[F[_]: FlatMap, G[_]: ContextCoercion[*[_], F]](
       ContextCoercion {
         gachaPointRef.modify { point => point.useInBatchAmountOf(amount).asTuple }
       }
-      // TODO: ここでガチャを引いた方がいいかもしれない？
+      // TODO: tryBatchTransactionと同様にここでガチャを引いた方がいいかもしれない？
     }(BatchUsageSemaphore.usageInterval)
 
 }

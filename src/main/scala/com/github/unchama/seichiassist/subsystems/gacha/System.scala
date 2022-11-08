@@ -137,6 +137,9 @@ object System {
             "gacha" -> new GachaCommand[F]().executor
           )
           override val listeners: Seq[Listener] = Seq(new PlayerPullGachaListener[F]())
+
+          override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] =
+            Seq(gachaDrawSettingRepositoryControls).map(_.coerceFinalizationContextTo[F])
         }
       }
     }

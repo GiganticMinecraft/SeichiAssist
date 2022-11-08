@@ -22,4 +22,7 @@ trait GachaPointApi[F[_], G[_], Player] {
    */
   def addGachaPoint(point: GachaPoint): Kleisli[G, Player, Unit]
 
+
+  def consumeGachaPoint(point: GachaPoint): Kleisli[G, Player, Unit]
+
 }

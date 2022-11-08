@@ -5,6 +5,7 @@ import cats.effect.concurrent.Ref
 import cats.implicits._
 
 class GachaDrawSettings[F[_]: Sync] {
+
   val consumeGachaTicketAmountReference: F[Ref[F, ConsumeAmount]] =
     Ref.of(ConsumeAmount.oneThousand)
   import ConsumeAmount._

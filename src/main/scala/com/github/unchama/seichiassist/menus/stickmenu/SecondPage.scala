@@ -338,7 +338,7 @@ object SecondPage extends Menu {
           for {
             consumeGachaTicketAmount <- environment.gachaAPI.consumeGachaTicketAmount(player)
           } yield SequentialEffect(
-            environment.gachaAPI.toggleConsumeGachaTicketAmount,
+            DeferredEffect(IO(environment.gachaAPI.toggleConsumeGachaTicketAmount)),
             MessageEffect(s"まとめ引きするガチャ券の数を${consumeGachaTicketAmount}枚に変更しました。"),
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
           )
@@ -372,7 +372,7 @@ object SecondPage extends Menu {
       val computeItemStack: IO[ItemStack] =
         environment.gachaAPI.consumeGachaTicketAmount(player).map { amount =>
           val lore = List(
-            s"$RESET${GREEN}ガチャを一気に${YELLOW}${amount}回${GREEN}引きます!",
+            s"$RESET${GREEN}ガチャを一気に${YELLOW}${amount.value}回${GREEN}引きます!",
             "左クリックで一度に引く枚数を変更します。",
             "右クリックでガチャを引きます。",
             "ガチャ券は整地報酬ガチャ券のストックから直接差し引かれます。"
