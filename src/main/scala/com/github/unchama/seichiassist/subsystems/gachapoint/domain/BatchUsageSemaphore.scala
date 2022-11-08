@@ -28,7 +28,7 @@ class BatchUsageSemaphore[F[_]: FlatMap, G[_]: ContextCoercion[*[_], F]](
     }(BatchUsageSemaphore.usageInterval)
 
   /**
-   * [[amount]]枚相当のガチャポイントを消費し、[[BatchUsageSemaphore.usageInterval]]の間使用不可にする作用。
+   * amount枚相当のガチャポイントを消費し、[[BatchUsageSemaphore.usageInterval]]の間使用不可にする作用。
    */
   def tryConsumeTransaction(amount: Int): F[Unit] =
     recoveringSemaphore.tryUse {
