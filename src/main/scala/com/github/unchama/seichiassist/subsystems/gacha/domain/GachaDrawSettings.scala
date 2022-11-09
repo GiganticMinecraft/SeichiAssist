@@ -6,23 +6,26 @@ import cats.implicits._
 
 class GachaDrawSettings[F[_]: Sync] {
 
-  val consumeGachaTicketAmountReference: F[Ref[F, ConsumeAmount]] =
-    Ref.of(ConsumeAmount.oneThousand)
+  val consumeGachaTicketAmountReference: Ref[F, ConsumeAmount] =
+    Ref.unsafe(ConsumeAmount.oneThousand)
+
   import ConsumeAmount._
   private val toggleConsumeGachaTicketAmountOrder = Map[ConsumeAmount, ConsumeAmount](
     oneThousand -> fiveThousands,
     fiveThousands -> tenThousands,
     tenThousands -> oneThousand
   )
-  def toggleConsumeGachaTicketAmount(): F[Unit] =
-    for {
-      ref <- consumeGachaTicketAmountReference
-      _ <- ref.update(oldValue => toggleConsumeGachaTicketAmountOrder(oldValue))
-    } yield ()
 
+  def toggleConsumeGachaTicketAmount(): F[Unit] = {
+    for {
+      _ <- consumeGachaTicketAmountReference.update(oldValue =>
+        toggleConsumeGachaTicketAmountOrder(oldValue)
+      )
+      newValue <- consumeGachaTicketAmountReference.get
+    } yield ()
+  }
   def consumeGachaTicketAmount(): F[ConsumeAmount] =
     for {
-      ref <- consumeGachaTicketAmountReference
-      value <- ref.get
+      value <- consumeGachaTicketAmountReference.get
     } yield value
 }
