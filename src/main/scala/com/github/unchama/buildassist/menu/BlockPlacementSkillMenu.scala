@@ -54,6 +54,8 @@ object BlockPlacementSkillMenu extends Menu {
 
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
     import player._
+    private val maxRange = 15
+    private val maxAreaInt = (maxRange - 1) / 2
 
     implicit class PlayerDataOps(val playerData: TemporaryMutableBuildAssistPlayerData) {
       def computeCurrentSkillRange(): Int = playerData.AREAint * 2 + 1
@@ -113,7 +115,7 @@ object BlockPlacementSkillMenu extends Menu {
         .title(s"$RED$UNDERLINE${BOLD}範囲設定を最大値に変更")
         .lore(
           s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange",
-          s"$RESET$AQUA${UNDERLINE}変更後の範囲設定： 11×11"
+          s"$RESET$AQUA${UNDERLINE}変更後の範囲設定： ${maxRange}×${maxRange}"
         )
         .amount(11)
         .build()
@@ -123,9 +125,9 @@ object BlockPlacementSkillMenu extends Menu {
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
           targetedeffect.UnfocusedEffect {
-            playerData.AREAint = 5
+            playerData.AREAint = maxAreaInt
           },
-          MessageEffect(s"${RED}現在の範囲設定は 11×11 です"),
+          MessageEffect(s"${RED}現在の範囲設定は ${maxRange}×${maxRange} です"),
           open
         )
       )
@@ -140,23 +142,23 @@ object BlockPlacementSkillMenu extends Menu {
         .title(s"$YELLOW$UNDERLINE${BOLD}範囲設定を一段階大きくする")
         .lore {
           List(s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange").concat(
-            if (playerData.AREAint == 5) {
+            if (playerData.AREAint == maxAreaInt) {
               Seq(s"$RESET${RED}これ以上範囲設定を大きくできません。")
             } else {
               Seq(
                 s"$RESET$AQUA${UNDERLINE}変更後の範囲設定： $changedRange×$changedRange",
-                s"$RESET$RED※範囲設定の最大値は11×11※"
+                s"$RESET$RED※範囲設定の最大値は${maxRange}×${maxRange}※"
               )
             }
           )
         }
-        .amount(7)
+        .amount(maxAreaInt)
         .build()
 
       Button(
         iconItemStack,
         LeftClickButtonEffect(DeferredEffect(IO {
-          if (playerData.AREAint < 5)
+          if (playerData.AREAint < maxAreaInt)
             SequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
               UnfocusedEffect {
