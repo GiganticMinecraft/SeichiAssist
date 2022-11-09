@@ -382,7 +382,7 @@ object SecondPage extends Menu {
         val computeItemStack: IO[ItemStack] =
           environment.gachaAPI.consumeGachaTicketAmount(player).map { amount =>
             val lore = List(
-              s"$RESET${GREEN}ガチャを一気に${YELLOW}${amount.value}回${GREEN}引きます!",
+              s"$RESET${GREEN}ガチャを一気に$YELLOW${amount.value}回${GREEN}引きます!",
               "左クリックで一度に引く枚数を変更します",
               "右クリックでガチャを引きます",
               "ガチャ券は整地報酬ガチャ券のストックから直接差し引かれます"
