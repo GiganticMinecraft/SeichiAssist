@@ -33,7 +33,7 @@ object System {
 
   def wired[F[_]: ConcurrentEffect: Timer: GetConnectedPlayers[*[_], Player]: ErrorLogger, G[
     _
-  ]: SyncEffect](
+  ]: SyncEffect: ContextCoercion[*[_], F]](
     breakCountReadAPI: BreakCountReadAPI[F, G, Player]
   )(implicit ioOnMainThread: OnMinecraftServerThread[IO]): G[System[F, G, Player]] = {
     import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
@@ -83,22 +83,26 @@ object System {
               .as(())
           }
 
-          override def addGachaPoint(point: GachaPoint): Kleisli[G, Player, Unit] = Kleisli {
-            player =>
-              gachaPointRepositoryControls
-                .repository
-                .lift(player)
-                .traverse { value => value.pointRef.update(_.add(point)) }
-                .as(())
-          }
+          override def addGachaPoint(point: GachaPoint): Kleisli[F, Player, Unit] =
+            Kleisli { player: Player =>
+              ContextCoercion(
+                gachaPointRepositoryControls
+                  .repository
+                  .lift(player)
+                  .traverse { value => value.pointRef.update(_.add(point)) }
+                  .as(())
+              )
+            }
 
-          override def consumeGachaPoint(point: GachaPoint): Kleisli[G, Player, Unit] =
-            Kleisli { player =>
-              gachaPointRepositoryControls
-                .repository
-                .lift(player)
-                .traverse { value => value.pointRef.update(_.consume(point)) }
-                .as(())
+          override def consumeGachaPoint(point: GachaPoint): Kleisli[F, Player, Unit] =
+            Kleisli { player: Player =>
+              ContextCoercion(
+                gachaPointRepositoryControls
+                  .repository
+                  .lift(player)
+                  .traverse { value => value.pointRef.update(_.consume(point)) }
+                  .as(())
+              )
             }
         }
 
