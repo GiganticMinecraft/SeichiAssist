@@ -28,18 +28,6 @@ case class GachaPoint(exp: SeichiExpAmount) {
   }
 
   /**
-   * ガチャポイントをamount枚のガチャ券に変換した際のポイントの変化を計算する。
-   */
-  def useInBatchAmountOf(amount: Int): GachaPoint.Usage = {
-    val ticketCount = availableTickets.min(amount).toInt
-
-    val expToUse = GachaPoint.perGachaTicket.exp.amount * ticketCount
-    val remaining = GachaPoint.ofNonNegative(exp.amount - expToUse)
-
-    GachaPoint.Usage(remaining, ticketCount)
-  }
-
-  /**
    * 次にガチャ券を利用できるようになるまでに必要な整地経験値量
    */
   lazy val amountUntilNextGachaTicket: SeichiExpAmount = {
