@@ -323,6 +323,11 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
   }
 
   def canGridExtend(direction: RelativeDirection, world: String): Boolean = {
+
+    /**
+     * メモ: 多分グリット式保護で作成する時点で1Unitの範囲を持っていて、そこから
+     *    どれだけ拡大するかという設定
+     */
     val limit = SeichiAssist.seichiAssistConfig.getGridLimitPerWorld(world)
     val chunkMap = unitMap
 
