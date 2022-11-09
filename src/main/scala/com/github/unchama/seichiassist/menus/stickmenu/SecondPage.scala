@@ -1,7 +1,9 @@
 package com.github.unchama.seichiassist.menus.stickmenu
 
 import cats.data.Kleisli
+import cats.effect.implicits.toEffectOps
 import cats.effect.{IO, Sync, SyncIO}
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory._
@@ -19,8 +21,10 @@ import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSetti
   ReceiveMessageOnly
 }
 import com.github.unchama.seichiassist.menus.CommonButtons
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
+import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.GachaPoint
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData.anniversaryPlayerHead
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas
@@ -336,15 +340,21 @@ object SecondPage extends Menu {
     def computeBulkDrawGachaButton(implicit environment: Environment): IO[Button] =
       RecomputedButton {
         import environment._
-        val leftClickButtonEffect = for {
-          _ <- gachaAPI.toggleConsumeGachaTicketAmount.apply(player)
-          consumeGachaTicketAmount <- gachaAPI.consumeGachaTicketAmount(player)
-        } yield SequentialEffect(
-          MessageEffect(s"まとめ引きするガチャ券の数を${consumeGachaTicketAmount.value}枚に変更しました。"),
-          FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
-        )
 
-        val rightClickButtonEffect = for {
+        val leftClickButtonEffect = action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+          _ =>
+            DeferredEffect {
+              for {
+                _ <- gachaAPI.toggleConsumeGachaTicketAmount.apply(player)
+                consumeGachaTicketAmount <- gachaAPI.consumeGachaTicketAmount(player)
+              } yield SequentialEffect(
+                MessageEffect(s"まとめ引きするガチャ券の数を${consumeGachaTicketAmount.value}枚に変更しました。"),
+                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+              )
+            }
+        }
+
+        lazy val rightClickButtonEffect = for {
           currentConsumeGachaTicketAmount <- gachaAPI.consumeGachaTicketAmount(player)
           currentGachaPoint <- gachaPointAPI.gachaPoint(player).read.toIO
         } yield {
@@ -356,10 +366,20 @@ object SecondPage extends Menu {
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
             )
           } else {
-            emptyEffect
-            //          DeferredEffect(
-            //            environment.gachaAPI.drawGacha(player, currentConsumeGachaTicketAmount.value) // 本来はこれがKleisliである必要がある
-            //          )
+            SequentialEffect(
+              DeferredEffect(IO {
+                gachaPointAPI.consumeGachaPoint(
+                  GachaPoint.gachaPointBy(currentConsumeGachaTicketAmount.value)
+                )
+              }),
+              UnfocusedEffect {
+                gachaAPI
+                  .drawGacha(player, currentConsumeGachaTicketAmount.value)
+                  .toIO
+                  .unsafeRunAsyncAndForget()
+              },
+              MessageEffect(s"${YELLOW}ガチャ一括まとめ引き完了!")
+            )
           }
         }
 
@@ -367,9 +387,9 @@ object SecondPage extends Menu {
           environment.gachaAPI.consumeGachaTicketAmount(player).map { amount =>
             val lore = List(
               s"$RESET${GREEN}ガチャを一気に${YELLOW}${amount.value}回${GREEN}引きます!",
-              "左クリックで一度に引く枚数を変更します。",
-              "右クリックでガチャを引きます。",
-              "ガチャ券は整地報酬ガチャ券のストックから直接差し引かれます。"
+              "左クリックで一度に引く枚数を変更します",
+              "右クリックでガチャを引きます",
+              "ガチャ券は整地報酬ガチャ券のストックから直接差し引かれます"
             )
             new IconItemStackBuilder(Material.PAPER)
               .title(s"$YELLOW$UNDERLINE${BOLD}ガチャ一括まとめ引き!")
@@ -379,11 +399,11 @@ object SecondPage extends Menu {
 
         for {
           itemStack <- computeItemStack
-          leftClickEffect <- leftClickButtonEffect
+//          leftClickEffect <- leftClickButtonEffect
           rightClickEffect <- rightClickButtonEffect
         } yield Button(
           itemStack,
-          action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ => leftClickEffect },
+          leftClickButtonEffect,
           action.FilteredButtonEffect(ClickEventFilter.RIGHT_CLICK) { _ => rightClickEffect }
         )
       }
