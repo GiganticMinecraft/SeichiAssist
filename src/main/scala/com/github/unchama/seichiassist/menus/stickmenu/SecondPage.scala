@@ -350,34 +350,40 @@ object SecondPage extends Menu {
             }
         }
 
-        lazy val rightClickButtonEffect = for {
-          currentConsumeGachaTicketAmount <- gachaAPI.consumeGachaTicketAmount(player)
-          currentGachaPoint <- gachaPointAPI.gachaPoint(player).read.toIO
-        } yield {
-          val gachaTicketLeft = currentGachaPoint.availableTickets
-          // 残ガチャ券のストックがまとめ引き指定数に足りない場合は何もしない
-          if (gachaTicketLeft < currentConsumeGachaTicketAmount.value) {
-            SequentialEffect(
-              MessageEffect(s"${RED}整地報酬ガチャ券のストックが足りません。"),
-              FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
-            )
-          } else {
-            SequentialEffect(
-              DeferredEffect(IO {
-                gachaPointAPI.consumeGachaPoint(
-                  GachaPoint.gachaPointBy(currentConsumeGachaTicketAmount.value)
-                )
-              }),
-              UnfocusedEffect {
-                gachaAPI
-                  .drawGacha(player, currentConsumeGachaTicketAmount.value)
-                  .toIO
-                  .unsafeRunAsyncAndForget()
-              },
-              MessageEffect(s"${YELLOW}ガチャ一括まとめ引き完了!")
-            )
+        lazy val rightClickButtonEffect =
+          action.FilteredButtonEffect(ClickEventFilter.RIGHT_CLICK) { _ =>
+            DeferredEffect {
+              for {
+                currentConsumeGachaTicketAmount <- gachaAPI.consumeGachaTicketAmount(player)
+                currentGachaPoint <- gachaPointAPI.gachaPoint(player).read.toIO
+              } yield {
+                val gachaTicketLeft = currentGachaPoint.availableTickets
+                // 残ガチャ券のストックがまとめ引き指定数に足りない場合は何もしない
+                if (gachaTicketLeft < currentConsumeGachaTicketAmount.value) {
+                  SequentialEffect(
+                    MessageEffect(s"${RED}整地報酬ガチャ券のストックが足りません。"),
+                    FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+                  )
+                } else {
+                  SequentialEffect(
+                    // 無暗に連打させないよう、まとめ引き時にメニューを閉じる
+                    closeInventoryEffect,
+                    DeferredEffect(IO {
+                      gachaPointAPI.consumeGachaPoint(
+                        GachaPoint.gachaPointBy(currentConsumeGachaTicketAmount.value)
+                      )
+                    }),
+                    UnfocusedEffect {
+                      gachaAPI
+                        .drawGacha(player, currentConsumeGachaTicketAmount.value)
+                        .toIO
+                        .unsafeRunAsyncAndForget()
+                    }
+                  )
+                }
+              }
+            }
           }
-        }
 
         val computeItemStack: IO[ItemStack] =
           environment.gachaAPI.consumeGachaTicketAmount(player).map { amount =>
@@ -395,13 +401,7 @@ object SecondPage extends Menu {
 
         for {
           itemStack <- computeItemStack
-//          leftClickEffect <- leftClickButtonEffect
-          rightClickEffect <- rightClickButtonEffect
-        } yield Button(
-          itemStack,
-          leftClickButtonEffect,
-          action.FilteredButtonEffect(ClickEventFilter.RIGHT_CLICK) { _ => rightClickEffect }
-        )
+        } yield Button(itemStack, leftClickButtonEffect, rightClickButtonEffect)
       }
   }
 
