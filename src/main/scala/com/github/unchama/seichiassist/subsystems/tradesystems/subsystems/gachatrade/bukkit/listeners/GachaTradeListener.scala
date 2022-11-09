@@ -69,7 +69,6 @@ class GachaTradeListener[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
     // ガチャポイントを付与する
     gachaPointApi
       .addGachaPoint(GachaPoint.gachaPointBy(tradeAmount))
-      .mapK[F](ContextCoercion.asFunctionK)
       .apply(player)
       .toIO
       .unsafeRunAsyncAndForget()

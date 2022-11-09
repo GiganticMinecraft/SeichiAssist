@@ -28,21 +28,23 @@ class BukkitGrantGachaPrize[F[_]: Sync: OnMinecraftServerThread](
       }
     }
 
+  import cats.implicits._
+
   override def insertIntoPlayerInventoryOrDrop(
     prize: GachaPrize[ItemStack]
   ): Kleisli[F, Player, GrantState] =
     Kleisli { player =>
-      Sync[F].delay {
-        val newItemStack = prize.materializeWithOwnerSignature(player.getName)
-        if (!InventoryOperations.isPlayerInventoryFull(player)) {
-          InventoryOperations.addItem(player, newItemStack)
-          GrantState.AddedInventory
-        } else {
-          InventoryOperations.dropItem(player, newItemStack)
-          GrantState.Dropped
-        }
-      }
-    }
+      val newItemStack = prize.materializeWithOwnerSignature(player.getName)
+      for {
+        isInventoryFull <- Sync[F].delay(InventoryOperations.isPlayerInventoryFull(player))
+        _ <-
+          if (isInventoryFull) {
+            Sync[F].delay(InventoryOperations.addItem(player, newItemStack))
+          } else {
+            InventoryOperations.grantItemStacksEffect(newItemStack).apply(player)
+          }
+      } yield if (isInventoryFull) GrantState.AddedInventory else GrantState.Dropped
 
+    }
   override implicit val F: Monad[F] = implicitly
 }

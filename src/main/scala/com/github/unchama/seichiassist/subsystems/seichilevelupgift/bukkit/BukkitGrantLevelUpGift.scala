@@ -33,7 +33,7 @@ class BukkitGrantLevelUpGift[F[_]: Sync: OnMinecraftServerThread, G[_]: ContextC
   }
 
   override def grantGachaPoint(gachaPoint: GachaPoint): Kleisli[F, Player, Unit] =
-    gachaPointApi.addGachaPoint(gachaPoint).mapK[F](ContextCoercion.asFunctionK)
+    gachaPointApi.addGachaPoint(gachaPoint)
 
   override def runGachaForPlayer: Kleisli[F, Player, Unit] = Kleisli { player =>
     gachaAPI.drawGacha(player, 1)
