@@ -2,8 +2,8 @@ package com.github.unchama.seichiassist.subsystems.gacha
 
 import cats.Functor
 import cats.data.Kleisli
-import cats.effect.{ConcurrentEffect, SyncEffect}
 import cats.effect.concurrent.Ref
+import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.datarepository.template.RepositoryDefinition
@@ -22,16 +22,10 @@ import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.{
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.command.GachaCommand
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.BukkitStaticGachaPrizeFactory
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.listeners.PlayerPullGachaListener
+import com.github.unchama.seichiassist.subsystems.gacha.domain._
 import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{
   GachaPrize,
   GachaPrizeId
-}
-import com.github.unchama.seichiassist.subsystems.gacha.domain.{
-  CanBeSignedAsGachaPrize,
-  ConsumeAmount,
-  GachaPrizeListPersistence,
-  LotteryOfGachaItems,
-  StaticGachaPrizeFactory
 }
 import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.JdbcGachaPrizeListPersistence
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI

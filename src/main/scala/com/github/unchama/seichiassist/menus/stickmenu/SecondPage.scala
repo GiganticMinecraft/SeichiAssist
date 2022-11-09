@@ -1,9 +1,7 @@
 package com.github.unchama.seichiassist.menus.stickmenu
 
-import cats.data.Kleisli
 import cats.effect.implicits.toEffectOps
-import cats.effect.{IO, Sync, SyncIO}
-import com.github.unchama.generic.ContextCoercion
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory._
@@ -21,7 +19,6 @@ import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSetti
   ReceiveMessageOnly
 }
 import com.github.unchama.seichiassist.menus.CommonButtons
-import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.GachaPoint
@@ -36,7 +33,6 @@ import com.github.unchama.seichiassist.subsystems.sharedinventory.domain.SharedF
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
-import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.{
   CommandEffect,
