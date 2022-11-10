@@ -17,6 +17,10 @@ class GachaDrawSettings[F[_]: Sync] {
     tenThousands -> oneThousand
   )
 
+  /**
+   * プレイヤー毎に保持している一括まとめ引きガチャ券の消費枚数を切り替える作用
+   * 設定値が一巡すると元に戻る
+   */
   def toggleConsumeGachaTicketAmount(): F[Unit] = {
     for {
       _ <- consumeGachaTicketAmountReference.update(oldValue =>
@@ -24,7 +28,10 @@ class GachaDrawSettings[F[_]: Sync] {
       )
     } yield ()
   }
-  
+
+  /**
+   * @return プレイヤー毎に保持している一括まとめ引きガチャ券の消費枚数を取得する作用
+   */
   def consumeGachaTicketAmount(): F[GachaTicketConsumeAmount] =
     for {
       value <- consumeGachaTicketAmountReference.get
