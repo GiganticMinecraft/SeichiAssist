@@ -5,7 +5,7 @@ import cats.data.Kleisli
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   CanBeSignedAsGachaPrize,
-  ConsumeAmount,
+  GachaTicketConsumeAmount,
   StaticGachaPrizeFactory
 }
 import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{
@@ -28,7 +28,7 @@ trait GachaDrawAPI[F[_], Player] {
   /**
    * @return 一度に引くガチャ券の枚数を取得する作業
    */
-  def consumeGachaTicketAmount(player: Player): F[ConsumeAmount]
+  def consumeGachaTicketAmount(player: Player): F[GachaTicketConsumeAmount]
 }
 
 object GachaDrawAPI {

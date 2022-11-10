@@ -124,7 +124,7 @@ object System {
                   )
               }
 
-              override def consumeGachaTicketAmount(player: Player): F[ConsumeAmount] =
+              override def consumeGachaTicketAmount(player: Player): F[GachaTicketConsumeAmount] =
                 ContextCoercion(gachaDrawSettingRepository(player).consumeGachaTicketAmount())
             }
           override val commands: Map[String, TabExecutor] = Map(
