@@ -90,7 +90,7 @@ object System {
                   .repository
                   .lift(player)
                   .traverse { value => value.pointRef.update(_.add(point)) }
-                  .as(())
+                  .void
               )
             }
 
