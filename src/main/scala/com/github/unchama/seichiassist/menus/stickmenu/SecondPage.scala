@@ -373,12 +373,9 @@ object SecondPage extends Menu {
                         GachaPoint.gachaPointBy(currentConsumeGachaTicketAmount.value)
                       )
                     }),
-                    UnfocusedEffect {
-                      gachaAPI
-                        .drawGacha(player, currentConsumeGachaTicketAmount.value)
-                        .toIO
-                        .unsafeRunAsyncAndForget()
-                    }
+                    DeferredEffect(IO {
+                      gachaAPI.drawGacha(currentConsumeGachaTicketAmount.value)
+                    })
                   )
                 }
               }

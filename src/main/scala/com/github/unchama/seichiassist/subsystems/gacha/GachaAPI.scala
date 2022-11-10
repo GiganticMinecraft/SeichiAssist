@@ -18,7 +18,7 @@ trait GachaDrawAPI[F[_], Player] {
   /**
    * @return ガチャを実行する作用
    */
-  def drawGacha(player: Player, draws: Int): F[Unit]
+  def drawGacha(draws: Int): Kleisli[F, Player, Unit]
 
   /**
    * @return 一度に引くガチャ券の枚数をトグルする作用
