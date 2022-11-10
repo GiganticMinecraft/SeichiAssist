@@ -369,7 +369,7 @@ object SecondPage extends Menu {
                     // 無暗に連打させないよう、まとめ引き時にメニューを閉じる
                     closeInventoryEffect,
                     DeferredEffect(IO {
-                      gachaPointAPI.consumeGachaPoint(
+                      gachaPointAPI.subtractGachaPoint(
                         GachaPoint.gachaPointBy(currentConsumeGachaTicketAmount.value)
                       )
                     }),

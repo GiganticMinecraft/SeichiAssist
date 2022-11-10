@@ -23,8 +23,8 @@ trait GachaPointApi[F[_], G[_], Player] {
   def addGachaPoint(point: GachaPoint): Kleisli[F, Player, Unit]
 
   /**
-   * @return プレーヤーのガチャポイントを消費する作用。
+   * @return プレーヤーのガチャポイントを減らす作用。
    */
-  def consumeGachaPoint(point: GachaPoint): Kleisli[F, Player, Unit]
+  def subtractGachaPoint(point: GachaPoint): Kleisli[F, Player, Unit]
 
 }

@@ -94,13 +94,13 @@ object System {
               )
             }
 
-          override def consumeGachaPoint(point: GachaPoint): Kleisli[F, Player, Unit] =
+          override def subtractGachaPoint(point: GachaPoint): Kleisli[F, Player, Unit] =
             Kleisli { player: Player =>
               ContextCoercion(
                 gachaPointRepositoryControls
                   .repository
                   .lift(player)
-                  .traverse { value => value.pointRef.update(_.consume(point)) }
+                  .traverse { value => value.pointRef.update(_.subtract(point)) }
                   .void
               )
             }
