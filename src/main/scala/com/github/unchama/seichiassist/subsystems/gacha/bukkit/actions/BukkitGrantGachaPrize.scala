@@ -37,7 +37,8 @@ class BukkitGrantGachaPrize[F[_]: Sync: OnMinecraftServerThread](
       val newItemStack = prize.materializeWithOwnerSignature(player.getName)
       for {
         isInventoryFull <- Sync[F].delay(InventoryOperations.isPlayerInventoryFull(player))
-        _ <-if (isInventoryFull) {
+        _ <-
+          if (isInventoryFull) {
             Sync[F].delay(InventoryOperations.addItem(player, newItemStack))
           } else {
             InventoryOperations.grantItemStacksEffect(newItemStack).apply(player)

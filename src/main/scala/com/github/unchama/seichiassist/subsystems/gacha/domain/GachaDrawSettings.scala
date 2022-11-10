@@ -11,11 +11,12 @@ class GachaDrawSettings[F[_]: Sync] {
   private val consumeGachaTicketAmountReference: Ref[F, GachaTicketConsumeAmount] =
     Ref.unsafe(oneThousand)
 
-  private val toggleConsumeGachaTicketAmountOrder = Map[GachaTicketConsumeAmount, GachaTicketConsumeAmount](
-    oneThousand -> fiveThousands,
-    fiveThousands -> tenThousands,
-    tenThousands -> oneThousand
-  )
+  private val toggleConsumeGachaTicketAmountOrder =
+    Map[GachaTicketConsumeAmount, GachaTicketConsumeAmount](
+      oneThousand -> fiveThousands,
+      fiveThousands -> tenThousands,
+      tenThousands -> oneThousand
+    )
 
   /**
    * プレイヤー毎に保持している一括まとめ引きガチャ券の消費枚数を切り替える作用
