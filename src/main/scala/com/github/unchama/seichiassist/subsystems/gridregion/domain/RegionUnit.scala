@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.gridprotection.domain
+package com.github.unchama.seichiassist.subsystems.gridregion.domain
 
 /**
  * 1ユニット <=> 15 * 15の保護領域

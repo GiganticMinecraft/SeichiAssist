@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.gridprotection.domain
+package com.github.unchama.seichiassist.subsystems.gridregion.domain
 
 import cats.effect.Sync
 import cats.effect.concurrent.Ref

@@ -1,7 +1,7 @@
-package com.github.unchama.seichiassist.subsystems.gridprotection
+package com.github.unchama.seichiassist.subsystems.gridregion
 
 import cats.data.Kleisli
-import com.github.unchama.seichiassist.subsystems.gridprotection.domain.RegionUnit
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.RegionUnit
 
 trait GridRegionAPI[F[_], Player] {
 
