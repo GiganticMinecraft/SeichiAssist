@@ -16,4 +16,11 @@ object GridRegionMenu extends Menu {
   override def computeMenuLayout(player: Player)(
     implicit environment: Environment
   ): IO[MenuSlotLayout] = ???
+
+  case class computeButtons() {
+
+    val toggleUnitPerClick
+
+  }
+
 }
