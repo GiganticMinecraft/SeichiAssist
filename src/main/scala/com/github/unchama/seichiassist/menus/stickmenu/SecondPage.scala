@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.menus.stickmenu
 
-import cats.effect.implicits.toEffectOps
+import cats.effect.implicits._
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory
