@@ -32,7 +32,7 @@ object GridRegionMenu extends Menu {
   case class computeButtons(player: Player)(implicit environment: Environment) {
     import environment._
 
-    def toggleUnitPerClick(): IO[Button] = RecomputedButton {
+    def toggleUnitPerClickButton(): IO[Button] = RecomputedButton {
       for {
         currentRegionUnit <- gridRegionAPI.unitPerClick(player)
       } yield {
