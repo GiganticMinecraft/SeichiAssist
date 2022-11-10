@@ -24,6 +24,7 @@ class GachaDrawSettings[F[_]: Sync] {
       )
     } yield ()
   }
+  
   def consumeGachaTicketAmount(): F[ConsumeAmount] =
     for {
       value <- consumeGachaTicketAmountReference.get
