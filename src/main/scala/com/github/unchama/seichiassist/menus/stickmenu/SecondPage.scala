@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.menus.stickmenu
 
-import cats.effect.implicits.toEffectOps
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory
@@ -373,12 +372,9 @@ object SecondPage extends Menu {
                         GachaPoint.gachaPointBy(currentConsumeGachaTicketAmount.value)
                       )
                     }),
-                    UnfocusedEffect {
-                      gachaAPI
-                        .drawGacha(player, currentConsumeGachaTicketAmount.value)
-                        .toIO
-                        .unsafeRunAsyncAndForget()
-                    }
+                    DeferredEffect(IO {
+                      gachaAPI.drawGacha(currentConsumeGachaTicketAmount.value)
+                    })
                   )
                 }
               }

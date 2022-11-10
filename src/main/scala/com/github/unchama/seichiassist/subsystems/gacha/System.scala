@@ -108,8 +108,10 @@ object System {
 
               override def list: F[Vector[GachaPrize[ItemStack]]] = gachaPrizesListReference.get
 
-              override def drawGacha(player: Player, draws: Int): F[Unit] =
-                new BukkitDrawGacha[F](gachaPrizesListReference).draw(player, draws)
+              override def drawGacha(draws: Int): Kleisli[F, Player, Unit] =
+                Kleisli { player =>
+                  new BukkitDrawGacha[F](gachaPrizesListReference).draw(player, draws)
+                }
 
               override def staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack] =
                 _staticGachaPrizeFactory
