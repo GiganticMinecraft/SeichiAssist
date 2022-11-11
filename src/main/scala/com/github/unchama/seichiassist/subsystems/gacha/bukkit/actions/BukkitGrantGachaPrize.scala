@@ -38,13 +38,10 @@ class BukkitGrantGachaPrize[F[_]: Sync: OnMinecraftServerThread](
       for {
         isInventoryFull <- Sync[F].delay(InventoryOperations.isPlayerInventoryFull(player))
         _ <-
-          if (isInventoryFull) {
-            Sync[F].delay(InventoryOperations.addItem(player, newItemStack))
-          } else {
-            InventoryOperations.grantItemStacksEffect(newItemStack).apply(player)
-          }
+          InventoryOperations.grantItemStacksEffect(newItemStack).apply(player)
       } yield if (isInventoryFull) GrantState.AddedInventory else GrantState.Dropped
 
     }
+
   override implicit val F: Monad[F] = implicitly
 }
