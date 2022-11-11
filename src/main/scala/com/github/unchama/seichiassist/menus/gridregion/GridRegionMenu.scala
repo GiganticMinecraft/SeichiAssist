@@ -58,6 +58,16 @@ object GridRegionMenu extends Menu {
       }
     }
 
+    private def gridLore: IO[List[String]] = for {
+      currentRegionUnit <- gridRegionAPI.unitPerClick(player)
+    } yield List(
+      s"${GREEN}左クリックで増加",
+      s"${RED}右クリックで減少",
+      s"$GRAY---------------",
+      s"${GRAY}方向：$AQUA${player.getEyeLocation.yaw}",
+      s"${GRAY}現在の指定方向のユニット数：$AQUA${currentRegionUnit.units}$GRAY($AQUA${currentRegionUnit.computeBlockAmount}${GRAY}ブロック)"
+    )
+
   }
 
 }
