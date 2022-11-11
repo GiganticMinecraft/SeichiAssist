@@ -11,8 +11,9 @@ class GachaDrawSettings[F[_]: Sync] {
   private val consumeGachaTicketAmountReference: Ref[F, GachaTicketConsumeAmount] =
     Ref.unsafe(oneThousand)
 
-  private val toggleConsumeGachaTicketAmountOrder =
-    Map[GachaTicketConsumeAmount, GachaTicketConsumeAmount](
+  private val toggleConsumeGachaTicketAmountOrder
+    : Map[GachaTicketConsumeAmount, GachaTicketConsumeAmount] =
+    Map(
       oneThousand -> fiveThousands,
       fiveThousands -> tenThousands,
       tenThousands -> oneThousand
