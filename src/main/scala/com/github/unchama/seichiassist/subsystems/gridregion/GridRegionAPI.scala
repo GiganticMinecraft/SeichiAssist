@@ -15,4 +15,15 @@ trait GridRegionAPI[F[_], Player] {
    */
   def unitPerClick(player: Player): F[RegionUnit]
 
+  /**
+   * @return [[RegionUnit]]が作成できる保護領域の範囲内かどうかを返す作用
+   */
+  def isWithinLimits(
+    ahead: RegionUnit,
+    right: RegionUnit,
+    behind: RegionUnit,
+    left: RegionUnit,
+    worldName: String
+  ): Boolean
+
 }
