@@ -34,9 +34,9 @@ class BukkitGrantGachaPrize[F[_]: Sync: OnMinecraftServerThread](
     prize: GachaPrize[ItemStack]
   ): Kleisli[F, Player, GrantState] =
     Kleisli { player =>
-      val newItemStack = prize.materializeWithOwnerSignature(player.getName)
       for {
         isInventoryFull <- Sync[F].delay(InventoryOperations.isPlayerInventoryFull(player))
+        newItemStack = prize.materializeWithOwnerSignature(player.getName)
         _ <-
           InventoryOperations.grantItemStacksEffect(newItemStack).apply(player)
       } yield if (isInventoryFull) GrantState.AddedInventory else GrantState.Dropped
