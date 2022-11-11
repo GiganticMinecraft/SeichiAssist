@@ -356,9 +356,9 @@ object SecondPage extends Menu {
                 currentConsumeGachaTicketAmount <- gachaAPI.consumeGachaTicketAmount(player)
                 currentGachaPoint <- gachaPointAPI.gachaPoint(player).read.toIO
               } yield {
-                val gachaTicketLeft = currentGachaPoint.availableTickets
+                val currentGachaTicketAmount = currentGachaPoint.availableTickets
                 // 残ガチャ券のストックがまとめ引き指定数に足りない場合は何もしない
-                if (gachaTicketLeft < currentConsumeGachaTicketAmount.value) {
+                if (currentGachaTicketAmount < currentConsumeGachaTicketAmount.value) {
                   SequentialEffect(
                     MessageEffect(s"${RED}整地報酬ガチャ券のストックが足りません。"),
                     FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
