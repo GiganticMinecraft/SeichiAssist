@@ -19,6 +19,7 @@ import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSetti
 }
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket.ConsumeGachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.GachaPoint
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary
@@ -60,7 +61,8 @@ object SecondPage extends Menu {
     implicit val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
     val sharedInventoryAPI: SharedInventoryAPI[IO, Player],
     val gachaAPI: GachaAPI[IO, ItemStack, Player],
-    val gachaPointAPI: GachaPointApi[IO, SyncIO, Player]
+    val gachaPointAPI: GachaPointApi[IO, SyncIO, Player],
+    val consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player]
   )
 
   override val frame: MenuFrame =
@@ -340,8 +342,10 @@ object SecondPage extends Menu {
           _ =>
             DeferredEffect {
               for {
-                _ <- gachaAPI.toggleConsumeGachaTicketAmount.apply(player)
-                consumeGachaTicketAmount <- gachaAPI.consumeGachaTicketAmount(player)
+                _ <- consumeGachaTicketAPI.toggleConsumeGachaTicketAmount.apply(player)
+                consumeGachaTicketAmount <- consumeGachaTicketAPI.consumeGachaTicketAmount(
+                  player
+                )
               } yield SequentialEffect(
                 MessageEffect(s"まとめ引きするガチャ券の数を${consumeGachaTicketAmount.value}枚に変更しました。"),
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
@@ -353,7 +357,8 @@ object SecondPage extends Menu {
           action.FilteredButtonEffect(ClickEventFilter.RIGHT_CLICK) { _ =>
             DeferredEffect {
               for {
-                currentConsumeGachaTicketAmount <- gachaAPI.consumeGachaTicketAmount(player)
+                currentConsumeGachaTicketAmount <- consumeGachaTicketAPI
+                  .consumeGachaTicketAmount(player)
                 currentGachaPoint <- gachaPointAPI.gachaPoint(player).read.toIO
               } yield {
                 val currentGachaTicketAmount = currentGachaPoint.availableTickets
@@ -382,7 +387,7 @@ object SecondPage extends Menu {
           }
 
         val computeItemStack: IO[ItemStack] =
-          gachaAPI.consumeGachaTicketAmount(player).map { amount =>
+          consumeGachaTicketAPI.consumeGachaTicketAmount(player).map { amount =>
             val lore = List(
               s"$RESET${GREEN}ガチャを一気に$YELLOW${amount.value}回${GREEN}引きます!",
               "左クリックで一度に引く枚数を変更します",

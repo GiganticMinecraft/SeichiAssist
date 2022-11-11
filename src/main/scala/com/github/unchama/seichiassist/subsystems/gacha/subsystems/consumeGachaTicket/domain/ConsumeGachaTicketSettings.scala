@@ -1,10 +1,11 @@
-package com.github.unchama.seichiassist.subsystems.gacha.domain
+package com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket.domain
 
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
 import cats.implicits._
+import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaTicketConsumeAmount
 
-class GachaDrawSettings[F[_]: Sync] {
+class ConsumeGachaTicketSettings[F[_]: Sync] {
 
   import GachaTicketConsumeAmount._
 

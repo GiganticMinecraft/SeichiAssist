@@ -70,6 +70,7 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
 }
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket.ConsumeGachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
@@ -395,6 +396,11 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.gacha.System.wired[IO, SyncIO].unsafeRunSync()
   }
 
+  private lazy val consumeGachaTicketSystem
+    : subsystems.gacha.subsystems.consumegachaticket.System[IO] = {
+    subsystems.gacha.subsystems.consumegachaticket.System.wired[IO, SyncIO].unsafeRunSync()
+  }
+
   private lazy val gachaTicketSystem: subsystems.gacha.subsystems.gachaticket.System[IO] =
     subsystems.gacha.subsystems.gachaticket.System.wired[IO]
 
@@ -434,7 +440,8 @@ class SeichiAssist extends JavaPlugin() {
     gachaTicketSystem,
     gtToSiinaSystem,
     gachaTradeSystem,
-    sharedInventorySystem
+    sharedInventorySystem,
+    consumeGachaTicketSystem
   )
 
   private lazy val buildAssist: BuildAssist = {
@@ -590,6 +597,8 @@ class SeichiAssist extends JavaPlugin() {
       sharedInventorySystem.api
     implicit val gachaTicketAPI: GachaTicketAPI[IO] =
       gachaTicketSystem.api
+    implicit val consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player] =
+      consumeGachaTicketSystem.api
 
     val menuRouter = TopLevelRouter.apply
     import menuRouter.{canOpenStickMenu, ioCanOpenCategorizedMineStackMenu}

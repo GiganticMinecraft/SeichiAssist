@@ -5,15 +5,12 @@ import cats.data.Kleisli
 import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.concurrent.NonServerThreadContextShift
-import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
-import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.serialization.SerializeAndDeserialize
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.minecraft.bukkit.algebra.BukkitItemStackSerializeAndDeserialize
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.application.repository.GachaSettingRepositoryDefinition
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.BukkitItemStackCanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.{
   BukkitDrawGacha,
@@ -67,21 +64,10 @@ object System {
     val system: F[System[F]] = {
       for {
         gachaPrizesListReference <- Ref.of[F, Vector[GachaPrize[ItemStack]]](Vector.empty)
-        gachaDrawSettingRepositoryControls <- ContextCoercion(
-          BukkitRepositoryControls.createHandles(
-            RepositoryDefinition
-              .Phased
-              .TwoPhased(
-                GachaSettingRepositoryDefinition.initialization[G, Player],
-                GachaSettingRepositoryDefinition.finalization[G, Player]
-              )
-          )
-        )
       } yield {
         new System[F] {
           override implicit val api: GachaAPI[F, ItemStack, Player] =
             new GachaAPI[F, ItemStack, Player] {
-              val gachaDrawSettingRepository = gachaDrawSettingRepositoryControls.repository
               override protected implicit val F: Functor[F] = implicitly
 
               override def load: F[Unit] = _gachaPersistence.list.flatMap { gachaPrizes =>
@@ -119,25 +105,12 @@ object System {
               override def canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
                 _canBeSignedAsGachaPrize
 
-              override def toggleConsumeGachaTicketAmount: Kleisli[F, Player, Unit] = Kleisli {
-                player =>
-                  ContextCoercion(
-                    gachaDrawSettingRepository(player).toggleConsumeGachaTicketAmount()
-                  )
-              }
-
-              override def consumeGachaTicketAmount(
-                player: Player
-              ): F[GachaTicketConsumeAmount] =
-                ContextCoercion(gachaDrawSettingRepository(player).consumeGachaTicketAmount())
             }
           override val commands: Map[String, TabExecutor] = Map(
             "gacha" -> new GachaCommand[F]().executor
           )
           override val listeners: Seq[Listener] = Seq(new PlayerPullGachaListener[F]())
 
-          override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] =
-            Seq(gachaDrawSettingRepositoryControls).map(_.coerceFinalizationContextTo[F])
         }
       }
     }
