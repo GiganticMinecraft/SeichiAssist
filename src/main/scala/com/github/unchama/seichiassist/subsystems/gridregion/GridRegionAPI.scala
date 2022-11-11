@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gridregion
 
 import cats.data.Kleisli
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.RegionUnit
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.{RegionUnit, RegionUnits}
 
 trait GridRegionAPI[F[_], Player] {
 
@@ -16,14 +16,8 @@ trait GridRegionAPI[F[_], Player] {
   def unitPerClick(player: Player): F[RegionUnit]
 
   /**
-   * @return [[RegionUnit]]が作成できる保護領域の範囲内かどうかを返す作用
+   * @return 指定された[[RegionUnits]]から保護が作成できる限界値を超えていないか返す作用
    */
-  def isWithinLimits(
-    ahead: RegionUnit,
-    right: RegionUnit,
-    behind: RegionUnit,
-    left: RegionUnit,
-    worldName: String
-  ): Boolean
+  def isWithinLimits(regionUnits: RegionUnits, worldName: String): Boolean
 
 }

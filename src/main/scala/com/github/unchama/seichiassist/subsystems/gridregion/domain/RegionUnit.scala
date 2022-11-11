@@ -30,22 +30,20 @@ object RegionUnit {
    */
   val initial: RegionUnit = RegionUnit(0)
 
-  /**
-   * 各方向の[[RegionUnit]]から合計の[[RegionUnit]]を計算する
-   * @return 各方向の[[RegionUnit]]の合計値
+}
+
+case class RegionUnits(
+  ahead: RegionUnit,
+  right: RegionUnit,
+  behind: RegionUnit,
+  left: RegionUnit
+) {
+  /*
+    グリット保護は「プレイヤーがどれだけ範囲を拡大するか」を定義するので、
+    最初に保護をしようとした時点で1ユニットの保護をすることになる。
+    そのために1ユニット分だけ最後に加算をする。
    */
-  def computeTotalRegionUnits(
-    ahead: RegionUnit,
-    right: RegionUnit,
-    behind: RegionUnit,
-    left: RegionUnit
-  ): RegionUnit = {
-    /*
-      グリット保護は「プレイヤーがどれだけ範囲を拡大するか」を定義するので、
-      最初に保護をしようとした時点で1ユニットの保護をすることになる。
-      そのために1ユニット分だけ最後に加算をする。
-     */
+  def computeTotalRegionUnits: RegionUnit =
     RegionUnit(ahead.add(behind).units * right.add(left).units).add(RegionUnit(1))
-  }
 
 }

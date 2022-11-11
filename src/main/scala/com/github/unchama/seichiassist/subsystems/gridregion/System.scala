@@ -7,7 +7,7 @@ import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gridregion.application.repository.RegionUnitPerClickSettingRepositoryDefinition
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.RegionUnit
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.{RegionUnit, RegionUnits}
 import org.bukkit.entity.Player
 
 trait System[F[_], Player] extends Subsystem[F] {
@@ -45,14 +45,11 @@ object System {
             regionUnitPerClickSettingRepository(player).unitPerClick
 
           override def isWithinLimits(
-            ahead: RegionUnit,
-            right: RegionUnit,
-            behind: RegionUnit,
-            left: RegionUnit,
+            regionUnits: RegionUnits,
             worldName: String
           ): Boolean = {
             val totalRegionUnits =
-              RegionUnit.computeTotalRegionUnits(ahead, right, behind, left)
+              regionUnits.computeTotalRegionUnits
             val limit = SeichiAssist.seichiAssistConfig.getGridLimitPerWorld(worldName)
 
             totalRegionUnits.units <= limit
