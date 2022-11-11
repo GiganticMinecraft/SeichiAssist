@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.gridregion.domain
 
+import com.github.unchama.generic.MathExtra
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.RelativeDirection._
 
 /**
@@ -77,20 +78,14 @@ object Direction {
    *         紐づいている方角(`Direction`)を返す。
    */
   def relativeDirection(yaw: Float): Map[RelativeDirection, Direction] = {
-    val directionAhead = convertYawToDirection(yaw)
     val directionOrder: Map[Direction, Direction] =
       Map(North -> East, East -> South, South -> West, West -> North)
+    val relativeDirectionOrder = List(Ahead, Right, Behind, Left)
 
-    val directionRight = directionOrder(directionAhead)
-    val directionBehind = directionOrder(directionRight)
-    val directionLeft = directionOrder(directionBehind)
+    val computedDirectionOrder =
+      MathExtra.recurrenceRelation(directionOrder, convertYawToDirection(yaw))()
 
-    Map(
-      Ahead -> directionAhead,
-      Right -> directionRight,
-      Behind -> directionBehind,
-      Left -> directionLeft
-    )
+    (relativeDirectionOrder zip computedDirectionOrder).toMap
   }
 
 }
