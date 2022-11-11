@@ -27,6 +27,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.d
 }
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
+import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.entity.Player
@@ -34,6 +35,7 @@ import org.bukkit.inventory.ItemStack
 
 import java.util.UUID
 import scala.util.chaining.scalaUtilChainingOps
+import scala.util.matching.Regex
 
 class GachaCommand[
   F[_]: OnMinecraftServerThread: NonServerThreadContextShift: ConcurrentEffect
@@ -182,14 +184,30 @@ class GachaCommand[
       playerCommandBuilder
         .argumentsParsers(List(gachaPrizeIdExistsParser))
         .execution { context =>
-          val eff = for {
-            gachaPrize <- gachaAPI.fetch(
-              GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
-            )
-            _ <- new BukkitGrantGachaPrize[F]().grantGachaPrize(gachaPrize.get)(context.sender)
-          } yield MessageEffect("ガチャアイテムを付与しました。")
+          val playerToSign =
+            if (context.args.yetToBeParsed.isEmpty)
+              Some(context.sender)
+            else {
+              val playerName = context.args.yetToBeParsed(0)
+              if ("[0-9A-Za-z_]{2,16}".r.matches(playerName)) {
+                // FIXME: Bukkitからだとオンラインのプレイヤーしか取得できないからボツ
+                Some(Bukkit.getServer.getPlayer(playerName))
+              } else
+                None
+            }
 
-          eff.toIO
+          if (playerToSign.isEmpty)
+            IO(MessageEffect("記名する名前のプレイヤーが存在しません。"))
+          else {
+            (for {
+              gachaPrize <- gachaAPI.fetch(
+                GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
+              )
+              _ <- new BukkitGrantGachaPrize[F]().grantGachaPrize(gachaPrize.get)(
+                playerToSign.get
+              )
+            } yield MessageEffect("ガチャアイテムを付与しました。")).toIO
+          }
         }
         .build()
 
