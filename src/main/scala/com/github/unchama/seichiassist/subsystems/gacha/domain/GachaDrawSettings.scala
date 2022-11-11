@@ -19,7 +19,7 @@ class GachaDrawSettings[F[_]: Sync] {
     )
 
   /**
-   * プレイヤー毎に保持している一括まとめ引きガチャ券の消費枚数を切り替える作用
+   * @retuen プレイヤー毎に保持している一括まとめ引きガチャ券の消費枚数を切り替える作用
    * 設定値が一巡すると元に戻る
    */
   def toggleConsumeGachaTicketAmount(): F[Unit] = {
