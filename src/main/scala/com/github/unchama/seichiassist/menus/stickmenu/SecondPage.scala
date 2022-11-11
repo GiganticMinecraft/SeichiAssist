@@ -349,7 +349,7 @@ object SecondPage extends Menu {
             }
         }
 
-        lazy val rightClickButtonEffect =
+        val rightClickButtonEffect =
           action.FilteredButtonEffect(ClickEventFilter.RIGHT_CLICK) { _ =>
             DeferredEffect {
               for {
