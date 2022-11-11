@@ -20,4 +20,9 @@ trait GridRegionAPI[F[_], Player] {
    */
   def isWithinLimits(regionUnits: RegionUnits, worldName: String): Boolean
 
+  /**
+   * @return [[Player]]の[[RegionUnits]]を取得する作用
+   */
+  def regionUnits(player: Player): F[RegionUnits]
+
 }
