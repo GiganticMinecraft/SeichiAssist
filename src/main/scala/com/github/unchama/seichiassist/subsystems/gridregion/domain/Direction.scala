@@ -1,10 +1,16 @@
 package com.github.unchama.seichiassist.subsystems.gridregion.domain
 
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.RelativeDirection._
+
 /**
  * @param start 始点
  * @param end 終点
  */
-case class DirectionRange(start: Float, end: Float)
+case class DirectionRange(start: Float, end: Float) {
+  private def isWithinDirection(value: Float): Boolean = 0f <= value && value <= 360f
+
+  require(isWithinDirection(start) && isWithinDirection(end))
+}
 
 /**
  * 方角の範囲を列挙するenum用のabstract class
@@ -18,6 +24,24 @@ abstract class Direction private (range: DirectionRange*) {
    */
   def isWithinRange(yaw: Float): Boolean =
     range.exists(range => range.start <= yaw && yaw <= range.end)
+
+}
+
+/**
+ * 相対的な方向を定義したenum
+ */
+sealed trait RelativeDirection
+
+object RelativeDirection {
+
+  case object Ahead extends RelativeDirection
+
+  case object Behind extends RelativeDirection
+
+  case object Left extends RelativeDirection
+
+  case object Right extends RelativeDirection
+
 }
 
 object Direction {
@@ -31,14 +55,14 @@ object Direction {
   case object West extends Direction(DirectionRange(226f, 315f))
 
   /**
-   * `yaw`から[[Direction]]に変換します。
+   * `yaw`から[[Direction]]に変換する
    *
    * `yaw`は以下の定義が成り立つものとする。
    *  - 南を起点に0から始まる
    *  - 時計回りに北までで180となる
    *  - 反時計周りで北までで-180となる
    */
-  def convertYawToDirection(yaw: Float): Direction = {
+  private def convertYawToDirection(yaw: Float): Direction = {
     // yawに+180することで北を起点とし、1周で360となる。
     val revisionYaw = yaw + 180
 
@@ -46,6 +70,27 @@ object Direction {
     else if (East.isWithinRange(revisionYaw)) East
     else if (South.isWithinRange(revisionYaw)) South
     else West
+  }
+
+  /**
+   * @return 現在向いている方向(`yaw`)から、相対的な方向(`RelativeDirection`)と
+   *         紐づいている方角(`Direction`)を返す。
+   */
+  def relativeDirection(yaw: Float): Map[RelativeDirection, Direction] = {
+    val directionAhead = convertYawToDirection(yaw)
+    val directionOrder: Map[Direction, Direction] =
+      Map(North -> East, East -> South, South -> West, West -> North)
+
+    val directionRight = directionOrder(directionAhead)
+    val directionBehind = directionOrder(directionRight)
+    val directionLeft = directionOrder(directionBehind)
+
+    Map(
+      Ahead -> directionAhead,
+      Right -> directionRight,
+      Behind -> directionBehind,
+      Left -> directionLeft
+    )
   }
 
 }
