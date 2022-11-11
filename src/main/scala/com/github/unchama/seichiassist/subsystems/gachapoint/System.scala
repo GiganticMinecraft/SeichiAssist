@@ -67,17 +67,17 @@ object System {
             .as(())
         }
       }
+      gachaPointRepositoryControlsRepository = gachaPointRepositoryControls.repository
     } yield {
       new System[F, G, Player] {
         override val api: GachaPointApi[F, G, Player] = new GachaPointApi[F, G, Player] {
           override val gachaPoint: KeyedDataRepository[Player, ReadOnlyRef[G, GachaPoint]] =
-            gachaPointRepositoryControls
-              .repository
-              .map(value => ReadOnlyRef.fromRef(value.pointRef))
+            gachaPointRepositoryControlsRepository.map(value =>
+              ReadOnlyRef.fromRef(value.pointRef)
+            )
 
           override val receiveBatch: Kleisli[F, Player, Unit] = Kleisli { player =>
-            gachaPointRepositoryControls
-              .repository
+            gachaPointRepositoryControlsRepository
               .lift(player)
               .traverse { value => value.semaphore.tryBatchTransaction }
               .as(())
@@ -86,8 +86,7 @@ object System {
           override def addGachaPoint(point: GachaPoint): Kleisli[F, Player, Unit] =
             Kleisli { player: Player =>
               ContextCoercion(
-                gachaPointRepositoryControls
-                  .repository
+                gachaPointRepositoryControlsRepository
                   .lift(player)
                   .traverse { value => value.pointRef.update(_.add(point)) }
                   .void
@@ -97,8 +96,7 @@ object System {
           override def subtractGachaPoint(point: GachaPoint): Kleisli[F, Player, Unit] =
             Kleisli { player: Player =>
               ContextCoercion(
-                gachaPointRepositoryControls
-                  .repository
+                gachaPointRepositoryControlsRepository
                   .lift(player)
                   .traverse { value => value.pointRef.update(_.subtract(point)) }
                   .void
