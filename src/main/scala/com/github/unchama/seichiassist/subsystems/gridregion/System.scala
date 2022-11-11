@@ -48,6 +48,7 @@ object System {
     } yield {
       val regionUnitPerClickSettingRepository =
         regionUnitPerClickSettingRepositoryControls.repository
+      val regionUnitsRepository = regionUnitsRepositoryControls.repository
 
       new System[F, Player] {
         override val api: GridRegionAPI[F, Player] = new GridRegionAPI[F, Player] {
@@ -66,6 +67,12 @@ object System {
 
             totalRegionUnits.units <= limit
           }
+
+          override def regionUnits(player: Player): F[RegionUnits] =
+            regionUnitsRepository(player).get
+
+          override def saveRegionUnits(player: Player, regionUnits: RegionUnits): F[Unit] =
+            regionUnitsRepository(player).set(regionUnits)
         }
       }
     }
