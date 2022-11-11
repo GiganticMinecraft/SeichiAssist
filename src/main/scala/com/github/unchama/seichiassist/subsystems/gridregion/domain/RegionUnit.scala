@@ -47,3 +47,10 @@ case class RegionUnits(
     RegionUnit(ahead.add(behind).units * right.add(left).units).add(RegionUnit(1))
 
 }
+
+object RegionUnits {
+
+  val initial: RegionUnits =
+    RegionUnits(RegionUnit.initial, RegionUnit.initial, RegionUnit.initial, RegionUnit.initial)
+
+}
