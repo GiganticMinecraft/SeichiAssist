@@ -2,17 +2,13 @@ package com.github.unchama.seichiassist.menus.gridregion
 
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
-import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
+import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
-import com.github.unchama.menuinventory.{
-  LayoutPreparationContext,
-  Menu,
-  MenuFrame,
-  MenuSlotLayout
-}
+import com.github.unchama.menuinventory.{LayoutPreparationContext, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.gridregion.GridRegionAPI
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.Direction
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.RelativeDirection._
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.{Direction, RelativeDirection}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect}
 import org.bukkit.ChatColor._
@@ -73,6 +69,80 @@ object GridRegionMenu extends Menu {
       s"${GRAY}方向：$AQUA${direction.uiLabel}",
       s"${GRAY}現在の指定方向のユニット数：$AQUA${currentRegionUnit.units}$GRAY($AQUA${currentRegionUnit.computeBlockAmount}${GRAY}ブロック)"
     )
+
+    def regionUnitExpansionButton(relativeDirection: RelativeDirection): IO[Button] =
+      RecomputedButton {
+        for {
+          yaw <- IO(player.getEyeLocation.getYaw)
+          direction = Direction.relativeDirection(yaw)(relativeDirection)
+          gridLore <- gridLore(direction)
+          regionUnits <- gridRegionAPI.regionUnits(player)
+          currentPerClickRegionUnit <- gridRegionAPI.unitPerClick(player)
+        } yield {
+          val worldName = player.getEyeLocation.getWorld.getName
+          val lore = gridLore ++ {
+            if (
+              gridRegionAPI.isWithinLimits(
+                regionUnits.expansionRegionUnits(relativeDirection, currentPerClickRegionUnit),
+                worldName
+              )
+            )
+              List(s"$RED${UNDERLINE}これ以上拡張できません")
+            else if (
+              gridRegionAPI.isWithinLimits(
+                regionUnits.contractRegionUnits(relativeDirection, currentPerClickRegionUnit),
+                worldName
+              )
+            )
+              List(s"$RED${UNDERLINE}これ以上縮小できません")
+            else
+              List.empty
+          }
+
+          val relativeDirectionString = relativeDirection match {
+            case Ahead  => "前へ"
+            case Behind => "後ろへ"
+            case Left   => "左へ"
+            case Right  => "右へ"
+          }
+
+          val itemStack =
+            new IconItemStackBuilder(Material.STAINED_GLASS_PANE, 1)
+              .title(s"$DARK_GREEN${relativeDirectionString}ユニット増やす/減らす")
+              .lore(lore)
+              .build()
+
+          val leftClickButtonEffect = FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
+            SequentialEffect(
+              DeferredEffect(
+                IO(
+                  gridRegionAPI.saveRegionUnits(
+                    regionUnits
+                      .expansionRegionUnits(relativeDirection, currentPerClickRegionUnit)
+                  )
+                )
+              ),
+              FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
+            )
+          }
+
+          val rightClickButtonEffect = FilteredButtonEffect(ClickEventFilter.RIGHT_CLICK) { _ =>
+            SequentialEffect(
+              DeferredEffect(
+                IO(
+                  gridRegionAPI.saveRegionUnits(
+                    regionUnits
+                      .contractRegionUnits(relativeDirection, currentPerClickRegionUnit)
+                  )
+                )
+              ),
+              FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
+            )
+          }
+
+          Button(itemStack, leftClickButtonEffect, rightClickButtonEffect)
+        }
+      }
 
   }
 

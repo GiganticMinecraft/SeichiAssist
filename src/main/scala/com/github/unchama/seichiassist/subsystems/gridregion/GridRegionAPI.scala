@@ -28,6 +28,6 @@ trait GridRegionAPI[F[_], Player] {
   /**
    * @return [[Player]]の[[RegionUnits]]を上書きする作用
    */
-  def saveRegionUnits(player: Player, regionUnits: RegionUnits): F[Unit]
+  def saveRegionUnits(regionUnits: RegionUnits): Kleisli[F, Player, Unit]
 
 }

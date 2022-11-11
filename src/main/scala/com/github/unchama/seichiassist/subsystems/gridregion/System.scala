@@ -7,15 +7,8 @@ import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.gridregion.application.repository.{
-  RegionUnitPerClickSettingRepositoryDefinition,
-  RegionUnitsRepositoryDefinition
-}
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
-  RegionUnit,
-  RegionUnits,
-  RegionUnitsPersistence
-}
+import com.github.unchama.seichiassist.subsystems.gridregion.application.repository.{RegionUnitPerClickSettingRepositoryDefinition, RegionUnitsRepositoryDefinition}
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.{RegionUnit, RegionUnits, RegionUnitsPersistence}
 import com.github.unchama.seichiassist.subsystems.gridregion.infrastructure.JdbcRegionUnitsPersistence
 import org.bukkit.entity.Player
 
@@ -71,8 +64,9 @@ object System {
           override def regionUnits(player: Player): F[RegionUnits] =
             regionUnitsRepository(player).get
 
-          override def saveRegionUnits(player: Player, regionUnits: RegionUnits): F[Unit] =
+          override def saveRegionUnits(regionUnits: RegionUnits): Kleisli[F, Player, Unit] = Kleisli { player =>
             regionUnitsRepository(player).set(regionUnits)
+          }
         }
       }
     }
