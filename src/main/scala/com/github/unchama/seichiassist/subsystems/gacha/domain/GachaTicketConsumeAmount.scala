@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gacha.domain
 
 /**
- * ガチャ券を消費する量を定義する。
+ * ガチャまとめ引きを実行する際に消費するガチャ券の量を定義する。
  * @param value 消費数
  */
 abstract class GachaTicketConsumeAmount(val value: Int)
