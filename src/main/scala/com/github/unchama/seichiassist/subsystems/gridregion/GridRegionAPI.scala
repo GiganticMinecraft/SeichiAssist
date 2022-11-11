@@ -25,4 +25,9 @@ trait GridRegionAPI[F[_], Player] {
    */
   def regionUnits(player: Player): F[RegionUnits]
 
+  /**
+   * @return [[Player]]の[[RegionUnits]]を上書きする作用
+   */
+  def saveRegionUnits(player: Player, regionUnits: RegionUnits): F[Unit]
+
 }
