@@ -14,21 +14,6 @@ case class DirectionRange(start: Float, end: Float) {
 }
 
 /**
- * 方角の範囲を列挙するenum用のabstract class
- * @param range 方角の範囲
- */
-abstract class Direction private (range: DirectionRange*) {
-  require(range.nonEmpty)
-
-  /**
-   * @return `yaw`が`range`の範囲内ならばtrueを返す
-   */
-  def isWithinRange(yaw: Float): Boolean =
-    range.exists(range => range.start <= yaw && yaw <= range.end)
-
-}
-
-/**
  * 相対的な方向を定義したenum
  */
 sealed trait RelativeDirection
@@ -45,15 +30,30 @@ object RelativeDirection {
 
 }
 
+/**
+ * 方角の範囲を列挙するenum用のabstract class
+ * @param range 方角の範囲
+ */
+abstract class Direction(val uiLabel: String, private val range: DirectionRange*) {
+  require(range.nonEmpty)
+
+  /**
+   * @return `yaw`が`range`の範囲内ならばtrueを返す
+   */
+  def isWithinRange(yaw: Float): Boolean =
+    range.exists(range => range.start <= yaw && yaw <= range.end)
+
+}
+
 object Direction {
 
-  case object North extends Direction(DirectionRange(0f, 45f), DirectionRange(316f, 360f))
+  case object North extends Direction("北(North)", DirectionRange(0f, 45f), DirectionRange(316f, 360f))
 
-  case object East extends Direction(DirectionRange(46f, 135f))
+  case object East extends Direction("東(East)", DirectionRange(46f, 135f))
 
-  case object South extends Direction(DirectionRange(136f, 225f))
+  case object South extends Direction("南(South)", DirectionRange(136f, 225f))
 
-  case object West extends Direction(DirectionRange(226f, 315f))
+  case object West extends Direction("西(West)", DirectionRange(226f, 315f))
 
   /**
    * `yaw`から[[Direction]]に変換する

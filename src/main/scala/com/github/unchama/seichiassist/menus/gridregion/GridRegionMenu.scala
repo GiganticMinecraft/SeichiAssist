@@ -4,9 +4,15 @@ import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
-import com.github.unchama.menuinventory.{LayoutPreparationContext, Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.menuinventory.{
+  LayoutPreparationContext,
+  Menu,
+  MenuFrame,
+  MenuSlotLayout
+}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.gridregion.GridRegionAPI
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.Direction
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect}
 import org.bukkit.ChatColor._
@@ -58,16 +64,13 @@ object GridRegionMenu extends Menu {
       }
     }
 
-    private def get
-
-    private def gridLore: IO[List[String]] = for {
+    private def gridLore(direction: Direction): IO[List[String]] = for {
       currentRegionUnit <- gridRegionAPI.unitPerClick(player)
-      yaw <- IO(player.getEyeLocation.getYaw)
     } yield List(
       s"${GREEN}左クリックで増加",
       s"${RED}右クリックで減少",
       s"$GRAY---------------",
-      s"${GRAY}方向：$AQUA${}",
+      s"${GRAY}方向：$AQUA${direction.uiLabel}",
       s"${GRAY}現在の指定方向のユニット数：$AQUA${currentRegionUnit.units}$GRAY($AQUA${currentRegionUnit.computeBlockAmount}${GRAY}ブロック)"
     )
 
