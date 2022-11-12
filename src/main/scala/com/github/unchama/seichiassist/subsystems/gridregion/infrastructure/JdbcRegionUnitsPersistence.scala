@@ -1,6 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.gridregion.infrastructure
 
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.{RegionUnits, RegionUnitsPersistence}
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
+  RegionUnits,
+  RegionUnitsPersistence
+}
 
 import java.util.UUID
 

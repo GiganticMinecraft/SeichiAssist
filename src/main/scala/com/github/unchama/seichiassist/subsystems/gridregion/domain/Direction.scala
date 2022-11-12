@@ -47,7 +47,8 @@ abstract class Direction(val uiLabel: String, private val range: DirectionRange*
 
 object Direction {
 
-  case object North extends Direction("北(North)", DirectionRange(0f, 45f), DirectionRange(316f, 360f))
+  case object North
+      extends Direction("北(North)", DirectionRange(0f, 45f), DirectionRange(316f, 360f))
 
   case object East extends Direction("東(East)", DirectionRange(46f, 135f))
 
