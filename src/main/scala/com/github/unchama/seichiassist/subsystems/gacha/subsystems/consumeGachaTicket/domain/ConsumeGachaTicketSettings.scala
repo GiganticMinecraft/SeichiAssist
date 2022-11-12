@@ -25,9 +25,9 @@ class ConsumeGachaTicketSettings[F[_]: Sync] {
    */
   def toggleConsumeGachaTicketAmount(): F[Unit] = {
     for {
-      _ <- consumeGachaTicketAmountReference.update(oldValue =>
+      _ <- consumeGachaTicketAmountReference.update { oldValue =>
         toggleConsumeGachaTicketAmountOrder(oldValue)
-      )
+      }
     } yield ()
   }
 
