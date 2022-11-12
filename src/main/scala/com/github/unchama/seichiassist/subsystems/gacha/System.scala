@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gacha
 
 import cats.Functor
+import cats.data.Kleisli
 import cats.effect.ConcurrentEffect
 import cats.effect.concurrent.Ref
 import com.github.unchama.concurrent.NonServerThreadContextShift
@@ -17,15 +18,10 @@ import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.{
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.command.GachaCommand
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.BukkitStaticGachaPrizeFactory
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.listeners.PlayerPullGachaListener
+import com.github.unchama.seichiassist.subsystems.gacha.domain._
 import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{
   GachaPrize,
   GachaPrizeId
-}
-import com.github.unchama.seichiassist.subsystems.gacha.domain.{
-  CanBeSignedAsGachaPrize,
-  GachaPrizeListPersistence,
-  LotteryOfGachaItems,
-  StaticGachaPrizeFactory
 }
 import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.JdbcGachaPrizeListPersistence
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
@@ -95,19 +91,23 @@ object System {
 
               override def list: F[Vector[GachaPrize[ItemStack]]] = gachaPrizesListReference.get
 
-              override def drawGacha(player: Player, draws: Int): F[Unit] =
-                new BukkitDrawGacha[F](gachaPrizesListReference).draw(player, draws)
+              override def drawGacha(draws: Int): Kleisli[F, Player, Unit] =
+                Kleisli { player =>
+                  new BukkitDrawGacha[F](gachaPrizesListReference).draw(player, draws)
+                }
 
               override def staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack] =
                 _staticGachaPrizeFactory
 
               override def canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
                 _canBeSignedAsGachaPrize
+
             }
           override val commands: Map[String, TabExecutor] = Map(
             "gacha" -> new GachaCommand[F]().executor
           )
           override val listeners: Seq[Listener] = Seq(new PlayerPullGachaListener[F]())
+
         }
       }
     }

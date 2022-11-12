@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gacha
 
 import cats.Functor
+import cats.data.Kleisli
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   CanBeSignedAsGachaPrize,
@@ -16,7 +17,7 @@ trait GachaDrawAPI[F[_], Player] {
   /**
    * @return ガチャを実行する作用
    */
-  def drawGacha(player: Player, draws: Int): F[Unit]
+  def drawGacha(draws: Int): Kleisli[F, Player, Unit]
 
 }
 
