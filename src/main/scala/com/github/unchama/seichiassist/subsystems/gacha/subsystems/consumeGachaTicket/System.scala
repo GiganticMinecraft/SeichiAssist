@@ -1,15 +1,19 @@
 package com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket
 
 import cats.data.Kleisli
-import cats.effect.{ConcurrentEffect, SyncEffect}
-import com.github.unchama.concurrent.NonServerThreadContextShift
-import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
+import cats.effect.{Sync, SyncEffect}
+import com.github.unchama.datarepository.bukkit.player.{
+  BukkitRepositoryControls,
+  PlayerDataRepository
+}
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
-import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket.application.repository.ConsumeGachaTicketSettingRepositoryDefinition
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket.domain.GachaTicketConsumeAmount
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket.domain.{
+  ConsumeGachaTicketSettings,
+  GachaTicketConsumeAmount
+}
 import org.bukkit.entity.Player
 
 trait System[F[_]] extends Subsystem[F] {
@@ -22,9 +26,7 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_]: OnMinecraftServerThread: NonServerThreadContextShift: ConcurrentEffect, G[
-    _
-  ]: SyncEffect: ContextCoercion[*[_], F]]: F[System[F]] = {
+  def wired[F[_]: Sync, G[_]: SyncEffect: ContextCoercion[*[_], F]]: F[System[F]] = {
 
     for {
       consumeGachaTicketSettingRepositoryControls <- ContextCoercion(
@@ -41,7 +43,8 @@ object System {
       new System[F] {
         override implicit val api: ConsumeGachaTicketAPI[F, Player] =
           new ConsumeGachaTicketAPI[F, Player] {
-            private val consumeGachaTicketSettingRepository =
+            val consumeGachaTicketSettingRepository
+              : PlayerDataRepository[ConsumeGachaTicketSettings[G]] =
               consumeGachaTicketSettingRepositoryControls.repository
 
             override def toggleConsumeGachaTicketAmount: Kleisli[F, Player, Unit] = Kleisli {
