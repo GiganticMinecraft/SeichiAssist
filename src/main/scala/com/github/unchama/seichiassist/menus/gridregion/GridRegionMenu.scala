@@ -39,9 +39,28 @@ object GridRegionMenu extends Menu {
   override val frame: MenuFrame =
     MenuFrame(Right(InventoryType.DISPENSER), s"${LIGHT_PURPLE}グリッド式保護設定メニュー")
 
-  override def computeMenuLayout(player: Player)(
-    implicit environment: Environment
-  ): IO[MenuSlotLayout] = ???
+  override def computeMenuLayout(
+    player: Player
+  )(implicit environment: Environment): IO[MenuSlotLayout] = {
+    val buttons = computeButtons(player)
+    import buttons._
+
+    for {
+      toggleUnitPerClick <- toggleUnitPerClickButton()
+      regionUnitExpansionAhead <- regionUnitExpansionButton(RelativeDirection.Ahead)
+      regionUnitExpansionLeft <- regionUnitExpansionButton(RelativeDirection.Left)
+      regionUnitExpansionBehind <- regionUnitExpansionButton(RelativeDirection.Behind)
+      regionUnitExpansionRight <- regionUnitExpansionButton(RelativeDirection.Right)
+    } yield MenuSlotLayout(
+      0 -> toggleUnitPerClick,
+      1 -> regionUnitExpansionAhead,
+      2 -> openGridRegionSettingMenuButton,
+      3 -> regionUnitExpansionLeft,
+      5 -> regionUnitExpansionBehind,
+      6 -> resetSettingButton,
+      7 -> regionUnitExpansionRight
+    )
+  }
 
   case class computeButtons(player: Player)(implicit environment: Environment) {
     import environment._
