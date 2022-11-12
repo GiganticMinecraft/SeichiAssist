@@ -7,8 +7,16 @@ import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.gridregion.application.repository.{RegionUnitPerClickSettingRepositoryDefinition, RegionUnitsRepositoryDefinition}
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.{RegionUnit, RegionUnits, RegionUnitsPersistence}
+import com.github.unchama.seichiassist.subsystems.gridregion.application.repository.{
+  RegionUnitPerClickSettingRepositoryDefinition,
+  RegionUnitsRepositoryDefinition
+}
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
+  RegionUnit,
+  RegionUnitLimit,
+  RegionUnits,
+  RegionUnitsPersistence
+}
 import com.github.unchama.seichiassist.subsystems.gridregion.infrastructure.JdbcRegionUnitsPersistence
 import org.bukkit.entity.Player
 
@@ -45,7 +53,6 @@ object System {
 
       new System[F, Player] {
         override val api: GridRegionAPI[F, Player] = new GridRegionAPI[F, Player] {
-
           override def toggleUnitPerClick: Kleisli[F, Player, Unit] = Kleisli { player =>
             regionUnitPerClickSettingRepository(player).toggleUnitPerClick
           }
@@ -64,8 +71,12 @@ object System {
           override def regionUnits(player: Player): F[RegionUnits] =
             regionUnitsRepository(player).get
 
-          override def saveRegionUnits(regionUnits: RegionUnits): Kleisli[F, Player, Unit] = Kleisli { player =>
-            regionUnitsRepository(player).set(regionUnits)
+          override def saveRegionUnits(regionUnits: RegionUnits): Kleisli[F, Player, Unit] =
+            Kleisli { player => regionUnitsRepository(player).set(regionUnits) }
+
+          override def regionUnitLimit(worldName: String): RegionUnitLimit = {
+            val limit = SeichiAssist.seichiAssistConfig.getGridLimitPerWorld(worldName)
+            RegionUnitLimit(limit)
           }
         }
       }

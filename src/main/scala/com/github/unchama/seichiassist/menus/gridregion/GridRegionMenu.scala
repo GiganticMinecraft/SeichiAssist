@@ -18,6 +18,7 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.gridregion.GridRegionAPI
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
   Direction,
+  RegionUnit,
   RegionUnits,
   RelativeDirection
 }
@@ -56,6 +57,7 @@ object GridRegionMenu extends Menu {
       1 -> regionUnitExpansionAhead,
       2 -> openGridRegionSettingMenuButton,
       3 -> regionUnitExpansionLeft,
+      4 -> nowRegionSettings,
       5 -> regionUnitExpansionBehind,
       6 -> resetSettingButton,
       7 -> regionUnitExpansionRight
@@ -181,6 +183,33 @@ object GridRegionMenu extends Menu {
       }
 
       Button(itemStack, leftClickButtonEffect)
+    }
+
+    val nowRegionSettings: IO[Button] = RecomputedButton {
+      for {
+        regionUnits <- gridRegionAPI.regionUnits(player)
+      } yield {
+        def createUnitInformation(regionUnit: RegionUnit): String =
+          s"${AQUA}${regionUnit.units}${GRAY}ユニット($AQUA${regionUnit.computeBlockAmount}${GRAY}ブロック)"
+        val worldName = player.getLocation.getWorld.getName
+
+        val lore = List(
+          s"${GRAY}現在の設定",
+          s"${GRAY}前方向：${createUnitInformation(regionUnits.ahead)}",
+          s"${GRAY}後ろ方向：${createUnitInformation(regionUnits.behind)}",
+          s"${GRAY}右方向：${createUnitInformation(regionUnits.right)}",
+          s"${GRAY}左方向：${createUnitInformation(regionUnits.left)}",
+          s"${GRAY}保護ユニット数：$AQUA${regionUnits.computeTotalRegionUnits.units}",
+          s"${GRAY}保護ユニット上限値：${RED}${gridRegionAPI.regionUnitLimit(worldName)}"
+        )
+
+        val itemStack = new IconItemStackBuilder(Material.STAINED_GLASS_PANE, 11)
+          .title(s"${DARK_GREEN}設定")
+          .lore(lore)
+          .build()
+
+        Button(itemStack)
+      }
     }
 
   }
