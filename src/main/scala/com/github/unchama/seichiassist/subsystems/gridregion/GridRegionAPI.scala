@@ -39,4 +39,8 @@ trait GridRegionAPI[F[_], Player] {
    */
   def saveRegionUnits(regionUnits: RegionUnits): Kleisli[F, Player, Unit]
 
+  /**
+   * @return [[Player]]の
+   */
+
 }
