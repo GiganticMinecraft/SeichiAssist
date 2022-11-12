@@ -22,19 +22,19 @@ import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
   RegionUnits,
   RelativeDirection
 }
-import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
 import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryType
-import org.bukkit.{Material, Sound}
+import org.bukkit.{Location, Material, Sound}
 
 object GridRegionMenu extends Menu {
 
   class Environment(
     implicit val onMainThread: OnMinecraftServerThread[IO],
     implicit val layoutPreparationContext: LayoutPreparationContext,
-    val gridRegionAPI: GridRegionAPI[IO, Player]
+    val gridRegionAPI: GridRegionAPI[IO, Player, Location]
   )
 
   override val frame: MenuFrame =
@@ -141,9 +141,17 @@ object GridRegionMenu extends Menu {
               .lore(lore)
               .build()
 
+          val regionSelection =
+            gridRegionAPI.regionSelection(player, contractedRegionUnits, direction)
+          val startPosition = regionSelection.startPosition
+          val endPosition = regionSelection.endPosition
+
           val leftClickButtonEffect = FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
             SequentialEffect(
               DeferredEffect(IO(gridRegionAPI.saveRegionUnits(expandedRegionUnits))),
+              CommandEffect("/;"),
+              CommandEffect(s"/pos1 ${startPosition.getX.toInt},0,${startPosition.getZ.toInt}"),
+              CommandEffect(s"/pos2 ${endPosition.getX.toInt},0,${endPosition.getZ.toInt}"),
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
             )
           }
@@ -151,6 +159,9 @@ object GridRegionMenu extends Menu {
           val rightClickButtonEffect = FilteredButtonEffect(ClickEventFilter.RIGHT_CLICK) { _ =>
             SequentialEffect(
               DeferredEffect(IO(gridRegionAPI.saveRegionUnits(contractedRegionUnits))),
+              CommandEffect("/;"),
+              CommandEffect(s"/pos1 ${startPosition.getX.toInt},0,${startPosition.getZ.toInt}"),
+              CommandEffect(s"/pos2 ${endPosition.getX.toInt},0,${endPosition.getZ.toInt}"),
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
             )
           }
@@ -180,7 +191,11 @@ object GridRegionMenu extends Menu {
         .build()
 
       val leftClickButtonEffect = LeftClickButtonEffect {
-        DeferredEffect(IO(gridRegionAPI.saveRegionUnits(RegionUnits.initial)))
+        SequentialEffect(
+          DeferredEffect(IO(gridRegionAPI.saveRegionUnits(RegionUnits.initial))),
+          CommandEffect("/;"),
+          FocusedSoundEffect(Sound.BLOCK_ANVIL_DESTROY, 0.5f, 1.0f)
+        )
       }
 
       Button(itemStack, leftClickButtonEffect)

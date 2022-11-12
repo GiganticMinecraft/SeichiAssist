@@ -1,13 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gridregion
 
 import cats.data.Kleisli
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
-  CreateRegionResult,
-  RegionSelection,
-  RegionUnit,
-  RegionUnitLimit,
-  RegionUnits
-}
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.{CreateRegionResult, Direction, RegionSelection, RegionUnit, RegionUnitLimit, RegionUnits}
 
 trait GridRegionAPI[F[_], Player, Location] {
 
@@ -44,11 +38,11 @@ trait GridRegionAPI[F[_], Player, Location] {
   /**
    * @return [[Player]]が[[RegionUnits]]分だけ保護を作成できるかどうかを返す作用
    */
-  def canCreateRegion(player: Player, regionUnits: RegionUnits): CreateRegionResult
+  def canCreateRegion(player: Player, regionUnits: RegionUnits, direction: Direction): CreateRegionResult
 
   /**
    * @return `player`の現在地点と`regionUnits`から[[RegionSelection]]を計算して返す
    */
-  def regionSelection(player: Player, regionUnits: RegionUnits): F[RegionSelection[Location]]
+  def regionSelection(player: Player, regionUnits: RegionUnits, direction: Direction): RegionSelection[Location]
 
 }
