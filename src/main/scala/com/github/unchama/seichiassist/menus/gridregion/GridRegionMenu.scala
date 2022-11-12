@@ -48,6 +48,7 @@ object GridRegionMenu extends Menu {
 
     for {
       toggleUnitPerClick <- toggleUnitPerClickButton()
+      nowRegionSettings <- nowRegionSettingButton
       regionUnitExpansionAhead <- regionUnitExpansionButton(RelativeDirection.Ahead)
       regionUnitExpansionLeft <- regionUnitExpansionButton(RelativeDirection.Left)
       regionUnitExpansionBehind <- regionUnitExpansionButton(RelativeDirection.Behind)
@@ -185,7 +186,7 @@ object GridRegionMenu extends Menu {
       Button(itemStack, leftClickButtonEffect)
     }
 
-    val nowRegionSettings: IO[Button] = RecomputedButton {
+    val nowRegionSettingButton: IO[Button] = RecomputedButton {
       for {
         regionUnits <- gridRegionAPI.regionUnits(player)
       } yield {
