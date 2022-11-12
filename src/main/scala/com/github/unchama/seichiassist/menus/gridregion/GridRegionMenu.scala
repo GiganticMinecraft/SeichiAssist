@@ -18,6 +18,7 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.gridregion.GridRegionAPI
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
   Direction,
+  RegionUnits,
   RelativeDirection
 }
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -145,6 +146,19 @@ object GridRegionMenu extends Menu {
       val leftClickButtonEffect = LeftClickButtonEffect {
         // TODO: openGridRegionSettingMenuを開く
         SequentialEffect(FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f))
+      }
+
+      Button(itemStack, leftClickButtonEffect)
+    }
+
+    val resetSettingButton: Button = {
+      val itemStack = new IconItemStackBuilder(Material.STAINED_GLASS_PANE, 4)
+        .title(s"${RED}全設定リセット")
+        .lore(List(s"$RED${UNDERLINE}取り扱い注意！！"))
+        .build()
+
+      val leftClickButtonEffect = LeftClickButtonEffect {
+        DeferredEffect(IO(gridRegionAPI.saveRegionUnits(RegionUnits.initial)))
       }
 
       Button(itemStack, leftClickButtonEffect)
