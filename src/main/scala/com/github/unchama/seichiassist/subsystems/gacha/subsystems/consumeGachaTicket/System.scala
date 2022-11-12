@@ -40,6 +40,7 @@ object System {
       )
     } yield {
       new System[F] {
+      
         override implicit val api: ConsumeGachaTicketAPI[F, Player] =
           new ConsumeGachaTicketAPI[F, Player] {
             val consumeGachaTicketSettingRepository
