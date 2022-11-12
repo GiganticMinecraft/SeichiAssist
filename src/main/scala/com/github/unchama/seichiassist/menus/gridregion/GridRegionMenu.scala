@@ -2,12 +2,24 @@ package com.github.unchama.seichiassist.menus.gridregion
 
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
-import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
+import com.github.unchama.menuinventory.slot.button.action.{
+  ClickEventFilter,
+  FilteredButtonEffect,
+  LeftClickButtonEffect
+}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
-import com.github.unchama.menuinventory.{LayoutPreparationContext, Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.menuinventory.{
+  LayoutPreparationContext,
+  Menu,
+  MenuFrame,
+  MenuSlotLayout
+}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.gridregion.GridRegionAPI
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.{Direction, RelativeDirection}
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
+  Direction,
+  RelativeDirection
+}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect}
 import org.bukkit.ChatColor._
@@ -71,28 +83,23 @@ object GridRegionMenu extends Menu {
 
     def regionUnitExpansionButton(relativeDirection: RelativeDirection): IO[Button] =
       RecomputedButton {
+        val yaw = player.getEyeLocation.getYaw
+        val direction = Direction.relativeDirection(yaw)(relativeDirection)
         for {
-          yaw <- IO(player.getEyeLocation.getYaw)
-          direction = Direction.relativeDirection(yaw)(relativeDirection)
           gridLore <- gridLore(direction)
           regionUnits <- gridRegionAPI.regionUnits(player)
           currentPerClickRegionUnit <- gridRegionAPI.unitPerClick(player)
         } yield {
           val worldName = player.getEyeLocation.getWorld.getName
+          val expandedRegionUnits =
+            regionUnits.expansionRegionUnits(relativeDirection, currentPerClickRegionUnit)
+          val contractedRegionUnits =
+            regionUnits.contractRegionUnits(relativeDirection, currentPerClickRegionUnit)
+
           val lore = gridLore ++ {
-            if (
-              gridRegionAPI.isWithinLimits(
-                regionUnits.expansionRegionUnits(relativeDirection, currentPerClickRegionUnit),
-                worldName
-              )
-            )
+            if (gridRegionAPI.isWithinLimits(expandedRegionUnits, worldName))
               List(s"$RED${UNDERLINE}これ以上拡張できません")
-            else if (
-              gridRegionAPI.isWithinLimits(
-                regionUnits.contractRegionUnits(relativeDirection, currentPerClickRegionUnit),
-                worldName
-              )
-            )
+            else if (gridRegionAPI.isWithinLimits(contractedRegionUnits, worldName))
               List(s"$RED${UNDERLINE}これ以上縮小できません")
             else
               List.empty
@@ -113,28 +120,14 @@ object GridRegionMenu extends Menu {
 
           val leftClickButtonEffect = FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
             SequentialEffect(
-              DeferredEffect(
-                IO(
-                  gridRegionAPI.saveRegionUnits(
-                    regionUnits
-                      .expansionRegionUnits(relativeDirection, currentPerClickRegionUnit)
-                  )
-                )
-              ),
+              DeferredEffect(IO(gridRegionAPI.saveRegionUnits(expandedRegionUnits))),
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
             )
           }
 
           val rightClickButtonEffect = FilteredButtonEffect(ClickEventFilter.RIGHT_CLICK) { _ =>
             SequentialEffect(
-              DeferredEffect(
-                IO(
-                  gridRegionAPI.saveRegionUnits(
-                    regionUnits
-                      .contractRegionUnits(relativeDirection, currentPerClickRegionUnit)
-                  )
-                )
-              ),
+              DeferredEffect(IO(gridRegionAPI.saveRegionUnits(contractedRegionUnits))),
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
             )
           }
