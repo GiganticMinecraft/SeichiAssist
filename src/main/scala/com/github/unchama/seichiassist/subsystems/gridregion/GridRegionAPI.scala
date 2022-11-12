@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.subsystems.gridregion
 
 import cats.data.Kleisli
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
+  CreateRegionResult,
   RegionUnit,
   RegionUnitLimit,
   RegionUnits
@@ -40,7 +41,8 @@ trait GridRegionAPI[F[_], Player] {
   def saveRegionUnits(regionUnits: RegionUnits): Kleisli[F, Player, Unit]
 
   /**
-   * @return [[Player]]の
+   * @return [[Player]]が[[RegionUnits]]分だけ保護を作成できるかどうかを返す作用
    */
+  def canCreateRegion(player: Player, regionUnits: RegionUnits): CreateRegionResult
 
 }
