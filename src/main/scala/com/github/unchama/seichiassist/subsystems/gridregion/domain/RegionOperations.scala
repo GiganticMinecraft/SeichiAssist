@@ -9,6 +9,6 @@ trait RegionOperations[Location] {
     currentLocation: Location,
     regionUnits: RegionUnits,
     direction: Direction
-  ): (Location, Location)
+  ): RegionSelection[Location]
 
 }

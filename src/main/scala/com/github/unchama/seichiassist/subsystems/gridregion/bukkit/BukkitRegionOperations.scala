@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.subsystems.gridregion.bukkit
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
   Direction,
   RegionOperations,
+  RegionSelection,
   RegionUnits
 }
 import org.bukkit.Location
@@ -13,14 +14,14 @@ class BukkitRegionOperations extends RegionOperations[Location] {
     currentLocation: Location,
     regionUnits: RegionUnits,
     direction: Direction
-  ): (Location, Location) = {
+  ): RegionSelection[Location] = {
 
     /*
      * startPosition - 北西
      * endPosition - 南東
      * に合わせる
      */
-    direction match {
+    val (startPosition, endPosition) = direction match {
       case Direction.East =>
         (
           currentLocation.subtract(
@@ -74,6 +75,8 @@ class BukkitRegionOperations extends RegionOperations[Location] {
           )
         )
     }
+
+    RegionSelection(startPosition, endPosition)
   }
 
 }
