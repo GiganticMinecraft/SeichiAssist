@@ -23,6 +23,7 @@ import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
   RegionUnits,
   RelativeDirection
 }
+import com.github.unchama.targetedeffect.player.PlayerEffects.closeInventoryEffect
 import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
 import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect}
 import org.bukkit.ChatColor._
@@ -54,6 +55,7 @@ object GridRegionMenu extends Menu {
       regionUnitExpansionLeft <- regionUnitExpansionButton(RelativeDirection.Left)
       regionUnitExpansionBehind <- regionUnitExpansionButton(RelativeDirection.Behind)
       regionUnitExpansionRight <- regionUnitExpansionButton(RelativeDirection.Right)
+      createRegion <- createRegionButton
     } yield MenuSlotLayout(
       0 -> toggleUnitPerClick,
       1 -> regionUnitExpansionAhead,
@@ -62,7 +64,8 @@ object GridRegionMenu extends Menu {
       4 -> nowRegionSettings,
       5 -> regionUnitExpansionBehind,
       6 -> resetSettingButton,
-      7 -> regionUnitExpansionRight
+      7 -> regionUnitExpansionRight,
+      8 -> createRegion
     )
   }
 
@@ -242,14 +245,23 @@ object GridRegionMenu extends Menu {
 
         canCreateRegionResult match {
           case CreateRegionResult.Success =>
+            val itemStack = new IconItemStackBuilder(Material.WOOL, 11)
+              .title(s"${GREEN}保護作成")
+              .lore(List(s"${DARK_GREEN}保護作成可能です", s"$RED${UNDERLINE}クリックで作成"))
+              .build()
+            val leftClickButtonEffect = LeftClickButtonEffect(
+              DeferredEffect(IO(gridRegionAPI.createRegion)),
+              FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f),
+              closeInventoryEffect
+            )
+            Button(itemStack, leftClickButtonEffect)
+          case CreateRegionResult.ThisWorldRegionCanNotBeCreated =>
             val itemStack = new IconItemStackBuilder(Material.WOOL, 14)
               .title(s"${RED}保護作成")
               .lore(List(s"$RED${UNDERLINE}このワールドでは保護を作成できません"))
               .build()
-            LeftClickButtonEffect(
-
-            )
-          case CreateRegionResult.ThisWorldRegionCanNotBeCreated =>
+            Button(itemStack)
+          case CreateRegionResult.RegionCanNotBeCreatedByOtherError =>
             val itemStack = new IconItemStackBuilder(Material.WOOL, 1)
               .title(s"${RED}以下の原因により保護の作成できません")
               .lore(
@@ -260,11 +272,7 @@ object GridRegionMenu extends Menu {
                 )
               )
               .build()
-          case CreateRegionResult.RegionCanNotBeCreatedByOtherError =>
-            val itemStack = new IconItemStackBuilder(Material.WOOL, 11)
-              .title(s"${GREEN}保護作成")
-              .lore(List(s"${DARK_GREEN}保護作成可能です", s"$RED${UNDERLINE}クリックで作成"))
-              .build()
+            Button(itemStack)
         }
       }
     }
