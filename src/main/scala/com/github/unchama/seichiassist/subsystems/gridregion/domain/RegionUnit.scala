@@ -21,12 +21,12 @@ case class RegionUnit(units: Int) {
   /**
    * 1[[RegionUnit]]あたりのブロック数
    */
-  private val blockPerBlockAmount = 15
+  val unitPerBlockAmount = 15
 
   /**
    * [[RegionUnit]]からブロック数を計算する
    */
-  def computeBlockAmount: Int = units * blockPerBlockAmount
+  def computeBlockAmount: Int = units * unitPerBlockAmount
 
 }
 

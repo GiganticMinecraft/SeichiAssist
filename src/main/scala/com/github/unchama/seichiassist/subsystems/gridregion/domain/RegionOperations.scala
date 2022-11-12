@@ -1,10 +1,14 @@
 package com.github.unchama.seichiassist.subsystems.gridregion.domain
 
-trait RegionOperations[F[_], Player] {
+trait RegionOperations[Location] {
 
   /**
-   * @return `regionUnits`の範囲を選択する作用
+   * @return `currentLocation`から`regionUnits`を使って保護範囲の始点と終点を求める
    */
-  def selectRegion(player: Player, regionUnits: RegionUnits): F[Unit]
+  def getSelection(
+    currentLocation: Location,
+    regionUnits: RegionUnits,
+    direction: Direction
+  ): (Location, Location)
 
 }
