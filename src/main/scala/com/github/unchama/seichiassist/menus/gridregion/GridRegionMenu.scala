@@ -136,7 +136,7 @@ object GridRegionMenu extends Menu {
         }
       }
 
-    val openGridRegionSettingMenu: Button = {
+    val openGridRegionSettingMenuButton: Button = {
       val itemStack = new IconItemStackBuilder(Material.CHEST)
         .title(s"${GREEN}設定保存メニュー")
         .lore(List(s"$RED${UNDERLINE}クリックで開く"))
