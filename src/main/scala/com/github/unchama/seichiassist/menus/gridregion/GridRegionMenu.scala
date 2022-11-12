@@ -7,7 +7,6 @@ import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
 import com.github.unchama.menuinventory.{LayoutPreparationContext, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.gridregion.GridRegionAPI
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.RelativeDirection._
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.{Direction, RelativeDirection}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect}
@@ -100,10 +99,10 @@ object GridRegionMenu extends Menu {
           }
 
           val relativeDirectionString = relativeDirection match {
-            case Ahead  => "前へ"
-            case Behind => "後ろへ"
-            case Left   => "左へ"
-            case Right  => "右へ"
+            case RelativeDirection.Ahead  => "前へ"
+            case RelativeDirection.Behind => "後ろへ"
+            case RelativeDirection.Left   => "左へ"
+            case RelativeDirection.Right  => "右へ"
           }
 
           val itemStack =
