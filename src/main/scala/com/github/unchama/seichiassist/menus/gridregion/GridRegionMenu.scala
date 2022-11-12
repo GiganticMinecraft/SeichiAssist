@@ -17,6 +17,7 @@ import com.github.unchama.menuinventory.{
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.gridregion.GridRegionAPI
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
+  CreateRegionResult,
   Direction,
   RegionUnit,
   RegionUnits,
@@ -225,6 +226,44 @@ object GridRegionMenu extends Menu {
           .build()
 
         Button(itemStack)
+      }
+    }
+
+    val createRegionButton: IO[Button] = RecomputedButton {
+      for {
+        regionUnits <- gridRegionAPI.regionUnits(player)
+      } yield {
+        val yaw = player.getEyeLocation.getYaw
+        val canCreateRegionResult = gridRegionAPI.canCreateRegion(
+          player,
+          regionUnits,
+          Direction.relativeDirection(yaw)(RelativeDirection.Ahead)
+        )
+
+        canCreateRegionResult match {
+          case CreateRegionResult.Success =>
+            val itemStack = new IconItemStackBuilder(Material.WOOL, 14)
+              .title(s"${RED}保護作成")
+              .lore(List(s"$RED${UNDERLINE}このワールドでは保護を作成できません"))
+              .build()
+
+          case CreateRegionResult.ThisWorldRegionCanNotBeCreated =>
+            val itemStack = new IconItemStackBuilder(Material.WOOL, 1)
+              .title(s"${RED}以下の原因により保護の作成できません")
+              .lore(
+                List(
+                  s"$RED${UNDERLINE}以下の原因により保護を作成できません。",
+                  s"$RED・保護の範囲が他の保護と重複している",
+                  s"$RED・保護の作成上限に達している"
+                )
+              )
+              .build()
+          case CreateRegionResult.RegionCanNotBeCreatedByOtherError =>
+            val itemStack = new IconItemStackBuilder(Material.WOOL, 11)
+              .title(s"${GREEN}保護作成")
+              .lore(List(s"${DARK_GREEN}保護作成可能です", s"$RED${UNDERLINE}クリックで作成"))
+              .build()
+        }
       }
     }
 

@@ -1,14 +1,23 @@
 package com.github.unchama.seichiassist.subsystems.gridregion.bukkit
 
+import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
   Direction,
   RegionOperations,
   RegionSelection,
   RegionUnits
 }
+import com.github.unchama.util.external.ExternalPlugins
+import com.sk89q.worldedit.bukkit.WorldEditPlugin
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin
+import com.sk89q.worldguard.bukkit.commands.AsyncCommandHelper
+import com.sk89q.worldguard.bukkit.commands.task.RegionAdder
+import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion
+import com.sk89q.worldguard.protection.util.DomainInputResolver
 import org.bukkit.Location
+import org.bukkit.entity.Player
 
-class BukkitRegionOperations extends RegionOperations[Location] {
+class BukkitRegionOperations[F[_]: Sync] extends RegionOperations[F, Location, Player] {
 
   override def getSelection(
     currentLocation: Location,
@@ -77,6 +86,31 @@ class BukkitRegionOperations extends RegionOperations[Location] {
     }
 
     RegionSelection(startPosition, endPosition)
+  }
+
+  override def createRegion(player: Player): F[Unit] = Sync[F].delay {
+    val we: WorldEditPlugin = ExternalPlugins.getWorldEdit
+    val wg: WorldGuardPlugin = ExternalPlugins.getWorldGuard
+
+    val selection = we.getSelection(player)
+
+    val region = new ProtectedCuboidRegion(
+      s"${player.getName}_1", // TODO: regionCountをRepositoryにする
+      selection.getNativeMinimumPoint.toBlockVector,
+      selection.getNativeMaximumPoint.toBlockVector
+    )
+    val manager = wg.getRegionManager(player.getWorld)
+
+    val task = new RegionAdder(wg, manager, region)
+    task.setLocatorPolicy(DomainInputResolver.UserLocatorPolicy.UUID_ONLY)
+    task.setOwnersInput(Array(player.getName))
+    val future = wg.getExecutorService.submit(task)
+
+    AsyncCommandHelper
+      .wrap(future, wg, player)
+      .formatUsing(s"${player.getName}_1")
+      .registerWithSupervisor("保護申請中")
+      .thenRespondWith("保護申請完了。保護名: '%s'", "保護作成失敗")
   }
 
 }
