@@ -246,7 +246,9 @@ object GridRegionMenu extends Menu {
               .title(s"${RED}保護作成")
               .lore(List(s"$RED${UNDERLINE}このワールドでは保護を作成できません"))
               .build()
+            LeftClickButtonEffect(
 
+            )
           case CreateRegionResult.ThisWorldRegionCanNotBeCreated =>
             val itemStack = new IconItemStackBuilder(Material.WOOL, 1)
               .title(s"${RED}以下の原因により保護の作成できません")

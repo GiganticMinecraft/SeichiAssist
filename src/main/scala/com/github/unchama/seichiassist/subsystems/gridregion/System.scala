@@ -51,7 +51,7 @@ object System {
       val regionUnitPerClickSettingRepository =
         regionUnitPerClickSettingRepositoryControls.repository
       val regionUnitsRepository = regionUnitsRepositoryControls.repository
-      val regionOperations: RegionOperations[Location] = new BukkitRegionOperations
+      val regionOperations: RegionOperations[F, Location, Player] = new BukkitRegionOperations
       val we: WorldEditPlugin = ExternalPlugins.getWorldEdit
       val wg: WorldGuardPlugin = ExternalPlugins.getWorldGuard
 
@@ -126,6 +126,10 @@ object System {
               direction: Direction
             ): RegionSelection[Location] =
               regionOperations.getSelection(player.getLocation, regionUnits, direction)
+
+            override def createRegion: Kleisli[F, Player, Unit] = Kleisli { player =>
+              regionOperations.createRegion(player)
+            }
           }
       }
     }
