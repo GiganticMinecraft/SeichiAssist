@@ -2,10 +2,9 @@ package com.github.unchama.seichiassist.subsystems.gacha
 
 import cats.Functor
 import cats.data.Kleisli
+import cats.effect.ConcurrentEffect
 import cats.effect.concurrent.Ref
-import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.concurrent.NonServerThreadContextShift
-import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.serialization.SerializeAndDeserialize
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.minecraft.bukkit.algebra.BukkitItemStackSerializeAndDeserialize
@@ -41,9 +40,7 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_]: OnMinecraftServerThread: NonServerThreadContextShift: ConcurrentEffect, G[
-    _
-  ]: SyncEffect: ContextCoercion[*[_], F]](
+  def wired[F[_]: OnMinecraftServerThread: NonServerThreadContextShift: ConcurrentEffect](
     implicit gachaTicketAPI: GachaTicketAPI[F]
   ): F[System[F]] = {
     implicit val _serializeAndDeserialize: SerializeAndDeserialize[Nothing, ItemStack] =
