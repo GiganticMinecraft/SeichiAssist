@@ -18,6 +18,7 @@ trait ConsumeGachaTicketAPI[F[_], Player] {
 }
 
 object ConsumeGachaTicketAPI {
+
   def apply[F[_], Player](
     implicit ev: ConsumeGachaTicketAPI[F, Player]
   ): ConsumeGachaTicketAPI[F, Player] = ev
