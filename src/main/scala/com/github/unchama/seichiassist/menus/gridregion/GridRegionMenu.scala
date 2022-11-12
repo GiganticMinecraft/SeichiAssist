@@ -136,6 +136,20 @@ object GridRegionMenu extends Menu {
         }
       }
 
+    val openGridRegionSettingMenu: Button = {
+      val itemStack = new IconItemStackBuilder(Material.CHEST)
+        .title(s"${GREEN}設定保存メニュー")
+        .lore(List(s"$RED${UNDERLINE}クリックで開く"))
+        .build()
+
+      val leftClickButtonEffect = LeftClickButtonEffect {
+        // TODO: openGridRegionSettingMenuを開く
+        SequentialEffect(FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f))
+      }
+
+      Button(itemStack, leftClickButtonEffect)
+    }
+
   }
 
 }
