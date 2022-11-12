@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegacha
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
 import cats.implicits._
-import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaTicketConsumeAmount
 
 class ConsumeGachaTicketSettings[F[_]: Sync] {
 

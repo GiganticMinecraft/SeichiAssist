@@ -8,8 +8,8 @@ import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaTicketConsumeAmount
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket.application.repository.ConsumeGachaTicketSettingRepositoryDefinition
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket.domain.GachaTicketConsumeAmount
 import org.bukkit.entity.Player
 
 trait System[F[_]] extends Subsystem[F] {

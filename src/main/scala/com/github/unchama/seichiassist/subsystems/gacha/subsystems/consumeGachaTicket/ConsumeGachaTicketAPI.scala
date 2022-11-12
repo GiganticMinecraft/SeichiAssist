@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket
 
 import cats.data.Kleisli
-import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaTicketConsumeAmount
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket.domain.GachaTicketConsumeAmount
 
 trait ConsumeGachaTicketAPI[F[_], Player] {
 
