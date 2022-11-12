@@ -3,7 +3,10 @@ package com.github.unchama.seichiassist.subsystems.gachapoint
 import cats.data.Kleisli
 import cats.effect.{ConcurrentEffect, IO, SyncEffect, Timer}
 import com.github.unchama.datarepository.KeyedDataRepository
-import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
+import com.github.unchama.datarepository.bukkit.player.{
+  BukkitRepositoryControls,
+  PlayerDataRepository
+}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
@@ -67,9 +70,11 @@ object System {
             .as(())
         }
       }
-      gachaPointRepositoryControlsRepository = gachaPointRepositoryControls.repository
     } yield {
       new System[F, G, Player] {
+        val gachaPointRepositoryControlsRepository
+          : PlayerDataRepository[GachaPointRepositoryDefinition.RepositoryValue[F, G]] =
+          gachaPointRepositoryControls.repository
         override val api: GachaPointApi[F, G, Player] = new GachaPointApi[F, G, Player] {
           override val gachaPoint: KeyedDataRepository[Player, ReadOnlyRef[G, GachaPoint]] =
             gachaPointRepositoryControlsRepository.map(value =>
