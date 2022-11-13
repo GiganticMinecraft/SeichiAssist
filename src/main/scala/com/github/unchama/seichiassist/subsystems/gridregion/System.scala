@@ -4,7 +4,6 @@ import cats.data.Kleisli
 import cats.effect.SyncEffect
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.datarepository.template.RepositoryDefinition
-import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gridregion.application.repository.{RegionUnitPerClickSettingRepositoryDefinition, RegionUnitsRepositoryDefinition}
@@ -41,7 +40,12 @@ object System {
           )
       )
       regionUnitsRepositoryControls <- BukkitRepositoryControls.createHandles(
-        RegionUnitsRepositoryDefinition.withContext[F, Player]
+        RepositoryDefinition
+          .Phased
+          .TwoPhased(
+            RegionUnitsRepositoryDefinition.initialization[F, Player],
+            RegionUnitsRepositoryDefinition.finalization[F, Player]
+          )
       )
     } yield {
       val regionUnitPerClickSettingRepository =
@@ -73,7 +77,7 @@ object System {
             }
 
             override def regionUnits(player: Player): F[RegionUnits] =
-              regionUnitsRepository(player).get
+              regionUnitsRepository(player).regionUnits
 
             override def saveRegionUnits(regionUnits: RegionUnits): Kleisli[F, Player, Unit] =
               Kleisli { player => regionUnitsRepository(player).set(regionUnits) }

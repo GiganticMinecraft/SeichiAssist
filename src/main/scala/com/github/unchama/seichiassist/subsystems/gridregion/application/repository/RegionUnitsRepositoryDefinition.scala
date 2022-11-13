@@ -1,23 +1,21 @@
 package com.github.unchama.seichiassist.subsystems.gridregion.application.repository
 
+import cats.Applicative
 import cats.effect.Sync
-import cats.effect.concurrent.Ref
-import com.github.unchama.datarepository.definitions.RefDictBackedRepositoryDefinition
-import com.github.unchama.datarepository.template.RepositoryDefinition
-import com.github.unchama.minecraft.algebra.HasUuid
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
-  RegionUnits,
-  RegionUnitsPersistence
-}
+import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
+import com.github.unchama.datarepository.template.initialization.TwoPhasedRepositoryInitialization
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.RegionUnitsSetting
 
 object RegionUnitsRepositoryDefinition {
 
-  def withContext[F[_]: Sync, Player: HasUuid](
-    implicit persistence: RegionUnitsPersistence[F]
-  ): RepositoryDefinition[F, Player, Ref[F, RegionUnits]] =
-    RefDictBackedRepositoryDefinition
-      .usingUuidRefDict[F, Player, RegionUnits](persistence)(RegionUnits.initial)
-      .toRefRepository
-      .augmentToTwoPhased((_, ref) => Sync[F].pure(ref))(value => Sync[F].pure(value))
+  def initialization[F[_]: Sync, Player]
+    : TwoPhasedRepositoryInitialization[F, Player, RegionUnitsSetting[F]] =
+    TwoPhasedRepositoryInitialization.withoutPrefetching[F, Player, RegionUnitsSetting[F]] {
+      _ => Sync[F].pure(new RegionUnitsSetting[F])
+    }
+
+  def finalization[F[_]: Applicative, Player]
+    : RepositoryFinalization[F, Player, RegionUnitsSetting[F]] =
+    RepositoryFinalization.trivial
 
 }
