@@ -1,7 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.gridregion.bukkit
 
 import cats.effect.Sync
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
+  CreateRegionResult,
   Direction,
   RegionOperations,
   RegionSelection,
@@ -17,7 +19,8 @@ import com.sk89q.worldguard.protection.util.DomainInputResolver
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
-class BukkitRegionOperations[F[_]: Sync] extends RegionOperations[F, Location, Player] {
+class BukkitRegionOperations[F[_]: Sync](implicit we: WorldEditPlugin, wg: WorldGuardPlugin)
+    extends RegionOperations[F, Location, Player] {
 
   override def getSelection(
     currentLocation: Location,
@@ -111,6 +114,39 @@ class BukkitRegionOperations[F[_]: Sync] extends RegionOperations[F, Location, P
       .formatUsing(s"${player.getName}_1")
       .registerWithSupervisor("保護申請中")
       .thenRespondWith("保護申請完了。保護名: '%s'", "保護作成失敗")
+  }
+
+  override def canCreateRegion(
+    player: Player,
+    regionUnits: RegionUnits,
+    direction: Direction
+  ): CreateRegionResult = {
+    if (!SeichiAssist.seichiAssistConfig.isGridProtectionEnabled(player.getWorld))
+      return CreateRegionResult.ThisWorldRegionCanNotBeCreated
+
+    val selection = Some(we.getSelection(player))
+    if (selection.isEmpty) return CreateRegionResult.RegionCanNotBeCreatedByOtherError
+
+    // TODO: regionNumをRepository保存にする
+    val region = new ProtectedCuboidRegion(
+      s"${player.getName}_1",
+      selection.get.getNativeMinimumPoint.toBlockVector,
+      selection.get.getNativeMaximumPoint.toBlockVector
+    )
+    val wgManager = wg.getRegionManager(player.getWorld)
+    val regions = wgManager.getApplicableRegions(region)
+    if (regions.size != 0) return CreateRegionResult.RegionCanNotBeCreatedByOtherError
+
+    val wgConfig = wg.getGlobalStateManager.get(player.getWorld)
+    val maxRegionCount = wgConfig.getMaxRegionCount(player)
+    if (
+      maxRegionCount >= 0 && wgManager.getRegionCountOfPlayer(
+        wg.wrapPlayer(player)
+      ) >= maxRegionCount
+    )
+      CreateRegionResult.RegionCanNotBeCreatedByOtherError
+    else
+      CreateRegionResult.Success
   }
 
 }
