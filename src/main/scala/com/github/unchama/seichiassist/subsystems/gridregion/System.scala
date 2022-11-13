@@ -9,7 +9,6 @@ import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gridregion.application.repository.{RegionUnitPerClickSettingRepositoryDefinition, RegionUnitsRepositoryDefinition}
 import com.github.unchama.seichiassist.subsystems.gridregion.bukkit.BukkitRegionOperations
 import com.github.unchama.seichiassist.subsystems.gridregion.domain._
-import com.github.unchama.seichiassist.subsystems.gridregion.infrastructure.JdbcRegionUnitsPersistence
 import com.github.unchama.util.external.ExternalPlugins
 import com.sk89q.worldedit.bukkit.WorldEditPlugin
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin
@@ -27,9 +26,6 @@ object System {
   import cats.implicits._
 
   def wired[F[_]: SyncEffect]: F[System[F, Player, Location]] = {
-    implicit val regionUnitsPersistence: RegionUnitsPersistence[F] =
-      new JdbcRegionUnitsPersistence[F]
-
     for {
       regionUnitPerClickSettingRepositoryControls <- BukkitRepositoryControls.createHandles(
         RepositoryDefinition
