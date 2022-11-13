@@ -2,14 +2,7 @@ package com.github.unchama.seichiassist.subsystems.gridregion.bukkit
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
-  CreateRegionResult,
-  Direction,
-  RegionOperations,
-  RegionSelection,
-  RegionUnits
-}
-import com.github.unchama.util.external.ExternalPlugins
+import com.github.unchama.seichiassist.subsystems.gridregion.domain._
 import com.sk89q.worldedit.bukkit.WorldEditPlugin
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin
 import com.sk89q.worldguard.bukkit.commands.AsyncCommandHelper
@@ -92,9 +85,6 @@ class BukkitRegionOperations[F[_]: Sync](implicit we: WorldEditPlugin, wg: World
   }
 
   override def createRegion(player: Player): F[Unit] = Sync[F].delay {
-    val we: WorldEditPlugin = ExternalPlugins.getWorldEdit
-    val wg: WorldGuardPlugin = ExternalPlugins.getWorldGuard
-
     val selection = we.getSelection(player)
 
     val region = new ProtectedCuboidRegion(
