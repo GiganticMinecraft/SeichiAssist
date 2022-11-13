@@ -696,6 +696,8 @@ class SeichiAssist extends JavaPlugin() {
     hasBeenLoadedAlready = true
     kickAllPlayersDueToInitialization.unsafeRunSync()
 
+    removeRegions()
+
     logger.info("SeichiAssistが有効化されました！")
   }
 
@@ -708,6 +710,11 @@ class SeichiAssist extends JavaPlugin() {
         e.printStackTrace()
         Bukkit.shutdown()
     }
+  }
+
+  private def removeRegions(): Unit = {
+    Bukkit.dispatchCommand(Bukkit.getConsoleSender, "rmp remove world_SW_2 3")
+    Bukkit.dispatchCommand(Bukkit.getConsoleSender, "rmp remove world_SW_4 3")
   }
 
   private def startRepeatedJobs(): Unit = {
