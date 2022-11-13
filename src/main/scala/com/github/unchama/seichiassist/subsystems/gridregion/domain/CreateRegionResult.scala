@@ -18,7 +18,7 @@ object CreateRegionResult {
   case object ThisWorldRegionCanNotBeCreated extends CreateRegionResult
 
   /**
-   * それ以外のエラー(以下のエラー)で保護が作成できない
+   * それ以外のエラー(考えられるのは以下のエラー)で保護が作成できない
    *  - 他保護との重複
    *  - 保護の作成上限に達している
    */
