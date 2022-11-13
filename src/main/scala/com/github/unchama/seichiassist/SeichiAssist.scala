@@ -712,6 +712,8 @@ class SeichiAssist extends JavaPlugin() {
     }
   }
 
+  // FIXME: subsystemsに切り出す
+  // ref: https://github.com/GiganticMinecraft/SeichiAssist/pulls#discussion_r1020897163
   private def removeRegions(): Unit = {
     Bukkit.dispatchCommand(Bukkit.getConsoleSender, "rmp remove world_SW_2 3")
     Bukkit.dispatchCommand(Bukkit.getConsoleSender, "rmp remove world_SW_4 3")
