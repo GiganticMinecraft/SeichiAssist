@@ -16,4 +16,13 @@ trait RegionOperations[F[_], Location, Player] {
    */
   def createRegion(player: Player): F[Unit]
 
+  /**
+   * @return 保護範囲を作成できるか確認する作用
+   */
+  def canCreateRegion(
+    player: Player,
+    regionUnits: RegionUnits,
+    direction: Direction
+  ): CreateRegionResult
+
 }
