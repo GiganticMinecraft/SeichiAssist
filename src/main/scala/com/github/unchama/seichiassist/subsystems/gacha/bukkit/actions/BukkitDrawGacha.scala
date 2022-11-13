@@ -3,16 +3,9 @@ package com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions
 import cats.effect.{IO, Sync}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
-import com.github.unchama.seichiassist.subsystems.gacha.application.actions.{
-  DrawGacha,
-  GrantGachaPrize
-}
+import com.github.unchama.seichiassist.subsystems.gacha.application.actions.{DrawGacha, GrantGachaPrize}
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity._
-import com.github.unchama.seichiassist.subsystems.gacha.domain.{
-  GlobalGachaPrizeList,
-  GrantState,
-  LotteryOfGachaItems
-}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.{GlobalGachaPrizeList, GrantState, LotteryOfGachaItems}
 import com.github.unchama.seichiassist.util.SendMessageEffect.sendMessageToEveryone
 import com.github.unchama.seichiassist.util._
 import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
@@ -116,6 +109,9 @@ class BukkitDrawGacha[F[_]: Sync: OnMinecraftServerThread](
           player.sendMessage(s"$AQUA${count}回ガチャを回しました。")
         }
         .whenA(count > 1)
+      _ <- Sync[F].delay {
+        player.playSound(player.getLocation, Sound.ENTITY_ARROW_HIT_PLAYER, 1f, 0.1f)
+      }
     } yield ()
   }
 }
