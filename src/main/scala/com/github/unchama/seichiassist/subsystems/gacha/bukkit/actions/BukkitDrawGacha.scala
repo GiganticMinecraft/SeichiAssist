@@ -113,6 +113,9 @@ class BukkitDrawGacha[F[_]: Sync: OnMinecraftServerThread](
         }
       _ <- Sync[F]
         .delay {
+          val regularAmount = gachaPrizes.count(GachaRarity.of(_) == GachaRarity.Regular)
+          val bigAmount = gachaPrizes.count(GachaRarity.of(_) == GachaRarity.Big)
+          player.sendMessage(s"${YELLOW}当たりが${regularAmount}個,${GOLD}大当たりが${bigAmount}個出ました!")
           player.sendMessage(s"$AQUA${count}回ガチャを回しました。")
         }
         .whenA(count > 1)
