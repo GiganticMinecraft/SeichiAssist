@@ -8,19 +8,21 @@ object GachaRarity {
 
   /**
    * `probabilityUpperLimit`は[[GachaRarity]]になるガチャアイテムの出現確率の上限値である。
-   * また、以下の定義が成り立つ。
+   * 正確には、以下のような定義を用いる。
    *
-   * ガチャ景品`g: GachaPrize[ItemStack]`、レアリティ`r: GachaRarity`について
-   * `g`が`r`以上のレアリティである <=> `g.probability < r.probabilityUpperLimit`
-   * が成り立つ。
+   * ガチャ景品 `g: GachaPrize[ItemStack]`、レアリティ `r: GachaRarity` について
+   * 「`g` が `r` 以上のレアリティである」を `g.probability < r.probabilityUpperLimit`
+   * が成り立つことと定義する。
    *
-   * ガチャレアリティ`r1, r2: GachaRarity`について
-   * `r1`は`r2`よりもレアである <=> `r1.probabilityUpperLimit < r2.probabilityUpperLimit`
-   * が成り立つ
+   * また、ガチャレアリティ `r1, r2: GachaRarity` について
+   * 「`r1` は `r2` よりもレアである」 を `r1.probabilityUpperLimit < r2.probabilityUpperLimit`
+   * が成り立つことと定義する。
    *
-   * ガチャ景品`g: GachaPrize[ItemStack]`のレアリティ`r = GachaRarity.of(g)`は
-   * `g`は`r`以上のレアリティであるような`rarity: GachaRarity`のうち、最もレアなレアリティである。
-   * もしそのようなレアリティが存在しなければ`r`は`GachaRingoOrExpBottle`である。
+   * これらの定義を踏まえた上で、
+   * ガチャ景品 `g: GachaPrize[ItemStack]` のレアリティ `r = GachaRarity.of(g)` は、
+   * `g` が `rarity` 以上のレアリティであるような `rarity: GachaRarity` のうち
+   * 最もレアなレアリティとして定義される。
+   * もしそのようなレアリティが存在しなければ、 `r` は `GachaRingoOrExpBottle` とする。
    */
   sealed abstract class GachaRarity(val probabilityUpperLimit: GachaProbability)
       extends EnumEntry
