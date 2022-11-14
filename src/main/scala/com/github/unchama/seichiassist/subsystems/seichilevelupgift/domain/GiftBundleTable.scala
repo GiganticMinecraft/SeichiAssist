@@ -8,7 +8,7 @@ object GiftBundleTable {
 
   def bundleAt(level: SeichiLevel): GiftBundle = {
     val gachaTicketForBeginners = if (level <= SeichiLevel.ofPositive(50)) {
-      GiftBundle.ofSinglePair(Gift.Item.GachaTicket, level.level * 5)
+      GiftBundle.ofSinglePair(Gift.GachaPointWorthSingleTicket, level.level * 5)
     } else {
       GiftBundle.empty
     }
