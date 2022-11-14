@@ -40,8 +40,8 @@ class GachaTradeListener[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
     val inventory = event.getInventory
     val name = player.getName
 
-    // インベントリサイズが4列でない時終了
-    if (inventory.row != 4) return
+    // インベントリサイズが6列でない時終了
+    if (inventory.row != 6) return
 
     if (inventory.getTitle != s"$LIGHT_PURPLE${BOLD}交換したい景品を入れてください") return
 
