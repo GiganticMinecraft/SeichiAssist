@@ -20,11 +20,12 @@ class BukkitGrantGachaPrize[F[_]: Sync: OnMinecraftServerThread](
 
   override def tryInsertIntoMineStack(
     prize: GachaPrize[ItemStack],
-    ownerName: String
+    optionOwnerName: Option[String]
   ): Kleisli[F, Player, Boolean] =
     Kleisli { player =>
       Sync[F].delay {
-        val signedItemStack = prize.materializeWithOwnerSignature(ownerName)
+        val signedItemStack =
+          optionOwnerName.fold(prize.itemStack)(prize.materializeWithOwnerSignature)
         BreakUtil.tryAddItemIntoMineStack(player, signedItemStack)
       }
     }
@@ -33,12 +34,14 @@ class BukkitGrantGachaPrize[F[_]: Sync: OnMinecraftServerThread](
 
   override def insertIntoPlayerInventoryOrDrop(
     prize: GachaPrize[ItemStack],
-    ownerName: String
+    optionOwnerName: Option[String]
   ): Kleisli[F, Player, GrantState] =
     Kleisli { player =>
       for {
         isInventoryFull <- Sync[F].delay(InventoryOperations.isPlayerInventoryFull(player))
-        newItemStack = prize.materializeWithOwnerSignature(ownerName)
+        newItemStack = optionOwnerName.fold(prize.itemStack)(
+          prize.materializeWithOwnerSignature
+        )
         _ <-
           InventoryOperations.grantItemStacksEffect(newItemStack).apply(player)
       } yield if (isInventoryFull) GrantState.AddedInventory else GrantState.Dropped

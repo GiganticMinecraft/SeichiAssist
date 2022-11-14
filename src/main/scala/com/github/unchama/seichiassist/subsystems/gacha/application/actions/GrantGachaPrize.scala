@@ -14,26 +14,26 @@ trait GrantGachaPrize[F[_], ItemStack] {
 
   def tryInsertIntoMineStack(
     prize: GachaPrize[ItemStack],
-    ownerName: String
+    optionOwnerName: Option[String]
   ): Kleisli[F, Player, Boolean]
 
   def insertIntoPlayerInventoryOrDrop(
     prize: GachaPrize[ItemStack],
-    ownerName: String
+    optionOwnerName: Option[String]
   ): Kleisli[F, Player, GrantState]
 
   final def grantGachaPrize(
     prize: GachaPrize[ItemStack],
-    ownerName: String
+    optionOwnerName: Option[String]
   ): Kleisli[F, Player, GrantState] =
     Kleisli { player =>
       for {
-        insertMineStackResult <- tryInsertIntoMineStack(prize, ownerName)(player)
+        insertMineStackResult <- tryInsertIntoMineStack(prize, optionOwnerName)(player)
         grantState <-
           if (insertMineStackResult) {
             F.pure(GrantState.GrantedMineStack)
           } else {
-            insertIntoPlayerInventoryOrDrop(prize, ownerName)(player)
+            insertIntoPlayerInventoryOrDrop(prize, optionOwnerName)(player)
           }
       } yield grantState
     }
