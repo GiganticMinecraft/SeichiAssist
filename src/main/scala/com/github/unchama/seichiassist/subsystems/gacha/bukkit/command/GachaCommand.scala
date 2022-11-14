@@ -182,14 +182,15 @@ class GachaCommand[
       playerCommandBuilder
         .argumentsParsers(List(gachaPrizeIdExistsParser))
         .execution { context =>
-          val optionOwnerName = context.args.yetToBeParsed.headOption
+          val ownerName = context.args.yetToBeParsed.headOption
 
           val eff = for {
             gachaPrize <- gachaAPI.fetch(
               GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
             )
-            _ <- new BukkitGrantGachaPrize[F]()
-              .grantGachaPrize(gachaPrize.get, optionOwnerName)(context.sender)
+            _ <- new BukkitGrantGachaPrize[F]().grantGachaPrize(gachaPrize.get, ownerName)(
+              context.sender
+            )
           } yield MessageEffect("ガチャアイテムを付与しました。")
 
           eff.toIO
