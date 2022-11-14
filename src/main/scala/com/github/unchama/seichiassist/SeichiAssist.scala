@@ -70,6 +70,7 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
 }
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket.ConsumeGachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
@@ -392,7 +393,12 @@ class SeichiAssist extends JavaPlugin() {
 
   private lazy val gachaSystem: subsystems.gacha.System[IO] = {
     implicit val gachaTicketAPI: GachaTicketAPI[IO] = gachaTicketSystem.api
-    subsystems.gacha.System.wired.unsafeRunSync()
+    subsystems.gacha.System.wired[IO].unsafeRunSync()
+  }
+
+  private lazy val consumeGachaTicketSystem
+    : subsystems.gacha.subsystems.consumegachaticket.System[IO] = {
+    subsystems.gacha.subsystems.consumegachaticket.System.wired[IO, SyncIO].unsafeRunSync()
   }
 
   private lazy val gachaTicketSystem: subsystems.gacha.subsystems.gachaticket.System[IO] =
@@ -434,7 +440,8 @@ class SeichiAssist extends JavaPlugin() {
     gachaTicketSystem,
     gtToSiinaSystem,
     gachaTradeSystem,
-    sharedInventorySystem
+    sharedInventorySystem,
+    consumeGachaTicketSystem
   )
 
   private lazy val buildAssist: BuildAssist = {
@@ -590,6 +597,8 @@ class SeichiAssist extends JavaPlugin() {
       sharedInventorySystem.api
     implicit val gachaTicketAPI: GachaTicketAPI[IO] =
       gachaTicketSystem.api
+    implicit val consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player] =
+      consumeGachaTicketSystem.api
 
     val menuRouter = TopLevelRouter.apply
     import menuRouter.{canOpenStickMenu, ioCanOpenCategorizedMineStackMenu}
@@ -687,6 +696,8 @@ class SeichiAssist extends JavaPlugin() {
     hasBeenLoadedAlready = true
     kickAllPlayersDueToInitialization.unsafeRunSync()
 
+    removeRegions()
+
     logger.info("SeichiAssistが有効化されました！")
   }
 
@@ -699,6 +710,13 @@ class SeichiAssist extends JavaPlugin() {
         e.printStackTrace()
         Bukkit.shutdown()
     }
+  }
+
+  // FIXME: rmpコマンドを実装しているシステムをsubsystemに切り出したらapiを利用して処理をする
+  // ref: https://github.com/GiganticMinecraft/SeichiAssist/pulls#discussion_r1020897163
+  private def removeRegions(): Unit = {
+    Bukkit.dispatchCommand(Bukkit.getConsoleSender, "rmp remove world_SW_2 3")
+    Bukkit.dispatchCommand(Bukkit.getConsoleSender, "rmp remove world_SW_4 3")
   }
 
   private def startRepeatedJobs(): Unit = {

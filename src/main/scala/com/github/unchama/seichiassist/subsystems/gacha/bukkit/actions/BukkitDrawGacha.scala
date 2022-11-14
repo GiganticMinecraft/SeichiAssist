@@ -116,6 +116,9 @@ class BukkitDrawGacha[F[_]: Sync: OnMinecraftServerThread](
           player.sendMessage(s"$AQUA${count}回ガチャを回しました。")
         }
         .whenA(count > 1)
+      _ <- Sync[F].delay {
+        player.playSound(player.getLocation, Sound.ENTITY_ARROW_HIT_PLAYER, 1f, 0.1f)
+      }
     } yield ()
   }
 }
