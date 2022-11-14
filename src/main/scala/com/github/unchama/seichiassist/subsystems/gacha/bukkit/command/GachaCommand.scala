@@ -199,7 +199,6 @@ class GachaCommand[
           } yield MessageEffect("ガチャアイテムを付与しました。")
 
           eff.toIO
-
         }
         .build()
 
