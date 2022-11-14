@@ -185,9 +185,8 @@ class GachaCommand[
           val ownerName =
             if (context.args.yetToBeParsed.isEmpty)
               context.sender.getName
-            else {
+            else 
               context.args.yetToBeParsed.head
-            }
 
           val eff = for {
             gachaPrize <- gachaAPI.fetch(
