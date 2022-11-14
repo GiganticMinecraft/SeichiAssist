@@ -29,11 +29,12 @@ class BukkitGrantGachaPrize[F[_]: Sync: OnMinecraftServerThread](
     }
 
   override def insertIntoPlayerInventoryOrDrop(
-    prize: GachaPrize[ItemStack]
+    prize: GachaPrize[ItemStack],
+    ownerName: String
   ): Kleisli[F, Player, GrantState] =
     Kleisli { player =>
       Sync[F].delay {
-        val newItemStack = prize.materializeWithOwnerSignature(player.getName)
+        val newItemStack = prize.materializeWithOwnerSignature(ownerName)
         if (!InventoryOperations.isPlayerInventoryFull(player)) {
           InventoryOperations.addItem(player, newItemStack)
           GrantState.AddedInventory

@@ -37,7 +37,7 @@ class BukkitDrawGacha[F[_]: Sync: OnMinecraftServerThread](
     for {
       gachaPrizes <- lotteryOfGachaItems.runLottery(count, gachaPrizesRepository)
       states <- gachaPrizes.traverse(gachaPrize =>
-        grantGachaPrize.grantGachaPrize(gachaPrize)(player)
+        grantGachaPrize.grantGachaPrize(gachaPrize, player.getName)(player)
       )
       _ <-
         (gachaPrizes zip states).traverse {
