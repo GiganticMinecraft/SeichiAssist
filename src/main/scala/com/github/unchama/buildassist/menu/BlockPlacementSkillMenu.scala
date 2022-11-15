@@ -117,7 +117,7 @@ object BlockPlacementSkillMenu extends Menu {
           s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange",
           s"$RESET$AQUA${UNDERLINE}変更後の範囲設定： $maxRange×$maxRange"
         )
-        .amount(15)
+        .amount(maxRange)
         .build()
 
       Button(
