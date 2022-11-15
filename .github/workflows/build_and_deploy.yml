@@ -129,7 +129,6 @@ jobs:
     if: github.ref == 'refs/heads/develop'
     needs:
       - build_test_and_upload
-      - check_whether_some_sql_migration_files_have_duplicated_ver
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
@@ -205,7 +204,6 @@ jobs:
     if: github.ref == 'refs/heads/master'
     needs:
       - build_test_and_upload
-      - check_whether_some_sql_migration_files_have_duplicated_ver
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
