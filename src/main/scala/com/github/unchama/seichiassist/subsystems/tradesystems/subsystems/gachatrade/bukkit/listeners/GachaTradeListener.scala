@@ -81,8 +81,9 @@ class GachaTradeListener[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
     } else {
       player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
       player.sendMessage(
-        s"${GREEN}大当たり景品を${tradableItemStacks.count(_.transactionInfo == BigOrRegular.Big)}個、あたり景品を${tradableItemStacks
-            .count(_.transactionInfo == BigOrRegular.Regular)}個認識しました。"
+        s"${GREEN}大当たり景品を${tradableItemStacks.filter(_.transactionInfo._1 == BigOrRegular.Big).map(_.amount)}個、あたり景品を${tradableItemStacks
+            .filter(_.transactionInfo._1 == BigOrRegular.Regular)
+            .map(_.amount)}個認識しました。"
       )
       player.sendMessage(s"$GREEN${tradeAmount}枚の${GOLD}ガチャ券${WHITE}を受け取りました。")
     }
