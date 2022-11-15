@@ -133,6 +133,32 @@ object BlockPlacementSkillMenu extends Menu {
       )
     }
 
+    def computeButtonToIncreaseRangeTo11(): IO[Button] = IO {
+      val playerData = BuildAssist.instance.temporaryData(getUniqueId)
+      val currentRange = playerData.computeCurrentSkillRange()
+
+      val iconItemStack = new SkullItemStackBuilder("MHF_ArrowUp")
+        .title(s"$RED$UNDERLINE${BOLD}範囲設定を11×11に変更")
+        .lore(
+          s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange",
+          s"$RESET$AQUA${UNDERLINE}変更後の範囲設定： 11×11"
+        )
+        .amount(11)
+        .build()
+
+      Button(
+        iconItemStack,
+        LeftClickButtonEffect(
+          FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+          targetedeffect.UnfocusedEffect {
+            playerData.AREAint = 5
+          },
+          MessageEffect(s"${RED}現在の範囲設定は 11×11 です"),
+          open
+        )
+      )
+    }
+
     def computeButtonToIncreaseRange(): IO[Button] = IO {
       val playerData = BuildAssist.instance.temporaryData(getUniqueId)
       val currentRange = playerData.computeCurrentSkillRange()
@@ -325,10 +351,11 @@ object BlockPlacementSkillMenu extends Menu {
         4 -> computeButtonToToggleDirtPlacement(),
         13 -> computeButtonToShowCurrentStatus(),
         19 -> computeButtonToMaximizeRange(),
-        20 -> computeButtonToIncreaseRange(),
+        20 -> computeButtonToIncreaseRangeTo11(),
+        21 -> computeButtonToIncreaseRange(),
         22 -> computeButtonToResetRange(),
-        24 -> computeButtonToDecreaseRange(),
-        25 -> computeButtonToMinimizeRange(),
+        23 -> computeButtonToDecreaseRange(),
+        24 -> computeButtonToMinimizeRange(),
         35 -> computeButtonToToggleConsumingMineStack()
       ).traverse(_.sequence)
 
