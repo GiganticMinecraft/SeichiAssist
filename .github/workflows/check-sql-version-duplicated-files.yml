@@ -6,13 +6,13 @@ on:
       - master
     paths:
       - src/main/resources/db/migration/**
-      - .github/workflows/check-sql-duplicated-files.yml
+      - .github/workflows/check-sql-version-duplicated-files.yml
   pull_request:
     branches:
       - develop
     paths:
       - src/main/resources/db/migration/**
-      - .github/workflows/check-sql-duplicated-files.yml
+      - .github/workflows/check-sql-version-duplicated-files.yml
 jobs:
   check:
     runs-on: ubuntu-latest
