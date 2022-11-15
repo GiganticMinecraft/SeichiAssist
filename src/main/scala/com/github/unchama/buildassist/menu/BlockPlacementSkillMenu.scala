@@ -115,7 +115,7 @@ object BlockPlacementSkillMenu extends Menu {
         .title(s"$RED$UNDERLINE${BOLD}範囲設定を最大値に変更")
         .lore(
           s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange",
-          s"$RESET$AQUA${UNDERLINE}変更後の範囲設定： ${maxRange}×${maxRange}"
+          s"$RESET$AQUA${UNDERLINE}変更後の範囲設定： $maxRange×$maxRange"
         )
         .amount(15)
         .build()
@@ -127,7 +127,7 @@ object BlockPlacementSkillMenu extends Menu {
           targetedeffect.UnfocusedEffect {
             playerData.AREAint = maxAreaInt
           },
-          MessageEffect(s"${RED}現在の範囲設定は ${maxRange}×${maxRange} です"),
+          MessageEffect(s"${RED}現在の範囲設定は $maxRange×$maxRange です"),
           open
         )
       )
@@ -147,7 +147,7 @@ object BlockPlacementSkillMenu extends Menu {
             } else {
               Seq(
                 s"$RESET$AQUA${UNDERLINE}変更後の範囲設定： $changedRange×$changedRange",
-                s"$RESET$RED※範囲設定の最大値は${maxRange}×${maxRange}※"
+                s"$RESET$RED※範囲設定の最大値は$maxRange×$maxRange※"
               )
             }
           )
