@@ -44,23 +44,26 @@ class BukkitTrade(owner: String, gachaPrizeTable: Vector[GachaPrize[ItemStack]])
     val (nonTradable, tradable) =
       ListExtra.partitionWith(contents) { itemStack =>
         if (bigList.exists(_.isSimilar(itemStack)))
-          Right(BigOrRegular.Big)
+          Right(BigOrRegular.Big -> itemStack.getAmount)
         else if (regularList.exists(_.isSimilar(itemStack)))
-          Right(BigOrRegular.Regular)
+          Right(BigOrRegular.Regular -> itemStack.getAmount)
         else Left(itemStack)
       }
 
-    /* NOTE: 2022/08/16現在、交換できるギガンテックアイテムは
-        スタックできるアイテムではない。
-        すなわち、この実装は交換できるアイテムが必ず単一のアイテムである
-        ことが前提となっている。
-     */
     TradeResult[ItemStack, BigOrRegular](
       tradable.map {
-        case BigOrRegular.Big =>
-          TradeSuccessResult(BukkitGachaSkullData.gachaForExchanging, 12, BigOrRegular.Big)
-        case BigOrRegular.Regular =>
-          TradeSuccessResult(BukkitGachaSkullData.gachaForExchanging, 3, BigOrRegular.Regular)
+        case (BigOrRegular.Big, amount) =>
+          TradeSuccessResult(
+            BukkitGachaSkullData.gachaForExchanging,
+            12 * amount,
+            BigOrRegular.Big
+          )
+        case (BigOrRegular.Regular, amount) =>
+          TradeSuccessResult(
+            BukkitGachaSkullData.gachaForExchanging,
+            3 * amount,
+            BigOrRegular.Regular
+          )
       },
       nonTradable
     )
