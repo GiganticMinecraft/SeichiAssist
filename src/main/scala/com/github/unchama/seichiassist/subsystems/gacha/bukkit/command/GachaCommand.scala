@@ -53,7 +53,7 @@ class GachaCommand[
         s"$RED/gacha give <all/プレイヤー名/UUID> <個数>",
         "ガチャ券配布コマンドです。allを指定で全員に配布(マルチ鯖対応済)",
         s"$RED/gacha get <ID> (<名前>)",
-        "指定したガチャリストのIDを入手 (所有者付きにもできます) IDを0に指定するとガチャリンゴを入手できます",
+        "指定したIDのガチャ景品を入手。名前を入力すると所有者付きになります。IDを0に指定するとガチャリンゴを入手できます",
         s"$RED/gacha add <確率>",
         "現在のメインハンドをガチャリストに追加。確率は1.0までで指定",
         s"$RED/gacha addms2 <確率> <名前>",
@@ -182,11 +182,14 @@ class GachaCommand[
       playerCommandBuilder
         .argumentsParsers(List(gachaPrizeIdExistsParser))
         .execution { context =>
+          val ownerName = context.args.yetToBeParsed.headOption
+
           val eff = for {
             gachaPrize <- gachaAPI.fetch(
               GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
             )
-            _ <- new BukkitGrantGachaPrize[F]().grantGachaPrize(gachaPrize.get)(context.sender)
+            _ <- new BukkitGrantGachaPrize[F]()
+              .insertIntoPlayerInventoryOrDrop(gachaPrize.get, ownerName)(context.sender)
           } yield MessageEffect("ガチャアイテムを付与しました。")
 
           eff.toIO
