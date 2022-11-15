@@ -52,7 +52,7 @@ class PlayerPullGachaListener[F[_]: ConcurrentEffect: OnMinecraftServerThread](
 
     /*
       以下の場合、処理を終了
-     * - 動作がAIRを右クリックしていないかつ、Blockを右クリックしていない
+     * - AIRを右クリックしていないかつ、Blockを右クリックしていない
      * - チェストやトラップチェストをクリックしている
       参照：https://github.com/GiganticMinecraft/SeichiAssist/issues/770
      */
