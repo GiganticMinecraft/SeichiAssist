@@ -19,13 +19,12 @@ class BukkitGrantGachaPrize[F[_]: Sync: OnMinecraftServerThread](
 ) extends GrantGachaPrize[F, ItemStack] {
 
   override def tryInsertIntoMineStack(
-    prize: GachaPrize[ItemStack],
-    ownerName: Option[String]
+    prize: GachaPrize[ItemStack]
   ): Kleisli[F, Player, Boolean] =
     Kleisli { player =>
       Sync[F].delay {
         val signedItemStack =
-          ownerName.fold(prize.itemStack)(prize.materializeWithOwnerSignature)
+          prize.materializeWithOwnerSignature(player.getName)
         BreakUtil.tryAddItemIntoMineStack(player, signedItemStack)
       }
     }

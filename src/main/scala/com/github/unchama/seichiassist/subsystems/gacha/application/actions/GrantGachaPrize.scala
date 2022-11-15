@@ -12,28 +12,22 @@ trait GrantGachaPrize[F[_], ItemStack] {
 
   implicit val F: Monad[F]
 
-  def tryInsertIntoMineStack(
-    prize: GachaPrize[ItemStack],
-    ownerName: Option[String]
-  ): Kleisli[F, Player, Boolean]
+  def tryInsertIntoMineStack(prize: GachaPrize[ItemStack]): Kleisli[F, Player, Boolean]
 
   def insertIntoPlayerInventoryOrDrop(
     prize: GachaPrize[ItemStack],
     ownerName: Option[String]
   ): Kleisli[F, Player, GrantState]
 
-  final def grantGachaPrize(
-    prize: GachaPrize[ItemStack],
-    ownerName: Option[String]
-  ): Kleisli[F, Player, GrantState] =
+  final def grantGachaPrize(prize: GachaPrize[ItemStack]): Kleisli[F, Player, GrantState] =
     Kleisli { player =>
       for {
-        insertMineStackResult <- tryInsertIntoMineStack(prize, ownerName)(player)
+        insertMineStackResult <- tryInsertIntoMineStack(prize)(player)
         grantState <-
           if (insertMineStackResult) {
             F.pure(GrantState.GrantedMineStack)
           } else {
-            insertIntoPlayerInventoryOrDrop(prize, ownerName)(player)
+            insertIntoPlayerInventoryOrDrop(prize, Some(player.getName))(player)
           }
       } yield grantState
     }

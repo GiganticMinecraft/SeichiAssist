@@ -188,9 +188,8 @@ class GachaCommand[
             gachaPrize <- gachaAPI.fetch(
               GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
             )
-            _ <- new BukkitGrantGachaPrize[F]().grantGachaPrize(gachaPrize.get, ownerName)(
-              context.sender
-            )
+            _ <- new BukkitGrantGachaPrize[F]()
+              .insertIntoPlayerInventoryOrDrop(gachaPrize.get, ownerName)(context.sender)
           } yield MessageEffect("ガチャアイテムを付与しました。")
 
           eff.toIO
