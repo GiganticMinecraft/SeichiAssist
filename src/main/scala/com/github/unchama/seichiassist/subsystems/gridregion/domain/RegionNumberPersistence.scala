@@ -1,15 +1,17 @@
 package com.github.unchama.seichiassist.subsystems.gridregion.domain
 
-trait RegionNumberPersistence[F[_], Player] {
+import java.util.UUID
+
+trait RegionNumberPersistence[F[_]] {
 
   /**
-   * @return `player`の[[RegionNumber]]を`regionNumber`で更新する作用
+   * @return `uuid`の[[RegionNumber]]を`regionNumber`で更新する作用
    */
-  def setRegionNumber(player: Player, regionNumber: RegionNumber): F[Unit]
+  def setRegionNumber(uuid: UUID, regionNumber: RegionNumber): F[Unit]
 
   /**
-   * @return `player`の[[RegionNumber]]を取得する作用
+   * @return `uuid`の[[RegionNumber]]を取得する作用
    */
-  def fetchRegionNumber(player: Player): F[Unit]
+  def fetchRegionNumber(uuid: UUID): F[Unit]
 
 }
