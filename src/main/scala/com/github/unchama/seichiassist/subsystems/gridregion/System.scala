@@ -4,11 +4,17 @@ import cats.data.Kleisli
 import cats.effect.SyncEffect
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.datarepository.template.RepositoryDefinition
+import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.gridregion.application.repository.{RegionUnitPerClickSettingRepositoryDefinition, RegionUnitsRepositoryDefinition}
+import com.github.unchama.seichiassist.subsystems.gridregion.application.repository.{
+  RegionNumberRepositoryDefinition,
+  RegionUnitPerClickSettingRepositoryDefinition,
+  RegionUnitsRepositoryDefinition
+}
 import com.github.unchama.seichiassist.subsystems.gridregion.bukkit.BukkitRegionOperations
 import com.github.unchama.seichiassist.subsystems.gridregion.domain._
+import com.github.unchama.seichiassist.subsystems.gridregion.infrastructure.JdbcRegionNumberPersistence
 import com.github.unchama.util.external.ExternalPlugins
 import com.sk89q.worldedit.bukkit.WorldEditPlugin
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin
@@ -26,6 +32,8 @@ object System {
   import cats.implicits._
 
   def wired[F[_]: SyncEffect]: F[System[F, Player, Location]] = {
+    val regionNumberPersistence: RegionNumberPersistence[F] = new JdbcRegionNumberPersistence[F]
+
     for {
       regionUnitPerClickSettingRepositoryControls <- BukkitRepositoryControls.createHandles(
         RepositoryDefinition
@@ -42,6 +50,9 @@ object System {
             RegionUnitsRepositoryDefinition.initialization[F, Player],
             RegionUnitsRepositoryDefinition.finalization[F, Player]
           )
+      )
+      regionNumberRepositoryControls <- BukkitRepositoryControls.createHandles(
+        RegionNumberRepositoryDefinition.withContext[F, Player](regionNumberPersistence)
       )
     } yield {
       val regionUnitPerClickSettingRepository =
