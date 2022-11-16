@@ -1,14 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gridregion
 
 import cats.data.Kleisli
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
-  CreateRegionResult,
-  Direction,
-  RegionSelection,
-  RegionUnit,
-  RegionUnitLimit,
-  RegionUnits
-}
+import com.github.unchama.seichiassist.subsystems.gridregion.domain._
 
 trait GridRegionAPI[F[_], Player, Location] {
 
