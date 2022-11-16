@@ -25,4 +25,5 @@ class JdbcRegionNumberPersistence[F[_]: Sync] extends RegionNumberPersistence[F]
       sql"SELECT rgnum FROM playerdata WHERE uuid = ${uuid.toString}".execute().apply()
     }
   }
+
 }
