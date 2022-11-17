@@ -4,4 +4,4 @@ import com.github.unchama.generic.RefDict
 
 import java.util.UUID
 
-trait RegionNumberPersistence[F[_]] extends RefDict[F, UUID, RegionNumber]
+trait RegionCountPersistence[F[_]] extends RefDict[F, UUID, RegionCount]

@@ -17,7 +17,7 @@ import org.bukkit.entity.Player
 class BukkitRegionOperations[F[_]: Sync](
   implicit we: WorldEditPlugin,
   wg: WorldGuardPlugin,
-  regionNumberRepository: KeyedDataRepository[Player, Ref[F, RegionNumber]]
+  regionCountRepository: KeyedDataRepository[Player, Ref[F, RegionCount]]
 ) extends RegionOperations[F, Location, Player] {
 
   override def getSelection(
@@ -92,10 +92,10 @@ class BukkitRegionOperations[F[_]: Sync](
   import cats.implicits._
 
   override def createRegion(player: Player): F[Unit] = for {
-    regionNumber <- regionNumberRepository(player).get
+    regionCount <- regionCountRepository(player).get
     _ <- Sync[F].delay {
       val selection = we.getSelection(player)
-      val regionName = s"${player.getName}_${regionNumber.value}"
+      val regionName = s"${player.getName}_${regionCount.value}"
 
       val region = new ProtectedCuboidRegion(
         regionName,
@@ -115,7 +115,7 @@ class BukkitRegionOperations[F[_]: Sync](
         .registerWithSupervisor("保護申請中")
         .thenRespondWith("保護申請完了。保護名: '%s'", "保護作成失敗")
     }
-    _ <- regionNumberRepository(player).update(_.increment)
+    _ <- regionCountRepository(player).update(_.increment)
   } yield ()
 
   override def canCreateRegion(
@@ -125,35 +125,36 @@ class BukkitRegionOperations[F[_]: Sync](
   ): F[CreateRegionResult] = {
     val selection = Some(we.getSelection(player))
     for {
-      _ <- if (!SeichiAssist.seichiAssistConfig.isGridProtectionEnabled(player.getWorld)) {
-        Sync[F].pure(CreateRegionResult.ThisWorldRegionCanNotBeCreated)
-      } else if (selection.isEmpty) {
-        Sync[F].pure(CreateRegionResult.RegionCanNotBeCreatedByOtherError)
-      } else {
-        Sync[F].delay {
-          val region = new ProtectedCuboidRegion(
-            s"${player.getName}_1",
-            selection.get.getNativeMinimumPoint.toBlockVector,
-            selection.get.getNativeMaximumPoint.toBlockVector
-          )
-          val wgManager = wg.getRegionManager(player.getWorld)
-          val regions = wgManager.getApplicableRegions(region)
-          if (regions.size != 0) {
-            CreateRegionResult.RegionCanNotBeCreatedByOtherError
-          } else {
-            val wgConfig = wg.getGlobalStateManager.get(player.getWorld)
-            val maxRegionCount = wgConfig.getMaxRegionCount(player)
-            val regionCountPerPlayer = wgManager.getRegionCountOfPlayer(
-              wg.wrapPlayer(player))
-
-            if (maxRegionCount >= 0 && regionCountPerPlayer >= maxRegionCount) {
+      _ <-
+        if (!SeichiAssist.seichiAssistConfig.isGridProtectionEnabled(player.getWorld)) {
+          Sync[F].pure(CreateRegionResult.ThisWorldRegionCanNotBeCreated)
+        } else if (selection.isEmpty) {
+          Sync[F].pure(CreateRegionResult.RegionCanNotBeCreatedByOtherError)
+        } else {
+          Sync[F].delay {
+            val region = new ProtectedCuboidRegion(
+              s"${player.getName}_1",
+              selection.get.getNativeMinimumPoint.toBlockVector,
+              selection.get.getNativeMaximumPoint.toBlockVector
+            )
+            val wgManager = wg.getRegionManager(player.getWorld)
+            val regions = wgManager.getApplicableRegions(region)
+            if (regions.size != 0) {
               CreateRegionResult.RegionCanNotBeCreatedByOtherError
             } else {
-              CreateRegionResult.Success
+              val wgConfig = wg.getGlobalStateManager.get(player.getWorld)
+              val maxRegionCount = wgConfig.getMaxRegionCount(player)
+              val regionCountPerPlayer = wgManager.getRegionCountOfPlayer(wg.wrapPlayer(player))
+
+              if (maxRegionCount >= 0 && regionCountPerPlayer >= maxRegionCount) {
+                CreateRegionResult.RegionCanNotBeCreatedByOtherError
+              } else {
+                CreateRegionResult.Success
+              }
             }
           }
         }
-      }
     } yield ()
 
+  }
 }

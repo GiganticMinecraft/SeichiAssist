@@ -9,14 +9,10 @@ import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.gridregion.application.repository.{
-  RegionNumberRepositoryDefinition,
-  RegionUnitPerClickSettingRepositoryDefinition,
-  RegionUnitsRepositoryDefinition
-}
+import com.github.unchama.seichiassist.subsystems.gridregion.application.repository.{RegionCountRepositoryDefinition, RegionUnitPerClickSettingRepositoryDefinition, RegionUnitsRepositoryDefinition}
 import com.github.unchama.seichiassist.subsystems.gridregion.bukkit.BukkitRegionOperations
 import com.github.unchama.seichiassist.subsystems.gridregion.domain._
-import com.github.unchama.seichiassist.subsystems.gridregion.infrastructure.JdbcRegionNumberPersistence
+import com.github.unchama.seichiassist.subsystems.gridregion.infrastructure.JdbcRegionCountPersistence
 import com.github.unchama.util.external.ExternalPlugins
 import com.sk89q.worldedit.bukkit.WorldEditPlugin
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin
@@ -34,7 +30,7 @@ object System {
   import cats.implicits._
 
   def wired[F[_]: SyncEffect]: F[System[F, Player, Location]] = {
-    val regionNumberPersistence: RegionNumberPersistence[F] = new JdbcRegionNumberPersistence[F]
+    val regionCountPersistence: RegionCountPersistence[F] = new JdbcRegionCountPersistence[F]
 
     for {
       regionUnitPerClickSettingRepositoryControls <- BukkitRepositoryControls.createHandles(
@@ -53,16 +49,16 @@ object System {
             RegionUnitsRepositoryDefinition.finalization[F, Player]
           )
       )
-      regionNumberRepositoryControls <- BukkitRepositoryControls.createHandles(
-        RegionNumberRepositoryDefinition.withContext[F, Player](regionNumberPersistence)
+      regionCountRepositoryControls <- BukkitRepositoryControls.createHandles(
+        RegionCountRepositoryDefinition.withContext[F, Player](regionCountPersistence)
       )
     } yield {
       val regionUnitPerClickSettingRepository =
         regionUnitPerClickSettingRepositoryControls.repository
       val regionUnitsRepository =
         regionUnitsRepositoryControls.repository
-      implicit val regionNumberRepository: KeyedDataRepository[Player, Ref[F, RegionNumber]] =
-        regionNumberRepositoryControls.repository
+      implicit val regionCountRepository: KeyedDataRepository[Player, Ref[F, RegionCount]] =
+        regionCountRepositoryControls.repository
       implicit val we: WorldEditPlugin = ExternalPlugins.getWorldEdit
       implicit val wg: WorldGuardPlugin = ExternalPlugins.getWorldGuard
       val regionOperations: RegionOperations[F, Location, Player] = new BukkitRegionOperations
