@@ -210,7 +210,7 @@ object GridRegionMenu extends Menu {
         regionUnits <- gridRegionAPI.regionUnits(player)
       } yield {
         def createUnitInformation(regionUnit: RegionUnit): String =
-          s"${AQUA}${regionUnit.units}${GRAY}ユニット($AQUA${regionUnit.computeBlockAmount}${GRAY}ブロック)"
+          s"$AQUA${regionUnit.units}${GRAY}ユニット($AQUA${regionUnit.computeBlockAmount}${GRAY}ブロック)"
         val worldName = player.getLocation.getWorld.getName
 
         val lore = List(
@@ -220,7 +220,7 @@ object GridRegionMenu extends Menu {
           s"${GRAY}右方向：${createUnitInformation(regionUnits.right)}",
           s"${GRAY}左方向：${createUnitInformation(regionUnits.left)}",
           s"${GRAY}保護ユニット数：$AQUA${regionUnits.computeTotalRegionUnits.units}",
-          s"${GRAY}保護ユニット上限値：${RED}${gridRegionAPI.regionUnitLimit(worldName)}"
+          s"${GRAY}保護ユニット上限値：$RED${gridRegionAPI.regionUnitLimit(worldName)}"
         )
 
         val itemStack = new IconItemStackBuilder(Material.STAINED_GLASS_PANE, 11)
