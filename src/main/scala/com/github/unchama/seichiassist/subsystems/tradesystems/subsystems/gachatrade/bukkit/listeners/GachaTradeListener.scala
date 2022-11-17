@@ -64,8 +64,6 @@ class GachaTradeListener[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
       .apply(player)
       .unsafeRunAsyncAndForget()
 
-    val tradableItemStacks = tradedInformation.tradedSuccessResult
-
     // ガチャポイントを付与する
     gachaPointApi
       .addGachaPoint(GachaPoint.gachaPointBy(tradeAmount))
@@ -76,13 +74,20 @@ class GachaTradeListener[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
     /*
      * お知らせする
      */
+    val tradableItemStacks = tradedInformation.tradedSuccessResult
+    val bigItemStackAmounts = tradableItemStacks.collect {
+      case result if result.transactionInfo._1 == BigOrRegular.Big => result.amount
+    }.sum
+    val regularItemStackAmounts = tradableItemStacks.collect {
+      case result if result.transactionInfo._1 == BigOrRegular.Regular => result.amount
+    }.sum
+
     if (tradeAmount == 0) {
       player.sendMessage(s"${YELLOW}景品を認識しませんでした。すべてのアイテムを返却します")
     } else {
       player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
       player.sendMessage(
-        s"${GREEN}大当たり景品を${tradableItemStacks.count(_.transactionInfo == BigOrRegular.Big)}個、あたり景品を${tradableItemStacks
-            .count(_.transactionInfo == BigOrRegular.Regular)}個認識しました。"
+        s"${GREEN}大当たり景品を${bigItemStackAmounts}個、あたり景品を${regularItemStackAmounts}個認識しました。"
       )
       player.sendMessage(s"$GREEN${tradeAmount}枚の${GOLD}ガチャ券${WHITE}を受け取りました。")
     }
