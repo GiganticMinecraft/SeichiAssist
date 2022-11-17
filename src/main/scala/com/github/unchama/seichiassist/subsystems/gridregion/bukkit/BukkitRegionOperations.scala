@@ -125,7 +125,7 @@ class BukkitRegionOperations[F[_]: Sync](
   ): F[CreateRegionResult] = {
     val selection = Some(we.getSelection(player))
     for {
-      _ <-
+      result <-
         if (!SeichiAssist.seichiAssistConfig.isGridProtectionEnabled(player.getWorld)) {
           Sync[F].pure(CreateRegionResult.ThisWorldRegionCanNotBeCreated)
         } else if (selection.isEmpty) {
@@ -154,7 +154,7 @@ class BukkitRegionOperations[F[_]: Sync](
             }
           }
         }
-    } yield ()
+    } yield result
 
   }
 }
