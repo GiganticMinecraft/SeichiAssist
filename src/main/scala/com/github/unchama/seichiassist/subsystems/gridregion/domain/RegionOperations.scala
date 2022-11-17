@@ -23,6 +23,6 @@ trait RegionOperations[F[_], Location, Player] {
     player: Player,
     regionUnits: RegionUnits,
     direction: Direction
-  ): CreateRegionResult
+  ): F[CreateRegionResult]
 
 }

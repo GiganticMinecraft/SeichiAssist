@@ -2,6 +2,8 @@ package com.github.unchama.seichiassist.subsystems.gridregion
 
 import cats.data.Kleisli
 import cats.effect.SyncEffect
+import cats.effect.concurrent.Ref
+import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
@@ -57,7 +59,10 @@ object System {
     } yield {
       val regionUnitPerClickSettingRepository =
         regionUnitPerClickSettingRepositoryControls.repository
-      val regionUnitsRepository = regionUnitsRepositoryControls.repository
+      val regionUnitsRepository =
+        regionUnitsRepositoryControls.repository
+      implicit val regionNumberRepository: KeyedDataRepository[Player, Ref[F, RegionNumber]] =
+        regionNumberRepositoryControls.repository
       implicit val we: WorldEditPlugin = ExternalPlugins.getWorldEdit
       implicit val wg: WorldGuardPlugin = ExternalPlugins.getWorldGuard
       val regionOperations: RegionOperations[F, Location, Player] = new BukkitRegionOperations
