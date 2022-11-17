@@ -180,7 +180,6 @@ object PlayerDataLoading {
           .unsafeRunSync()
 
         playerData.unclaimedApologyItems = rs.getInt("numofsorryforbug")
-        playerData.regionCount = rs.getInt("rgnum")
         playerData.playTick = rs.getLong("playtick")
 
         playerData.totalexp = rs.getInt("totalexp")

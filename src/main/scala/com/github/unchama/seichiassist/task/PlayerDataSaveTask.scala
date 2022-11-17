@@ -113,7 +113,6 @@ object PlayerDataSaveTask {
             .map(skill => s"'${skill.entryName}'")
             .getOrElse("null")
 
-          + ",rgnum = " + playerdata.regionCount
           + ",playtick = " + playerdata.playTick
           + ",killlogflag = " + playerdata.settings.shouldDisplayDeathMessages
           + ",worldguardlogflag = " + playerdata.settings.shouldDisplayWorldGuardLogs
