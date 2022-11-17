@@ -9,7 +9,11 @@ import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.gridregion.application.repository.{RegionCountRepositoryDefinition, RegionUnitPerClickSettingRepositoryDefinition, RegionUnitsRepositoryDefinition}
+import com.github.unchama.seichiassist.subsystems.gridregion.application.repository.{
+  RegionCountRepositoryDefinition,
+  RegionUnitPerClickSettingRepositoryDefinition,
+  RegionUnitsRepositoryDefinition
+}
 import com.github.unchama.seichiassist.subsystems.gridregion.bukkit.BukkitRegionOperations
 import com.github.unchama.seichiassist.subsystems.gridregion.domain._
 import com.github.unchama.seichiassist.subsystems.gridregion.infrastructure.JdbcRegionCountPersistence
@@ -112,6 +116,9 @@ object System {
             override def createRegion: Kleisli[F, Player, Unit] = Kleisli { player =>
               regionOperations.createRegion(player)
             }
+
+            override def regionCount(player: Player): F[RegionCount] =
+              regionCountRepository(player).get
           }
       }
     }
