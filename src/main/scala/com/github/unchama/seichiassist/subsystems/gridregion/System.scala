@@ -120,6 +120,12 @@ object System {
             override def regionCount(player: Player): F[RegionCount] =
               regionCountRepository(player).get
           }
+
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
+          regionUnitPerClickSettingRepositoryControls,
+          regionUnitsRepositoryControls,
+          regionCountRepositoryControls
+        )
       }
     }
   }
