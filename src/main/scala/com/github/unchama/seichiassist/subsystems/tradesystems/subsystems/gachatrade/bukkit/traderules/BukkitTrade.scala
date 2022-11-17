@@ -53,11 +53,11 @@ class BukkitTrade(owner: String, gachaPrizeTable: Vector[GachaPrize[ItemStack]])
     TradeResult[ItemStack, (BigOrRegular, Int)](
       tradable.map {
         case (BigOrRegular.Big, amount) =>
-          (TradeSuccessResult(
+          TradeSuccessResult(
             BukkitGachaSkullData.gachaForExchanging,
             12 * amount,
             (BigOrRegular.Big, amount)
-          ))
+          )
         case (BigOrRegular.Regular, amount) =>
           TradeSuccessResult(
             BukkitGachaSkullData.gachaForExchanging,
