@@ -103,7 +103,7 @@ object System {
               player: Player,
               regionUnits: RegionUnits,
               direction: Direction
-            ): CreateRegionResult =
+            ): F[CreateRegionResult] =
               regionOperations.canCreateRegion(player, regionUnits, direction)
 
             override def regionSelection(

@@ -235,14 +235,13 @@ object GridRegionMenu extends Menu {
     val createRegionButton: IO[Button] = RecomputedButton {
       for {
         regionUnits <- gridRegionAPI.regionUnits(player)
-      } yield {
-        val yaw = player.getEyeLocation.getYaw
-        val canCreateRegionResult = gridRegionAPI.canCreateRegion(
+        yaw = player.getEyeLocation.getYaw
+        canCreateRegionResult <- gridRegionAPI.canCreateRegion(
           player,
           regionUnits,
           Direction.relativeDirection(yaw)(RelativeDirection.Ahead)
         )
-
+      } yield {
         canCreateRegionResult match {
           case CreateRegionResult.Success =>
             val itemStack = new IconItemStackBuilder(Material.WOOL, 11)

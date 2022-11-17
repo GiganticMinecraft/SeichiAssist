@@ -42,7 +42,7 @@ trait GridRegionAPI[F[_], Player, Location] {
     player: Player,
     regionUnits: RegionUnits,
     direction: Direction
-  ): CreateRegionResult
+  ): F[CreateRegionResult]
 
   /**
    * @return 保護を作成する作用
