@@ -125,6 +125,7 @@ class BukkitRegionOperations[F[_]: Sync](
   ): F[CreateRegionResult] = {
     val selection = Some(we.getSelection(player))
     for {
+      regionCount <- regionCountRepository(player).get
       result <-
         if (!SeichiAssist.seichiAssistConfig.isGridProtectionEnabled(player.getWorld)) {
           Sync[F].pure(CreateRegionResult.ThisWorldRegionCanNotBeCreated)
@@ -133,7 +134,7 @@ class BukkitRegionOperations[F[_]: Sync](
         } else {
           Sync[F].delay {
             val region = new ProtectedCuboidRegion(
-              s"${player.getName}_1",
+              s"${player.getName}_${regionCount.value}",
               selection.get.getNativeMinimumPoint.toBlockVector,
               selection.get.getNativeMaximumPoint.toBlockVector
             )
