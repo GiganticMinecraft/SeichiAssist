@@ -10,6 +10,7 @@ import com.github.unchama.seichiassist.menus.achievement.{
   AchievementCategoryMenu,
   AchievementMenu
 }
+import com.github.unchama.seichiassist.menus.gridregion.GridRegionMenu
 import com.github.unchama.seichiassist.menus.home.{ConfirmationMenuEnvironment, HomeMenu}
 import com.github.unchama.seichiassist.menus.minestack.{
   CategorizedMineStackMenu,
@@ -42,6 +43,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachat
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
+import com.github.unchama.seichiassist.subsystems.gridregion.GridRegionAPI
 import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
@@ -52,6 +54,7 @@ import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.FairySpeechAPI
 import io.chrisdavenport.cats.effect.time.JavaTime
+import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -96,7 +99,8 @@ object TopLevelRouter {
     mineStackAPI: MineStackAPI[IO, Player, ItemStack],
     gachaDrawAPI: GachaDrawAPI[IO, Player],
     consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player],
-    fairySpeechAPI: FairySpeechAPI[IO, Player]
+    fairySpeechAPI: FairySpeechAPI[IO, Player],
+    gridRegionAPI: GridRegionAPI[IO, Player, Location]
   ): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     import assortedRankingApi._
 
@@ -144,7 +148,11 @@ object TopLevelRouter {
     implicit lazy val rankingRootMenuEnv: RankingRootMenu.Environment =
       new RankingRootMenu.Environment
 
+
     implicit lazy val voteMenuEnv: VoteMenu.Environment = new VoteMenu.Environment
+
+    implicit lazy val gridRegionMenuEnv: GridRegionMenu.Environment =
+      new GridRegionMenu.Environment
 
     implicit lazy val stickMenuEnv: FirstPage.Environment = new FirstPage.Environment
 
@@ -184,6 +192,7 @@ object TopLevelRouter {
     implicit lazy val ioCanOpenLoginTimeRankingMenu: IO CanOpen RankingMenu[LoginTime] = _.open
     implicit lazy val ioCanOpenVoteCountRankingMenu: IO CanOpen RankingMenu[VoteCount] = _.open
     implicit lazy val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type = _.open
+    implicit lazy val ioCanOpenGridRegionMenu: IO CanOpen GridRegionMenu.type = _.open
 
     override implicit lazy val canOpenStickMenu: IO CanOpen FirstPage.type = _.open
     override implicit lazy val canOpenAchievementMenu: IO CanOpen AchievementMenu.type = _.open
