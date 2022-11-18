@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.menus.achievement.{
   AchievementCategoryMenu,
   AchievementMenu
 }
-import com.github.unchama.seichiassist.menus.gridregion.GridRegionMenu
+import com.github.unchama.seichiassist.menus.gridregion.{GridRegionMenu, GridTemplateMenu}
 import com.github.unchama.seichiassist.menus.home.{ConfirmationMenuEnvironment, HomeMenu}
 import com.github.unchama.seichiassist.menus.minestack.{
   CategorizedMineStackMenu,
@@ -109,7 +109,7 @@ object TopLevelRouter {
       new MineStackMainMenu.Environment
     implicit lazy val categorizedMineStackMenuEnv: CategorizedMineStackMenu.Environment =
       new CategorizedMineStackMenu.Environment
-    implicit lazy val regionMenuEnv: RegionMenu.Environment = ()
+    implicit lazy val regionMenuEnv: RegionMenu.Environment = new RegionMenu.Environment
     implicit lazy val activeSkillMenuEnv: ActiveSkillMenu.Environment =
       new ActiveSkillMenu.Environment
     implicit lazy val activeSkillEffectMenuEnv: ActiveSkillEffectMenu.Environment =
@@ -153,6 +153,8 @@ object TopLevelRouter {
 
     implicit lazy val gridRegionMenuEnv: GridRegionMenu.Environment =
       new GridRegionMenu.Environment
+    implicit lazy val gridTemplateMenuEnv: GridTemplateMenu.Environment =
+      new GridTemplateMenu.Environment
 
     implicit lazy val stickMenuEnv: FirstPage.Environment = new FirstPage.Environment
 
@@ -193,6 +195,7 @@ object TopLevelRouter {
     implicit lazy val ioCanOpenVoteCountRankingMenu: IO CanOpen RankingMenu[VoteCount] = _.open
     implicit lazy val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type = _.open
     implicit lazy val ioCanOpenGridRegionMenu: IO CanOpen GridRegionMenu.type = _.open
+    implicit lazy val ioCanOpenGridTemplateMenu: IO CanOpen GridTemplateMenu.type = _.open
 
     override implicit lazy val canOpenStickMenu: IO CanOpen FirstPage.type = _.open
     override implicit lazy val canOpenAchievementMenu: IO CanOpen AchievementMenu.type = _.open

@@ -26,7 +26,7 @@ object RegionMenu extends Menu {
   import com.github.unchama.targetedeffect._
   import com.github.unchama.targetedeffect.player.PlayerEffects._
 
-  class Environment(val ioCanOpenGridRegionMenu: IO CanOpen GridRegionMenu.type)
+  class Environment(implicit val ioCanOpenGridRegionMenu: IO CanOpen GridRegionMenu.type)
 
   override val frame: MenuFrame = MenuFrame(Right(InventoryType.HOPPER), s"${BLACK}保護メニュー")
 
