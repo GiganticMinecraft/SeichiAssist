@@ -4,7 +4,6 @@ import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.util.MenuIcon;
-import com.github.unchama.seichiassist.util.MenuIcon;
 import com.github.unchama.seichiassist.util.RelativeDirection;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
