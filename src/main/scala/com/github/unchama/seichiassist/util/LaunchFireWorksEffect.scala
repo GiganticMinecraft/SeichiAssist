@@ -18,6 +18,12 @@ object LaunchFireWorksEffect {
   }
 
   // 指定された場所に花火を打ち上げる関数
+
+  /**
+   * 指定された場所を起点として花火を打ち上げる関数。
+   * OnMinecraftServerThread内で実行しないと例外が発生して動作しないので注意。
+   * @param loc 花火を打ち上げる起点座標
+   */
   def launchFireWorks(loc: Location): Unit = {
     val types = List(
       FireworkEffect.Type.BALL,
