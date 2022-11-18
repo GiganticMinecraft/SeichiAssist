@@ -11,10 +11,10 @@ import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
   RegionUnits
 }
 
-object RegionTemplateRepositoryPersistenceDefinition {
+object RegionTemplateRepositoryDefinition {
 
   def withContext[F[_]: Sync, Player: HasUuid](
-    persistence: RegionTemplatePersistence[F]
+    implicit persistence: RegionTemplatePersistence[F]
   ): RepositoryDefinition[F, Player, Ref[F, Map[RegionTemplateId, RegionUnits]]] =
     RefDictBackedRepositoryDefinition
       .usingUuidRefDict[F, Player, Map[RegionTemplateId, RegionUnits]](persistence)(Map.empty)

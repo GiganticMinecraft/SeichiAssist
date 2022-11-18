@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.subsystems.gridregion.domain.{RegionCount
 object RegionCountRepositoryDefinition {
 
   def withContext[F[_]: Sync, Player: HasUuid](
-    persistence: RegionCountPersistence[F]
+    implicit persistence: RegionCountPersistence[F]
   ): RepositoryDefinition[F, Player, Ref[F, RegionCount]] =
     RefDictBackedRepositoryDefinition
       .usingUuidRefDict[F, Player, RegionCount](persistence)(RegionCount.initial)

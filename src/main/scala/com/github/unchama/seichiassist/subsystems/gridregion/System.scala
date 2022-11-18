@@ -10,10 +10,18 @@ import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.gridregion.application.repository.{RegionCountRepositoryDefinition, RegionUnitPerClickSettingRepositoryDefinition, RegionUnitsRepositoryDefinition}
+import com.github.unchama.seichiassist.subsystems.gridregion.application.repository.{
+  RegionCountRepositoryDefinition,
+  RegionTemplateRepositoryDefinition,
+  RegionUnitPerClickSettingRepositoryDefinition,
+  RegionUnitsRepositoryDefinition
+}
 import com.github.unchama.seichiassist.subsystems.gridregion.bukkit.BukkitRegionOperations
 import com.github.unchama.seichiassist.subsystems.gridregion.domain._
-import com.github.unchama.seichiassist.subsystems.gridregion.infrastructure.JdbcRegionCountPersistence
+import com.github.unchama.seichiassist.subsystems.gridregion.infrastructure.{
+  JdbcRegionCountPersistence,
+  JdbcRegionTemplatePersistence
+}
 import com.github.unchama.util.external.ExternalPlugins
 import com.sk89q.worldedit.bukkit.WorldEditPlugin
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin
@@ -30,8 +38,11 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_], G[_]: SyncEffect: ContextCoercion[*[_], F]]: G[System[F, Player, Location]] = {
-    val regionCountPersistence: RegionCountPersistence[G] = new JdbcRegionCountPersistence[G]
+  def wired[F[_], G[_]: SyncEffect: ContextCoercion[*[_], F]]
+    : G[System[F, Player, Location]] = {
+    implicit val regionCountPersistence: RegionCountPersistence[G] = new JdbcRegionCountPersistence[G]
+    implicit val regionTemplatePersistence: RegionTemplatePersistence[G] =
+      new JdbcRegionTemplatePersistence[G]
 
     for {
       regionUnitPerClickSettingRepositoryControls <- BukkitRepositoryControls.createHandles(
@@ -51,7 +62,10 @@ object System {
           )
       )
       regionCountRepositoryControls <- BukkitRepositoryControls.createHandles(
-        RegionCountRepositoryDefinition.withContext[G, Player](regionCountPersistence)
+        RegionCountRepositoryDefinition.withContext[G, Player]
+      )
+      regionTemplateRepositoryControls <- BukkitRepositoryControls.createHandles(
+        RegionTemplateRepositoryDefinition.withContext[G, Player]
       )
     } yield {
       val regionUnitPerClickSettingRepository =
@@ -89,7 +103,9 @@ object System {
               ContextCoercion(regionUnitsRepository(player).regionUnits)
 
             override def saveRegionUnits(regionUnits: RegionUnits): Kleisli[F, Player, Unit] =
-              Kleisli { player => ContextCoercion(regionUnitsRepository(player).set(regionUnits)) }
+              Kleisli { player =>
+                ContextCoercion(regionUnitsRepository(player).set(regionUnits))
+              }
 
             override def regionUnitLimit(worldName: String): RegionUnitLimit = {
               val limit = SeichiAssist.seichiAssistConfig.getGridLimitPerWorld(worldName)
