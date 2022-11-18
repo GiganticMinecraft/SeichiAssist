@@ -66,6 +66,6 @@ trait GridRegionAPI[F[_], Player, Location] {
   /**
    * @return `player`の`gridRegionTemplate`を取得する作用
    */
-  def gridRegionTemplate(player: Player): Map[RegionTemplateId, RegionUnits]
+  def gridRegionTemplate(player: Player): F[Map[RegionTemplateId, RegionUnits]]
 
 }

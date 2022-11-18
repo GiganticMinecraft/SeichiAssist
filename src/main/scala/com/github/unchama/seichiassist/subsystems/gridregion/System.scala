@@ -40,7 +40,8 @@ object System {
 
   def wired[F[_], G[_]: SyncEffect: ContextCoercion[*[_], F]]
     : G[System[F, Player, Location]] = {
-    implicit val regionCountPersistence: RegionCountPersistence[G] = new JdbcRegionCountPersistence[G]
+    implicit val regionCountPersistence: RegionCountPersistence[G] =
+      new JdbcRegionCountPersistence[G]
     implicit val regionTemplatePersistence: RegionTemplatePersistence[G] =
       new JdbcRegionTemplatePersistence[G]
 
@@ -132,6 +133,11 @@ object System {
 
             override def regionCount(player: Player): F[RegionCount] =
               ContextCoercion(regionCountRepository(player).get)
+
+            override def gridRegionTemplate(
+              player: Player
+            ): F[Map[RegionTemplateId, RegionUnits]] =
+              ContextCoercion(regionTemplateRepositoryControls.repository(player).get)
           }
 
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
