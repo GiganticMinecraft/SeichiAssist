@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification.bukkit.actions
 
-import cats.effect.{IO, Sync}
+import cats.effect.{IO, Sync, SyncIO}
 import com.github.unchama.generic.Diff
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.{
   BuildAssistExpTable,
@@ -9,7 +10,7 @@ import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.{
 }
 import com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification.application.actions.NotifyLevelUp
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
-import com.github.unchama.seichiassist.util.PlayerSendable
+import com.github.unchama.seichiassist.util.{LaunchFireWorksEffect, PlayerSendable}
 import com.github.unchama.seichiassist.util.SendMessageEffect.sendMessageToEveryoneIgnoringPreference
 import com.github.unchama.seichiassist.util.SendSoundEffect.sendEverySound
 import org.bukkit.ChatColor.GOLD
@@ -22,7 +23,8 @@ object BukkitNotifyLevelUp {
   import cats.implicits._
 
   // TODO: BukkitNotifyLevelUpなのにdiffの展開やいつメッセージを出すかなどを扱うべきでない。
-  def apply[F[_]: Sync: DiscordNotificationAPI]: NotifyLevelUp[F, Player] = {
+  def apply[F[_]: Sync: OnMinecraftServerThread: DiscordNotificationAPI]
+    : NotifyLevelUp[F, Player] = {
     new NotifyLevelUp[F, Player] {
       override def ofBuildLevelTo(player: Player)(diff: Diff[BuildLevel]): F[Unit] = {
         val Diff(oldLevel, newLevel) = diff
@@ -34,13 +36,18 @@ object BukkitNotifyLevelUp {
             sendMessageToEveryoneIgnoringPreference(messageLevelMaxGlobal)(forString[IO])
             player.sendMessage(messageLevelMaxPlayer)
             sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
-          } >> DiscordNotificationAPI[F].sendPlainText(messageLevelMaxDiscord)
+          } >> OnMinecraftServerThread[F].runAction(SyncIO {
+            LaunchFireWorksEffect.launchFireWorks(player.getLocation)
+          }) >>
+            DiscordNotificationAPI[F].sendPlainText(messageLevelMaxDiscord)
         } else if (oldLevel < newLevel) {
           val messageLevelUp =
             s"${GOLD}ﾑﾑｯﾚﾍﾞﾙｱｯﾌﾟ∩( ・ω・)∩【建築Lv(${oldLevel.level})→建築Lv(${newLevel.level})】"
           Sync[F].delay {
             player.sendMessage(messageLevelUp)
-          }
+          } >> OnMinecraftServerThread[F].runAction(SyncIO {
+            LaunchFireWorksEffect.launchFireWorks(player.getLocation)
+          })
         } else
           Sync[F].unit
       }

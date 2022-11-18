@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notific
 
 import cats.effect.Concurrent
 import com.github.unchama.generic.effect.stream.StreamExtra
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification.application.actions.{
   NotifyBuildAmountThreshold,
@@ -17,7 +18,9 @@ import org.bukkit.entity.Player
 
 object System {
 
-  def backgroundProcess[F[_]: Concurrent: ErrorLogger: DiscordNotificationAPI, G[_], A](
+  def backgroundProcess[F[
+    _
+  ]: Concurrent: ErrorLogger: OnMinecraftServerThread: DiscordNotificationAPI, G[_], A](
     buildCountReadAPI: BuildCountAPI[F, G, Player]
   ): F[A] = {
     val notifyLevelUp: NotifyLevelUp[F, Player] = BukkitNotifyLevelUp[F]
