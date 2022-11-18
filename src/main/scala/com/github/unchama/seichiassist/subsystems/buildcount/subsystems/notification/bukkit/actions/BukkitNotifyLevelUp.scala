@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification.bukkit.actions
 
-import cats.effect.{IO, Sync, SyncIO}
+import cats.effect.{IO, Sync}
 import com.github.unchama.generic.Diff
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
@@ -10,9 +10,9 @@ import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.{
 }
 import com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification.application.actions.NotifyLevelUp
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
-import com.github.unchama.seichiassist.util.{LaunchFireWorksEffect, PlayerSendable}
 import com.github.unchama.seichiassist.util.SendMessageEffect.sendMessageToEveryoneIgnoringPreference
 import com.github.unchama.seichiassist.util.SendSoundEffect.sendEverySound
+import com.github.unchama.seichiassist.util.{LaunchFireWorksEffect, PlayerSendable}
 import org.bukkit.ChatColor.GOLD
 import org.bukkit.Sound
 import org.bukkit.entity.Player
@@ -36,18 +36,15 @@ object BukkitNotifyLevelUp {
             sendMessageToEveryoneIgnoringPreference(messageLevelMaxGlobal)(forString[IO])
             player.sendMessage(messageLevelMaxPlayer)
             sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
-          } >> OnMinecraftServerThread[F].runAction(SyncIO {
-            LaunchFireWorksEffect.launchFireWorks(player.getLocation)
-          }) >>
-            DiscordNotificationAPI[F].sendPlainText(messageLevelMaxDiscord)
+          } >> LaunchFireWorksEffect.launchFireWorks[F](
+            player.getLocation
+          ) >> DiscordNotificationAPI[F].sendPlainText(messageLevelMaxDiscord)
         } else if (oldLevel < newLevel) {
           val messageLevelUp =
             s"${GOLD}ﾑﾑｯﾚﾍﾞﾙｱｯﾌﾟ∩( ・ω・)∩【建築Lv(${oldLevel.level})→建築Lv(${newLevel.level})】"
           Sync[F].delay {
             player.sendMessage(messageLevelUp)
-          } >> OnMinecraftServerThread[F].runAction(SyncIO {
-            LaunchFireWorksEffect.launchFireWorks(player.getLocation)
-          })
+          } >> LaunchFireWorksEffect.launchFireWorks[F](player.getLocation)
         } else
           Sync[F].unit
       }

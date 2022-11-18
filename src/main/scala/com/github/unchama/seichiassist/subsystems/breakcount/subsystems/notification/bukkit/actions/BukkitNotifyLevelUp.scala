@@ -65,12 +65,12 @@ object BukkitNotifyLevelUp {
         val titleMessage = s"【Lv${oldLevel.level}→Lv${newLevel.level}】"
         val subTitleMessage = s"${GOLD}ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww"
 
-        if (oldLevel < newLevel) Sync[F].delay {
-          player.sendTitle(titleMessage, subTitleMessage, 1, 20 * 5, 1)
-          player.sendMessage(s"$subTitleMessage$titleMessage")
-        } >> OnMinecraftServerThread[F].runAction(SyncIO {
-          LaunchFireWorksEffect.launchFireWorks(player.getLocation)
-        })
+        if (oldLevel < newLevel)
+          Sync[F].delay {
+            player.sendTitle(titleMessage, subTitleMessage, 1, 20 * 5, 1)
+            player.sendMessage(s"$subTitleMessage$titleMessage")
+          } >>
+            LaunchFireWorksEffect.launchFireWorks[F](player.getLocation)
         else Applicative[F].unit
       }
 
@@ -88,9 +88,7 @@ object BukkitNotifyLevelUp {
         if (oldStars < newStars) Sync[F].delay {
           player.sendTitle(titleMessage, subTitleMessage, 1, 20 * 5, 1)
           player.sendMessage(s"$subTitleMessage$titleMessage")
-        } >> OnMinecraftServerThread[F].runAction(SyncIO {
-          LaunchFireWorksEffect.launchFireWorks(player.getLocation)
-        })
+        } >> LaunchFireWorksEffect.launchFireWorks[F](player.getLocation)
         else Applicative[F].unit
       }
     }
