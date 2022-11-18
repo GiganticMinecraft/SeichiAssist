@@ -5,15 +5,19 @@ import cats.effect.concurrent.Ref
 import com.github.unchama.datarepository.definitions.RefDictBackedRepositoryDefinition
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.minecraft.algebra.HasUuid
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.{RegionCount, RegionCountPersistence}
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
+  RegionTemplateId,
+  RegionTemplatePersistence,
+  RegionUnits
+}
 
-object RegionCountRepositoryDefinition {
+object RegionTemplateRepositoryPersistenceDefinition {
 
   def withContext[F[_]: Sync, Player: HasUuid](
-    persistence: RegionCountPersistence[F]
-  ): RepositoryDefinition[F, Player, Ref[F, RegionCount]] =
+    persistence: RegionTemplatePersistence[F]
+  ): RepositoryDefinition[F, Player, Ref[F, Map[RegionTemplateId, RegionUnits]]] =
     RefDictBackedRepositoryDefinition
-      .usingUuidRefDict[F, Player, RegionCount](persistence)(RegionCount.initial)
+      .usingUuidRefDict[F, Player, Map[RegionTemplateId, RegionUnits]](persistence)(Map.empty)
       .toRefRepository
       .augmentToTwoPhased((_, ref) => Sync[F].pure(ref))(value => Sync[F].pure(value))
 
