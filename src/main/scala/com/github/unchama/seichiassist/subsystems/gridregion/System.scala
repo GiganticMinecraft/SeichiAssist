@@ -6,14 +6,11 @@ import cats.effect.concurrent.Ref
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.datarepository.template.RepositoryDefinition
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.gridregion.application.repository.{
-  RegionCountRepositoryDefinition,
-  RegionUnitPerClickSettingRepositoryDefinition,
-  RegionUnitsRepositoryDefinition
-}
+import com.github.unchama.seichiassist.subsystems.gridregion.application.repository.{RegionCountRepositoryDefinition, RegionUnitPerClickSettingRepositoryDefinition, RegionUnitsRepositoryDefinition}
 import com.github.unchama.seichiassist.subsystems.gridregion.bukkit.BukkitRegionOperations
 import com.github.unchama.seichiassist.subsystems.gridregion.domain._
 import com.github.unchama.seichiassist.subsystems.gridregion.infrastructure.JdbcRegionCountPersistence
@@ -33,49 +30,49 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_]: SyncEffect]: F[System[F, Player, Location]] = {
-    val regionCountPersistence: RegionCountPersistence[F] = new JdbcRegionCountPersistence[F]
+  def wired[F[_], G[_]: SyncEffect: ContextCoercion[*[_], F]]: G[System[F, Player, Location]] = {
+    val regionCountPersistence: RegionCountPersistence[G] = new JdbcRegionCountPersistence[G]
 
     for {
       regionUnitPerClickSettingRepositoryControls <- BukkitRepositoryControls.createHandles(
         RepositoryDefinition
           .Phased
           .TwoPhased(
-            RegionUnitPerClickSettingRepositoryDefinition.initialization[F, Player],
-            RegionUnitPerClickSettingRepositoryDefinition.finalization[F, Player]
+            RegionUnitPerClickSettingRepositoryDefinition.initialization[G, Player],
+            RegionUnitPerClickSettingRepositoryDefinition.finalization[G, Player]
           )
       )
       regionUnitsRepositoryControls <- BukkitRepositoryControls.createHandles(
         RepositoryDefinition
           .Phased
           .TwoPhased(
-            RegionUnitsRepositoryDefinition.initialization[F, Player],
-            RegionUnitsRepositoryDefinition.finalization[F, Player]
+            RegionUnitsRepositoryDefinition.initialization[G, Player],
+            RegionUnitsRepositoryDefinition.finalization[G, Player]
           )
       )
       regionCountRepositoryControls <- BukkitRepositoryControls.createHandles(
-        RegionCountRepositoryDefinition.withContext[F, Player](regionCountPersistence)
+        RegionCountRepositoryDefinition.withContext[G, Player](regionCountPersistence)
       )
     } yield {
       val regionUnitPerClickSettingRepository =
         regionUnitPerClickSettingRepositoryControls.repository
       val regionUnitsRepository =
         regionUnitsRepositoryControls.repository
-      implicit val regionCountRepository: KeyedDataRepository[Player, Ref[F, RegionCount]] =
+      implicit val regionCountRepository: KeyedDataRepository[Player, Ref[G, RegionCount]] =
         regionCountRepositoryControls.repository
       implicit val we: WorldEditPlugin = ExternalPlugins.getWorldEdit
       implicit val wg: WorldGuardPlugin = ExternalPlugins.getWorldGuard
-      val regionOperations: RegionOperations[F, Location, Player] = new BukkitRegionOperations
+      val regionOperations: RegionOperations[G, Location, Player] = new BukkitRegionOperations
 
       new System[F, Player, Location] {
         override val api: GridRegionAPI[F, Player, Location] =
           new GridRegionAPI[F, Player, Location] {
             override def toggleUnitPerClick: Kleisli[F, Player, Unit] = Kleisli { player =>
-              regionUnitPerClickSettingRepository(player).toggleUnitPerClick
+              ContextCoercion(regionUnitPerClickSettingRepository(player).toggleUnitPerClick)
             }
 
             override def unitPerClick(player: Player): F[RegionUnit] =
-              regionUnitPerClickSettingRepository(player).unitPerClick
+              ContextCoercion(regionUnitPerClickSettingRepository(player).unitPerClick)
 
             override def isWithinLimits(
               regionUnits: RegionUnits,
@@ -89,10 +86,10 @@ object System {
             }
 
             override def regionUnits(player: Player): F[RegionUnits] =
-              regionUnitsRepository(player).regionUnits
+              ContextCoercion(regionUnitsRepository(player).regionUnits)
 
             override def saveRegionUnits(regionUnits: RegionUnits): Kleisli[F, Player, Unit] =
-              Kleisli { player => regionUnitsRepository(player).set(regionUnits) }
+              Kleisli { player => ContextCoercion(regionUnitsRepository(player).set(regionUnits)) }
 
             override def regionUnitLimit(worldName: String): RegionUnitLimit = {
               val limit = SeichiAssist.seichiAssistConfig.getGridLimitPerWorld(worldName)
@@ -104,7 +101,7 @@ object System {
               regionUnits: RegionUnits,
               direction: Direction
             ): F[CreateRegionResult] =
-              regionOperations.canCreateRegion(player, regionUnits, direction)
+              ContextCoercion(regionOperations.canCreateRegion(player, regionUnits, direction))
 
             override def regionSelection(
               player: Player,
@@ -114,18 +111,18 @@ object System {
               regionOperations.getSelection(player.getLocation, regionUnits, direction)
 
             override def createRegion: Kleisli[F, Player, Unit] = Kleisli { player =>
-              regionOperations.createRegion(player)
+              ContextCoercion(regionOperations.createRegion(player))
             }
 
             override def regionCount(player: Player): F[RegionCount] =
-              regionCountRepository(player).get
+              ContextCoercion(regionCountRepository(player).get)
           }
 
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
           regionUnitPerClickSettingRepositoryControls,
           regionUnitsRepositoryControls,
           regionCountRepositoryControls
-        )
+        ).map(_.coerceFinalizationContextTo[F])
       }
     }
   }

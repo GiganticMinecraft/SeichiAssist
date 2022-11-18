@@ -2,27 +2,12 @@ package com.github.unchama.seichiassist.menus.gridregion
 
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
-import com.github.unchama.menuinventory.slot.button.action.{
-  ClickEventFilter,
-  FilteredButtonEffect,
-  LeftClickButtonEffect
-}
+import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
-import com.github.unchama.menuinventory.{
-  LayoutPreparationContext,
-  Menu,
-  MenuFrame,
-  MenuSlotLayout
-}
+import com.github.unchama.menuinventory.{LayoutPreparationContext, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.gridregion.GridRegionAPI
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
-  CreateRegionResult,
-  Direction,
-  RegionUnit,
-  RegionUnits,
-  RelativeDirection
-}
+import com.github.unchama.seichiassist.subsystems.gridregion.domain._
 import com.github.unchama.targetedeffect.player.PlayerEffects.closeInventoryEffect
 import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
 import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect}
