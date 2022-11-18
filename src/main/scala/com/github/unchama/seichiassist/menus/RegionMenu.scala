@@ -33,7 +33,7 @@ object RegionMenu extends Menu {
   override def computeMenuLayout(
     player: Player
   )(implicit environment: Environment): IO[MenuSlotLayout] = {
-    val constantButtons = ConstantButtons()
+    val constantButtons = ConstantButtons(environment)
     import constantButtons._
     val computations = ButtonComputations(player)
     import computations._
@@ -137,7 +137,7 @@ object RegionMenu extends Menu {
     }
   }
 
-  private case class ConstantButtons(implicit environment: Environment) {
+  private case class ConstantButtons(environment: Environment) {
 
     val summonWandButton: Button = {
       val wandUsage = List(
