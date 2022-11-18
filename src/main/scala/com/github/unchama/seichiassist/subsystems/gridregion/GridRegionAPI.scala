@@ -59,8 +59,13 @@ trait GridRegionAPI[F[_], Player, Location] {
   ): RegionSelection[Location]
 
   /**
-   * @return `player`の[[RegionCount]]を取得する
+   * @return `player`の[[RegionCount]]を取得する作用
    */
   def regionCount(player: Player): F[RegionCount]
+
+  /**
+   * @return `player`の`gridRegionTemplate`を取得する作用
+   */
+  def gridRegionTemplate(player: Player): Map[RegionTemplateId, RegionUnits]
 
 }
