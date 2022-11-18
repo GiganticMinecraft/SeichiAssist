@@ -2,9 +2,19 @@ package com.github.unchama.seichiassist.menus.gridregion
 
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
-import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
+import com.github.unchama.menuinventory.router.CanOpen
+import com.github.unchama.menuinventory.slot.button.action.{
+  ClickEventFilter,
+  FilteredButtonEffect,
+  LeftClickButtonEffect
+}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
-import com.github.unchama.menuinventory.{LayoutPreparationContext, Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.menuinventory.{
+  LayoutPreparationContext,
+  Menu,
+  MenuFrame,
+  MenuSlotLayout
+}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.gridregion.GridRegionAPI
 import com.github.unchama.seichiassist.subsystems.gridregion.domain._
@@ -21,7 +31,8 @@ object GridRegionMenu extends Menu {
   class Environment(
     implicit val onMainThread: OnMinecraftServerThread[IO],
     implicit val layoutPreparationContext: LayoutPreparationContext,
-    val gridRegionAPI: GridRegionAPI[IO, Player, Location]
+    val gridRegionAPI: GridRegionAPI[IO, Player, Location],
+    val ioCanOpenGridTemplateMenu: IO CanOpen GridTemplateMenu.type
   )
 
   override val frame: MenuFrame =
@@ -166,7 +177,7 @@ object GridRegionMenu extends Menu {
         .build()
 
       val leftClickButtonEffect = LeftClickButtonEffect {
-        // TODO: openGridRegionSettingMenuを開く
+        ioCanOpenGridTemplateMenu.open(GridTemplateMenu)
         SequentialEffect(FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f))
       }
 
