@@ -63,15 +63,15 @@ object BukkitNotifyLevelUp {
         val Diff(oldLevel, newLevel) = diff
 
         val titleMessage = s"【Lv${oldLevel.level}→Lv${newLevel.level}】"
-        val subtitleMessage = s"${GOLD}ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww"
+        val subTitleMessage = s"${GOLD}ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww"
 
-        if (oldLevel < newLevel) {
-          OnMinecraftServerThread[F].runAction(SyncIO {
-            player.sendTitle(titleMessage, subtitleMessage, 1, 20 * 5, 1)
-            player.sendMessage(s"$subtitleMessage$titleMessage")
-            LaunchFireWorksEffect.launchFireWorks(player.getLocation)
-          })
-        } else Applicative[F].unit
+        if (oldLevel < newLevel) Sync[F].delay {
+          player.sendTitle(titleMessage, subTitleMessage, 1, 20 * 5, 1)
+          player.sendMessage(s"$subTitleMessage$titleMessage")
+        } >> OnMinecraftServerThread[F].runAction(SyncIO {
+          LaunchFireWorksEffect.launchFireWorks(player.getLocation)
+        })
+        else Applicative[F].unit
       }
 
       override def ofSeichiStarLevelTo(player: Player)(diff: Diff[SeichiStarLevel]): F[Unit] = {
@@ -88,8 +88,9 @@ object BukkitNotifyLevelUp {
         if (oldStars < newStars) Sync[F].delay {
           player.sendTitle(titleMessage, subTitleMessage, 1, 20 * 5, 1)
           player.sendMessage(s"$subTitleMessage$titleMessage")
+        } >> OnMinecraftServerThread[F].runAction(SyncIO {
           LaunchFireWorksEffect.launchFireWorks(player.getLocation)
-        }
+        })
         else Applicative[F].unit
       }
     }
