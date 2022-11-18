@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.menus
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{
   ClickEventFilter,
   FilteredButtonEffect
@@ -10,7 +11,7 @@ import com.github.unchama.menuinventory.slot.button.action.{
 import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.data.RegionMenuData
+import com.github.unchama.seichiassist.menus.gridregion.GridRegionMenu
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
 import com.github.unchama.util.external.ExternalPlugins
@@ -25,14 +26,15 @@ object RegionMenu extends Menu {
   import com.github.unchama.targetedeffect._
   import com.github.unchama.targetedeffect.player.PlayerEffects._
 
-  override type Environment = Unit
+  class Environment(val ioCanOpenGridRegionMenu: IO CanOpen GridRegionMenu.type)
 
   override val frame: MenuFrame = MenuFrame(Right(InventoryType.HOPPER), s"${BLACK}保護メニュー")
 
   override def computeMenuLayout(
     player: Player
   )(implicit environment: Environment): IO[MenuSlotLayout] = {
-    import ConstantButtons._
+    val constantButtons = ConstantButtons()
+    import constantButtons._
     val computations = ButtonComputations(player)
     import computations._
 
@@ -135,7 +137,7 @@ object RegionMenu extends Menu {
     }
   }
 
-  private object ConstantButtons {
+  private case class ConstantButtons(implicit environment: Environment) {
 
     val summonWandButton: Button = {
       val wandUsage = List(
@@ -238,8 +240,7 @@ object RegionMenu extends Menu {
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)(_ =>
           SequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1f, 1f),
-            // TODO メニューに置き換える
-            ComputedEffect(p => openInventoryEffect(RegionMenuData.getGridWorldGuardMenu(p)))
+            environment.ioCanOpenGridRegionMenu.open(GridRegionMenu)
           )
         )
       )
