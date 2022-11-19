@@ -114,6 +114,18 @@ class GachaCommand[
 
   object ChildExecutors {
 
+    val getGachaPrizeIdExistsParser: String => Either[TargetedEffect[CommandSender], Any] =
+      Parsers
+        .closedRangeInt(0, Int.MaxValue, MessageEffect("IDは0以上の整数を指定してください。"))
+        .andThen(_.flatMap { id =>
+          val intId = id.asInstanceOf[Int]
+          if (gachaAPI.existsGachaPrize(GachaPrizeId(intId)).toIO.unsafeRunSync()) {
+            succeedWith(intId)
+          } else {
+            failWith("指定されたIDのアイテムは存在しません！")
+          }
+        })
+
     val gachaPrizeIdExistsParser: String => Either[TargetedEffect[CommandSender], Any] = Parsers
       .closedRangeInt(1, Int.MaxValue, MessageEffect("IDは正の値を指定してください。"))
       .andThen(_.flatMap { id =>
@@ -180,7 +192,7 @@ class GachaCommand[
 
     val giveItem: ContextualExecutor =
       playerCommandBuilder
-        .argumentsParsers(List(gachaPrizeIdExistsParser))
+        .argumentsParsers(List(getGachaPrizeIdExistsParser))
         .execution { context =>
           val ownerName = context.args.yetToBeParsed.headOption
 
