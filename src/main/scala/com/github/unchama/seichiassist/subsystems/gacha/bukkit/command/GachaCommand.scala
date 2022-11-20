@@ -119,11 +119,10 @@ class GachaCommand[
         .closedRangeInt(0, Int.MaxValue, MessageEffect("IDは0以上の整数を指定してください。"))
         .andThen(_.flatMap { id =>
           val intId = id.asInstanceOf[Int]
-          if (gachaAPI.existsGachaPrize(GachaPrizeId(intId)).toIO.unsafeRunSync()) {
+          if (gachaAPI.existsGachaPrize(GachaPrizeId(intId)).toIO.unsafeRunSync())
             succeedWith(intId)
-          } else {
+          else
             failWith("指定されたIDのアイテムは存在しません！")
-          }
         })
 
     val gachaPrizeIdExistsParser: String => Either[TargetedEffect[CommandSender], Any] = Parsers
