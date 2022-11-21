@@ -45,7 +45,7 @@ trait GachaReadAPI[F[_], ItemStack] {
    */
   final def fetch(gachaPrizeId: GachaPrizeId): F[Option[GachaPrize[ItemStack]]] = for {
     prizes <- list
-  } yield
+  } yield {
     if (gachaPrizeId.id == 0)
       Some(
         GachaPrize(
@@ -56,6 +56,7 @@ trait GachaReadAPI[F[_], ItemStack] {
         )
       )
     else prizes.find(_.id == gachaPrizeId)
+  }
 
   /**
    * 指定された[[GachaPrizeId]]に対応する[[GachaPrize]]が存在するか確認する
