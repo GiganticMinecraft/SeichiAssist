@@ -37,7 +37,7 @@ object System {
       override def ruleFor(
         playerName: String,
         gachaList: Vector[GachaPrize[ItemStack]]
-      ): TradeRule[ItemStack, BigOrRegular] =
+      ): TradeRule[ItemStack, (BigOrRegular, Int)] =
         new BukkitTrade(playerName, gachaList)
     }
 
