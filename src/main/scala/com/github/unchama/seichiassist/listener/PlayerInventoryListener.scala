@@ -65,28 +65,41 @@ class PlayerInventoryListener(
      * 非対象商品は返却boxへ
      */
 
+    // 石炭とラピスラズリを適切に処理するため、typeとdurabilityを持つクラスを用意
+    case class ExchangeableMaterial(materialType: Material, durability: Short)
+
     val requiredAmountPerTicket = Map(
-      Material.COAL_ORE -> 128,
-      Material.IRON_ORE -> 64,
-      Material.GOLD_ORE -> 8,
-      Material.LAPIS_ORE -> 8,
-      Material.DIAMOND_ORE -> 4,
-      Material.REDSTONE_ORE -> 32,
-      Material.EMERALD_ORE -> 4,
-      Material.QUARTZ_ORE -> 16
+      ExchangeableMaterial(Material.COAL_ORE, 0) -> 128,
+      ExchangeableMaterial(Material.IRON_ORE, 0) -> 64,
+      ExchangeableMaterial(Material.GOLD_ORE, 0) -> 8,
+      ExchangeableMaterial(Material.LAPIS_ORE, 0) -> 8,
+      ExchangeableMaterial(Material.DIAMOND_ORE, 0) -> 4,
+      ExchangeableMaterial(Material.REDSTONE_ORE, 0) -> 32,
+      ExchangeableMaterial(Material.EMERALD_ORE, 0) -> 4,
+      ExchangeableMaterial(Material.QUARTZ_ORE, 0) -> 16,
+      ExchangeableMaterial(Material.COAL, 0) -> 432,
+      ExchangeableMaterial(Material.REDSTONE, 0) -> 288,
+      ExchangeableMaterial(Material.INK_SACK, 4) -> 64,
+      ExchangeableMaterial(Material.DIAMOND, 0) -> 8
     )
 
     val inventoryContents = inventory.getContents.filter(_ != null)
 
     val (itemsToExchange, rejectedItems) =
-      inventoryContents.partition { stack => requiredAmountPerTicket.contains(stack.getType) }
+      inventoryContents.partition { stack =>
+        requiredAmountPerTicket.contains(
+          ExchangeableMaterial(stack.getType, stack.getDurability)
+        )
+      }
 
-    val exchangingAmount = itemsToExchange.groupBy(_.getType).toList.map {
-      case (key, stacks) => key -> stacks.map(_.getAmount).sum
-    }
+    val exchangingAmount = itemsToExchange
+      .groupBy(stacks => ExchangeableMaterial(stacks.getType, stacks.getDurability))
+      .toList
+      .map { case (key, stacks) => key -> stacks.map(_.getAmount).sum }
 
     val ticketAmount = exchangingAmount.map {
-      case (material, amount) => amount / requiredAmountPerTicket(material)
+      case (exchangeableMaterial, amount) =>
+        amount / requiredAmountPerTicket(exchangeableMaterial)
     }.sum
 
     // プレイヤー通知
@@ -134,9 +147,14 @@ class PlayerInventoryListener(
         .flatMap {
           case (exchangedMaterial, exchangedAmount) =>
             val returningAmount = exchangedAmount % requiredAmountPerTicket(exchangedMaterial)
-            import scala.util.chaining._
             if (returningAmount != 0)
-              Some(new ItemStack(exchangedMaterial).tap(_.setAmount(returningAmount)))
+              Some(
+                new ItemStack(
+                  exchangedMaterial.materialType,
+                  returningAmount,
+                  exchangedMaterial.durability
+                )
+              )
             else
               None
         }
