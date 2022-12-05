@@ -98,7 +98,7 @@ class PlayerInventoryListener(
       .map { case (key, stacks) => key -> stacks.map(_.getAmount).sum }
 
     val ticketAmount = exchangingAmount.map {
-      case (material, amount) => amount / requiredAmountPerTicket(material)
+      case (exchangeableMaterial, amount) => amount / requiredAmountPerTicket(exchangeableMaterial)
     }.sum
 
     // プレイヤー通知
