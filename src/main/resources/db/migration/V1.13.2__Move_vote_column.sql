@@ -1,11 +1,11 @@
 USE seichiassist;
 
-CREATE TABLE vote(
+CREATE TABLE IF NOT EXISTS vote(
  uuid CHAR(36) NOT NULL PRIMARY KEY,
- vote_number INT NOT NULL ,
- chain_vote_number INT NOT NULL ,
- effect_point INT NOT NULL ,
- given_effect_point INT NOT NULL ,
+ vote_number INT NOT NULL,
+ chain_vote_number INT NOT NULL,
+ effect_point INT NOT NULL,
+ given_effect_point INT NOT NULL,
  last_vote DATETIME NOT NULL
 );
 
@@ -29,8 +29,8 @@ FROM
  playerdata;
 
 ALTER TABLE
- playerdata DROP p_vote,
- DROP chainvote,
- DROP effectpoint,
- DROP p_givenvote,
- DROP lastvote;
+ playerdata DROP IF EXISTS p_vote,
+ DROP IF EXISTS chainvote,
+ DROP IF EXISTS effectpoint,
+ DROP IF EXISTS p_givenvote,
+ DROP IF EXISTS lastvote;
