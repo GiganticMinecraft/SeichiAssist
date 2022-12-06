@@ -1,14 +1,16 @@
 package com.github.unchama.seichiassist.subsystems.gacha
 
 import cats.Functor
+import cats.data.Kleisli
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.domain.{
-  CanBeSignedAsGachaPrize,
-  StaticGachaPrizeFactory
-}
 import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{
   GachaPrize,
   GachaPrizeId
+}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.{
+  CanBeSignedAsGachaPrize,
+  GachaProbability,
+  StaticGachaPrizeFactory
 }
 
 trait GachaDrawAPI[F[_], Player] {
@@ -16,7 +18,7 @@ trait GachaDrawAPI[F[_], Player] {
   /**
    * @return ガチャを実行する作用
    */
-  def drawGacha(player: Player, draws: Int): F[Unit]
+  def drawGacha(draws: Int): Kleisli[F, Player, Unit]
 
 }
 
@@ -43,7 +45,18 @@ trait GachaReadAPI[F[_], ItemStack] {
    */
   final def fetch(gachaPrizeId: GachaPrizeId): F[Option[GachaPrize[ItemStack]]] = for {
     prizes <- list
-  } yield prizes.find(_.id == gachaPrizeId)
+  } yield {
+    if (gachaPrizeId.id == 0)
+      Some(
+        GachaPrize(
+          staticGachaPrizeFactory.gachaRingo,
+          GachaProbability(1.0),
+          signOwner = false,
+          GachaPrizeId(0)
+        )
+      )
+    else prizes.find(_.id == gachaPrizeId)
+  }
 
   /**
    * 指定された[[GachaPrizeId]]に対応する[[GachaPrize]]が存在するか確認する

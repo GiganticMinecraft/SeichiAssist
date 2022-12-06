@@ -2,8 +2,11 @@ package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gacha
 
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, IO}
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
+import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
+import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.GachaPoint
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.traderules.BigOrRegular
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.domain.{
   GachaListProvider,
@@ -18,9 +21,12 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 
-class GachaTradeListener[F[_]: ConcurrentEffect](rule: GachaTradeRule[ItemStack])(
+class GachaTradeListener[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
+  rule: GachaTradeRule[ItemStack]
+)(
   implicit canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack],
-  gachaListProvider: GachaListProvider[F, ItemStack]
+  gachaListProvider: GachaListProvider[F, ItemStack],
+  gachaPointApi: GachaPointApi[F, G, Player]
 ) extends Listener {
 
   @EventHandler
@@ -34,8 +40,8 @@ class GachaTradeListener[F[_]: ConcurrentEffect](rule: GachaTradeRule[ItemStack]
     val inventory = event.getInventory
     val name = player.getName
 
-    // インベントリサイズが4列でない時終了
-    if (inventory.row != 4) return
+    // インベントリサイズが6列でない時終了
+    if (inventory.row != 6) return
 
     if (inventory.getTitle != s"$LIGHT_PURPLE${BOLD}交換したい景品を入れてください") return
 
@@ -48,32 +54,40 @@ class GachaTradeListener[F[_]: ConcurrentEffect](rule: GachaTradeRule[ItemStack]
     val tradeAmount = tradedInformation.tradedSuccessResult.map(_.amount).sum
 
     /*
-     * ガチャ券と交換できなかったアイテムをインベントリに
+     * 交換できなかったアイテムをインベントリに
      */
     val nonTradableItemStacksToReturn =
       tradedInformation.nonTradableItemStacks.filterNot(_ == null)
-    val tradableItemStacksToReturn = tradedInformation
-      .tradedSuccessResult
-      .flatMap(result => Seq.fill(result.amount)(result.itemStack))
 
     InventoryOperations
-      .grantItemStacksEffect[IO](
-        nonTradableItemStacksToReturn ++ tradableItemStacksToReturn: _*
-      )
+      .grantItemStacksEffect[IO](nonTradableItemStacksToReturn: _*)
       .apply(player)
+      .unsafeRunAsyncAndForget()
+
+    // ガチャポイントを付与する
+    gachaPointApi
+      .addGachaPoint(GachaPoint.gachaPointBy(tradeAmount))
+      .apply(player)
+      .toIO
       .unsafeRunAsyncAndForget()
 
     /*
      * お知らせする
      */
     val tradableItemStacks = tradedInformation.tradedSuccessResult
+    val bigItemStackAmounts = tradableItemStacks.collect {
+      case result if result.transactionInfo._1 == BigOrRegular.Big => result.amount
+    }.sum
+    val regularItemStackAmounts = tradableItemStacks.collect {
+      case result if result.transactionInfo._1 == BigOrRegular.Regular => result.amount
+    }.sum
+
     if (tradeAmount == 0) {
       player.sendMessage(s"${YELLOW}景品を認識しませんでした。すべてのアイテムを返却します")
     } else {
       player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
       player.sendMessage(
-        s"${GREEN}大当たり景品を${tradableItemStacks.count(_.transactionInfo == BigOrRegular.Big)}個、あたり景品を${tradableItemStacks
-            .count(_.transactionInfo == BigOrRegular.Regular)}個認識しました。"
+        s"${GREEN}大当たり景品を${bigItemStackAmounts}個、あたり景品を${regularItemStackAmounts}個認識しました。"
       )
       player.sendMessage(s"$GREEN${tradeAmount}枚の${GOLD}ガチャ券${WHITE}を受け取りました。")
     }

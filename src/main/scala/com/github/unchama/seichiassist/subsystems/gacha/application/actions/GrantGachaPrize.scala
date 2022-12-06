@@ -15,7 +15,8 @@ trait GrantGachaPrize[F[_], ItemStack] {
   def tryInsertIntoMineStack(prize: GachaPrize[ItemStack]): Kleisli[F, Player, Boolean]
 
   def insertIntoPlayerInventoryOrDrop(
-    prize: GachaPrize[ItemStack]
+    prize: GachaPrize[ItemStack],
+    ownerName: Option[String]
   ): Kleisli[F, Player, GrantState]
 
   final def grantGachaPrize(prize: GachaPrize[ItemStack]): Kleisli[F, Player, GrantState] =
@@ -26,7 +27,7 @@ trait GrantGachaPrize[F[_], ItemStack] {
           if (insertMineStackResult) {
             F.pure(GrantState.GrantedMineStack)
           } else {
-            insertIntoPlayerInventoryOrDrop(prize)(player)
+            insertIntoPlayerInventoryOrDrop(prize, Some(player.getName))(player)
           }
       } yield grantState
     }

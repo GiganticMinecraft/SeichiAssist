@@ -14,12 +14,12 @@ import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, a
 import com.github.unchama.seichiassist.data.descrptions.PlayerStatsLoreGenerator
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
+import com.github.unchama.seichiassist.menus.home.HomeMenu
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
 import com.github.unchama.seichiassist.menus.ranking.RankingRootMenu
 import com.github.unchama.seichiassist.menus.skill.{ActiveSkillMenu, PassiveSkillMenu}
 import com.github.unchama.seichiassist.menus.{
   CommonButtons,
-  HomeMenu,
   RegionMenu,
   ServerSwitchMenu,
   VoteMenu
@@ -86,7 +86,7 @@ object FirstPage extends Menu {
     val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type,
     val ioCanOpenServerSwitchMenu: IO CanOpen ServerSwitchMenu.type,
     val ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type,
-    val ioCanOpenHomeMenu: IO CanOpen HomeMenu.type,
+    val ioCanOpenHomeMenu: IO CanOpen HomeMenu,
     val ioCanOpenPassiveSkillMenu: IO CanOpen PassiveSkillMenu.type,
     val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type,
     val ioCanOpenVoteMenu: IO CanOpen VoteMenu.type,
@@ -641,7 +641,7 @@ object FirstPage extends Menu {
       )
     }
 
-    def homePointMenuButton(implicit ioCanOpenHomeMenu: IO CanOpen HomeMenu.type): Button = {
+    def homePointMenuButton(implicit ioCanOpenHomeMenu: IO CanOpen HomeMenu): Button = {
       val iconItemStack =
         new IconItemStackBuilder(Material.BED)
           .title(s"$YELLOW$UNDERLINE${BOLD}ホームメニューを開く")
@@ -652,7 +652,7 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 1.5f),
-          ioCanOpenHomeMenu.open(HomeMenu)
+          ioCanOpenHomeMenu.open(new HomeMenu)
         )
       )
     }

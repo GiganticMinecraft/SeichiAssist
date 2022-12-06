@@ -1,15 +1,16 @@
 package com.github.unchama.seichiassist.menus
 
 import cats.effect.{IO, SyncIO}
+import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.menuinventory.LayoutPreparationContext
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.menus.HomeMenu.ConfirmationMenuEnvironment
 import com.github.unchama.seichiassist.menus.achievement.group.AchievementGroupMenu
 import com.github.unchama.seichiassist.menus.achievement.{
   AchievementCategoryMenu,
   AchievementMenu
 }
+import com.github.unchama.seichiassist.menus.home.{ConfirmationMenuEnvironment, HomeMenu}
 import com.github.unchama.seichiassist.menus.minestack.{
   CategorizedMineStackMenu,
   MineStackMainMenu,
@@ -34,6 +35,8 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
   FastDiggingSettingsApi
 }
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
+import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket.ConsumeGachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
@@ -45,6 +48,7 @@ import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 
 trait TopLevelRouter[F[_]] {
 
@@ -76,7 +80,10 @@ object TopLevelRouter {
     sharedInventoryAPI: SharedInventoryAPI[IO, Player],
     voteAPI: VoteAPI[IO, Player],
     fairyAPI: FairyAPI[IO, SyncIO, Player],
-    gachaTicketAPI: GachaTicketAPI[IO]
+    gachaTicketAPI: GachaTicketAPI[IO],
+    nonServerThreadContextShift: NonServerThreadContextShift[IO],
+    gachaAPI: GachaAPI[IO, ItemStack, Player],
+    consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player]
   ): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     import assortedRankingApi._
 
@@ -98,8 +105,7 @@ object TopLevelRouter {
     implicit lazy val achievementMenuEnv: AchievementMenu.Environment =
       new AchievementMenu.Environment
     implicit lazy val homeMenuEnv: HomeMenu.Environment = new HomeMenu.Environment
-    implicit lazy val homeConfirmationMenuEnv
-      : HomeMenu.ConfirmationMenuEnvironment.Environment =
+    implicit lazy val homeConfirmationMenuEnv: home.ConfirmationMenuEnvironment.Environment =
       new ConfirmationMenuEnvironment.Environment
     implicit lazy val achievementCategoryMenuEnv: AchievementCategoryMenu.Environment =
       new AchievementCategoryMenu.Environment
@@ -133,7 +139,7 @@ object TopLevelRouter {
       _.open
     implicit lazy val ioCanOpenAchievementGroupMenu: IO CanOpen AchievementGroupMenu = _.open
     implicit lazy val ioCanOpenHomeConfirmationMenu
-      : IO CanOpen HomeMenu.HomeChangeConfirmationMenu =
+      : IO CanOpen home.HomeChangeConfirmationMenu =
       _.open
     implicit lazy val ioCanOpenAchievementCategoryMenu: IO CanOpen AchievementCategoryMenu =
       _.open
@@ -149,8 +155,8 @@ object TopLevelRouter {
     implicit lazy val ioCanOpenRegionMenu: IO CanOpen RegionMenu.type = _.open
     implicit lazy val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type = _.open
     implicit lazy val ioCanOpenServerSwitchMenu: IO CanOpen ServerSwitchMenu.type = _.open
-    implicit lazy val ioCanOpenHomeMenu: IO CanOpen HomeMenu.type = _.open
-    implicit lazy val ioCanOpenHomeConfirmMenu: IO CanOpen HomeMenu.HomeRemoveConfirmationMenu =
+    implicit lazy val ioCanOpenHomeMenu: IO CanOpen home.HomeMenu = _.open
+    implicit lazy val ioCanOpenHomeConfirmMenu: IO CanOpen home.HomeRemoveConfirmationMenu =
       _.open
     implicit lazy val ioCanOpenPassiveSkillMenu: IO CanOpen PassiveSkillMenu.type = _.open
 

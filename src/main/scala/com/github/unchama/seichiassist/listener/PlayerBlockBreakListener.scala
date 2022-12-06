@@ -134,6 +134,8 @@ class PlayerBlockBreakListener(
       val multiBreakList = new ArrayBuffer[Set[BlockBreakableBySkill]]
       // 壊される溶岩の全てのリストデータ
       val multiLavaList = new ArrayBuffer[Set[Block]]
+      // 壊される水ブロックの全てのリストデータ
+      val multiWaterList = new ArrayBuffer[Set[Block]]
       // 全ての耐久消費量
       var toolDamageToSet = tool.getDurability.toInt
 
@@ -146,7 +148,7 @@ class PlayerBlockBreakListener(
         breakAreaList.foreach { breakArea =>
           import com.github.unchama.seichiassist.data.syntax._
 
-          val BlockSearching.Result(breakBlocks, _, lavaBlocks) =
+          val BlockSearching.Result(breakBlocks, waterBlocks, lavaBlocks) =
             BlockSearching
               .searchForBlocksBreakableWithSkill(player, breakArea.gridPoints(), block)
               .unsafeRunSync()
@@ -174,10 +176,10 @@ class PlayerBlockBreakListener(
             case None        => b.break()
           }
 
-          // 減る耐久値の計算(１マス溶岩を破壊するのにはブロック１０個分の耐久が必要)
+          // 減る耐久値の計算(溶岩及び水を破壊するとブロック１０個分の耐久値減少判定を行う)
           toolDamageToSet += BreakUtil.calcDurability(
             tool.getEnchantmentLevel(Enchantment.DURABILITY),
-            breakBlocks.size + 10 * lavaBlocks.size
+            breakBlocks.size + 10 * (lavaBlocks.size + waterBlocks.size)
           )
 
           // 実際に耐久値を減らせるか判定
@@ -188,6 +190,7 @@ class PlayerBlockBreakListener(
 
           multiBreakList.addOne(breakBlocks.toSet)
           multiLavaList.addOne(lavaBlocks.toSet)
+          multiWaterList.addOne(waterBlocks.toSet)
         }
       }
 
@@ -206,7 +209,10 @@ class PlayerBlockBreakListener(
         }
 
         val effectPrograms = for {
-          ((blocks, lavas), chunkIndex) <- multiBreakList.zip(multiLavaList).zipWithIndex
+          ((blocks, lavas, waters), chunkIndex) <-
+            (multiBreakList lazyZip
+              multiLavaList lazyZip
+              multiWaterList).zipWithIndex.toList
           blockChunk = BukkitResources.vanishingBlockSetResource[IO, BlockBreakableBySkill](
             blocks
           )
@@ -218,7 +224,7 @@ class PlayerBlockBreakListener(
               for {
                 _ <- IO.sleep((chunkIndex * 4).ticks)(IO.timer(cachedThreadPool))
                 _ <- ioOnMainThread.runAction(SyncIO {
-                  lavas.foreach(_.setType(Material.AIR))
+                  (lavas ++ waters).foreach(_.setType(Material.AIR))
                 })
                 _ <- playerData
                   .skillEffectState

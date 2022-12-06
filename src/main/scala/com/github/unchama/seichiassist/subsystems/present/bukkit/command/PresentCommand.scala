@@ -452,6 +452,17 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
           .build()
     }
 
+    object player {
+      val help: EchoExecutor = EchoExecutor(
+        MessageEffect(
+          List(
+            "/present player <プレイヤー名>",
+            "    指定したプレイヤーが受け取れるプレゼントを表示します"
+          )
+        )
+      )
+    }
+
     object Help {
 
       /**

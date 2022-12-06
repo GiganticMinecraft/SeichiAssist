@@ -1,16 +1,20 @@
 package com.github.unchama.seichiassist.subsystems.home
 
-import cats.effect.ConcurrentEffect
+import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.concurrent.NonServerThreadContextShift
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist.Scopes.globalChatInterceptionScope
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
+import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
+import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.home.bukkit.command.HomeCommand
 import com.github.unchama.seichiassist.subsystems.home.bukkit.listeners.RespawnLocationOverwriter
-import com.github.unchama.seichiassist.subsystems.home.domain.{Home, HomeId, HomeLocation}
 import com.github.unchama.seichiassist.subsystems.home.domain.OperationResult.RenameResult
+import com.github.unchama.seichiassist.subsystems.home.domain.{Home, HomeId, HomeLocation}
 import com.github.unchama.seichiassist.subsystems.home.infrastructure.JdbcHomePersistence
 import org.bukkit.command.TabExecutor
+import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 
 import java.util.UUID
@@ -20,8 +24,12 @@ trait System[F[_]] extends Subsystem[F] {
 }
 
 object System {
-  def wired[F[_]: OnMinecraftServerThread: ConcurrentEffect: NonServerThreadContextShift]
-    : System[F] = {
+  def wired[F[_]: OnMinecraftServerThread: ConcurrentEffect: NonServerThreadContextShift, G[
+    _
+  ]: SyncEffect: ContextCoercion[*[_], F]](
+    implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player],
+    buildCountReadAPI: BuildCountAPI[F, G, Player]
+  ): System[F] = {
     val persistence = new JdbcHomePersistence[F]()
 
     new System[F] {
@@ -40,7 +48,7 @@ object System {
           persistence.remove(ownerUuid, id)
       }
       override val commands: Map[String, TabExecutor] =
-        Map("home" -> HomeCommand.executor)
+        Map("home" -> new HomeCommand().executor)
 
       override val listeners: Seq[Listener] = Seq(new RespawnLocationOverwriter[F])
     }
