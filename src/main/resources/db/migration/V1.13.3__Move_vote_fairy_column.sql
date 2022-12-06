@@ -1,14 +1,14 @@
 USE seichiassist;
 
 CREATE TABLE vote_fairy(
- uuid CHAR(36) PRIMARY KEY,
- apple_open_state INT DEFAULT 1,
- fairy_summon_cost INT DEFAULT 1,
- is_fairy_using BOOLEAN DEFAULT false,
- fairy_recovery_mana_value INT DEFAULT 0,
+ uuid CHAR(36) NOT NULL PRIMARY KEY,
+ apple_open_state INT NOT NULL DEFAULT 1,
+ fairy_summon_cost INT NOT NULL DEFAULT 1,
+ is_fairy_using BOOLEAN NOT NULL DEFAULT false,
+ fairy_recovery_mana_value INT NOT NULL DEFAULT 0,
  fairy_end_time DATETIME DEFAULT NULL,
- given_apple_amount BIGINT DEFAULT 0,
- is_play_fairy_speech_sound BOOLEAN DEFAULT true
+ given_apple_amount BIGINT NOT NULL DEFAULT 0,
+ is_play_fairy_speech_sound BOOLEAN NOT NULL DEFAULT true
 );
 
 INSERT INTO

@@ -1,12 +1,12 @@
 USE seichiassist;
 
 CREATE TABLE vote(
- uuid CHAR(36) PRIMARY KEY,
- vote_number INT,
- chain_vote_number INT,
- effect_point INT,
- given_effect_point INT,
- last_vote DATETIME
+ uuid CHAR(36) NOT NULL PRIMARY KEY,
+ vote_number INT NOT NULL ,
+ chain_vote_number INT NOT NULL ,
+ effect_point INT NOT NULL ,
+ given_effect_point INT NOT NULL ,
+ last_vote DATETIME NOT NULL
 );
 
 INSERT INTO
