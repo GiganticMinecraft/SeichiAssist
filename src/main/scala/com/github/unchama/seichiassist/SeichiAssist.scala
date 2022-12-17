@@ -453,6 +453,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val bungeeSemaphoreResponderSystem: BungeeSemaphoreResponderSystem[IO] = {
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val systemConfiguration
       : com.github.unchama.bungeesemaphoreresponder.Configuration =

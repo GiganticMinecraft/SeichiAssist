@@ -115,12 +115,19 @@ class PlayerJoinListener extends Listener {
       )
       player.sendMessage(s"${YELLOW}ルール→ $YELLOW${UNDERLINE}https://www.seichi.network/rule")
 
+      import scala.util.chaining._
+
       // 初見プレイヤーに木の棒、エリトラ、ピッケルを配布
       val inv = player.getInventory
-      inv.addItem(new ItemStack(Material.STICK))
+      val stick = new ItemStack(Material.STICK, 1).tap { itemStack =>
+        import itemStack._
+        val meta = getItemMeta
+        meta.setDisplayName("棒メニューが開ける棒")
+        setItemMeta(meta)
+      }
+      inv.addItem(stick)
       inv.addItem(new ItemStack(Material.ELYTRA))
 
-      import scala.util.chaining._
       val pickaxe = new ItemStack(Material.DIAMOND_PICKAXE)
         // 耐久Ⅲ
         .tap(_.addEnchantment(Enchantment.DURABILITY, 3))
