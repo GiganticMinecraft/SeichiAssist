@@ -9,6 +9,7 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.{
 import java.time.LocalDate
 
 object Christmas {
+  // FIXME: 2022年は2021年の補填も含めて2倍の排出率になっているので2023年以降に開催する場合は戻す
   val itemDropRate: Double = validateItemDropRate(0.012)
   val itemDropRateFromStray: Double = validateItemDropRate(0.6)
   val EVENT_YEAR: Int = 2022
