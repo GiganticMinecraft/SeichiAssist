@@ -22,7 +22,6 @@ class EventCommand(implicit ioOnMainThread: OnMinecraftServerThread[IO]) {
       christmasTurkey,
       christmasPotion,
       christmasChestPlate,
-      christmasPickaxe,
       christmasSock
     )
 
