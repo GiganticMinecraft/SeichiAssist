@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.christmas
 
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas.EVENT_YEAR
-import com.github.unchama.seichiassist.util.EnchantNameToJapanese
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Color.fromRGB
