@@ -11,7 +11,7 @@ import java.time.{LocalDate, LocalDateTime}
 
 object NewYear {
   // 新年が何年かを西暦で入力しておくと、自動的に他の日付が設定される
-  val EVENT_YEAR: Int = 2020
+  val EVENT_YEAR: Int = 2022
   val START_DATE: LocalDate = LocalDate.of(EVENT_YEAR, 1, 1)
   val END_DATE: LocalDate = LocalDate.of(EVENT_YEAR, 1, 31)
   // 年越しそばが配布されるのは、大晦日の4:10から元旦の4:10まで
