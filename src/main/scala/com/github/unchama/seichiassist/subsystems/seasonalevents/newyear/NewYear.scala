@@ -18,7 +18,7 @@ object NewYear {
   val NEW_YEAR_EVE: DateTimeDuration =
     DateTimeDuration.fromLocalDate(START_DATE.minusDays(1), START_DATE)
   // FIXME: クリスマスイベントと同様、2倍の排出率になっているので2023年以降には戻す
-  val itemDropRate: Double = validateItemDropRate(0.012)
+  val itemDropRate: Double = validateItemDropRate(0.004)
   val blogArticleUrl: String = validateUrl(
     s"https://www.seichi.network/post/newyear$EVENT_YEAR"
   )
