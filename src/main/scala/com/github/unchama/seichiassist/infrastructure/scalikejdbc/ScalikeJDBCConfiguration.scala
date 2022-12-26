@@ -22,10 +22,6 @@ object ScalikeJDBCConfiguration {
 
   def initializeGlobalConfigs(): Unit = {
     GlobalSettings.loggingSQLAndTime = loggingSettings
-    // 動的パラメータのため
-    GlobalSettings.nameBindingSQLValidator = NameBindingSQLValidatorSettings(
-      globalsettings.NoCheckForIgnoredParams
-    )
   }
 
 }
