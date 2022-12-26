@@ -156,9 +156,9 @@ object MineStackMassCraftMenu {
         }
         allIngredientsAvailable = (allIngredientsAmount zip ingredientObjects.map(_._2))
           .forall { case (mineStackAmount, requireAmount) => mineStackAmount >= requireAmount }
-        isNotEnoughBuildLevel = buildLevel.levelCorrespondingToExp.level < requiredBuildLevel
+        isLowerBuildLevel = buildLevel.levelCorrespondingToExp.level < requiredBuildLevel
         errorEffect =
-          if (isNotEnoughBuildLevel) {
+          if (isLowerBuildLevel) {
             MessageEffect(s"${RED}建築Lvが足りません")
           } else if (!allIngredientsAvailable) {
             MessageEffect(s"${RED}クラフト材料が足りません")
@@ -174,7 +174,7 @@ object MineStackMassCraftMenu {
             s"${enumerateChunkDetails(productObjects)}変換"
 
           MessageEffectF[IO](successMessage).apply(player)
-        }.whenA(!isNotEnoughBuildLevel && allIngredientsAvailable)
+        }.whenA(!isLowerBuildLevel && allIngredientsAvailable)
       } yield LeftClickButtonEffect(
         SequentialEffect(
           errorEffect,
