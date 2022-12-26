@@ -17,7 +17,7 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack](
   override def list: F[Vector[GachaPrize[ItemStack]]] = {
     Sync[F].delay {
       DB.readOnly { implicit session =>
-        sql"select id,itemstack,probability,event_name from gachadata"
+        sql"SELECT id,itemstack,probability,gacha_events.event_name FROM gachadata INNER JOIN gacha_events ON event_id = gacha_events.id"
           .map { rs =>
             val probability = rs.double("probability")
             // TODO ガチャアイテムに対して記名を行うかどうかを確率に依存すべきではない
@@ -61,7 +61,7 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack](
   override def addMineStackGachaObject(id: GachaPrizeId, objectName: String): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
-        sql"INSERT INTO mine_stack_gacha_objects (id, mine_stack_object_name) VALUES (${id.id}, ${objectName})"
+        sql"INSERT INTO mine_stack_gacha_objects (id, mine_stack_object_name) VALUES (${id.id}, $objectName)"
           .execute()
           .apply()
       }
