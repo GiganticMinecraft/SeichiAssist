@@ -48,8 +48,8 @@ object ListExtra {
   /**
    * `conditions`に当てはまる値が2つの[[List]]に存在するか探し、その結果の直積を`compute`で写した結果を返します。
    *
-   * @param conditions 探す値の条件を関数で記述します。
-   * @param compute    探した結果を受け取り、写す関数を渡します。
+   * @param predicate 探す値の条件を関数で記述します。
+   * @param map    探した結果を受け取り、写す関数を渡します。
    *                   この引数の関数は、conditionsにマッチする要素がfirstListとsecondListそれぞれに見つかれば、
    *                   それぞれの結果を[[Tuple2]]に格納した[[Some]]が、そうでなければ[[None]]が渡されます。
    * @return `firstList`と`secondList`から`conditions`に合致する要素を探した結果を`compute`で写した値
@@ -57,11 +57,11 @@ object ListExtra {
   def computeDoubleList[A, B](
     firstList: List[A],
     secondList: List[A]
-  )(conditions: A => Boolean, compute: Option[(A, A)] => B): B = {
+  )(predicate: A => Boolean, map: Option[(A, A)] => B): B = {
     import cats.implicits._
-    val firstTarget = firstList.find(conditions)
-    val secondTarget = secondList.find(conditions)
-    compute(firstTarget.product(secondTarget))
+    val firstTarget = firstList.find(predicate)
+    val secondTarget = secondList.find(predicate)
+    map(firstTarget.product(secondTarget))
   }
 
 }
