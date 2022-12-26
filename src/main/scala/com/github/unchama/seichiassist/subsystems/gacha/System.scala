@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.gacha
 
+import cats.data.Kleisli
 import cats.effect.ConcurrentEffect
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
@@ -56,13 +57,12 @@ object System {
     for {
       gachaPrizesListReference <- gachaPrizeAPI.listOfNow
     } yield {
-      implicit val drawGacha: DrawGacha[F, Player] =
+      implicit val _drawGacha: DrawGacha[F, Player] =
         new BukkitDrawGacha[F](gachaPrizesListReference)
 
       new System[F, Player] {
-        override val api: GachaDrawAPI[F, Player] = (player: Player, draws: Int) => {
-          drawGacha.draw(player, draws)
-        }
+        override val api: GachaDrawAPI[F, Player] = (draws: Int) =>
+          Kleisli { player => _drawGacha.draw(player, draws) }
 
         override val commands: Map[String, TabExecutor] = Map(
           "gacha" -> new GachaCommand[F].executor

@@ -1,23 +1,14 @@
 package com.github.unchama.seichiassist.menus.stickmenu
 
-import cats.data.Kleisli
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.router.CanOpen
-import com.github.unchama.menuinventory.slot.button.action.{
-  ClickEventFilter,
-  FilteredButtonEffect,
-  LeftClickButtonEffect
-}
+import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings.{
-  MuteMessageAndSound,
-  ReceiveMessageAndSound,
-  ReceiveMessageOnly
-}
+import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings.{MuteMessageAndSound, ReceiveMessageAndSound, ReceiveMessageOnly}
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.subsystems.gacha.GachaDrawAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket.ConsumeGachaTicketAPI
@@ -35,11 +26,7 @@ import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
-import com.github.unchama.targetedeffect.player.{
-  CommandEffect,
-  FocusedSoundEffect,
-  PlayerEffects
-}
+import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect, PlayerEffects}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -379,9 +366,7 @@ object SecondPage extends Menu {
                       )
                     }),
                     DeferredEffect(IO {
-                      Kleisli { player =>
-                        gachaDrawAPI.drawGacha(player, currentConsumeGachaTicketAmount.value)
-                      }
+                      gachaDrawAPI.drawGacha(currentConsumeGachaTicketAmount.value)
                     })
                   )
                 }
