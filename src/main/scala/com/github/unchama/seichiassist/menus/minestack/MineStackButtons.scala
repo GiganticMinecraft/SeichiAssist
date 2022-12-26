@@ -86,9 +86,8 @@ private[minestack] case class MineStackButtons(player: Player)(
             import itemMeta._
             setDisplayName {
               val name = mineStackObject.uiName match {
-                case Some(value)            => value
-                case None if hasDisplayName => getDisplayName
-                case None                   => getType.toString
+                case Some(value) => value
+                case None        => if (hasDisplayName) getDisplayName else getType.toString
               }
 
               s"$YELLOW$UNDERLINE$BOLD$name"
