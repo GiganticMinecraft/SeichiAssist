@@ -54,7 +54,7 @@ object ListExtra {
    *                   それぞれの結果を[[Tuple2]]に格納した[[Some]]が、そうでなければ[[None]]が渡されます。
    * @return `firstList`と`secondList`から`conditions`に合致する要素を探した結果を`compute`で写した値
    */
-  def computeDoubleList[A, B](
+  def findBothThenMap[A, B](
     firstList: List[A],
     secondList: List[A]
   )(predicate: A => Boolean, map: Option[(A, A)] => B): B = {

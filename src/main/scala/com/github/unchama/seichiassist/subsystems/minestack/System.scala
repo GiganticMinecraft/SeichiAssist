@@ -127,7 +127,7 @@ object System {
                     )
                 }
               } yield {
-                ListExtra.computeDoubleList(oldMineStackObjects, updatedMineStackObjects)(
+                ListExtra.findBothThenMap(oldMineStackObjects, updatedMineStackObjects)(
                   _.mineStackObject == mineStackObject,
                   {
                     case Some((oldMineStackObject, updatedMineStackObject)) =>
