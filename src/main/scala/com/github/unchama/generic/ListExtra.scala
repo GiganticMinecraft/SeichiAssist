@@ -33,7 +33,7 @@ object ListExtra {
 
   /**
    * Listの中身で条件に一致するものがあれば`element`を先頭に追加しなおし、
-   * 一致するものがなければreplacementを追加します
+   * 一致するものがなければ`element(None)`を先頭に追加します
    */
   def rePrependOrAdd[A](
     list: List[A]
