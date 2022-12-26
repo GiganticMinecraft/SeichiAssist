@@ -22,6 +22,12 @@ object ListExtra {
 
   /**
    * Listの中身で条件に一致するものがあったときに`element`を先頭に追加し直します
+   * listの中に与えられたpredicateに合致する要素があった場合、その要素をelementで写して変換します。そのような要素がなかった場合、そのままlistを返却します。
+   *
+   * @param list      処理対象
+   * @param predicate 抽出する要素の述語
+   * @param element   抽出された要素を写す関数
+   * @return 一致した要素が先頭に移動されたかもしれない[[List]]
    */
   def rePrepend[A](list: List[A])(predicate: A => Boolean, element: A => A): List[A] = {
     list.find(predicate) match {
