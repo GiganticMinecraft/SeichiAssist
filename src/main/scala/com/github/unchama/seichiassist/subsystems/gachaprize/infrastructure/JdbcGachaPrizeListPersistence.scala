@@ -4,10 +4,7 @@ import cats.effect.Sync
 import com.github.unchama.generic.serialization.SerializeAndDeserialize
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain._
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.GachaEventName
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
-  GachaPrize,
-  GachaPrizeId
-}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{GachaPrize, GachaPrizeId}
 import scalikejdbc._
 
 class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack](
@@ -17,7 +14,7 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack](
   override def list: F[Vector[GachaPrize[ItemStack]]] = {
     Sync[F].delay {
       DB.readOnly { implicit session =>
-        sql"SELECT id,itemstack,probability,gacha_events.event_name FROM gachadata INNER JOIN gacha_events ON event_id = gacha_events.id"
+        sql"SELECT id,itemstack,probability,gacha_events.event_name AS event_name FROM gachadata INNER JOIN gacha_events ON event_id = gacha_events.id"
           .map { rs =>
             val probability = rs.double("probability")
             // TODO ガチャアイテムに対して記名を行うかどうかを確率に依存すべきではない
