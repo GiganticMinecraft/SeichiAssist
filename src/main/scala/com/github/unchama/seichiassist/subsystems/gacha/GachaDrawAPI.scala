@@ -4,6 +4,7 @@ trait GachaDrawAPI[F[_], Player] {
 
   /**
    * @return ガチャを引く作用
+   * TODO: drawGachaをKleisliにする
    */
   def drawGacha(player: Player, draws: Int): F[Unit]
 

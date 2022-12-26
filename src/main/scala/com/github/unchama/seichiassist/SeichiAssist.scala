@@ -70,8 +70,9 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
   FastDiggingSettingsApi
 }
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
-import com.github.unchama.seichiassist.subsystems.gacha.GachaDrawAPI
+import com.github.unchama.seichiassist.subsystems.gacha.{GachaAPI, GachaDrawAPI}
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket.ConsumeGachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
@@ -402,9 +403,15 @@ class SeichiAssist extends JavaPlugin() {
   private implicit lazy val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player] =
     gachaPrizeSystem.api
 
-  private lazy val gachaSystem: gacha.System[IO, Player] = {
+  private lazy val gachaSystem: subsystems.gacha.System[IO, Player] = {
     implicit val gachaTicketAPI: GachaTicketAPI[IO] = gachaTicketSystem.api
-    gacha.System.wired[IO].unsafeRunSync()
+
+    subsystems.gacha.System.wired[IO].unsafeRunSync()
+  }
+
+  private lazy val consumeGachaTicketSystem
+    : subsystems.gacha.subsystems.consumegachaticket.System[IO] = {
+    subsystems.gacha.subsystems.consumegachaticket.System.wired[IO, SyncIO].unsafeRunSync()
   }
 
   private lazy val gachaTicketSystem: gachaticket.System[IO] =
@@ -454,7 +461,8 @@ class SeichiAssist extends JavaPlugin() {
     gtToSiinaSystem,
     gachaTradeSystem,
     sharedInventorySystem,
-    mineStackSystem
+    mineStackSystem,
+    consumeGachaTicketSystem
   )
 
   private lazy val buildAssist: BuildAssist = {
@@ -467,6 +475,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val bungeeSemaphoreResponderSystem: BungeeSemaphoreResponderSystem[IO] = {
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val systemConfiguration
       : com.github.unchama.bungeesemaphoreresponder.Configuration =
@@ -606,6 +615,9 @@ class SeichiAssist extends JavaPlugin() {
       sharedInventorySystem.api
     implicit val gachaTicketAPI: GachaTicketAPI[IO] =
       gachaTicketSystem.api
+    implicit val gachaAPI: GachaDrawAPI[IO, Player] = gachaSystem.api
+    implicit val consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player] =
+      consumeGachaTicketSystem.api
 
     implicit val minecraftItemStack: MinecraftItemStack[ItemStack] = new BukkitItemStack
 
@@ -703,6 +715,8 @@ class SeichiAssist extends JavaPlugin() {
     hasBeenLoadedAlready = true
     kickAllPlayersDueToInitialization.unsafeRunSync()
 
+    removeRegions()
+
     logger.info("SeichiAssistが有効化されました！")
   }
 
@@ -715,6 +729,13 @@ class SeichiAssist extends JavaPlugin() {
         e.printStackTrace()
         Bukkit.shutdown()
     }
+  }
+
+  // FIXME: rmpコマンドを実装しているシステムをsubsystemに切り出したらapiを利用して処理をする
+  // ref: https://github.com/GiganticMinecraft/SeichiAssist/pulls#discussion_r1020897163
+  private def removeRegions(): Unit = {
+    Bukkit.dispatchCommand(Bukkit.getConsoleSender, "rmp remove world_SW_2 3")
+    Bukkit.dispatchCommand(Bukkit.getConsoleSender, "rmp remove world_SW_4 3")
   }
 
   private def startRepeatedJobs(): Unit = {

@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.menus.stickmenu
 
-import cats.effect.IO
+import cats.data.Kleisli
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory._
@@ -18,6 +19,10 @@ import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSetti
   ReceiveMessageOnly
 }
 import com.github.unchama.seichiassist.menus.CommonButtons
+import com.github.unchama.seichiassist.subsystems.gacha.GachaDrawAPI
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket.ConsumeGachaTicketAPI
+import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
+import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.GachaPoint
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData.anniversaryPlayerHead
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas
@@ -37,6 +42,7 @@ import com.github.unchama.targetedeffect.player.{
 }
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.{Material, Sound}
 
@@ -54,7 +60,10 @@ object SecondPage extends Menu {
 
   class Environment(
     implicit val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
-    val sharedInventoryAPI: SharedInventoryAPI[IO, Player]
+    val sharedInventoryAPI: SharedInventoryAPI[IO, Player],
+    val gachaDrawAPI: GachaDrawAPI[IO, Player],
+    val gachaPointAPI: GachaPointApi[IO, SyncIO, Player],
+    val consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player]
   )
 
   override val frame: MenuFrame =
@@ -87,7 +96,8 @@ object SecondPage extends Menu {
       ChestSlotRef(1, 3) -> computeHeadSummoningButton,
       ChestSlotRef(1, 4) -> computeBroadcastMessageToggleButton,
       ChestSlotRef(1, 5) -> computeDeathMessageToggleButton,
-      ChestSlotRef(1, 6) -> computeWorldGuardMessageToggleButton
+      ChestSlotRef(1, 6) -> computeWorldGuardMessageToggleButton,
+      ChestSlotRef(2, 8) -> computeBulkDrawGachaButton
     ).toList.traverse(_.sequence)
 
     for {
@@ -324,6 +334,79 @@ object SecondPage extends Menu {
 
       Button(iconItemStack, LeftClickButtonEffect(CommandEffect("shareinv")))
     })
+
+    def computeBulkDrawGachaButton(implicit environment: Environment): IO[Button] =
+      RecomputedButton {
+        import environment._
+
+        val leftClickButtonEffect = action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+          _ =>
+            DeferredEffect {
+              for {
+                _ <- consumeGachaTicketAPI.toggleConsumeGachaTicketAmount.apply(player)
+                consumeGachaTicketAmount <- consumeGachaTicketAPI.consumeGachaTicketAmount(
+                  player
+                )
+              } yield SequentialEffect(
+                MessageEffect(s"まとめ引きするガチャ券の数を${consumeGachaTicketAmount.value}枚に変更しました。"),
+                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+              )
+            }
+        }
+
+        val rightClickButtonEffect =
+          action.FilteredButtonEffect(ClickEventFilter.RIGHT_CLICK) { _ =>
+            DeferredEffect {
+              for {
+                currentConsumeGachaTicketAmount <- consumeGachaTicketAPI
+                  .consumeGachaTicketAmount(player)
+                currentGachaPoint <- gachaPointAPI.gachaPoint(player).read.toIO
+              } yield {
+                val currentGachaTicketAmount = currentGachaPoint.availableTickets
+                // 残ガチャ券のストックがまとめ引き指定数に足りない場合は何もしない
+                if (currentGachaTicketAmount < currentConsumeGachaTicketAmount.value) {
+                  SequentialEffect(
+                    MessageEffect(s"${RED}整地報酬ガチャ券のストックが足りません。"),
+                    FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+                  )
+                } else {
+                  SequentialEffect(
+                    // 無暗に連打させないよう、まとめ引き時にメニューを閉じる
+                    closeInventoryEffect,
+                    DeferredEffect(IO {
+                      gachaPointAPI.subtractGachaPoint(
+                        GachaPoint.gachaPointBy(currentConsumeGachaTicketAmount.value)
+                      )
+                    }),
+                    DeferredEffect(IO {
+                      Kleisli { player =>
+                        gachaDrawAPI.drawGacha(player, currentConsumeGachaTicketAmount.value)
+                      }
+                    })
+                  )
+                }
+              }
+            }
+          }
+
+        val computeItemStack: IO[ItemStack] =
+          consumeGachaTicketAPI.consumeGachaTicketAmount(player).map { amount =>
+            val lore = List(
+              s"$RESET${GREEN}ガチャを一気に$YELLOW${amount.value}回${GREEN}引きます!",
+              "左クリックで一度に引く枚数を変更します",
+              "右クリックでガチャを引きます",
+              "ガチャ券は整地報酬ガチャ券のストックから直接差し引かれます"
+            )
+            new IconItemStackBuilder(Material.PAPER)
+              .title(s"$YELLOW$UNDERLINE${BOLD}ガチャ一括まとめ引き!")
+              .lore(lore)
+              .build()
+          }
+
+        for {
+          itemStack <- computeItemStack
+        } yield Button(itemStack, leftClickButtonEffect, rightClickButtonEffect)
+      }
   }
 
   private object ConstantButtons {
@@ -531,5 +614,4 @@ object SecondPage extends Menu {
     )
 
   }
-
 }

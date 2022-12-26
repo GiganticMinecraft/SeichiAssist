@@ -8,5 +8,5 @@ trait GachaTradeRule[ItemStack] {
   def ruleFor(
     playerName: String,
     gachaList: Vector[GachaPrize[ItemStack]]
-  ): TradeRule[ItemStack, BigOrRegular]
+  ): TradeRule[ItemStack, (BigOrRegular, Int)]
 }

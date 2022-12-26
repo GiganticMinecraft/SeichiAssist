@@ -53,12 +53,14 @@ class PlayerPullGachaListener[F[_]: ConcurrentEffect: OnMinecraftServerThread](
     }
 
     /*
-      AIRまたはBlockを右クリックしていない、または、Blockのときにチェストやトラップチェストをクリックしていれば処理を終了
+      以下の場合、処理を終了
+     * - AIRを右クリックしていないかつ、Blockを右クリックしていない
+     * - チェストやトラップチェストをクリックしている
       参照：https://github.com/GiganticMinecraft/SeichiAssist/issues/770
      */
     if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) return
     if (
-      action == Action.RIGHT_CLICK_BLOCK && (clickedBlock.getType == Material.CHEST || clickedBlock.getType == Material.TRAPPED_CHEST)
+      clickedBlock.getType == Material.CHEST || clickedBlock.getType == Material.TRAPPED_CHEST
     ) return
 
     // ガチャデータが設定されていない場合

@@ -4,25 +4,13 @@ import cats.effect.ConcurrentEffect
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.gacha.application.actions.{
-  DrawGacha,
-  GrantGachaPrize
-}
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.{
-  BukkitDrawGacha,
-  BukkitGrantGachaPrize
-}
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.{
-  GachaCommand,
-  PlayerPullGachaListener
-}
+import com.github.unchama.seichiassist.subsystems.gacha.application.actions.{DrawGacha, GrantGachaPrize}
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.{BukkitDrawGacha, BukkitGrantGachaPrize}
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.{GachaCommand, PlayerPullGachaListener}
 import com.github.unchama.seichiassist.subsystems.gacha.domain.LotteryOfGachaItems
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
-  CanBeSignedAsGachaPrize,
-  StaticGachaPrizeFactory
-}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{CanBeSignedAsGachaPrize, StaticGachaPrizeFactory}
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player

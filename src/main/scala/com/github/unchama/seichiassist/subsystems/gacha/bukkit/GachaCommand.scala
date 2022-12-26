@@ -115,7 +115,18 @@ class GachaCommand[
 
   object ChildExecutors {
 
-    val gachaPrizeIdExistsParser: String => Either[TargetedEffect[CommandSender], Any] = Parsers
+    private val getGachaPrizeIdExistsParser: String => Either[TargetedEffect[CommandSender], Any] =
+      Parsers
+        .closedRangeInt(0, Int.MaxValue, MessageEffect("IDは0以上の整数を指定してください。"))
+        .andThen(_.flatMap { id =>
+          val intId = id.asInstanceOf[Int]
+          if (gachaPrizeAPI.existsGachaPrize(GachaPrizeId(intId)).toIO.unsafeRunSync())
+            succeedWith(intId)
+          else
+            failWith("指定されたIDのアイテムは存在しません！")
+        })
+
+    private val gachaPrizeIdExistsParser: String => Either[TargetedEffect[CommandSender], Any] = Parsers
       .closedRangeInt(1, Int.MaxValue, MessageEffect("IDは正の値を指定してください。"))
       .andThen(_.flatMap { id =>
         val intId = id.asInstanceOf[Int]
@@ -126,7 +137,7 @@ class GachaCommand[
         }
       })
 
-    val probabilityParser: String => Either[TargetedEffect[CommandSender], Any] =
+    private val probabilityParser: String => Either[TargetedEffect[CommandSender], Any] =
       Parsers.double(MessageEffect("確率は小数点数で指定してください。")).andThen {
         _.flatMap { num =>
           val doubleNum = num.asInstanceOf[Double]
@@ -181,13 +192,16 @@ class GachaCommand[
 
     val giveItem: ContextualExecutor =
       playerCommandBuilder
-        .argumentsParsers(List(gachaPrizeIdExistsParser))
+        .argumentsParsers(List(getGachaPrizeIdExistsParser))
         .execution { context =>
+          val ownerName = context.args.yetToBeParsed.headOption
+
           val eff = for {
             gachaPrize <- gachaPrizeAPI.fetch(
               GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
             )
-            _ <- new BukkitGrantGachaPrize[F]().grantGachaPrize(gachaPrize.get)(context.sender)
+            _ <- new BukkitGrantGachaPrize[F]()
+              .insertIntoPlayerInventoryOrDrop(gachaPrize.get, ownerName)(context.sender)
           } yield MessageEffect("ガチャアイテムを付与しました。")
 
           eff.toIO
