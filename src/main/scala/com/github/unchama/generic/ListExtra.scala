@@ -46,8 +46,13 @@ object ListExtra {
   }
 
   /**
-   * `firstList`と`secondList`共に`conditions`に合致する要素を探し、
-   * 共に存在すれば`compute`をした結果を返します
+   * `conditions`に当てはまる値が2つの[[List]]に存在するか探し、その結果の直積を`compute`で写した結果を返します。
+   *
+   * @param conditions 探す値の条件を関数で記述します。
+   * @param compute    探した結果を受け取り、写す関数を渡します。
+   *                   この引数の関数は、conditionsにマッチする要素がfirstListとsecondListそれぞれに見つかれば、
+   *                   それぞれの結果を[[Tuple2]]に格納した[[Some]]が、そうでなければ[[None]]が渡されます。
+   * @return `firstList`と`secondList`から`conditions`に合致する要素を探した結果を`compute`で写した値
    */
   def computeDoubleList[A, B](
     firstList: List[A],
