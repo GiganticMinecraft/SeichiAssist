@@ -401,7 +401,7 @@ class GachaCommand[
                     LocalDate.parse(endDate, dateTimeFormatter)
                   )
                 )
-                .whenA(!isExistsEvent)
+                .unlessA(isExistsEvent)
 
             } yield {
               if (isExistsEvent) MessageEffect(s"${RED}指定されたイベント名のイベントが存在します。")
