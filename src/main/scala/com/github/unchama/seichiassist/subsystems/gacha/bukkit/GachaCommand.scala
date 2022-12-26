@@ -201,8 +201,7 @@ class GachaCommand[
           val player = context.sender
           val args = context.args.parsed
           val probability = args.head.asInstanceOf[Double]
-          val eventName =
-            Option.when(args(1).toString != null)(GachaEventName(args(1).toString))
+          val eventName = Option(args(1).toString).map(GachaEventName)
           val mainHandItem = player.getInventory.getItemInMainHand
           val eff = for {
             _ <- gachaPrizeAPI.addGachaPrize(
