@@ -127,7 +127,7 @@ object MineStackMassCraftMenu {
           ).flatten
 
           // MineStackObjectから直接メタ等のスタック情報を受け継ぐべきなのでビルダを使わずメタを直接書き換える
-          val productStack = productObjects.head._1.itemStack.clone()
+          val productStack = productObjects.head._1.itemStack
 
           productStack.setItemMeta {
             import scala.jdk.javaapi.CollectionConverters.asJava
