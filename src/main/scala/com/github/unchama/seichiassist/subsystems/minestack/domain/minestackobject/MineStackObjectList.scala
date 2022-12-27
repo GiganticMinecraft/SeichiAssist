@@ -3,12 +3,12 @@ package com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobj
 trait MineStackObjectList[F[_], ItemStack, Player] {
 
   /**
-   * @return [[MineStackObject]]をすべて返します
+   * @return [[MineStackObject]]をすべて返す作用
    */
   def allMineStackObjects: F[Vector[MineStackObject[ItemStack]]]
 
   /**
-   * @return [[ItemStack]]から[[MineStackObject]]を取得します
+   * @return [[ItemStack]]から[[MineStackObject]]を取得しようとする作用
    */
   def findByItemStack(
     itemStack: ItemStack,
@@ -16,12 +16,12 @@ trait MineStackObjectList[F[_], ItemStack, Player] {
   ): F[Option[MineStackObject[ItemStack]]]
 
   /**
-   * @return `name`から[[MineStackObject]]を取得します
+   * @return `name`から[[MineStackObject]]を取得する作用
    */
   def findByName(name: String): F[Option[MineStackObject[ItemStack]]]
 
   /**
-   * `category`を指定してすべての[[MineStackObjectGroup]]を取得します。
+   * @return `category`を指定してすべての[[MineStackObjectGroup]]を取得する作用
    */
   def getAllObjectGroupsInCategory(
     category: MineStackObjectCategory
