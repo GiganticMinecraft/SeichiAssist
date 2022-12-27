@@ -65,12 +65,11 @@ object System {
               override def load: F[Unit] = for {
                 createdEvents <- _gachaEventPersistence.gachaEvents
                 _ <- gachaPrizesListReference.update { prizes =>
-                  createdEvents.find(_.isHolding) match {
-                    case Some(value) =>
+                  createdEvents
+                    .find(_.isHolding)
+                    .fold(prizes.filter(_.gachaEventName.isEmpty))(value =>
                       prizes.filter(_.gachaEventName.contains(value.eventName))
-                    case None =>
-                      prizes.filter(_.gachaEventName.isEmpty)
-                  }
+                    )
                 }
               } yield ()
 
