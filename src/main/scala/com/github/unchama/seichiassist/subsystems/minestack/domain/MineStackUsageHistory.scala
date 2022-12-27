@@ -6,6 +6,7 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
 
 class MineStackUsageHistory[F[_]: Sync, ItemStack] {
 
+  // NOTE: 履歴を保存できる最大数
   private val maxListSize = 27
 
   import cats.implicits._
@@ -15,7 +16,10 @@ class MineStackUsageHistory[F[_]: Sync, ItemStack] {
   } yield reference
 
   /**
-   * 履歴に追加します。ただし、データの保存可能な最大値を超えていた場合、先頭から削除されます。
+   * 指定されたアイテムを履歴に追加します。
+   * ただし、履歴の数が保存できる最大エントリ数を超えていた場合、古い方から削除されます。
+   *
+   * @return 履歴を更新する作用
    */
   def addHistory(mineStackObject: MineStackObject[ItemStack]): F[Unit] = for {
     reference <- _usageHistory
@@ -26,6 +30,9 @@ class MineStackUsageHistory[F[_]: Sync, ItemStack] {
     _ <- reference.update(_.drop(1)).whenA(oldHistories.size > maxListSize)
   } yield ()
 
+  /**
+   * @return MineStackの使用履歴を返す作用
+   */
   def usageHistory: F[Vector[MineStackObject[ItemStack]]] = for {
     reference <- _usageHistory
     histories <- reference.get
