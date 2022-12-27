@@ -113,9 +113,7 @@ class BlockLineUpTriggerListener[
             .getStackedAmountOf(player, mineStackObject)
             .unsafeRunSync()
         }
-        .getOrElse {
-          0L
-        }
+        .getOrElse(0L)
 
       val available = availableOnHand + availableInMineStack
 
