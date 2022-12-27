@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
 trait MineStackWriteAPI[F[_], Player, ItemStack] {
 
   /**
-   * @return `player`の`mineStackObject`を`amount`だけさせる作用
+   * @return `player`の`mineStackObject`を`amount`だけ増加させる作用
    */
   def addStackedAmountOf(
     player: Player,
@@ -19,7 +19,8 @@ trait MineStackWriteAPI[F[_], Player, ItemStack] {
   ): F[Unit]
 
   /**
-   * @return `player`の`mineStackObject`を`amount`だけ減少させ、実際に減少させた量を返す
+   * `player`の`mineStackObject`を`amount`だけ減少させます。
+   * @return 実際に減少させた量を返す作用
    */
   def subtractStackedAmountOf(
     player: Player,
@@ -28,7 +29,7 @@ trait MineStackWriteAPI[F[_], Player, ItemStack] {
   ): F[Long]
 
   /**
-   * @return `player`のMineStackUsageHistoryに`mineStackObject`を追加する
+   * @return `player`のMineStackUsageHistoryに`mineStackObject`を追加する作用
    */
   def addUsageHistory(mineStackObject: MineStackObject[ItemStack]): Kleisli[F, Player, Unit]
 
@@ -38,7 +39,7 @@ trait MineStackWriteAPI[F[_], Player, ItemStack] {
   def toggleAutoMineStack: Kleisli[F, Player, Unit]
 
   /**
-   * @return [[TryIntoMineStack]]を返す
+   * @return プレイヤーのMineStackリポジトリに格納を試みる関数
    */
   def tryIntoMineStack: TryIntoMineStack[F, Player, ItemStack]
 
@@ -55,22 +56,22 @@ object MineStackWriteAPI {
 trait MineStackReadAPI[F[_], Player, ItemStack] {
 
   /**
-   * @return `player`が持っている`mineStackObject`の量を取得する
+   * @return `player`が持っている`mineStackObject`の量を取得する作用
    */
   def getStackedAmountOf(player: Player, mineStackObject: MineStackObject[ItemStack]): F[Long]
 
   /**
-   * @return `player`のMineStackUsageHistoryを取得する
+   * @return `player`のMineStackの使用履歴を取得する作用
    */
   def getUsageHistory(player: Player): F[Vector[MineStackObject[ItemStack]]]
 
   /**
-   * @return 現在のAutoMineStackのステータスを取得する
+   * @return 現在、自動回収されるかどうかを返す作用
    */
   def autoMineStack(player: Player): F[Boolean]
 
   /**
-   * @return [[MineStackObjectList]]を返す
+   * @return [[MineStackObject]]に対する操作を提供するtrait
    */
   def mineStackObjectList: MineStackObjectList[F, ItemStack, Player]
 
