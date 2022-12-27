@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject
 
+import cats.Functor
+
 trait MineStackObjectList[F[_], ItemStack, Player] {
 
   /**
@@ -15,10 +17,16 @@ trait MineStackObjectList[F[_], ItemStack, Player] {
     player: Player
   ): F[Option[MineStackObject[ItemStack]]]
 
+  protected implicit val F: Functor[F]
+
+  import cats.implicits._
+
   /**
    * @return `name`から[[MineStackObject]]を取得する作用
    */
-  def findByName(name: String): F[Option[MineStackObject[ItemStack]]]
+  final def findByName(name: String): F[Option[MineStackObject[ItemStack]]] = for {
+    result <- allMineStackObjects.map(_.find(_.mineStackObjectName == name))
+  } yield result
 
   /**
    * @return `category`を指定してすべての[[MineStackObjectGroup]]を取得する作用

@@ -672,8 +672,5 @@ class BukkitMineStackObjectList[F[_]: Sync](
       itemStack
     }
     mineStackObjects.find(_.itemStack.isSimilar(targetItemStack))
-  }
 
-  override def findByName(name: String): F[Option[MineStackObject[ItemStack]]] =
-    allMineStackObjects.map(_.find(_.mineStackObjectName == name))
 }
