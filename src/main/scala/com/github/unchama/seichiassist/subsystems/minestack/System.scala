@@ -57,10 +57,10 @@ object System {
   def wired[F[_]: ConcurrentEffect, G[_]: SyncEffect: ContextCoercion[*[_], F]](
     implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player]
   ): F[System[F, Player, ItemStack]] = {
-    implicit val minecraftMaterial: MinecraftMaterial[Material, ItemStack] = new BukkitMaterial
     implicit val mineStackGachaObjectPersistence
       : MineStackGachaObjectPersistence[F, ItemStack] =
       new JdbcMineStackGachaObjectPersistence[F, ItemStack, Player]
+    implicit val minecraftMaterial: MinecraftMaterial[Material, ItemStack] = new BukkitMaterial
     implicit val _mineStackObjectList: MineStackObjectList[F, ItemStack, Player] =
       new BukkitMineStackObjectList[F]
     implicit val playerSettingPersistence: PlayerSettingPersistence[G] =

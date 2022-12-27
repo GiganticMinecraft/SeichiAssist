@@ -19,7 +19,6 @@ import com.github.unchama.datarepository.definitions.SessionMutexRepositoryDefin
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
 import com.github.unchama.datarepository.template.initialization.SinglePhasedRepositoryInitialization
-import com.github.unchama.generic.algebra.Cloneable
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.generic.effect.concurrent.SessionMutex
@@ -31,7 +30,6 @@ import com.github.unchama.minecraft.bukkit.actions.{
   GetConnectedBukkitPlayers,
   SendBukkitMessage
 }
-import com.github.unchama.minecraft.bukkit.algebra.CloneableBukkitItemStack
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
 import com.github.unchama.seichiassist.SeichiAssist.seichiAssistConfig
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
@@ -42,8 +40,8 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
   asyncShift,
   onMainThread
 }
-import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.RankData
+import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.domain.actions.{
   GetNetworkConnectionCount,
@@ -71,11 +69,11 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
 }
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.gacha.GachaDrawAPI
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket.ConsumeGachaTicketAPI
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
-import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository
@@ -467,7 +465,6 @@ class SeichiAssist extends JavaPlugin() {
     implicit val flyApi: ManagedFlyApi[SyncIO, Player] = managedFlySystem.api
     implicit val buildCountAPI: BuildCountAPI[IO, SyncIO, Player] = buildCountSystem.api
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
-    implicit val minecraftItemStack: Cloneable[ItemStack] = new CloneableBukkitItemStack
 
     new BuildAssist(this)
   }

@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.minestack.bukkit
 import cats.Functor
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
-import com.github.unchama.minecraft.bukkit.algebra.CloneableBukkitItemStack.instance
+import com.github.unchama.minecraft.bukkit.algebra.CloneableBukkitItemStack._
 import com.github.unchama.minecraft.objects.MinecraftMaterial
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject.{
@@ -18,9 +18,9 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 class BukkitMineStackObjectList[F[_]: Sync](
-  implicit minecraftMaterial: MinecraftMaterial[Material, ItemStack],
-  gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
-  mineStackGachaObjectPersistence: MineStackGachaObjectPersistence[F, ItemStack]
+  implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
+  mineStackGachaObjectPersistence: MineStackGachaObjectPersistence[F, ItemStack],
+  minecraftMaterial: MinecraftMaterial[Material, ItemStack]
 ) extends MineStackObjectList[F, ItemStack, Player] {
 
   private def leftElems[A](elems: A*): List[Either[A, Nothing]] = elems.toList.map(Left.apply)
