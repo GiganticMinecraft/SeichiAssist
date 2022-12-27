@@ -38,10 +38,9 @@ class TryIntoMineStack[F[_]: Sync, Player, ItemStack](
   ): F[Unit] = mineStackObjectRepository(player).update { mineStackObjects =>
     ListExtra.rePrependOrAdd(mineStackObjects)(
       _.mineStackObject == mineStackObject,
-      {
-        case Some(value) => value.increase(amount)
-        case None        => MineStackObjectWithAmount(mineStackObject, amount)
-      }
+      _.fold(MineStackObjectWithAmount(mineStackObject, amount))(value =>
+        value.increase(amount)
+      )
     )
   }
 
