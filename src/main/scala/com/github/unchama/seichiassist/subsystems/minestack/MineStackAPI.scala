@@ -1,10 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.minestack
 
 import cats.data.Kleisli
-import com.github.unchama.seichiassist.subsystems.minestack.domain.{
-  MineStackRepository,
-  TryIntoMineStack
-}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackRepository
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
   MineStackObject,
   MineStackObjectList
@@ -18,14 +15,9 @@ trait MineStackWriteAPI[F[_], Player, ItemStack] {
   def addUsageHistory(mineStackObject: MineStackObject[ItemStack]): Kleisli[F, Player, Unit]
 
   /**
-   * @return AutoMineStackをステータスをトグルする作用
+   * @return 自動収集のステータスをトグルする作用
    */
   def toggleAutoMineStack: Kleisli[F, Player, Unit]
-
-  /**
-   * @return プレイヤーのMineStackリポジトリに格納を試みる関数
-   */
-  def tryIntoMineStack: TryIntoMineStack[F, Player, ItemStack]
 
 }
 

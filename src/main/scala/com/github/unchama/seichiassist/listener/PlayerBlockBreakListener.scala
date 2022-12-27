@@ -315,8 +315,8 @@ class PlayerBlockBreakListener(
       .toList
       .traverse { droppedItemStack =>
         mineStackAPI
-          .tryIntoMineStack
-          .apply(player, droppedItemStack, droppedItemStack.getAmount)
+          .mineStackRepository
+          .tryIntoMineStack(player, droppedItemStack, droppedItemStack.getAmount)
           .map(if (_) event.setDropItems(false) else ())
       }
       .unsafeRunSync()

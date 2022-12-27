@@ -23,7 +23,7 @@ class BukkitGrantGachaPrize[F[_]: Sync: OnMinecraftServerThread](
   ): Kleisli[F, Player, Boolean] =
     Kleisli { player =>
       val itemStack = prize.itemStack
-      mineStackAPI.tryIntoMineStack.apply(player, itemStack, itemStack.getAmount)
+      mineStackAPI.mineStackRepository.tryIntoMineStack(player, itemStack, itemStack.getAmount)
     }
 
   import cats.implicits._

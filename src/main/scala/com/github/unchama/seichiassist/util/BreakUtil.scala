@@ -390,9 +390,9 @@ object BreakUtil {
             .instance
             .mineStackSystem
             .api
-            .tryIntoMineStack
-            .apply(player, itemStack, itemStack.getAmount)
-            .map(if (_) Some(itemStack) else None)
+            .mineStackRepository
+            .tryIntoMineStack(player, itemStack, itemStack.getAmount)
+            .map(Option.when(_)(itemStack))
         }
 
       _ <- IO {

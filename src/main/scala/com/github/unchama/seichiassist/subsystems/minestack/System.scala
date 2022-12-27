@@ -107,9 +107,7 @@ object System {
       implicit val mineStackSettingRepository
         : PlayerDataRepository[MineStackSettings[G, Player]] =
         mineStackSettingsRepositoryControls.repository
-      implicit val _tryIntoMineStack: TryIntoMineStack[F, Player, ItemStack] =
-        new TryIntoMineStack[F, Player, ItemStack]
-      val _mineStackRepository: MineStackRepository[F, Player, ItemStack] =
+      implicit val _mineStackRepository: MineStackRepository[F, Player, ItemStack] =
         new BukkitMineStackRepository[F]
 
       new System[F, Player, ItemStack] {
@@ -146,9 +144,6 @@ object System {
                 mineStackSettingRepository(player).isAutoCollectionTurnedOn
               )
             } yield currentState
-
-            override def tryIntoMineStack: TryIntoMineStack[F, Player, ItemStack] =
-              _tryIntoMineStack
 
             override def mineStackObjectList: MineStackObjectList[F, ItemStack, Player] =
               _mineStackObjectList

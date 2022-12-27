@@ -95,8 +95,8 @@ object MineStackCommand {
             targetIndexes <- inventory.getContents.toList.zipWithIndex.traverse {
               case (itemStack, index) =>
                 mineStackAPI
-                  .tryIntoMineStack
-                  .apply(player, itemStack, itemStack.getAmount)
+                  .mineStackRepository
+                  .tryIntoMineStack(player, itemStack, itemStack.getAmount)
                   .map(isSucceed => Option.when(itemStack != null && isSucceed)(index))
             }
             _ <- IO(targetIndexes.foreach(_.foreach(index => inventory.clear(index))))

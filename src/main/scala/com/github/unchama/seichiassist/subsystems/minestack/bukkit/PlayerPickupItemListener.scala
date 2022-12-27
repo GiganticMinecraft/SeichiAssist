@@ -6,10 +6,7 @@ import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.ApplicativeExtra.whenAOrElse
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.subsystems.minestack.domain.{
-  MineStackSettings,
-  TryIntoMineStack
-}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.{MineStackRepository, MineStackSettings}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityPickupItemEvent
@@ -19,7 +16,7 @@ import org.bukkit.{GameMode, Sound}
 
 class PlayerPickupItemListener[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
   implicit mineStackSettingRepository: PlayerDataRepository[MineStackSettings[G, Player]],
-  tryIntoMineStack: TryIntoMineStack[F, Player, ItemStack]
+  mineStackRepository: MineStackRepository[F, Player, ItemStack]
 ) extends Listener {
 
   import cats.implicits._
@@ -38,7 +35,7 @@ class PlayerPickupItemListener[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_
             mineStackSettingRepository(player).isAutoCollectionTurnedOn
           )
           isSucceedTryIntoMineStack <- whenAOrElse(currentAutoMineStackState)(
-            tryIntoMineStack(player, itemStack, itemStack.getAmount),
+            mineStackRepository.tryIntoMineStack(player, itemStack, itemStack.getAmount),
             false
           )
           _ <- Sync[F]
