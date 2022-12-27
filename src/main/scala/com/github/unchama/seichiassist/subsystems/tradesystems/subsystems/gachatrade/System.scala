@@ -3,16 +3,12 @@ package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gacha
 import cats.effect.ConcurrentEffect
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
+import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.GachaPrize
-import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
-import com.github.unchama.seichiassist.subsystems.tradesystems.domain.TradeRule
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.listeners.GachaTradeListener
-import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.traderules.{
-  BigOrRegular,
-  BukkitTrade
-}
+import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.traderules.BukkitTrade
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.domain.{
   GachaListProvider,
   GachaTradeRule
@@ -33,13 +29,9 @@ object System {
       new GachaListProvider[F, ItemStack] {
         override def readGachaList: F[Vector[GachaPrize[ItemStack]]] = gachaPrizeAPI.listOfNow
       }
-    val gachaTradeRule: GachaTradeRule[ItemStack] = new GachaTradeRule[ItemStack] {
-      override def ruleFor(
-        playerName: String,
-        gachaList: Vector[GachaPrize[ItemStack]]
-      ): TradeRule[ItemStack, (BigOrRegular, Int)] =
+    val gachaTradeRule: GachaTradeRule[ItemStack] =
+      (playerName: String, gachaList: Vector[GachaPrize[ItemStack]]) =>
         new BukkitTrade(playerName, gachaList)
-    }
 
     new Subsystem[F] {
       override val listeners: Seq[Listener] = Seq(new GachaTradeListener[F, G](gachaTradeRule))

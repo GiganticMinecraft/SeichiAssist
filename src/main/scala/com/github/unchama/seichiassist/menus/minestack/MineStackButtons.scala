@@ -45,10 +45,9 @@ private[minestack] case class MineStackButtons(player: Player)(
     }
   }
 
-  def getMineStackObjectButtonOf(mineStackObject: MineStackObject[ItemStack])(
-    implicit onMainThread: OnMinecraftServerThread[IO],
-    canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu
-  ): IO[Button] = RecomputedButton {
+  def getMineStackObjectButtonOf(
+    mineStackObject: MineStackObject[ItemStack]
+  )(implicit onMainThread: OnMinecraftServerThread[IO]): IO[Button] = RecomputedButton {
     val mineStackObjectGroup: MineStackObjectGroup[ItemStack] = Left(mineStackObject)
 
     for {
@@ -138,8 +137,7 @@ private[minestack] case class MineStackButtons(player: Player)(
   }
 
   private def objectClickEffect(mineStackObject: MineStackObject[ItemStack], amount: Int)(
-    implicit onMainThread: OnMinecraftServerThread[IO],
-    canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu
+    implicit onMainThread: OnMinecraftServerThread[IO]
   ): Kleisli[IO, Player, Unit] = {
     SequentialEffect(
       withDrawItemEffect(mineStackObject, amount),
