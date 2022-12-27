@@ -19,7 +19,7 @@ case class MineStackObject[ItemStack](
     minecraftItemStack.copy(_itemStack)
 
   /**
-   * 記名済みの[[ItemStack]]へ変換することを試みます
+   * @return 記名済みの[[ItemStack]]へ変換することを試みる作用
    */
   def tryToSignedItemStack[F[_]: Sync, Player](name: String)(
     implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
