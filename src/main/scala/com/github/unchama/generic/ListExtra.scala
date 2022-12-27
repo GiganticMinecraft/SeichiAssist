@@ -38,8 +38,13 @@ object ListExtra {
   }
 
   /**
-   * Listの中身で条件に一致するものがあれば`element`を先頭に追加しなおし、
-   * 一致するものがなければ`element(None)`を先頭に追加します
+   * 与えられたListにおいて、述語に合致する要素を全て取り除いた上で先頭に追加します。
+   *
+   * @param list      処理対象
+   * @param predicate 述語
+   * @param element   先頭に追加するために、述語で検索した結果を移す関数。`Option.get`は例外の原因となりえることに注意。
+   * @return Listの中身で条件に一致するものがあれば一番最初に見つかった要素と同値のもの全てを取り除いてからその要素を先頭に追加したListを返し、
+   *         一致するものがなければ`element(None)`を先頭に追加します
    */
   def rePrependOrAdd[A](
     list: List[A]
