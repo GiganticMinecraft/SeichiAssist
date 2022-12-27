@@ -21,7 +21,7 @@ class TryIntoMineStack[F[_]: Sync, Player, ItemStack](
 
   /**
    * [[Player]]のMineStackリポジトリに[[ItemStack]]を格納することを試みます。
-   * @return 格納ができたかどうか
+   * @return 格納ができたかどうかを取得する作用
    */
   def apply(player: Player, itemStack: ItemStack, amount: Int): F[Boolean] = for {
     foundMineStackObject <- mineStackObjectList.findByItemStack(itemStack, player)
