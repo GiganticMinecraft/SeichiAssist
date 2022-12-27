@@ -6,7 +6,10 @@ import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.ApplicativeExtra.whenAOrElse
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.subsystems.minestack.domain.{MineStackRepository, MineStackSettings}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.{
+  MineStackRepository,
+  MineStackSettings
+}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityPickupItemEvent

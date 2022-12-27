@@ -9,6 +9,7 @@ import com.github.unchama.datarepository.bukkit.player.{
 }
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 import com.github.unchama.minecraft.bukkit.objects.{BukkitItemStack, BukkitMaterial}
 import com.github.unchama.minecraft.objects.{MinecraftItemStack, MinecraftMaterial}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
@@ -63,8 +64,8 @@ object System {
       new JdbcMineStackGachaObjectPersistence[F, ItemStack, Player]
     implicit val _mineStackObjectList: MineStackObjectList[F, ItemStack, Player] =
       new BukkitMineStackObjectList[F]
-    implicit val playerSettingPersistence: Player => PlayerSettingPersistence[G] =
-      player => new JdbcPlayerSettingPersistence[G](player.getUniqueId)
+    implicit val playerSettingPersistence: PlayerSettingPersistence[G] =
+      new JdbcPlayerSettingPersistence[G]
 
     for {
       allMineStackObjects <- _mineStackObjectList.allMineStackObjects
