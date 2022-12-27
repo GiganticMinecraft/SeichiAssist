@@ -8,12 +8,12 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
 trait GachaPrizeListPersistence[F[_], ItemStack] {
 
   /**
-   * @return ガチャアイテムとして登録されているアイテムリストをGachaPrizeのVectorとして返す
+   * @return ガチャアイテムとして登録されているアイテムの一覧を返す作用
    */
   def list: F[Vector[GachaPrize[ItemStack]]]
 
   /**
-   * @return ガチャリストを`gachaPrizesList`に設定する作用
+   * @return ガチャリストを更新する作用
    */
   def set(gachaPrizesList: Vector[GachaPrize[ItemStack]]): F[Unit]
 
