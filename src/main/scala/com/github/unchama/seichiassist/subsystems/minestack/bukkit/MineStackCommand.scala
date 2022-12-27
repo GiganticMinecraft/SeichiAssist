@@ -24,8 +24,8 @@ object MineStackCommand {
   ): TabExecutor =
     BranchedExecutor(
       Map(
-        "on" -> ChildExecutors.setAutoCollectionExecutor(true),
-        "off" -> ChildExecutors.setAutoCollectionExecutor(false),
+        "on" -> ChildExecutors.setAutoCollectionExecutor(autoMineStack = true),
+        "off" -> ChildExecutors.setAutoCollectionExecutor(autoMineStack = false),
         "open" -> ChildExecutors.openCategorizedMineStackMenu,
         "store-all" -> ChildExecutors.storeEverythingInInventory
       )
@@ -97,7 +97,7 @@ object MineStackCommand {
                 mineStackAPI
                   .tryIntoMineStack
                   .apply(player, itemStack, itemStack.getAmount)
-                  .map(isSucceed => if (itemStack != null && isSucceed) Some(index) else None)
+                  .map(isSucceed => Option.when(itemStack != null && isSucceed)(index))
             }
             _ <- IO(targetIndexes.foreach(_.foreach(index => inventory.clear(index))))
           } yield MessageEffect(s"${YELLOW}インベントリの中身をすべてマインスタックに収納しました。")
