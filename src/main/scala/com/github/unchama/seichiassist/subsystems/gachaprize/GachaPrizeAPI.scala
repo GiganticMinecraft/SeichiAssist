@@ -33,7 +33,8 @@ trait GachaEventReadAPI[F[_]] {
   } yield gachaEvents.find(_.eventName == gachaEventName)
 
   /**
-   * @return `gachaEventName`という名前のイベントが存在するか取得する作用
+   * 指定された[[GachaEventName]]のイベントが存在するか調べる
+   * @return 存在すれば`true`、存在しないなら`false`を返す作用
    */
   final def isExistsGachaEvent(gachaEventName: GachaEventName): F[Boolean] = for {
     foundGachaEvent <- findGachaEvent(gachaEventName)
@@ -92,7 +93,8 @@ trait GachaPrizeReadAPI[F[_], ItemStack] {
   } yield prizes.find(_.id == gachaPrizeId)
 
   /**
-   * @return 指定された`gachaPrizeId`に対応する[[GachaPrize]]が存在するか確認する作用
+   * 指定された[[GachaPrizeId]]に対応する[[GachaPrize]]が存在するか確認する
+   * @return 存在するならtrue、存在しないならfalseを返す作用
    */
   final def existsGachaPrize(gachaPrizeId: GachaPrizeId): F[Boolean] =
     F.map(fetch(gachaPrizeId))(_.nonEmpty)
