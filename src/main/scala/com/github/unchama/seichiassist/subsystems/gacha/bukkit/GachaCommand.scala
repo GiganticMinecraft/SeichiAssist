@@ -420,7 +420,7 @@ class GachaCommand[
                 .unlessA(isExistsEvent)
 
             } yield {
-              if (isExistsEvent) MessageEffect(s"${RED}指定されたイベント名のイベントが存在します。")
+              if (isExistsEvent) MessageEffect(s"${RED}指定された名前のイベントが既に存在します。")
               else MessageEffect(s"${AQUA}イベントを作成しました。")
             }
 
