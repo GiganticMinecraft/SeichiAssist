@@ -76,7 +76,7 @@ object MineStackMassCraftMenu {
       import environment._
 
       def queryAmountOf(mineStackObj: MineStackObject[ItemStack]): IO[Long] =
-        environment.mineStackAPI.getStackedAmountOf(player, mineStackObj)
+        environment.mineStackAPI.mineStackRepository.getStackedAmountOf(player, mineStackObj)
 
       def toMineStackObjectChunk(
         chunk: (MineStackItemId, Int)
@@ -152,7 +152,7 @@ object MineStackMassCraftMenu {
         buildLevel <- BuildAssist.instance.buildAmountDataRepository(player).read.toIO
         allIngredientsAmount <- ingredientObjects.traverse {
           case (obj, _) =>
-            environment.mineStackAPI.getStackedAmountOf(player, obj)
+            environment.mineStackAPI.mineStackRepository.getStackedAmountOf(player, obj)
         }
         allIngredientsAvailable = (allIngredientsAmount zip ingredientObjects.map(_._2))
           .forall { case (mineStackAmount, requireAmount) => mineStackAmount >= requireAmount }
@@ -165,10 +165,16 @@ object MineStackMassCraftMenu {
           } else emptyEffect
         _ <- ingredientObjects.traverse {
           case (mineStackObject, amount) =>
-            environment.mineStackAPI.subtractStackedAmountOf(player, mineStackObject, amount)
+            environment
+              .mineStackAPI
+              .mineStackRepository
+              .subtractStackedAmountOf(player, mineStackObject, amount)
         } >> productObjects.traverse {
           case (mineStackObject, amount) =>
-            environment.mineStackAPI.addStackedAmountOf(player, mineStackObject, amount)
+            environment
+              .mineStackAPI
+              .mineStackRepository
+              .addStackedAmountOf(player, mineStackObject, amount)
         } >> {
           val successMessage = s"$GREEN${enumerateChunkDetails(ingredientObjects)}→" +
             s"${enumerateChunkDetails(productObjects)}変換"

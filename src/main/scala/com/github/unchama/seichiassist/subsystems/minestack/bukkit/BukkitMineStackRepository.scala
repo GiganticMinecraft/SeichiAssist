@@ -22,6 +22,15 @@ class BukkitMineStackRepository[F[_]: Sync](
 
   import cats.implicits._
 
+  override def getStackedAmountOf(
+    player: Player,
+    mineStackObject: MineStackObject[ItemStack]
+  ): F[Long] = for {
+    mineStackObjects <- mineStackObjectRepository(player).get
+  } yield {
+    mineStackObjects.find(_.mineStackObject == mineStackObject).map(_.amount).getOrElse(0L)
+  }
+
   override def addStackedAmountOf(
     player: Player,
     mineStackObject: MineStackObject[ItemStack],

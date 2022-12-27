@@ -20,6 +20,7 @@ import com.github.unchama.seichiassist.subsystems.minestack.application.reposito
 }
 import com.github.unchama.seichiassist.subsystems.minestack.bukkit.{
   BukkitMineStackObjectList,
+  BukkitMineStackRepository,
   PlayerPickupItemListener
 }
 import com.github.unchama.seichiassist.subsystems.minestack.domain._
@@ -108,60 +109,12 @@ object System {
         mineStackSettingsRepositoryControls.repository
       implicit val _tryIntoMineStack: TryIntoMineStack[F, Player, ItemStack] =
         new TryIntoMineStack[F, Player, ItemStack]
+      val _mineStackRepository: MineStackRepository[F, Player, ItemStack] =
+        new BukkitMineStackRepository[F]
 
       new System[F, Player, ItemStack] {
         override val api: MineStackAPI[F, Player, ItemStack] =
           new MineStackAPI[F, Player, ItemStack] {
-            override def subtractStackedAmountOf(
-              player: Player,
-              mineStackObject: MineStackObject[ItemStack],
-              amount: Long
-            ): F[Long] = {
-              for {
-                oldMineStackObjects <- mineStackObjectRepository(player).get
-                updatedMineStackObjects <- mineStackObjectRepository(player).updateAndGet {
-                  mineStackObjects =>
-                    ListExtra.rePrepend(mineStackObjects)(
-                      _.mineStackObject == mineStackObject,
-                      _.decrease(amount)
-                    )
-                }
-              } yield {
-                ListExtra.findBothThenMap(oldMineStackObjects, updatedMineStackObjects)(
-                  _.mineStackObject == mineStackObject,
-                  {
-                    case Some((oldMineStackObject, updatedMineStackObject)) =>
-                      Math.abs(oldMineStackObject.amount - updatedMineStackObject.amount)
-                    case None => 0
-                  }
-                )
-              }
-            }
-
-            override def addStackedAmountOf(
-              player: Player,
-              mineStackObject: MineStackObject[ItemStack],
-              amount: Int
-            ): F[Unit] =
-              mineStackObjectRepository(player).update { mineStackObjects =>
-                ListExtra.rePrepend(mineStackObjects)(
-                  _.mineStackObject == mineStackObject,
-                  _.increase(amount)
-                )
-              }
-
-            override def getStackedAmountOf(
-              player: Player,
-              mineStackObject: MineStackObject[ItemStack]
-            ): F[Long] = for {
-              mineStackObjects <- mineStackObjectRepository(player).get
-            } yield {
-              mineStackObjects
-                .find(_.mineStackObject == mineStackObject)
-                .map(_.amount)
-                .getOrElse(0L)
-            }
-
             override def getUsageHistory(
               player: Player
             ): F[Vector[MineStackObject[ItemStack]]] = ContextCoercion {
@@ -189,7 +142,9 @@ object System {
               }
 
             override def autoMineStack(player: Player): F[Boolean] = for {
-              currentState <- ContextCoercion(mineStackSettingRepository(player).isAutoCollectionTurnedOn)
+              currentState <- ContextCoercion(
+                mineStackSettingRepository(player).isAutoCollectionTurnedOn
+              )
             } yield currentState
 
             override def tryIntoMineStack: TryIntoMineStack[F, Player, ItemStack] =
@@ -198,6 +153,8 @@ object System {
             override def mineStackObjectList: MineStackObjectList[F, ItemStack, Player] =
               _mineStackObjectList
 
+            override def mineStackRepository: MineStackRepository[F, Player, ItemStack] =
+              _mineStackRepository
           }
 
         override val listeners: Seq[Listener] = Seq(new PlayerPickupItemListener[F, G])

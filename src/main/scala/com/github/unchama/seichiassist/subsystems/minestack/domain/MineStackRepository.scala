@@ -8,6 +8,11 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
 trait MineStackRepository[F[_], Player, ItemStack] {
 
   /**
+   * @return `player`が持っている`mineStackObject`の量を取得する作用
+   */
+  def getStackedAmountOf(player: Player, mineStackObject: MineStackObject[ItemStack]): F[Long]
+
+  /**
    * @return `player`の`mineStackObject`を`amount`だけ増加させる作用
    */
   def addStackedAmountOf(
@@ -17,7 +22,7 @@ trait MineStackRepository[F[_], Player, ItemStack] {
   ): F[Unit]
 
   /**
-   * `player`の`mineStackObject`を`amount`だけ減少させます。
+   * `player`の`mineStackObject`を`amount`だけ減少させる作用
    * @return 実際に減少させた量を返す作用
    */
   def subtractStackedAmountOf(
@@ -28,7 +33,7 @@ trait MineStackRepository[F[_], Player, ItemStack] {
 
   /**
    * [[Player]]のMineStackリポジトリに[[ItemStack]]を格納することを試みます。
-   * @return 格納できたら`true`、格納に失敗すれば`false`
+   * @return 格納できたら`true`、格納に失敗すれば`false`を返す作用
    */
   def tryIntoMineStack(player: Player, itemStack: ItemStack, amount: Int): F[Boolean]
 

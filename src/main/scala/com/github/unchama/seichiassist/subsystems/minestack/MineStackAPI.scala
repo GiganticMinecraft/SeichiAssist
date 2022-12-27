@@ -1,32 +1,16 @@
 package com.github.unchama.seichiassist.subsystems.minestack
 
 import cats.data.Kleisli
-import com.github.unchama.seichiassist.subsystems.minestack.domain.TryIntoMineStack
+import com.github.unchama.seichiassist.subsystems.minestack.domain.{
+  MineStackRepository,
+  TryIntoMineStack
+}
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
   MineStackObject,
   MineStackObjectList
 }
 
 trait MineStackWriteAPI[F[_], Player, ItemStack] {
-
-  /**
-   * @return `player`の`mineStackObject`を`amount`だけ増加させる作用
-   */
-  def addStackedAmountOf(
-    player: Player,
-    mineStackObject: MineStackObject[ItemStack],
-    amount: Int
-  ): F[Unit]
-
-  /**
-   * `player`の`mineStackObject`を`amount`だけ減少させます。
-   * @return 実際に減少させた量を返す作用
-   */
-  def subtractStackedAmountOf(
-    player: Player,
-    mineStackObject: MineStackObject[ItemStack],
-    amount: Long
-  ): F[Long]
 
   /**
    * @return `player`のMineStackUsageHistoryに`mineStackObject`を追加する作用
@@ -56,11 +40,6 @@ object MineStackWriteAPI {
 trait MineStackReadAPI[F[_], Player, ItemStack] {
 
   /**
-   * @return `player`が持っている`mineStackObject`の量を取得する作用
-   */
-  def getStackedAmountOf(player: Player, mineStackObject: MineStackObject[ItemStack]): F[Long]
-
-  /**
    * @return `player`のMineStackの使用履歴を取得する作用
    */
   def getUsageHistory(player: Player): F[Vector[MineStackObject[ItemStack]]]
@@ -71,9 +50,14 @@ trait MineStackReadAPI[F[_], Player, ItemStack] {
   def autoMineStack(player: Player): F[Boolean]
 
   /**
-   * @return [[MineStackObject]]に対する操作を提供するtrait
+   * @return [[MineStackObject]]に対する操作を提供するクラス
    */
   def mineStackObjectList: MineStackObjectList[F, ItemStack, Player]
+
+  /**
+   * @return MineStackのアイテム数に関する操作を提供するクラス
+   */
+  def mineStackRepository: MineStackRepository[F, Player, ItemStack]
 
 }
 

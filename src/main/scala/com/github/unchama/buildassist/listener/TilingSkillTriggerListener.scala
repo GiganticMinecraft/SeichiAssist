@@ -188,11 +188,14 @@ class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[
                 case Some(mineStackObject) =>
                   if (
                     mineStackAPI
+                      .mineStackRepository
                       .getStackedAmountOf(player, mineStackObject)
                       .toIO
                       .unsafeRunSync() > 0
                   ) {
-                    mineStackAPI.subtractStackedAmountOf(player, mineStackObject, 1)
+                    mineStackAPI
+                      .mineStackRepository
+                      .subtractStackedAmountOf(player, mineStackObject, 1)
 
                     commitPlacement()
                     b2.break()
