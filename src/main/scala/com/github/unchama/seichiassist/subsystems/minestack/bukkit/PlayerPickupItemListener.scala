@@ -35,7 +35,7 @@ class PlayerPickupItemListener[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_
 
         val program = for {
           currentAutoMineStackState <- ContextCoercion(
-            mineStackSettingRepository(player).currentState
+            mineStackSettingRepository(player).isAutoCollectionTurnedOn
           )
           isSucceedTryIntoMineStack <- whenAOrElse(currentAutoMineStackState)(
             tryIntoMineStack(player, itemStack, itemStack.getAmount),

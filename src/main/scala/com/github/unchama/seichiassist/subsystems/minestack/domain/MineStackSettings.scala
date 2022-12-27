@@ -18,7 +18,7 @@ class MineStackSettings[F[_]: Sync, Player](player: Player)(
   /**
    * @return 自動収集を有効にする作用
    */
-  def toggleAutoMineStackTurnOn: F[Unit] = for {
+  def turnOnAutoCollect: F[Unit] = for {
     _ <- playerSettingPersistence(player).turnOnAutoMineStack
     reference <- autoMineStack
   } yield reference.set(true)
@@ -26,7 +26,7 @@ class MineStackSettings[F[_]: Sync, Player](player: Player)(
   /**
    * @return 自動収集を無効にする作用
    */
-  def toggleAutoMineStackTurnOff: F[Unit] = for {
+  def turnOffAutoCollect: F[Unit] = for {
     _ <- playerSettingPersistence(player).turnOffAutoMineStack
     reference <- autoMineStack
   } yield reference.set(false)
@@ -35,7 +35,7 @@ class MineStackSettings[F[_]: Sync, Player](player: Player)(
    * 現在自動収集が有効になっているかを取得します
    * @return 有効になっていればtrue、なっていなければfalseを返す作用
    */
-  def currentState: F[Boolean] = for {
+  def isAutoCollectionTurnedOn: F[Boolean] = for {
     reference <- autoMineStack
     state <- reference.get
   } yield state

@@ -182,14 +182,14 @@ object System {
                   currentState <- autoMineStack(player)
                   _ <- ContextCoercion {
                     if (currentState)
-                      mineStackSettingRepository(player).toggleAutoMineStackTurnOff
-                    else mineStackSettingRepository(player).toggleAutoMineStackTurnOn
+                      mineStackSettingRepository(player).turnOffAutoCollect
+                    else mineStackSettingRepository(player).turnOnAutoCollect
                   }
                 } yield ()
               }
 
             override def autoMineStack(player: Player): F[Boolean] = for {
-              currentState <- ContextCoercion(mineStackSettingRepository(player).currentState)
+              currentState <- ContextCoercion(mineStackSettingRepository(player).isAutoCollectionTurnedOn)
             } yield currentState
 
             override def tryIntoMineStack: TryIntoMineStack[F, Player, ItemStack] =
