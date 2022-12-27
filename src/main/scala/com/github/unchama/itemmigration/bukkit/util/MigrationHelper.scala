@@ -36,7 +36,7 @@ object MigrationHelper {
                  *
                  * [[BlockStateMeta]] の `.getBlockState` メソッドは
                  *
-                 * > The state is a clone, it must be set back (or to another item) with
+                 * > The state is a copy, it must be set back (or to another item) with
                  * setBlockState(BlockState)
                  *
                  * にあるように状態のコピーを返してくるので、それに付属したインベントリ(`state.getInventory`) に変更を行った後は `state` を
