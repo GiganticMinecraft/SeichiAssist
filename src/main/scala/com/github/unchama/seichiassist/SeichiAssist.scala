@@ -430,11 +430,9 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.sharedinventory.System.wired[IO]
 
   /* TODO: mineStackSystemは本来privateであるべきだが、mineStackにアイテムを格納するというAPIを現状の実装だと
-      BreakUtilから呼び出されている都合上publicやむを得ずになっている。*/
-  lazy val mineStackSystem: subsystems.minestack.System[IO, Player, ItemStack] = {
-
+      BreakUtilから呼び出されている都合上やむを得ずpublicになっている。*/
+  lazy val mineStackSystem: subsystems.minestack.System[IO, Player, ItemStack] =
     subsystems.minestack.System.wired[IO, SyncIO].unsafeRunSync()
-  }
 
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
