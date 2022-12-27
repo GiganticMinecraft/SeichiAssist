@@ -108,7 +108,10 @@ class BlockLineUpTriggerListener[
       val availableOnHand = mainHandItem.getAmount.toLong
       val availableInMineStack = mineStackObjectToBeUsed
         .map { mineStackObject =>
-          mineStackAPI.mineStackRepository.getStackedAmountOf(player, mineStackObject).unsafeRunSync()
+          mineStackAPI
+            .mineStackRepository
+            .getStackedAmountOf(player, mineStackObject)
+            .unsafeRunSync()
         }
         .getOrElse {
           0L
@@ -203,7 +206,8 @@ class BlockLineUpTriggerListener[
 
     val consumptionFromMainHand = mineStackObjectToBeUsed match {
       case Some(obj) =>
-        val mineStackAmount = mineStackAPI.mineStackRepository.getStackedAmountOf(player, obj).unsafeRunSync()
+        val mineStackAmount =
+          mineStackAPI.mineStackRepository.getStackedAmountOf(player, obj).unsafeRunSync()
         val consumptionFromMineStack = Math.min(placedBlockCount.toLong, mineStackAmount)
 
         mineStackAPI

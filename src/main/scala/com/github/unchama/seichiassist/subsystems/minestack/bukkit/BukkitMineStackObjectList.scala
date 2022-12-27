@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.minestack.bukkit
 
+import cats.Functor
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
 import com.github.unchama.minecraft.objects.{MinecraftItemStack, MinecraftMaterial}
@@ -23,6 +24,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
 ) extends MineStackObjectList[F, ItemStack, Player] {
 
   private def leftElems[A](elems: A*): List[Either[A, Nothing]] = elems.toList.map(Left.apply)
+
   private def rightElems[B](elems: B*): List[Either[Nothing, B]] = elems.toList.map(Right.apply)
 
   // @formatter:off
@@ -54,7 +56,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
   )
 
   // モンスター+動物ドロップ
-  private val minestacklistdrop: List[Either[MineStackObject[ItemStack],MineStackObjectWithColorVariants[ItemStack]]] = leftElems(
+  private val minestacklistdrop: List[Either[MineStackObject[ItemStack], MineStackObjectWithColorVariants[ItemStack]]] = leftElems(
     MineStackObjectByMaterial(MOB_DROP, "ender_pearl", "エンダーパール", Material.ENDER_PEARL, 0),
     MineStackObjectByMaterial(MOB_DROP, "ender_eye", "エンダーアイ", Material.EYE_OF_ENDER, 0),
     MineStackObjectByMaterial(MOB_DROP, "slime_ball", "スライムボール", Material.SLIME_BALL, 0),
@@ -123,7 +125,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(AGRICULTURAL, "sugar_cane", "サトウキビ", Material.SUGAR_CANE, 0),
     MineStackObjectByMaterial(AGRICULTURAL, "pumpkin", "カボチャ", Material.PUMPKIN, 0),
     MineStackObjectByMaterial(AGRICULTURAL, "ink_sack3", "カカオ豆", Material.INK_SACK, 3),
-    MineStackObjectByMaterial(AGRICULTURAL, "huge_mushroom_1", "キノコ", Material.HUGE_MUSHROOM_1,0),
+    MineStackObjectByMaterial(AGRICULTURAL, "huge_mushroom_1", "キノコ", Material.HUGE_MUSHROOM_1, 0),
     MineStackObjectByMaterial(AGRICULTURAL, "huge_mushroom_2", "キノコ", Material.HUGE_MUSHROOM_2, 0),
     MineStackObjectByMaterial(AGRICULTURAL, "melon", "スイカ", Material.MELON, 0),
     MineStackObjectByMaterial(AGRICULTURAL, "melon_block", "スイカ", Material.MELON_BLOCK, 0),
@@ -387,36 +389,36 @@ class BukkitMineStackObjectList[F[_]: Sync](
         MineStackObjectByMaterial(BUILDING, "concrete_powder3", "空色のコンクリートパウダー", Material.CONCRETE_POWDER, 3),
         MineStackObjectByMaterial(BUILDING, "concrete_powder4", "黄色のコンクリートパウダー", Material.CONCRETE_POWDER, 4),
         MineStackObjectByMaterial(BUILDING, "concrete_powder5", "黄緑色のコンクリートパウダー", Material.CONCRETE_POWDER, 5),
-        MineStackObjectByMaterial(BUILDING,"concrete_powder6","桃色のコンクリートパウダー", Material.CONCRETE_POWDER,6),
-        MineStackObjectByMaterial(BUILDING,"concrete_powder7","灰色のコンクリートパウダー", Material.CONCRETE_POWDER,7),
-        MineStackObjectByMaterial(BUILDING,"concrete_powder8","薄灰色のコンクリートパウダー", Material.CONCRETE_POWDER,8),
-        MineStackObjectByMaterial(BUILDING,"concrete_powder9","青緑色のコンクリートパウダー", Material.CONCRETE_POWDER,9),
-        MineStackObjectByMaterial(BUILDING,"concrete_powder10","紫色のコンクリートパウダー", Material.CONCRETE_POWDER,10),
-        MineStackObjectByMaterial(BUILDING,"concrete_powder11","青色のコンクリートパウダー", Material.CONCRETE_POWDER,11),
-        MineStackObjectByMaterial(BUILDING,"concrete_powder12","茶色のコンクリートパウダー", Material.CONCRETE_POWDER,12),
-        MineStackObjectByMaterial(BUILDING,"concrete_powder13","緑色のコンクリートパウダー", Material.CONCRETE_POWDER,13),
-        MineStackObjectByMaterial(BUILDING,"concrete_powder14","赤色のコンクリートパウダー", Material.CONCRETE_POWDER,14),
-        MineStackObjectByMaterial(BUILDING,"concrete_powder15","黒色のコンクリートパウダー", Material.CONCRETE_POWDER,15)
+        MineStackObjectByMaterial(BUILDING, "concrete_powder6", "桃色のコンクリートパウダー", Material.CONCRETE_POWDER, 6),
+        MineStackObjectByMaterial(BUILDING, "concrete_powder7", "灰色のコンクリートパウダー", Material.CONCRETE_POWDER, 7),
+        MineStackObjectByMaterial(BUILDING, "concrete_powder8", "薄灰色のコンクリートパウダー", Material.CONCRETE_POWDER, 8),
+        MineStackObjectByMaterial(BUILDING, "concrete_powder9", "青緑色のコンクリートパウダー", Material.CONCRETE_POWDER, 9),
+        MineStackObjectByMaterial(BUILDING, "concrete_powder10", "紫色のコンクリートパウダー", Material.CONCRETE_POWDER, 10),
+        MineStackObjectByMaterial(BUILDING, "concrete_powder11", "青色のコンクリートパウダー", Material.CONCRETE_POWDER, 11),
+        MineStackObjectByMaterial(BUILDING, "concrete_powder12", "茶色のコンクリートパウダー", Material.CONCRETE_POWDER, 12),
+        MineStackObjectByMaterial(BUILDING, "concrete_powder13", "緑色のコンクリートパウダー", Material.CONCRETE_POWDER, 13),
+        MineStackObjectByMaterial(BUILDING, "concrete_powder14", "赤色のコンクリートパウダー", Material.CONCRETE_POWDER, 14),
+        MineStackObjectByMaterial(BUILDING, "concrete_powder15", "黒色のコンクリートパウダー", Material.CONCRETE_POWDER, 15)
       )
     ),
     MineStackObjectWithColorVariants(
-      MineStackObjectByMaterial(BUILDING,"white_glazed_terracotta","白色の彩釉テラコッタ", Material.WHITE_GLAZED_TERRACOTTA,0),
+      MineStackObjectByMaterial(BUILDING, "white_glazed_terracotta", "白色の彩釉テラコッタ", Material.WHITE_GLAZED_TERRACOTTA, 0),
       List(
-        MineStackObjectByMaterial(BUILDING,"orange_glazed_terracotta","橙色の彩釉テラコッタ", Material.ORANGE_GLAZED_TERRACOTTA,0),
-        MineStackObjectByMaterial(BUILDING,"magenta_glazed_terracotta","赤紫色の彩釉テラコッタ", Material.MAGENTA_GLAZED_TERRACOTTA,0),
-        MineStackObjectByMaterial(BUILDING,"light_blue_glazed_terracotta","空色の彩釉テラコッタ", Material.LIGHT_BLUE_GLAZED_TERRACOTTA,0),
-        MineStackObjectByMaterial(BUILDING,"yellow_glazed_terracotta","黄色の彩釉テラコッタ", Material.YELLOW_GLAZED_TERRACOTTA,0),
-        MineStackObjectByMaterial(BUILDING,"lime_glazed_terracotta","黄緑色の彩釉テラコッタ", Material.LIME_GLAZED_TERRACOTTA,0),
-        MineStackObjectByMaterial(BUILDING,"pink_glazed_terracotta","桃色の彩釉テラコッタ", Material.PINK_GLAZED_TERRACOTTA,0),
-        MineStackObjectByMaterial(BUILDING,"gray_glazed_terracotta","灰色の彩釉テラコッタ", Material.GRAY_GLAZED_TERRACOTTA,0),
-        MineStackObjectByMaterial(BUILDING,"silver_glazed_terracotta","薄灰色の彩釉テラコッタ", Material.SILVER_GLAZED_TERRACOTTA,0),
-        MineStackObjectByMaterial(BUILDING,"cyan_glazed_terracotta","青緑色の彩釉テラコッタ", Material.CYAN_GLAZED_TERRACOTTA,0),
-        MineStackObjectByMaterial(BUILDING,"purple_glazed_terracotta","紫色の彩釉テラコッタ", Material.PURPLE_GLAZED_TERRACOTTA,0),
-        MineStackObjectByMaterial(BUILDING,"blue_glazed_terracotta","青色の彩釉テラコッタ", Material.BLUE_GLAZED_TERRACOTTA,0),
-        MineStackObjectByMaterial(BUILDING,"brown_glazed_terracotta","茶色の彩釉テラコッタ", Material.BROWN_GLAZED_TERRACOTTA,0),
-        MineStackObjectByMaterial(BUILDING,"green_glazed_terracotta","緑色の彩釉テラコッタ", Material.GREEN_GLAZED_TERRACOTTA,0),
-        MineStackObjectByMaterial(BUILDING,"red_glazed_terracotta","赤色の彩釉テラコッタ", Material.RED_GLAZED_TERRACOTTA,0),
-        MineStackObjectByMaterial(BUILDING,"black_glazed_terracotta","黒色の彩釉テラコッタ", Material.BLACK_GLAZED_TERRACOTTA,0)
+        MineStackObjectByMaterial(BUILDING, "orange_glazed_terracotta", "橙色の彩釉テラコッタ", Material.ORANGE_GLAZED_TERRACOTTA, 0),
+        MineStackObjectByMaterial(BUILDING, "magenta_glazed_terracotta", "赤紫色の彩釉テラコッタ", Material.MAGENTA_GLAZED_TERRACOTTA, 0),
+        MineStackObjectByMaterial(BUILDING, "light_blue_glazed_terracotta", "空色の彩釉テラコッタ", Material.LIGHT_BLUE_GLAZED_TERRACOTTA, 0),
+        MineStackObjectByMaterial(BUILDING, "yellow_glazed_terracotta", "黄色の彩釉テラコッタ", Material.YELLOW_GLAZED_TERRACOTTA, 0),
+        MineStackObjectByMaterial(BUILDING, "lime_glazed_terracotta", "黄緑色の彩釉テラコッタ", Material.LIME_GLAZED_TERRACOTTA, 0),
+        MineStackObjectByMaterial(BUILDING, "pink_glazed_terracotta", "桃色の彩釉テラコッタ", Material.PINK_GLAZED_TERRACOTTA, 0),
+        MineStackObjectByMaterial(BUILDING, "gray_glazed_terracotta", "灰色の彩釉テラコッタ", Material.GRAY_GLAZED_TERRACOTTA, 0),
+        MineStackObjectByMaterial(BUILDING, "silver_glazed_terracotta", "薄灰色の彩釉テラコッタ", Material.SILVER_GLAZED_TERRACOTTA, 0),
+        MineStackObjectByMaterial(BUILDING, "cyan_glazed_terracotta", "青緑色の彩釉テラコッタ", Material.CYAN_GLAZED_TERRACOTTA, 0),
+        MineStackObjectByMaterial(BUILDING, "purple_glazed_terracotta", "紫色の彩釉テラコッタ", Material.PURPLE_GLAZED_TERRACOTTA, 0),
+        MineStackObjectByMaterial(BUILDING, "blue_glazed_terracotta", "青色の彩釉テラコッタ", Material.BLUE_GLAZED_TERRACOTTA, 0),
+        MineStackObjectByMaterial(BUILDING, "brown_glazed_terracotta", "茶色の彩釉テラコッタ", Material.BROWN_GLAZED_TERRACOTTA, 0),
+        MineStackObjectByMaterial(BUILDING, "green_glazed_terracotta", "緑色の彩釉テラコッタ", Material.GREEN_GLAZED_TERRACOTTA, 0),
+        MineStackObjectByMaterial(BUILDING, "red_glazed_terracotta", "赤色の彩釉テラコッタ", Material.RED_GLAZED_TERRACOTTA, 0),
+        MineStackObjectByMaterial(BUILDING, "black_glazed_terracotta", "黒色の彩釉テラコッタ", Material.BLACK_GLAZED_TERRACOTTA, 0)
       )
     ),
     MineStackObjectWithColorVariants(
@@ -482,122 +484,122 @@ class BukkitMineStackObjectList[F[_]: Sync](
     ),
     MineStackObjectWithColorVariants(
       MineStackObjectByMaterial(BUILDING, "glass_panel", "板ガラス", Material.THIN_GLASS, 0),
-        List(
-          MineStackObjectByMaterial(BUILDING,"glass_panel_0","白色の色付きガラス板", Material.STAINED_GLASS_PANE,0),
-          MineStackObjectByMaterial(BUILDING,"glass_panel_1","橙色の色付きガラス板", Material.STAINED_GLASS_PANE,1),
-          MineStackObjectByMaterial(BUILDING,"glass_panel_2","赤紫色の色付きガラス板", Material.STAINED_GLASS_PANE,2),
-          MineStackObjectByMaterial(BUILDING,"glass_panel_3","空色の色付きガラス板", Material.STAINED_GLASS_PANE,3),
-          MineStackObjectByMaterial(BUILDING,"glass_panel_4","黄色の色付きガラス板", Material.STAINED_GLASS_PANE,4),
-          MineStackObjectByMaterial(BUILDING,"glass_panel_5","黄緑色の色付きガラス板", Material.STAINED_GLASS_PANE,5),
-          MineStackObjectByMaterial(BUILDING,"glass_panel_6","桃色の色付きガラス板", Material.STAINED_GLASS_PANE,6),
-          MineStackObjectByMaterial(BUILDING,"glass_panel_7","灰色の色付きガラス板", Material.STAINED_GLASS_PANE,7),
-          MineStackObjectByMaterial(BUILDING,"glass_panel_8","薄灰色の色付きガラス板", Material.STAINED_GLASS_PANE,8),
-          MineStackObjectByMaterial(BUILDING,"glass_panel_9","青緑色の色付きガラス板", Material.STAINED_GLASS_PANE,9),
-          MineStackObjectByMaterial(BUILDING,"glass_panel_10","紫色の色付きガラス板", Material.STAINED_GLASS_PANE,10),
-          MineStackObjectByMaterial(BUILDING,"glass_panel_11","青色の色付きガラス板", Material.STAINED_GLASS_PANE,11),
-          MineStackObjectByMaterial(BUILDING,"glass_panel_12","茶色の色付きガラス板", Material.STAINED_GLASS_PANE,12),
-          MineStackObjectByMaterial(BUILDING,"glass_panel_13","緑色の色付きガラス板", Material.STAINED_GLASS_PANE,13),
-          MineStackObjectByMaterial(BUILDING,"glass_panel_14","赤色の色付きガラス板", Material.STAINED_GLASS_PANE,14),
-          MineStackObjectByMaterial(BUILDING,"glass_panel_15","黒色の色付きガラス板", Material.STAINED_GLASS_PANE,15)
-        )
+      List(
+        MineStackObjectByMaterial(BUILDING, "glass_panel_0", "白色の色付きガラス板", Material.STAINED_GLASS_PANE, 0),
+        MineStackObjectByMaterial(BUILDING, "glass_panel_1", "橙色の色付きガラス板", Material.STAINED_GLASS_PANE, 1),
+        MineStackObjectByMaterial(BUILDING, "glass_panel_2", "赤紫色の色付きガラス板", Material.STAINED_GLASS_PANE, 2),
+        MineStackObjectByMaterial(BUILDING, "glass_panel_3", "空色の色付きガラス板", Material.STAINED_GLASS_PANE, 3),
+        MineStackObjectByMaterial(BUILDING, "glass_panel_4", "黄色の色付きガラス板", Material.STAINED_GLASS_PANE, 4),
+        MineStackObjectByMaterial(BUILDING, "glass_panel_5", "黄緑色の色付きガラス板", Material.STAINED_GLASS_PANE, 5),
+        MineStackObjectByMaterial(BUILDING, "glass_panel_6", "桃色の色付きガラス板", Material.STAINED_GLASS_PANE, 6),
+        MineStackObjectByMaterial(BUILDING, "glass_panel_7", "灰色の色付きガラス板", Material.STAINED_GLASS_PANE, 7),
+        MineStackObjectByMaterial(BUILDING, "glass_panel_8", "薄灰色の色付きガラス板", Material.STAINED_GLASS_PANE, 8),
+        MineStackObjectByMaterial(BUILDING, "glass_panel_9", "青緑色の色付きガラス板", Material.STAINED_GLASS_PANE, 9),
+        MineStackObjectByMaterial(BUILDING, "glass_panel_10", "紫色の色付きガラス板", Material.STAINED_GLASS_PANE, 10),
+        MineStackObjectByMaterial(BUILDING, "glass_panel_11", "青色の色付きガラス板", Material.STAINED_GLASS_PANE, 11),
+        MineStackObjectByMaterial(BUILDING, "glass_panel_12", "茶色の色付きガラス板", Material.STAINED_GLASS_PANE, 12),
+        MineStackObjectByMaterial(BUILDING, "glass_panel_13", "緑色の色付きガラス板", Material.STAINED_GLASS_PANE, 13),
+        MineStackObjectByMaterial(BUILDING, "glass_panel_14", "赤色の色付きガラス板", Material.STAINED_GLASS_PANE, 14),
+        MineStackObjectByMaterial(BUILDING, "glass_panel_15", "黒色の色付きガラス板", Material.STAINED_GLASS_PANE, 15)
+      )
     ),
     MineStackObjectWithColorVariants(
       MineStackObjectByMaterial(BUILDING, "dye_1", "赤色の染料", Material.INK_SACK, 1),
-        List(
-          MineStackObjectByMaterial(BUILDING, "dye_2", "緑色の染料", Material.INK_SACK, 2),
-          MineStackObjectByMaterial(BUILDING, "dye_5", "紫色の染料", Material.INK_SACK, 5),
-          MineStackObjectByMaterial(BUILDING, "dye_6", "青緑色の染料", Material.INK_SACK, 6),
-          MineStackObjectByMaterial(BUILDING, "dye_7", "薄灰色の染料", Material.INK_SACK, 7),
-          MineStackObjectByMaterial(BUILDING, "dye_8", "灰色の染料", Material.INK_SACK, 8),
-          MineStackObjectByMaterial(BUILDING, "dye_9", "桃色の染料", Material.INK_SACK, 9),
-          MineStackObjectByMaterial(BUILDING, "dye_10", "黄緑色の染料", Material.INK_SACK, 10),
-          MineStackObjectByMaterial(BUILDING, "dye_11", "黄色の染料", Material.INK_SACK, 11),
-          MineStackObjectByMaterial(BUILDING, "dye_12", "空色の染料", Material.INK_SACK, 12),
-          MineStackObjectByMaterial(BUILDING, "dye_13", "赤紫色の染料", Material.INK_SACK, 13),
-          MineStackObjectByMaterial(BUILDING, "dye_14", "橙色の染料", Material.INK_SACK, 14),
-          MineStackObjectByMaterial(BUILDING, "dye_15", "骨粉", Material.INK_SACK, 15),
-          MineStackObjectByMaterial(BUILDING, "ink_sack0", "イカスミ", Material.INK_SACK, 0)
-        )
+      List(
+        MineStackObjectByMaterial(BUILDING, "dye_2", "緑色の染料", Material.INK_SACK, 2),
+        MineStackObjectByMaterial(BUILDING, "dye_5", "紫色の染料", Material.INK_SACK, 5),
+        MineStackObjectByMaterial(BUILDING, "dye_6", "青緑色の染料", Material.INK_SACK, 6),
+        MineStackObjectByMaterial(BUILDING, "dye_7", "薄灰色の染料", Material.INK_SACK, 7),
+        MineStackObjectByMaterial(BUILDING, "dye_8", "灰色の染料", Material.INK_SACK, 8),
+        MineStackObjectByMaterial(BUILDING, "dye_9", "桃色の染料", Material.INK_SACK, 9),
+        MineStackObjectByMaterial(BUILDING, "dye_10", "黄緑色の染料", Material.INK_SACK, 10),
+        MineStackObjectByMaterial(BUILDING, "dye_11", "黄色の染料", Material.INK_SACK, 11),
+        MineStackObjectByMaterial(BUILDING, "dye_12", "空色の染料", Material.INK_SACK, 12),
+        MineStackObjectByMaterial(BUILDING, "dye_13", "赤紫色の染料", Material.INK_SACK, 13),
+        MineStackObjectByMaterial(BUILDING, "dye_14", "橙色の染料", Material.INK_SACK, 14),
+        MineStackObjectByMaterial(BUILDING, "dye_15", "骨粉", Material.INK_SACK, 15),
+        MineStackObjectByMaterial(BUILDING, "ink_sack0", "イカスミ", Material.INK_SACK, 0)
+      )
     )
   )
 
   // レッドストーン系ブロック
   private val minestacklistrs: List[MineStackObjectGroup[ItemStack]] = leftElems(
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"redstone","レッドストーン", Material.REDSTONE,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"stone_button","石のボタン", Material.STONE_BUTTON,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"wood_button","木のボタン", Material.WOOD_BUTTON,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"stone_plate","石の感圧版", Material.STONE_PLATE,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"wood_plate","木の感圧版", Material.WOOD_PLATE,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"fence_gate","オークのフェンスゲート", Material.FENCE_GATE,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"spruce_fence_gate","マツのフェンスゲート", Material.SPRUCE_FENCE_GATE,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"birch_fence_gate","シラカバのフェンスゲート", Material.BIRCH_FENCE_GATE,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"jungle_fence_gate","ジャングルのフェンスゲート", Material.JUNGLE_FENCE_GATE,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"dark_oak_fence_gate","ダークオークのフェンスゲート", Material.DARK_OAK_FENCE_GATE,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"acacia_fence_gate","アカシアのフェンスゲート", Material.ACACIA_FENCE_GATE,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"redstone_block","レッドストーンブロック", Material.REDSTONE_BLOCK,0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "redstone", "レッドストーン", Material.REDSTONE, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "stone_button", "石のボタン", Material.STONE_BUTTON, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "wood_button", "木のボタン", Material.WOOD_BUTTON, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "stone_plate", "石の感圧版", Material.STONE_PLATE, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "wood_plate", "木の感圧版", Material.WOOD_PLATE, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "fence_gate", "オークのフェンスゲート", Material.FENCE_GATE, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "spruce_fence_gate", "マツのフェンスゲート", Material.SPRUCE_FENCE_GATE, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "birch_fence_gate", "シラカバのフェンスゲート", Material.BIRCH_FENCE_GATE, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "jungle_fence_gate", "ジャングルのフェンスゲート", Material.JUNGLE_FENCE_GATE, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "dark_oak_fence_gate", "ダークオークのフェンスゲート", Material.DARK_OAK_FENCE_GATE, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "acacia_fence_gate", "アカシアのフェンスゲート", Material.ACACIA_FENCE_GATE, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "redstone_block", "レッドストーンブロック", Material.REDSTONE_BLOCK, 0),
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "lever", "レバー", Material.LEVER, 0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"redstone_torch_on","レッドストーントーチ", Material.REDSTONE_TORCH_ON,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"trap_door","木のトラップドア", Material.TRAP_DOOR,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"iron_trapdoor","鉄のトラップドア", Material.IRON_TRAPDOOR,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"gold_plate","重量感圧版 (軽) ", Material.GOLD_PLATE,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"iron_plate","重量感圧版 (重) ", Material.IRON_PLATE,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"wood_door","オークのドア", Material.WOOD_DOOR,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"spruce_door_item","マツのドア", Material.SPRUCE_DOOR_ITEM,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"birch_door_item","シラカバのドア", Material.BIRCH_DOOR_ITEM,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"jungle_door_item","ジャングルのドア", Material.JUNGLE_DOOR_ITEM,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"acacia_door_item","アカシアのドア", Material.ACACIA_DOOR_ITEM,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"dark_oak_door_item","ダークオークのドア", Material.DARK_OAK_DOOR_ITEM,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"note_block","音符ブロック", Material.NOTE_BLOCK,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"redstone_lamp_off","レッドストーンランプ", Material.REDSTONE_LAMP_OFF,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"tripwire_hook","トリップワイヤーフック", Material.TRIPWIRE_HOOK,0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "redstone_torch_on", "レッドストーントーチ", Material.REDSTONE_TORCH_ON, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "trap_door", "木のトラップドア", Material.TRAP_DOOR, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "iron_trapdoor", "鉄のトラップドア", Material.IRON_TRAPDOOR, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "gold_plate", "重量感圧版 (軽) ", Material.GOLD_PLATE, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "iron_plate", "重量感圧版 (重) ", Material.IRON_PLATE, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "wood_door", "オークのドア", Material.WOOD_DOOR, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "spruce_door_item", "マツのドア", Material.SPRUCE_DOOR_ITEM, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "birch_door_item", "シラカバのドア", Material.BIRCH_DOOR_ITEM, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "jungle_door_item", "ジャングルのドア", Material.JUNGLE_DOOR_ITEM, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "acacia_door_item", "アカシアのドア", Material.ACACIA_DOOR_ITEM, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "dark_oak_door_item", "ダークオークのドア", Material.DARK_OAK_DOOR_ITEM, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "note_block", "音符ブロック", Material.NOTE_BLOCK, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "redstone_lamp_off", "レッドストーンランプ", Material.REDSTONE_LAMP_OFF, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "tripwire_hook", "トリップワイヤーフック", Material.TRIPWIRE_HOOK, 0),
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "dropper", "ドロッパー", Material.DROPPER, 0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"piston_sticky_base","粘着ピストン", Material.PISTON_STICKY_BASE,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"piston_base","ピストン", Material.PISTON_BASE,0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "piston_sticky_base", "粘着ピストン", Material.PISTON_STICKY_BASE, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "piston_base", "ピストン", Material.PISTON_BASE, 0),
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "tnt", "TNT", Material.TNT, 0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"trapped_chest","トラップチェスト", Material.TRAPPED_CHEST,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"daylight_detector","日照センサー", Material.DAYLIGHT_DETECTOR,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"iron_door","鉄のドア", Material.IRON_DOOR,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"diode","レッドストーンリピーター", Material.DIODE,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"dispenser","ディスペンサー", Material.DISPENSER,0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "trapped_chest", "トラップチェスト", Material.TRAPPED_CHEST, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "daylight_detector", "日照センサー", Material.DAYLIGHT_DETECTOR, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "iron_door", "鉄のドア", Material.IRON_DOOR, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "diode", "レッドストーンリピーター", Material.DIODE, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "dispenser", "ディスペンサー", Material.DISPENSER, 0),
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "hopper", "ホッパー", Material.HOPPER, 0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"redstone_comparator","レッドストーンコンパレーター", Material.REDSTONE_COMPARATOR,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"powered_rail","パワードレール", Material.POWERED_RAIL,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"detector_rail","ディテクターレール", Material.DETECTOR_RAIL,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"activator_rail","アクティベーターレール", Material.ACTIVATOR_RAIL,0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "redstone_comparator", "レッドストーンコンパレーター", Material.REDSTONE_COMPARATOR, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "powered_rail", "パワードレール", Material.POWERED_RAIL, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "detector_rail", "ディテクターレール", Material.DETECTOR_RAIL, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "activator_rail", "アクティベーターレール", Material.ACTIVATOR_RAIL, 0),
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "boat", "オークのボート", Material.BOAT, 0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"spruce_boat","マツのボート", Material.BOAT_SPRUCE,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"birch_boat","シラカバのボート", Material.BOAT_BIRCH,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"jungle_boat","ジャングルのボート", Material.BOAT_JUNGLE,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"acacia_boat","アカシアのボート", Material.BOAT_ACACIA,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"dark_oak_boat","ダークオークのボート", Material.BOAT_DARK_OAK,0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "spruce_boat", "マツのボート", Material.BOAT_SPRUCE, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "birch_boat", "シラカバのボート", Material.BOAT_BIRCH, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "jungle_boat", "ジャングルのボート", Material.BOAT_JUNGLE, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "acacia_boat", "アカシアのボート", Material.BOAT_ACACIA, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "dark_oak_boat", "ダークオークのボート", Material.BOAT_DARK_OAK, 0),
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "saddle", "サドル", Material.SADDLE, 0),
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "minecart", "トロッコ", Material.MINECART, 0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"chest_minecart","チェスト付きトロッコ", Material.STORAGE_MINECART,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"furnace_minecart","かまど付きトロッコ", Material.POWERED_MINECART,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"hopper_minecart","ホッパー付きトロッコ", Material.HOPPER_MINECART,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"iron_horse_armor","鉄の馬鎧", Material.IRON_BARDING,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"golden_horse_armor","金の馬鎧", Material.GOLD_BARDING,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"diamond_horse_armor","ダイヤの馬鎧", Material.DIAMOND_BARDING,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"record_13","レコード", Material.GOLD_RECORD,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"record_cat","レコード", Material.GREEN_RECORD,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"record_blocks","レコード", Material.RECORD_3,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"record_chirp","レコード", Material.RECORD_4,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"record_far","レコード", Material.RECORD_5,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"record_mall","レコード", Material.RECORD_6,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"record_mellohi","レコード", Material.RECORD_7,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"record_stal","レコード", Material.RECORD_8,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"record_strad","レコード", Material.RECORD_9,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"record_ward","レコード", Material.RECORD_10,0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"record_11","レコード", Material.RECORD_11, 0),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"record_wait","レコード", Material.RECORD_12,0)
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "chest_minecart", "チェスト付きトロッコ", Material.STORAGE_MINECART, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "furnace_minecart", "かまど付きトロッコ", Material.POWERED_MINECART, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "hopper_minecart", "ホッパー付きトロッコ", Material.HOPPER_MINECART, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "iron_horse_armor", "鉄の馬鎧", Material.IRON_BARDING, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "golden_horse_armor", "金の馬鎧", Material.GOLD_BARDING, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "diamond_horse_armor", "ダイヤの馬鎧", Material.DIAMOND_BARDING, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "record_13", "レコード", Material.GOLD_RECORD, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "record_cat", "レコード", Material.GREEN_RECORD, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "record_blocks", "レコード", Material.RECORD_3, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "record_chirp", "レコード", Material.RECORD_4, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "record_far", "レコード", Material.RECORD_5, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "record_mall", "レコード", Material.RECORD_6, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "record_mellohi", "レコード", Material.RECORD_7, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "record_stal", "レコード", Material.RECORD_8, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "record_strad", "レコード", Material.RECORD_9, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "record_ward", "レコード", Material.RECORD_10, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "record_11", "レコード", Material.RECORD_11, 0),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "record_wait", "レコード", Material.RECORD_12, 0)
   )
 
   /**
    * デフォルトでガチャの内容に含まれている景品。
    */
   private val minestackBuiltinGachaPrizes: List[MineStackObjectGroup[ItemStack]] = leftElems(
-    MineStackObjectByItemStack(GACHA_PRIZES,"gachaimo",None,hasNameLore = true, gachaPrizeAPI.staticGachaPrizeFactory.gachaRingo),
-    MineStackObjectByItemStack(GACHA_PRIZES,"exp_bottle",Some("エンチャントの瓶"),hasNameLore = false,new ItemStack(Material.EXP_BOTTLE,1))
+    MineStackObjectByItemStack(GACHA_PRIZES, "gachaimo", None, hasNameLore = true, gachaPrizeAPI.staticGachaPrizeFactory.gachaRingo),
+    MineStackObjectByItemStack(GACHA_PRIZES, "exp_bottle", Some("エンチャントの瓶"), hasNameLore = false, new ItemStack(Material.EXP_BOTTLE, 1))
   )
 
   // @formatter:on
@@ -652,6 +654,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
         case Right(groupedObjects) => groupedObjects.category
       }
     }
+
     allMineStackGroups.map(_.filter { group => categoryOf(group) == category })
   }
 
@@ -672,5 +675,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
       itemStack
     }
     mineStackObjects.find(_.itemStack.isSimilar(targetItemStack))
+  }
 
+  override protected implicit val F: Functor[F] = implicitly
 }

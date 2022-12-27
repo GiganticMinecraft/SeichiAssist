@@ -8,7 +8,7 @@ import com.github.unchama.datarepository.bukkit.player.{
   PlayerDataRepository
 }
 import com.github.unchama.datarepository.template.RepositoryDefinition
-import com.github.unchama.generic.{ContextCoercion, ListExtra}
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.bukkit.objects.{BukkitItemStack, BukkitMaterial}
 import com.github.unchama.minecraft.objects.{MinecraftItemStack, MinecraftMaterial}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem

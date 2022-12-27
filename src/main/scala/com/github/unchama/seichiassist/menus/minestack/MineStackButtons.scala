@@ -77,7 +77,9 @@ private[minestack] case class MineStackButtons(player: Player)(
     }
 
     for {
-      stackedAmount <- mineStackAPI.mineStackRepository.getStackedAmountOf(player, mineStackObject)
+      stackedAmount <- mineStackAPI
+        .mineStackRepository
+        .getStackedAmountOf(player, mineStackObject)
     } yield {
       mineStackObject.itemStack.tap { itemStack =>
         import itemStack._
