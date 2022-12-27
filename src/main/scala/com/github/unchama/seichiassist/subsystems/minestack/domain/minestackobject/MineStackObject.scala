@@ -1,11 +1,12 @@
 package com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject
 
 import cats.effect.Sync
-import com.github.unchama.minecraft.objects.{MinecraftItemStack, MinecraftMaterial}
+import com.github.unchama.generic.algebra.Cloneable
+import com.github.unchama.minecraft.objects.MinecraftMaterial
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.CanBeSignedAsGachaPrize
 
-case class MineStackObject[ItemStack](
+case class MineStackObject[ItemStack: Cloneable](
   mineStackObjectName: String,
   uiName: Option[String],
   private val _itemStack: ItemStack,
@@ -15,16 +16,14 @@ case class MineStackObject[ItemStack](
 
   import cats.implicits._
 
-  def itemStack(implicit minecraftItemStack: MinecraftItemStack[ItemStack]): ItemStack =
-    minecraftItemStack.copy(_itemStack)
+  def itemStack: ItemStack = Cloneable[ItemStack].clone(_itemStack)
 
   /**
    * @return 記名済みの[[ItemStack]]へ変換することを試みる作用
    */
-  def tryToSignedItemStack[F[_]: Sync, Player](name: String)(
-    implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
-    minecraftItemStack: MinecraftItemStack[ItemStack]
-  ): F[Option[ItemStack]] = {
+  def tryToSignedItemStack[F[_]: Sync, Player](
+    name: String
+  )(implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player]): F[Option[ItemStack]] = {
     if (category != MineStackObjectCategory.GACHA_PRIZES) return Sync[F].pure(None)
 
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
@@ -39,7 +38,7 @@ case class MineStackObject[ItemStack](
 
 object MineStackObject {
 
-  def MineStackObjectByMaterial[ItemStack, Material](
+  def MineStackObjectByMaterial[ItemStack: Cloneable, Material](
     category: MineStackObjectCategory,
     mineStackObjectName: String,
     japaneseName: String,
@@ -57,7 +56,7 @@ object MineStackObject {
     )
   }
 
-  def MineStackObjectByItemStack[ItemStack](
+  def MineStackObjectByItemStack[ItemStack: Cloneable](
     category: MineStackObjectCategory,
     mineStackObjectName: String,
     japaneseName: Option[String],

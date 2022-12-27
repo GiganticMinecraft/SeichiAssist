@@ -9,7 +9,6 @@ import com.github.unchama.menuinventory.slot.Slot
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, ReloadingButton}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
-import com.github.unchama.minecraft.objects.MinecraftItemStack
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.{BuildMainMenu, ColorScheme, CommonButtons}
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
@@ -38,8 +37,7 @@ object MineStackMassCraftMenu {
   class Environment(
     implicit val canOpenBuildMainMenu: CanOpen[IO, BuildMainMenu.type],
     val canOpenItself: CanOpen[IO, MineStackMassCraftMenu],
-    val mineStackAPI: MineStackAPI[IO, Player, ItemStack],
-    implicit val minecraftItemStack: MinecraftItemStack[ItemStack]
+    val mineStackAPI: MineStackAPI[IO, Player, ItemStack]
   )
 
   case class MassCraftRecipe(
@@ -73,7 +71,6 @@ object MineStackMassCraftMenu {
       implicit environment: Environment
     ): IO[Button] = {
       import cats.implicits._
-      import environment._
 
       def queryAmountOf(mineStackObj: MineStackObject[ItemStack]): IO[Long] =
         environment.mineStackAPI.mineStackRepository.getStackedAmountOf(player, mineStackObj)

@@ -19,6 +19,7 @@ import com.github.unchama.datarepository.definitions.SessionMutexRepositoryDefin
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
 import com.github.unchama.datarepository.template.initialization.SinglePhasedRepositoryInitialization
+import com.github.unchama.generic.algebra.Cloneable
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.generic.effect.concurrent.SessionMutex
@@ -30,8 +31,7 @@ import com.github.unchama.minecraft.bukkit.actions.{
   GetConnectedBukkitPlayers,
   SendBukkitMessage
 }
-import com.github.unchama.minecraft.bukkit.objects.BukkitItemStack
-import com.github.unchama.minecraft.objects.MinecraftItemStack
+import com.github.unchama.minecraft.bukkit.algebra.CloneableBukkitItemStack
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
 import com.github.unchama.seichiassist.SeichiAssist.seichiAssistConfig
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
@@ -467,7 +467,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val flyApi: ManagedFlyApi[SyncIO, Player] = managedFlySystem.api
     implicit val buildCountAPI: BuildCountAPI[IO, SyncIO, Player] = buildCountSystem.api
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
-    implicit val minecraftItemStack: MinecraftItemStack[ItemStack] = new BukkitItemStack
+    implicit val minecraftItemStack: Cloneable[ItemStack] = new CloneableBukkitItemStack
 
     new BuildAssist(this)
   }
@@ -616,8 +616,6 @@ class SeichiAssist extends JavaPlugin() {
     implicit val gachaAPI: GachaDrawAPI[IO, Player] = gachaSystem.api
     implicit val consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player] =
       consumeGachaTicketSystem.api
-
-    implicit val minecraftItemStack: MinecraftItemStack[ItemStack] = new BukkitItemStack
 
     val menuRouter = TopLevelRouter.apply
     import SeichiAssist.Scopes.globalChatInterceptionScope

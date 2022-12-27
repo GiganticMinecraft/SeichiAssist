@@ -4,9 +4,9 @@ import cats.effect.{ConcurrentEffect, IO, SyncIO}
 import com.github.unchama.buildassist.listener._
 import com.github.unchama.buildassist.menu.BuildAssistMenuRouter
 import com.github.unchama.datarepository.KeyedDataRepository
+import com.github.unchama.generic.algebra.Cloneable
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.minecraft.objects.MinecraftItemStack
 import com.github.unchama.seichiassist.listener.BuildMainMenuOpener
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
@@ -28,7 +28,7 @@ class BuildAssist(plugin: Plugin)(
   manaApi: ManaApi[IO, SyncIO, Player],
   mineStackAPI: MineStackAPI[IO, Player, ItemStack],
   ioConcurrentEffect: ConcurrentEffect[IO],
-  minecraftItemStack: MinecraftItemStack[ItemStack]
+  minecraftItemStack: Cloneable[ItemStack]
 ) {
 
   // TODO この辺のフィールドを整理する

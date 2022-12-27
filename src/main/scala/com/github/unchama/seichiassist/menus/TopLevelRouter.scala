@@ -5,7 +5,6 @@ import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.menuinventory.LayoutPreparationContext
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.minecraft.objects.MinecraftItemStack
 import com.github.unchama.seichiassist.menus.achievement.group.AchievementGroupMenu
 import com.github.unchama.seichiassist.menus.achievement.{
   AchievementCategoryMenu,
@@ -39,8 +38,8 @@ import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDime
 import com.github.unchama.seichiassist.subsystems.gacha.GachaDrawAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket.ConsumeGachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
-import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
@@ -83,7 +82,6 @@ object TopLevelRouter {
     gachaTicketAPI: GachaTicketAPI[IO],
     gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
     mineStackAPI: MineStackAPI[IO, Player, ItemStack],
-    minecraftItemStack: MinecraftItemStack[ItemStack],
     gachaDrawAPI: GachaDrawAPI[IO, Player],
     consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player]
   ): TopLevelRouter[IO] = new TopLevelRouter[IO] {

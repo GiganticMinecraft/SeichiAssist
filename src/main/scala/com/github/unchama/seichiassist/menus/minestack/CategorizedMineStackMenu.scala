@@ -7,7 +7,6 @@ import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.minecraft.objects.MinecraftItemStack
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
@@ -26,8 +25,7 @@ object CategorizedMineStackMenu {
     val ioCanOpenSelectItemColorMenu: IO CanOpen MineStackSelectItemColorMenu,
     val onMainThread: OnMinecraftServerThread[IO],
     val mineStackAPI: MineStackAPI[IO, Player, ItemStack],
-    implicit val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
-    implicit val minecraftItemStack: MinecraftItemStack[ItemStack]
+    implicit val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player]
   )
 
 }
@@ -44,7 +42,7 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
   /**
    * マインスタックオブジェクトボタンを置くセクションの行数
    */
-  val objectSectionRows = 5
+  private val objectSectionRows = 5
 
   override type Environment = CategorizedMineStackMenu.Environment
 
@@ -53,7 +51,7 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
     s"$DARK_BLUE${BOLD}MineStack(${category.uiLabel})"
   )
 
-  def mineStackMainMenuButtonSection(
+  private def mineStackMainMenuButtonSection(
     implicit ioCanOpenMineStackMainMenu: IO CanOpen MineStackMainMenu.type
   ): Seq[(Int, Button)] =
     Seq(
