@@ -50,4 +50,10 @@ object MapExtra {
     require(keys.subsetOf(base))
     map ++ (base -- keys).map(a => a -> default)
   }
+
+  /**
+   * `cond`がtrueであれば`value`を、falseであれば空のMapを返す
+   */
+  def when[K, V](cond: Boolean)(value: => Map[K, V]): Map[K, V] =
+    if (cond) value else Map.empty
 }

@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.data.descrptions
 
 import cats.effect.IO
+import com.github.unchama.seichiassist.ManagedWorld
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{
@@ -12,7 +13,6 @@ import com.github.unchama.seichiassist.subsystems.ranking.domain.{
   Ranking,
   RankingRecordWithPosition
 }
-import com.github.unchama.seichiassist.text.WarningsGenerator
 import com.github.unchama.seichiassist.util.TypeConverter
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
@@ -29,18 +29,21 @@ class PlayerStatsLoreGenerator(
 ) {
   private val targetPlayer: Player = Bukkit.getPlayer(playerData.uuid)
 
+  private def noRewardsOutsideSeichiWorld(player: Player): List[String] = {
+    if (ManagedWorld.fromBukkitWorld(player.getWorld).exists(_.isSeichi))
+      Nil
+    else
+      List(s"${RED}整地ワールド以外では", s"${RED}整地量とガチャ券は増えません")
+  }
+
   /**
    * Player統計のLoreを返します.
    */
   def computeLore(): IO[List[String]] = IO {
-    val generator = new WarningsGenerator(targetPlayer)
-
-    import generator._
-
     List(
       List(seichiLevelDescription()),
       levelProgressionDescription(),
-      noRewardsOutsideSeichiWorld,
+      noRewardsOutsideSeichiWorld(targetPlayer),
       passiveSkillDescription(),
       List(totalBreakAmountDescription()),
       rankingDescription().toList,

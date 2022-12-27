@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin
 
 import cats.effect.IO
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.data.GachaSkullData
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.BukkitGachaSkullData
 import com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin.LimitedLoginEvent.{
   START_DATE,
   isInEvent
@@ -65,7 +65,7 @@ class LimitedLoginBonusGifter(implicit ioOnMainThread: OnMinecraftServerThread[I
         case LoginBonusGachaTicket =>
           player.sendMessage(s"【限定ログボ：$messageOfDay】${loginBonus.amount}個のガチャ券をプレゼント！")
 
-          val skull = GachaSkullData.gachaSkull
+          val skull = BukkitGachaSkullData.gachaSkull
           giveItem("ガチャ券", loginBonus.amount, skull)
       }
     }

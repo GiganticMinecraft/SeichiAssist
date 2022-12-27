@@ -18,9 +18,11 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin.Li
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYearListener
 import com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki.SeizonsikiListener
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineListener
+import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.GtToSiinaAPI
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
+import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 
 import java.util.UUID
@@ -40,7 +42,8 @@ object System {
   )(
     implicit manaWriteApi: ManaWriteApi[G, Player],
     effectEnvironment: EffectEnvironment,
-    ioOnMainThread: OnMinecraftServerThread[IO]
+    ioOnMainThread: OnMinecraftServerThread[IO],
+    gtToSiinaAPI: GtToSiinaAPI[ItemStack]
   ): System[H] = {
 
     implicit val repository: LastQuitPersistenceRepository[F, UUID] =
