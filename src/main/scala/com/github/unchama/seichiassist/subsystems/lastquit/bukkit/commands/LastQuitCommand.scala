@@ -23,7 +23,7 @@ class LastQuitCommand[F[_]: ConcurrentEffect](implicit lastQuitAPI: LastQuitAPI[
 
       for {
         uuidEither <- new JdbcLastSeenNameToUuid[IO].of(playerName)
-        lastQuit <- uuidEither.traverse(uuid => lastQuitAPI.lastQuitDateTime(uuid).toIO)
+        lastQuit <- uuidEither.traverse(uuid => lastQuitAPI.get(uuid).toIO)
       } yield {
         lastQuit match {
           case Left(error) =>

@@ -24,7 +24,7 @@ trait LastQuitReadAPI[F[_]] {
   /**
    * @return 最終ログアウト日時を取得する作用
    */
-  def lastQuitDateTime(uuid: UUID): F[Option[LastQuitDateTime]]
+  def get(uuid: UUID): F[Option[LastQuitDateTime]]
 
 }
 
