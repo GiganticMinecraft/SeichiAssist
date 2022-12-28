@@ -25,7 +25,7 @@ object LastSeenNameToUuidError {
 class JdbcLastSeenNameToUuid[F[_]: Sync]
     extends LastSeenNameToUuid[F, LastSeenNameToUuidError] {
 
-  override def of(playerName: String): F[Either[UUID, LastSeenNameToUuidError]] =
+  override def of(playerName: String): F[Either[LastSeenNameToUuidError, UUID]] =
     Sync[F].delay {
       DB.readOnly { implicit session =>
         val foundUuid = sql"SELECT uuid FROM playerdata WHERE name = $playerName"
@@ -33,9 +33,9 @@ class JdbcLastSeenNameToUuid[F[_]: Sync]
           .toList()
           .apply()
 
-        if (foundUuid.isEmpty) Right(LastSeenNameToUuidError.NotFound)
-        else if (foundUuid.length >= 2) Right(LastSeenNameToUuidError.MultipleFound)
-        else Left(foundUuid.head)
+        if (foundUuid.isEmpty) Left(LastSeenNameToUuidError.NotFound)
+        else if (foundUuid.length >= 2) Left(LastSeenNameToUuidError.MultipleFound)
+        else Right(foundUuid.head)
       }
     }
 

@@ -11,6 +11,6 @@ trait LastSeenNameToUuid[F[_], Error] {
    *
    * @return `playerName`に紐づく[[UUID]]または取得する際に発生したエラー
    */
-  def of(playerName: String): F[Either[UUID, Error]]
+  def of(playerName: String): F[Either[Error, UUID]]
 
 }

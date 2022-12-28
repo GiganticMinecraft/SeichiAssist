@@ -27,8 +27,8 @@ object System {
     val persistence: LastQuitPersistence[F] = new JdbcLastQuitPersistence[F]
     new System[F] {
       override implicit val api: LastQuitAPI[F] = new LastQuitAPI[F] {
-        override def lastQuitDateTime(playerName: PlayerName): F[Option[LastQuitDateTime]] =
-          persistence.lastQuitDateTime(playerName)
+        override def lastQuitDateTime(uuid: UUID): F[Option[LastQuitDateTime]] =
+          persistence.lastQuitDateTime(uuid)
 
         override def updateLastLastQuitDateTimeNow(uuid: UUID): F[Unit] =
           persistence.updateLastQuitNow(uuid)
