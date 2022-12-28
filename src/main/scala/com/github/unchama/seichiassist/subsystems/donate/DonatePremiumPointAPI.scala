@@ -11,7 +11,7 @@ import java.util.UUID
 trait DonatePremiumPointWriteAPI[F[_]] {
 
   /**
-   * プレミアムエフェクトポイントを使用する作用
+   * @return プレミアムエフェクトポイントを使用する作用
    */
   def useDonatePremiumEffectPoint(
     uuid: UUID,
@@ -30,17 +30,17 @@ object DonatePremiumPointWriteAPI {
 trait DonatePremiumPointReadAPI[F[_]] {
 
   /**
-   * 現在のプレミアムエフェクトポイントの合計を取得する作用
+   * @return 現在のプレミアムエフェクトポイントの合計を取得する作用
    */
   def currentPoint(uuid: UUID): F[DonatePremiumEffectPoint]
 
   /**
-   * プレミアムエフェクトの購入履歴を取得する作用
+   * @return プレミアムエフェクトの購入履歴を取得する作用
    */
   def fetchGrantHistory(uuid: UUID): F[Vector[PremiumEffectPurchaseData]]
 
   /**
-   * プレミアムエフェクトの使用履歴を取得する作用
+   * @return プレミアムエフェクトの使用履歴を取得する作用
    */
   def fetchUseHistory(uuid: UUID): F[Vector[PremiumEffectPurchaseData]]
 
