@@ -38,6 +38,8 @@ case class GachaPoint(exp: SeichiExpAmount) {
   }
 
   def add(point: GachaPoint): GachaPoint = GachaPoint(exp.add(point.exp))
+
+  def subtract(point: GachaPoint): GachaPoint = GachaPoint(exp.subtract(point.exp))
 }
 
 object GachaPoint {
@@ -68,8 +70,19 @@ object GachaPoint {
   final val initial: GachaPoint = GachaPoint.ofNonNegative(0)
 
   /**
+   * ガチャ券1枚あたりのガチャポイント
+   */
+  private val perGachaTicketPoint = 1000
+
+  /**
    * ガチャ券へのポイントの交換にて、ガチャ券一つ当たりに消費するガチャポイント量。
    */
-  final val perGachaTicket: GachaPoint = GachaPoint.ofNonNegative(1000)
+  final val perGachaTicket: GachaPoint = GachaPoint.ofNonNegative(perGachaTicketPoint)
+
+  /**
+   * ガチャ券の枚数を指定して相当分のガチャポイントを返す
+   */
+  def gachaPointBy(gachaTicketAmount: Int): GachaPoint =
+    ofNonNegative(perGachaTicketPoint * gachaTicketAmount)
 
 }

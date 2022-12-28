@@ -908,14 +908,6 @@ public final class MenuInventoryData {
         return Bukkit.getServer().createInventory(null, rows * 9, title);
     }
 
-    private static SkullMeta buildSkullMeta(final String name, final List<String> lore, final String owner) {
-        final SkullMeta ret = ItemMetaFactory.SKULL.getValue();
-        ret.setDisplayName(name);
-        ret.setOwner(owner);
-        ret.setLore(lore);
-        return ret;
-    }
-
     private static ItemStack build(final Material mat, final String name, final String singleLore) {
         return build(mat, name, singleLore, nullConsumer());
     }

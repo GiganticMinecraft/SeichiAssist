@@ -40,10 +40,6 @@ dropexplevel9: '94'
 dropexplevel10: '114'
 dokodemoenderlevel: '25'
 
-# サブホームポイント数の設定
-# 7以下に設定
-subhomemax: 5
-
 # 実績名の名称設定 -> Nicknames.scalaを参照すること
 
 # デバッグモードの設定

@@ -9,3 +9,4 @@ project
 
 target*
 !target/build
+localDependencies/ajd4jp-8.0.2.2021.jar

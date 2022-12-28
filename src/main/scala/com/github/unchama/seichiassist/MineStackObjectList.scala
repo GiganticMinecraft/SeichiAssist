@@ -12,8 +12,8 @@ import com.github.unchama.seichiassist.minestack.{
   MineStackObjectCategory,
   MineStackObjectWithColorVariants
 }
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.BukkitStaticGachaPrizeFactory
 import com.github.unchama.seichiassist.util.ItemInformation.itemStackContainsOwnerName
-import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
@@ -594,7 +594,7 @@ object MineStackObjectList {
    * デフォルトでガチャの内容に含まれている景品。
    */
   private val minestackBuiltinGachaPrizes: List[MineStackObjectGroup] = leftElems(
-    itemStackMineStackObject(GACHA_PRIZES,"gachaimo",None,hasNameLore = true,StaticGachaPrizeFactory.getGachaRingo),
+    itemStackMineStackObject(GACHA_PRIZES,"gachaimo",None,hasNameLore = true,BukkitStaticGachaPrizeFactory.gachaRingo),
     itemStackMineStackObject(GACHA_PRIZES,"exp_bottle",Some("エンチャントの瓶"),hasNameLore = false,new ItemStack(Material.EXP_BOTTLE,1))
   )
 
@@ -680,7 +680,7 @@ object MineStackObjectList {
           if (itemNotInfoExists) {
             true
           } else if (itemInfoExists) {
-            if (itemStack.isSimilar(StaticGachaPrizeFactory.getGachaRingo)) {
+            if (itemStack.isSimilar(BukkitStaticGachaPrizeFactory.gachaRingo)) {
               true
             } else {
               // ガチャ品
