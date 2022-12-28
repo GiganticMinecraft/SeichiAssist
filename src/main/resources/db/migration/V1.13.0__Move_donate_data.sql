@@ -1,6 +1,6 @@
 USE seichiassist;
 
-CREATE TABLE donate_usage_history(
+CREATE TABLE IF NOT EXISTS donate_usage_history(
     id INT AUTO_INCREMENT NOT NULL,
     uuid CHAR(36) NOT NULL,
     effect_name VARCHAR(20) NOT NULL,
@@ -25,7 +25,7 @@ FROM
 WHERE
     usepoint > 0;
 
-CREATE TABLE donate_purchase_history(
+CREATE TABLE IF NOT EXISTS donate_purchase_history(
     id INT AUTO_INCREMENT NOT NULL,
     uuid CHAR(36) NOT NULL,
     get_points INT NOT NULL,
