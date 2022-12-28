@@ -439,7 +439,6 @@ class SeichiAssist extends JavaPlugin() {
     homeSystem,
     presentSystem,
     anywhereEnderSystem,
-    sharedInventorySystem,
     lastQuitSystem,
     gachaSystem,
     gachaTicketSystem,
