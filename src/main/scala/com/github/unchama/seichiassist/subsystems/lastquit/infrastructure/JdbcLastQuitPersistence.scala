@@ -1,7 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.lastquit.infrastructure
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.lastquit.domain.{LastQuitDateTime, LastQuitPersistence}
+import com.github.unchama.seichiassist.subsystems.lastquit.domain.{
+  LastQuitDateTime,
+  LastQuitPersistence
+}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID
