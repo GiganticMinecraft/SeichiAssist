@@ -12,7 +12,7 @@ class LastQuitUpdater[F[_]: ConcurrentEffect](implicit lastQuitAPI: LastQuitAPI[
   @EventHandler
   def onQuit(event: PlayerQuitEvent): Unit = {
     val uuid = event.getPlayer.getUniqueId
-    lastQuitAPI.updateLastLastQuitDateTimeNow(uuid).toIO
+    lastQuitAPI.updateLastLastQuitDateTimeNow(uuid).toIO.unsafeRunAsyncAndForget()
   }
 
 }
