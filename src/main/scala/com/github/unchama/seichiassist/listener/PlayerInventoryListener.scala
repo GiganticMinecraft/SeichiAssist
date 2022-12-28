@@ -6,18 +6,15 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.player.GiganticBerserk
-import com.github.unchama.seichiassist.data.{GachaSkullData, ItemData, MenuInventoryData}
+import com.github.unchama.seichiassist.data.{ItemData, MenuInventoryData}
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.BukkitGachaSkullData
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.task.VotingFairyTask
-import com.github.unchama.seichiassist.util.{
-  InventoryOperations,
-  StaticGachaPrizeFactory,
-  TimeUtils
-}
+import com.github.unchama.seichiassist.util.{InventoryOperations, TimeUtils}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
@@ -28,8 +25,6 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.inventory.{ItemFlag, ItemStack}
 import org.bukkit.{Bukkit, Material, Sound}
-
-import scala.collection.mutable.ArrayBuffer
 
 class PlayerInventoryListener(
   implicit effectEnvironment: EffectEnvironment,
@@ -44,129 +39,7 @@ class PlayerInventoryListener(
   import com.github.unchama.util.syntax._
 
   private val playerMap = SeichiAssist.playermap
-  private val gachaDataList = SeichiAssist.gachadatalist
   private val databaseGateway = SeichiAssist.databaseGateway
-
-  // ガチャ交換システム
-  @EventHandler
-  def onGachaTradeEvent(event: InventoryCloseEvent): Unit = {
-    val player = event.getPlayer.asInstanceOf[Player]
-    val uuid = player.getUniqueId
-    val playerdata = playerMap(uuid).ifNull {
-      return
-    }
-    // エラー分岐
-    val name = playerdata.lowercaseName
-    val inventory = event.getInventory
-
-    // インベントリサイズが36でない時終了
-    if (inventory.row != 4) {
-      return
-    }
-    if (inventory.getTitle == s"${LIGHT_PURPLE.toString}${BOLD}交換したい景品を入れてください") {
-      var givegacha = 0
-      /*
-       * step1 for文でinventory内に対象商品がないか検索
-       * あったらdurabilityに応じてgivegachaを増やし、非対象商品は返却boxへ
-       */
-      // ガチャ景品交換インベントリの中身を取得
-      val items = inventory.getContents
-      // ドロップ用アイテムリスト(返却box)作成
-      val dropitem = ArrayBuffer[ItemStack]()
-      // カウント用
-      var big = 0
-      var reg = 0
-
-      // for文で１個ずつ対象アイテムか見る
-      // ガチャ景品交換インベントリを一個ずつ見ていくfor文
-      items.foreach {
-        case null =>
-        case item
-            if !item.hasItemMeta ||
-              !item.getItemMeta.hasLore ||
-              item.getType == Material.SKULL_ITEM =>
-          dropitem += item
-        case item =>
-          // ガチャ景品リスト上を線形探索する
-          val matchingGachaData = gachaDataList.find { gachadata =>
-            // ガチャ景品リストにある商品の場合(Lore=説明文と表示名で判別),無い場合はアイテム返却
-            if (
-              gachadata.itemStack.hasItemMeta && gachadata
-                .itemStack
-                .getItemMeta
-                .hasLore && gachadata.compare(item, name)
-            ) {
-              if (SeichiAssist.DEBUG)
-                player.sendMessage(gachadata.itemStack.getItemMeta.getDisplayName)
-              val amount = item.getAmount
-
-              if (gachadata.probability < 0.001) {
-                // ギガンティック大当たりの部分
-                // ガチャ券に交換せずそのままアイテムを返す
-                dropitem += item
-              } else if (gachadata.probability < 0.01) {
-                // 大当たりの部分
-                givegacha += 12 * amount
-                big += amount
-              } else if (gachadata.probability < 0.1) {
-                // 当たりの部分
-                givegacha += 3 * amount
-                reg += amount
-              } else {
-                // それ以外アイテム返却(経験値ポーションとかがここにくるはず)
-                dropitem += item
-              }
-              true
-            } else false
-          }
-          matchingGachaData match {
-            // ガチャ景品リストに対象アイテムが無かった場合
-            case None => dropitem += item
-            case _    =>
-          }
-      }
-      if (big <= 0 && reg <= 0) {
-        player.sendMessage(s"${YELLOW}景品を認識しませんでした。全てのアイテムを返却します")
-      } else {
-        player.sendMessage(s"${GREEN}大当たり景品を${big}個、当たり景品を${reg}個認識しました")
-      }
-      /*
-       * step2 非対象商品をインベントリに戻す
-       */
-      for (m <- dropitem) {
-        if (!InventoryOperations.isPlayerInventoryFull(player)) {
-          InventoryOperations.addItem(player, m)
-        } else {
-          InventoryOperations.dropItem(player, m)
-        }
-      }
-      /*
-       * step3 ガチャ券をインベントリへ
-       */
-      val skull = GachaSkullData.gachaForExchanging
-      var count = 0
-      while (givegacha > 0) {
-        if (
-          player.getInventory.contains(skull) || !InventoryOperations.isPlayerInventoryFull(
-            player
-          )
-        ) {
-          InventoryOperations.addItem(player, skull)
-        } else {
-          InventoryOperations.dropItem(player, skull)
-        }
-        givegacha -= 1
-        count += 1
-      }
-      if (count > 0) {
-        player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-        player.sendMessage(
-          GREEN.toString + "" + count + "枚の" + GOLD + "ガチャ券" + WHITE + "を受け取りました"
-        )
-      }
-    }
-
-  }
 
   // 実績メニューの処理
   @EventHandler
@@ -192,28 +65,41 @@ class PlayerInventoryListener(
      * 非対象商品は返却boxへ
      */
 
+    // 石炭とラピスラズリを適切に処理するため、typeとdurabilityを持つクラスを用意
+    case class ExchangeableMaterial(materialType: Material, durability: Short)
+
     val requiredAmountPerTicket = Map(
-      Material.COAL_ORE -> 128,
-      Material.IRON_ORE -> 64,
-      Material.GOLD_ORE -> 8,
-      Material.LAPIS_ORE -> 8,
-      Material.DIAMOND_ORE -> 4,
-      Material.REDSTONE_ORE -> 32,
-      Material.EMERALD_ORE -> 4,
-      Material.QUARTZ_ORE -> 16
+      ExchangeableMaterial(Material.COAL_ORE, 0) -> 128,
+      ExchangeableMaterial(Material.IRON_ORE, 0) -> 64,
+      ExchangeableMaterial(Material.GOLD_ORE, 0) -> 8,
+      ExchangeableMaterial(Material.LAPIS_ORE, 0) -> 8,
+      ExchangeableMaterial(Material.DIAMOND_ORE, 0) -> 4,
+      ExchangeableMaterial(Material.REDSTONE_ORE, 0) -> 32,
+      ExchangeableMaterial(Material.EMERALD_ORE, 0) -> 4,
+      ExchangeableMaterial(Material.QUARTZ_ORE, 0) -> 16,
+      ExchangeableMaterial(Material.COAL, 0) -> 432,
+      ExchangeableMaterial(Material.REDSTONE, 0) -> 288,
+      ExchangeableMaterial(Material.INK_SACK, 4) -> 64,
+      ExchangeableMaterial(Material.DIAMOND, 0) -> 8
     )
 
     val inventoryContents = inventory.getContents.filter(_ != null)
 
     val (itemsToExchange, rejectedItems) =
-      inventoryContents.partition { stack => requiredAmountPerTicket.contains(stack.getType) }
+      inventoryContents.partition { stack =>
+        requiredAmountPerTicket.contains(
+          ExchangeableMaterial(stack.getType, stack.getDurability)
+        )
+      }
 
-    val exchangingAmount = itemsToExchange.groupBy(_.getType).toList.map {
-      case (key, stacks) => key -> stacks.map(_.getAmount).sum
-    }
+    val exchangingAmount = itemsToExchange
+      .groupBy(stacks => ExchangeableMaterial(stacks.getType, stacks.getDurability))
+      .toList
+      .map { case (key, stacks) => key -> stacks.map(_.getAmount).sum }
 
     val ticketAmount = exchangingAmount.map {
-      case (material, amount) => amount / requiredAmountPerTicket(material)
+      case (exchangeableMaterial, amount) =>
+        amount / requiredAmountPerTicket(exchangeableMaterial)
     }.sum
 
     // プレイヤー通知
@@ -261,9 +147,14 @@ class PlayerInventoryListener(
         .flatMap {
           case (exchangedMaterial, exchangedAmount) =>
             val returningAmount = exchangedAmount % requiredAmountPerTicket(exchangedMaterial)
-            import scala.util.chaining._
             if (returningAmount != 0)
-              Some(new ItemStack(exchangedMaterial).tap(_.setAmount(returningAmount)))
+              Some(
+                new ItemStack(
+                  exchangedMaterial.materialType,
+                  returningAmount,
+                  exchangedMaterial.durability
+                )
+              )
             else
               None
         }
@@ -274,115 +165,6 @@ class PlayerInventoryListener(
       InventoryOperations.grantItemStacksEffect(itemStacksToReturn: _*),
       "鉱石交換でのアイテム返却を行う"
     )
-  }
-
-  // ギガンティック→椎名林檎交換システム
-  @EventHandler
-  def onGachaRingoEvent(event: InventoryCloseEvent): Unit = {
-    val player = event.getPlayer.asInstanceOf[Player]
-    val uuid = player.getUniqueId
-    val playerdata = playerMap(uuid).ifNull {
-      return
-    }
-    // エラー分岐
-    val name = playerdata.lowercaseName
-    val inventory = event.getInventory
-
-    // インベントリサイズが4列でない時終了
-    if (inventory.row != 4) {
-      return
-    }
-    if (inventory.getTitle == GOLD.toString + "" + BOLD + "椎名林檎と交換したい景品を入れてネ") {
-      var giveringo = 0
-      /*
-       * step1 for文でinventory内に対象商品がないか検索
-       * あったらdurabilityに応じてgivegachaを増やし、非対象商品は返却boxへ
-       */
-      // ガチャ景品交換インベントリの中身を取得
-      val item = inventory.getContents
-      // ドロップ用アイテムリスト(返却box)作成
-      val dropitem = ArrayBuffer[ItemStack]()
-      // カウント用
-      var giga = 0
-      // for文で１個ずつ対象アイテムか見る
-      // ガチャ景品交換インベントリを一個ずつ見ていくfor文
-      item.foreach {
-        case null =>
-        case m
-            if !m.hasItemMeta ||
-              !m.getItemMeta.hasLore ||
-              m.getType == Material.SKULL_ITEM =>
-          dropitem.addOne(m)
-        case m =>
-          // ガチャ景品リストを一個ずつ見ていくfor文
-          gachaDataList.find { gachadata =>
-            if (
-              gachadata.itemStack.hasItemMeta && gachadata
-                .itemStack
-                .getItemMeta
-                .hasLore && gachadata.compare(m, name)
-            ) {
-              if (SeichiAssist.DEBUG) {
-                player.sendMessage(gachadata.itemStack.getItemMeta.getDisplayName)
-              }
-              val amount = m.getAmount
-              if (gachadata.probability < 0.001) {
-                // ギガンティック大当たりの部分
-                // 1個につき椎名林檎n個と交換する
-                giveringo += SeichiAssist.seichiAssistConfig.rateGiganticToRingo * amount
-                giga += 1
-              } else {
-                // それ以外アイテム返却
-                dropitem.addOne(m)
-              }
-              true
-            } else false
-          } match {
-            case None => dropitem.addOne(m)
-            case _    =>
-          }
-      }
-      if (giga <= 0) {
-        player.sendMessage(YELLOW.toString + "ギガンティック大当り景品を認識しませんでした。全てのアイテムを返却します")
-      } else {
-        player.sendMessage(GREEN.toString + "ギガンティック大当り景品を" + giga + "個認識しました")
-      }
-      /*
-       * step2 非対象商品をインベントリに戻す
-       */
-      for (m <- dropitem) {
-        if (!InventoryOperations.isPlayerInventoryFull(player)) {
-          InventoryOperations.addItem(player, m)
-        } else {
-          InventoryOperations.dropItem(player, m)
-        }
-      }
-      /*
-       * step3 椎名林檎をインベントリへ
-       */
-      val ringo = StaticGachaPrizeFactory.getMaxRingo(player.getName)
-      var count = 0
-      while (giveringo > 0) {
-        if (
-          player.getInventory.contains(ringo) || !InventoryOperations.isPlayerInventoryFull(
-            player
-          )
-        ) {
-          InventoryOperations.addItem(player, ringo)
-        } else {
-          InventoryOperations.dropItem(player, ringo)
-        }
-        giveringo -= 1
-        count += 1
-      }
-      if (count > 0) {
-        player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-        player.sendMessage(
-          GREEN.toString + "" + count + "個の" + GOLD + "椎名林檎" + WHITE + "を受け取りました"
-        )
-      }
-    }
-
   }
 
   // 投票ptメニュー
@@ -453,7 +235,7 @@ class PlayerInventoryListener(
           // ここに投票1回につきプレゼントする特典の処理を書く
 
           // ガチャ券プレゼント処理
-          val skull = GachaSkullData.gachaForVoting
+          val skull = BukkitGachaSkullData.gachaForVoting
           for { _ <- 0 to 9 } {
             if (
               player.getInventory.contains(skull) || !InventoryOperations.isPlayerInventoryFull(

@@ -5,9 +5,24 @@ on:
     branches:
       - develop
       - master
+    paths:
+      - src/**
+      - build.sbt
+      - .scalafix.conf
+      - .scalafmt.conf
+      - project/*
+      - .github/workflows/*.yml
+      
   pull_request:
     branches:
       - develop
+    paths:
+      - src/**/
+      - build.sbt
+      - .scalafix.conf
+      - .scalafmt.conf
+      - project/*
+      - .github/workflows/*.yml
 
 jobs:
   build_test_and_upload:
@@ -17,12 +32,12 @@ jobs:
     container: ghcr.io/giganticminecraft/seichiassist-builder:1a64049
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: 'recursive'
 
       - name: Prepare build dependencies cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-build-dependencies
           cache-version: v-4
@@ -46,7 +61,7 @@ jobs:
 
       - name: Prepare build cache
         if: github.ref != 'refs/heads/master'
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-build
           cache-version: v-4
@@ -91,7 +106,7 @@ jobs:
         run: sbt assembly
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: SeichiAssist-build
           path: target/build/SeichiAssist.jar
@@ -112,7 +127,8 @@ jobs:
   push_artifact_to_debug_server_definition:
     runs-on: ubuntu-20.04
     if: github.ref == 'refs/heads/develop'
-    needs: build_test_and_upload
+    needs:
+      - build_test_and_upload
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
@@ -186,7 +202,8 @@ jobs:
   deploy_artifact_to_production:
     runs-on: ubuntu-20.04
     if: github.ref == 'refs/heads/master'
-    needs: build_test_and_upload
+    needs:
+      - build_test_and_upload
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
@@ -218,4 +235,3 @@ jobs:
           description: "s1、s2等の本番環境にプラグインを配置する"
           username: GitHub Actions
           avatar_url: ${{ secrets.DISCORD_AVATAR_URL }}
-
