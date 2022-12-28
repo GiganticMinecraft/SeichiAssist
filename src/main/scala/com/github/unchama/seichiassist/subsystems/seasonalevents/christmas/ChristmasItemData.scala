@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.christmas
 
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas.EVENT_YEAR
-import com.github.unchama.seichiassist.util.EnchantNameToJapanese
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Color.fromRGB
@@ -184,53 +183,6 @@ object ChristmasItemData {
     val isZombie = enemyType == EntityType.ZOMBIE || enemyType == EntityType.ZOMBIE_VILLAGER
 
     (if (isZombie) 40 else 20) * rate
-  }
-
-  // endregion
-
-  // region THANATOSレプリカ
-
-  val christmasPickaxe: ItemStack = {
-    val displayName = Seq(
-      "T" -> RED,
-      "H" -> GOLD,
-      "A" -> YELLOW,
-      "N" -> GREEN,
-      "A" -> BLUE,
-      "T" -> DARK_AQUA,
-      "O" -> LIGHT_PURPLE,
-      "S" -> RED,
-      " Replica" -> WHITE
-    ).map { case (c, color) => s"$color$BOLD$ITALIC$c" }.mkString
-    val enchants = Set((Enchantment.DIG_SPEED, 3), (Enchantment.LOOT_BONUS_BLOCKS, 1))
-    val loreList = {
-      val enchDescription = enchants.map {
-        case (ench, lvl) =>
-          s"$RESET$GRAY${EnchantNameToJapanese.getEnchantName(ench.getName, lvl)}"
-      }.toList
-      val lore = List(s"$RESET${AQUA}耐久無限")
-
-      enchDescription ::: christmasItemBaseLore ::: lore
-    }.asJava
-
-    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.DIAMOND_PICKAXE).tap { meta =>
-      import meta._
-      setDisplayName(displayName)
-      setLore(loreList)
-      setUnbreakable(true)
-      addItemFlags(ItemFlag.HIDE_ENCHANTS)
-      enchants.foreach { case (ench, lvl) => addEnchant(ench, lvl, true) }
-    }
-
-    val pickaxe = new ItemStack(Material.DIAMOND_PICKAXE, 1)
-    pickaxe.setItemMeta(itemMeta)
-
-    new NBTItem(pickaxe)
-      .tap { nbtItem =>
-        import nbtItem._
-        setByte(NBTTagConstants.typeIdTag, 5.toByte)
-      }
-      .pipe(_.getItem)
   }
 
   // endregion

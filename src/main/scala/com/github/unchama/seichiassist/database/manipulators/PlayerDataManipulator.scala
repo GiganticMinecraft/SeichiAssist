@@ -83,44 +83,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     supplier
   }
 
-  // 最新のnumofsorryforbug値を返してmysqlのnumofsorrybug値を初期化する処理
-  def givePlayerBug(player: Player): Int = {
-    val uuid = player.getUniqueId.toString
-    val numberToGrant = {
-      val command = s"select numofsorryforbug from $tableReference where uuid = '$uuid'"
-      val rawMaximum =
-        try {
-          gateway
-            .executeQuery(command)
-            .recordIteration {
-              _.getInt("numofsorryforbug")
-            }
-            .head
-        } catch {
-          case e: Exception =>
-            println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
-            e.printStackTrace()
-            player.sendMessage(RED.toString + "ガチャ券の受け取りに失敗しました")
-            return 0
-        }
-
-      Math.min(rawMaximum, 576)
-    }
-
-    {
-      val updateCommand =
-        s"update $tableReference " +
-          s"set numofsorryforbug = numofsorryforbug - $numberToGrant where uuid = '$uuid'"
-
-      if (gateway.executeUpdate(updateCommand) == ActionStatus.Fail) {
-        player.sendMessage(RED.toString + "ガチャ券の受け取りに失敗しました")
-        return 0
-      }
-    }
-
-    numberToGrant
-  }
-
   /**
    * 投票ポイントをインクリメントするメソッド。
    *
@@ -131,23 +93,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     DB.localTx { implicit session =>
       sql"update playerdata set p_vote = p_vote + 1 where name = $playerName".update().apply()
     }
-  }
-
-  // 指定されたプレイヤーにガチャ券を送信する
-  def addPlayerBug(playerName: String, num: Int): IO[ResponseEffectOrResult[Player, Unit]] = {
-    val executeQuery = IO {
-      import scalikejdbc._
-      DB.localTx { implicit session =>
-        sql"""update playerdata set numofsorryforbug = numofsorryforbug + $num where name = $playerName"""
-          .update()
-          .apply()
-      }
-    }.void
-
-    catchingDatabaseErrors(
-      s"add admin-gacha for $playerName",
-      EitherT.right(executeQuery).value
-    )
   }
 
   def addChainVote(name: String): Unit =
@@ -243,7 +188,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       gateway.executeQuery(command).recordIteration { lrs =>
         val rankdata = new RankData()
         rankdata.name = lrs.getString("name")
-        rankdata.playtick = lrs.getInt("playtick")
+        rankdata.playtick = lrs.getLong("playtick")
         ranklist += rankdata
       }
     } catch {
@@ -305,28 +250,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     SeichiAssist.ranklist_p_apple.clear()
     SeichiAssist.ranklist_p_apple.addAll(ranklist)
     true
-  }
-
-  // 全員に詫びガチャの配布
-  def addAllPlayerBug(amount: Int): ActionStatus = {
-    val command = s"update $tableReference set numofsorryforbug = numofsorryforbug + $amount"
-    gateway.executeUpdate(command)
-  }
-
-  private def catchingDatabaseErrors[R](
-    targetName: String,
-    program: IO[Either[TargetedEffect[CommandSender], R]]
-  ): IO[Either[TargetedEffect[CommandSender], R]] = {
-    program.attempt.flatMap {
-      case Left(error) =>
-        IO {
-          Bukkit.getLogger.warning(s"database failure for $targetName.")
-          error.printStackTrace()
-
-          Left(MessageEffect(s"${RED}データベースアクセスに失敗しました。"))
-        }
-      case Right(result) => IO.pure(result)
-    }
   }
 
   def loadPlayerData(playerUUID: UUID, playerName: String): PlayerData = {

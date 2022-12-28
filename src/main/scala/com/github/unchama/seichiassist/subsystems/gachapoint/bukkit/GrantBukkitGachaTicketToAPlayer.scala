@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.gachapoint.bukkit
 
 import cats.effect.{IO, LiftIO}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.data.GachaSkullData
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.BukkitGachaSkullData
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.GrantGachaTicketToAPlayer
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.targetedeffect.SequentialEffect
@@ -20,7 +20,7 @@ case class GrantBukkitGachaTicketToAPlayer[F[_]: LiftIO](player: Player)(
   override def give(count: Int): F[Unit] = {
     val effect =
       if (count > 0) {
-        val itemToGive = GachaSkullData.gachaSkull
+        val itemToGive = BukkitGachaSkullData.gachaSkull
         val itemStacksToGive = Seq.fill(count)(itemToGive)
 
         SequentialEffect(

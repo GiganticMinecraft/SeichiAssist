@@ -5,6 +5,9 @@ import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.Bui
 
 trait NotifyLevelUp[F[_], Player] {
 
+  /**
+   * @return 建築レベルがアップするごとにプレイヤーに通知を出す作用を返す
+   */
   def ofBuildLevelTo(player: Player)(diff: Diff[BuildLevel]): F[Unit]
 
 }
