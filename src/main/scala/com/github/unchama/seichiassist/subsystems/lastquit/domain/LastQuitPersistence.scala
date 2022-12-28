@@ -12,6 +12,6 @@ trait LastQuitPersistence[F[_]] {
   /**
    * @return 最終ログアウト日時を取得する作用
    */
-  def lastQuitDateTime(playerName: PlayerName): F[Option[LastQuitDateTime]]
+  def lastQuitDateTime(uuid: UUID): F[Option[LastQuitDateTime]]
 
 }
