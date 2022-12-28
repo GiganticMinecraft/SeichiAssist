@@ -6,8 +6,7 @@ import com.github.unchama.seichiassist.subsystems.lastquit.bukkit.commands.LastQ
 import com.github.unchama.seichiassist.subsystems.lastquit.bukkit.listeners.LastQuitUpdater
 import com.github.unchama.seichiassist.subsystems.lastquit.domain.{
   LastQuitDateTime,
-  LastQuitPersistence,
-  PlayerName
+  LastQuitPersistence
 }
 import com.github.unchama.seichiassist.subsystems.lastquit.infrastructure.JdbcLastQuitPersistence
 import org.bukkit.command.TabExecutor
