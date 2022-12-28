@@ -7,7 +7,7 @@ import java.util.UUID
 trait LastQuitWriteAPI[F[_]] {
 
   /**
-   * 最終ログアウト日時を現在の時刻で更新します。
+   * @return 最終ログアウト日時を現在の時刻で更新する作用
    */
   def updateLastLastQuitDateTimeNow(uuid: UUID): F[Unit]
 
@@ -22,7 +22,7 @@ object LastQuitWriteAPI {
 trait LastQuitReadAPI[F[_]] {
 
   /**
-   * 最終ログアウト日時を取得します。
+   * @return 最終ログアウト日時を取得する作用
    */
   def lastQuitDateTime(uuid: UUID): F[Option[LastQuitDateTime]]
 
