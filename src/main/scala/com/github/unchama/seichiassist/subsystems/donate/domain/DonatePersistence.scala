@@ -7,7 +7,7 @@ import java.util.UUID
 trait DonatePersistence[F[_]] {
 
   /**
-   * プレミアムエフェクトポイントを増加させる作用
+   * @return プレミアムエフェクトポイントを増加させる作用
    */
   def addDonatePremiumEffectPoint(
     playerName: PlayerName,
@@ -15,22 +15,22 @@ trait DonatePersistence[F[_]] {
   ): F[Unit]
 
   /**
-   * プレミアムエフェクトポイントを使用する作用
+   * @return プレミアムエフェクトポイントを使用する作用
    */
   def useDonatePremiumEffectPoint(uuid: UUID, effect: ActiveSkillPremiumEffect): F[Unit]
 
   /**
-   * 現在のプレミアムエフェクトポイントの合計を取得する作用
+   * @return 現在のプレミアムエフェクトポイントの合計を取得する作用
    */
   def currentPremiumEffectPoints(uuid: UUID): F[DonatePremiumEffectPoint]
 
   /**
-   * プレミアムエフェクトの購入履歴を取得する作用
+   * @return プレミアムエフェクトの購入履歴を取得する作用
    */
   def donatePremiumEffectPointPurchaseHistory(uuid: UUID): F[Vector[PremiumEffectPurchaseData]]
 
   /**
-   * プレミアムエフェクトの使用履歴を取得する作用
+   * @return プレミアムエフェクトの使用履歴を取得する作用
    */
   def donatePremiumEffectPointUsageHistory(uuid: UUID): F[Vector[PremiumEffectPurchaseData]]
 
