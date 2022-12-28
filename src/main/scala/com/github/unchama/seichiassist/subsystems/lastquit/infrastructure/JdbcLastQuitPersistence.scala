@@ -12,9 +12,6 @@ import java.util.UUID
 
 class JdbcLastQuitPersistence[F[_]: Sync] extends LastQuitPersistence[F] {
 
-  /**
-   * 最終ログアウトを現在の日時で更新します
-   */
   override def updateLastQuitNow(uuid: UUID): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
       sql"UPDATE playerdata SET lastquit = NOW() WHERE uuid = ${uuid.toString}"
@@ -23,9 +20,6 @@ class JdbcLastQuitPersistence[F[_]: Sync] extends LastQuitPersistence[F] {
     }
   }
 
-  /**
-   * 最終ログアウト日時を取得します
-   */
   override def lastQuitDateTime(playerName: PlayerName): F[Option[LastQuitDateTime]] =
     Sync[F].delay {
       DB.readOnly { implicit session =>

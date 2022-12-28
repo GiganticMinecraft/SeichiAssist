@@ -5,12 +5,12 @@ import java.util.UUID
 trait LastQuitPersistence[F[_]] {
 
   /**
-   * 最終ログアウトを現在の日時で更新します
+   * @return 最終ログアウトを現在の日時で更新する作用
    */
   def updateLastQuitNow(uuid: UUID): F[Unit]
 
   /**
-   * 最終ログアウト日時を取得します
+   * @return 最終ログアウト日時を取得する作用
    */
   def lastQuitDateTime(playerName: PlayerName): F[Option[LastQuitDateTime]]
 
