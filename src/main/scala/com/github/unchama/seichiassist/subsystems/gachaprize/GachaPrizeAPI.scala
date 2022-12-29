@@ -86,7 +86,7 @@ trait GachaPrizeReadAPI[F[_], ItemStack] {
   def allGachaPrizeList: F[Vector[GachaPrize[ItemStack]]]
 
   /**
-   * @return `gachaPrizeId`に対応する[[GachaPrize]]作用
+   * @return `gachaPrizeId`に対応する[[GachaPrize]]を返す作用
    */
   final def fetch(gachaPrizeId: GachaPrizeId): F[Option[GachaPrize[ItemStack]]] = for {
     prizes <- allGachaPrizeList
@@ -135,7 +135,7 @@ trait GachaPrizeWriteAPI[F[_], ItemStack] {
   def load: F[Unit]
 
   /**
-   * @return ガチャの景品リストを`gachaPrizesList`に置き換えを行う作用
+   * @return ガチャの景品リストを`gachaPrizesList`に置き換える作用
    */
   def replace(gachaPrizesList: Vector[GachaPrize[ItemStack]]): F[Unit]
 
