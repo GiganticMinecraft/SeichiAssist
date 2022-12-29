@@ -4,9 +4,13 @@ import cats.effect.ConcurrentEffect
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
-import com.github.unchama.seichiassist.subsystems.vote.domain.{PlayerName, VotePersistence}
+import com.github.unchama.seichiassist.infrastructure.minecraft.{
+  JdbcLastSeenNameToUuid,
+  LastSeenNameToUuidError
+}
+import com.github.unchama.seichiassist.subsystems.vote.domain.VotePersistence
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
-import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
+import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 
@@ -22,18 +26,28 @@ class VoteCommand[F[_]: ConcurrentEffect](implicit votePersistence: VotePersiste
     ContextualExecutorBuilder
       .beginConfiguration()
       .executionCSEffect { context =>
-        val lowerCasePlayerName = context.args.yetToBeParsed.head
+        val playerName = context.args.yetToBeParsed.head
+        val distributionProcess = for {
+          uuidEither <- new JdbcLastSeenNameToUuid[F].of(playerName)
+          program <- uuidEither.traverse { uuid =>
+            votePersistence.incrementVoteCount(uuid) >> votePersistence
+              .updateConsecutiveVoteStreak(uuid)
+          }
+        } yield program match {
+          case Left(error) =>
+            error match {
+              case LastSeenNameToUuidError.MultipleFound =>
+                MessageEffect(s"${RED}指定された名前のプレイヤーが複数見つかりました。")
+              case LastSeenNameToUuidError.NotFound =>
+                MessageEffect(s"${RED}指定された名前のプレイヤーが見つかりませんでした。")
+            }
+          case Right(_) =>
+            MessageEffect(s"$AQUA${playerName}への特典配布処理に成功しました。")
+        }
 
         SequentialEffect(
-          MessageEffect(s"$YELLOW${lowerCasePlayerName}の特典配布処理開始…"),
-          UnfocusedEffect {
-            val playerName = PlayerName(lowerCasePlayerName)
-            val eff = for {
-              _ <- votePersistence.incrementVoteCount(playerName)
-              _ <- votePersistence.updateConsecutiveVoteStreak(playerName)
-            } yield ()
-            eff.toIO.unsafeRunAsyncAndForget()
-          }
+          MessageEffect(s"$YELLOW${playerName}の特典配布処理開始…"),
+          DeferredEffect(distributionProcess.toIO)
         )
       }
       .build()

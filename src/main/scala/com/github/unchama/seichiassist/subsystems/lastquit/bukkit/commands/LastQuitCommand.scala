@@ -3,11 +3,8 @@ package com.github.unchama.seichiassist.subsystems.lastquit.bukkit.commands
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
+import com.github.unchama.seichiassist.infrastructure.minecraft.{JdbcLastSeenNameToUuid, LastSeenNameToUuidError}
 import com.github.unchama.seichiassist.subsystems.lastquit.LastQuitAPI
-import com.github.unchama.seichiassist.subsystems.lastquit.infrastructure.{
-  JdbcLastSeenNameToUuid,
-  LastSeenNameToUuidError
-}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor.RED
 import org.bukkit.command.TabExecutor

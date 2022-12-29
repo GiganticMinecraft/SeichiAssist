@@ -14,7 +14,7 @@ trait VotePersistence[F[_]] {
   /**
    * @return 投票回数をインクリメントする作用
    */
-  def incrementVoteCount(playerName: PlayerName): F[Unit]
+  def incrementVoteCount(uuid: UUID): F[Unit]
 
   /**
    * @return 投票回数を返す作用
@@ -24,7 +24,7 @@ trait VotePersistence[F[_]] {
   /**
    * @return 連続投票回数を更新する作用
    */
-  def updateConsecutiveVoteStreak(playerName: PlayerName): F[Unit]
+  def updateConsecutiveVoteStreak(uuid: UUID): F[Unit]
 
   /**
    * @return 連続投票日数を返す作用
