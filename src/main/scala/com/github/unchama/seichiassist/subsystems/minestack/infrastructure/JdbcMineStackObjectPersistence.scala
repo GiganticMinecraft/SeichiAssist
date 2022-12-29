@@ -40,7 +40,7 @@ class JdbcMineStackObjectPersistence[F[_]: Sync, ItemStack, Player](
   override def write(key: UUID, value: List[MineStackObjectWithAmount[ItemStack]]): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
-        val batchParams: Seq[Seq[Any]] = value.map { mineStackObjectWithAmount =>
+        val batchParams = value.map { mineStackObjectWithAmount =>
           val objectName = mineStackObjectWithAmount.mineStackObject.mineStackObjectName
           val amount = mineStackObjectWithAmount.amount
           Seq(key.toString, objectName, amount)

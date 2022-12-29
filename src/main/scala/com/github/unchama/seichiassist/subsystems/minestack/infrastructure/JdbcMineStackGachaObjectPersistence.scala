@@ -17,7 +17,6 @@ class JdbcMineStackGachaObjectPersistence[F[_]: Sync, ItemStack, Player](
     mineStackGachaObjects <- Sync[F].delay {
       DB.readOnly { implicit session =>
         sql"SELECT id, mine_stack_object_name FROM mine_stack_gacha_objects"
-          .toList()
           .map { rs =>
             val id = rs.int("id")
             allGachaPrizeList
