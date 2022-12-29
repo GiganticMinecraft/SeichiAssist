@@ -27,29 +27,30 @@ class BukkitReceiveVoteBenefits[F[_]: OnMinecraftServerThread: Sync, G[
   override def receive(player: Player): F[Unit] = {
     val uuid = player.getUniqueId
     for {
-      voteCounter <- votePersistence.voteCounter(uuid)
+      totalVote <- votePersistence.voteCounter(uuid)
       receivedVote <- votePersistence.receivedVoteBenefits(uuid)
-      notReceivedBenefits = VoteBenefit(voteCounter.value - receivedVote.value)
+      pendingCount = VoteBenefit(totalVote.value - receivedVote.value)
+      // 受け取ってない分を受け取ったことにする
       _ <- votePersistence.increaseVoteBenefits(
         uuid,
-        notReceivedBenefits
-      ) // 受け取ってない分を受け取ったことにする
+        pendingCount
+      )
       playerLevel <- ContextCoercion(breakCountAPI.seichiAmountDataRepository(player).read.map {
         _.levelCorrespondingToExp.level
       })
-      gachaSkulls = Seq.fill(10 * notReceivedBenefits.value)(
+      gachaSkulls = Seq.fill(10 * pendingCount.value)(
         BukkitGachaSkullData.gachaForVoting
       )
-      elseVoteBenefits = Seq.fill(notReceivedBenefits.value)(
+      elseVoteBenefits = Seq.fill(pendingCount.value)(
         if (playerLevel < 50) ItemData.getSuperPickaxe(1)
         else ItemData.getVotingGift(1)
       )
       grantItems = gachaSkulls ++ elseVoteBenefits
       _ <- {
         ContextCoercion(votePersistence.increaseEffectPoints(uuid, EffectPoint(10)))
-          .replicateA(notReceivedBenefits.value) >>
+          .replicateA(pendingCount.value) >>
           grantItemStacksEffect[F](grantItems: _*).apply(player)
-      }.whenA(notReceivedBenefits.value != 0)
+      }.whenA(pendingCount.value != 0)
     } yield ()
   }
 
