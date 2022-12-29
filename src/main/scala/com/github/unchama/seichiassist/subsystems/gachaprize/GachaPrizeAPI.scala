@@ -36,7 +36,7 @@ trait GachaEventReadAPI[F[_]] {
    * 指定された[[GachaEventName]]のイベントが存在するか調べる
    * @return 存在すれば`true`、存在しないなら`false`を返す作用
    */
-  final def isExistsGachaEvent(gachaEventName: GachaEventName): F[Boolean] = for {
+  final def existsGachaEvent(gachaEventName: GachaEventName): F[Boolean] = for {
     foundGachaEvent <- findGachaEvent(gachaEventName)
   } yield foundGachaEvent.nonEmpty
 

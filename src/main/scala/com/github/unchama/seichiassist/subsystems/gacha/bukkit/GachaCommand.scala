@@ -408,7 +408,7 @@ class GachaCommand[
             IO(MessageEffect(s"${RED}イベント名は30字以内で指定してください。"))
           } else {
             val eff = for {
-              isExistsEvent <- gachaPrizeAPI.isExistsGachaEvent(eventName)
+              isExistsEvent <- gachaPrizeAPI.existsGachaEvent(eventName)
               _ <- gachaPrizeAPI
                 .createGachaEvent(
                   GachaEvent(
