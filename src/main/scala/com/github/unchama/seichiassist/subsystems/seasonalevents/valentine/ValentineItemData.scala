@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.valentine
 
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine.{
-  END_DATE,
+  END_DATE_TIME,
+  EVENT_DURATION,
   EVENT_YEAR
 }
 import de.tr7zw.itemnbtapi.NBTItem
@@ -10,7 +11,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.{Bukkit, Material}
 
-import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.UUID
 import scala.jdk.CollectionConverters._
 import scala.util.chaining._
@@ -20,19 +21,38 @@ object ValentineItemData {
     s"${GRAY}食べると一定時間ステータスが変化する。",
     s"${GRAY}消費期限を超えると効果が無くなる。",
     "",
-    s"${DARK_GREEN}消費期限：$END_DATE",
+    s"${DARK_GREEN}消費期限：$END_DATE_TIME",
     s"${AQUA}ステータス変化（10分）$GRAY （期限内）"
   ).map(str => s"$RESET$str")
 
   private val cookieName = s"$GOLD${BOLD}チョコチップクッキー"
 
+  /**
+   * チョコチップクッキーであるかどうかを返す
+   * @see バレンタインイベントのチョコチップクッキーであるかどうかを確認するには[[isDroppedCookie]]または[[isGiftedCookie]]
+   */
+  def isCookie(item: ItemStack): Boolean = item != null && item.getType == Material.COOKIE
+
+  /**
+   * クッキーの有効期限が切れていないかどうかを返す。
+   * @return 有効期限が現在日時と等しい、または現在日時より前であるかどうか。有効期限が設定されていなければ`false`
+   * @see チョコチップクッキーであるかどうかは確認するには[[isCookie]]
+   * @see バレンタインイベントのチョコチップクッキーであるかどうかを確認するには[[isDroppedCookie]]または[[isGiftedCookie]]
+   */
   def isUsableCookie(item: ItemStack): Boolean = {
-    val today = LocalDate.now()
-    val exp = new NBTItem(item).getObject(NBTTagConstants.expiryDateTag, classOf[LocalDate])
-    today.isBefore(exp)
+    val now = LocalDateTime.now()
+    val exp = Option(
+      new NBTItem(item).getObject(NBTTagConstants.expiryDateTimeTag, classOf[LocalDateTime])
+    ).getOrElse(return false)
+    now.isBefore(exp) || now.isEqual(exp)
   }
 
   // region DroppedCookie -> 爆発したmobからドロップするやつ
+
+  /**
+   * ドロップするチョコチップクッキーのアイテムID。1は有効期限が[[java.time.LocalDate]]のもの
+   */
+  private val droppedCookieTypeId = 3
 
   val droppedCookie: ItemStack = {
     val loreList = {
@@ -51,22 +71,26 @@ object ValentineItemData {
     new NBTItem(itemStack)
       .tap { item =>
         import item._
-        setByte(NBTTagConstants.typeIdTag, 1.toByte)
-        setObject(NBTTagConstants.expiryDateTag, END_DATE)
+        setByte(NBTTagConstants.typeIdTag, droppedCookieTypeId.toByte)
+        setObject(NBTTagConstants.expiryDateTimeTag, EVENT_DURATION.to)
       }
       .pipe(_.getItem)
   }
 
   def isDroppedCookie(item: ItemStack): Boolean =
-    item != null && item.getType == Material.COOKIE && {
-      new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 1
-    }
+    isCookie(item) && new NBTItem(item)
+      .getByte(NBTTagConstants.typeIdTag) == droppedCookieTypeId
 
   // endregion
 
   // region GiftedCookie -> 棒メニューでもらえるやつ
 
-  def cookieOf(playerName: String, playerUuid: UUID): ItemStack = {
+  /**
+   * 棒メニューからチョコチップクッキーのアイテムID。2は有効期限が[[java.time.LocalDate]]のもの
+   */
+  private val giftedCookieTypeId = 4
+
+  def giftedCookieOf(playerName: String, playerUuid: UUID): ItemStack = {
     val loreList = {
       val header = List("", s"$RESET${GRAY}手作りのチョコチップクッキー。")
       val producer = List(s"$RESET${DARK_GREEN}製作者：$playerName")
@@ -86,8 +110,8 @@ object ValentineItemData {
     new NBTItem(itemStack)
       .tap { item =>
         import item._
-        setByte(NBTTagConstants.typeIdTag, 2.toByte)
-        setObject(NBTTagConstants.expiryDateTag, END_DATE)
+        setByte(NBTTagConstants.typeIdTag, giftedCookieTypeId.toByte)
+        setObject(NBTTagConstants.expiryDateTimeTag, EVENT_DURATION.to)
         setObject(NBTTagConstants.producerUuidTag, playerUuid)
         setString(NBTTagConstants.producerNameTag, playerName)
       }
@@ -95,10 +119,12 @@ object ValentineItemData {
   }
 
   def isGiftedCookie(item: ItemStack): Boolean =
-    item != null && item.getType == Material.COOKIE && {
-      new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 2
-    }
+    isCookie(item) && new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == giftedCookieTypeId
 
+  /**
+   * チョコチップクッキーのOwnerのUUIDを返す。
+   * @return UUIDが設定されていれば[[Some]]、なければ[[None]]
+   */
   def ownerOf(item: ItemStack): Option[UUID] =
     Option(new NBTItem(item).getObject(NBTTagConstants.producerUuidTag, classOf[UUID]))
 
@@ -133,7 +159,7 @@ object ValentineItemData {
 
   object NBTTagConstants {
     val typeIdTag = "valentineCookieTypeId"
-    val expiryDateTag = "valentineCookieExpiryDate"
+    val expiryDateTimeTag = "valentineCookieExpiryDateTime"
     val producerNameTag = "valentineCookieProducerName"
     val producerUuidTag = "valentineCookieProducerUuid"
   }
