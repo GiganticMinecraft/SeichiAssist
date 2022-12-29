@@ -73,6 +73,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket.ConsumeGachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
+import com.github.unchama.seichiassist.subsystems.idletime.IdleTimeAPI
 import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository
@@ -222,6 +223,8 @@ class SeichiAssist extends JavaPlugin() {
       .managedfly
       .application
       .SystemConfiguration(expConsumptionAmount = seichiAssistConfig.getFlyExp)
+
+    implicit val idleTimeAPI: IdleTimeAPI[IO, Player] = idleTimeSystem.api
 
     subsystems.managedfly.System.wired[IO, SyncIO](configuration).unsafeRunSync()
   }
@@ -424,6 +427,19 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val donateSystem: subsystems.donate.System[IO] =
     subsystems.donate.System.wired[IO]
 
+  private lazy val idleTimeSystem: subsystems.idletime.System[IO, Player] = {
+    import PluginExecutionContexts.{onMainThread, sleepAndRoutineContext}
+    subsystems.idletime.System.wired[IO].unsafeRunSync()
+  }
+
+  private lazy val awayScreenNameSystem: Subsystem[IO] = {
+    import PluginExecutionContexts.{onMainThread, sleepAndRoutineContext}
+
+    implicit val idleTimeAPI: IdleTimeAPI[IO, Player] = idleTimeSystem.api
+
+    subsystems.idletime.subsystems.awayscreenname.System.wired[IO].unsafeRunSync()
+  }
+
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
     expBottleStackSystem,
@@ -444,6 +460,8 @@ class SeichiAssist extends JavaPlugin() {
     homeSystem,
     presentSystem,
     anywhereEnderSystem,
+    awayScreenNameSystem,
+    idleTimeSystem,
     lastQuitSystem,
     donateSystem,
     gachaSystem,
