@@ -395,7 +395,6 @@ class SeichiAssist extends JavaPlugin() {
       .wired[SyncIO, IO](seichiAssistConfig.getAnywhereEnderConfiguration)
   }
 
-
   private implicit lazy val mineStackAPI: MineStackAPI[IO, Player, ItemStack] =
     mineStackSystem.api
 

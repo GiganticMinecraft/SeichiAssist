@@ -163,10 +163,8 @@ object VotingFairyListener {
       // りんご所持数で値変更
       val gachaRingo =
         mineStackAPI.mineStackObjectList.findByName("gachaimo").unsafeRunSync().get
-      val quantity = mineStackAPI
-        .mineStackRepository
-        .getStackedAmountOf(player, gachaRingo)
-        .unsafeRunSync()
+      val quantity =
+        mineStackAPI.mineStackRepository.getStackedAmountOf(player, gachaRingo).unsafeRunSync()
       if (m > quantity) {
         if (quantity == 0) {
           n /= 2
