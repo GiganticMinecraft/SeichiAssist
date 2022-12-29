@@ -107,7 +107,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
    */
   private def computeAppleConsumptionAmount: F[Int] = for {
     seichiAmountData <- ContextCoercion(breakCountAPI.seichiAmountDataRepository(player).read)
-    chainVoteNumber <- voteAPI.chainVoteDayNumber(uuid)
+    chainVoteNumber <- voteAPI.currentConsecutiveVoteStreakDays(uuid)
     appleOpenState <- fairyPersistence.appleOpenState(uuid)
     oldManaAmount <- ContextCoercion {
       manaApi.readManaAmount(player)

@@ -35,7 +35,7 @@ object System {
         override def count(uuid: UUID): F[VoteCounter] =
           _votePersistence.voteCounter(uuid)
 
-        override def chainVoteDayNumber(uuid: UUID): F[ChainVoteDayNumber] =
+        override def currentConsecutiveVoteStreakDays(uuid: UUID): F[ChainVoteDayNumber] =
           _votePersistence.chainVoteDays(uuid)
 
         override def decreaseEffectPoint(uuid: UUID, effectPoint: EffectPoint): F[Unit] =

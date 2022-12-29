@@ -30,7 +30,7 @@ trait VoteReadAPI[F[_], Player] {
   /**
    * @return 連続投票日数を返す作用
    */
-  def chainVoteDayNumber(uuid: UUID): F[ChainVoteDayNumber]
+  def currentConsecutiveVoteStreakDays(uuid: UUID): F[ChainVoteDayNumber]
 
   /**
    * @return effectPointを返す作用
