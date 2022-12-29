@@ -24,11 +24,12 @@ class BukkitPlayerIdleTimeRecalculationRoutine(player: Player)(
     for {
       playerLocation <- playerLocationRepository.getRepositoryLocation
       _ <- playerLocationRepository.updateNowLocation
-      _ <- if (playerLocation.location == player.getLocation) {
-        playerIdleTimeRepository.addOneMinute
-      } else {
-        playerIdleTimeRepository.reset
-      }
+      _ <-
+        if (playerLocation.location == player.getLocation) {
+          playerIdleTimeRepository.addOneMinute
+        } else {
+          playerIdleTimeRepository.reset
+        }
     } yield ()
   }
 
