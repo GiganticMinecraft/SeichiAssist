@@ -84,10 +84,9 @@ private[minestack] case class MineStackButtons(player: Player)(
           getItemMeta.tap { itemMeta =>
             import itemMeta._
             setDisplayName {
-              val name = mineStackObject.uiName match {
-                case Some(value) => value
-                case None        => if (hasDisplayName) getDisplayName else getType.toString
-              }
+              val name = mineStackObject
+                .uiName
+                .fold(if (hasDisplayName) getDisplayName else getType.toString)(_)
 
               s"$YELLOW$UNDERLINE$BOLD$name"
             }
