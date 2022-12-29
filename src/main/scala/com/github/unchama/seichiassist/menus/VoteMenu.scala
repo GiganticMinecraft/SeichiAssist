@@ -105,7 +105,7 @@ object VoteMenu extends Menu {
       val uuid = player.getUniqueId
       for {
         benefits <- voteAPI.receivedVoteBenefits(uuid)
-        voteCounter <- voteAPI.voteCounter(uuid)
+        voteCounter <- voteAPI.count(uuid)
         effectPoint <- voteAPI.effectPoints(player)
       } yield {
         Button(
