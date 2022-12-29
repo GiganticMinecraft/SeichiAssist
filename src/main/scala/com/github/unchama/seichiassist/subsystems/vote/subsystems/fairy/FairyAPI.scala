@@ -11,7 +11,9 @@ trait FairyWriteAPI[F[_], G[_], Player] {
   /**
    * @return 妖精にあげるりんごの開放状態を変更する作用
    */
-  def updateAppleOpenState(appleConsumeStrategy: FairyAppleConsumeStrategy): Kleisli[F, Player, Unit]
+  def updateAppleOpenState(
+    appleConsumeStrategy: FairyAppleConsumeStrategy
+  ): Kleisli[F, Player, Unit]
 
   /**
    * @return 妖精を召喚するためのコストを変更する作用
@@ -106,9 +108,8 @@ trait FairySummonAPI[F[_], Player] {
   /**
    * 召喚に失敗した場合はエラーを返す
    * 成功した場合は召喚する作用を返す
-   * @return 妖精の召喚をリクエストする作用
    */
-  def fairySummonRequest(player: Player): F[FairySpawnRequestErrorOrSpawn[F]]
+  def fairySummonRequest: Kleisli[F, Player, FairySpawnRequestErrorOrSpawn[F]]
 }
 
 object FairySummonAPI {

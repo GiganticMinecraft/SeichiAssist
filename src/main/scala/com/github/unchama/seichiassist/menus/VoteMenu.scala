@@ -26,7 +26,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.p
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects.closeInventoryEffect
-import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect, UnfocusedEffect}
+import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
@@ -275,8 +275,8 @@ object VoteMenu extends Menu {
                     errorEffectOnSpawn(s"${GOLD}投票ptが足りません")
                 }
               case Right(process) =>
-                UnfocusedEffect {
-                  process.unsafeRunAsyncAndForget()
+                DeferredEffect {
+                  process.map(program => Kleisli { _ => IO(program) })
                 }
             },
             closeInventoryEffect

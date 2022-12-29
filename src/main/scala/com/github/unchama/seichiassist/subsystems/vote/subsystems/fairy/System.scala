@@ -136,10 +136,9 @@ object System {
               player => fairySpeech.speechEndTime(player)
             }
 
-            override def fairySummonRequest(
-              player: Player
-            ): IO[FairySpawnRequestErrorOrSpawn[IO]] =
+            override def fairySummonRequest: Kleisli[IO, Player, FairySpawnRequestErrorOrSpawn[IO]] = Kleisli { player =>
               summonRequest.summonRequest(player)
+            }
 
           }
 
