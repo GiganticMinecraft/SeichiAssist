@@ -18,10 +18,10 @@ import com.github.unchama.seichiassist.seichiskill.effect.{
 }
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.domain.EffectPoint
+import com.github.unchama.seichiassist.subsystems.donate.DonatePremiumPointAPI
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import com.github.unchama.util.ActionStatus
 import net.md_5.bungee.api.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
@@ -38,12 +38,13 @@ object ActiveSkillEffectMenu extends Menu {
     val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type,
     val ioCanOpenTransactionHistoryMenu: IO CanOpen PremiumPointTransactionHistoryMenu,
     val ioOnMainThread: OnMinecraftServerThread[IO],
-    val voteAPI: VoteAPI[IO, Player]
+    val voteAPI: VoteAPI[IO, Player],
+    val donateAPI: DonatePremiumPointAPI[IO]
   )
 
   override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}整地スキルエフェクト選択")
 
-  def setEffectSelectionTo(effect: ActiveSkillEffect)(player: Player): IO[Unit] = {
+  private def setEffectSelectionTo(effect: ActiveSkillEffect)(player: Player): IO[Unit] = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
 
     MessageEffect(s"${GREEN}エフェクト：${effect.nameOnUI} が選択されました")(player) >> IO {
@@ -51,9 +52,9 @@ object ActiveSkillEffectMenu extends Menu {
     }
   }
 
-  def unlockOrSet(
+  private def unlockOrSet(
     effect: ActiveSkillEffect
-  )(implicit voteAPI: VoteAPI[IO, Player]): TargetedEffect[Player] = Kleisli { player =>
+  )(implicit voteAPI: VoteAPI[IO, Player], donateAPI: DonatePremiumPointAPI[IO]): TargetedEffect[Player] = Kleisli { player =>
     val playerData = SeichiAssist.playermap(player.getUniqueId)
 
     def unlockNormalEffect(effect: ActiveSkillNormalEffect): IO[Unit] =
@@ -85,37 +86,27 @@ object ActiveSkillEffectMenu extends Menu {
 
     def unlockPremiumEffect(effect: ActiveSkillPremiumEffect): IO[Unit] =
       for {
-        premiumEffectPoint <- SeichiAssist
-          .databaseGateway
-          .donateDataManipulator
-          .currentPremiumPointFor(player)
+        premiumEffectPoint <- donateAPI.currentPoint(player.getUniqueId)
         _ <-
-          if (premiumEffectPoint < effect.usePoint) {
+          if (premiumEffectPoint.value < effect.usePoint) {
             SequentialEffect(
               MessageEffect(s"${DARK_RED}プレミアムエフェクトポイントが足りません"),
               FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.5f)
             ).apply(player)
           } else {
             for {
-              transactionResult <- SeichiAssist
-                .databaseGateway
-                .donateDataManipulator
-                .recordPremiumEffectPurchase(player, effect)
-              _ <- transactionResult match {
-                case ActionStatus.Ok =>
-                  IO {
-                    val state = playerData.skillEffectState
-                    playerData.skillEffectState =
-                      state.copy(obtainedEffects = state.obtainedEffects + effect)
-                  } >> SequentialEffect(
-                    MessageEffect(
-                      s"${LIGHT_PURPLE}プレミアムエフェクト：${effect.nameOnUI}$RESET$LIGHT_PURPLE${BOLD}を解除しました"
-                    ),
-                    FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.2f)
-                  ).apply(player)
-                case ActionStatus.Fail =>
-                  MessageEffect("購入履歴が正しく記録されませんでした。管理者に報告してください。")(player)
+              _ <- donateAPI.useDonatePremiumEffectPoint(player.getUniqueId, effect)
+              _ <- IO {
+                val state = playerData.skillEffectState
+                playerData.skillEffectState =
+                  state.copy(obtainedEffects = state.obtainedEffects + effect)
               }
+              _ <- SequentialEffect(
+                MessageEffect(
+                  s"${LIGHT_PURPLE}プレミアムエフェクト：${effect.nameOnUI}$RESET$LIGHT_PURPLE${BOLD}を解除しました"
+                ),
+                FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.2f)
+              ).apply(player)
             } yield ()
           }
       } yield ()
@@ -179,18 +170,15 @@ object ActiveSkillEffectMenu extends Menu {
 
       itemStackComputation.map(itemStack =>
         ReloadingButton(ActiveSkillEffectMenu)(
-          Button(itemStack, LeftClickButtonEffect(unlockOrSet(effect)(environment.voteAPI)))
+          Button(itemStack, LeftClickButtonEffect(unlockOrSet(effect)))
         )
       )
     }
 
     val effectDataButton: IO[Button] =
       for {
-        premiumEffectPoint <- SeichiAssist
-          .databaseGateway
-          .donateDataManipulator
-          .currentPremiumPointFor(player)
         effectPoints <- voteAPI.effectPoints(player)
+        premiumEffectPoint <- donateAPI.currentPoint(player.getUniqueId)
         button <-
           IO {
             val playerData = SeichiAssist.playermap(getUniqueId)
@@ -204,7 +192,7 @@ object ActiveSkillEffectMenu extends Menu {
                       s"$RESET${GREEN}現在選択しているエフェクト：${playerData.skillEffectState.selection.nameOnUI}",
                       s"$RESET${YELLOW}使えるエフェクトポイント：${effectPoints.value}",
                       s"$RESET$DARK_GRAY※投票すると獲得できます",
-                      s"$RESET${LIGHT_PURPLE}使えるプレミアムポイント$premiumEffectPoint",
+                      s"$RESET${LIGHT_PURPLE}使えるプレミアムポイント${premiumEffectPoint.value}",
                       s"$RESET$DARK_GRAY※寄付をすると獲得できます"
                     )
                   )

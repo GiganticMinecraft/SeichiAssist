@@ -1,18 +1,12 @@
 package com.github.unchama.seichiassist.database.manipulators
 
-import cats.data.EitherT
-import cats.effect.IO
-import com.github.unchama.contextualexecutor.builder.ResponseEffectOrResult
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.database.{DatabaseConstants, DatabaseGateway}
 import com.github.unchama.seichiassist.task.PlayerDataLoading
-import com.github.unchama.targetedeffect.TargetedEffect
-import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.util.ActionStatus
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
-import org.bukkit.command.CommandSender
 
 import java.sql.SQLException
 import java.util.UUID
@@ -60,51 +54,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         return null
     }
     uuidList.toList
-  }
-
-  private def catchingDatabaseErrors[R](
-    targetName: String,
-    program: IO[Either[TargetedEffect[CommandSender], R]]
-  ): IO[Either[TargetedEffect[CommandSender], R]] = {
-    program.attempt.flatMap {
-      case Left(error) =>
-        IO {
-          Bukkit.getLogger.warning(s"database failure for $targetName.")
-          error.printStackTrace()
-
-          Left(MessageEffect(s"${RED}データベースアクセスに失敗しました。"))
-        }
-      case Right(result) => IO.pure(result)
-    }
-  }
-
-  def inquireLastQuitOf(playerName: String): IO[TargetedEffect[CommandSender]] = {
-    val fetchLastQuitData: IO[ResponseEffectOrResult[CommandSender, String]] = EitherT
-      .right(IO {
-        import scalikejdbc._
-        DB.readOnly { implicit session =>
-          sql"""select lastquit from playerdata where name = $playerName"""
-            .map(rs => rs.string("lastquit"))
-            .single()
-            .apply()
-        }.get
-      })
-      .value
-
-    catchingDatabaseErrors(playerName, fetchLastQuitData).map {
-      case Left(errorEffect) =>
-        import com.github.unchama.generic.syntax._
-
-        val messages = List(
-          s"${RED}最終ログアウト日時の照会に失敗しました。",
-          s"${RED}プレイヤー名が変更されていないか確認してください。",
-          s"${RED}プレイヤー名が正しいのにこのエラーが出る場合、最終ログイン時間が古い可能性があります。"
-        )
-
-        errorEffect.followedBy(MessageEffect(messages))
-      case Right(lastQuit) =>
-        MessageEffect(s"${playerName}の最終ログアウト日時：$lastQuit")
-    }
   }
 
   def loadPlayerData(playerUUID: UUID, playerName: String): PlayerData = {

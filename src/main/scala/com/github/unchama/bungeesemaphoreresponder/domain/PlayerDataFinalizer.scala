@@ -41,11 +41,6 @@ object PlayerDataFinalizer {
   import cats.effect.implicits._
   import cats.implicits._
 
-  def sequence[F[_]: Applicative, Player](
-    finalizers: List[PlayerDataFinalizer[F, Player]]
-  ): PlayerDataFinalizer[F, Player] =
-    PlayerDataFinalizer { player => finalizers.traverse(_.onQuitOf(player)).as(()) }
-
   def concurrently[F[_]: ConcurrentEffect, Player](
     finalizers: List[PlayerDataFinalizer[F, Player]]
   ): PlayerDataFinalizer[F, Player] =
@@ -54,6 +49,7 @@ object PlayerDataFinalizer {
         fibers <- finalizers.traverse(_.onQuitOf(player).attempt.start)
         results <- fibers.traverse(_.join)
         _ <-
+          // TODO: 最初のエラーしか報告されていないが、全部報告すべき
           results.collectFirst { case Left(error) => error } match {
             case Some(error) =>
               ApplicativeError[F, Throwable].raiseError(error)

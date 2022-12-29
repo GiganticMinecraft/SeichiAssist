@@ -9,10 +9,10 @@ import scalikejdbc.{
 
 object ScalikeJDBCConfiguration {
 
-  val connectionPoolSettings: ConnectionPoolSettings =
+  private val connectionPoolSettings: ConnectionPoolSettings =
     ConnectionPoolSettings(initialSize = 5, maxSize = 20, connectionTimeoutMillis = 100000L)
 
-  val loggingSettings: LoggingSQLAndTimeSettings = LoggingSQLAndTimeSettings(
+  private val loggingSettings: LoggingSQLAndTimeSettings = LoggingSQLAndTimeSettings(
     enabled = true,
     singleLineMode = true,
     printUnprocessedStackTrace = false,

@@ -11,10 +11,7 @@ import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.bungeesemaphoreresponder.{System => BungeeSemaphoreResponderSystem}
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.concurrent.RepeatingRoutine
-import com.github.unchama.datarepository.bukkit.player.{
-  BukkitRepositoryControls,
-  PlayerDataRepository
-}
+import com.github.unchama.datarepository.bukkit.player.{BukkitRepositoryControls, PlayerDataRepository}
 import com.github.unchama.datarepository.definitions.SessionMutexRepositoryDefinition
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
@@ -26,27 +23,17 @@ import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.MenuHandler
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.{GetConnectedPlayers, SendMinecraftMessage}
-import com.github.unchama.minecraft.bukkit.actions.{
-  GetConnectedBukkitPlayers,
-  SendBukkitMessage
-}
+import com.github.unchama.minecraft.bukkit.actions.{GetConnectedBukkitPlayers, SendBukkitMessage}
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
 import com.github.unchama.seichiassist.SeichiAssist.seichiAssistConfig
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
-import com.github.unchama.seichiassist.commands.legacy.DonationCommand
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
-  asyncShift,
-  onMainThread
-}
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, onMainThread}
 import com.github.unchama.seichiassist.data.MineStackGachaData
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.database.DatabaseGateway
-import com.github.unchama.seichiassist.domain.actions.{
-  GetNetworkConnectionCount,
-  UuidToLastSeenName
-}
+import com.github.unchama.seichiassist.domain.actions.{GetNetworkConnectionCount, UuidToLastSeenName}
 import com.github.unchama.seichiassist.domain.configuration.RedisBungeeRedisConfiguration
 import com.github.unchama.seichiassist.infrastructure.akka.ConfiguredActorSystemProvider
 import com.github.unchama.seichiassist.infrastructure.logging.jul.NamedJULLogger
@@ -63,16 +50,16 @@ import com.github.unchama.seichiassist.subsystems.breakcount.{BreakCountAPI, Bre
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
+import com.github.unchama.seichiassist.subsystems.donate.DonatePremiumPointAPI
+import com.github.unchama.seichiassist.subsystems.donate.bukkit.commands.DonationCommand
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
-  FastDiggingEffectApi,
-  FastDiggingSettingsApi
-}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket.ConsumeGachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
+import com.github.unchama.seichiassist.subsystems.idletime.IdleTimeAPI
 import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository
@@ -225,6 +212,8 @@ class SeichiAssist extends JavaPlugin() {
       .application
       .SystemConfiguration(expConsumptionAmount = seichiAssistConfig.getFlyExp)
 
+    implicit val idleTimeAPI: IdleTimeAPI[IO, Player] = idleTimeSystem.api
+
     subsystems.managedfly.System.wired[IO, SyncIO](configuration).unsafeRunSync()
   }
 
@@ -362,7 +351,7 @@ class SeichiAssist extends JavaPlugin() {
       .wired[IO](seichiAssistConfig.discordNotificationConfiguration)
   }
 
-  lazy val homeSystem: home.System[IO] = {
+  private lazy val homeSystem: home.System[IO] = {
     import PluginExecutionContexts.{asyncShift, onMainThread}
 
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
@@ -372,7 +361,7 @@ class SeichiAssist extends JavaPlugin() {
     home.System.wired[IO, SyncIO]
   }
 
-  lazy val presentSystem: Subsystem[IO] = {
+  private lazy val presentSystem: Subsystem[IO] = {
     import PluginExecutionContexts.{asyncShift, onMainThread}
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
@@ -389,6 +378,11 @@ class SeichiAssist extends JavaPlugin() {
       .anywhereender
       .System
       .wired[SyncIO, IO](seichiAssistConfig.getAnywhereEnderConfiguration)
+  }
+
+  private lazy val sharedInventorySystem: subsystems.sharedinventory.System[IO] = {
+    import PluginExecutionContexts.timer
+    subsystems.sharedinventory.System.wired[IO, IO].unsafeRunSync()
   }
 
   private lazy implicit val gachaAPI: GachaAPI[IO, ItemStack, Player] = gachaSystem.api
@@ -415,8 +409,24 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.tradesystems.subsystems.gachatrade.System.wired[IO, SyncIO]
   }
 
-  private lazy val sharedInventorySystem: subsystems.sharedinventory.System[IO] =
-    subsystems.sharedinventory.System.wired[IO]
+  private lazy val lastQuitSystem: subsystems.lastquit.System[IO] =
+    subsystems.lastquit.System.wired[IO]
+
+  private lazy val donateSystem: subsystems.donate.System[IO] =
+    subsystems.donate.System.wired[IO]
+
+  private lazy val idleTimeSystem: subsystems.idletime.System[IO, Player] = {
+    import PluginExecutionContexts.{onMainThread, sleepAndRoutineContext}
+    subsystems.idletime.System.wired[IO].unsafeRunSync()
+  }
+
+  private lazy val awayScreenNameSystem: Subsystem[IO] = {
+    import PluginExecutionContexts.{onMainThread, sleepAndRoutineContext}
+
+    implicit val idleTimeAPI: IdleTimeAPI[IO, Player] = idleTimeSystem.api
+
+    subsystems.idletime.subsystems.awayscreenname.System.wired[IO].unsafeRunSync()
+  }
 
   // TODO: これはprivateであるべきだが、Achievementシステムが再実装されるまでやむを得ずpublicにする
   lazy val voteSystem: subsystems.vote.System[IO, Player] = {
@@ -457,6 +467,10 @@ class SeichiAssist extends JavaPlugin() {
     anywhereEnderSystem,
     voteSystem,
     fairySystem,
+    awayScreenNameSystem,
+    idleTimeSystem,
+    lastQuitSystem,
+    donateSystem,
     gachaSystem,
     gachaTicketSystem,
     gtToSiinaSystem,
@@ -474,6 +488,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val bungeeSemaphoreResponderSystem: BungeeSemaphoreResponderSystem[IO] = {
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val systemConfiguration
       : com.github.unchama.bungeesemaphoreresponder.Configuration =
@@ -618,6 +633,7 @@ class SeichiAssist extends JavaPlugin() {
       sharedInventorySystem.api
     implicit val voteAPI: VoteAPI[IO, Player] = voteSystem.api
     implicit val fairyAPI: FairyAPI[IO, SyncIO, Player] = fairySystem.api
+    implicit val donateAPI: DonatePremiumPointAPI[IO] = donateSystem.api
     implicit val gachaTicketAPI: GachaTicketAPI[IO] =
       gachaTicketSystem.api
     implicit val consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player] =
@@ -641,11 +657,9 @@ class SeichiAssist extends JavaPlugin() {
 
     // コマンドの登録
     Map(
-      "donation" -> new DonationCommand,
       "map" -> MapCommand.executor,
       "ef" -> new EffectCommand(fastDiggingEffectSystem.settingsApi).executor,
       "seichiassist" -> SeichiAssistCommand.executor,
-      "lastquit" -> LastQuitCommand.executor,
       "stick" -> StickCommand.executor,
       "rmp" -> RmpCommand.executor,
       "halfguard" -> HalfBlockProtectCommand.executor,

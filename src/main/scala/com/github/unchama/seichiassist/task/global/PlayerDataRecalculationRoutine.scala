@@ -34,17 +34,6 @@ object PlayerDataRecalculationRoutine {
       for (player <- onlinePlayers) {
         val playerData = SeichiAssist.playermap(player.getUniqueId)
 
-        // 放置判定
-        if (playerData.loc.contains(player.getLocation)) {
-          // idletime加算
-          playerData.idleMinute = playerData.idleMinute + 1
-        } else {
-          // 現在地点再取得
-          playerData.loc = Some(player.getLocation)
-          // idletimeリセット
-          playerData.idleMinute = 0
-        }
-
         // 表示名とマナをレベルと同期する
         playerData.synchronizeDisplayNameToLevelState()
 
