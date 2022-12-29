@@ -275,11 +275,11 @@ object VoteMenu extends Menu {
               case Left(errorResult) =>
                 errorResult match {
                   case NotEnoughSeichiLevel =>
-                    spawnFailedEffect(s"${GOLD}プレイヤーレベルが足りません")
+                    errorEffectOnSpawn(s"${GOLD}プレイヤーレベルが足りません")
                   case AlreadyFairySpawned =>
-                    spawnFailedEffect(s"${GOLD}既に妖精を召喚しています")
+                    errorEffectOnSpawn(s"${GOLD}既に妖精を召喚しています")
                   case NotEnoughEffectPoint =>
-                    spawnFailedEffect(s"${GOLD}投票ptが足りません")
+                    errorEffectOnSpawn(s"${GOLD}投票ptが足りません")
                 }
               case Right(process) =>
                 UnfocusedEffect {
@@ -301,7 +301,7 @@ object VoteMenu extends Menu {
       }
     }
 
-    private def spawnFailedEffect(message: String): Kleisli[IO, Player, Unit] = {
+    private def errorEffectOnSpawn(message: String): Kleisli[IO, Player, Unit] = {
       SequentialEffect(
         MessageEffect(message),
         FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
