@@ -34,7 +34,6 @@ import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
 import com.github.unchama.seichiassist.SeichiAssist.seichiAssistConfig
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
-import com.github.unchama.seichiassist.commands.legacy.DonationCommand
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
   asyncShift,
@@ -63,6 +62,7 @@ import com.github.unchama.seichiassist.subsystems.breakcount.{BreakCountAPI, Bre
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
+import com.github.unchama.seichiassist.subsystems.donate.DonatePremiumPointAPI
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
   FastDiggingEffectApi,
@@ -419,6 +419,9 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val lastQuitSystem: subsystems.lastquit.System[IO] =
     subsystems.lastquit.System.wired[IO]
 
+  private lazy val donateSystem: subsystems.donate.System[IO] =
+    subsystems.donate.System.wired[IO]
+
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
     expBottleStackSystem,
@@ -440,6 +443,7 @@ class SeichiAssist extends JavaPlugin() {
     presentSystem,
     anywhereEnderSystem,
     lastQuitSystem,
+    donateSystem,
     gachaSystem,
     gachaTicketSystem,
     gtToSiinaSystem,
@@ -600,6 +604,7 @@ class SeichiAssist extends JavaPlugin() {
       anywhereEnderSystem.accessApi
     implicit val sharedInventoryAPI: SharedInventoryAPI[IO, Player] =
       sharedInventorySystem.api
+    implicit val donateAPI: DonatePremiumPointAPI[IO] = donateSystem.api
     implicit val gachaTicketAPI: GachaTicketAPI[IO] =
       gachaTicketSystem.api
     implicit val consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player] =
@@ -624,7 +629,6 @@ class SeichiAssist extends JavaPlugin() {
     // コマンドの登録
     Map(
       "vote" -> VoteCommand.executor,
-      "donation" -> new DonationCommand,
       "map" -> MapCommand.executor,
       "ef" -> new EffectCommand(fastDiggingEffectSystem.settingsApi).executor,
       "seichiassist" -> SeichiAssistCommand.executor,
