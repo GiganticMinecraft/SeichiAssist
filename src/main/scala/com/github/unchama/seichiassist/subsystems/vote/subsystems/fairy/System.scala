@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy
 
 import cats.data.Kleisli
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
+import cats.instances.uuid
 import com.github.unchama.concurrent.RepeatingTaskContext
 import com.github.unchama.datarepository.bukkit.player.{
   BukkitRepositoryControls,
@@ -141,9 +142,12 @@ object System {
             override def doPlaySoundOnSpeak(uuid: UUID): IO[Boolean] =
               persistence.fairySpeechSound(uuid)
 
-            override def toggleSoundOnSpeak(uuid: UUID): IO[Unit] = for {
-              isPlayFairySpeechSound <- doPlaySoundOnSpeak(uuid)
-            } yield persistence.toggleFairySpeechSound(uuid, !isPlayFairySpeechSound)
+            override def toggleSoundOnSpeak: Kleisli[IO, Player, Unit] = Kleisli { player =>
+              val uuid = player.getUniqueId
+              for {
+                isPlayFairySpeechSound <- doPlaySoundOnSpeak(uuid)
+              } yield persistence.toggleFairySpeechSound(uuid, !isPlayFairySpeechSound)
+            }
 
             override def sendDisappearTimeToChat: Kleisli[IO, Player, Unit] = Kleisli {
               player => fairySpeech.speechEndTime(player)

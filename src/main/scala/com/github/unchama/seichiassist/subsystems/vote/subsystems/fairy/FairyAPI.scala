@@ -80,7 +80,7 @@ trait FairySpeechAPI[F[_], Player] {
   /**
    * @return 妖精が喋るときに音をだすかをトグルする作用
    */
-  def toggleSoundOnSpeak(uuid: UUID): F[Unit]
+  def toggleSoundOnSpeak: Kleisli[F, Player, Unit]
 
   /**
    * @return 妖精が喋ったときに音を再生するか取得する作用
