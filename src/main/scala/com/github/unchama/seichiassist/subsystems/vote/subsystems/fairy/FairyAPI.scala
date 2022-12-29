@@ -8,12 +8,12 @@ import java.util.UUID
 trait FairyWriteAPI[F[_], G[_], Player] {
 
   /**
-   * 妖精にあげるりんごの開放状態を変更する
+   * @return 妖精にあげるりんごの開放状態を変更する作用
    */
   def updateAppleOpenState(uuid: UUID, appleConsumeStrategy: FairyAppleConsumeStrategy): F[Unit]
 
   /**
-   * 妖精を召喚するためのコストを変更します。
+   * @return 妖精を召喚するためのコストを変更する作用
    */
   def updateFairySummonCost(uuid: UUID, fairySummonCost: FairySummonCost): F[Unit]
 
@@ -30,37 +30,37 @@ object FairyWriteAPI {
 trait FairyReadAPI[F[_], G[_], Player] {
 
   /**
-   * 妖精にあげるりんごの開放状態を取得する
+   * @return 妖精にあげるりんごの開放状態を取得する作用
    */
   def appleOpenState(uuid: UUID): F[FairyAppleConsumeStrategy]
 
   /**
-   * 妖精を召喚するためのコストを取得する
+   * @return 妖精を召喚するためのコストを取得する作用
    */
   def fairySummonCost(player: Player): F[FairySummonCost]
 
   /**
-   * `FairyLoreTable`からLoreを取得する
+   * @return `FairyLoreTable`からLoreを取得する作用
    */
   def getFairyLore(uuid: UUID): F[FairyLore]
 
   /**
-   * 妖精を使っているかを取得する
+   * @return 妖精を使っているかを取得する作用
    */
   def isFairyUsing(player: Player): F[Boolean]
 
   /**
-   * 自分の妖精に食べさせたりんごの量の順位を返す
+   * @return 自分の妖精に食べさせたりんごの量の順位を返す作用
    */
   def appleAteByFairyMyRanking(player: Player): F[Option[AppleAteByFairyRank]]
 
   /**
-   * 妖精に食べさせたりんごの量の順位上`number`件を返す
+   * @return 妖精に食べさせたりんごの量の順位上`number`件を返す作用
    */
   def appleAteByFairyRanking(number: Int): F[Vector[Option[AppleAteByFairyRank]]]
 
   /**
-   * 妖精が食べたりんごの合計数を返す
+   * @return 妖精が食べたりんごの合計数を返す作用
    */
   def allEatenAppleAmount: F[AppleAmount]
 
@@ -77,17 +77,17 @@ object FairyReadAPI {
 trait FairySpeechAPI[F[_], Player] {
 
   /**
-   * 妖精が喋るときに音をだすかをトグルする
+   * @return 妖精が喋るときに音をだすかをトグルする作用
    */
   def toggleFairySpeechSound(uuid: UUID): F[Unit]
 
   /**
-   * 妖精が喋ったときに音を再生するか取得する
+   * @return 妖精が喋ったときに音を再生するか取得する作用
    */
   def isPlayFairySpeechSound(uuid: UUID): F[Boolean]
 
   /**
-   * @return 妖精がいつ帰るのかを[[Player]]に送信する作用
+   * @return 妖精がいつ帰るのかを`player`に送信する作用作用
    */
   def speechEndTime(player: Player): F[Unit]
 
@@ -103,9 +103,9 @@ object FairySpeechAPI {
 trait FairySummonAPI[F[_], Player] {
 
   /**
-   * 妖精の召喚をリクエストする
    * 召喚に失敗した場合はエラーを返す
    * 成功した場合は召喚する作用を返す
+   * @return 妖精の召喚をリクエストする作用
    */
   def fairySummonRequest(player: Player): F[FairySpawnRequestErrorOrSpawn[F]]
 }
