@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject
 
 import cats.effect.Sync
-import com.github.unchama.generic.algebra.Cloneable
+import com.github.unchama.generic.Cloneable
 import com.github.unchama.minecraft.objects.MinecraftMaterial
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.CanBeSignedAsGachaPrize

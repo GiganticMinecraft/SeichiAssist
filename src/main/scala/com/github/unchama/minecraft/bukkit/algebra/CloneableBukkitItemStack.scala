@@ -1,6 +1,6 @@
 package com.github.unchama.minecraft.bukkit.algebra
 
-import com.github.unchama.generic.algebra.Cloneable
+import com.github.unchama.generic.Cloneable
 import org.bukkit.inventory.ItemStack
 
 class CloneableBukkitItemStack extends Cloneable[ItemStack] {

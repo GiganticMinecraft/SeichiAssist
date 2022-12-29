@@ -1,4 +1,4 @@
-package com.github.unchama.generic.algebra
+package com.github.unchama.generic
 
 trait Cloneable[T] {
 
