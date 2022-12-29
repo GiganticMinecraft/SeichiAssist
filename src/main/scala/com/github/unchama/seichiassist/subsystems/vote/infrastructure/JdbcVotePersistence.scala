@@ -9,7 +9,7 @@ import java.util.UUID
 class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
 
   // NOTE: 連続投票許容幅を変更する場合はここを変更してください。
-  private val chainVoteAllowableWidth = 4
+  private val consecutiveVoteStreakDaysThreshold = 4
 
   def createPlayerData(uuid: UUID): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
@@ -46,7 +46,7 @@ class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
           小さかった場合に連続投票を0に戻します。
        */
       sql"""UPDATE vote SET chain_vote_number = 
-           | CASE WHEN DATEDIFF(last_vote, NOW()) <= ${-chainVoteAllowableWidth - 1}
+           | CASE WHEN DATEDIFF(last_vote, NOW()) <= ${-consecutiveVoteStreakDaysThreshold - 1}
            | THEN 0 
            | ELSE chain_vote_number + 1 
            | END,
