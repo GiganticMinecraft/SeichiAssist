@@ -16,7 +16,7 @@ trait FairyWriteAPI[F[_], G[_], Player] {
   /**
    * @return 妖精を召喚するためのコストを変更する作用
    */
-  def updateFairySummonCost(uuid: UUID, fairySummonCost: FairySummonCost): F[Unit]
+  def updateFairySummonCost(fairySummonCost: FairySummonCost): Kleisli[F, Player, Unit]
 
 }
 

@@ -183,13 +183,10 @@ object VoteMenu extends Menu {
           LeftClickButtonEffect {
             SequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-              UnfocusedEffect(
-                fairyAPI
-                  .updateFairySummonCost(
-                    player.getUniqueId,
-                    FairySummonCost(fairySummonCost.value % 4 + 1)
-                  )
-                  .unsafeRunAsyncAndForget()
+              DeferredEffect(
+                IO(
+                  fairyAPI.updateFairySummonCost(FairySummonCost(fairySummonCost.value % 4 + 1))
+                )
               )
             )
           }
