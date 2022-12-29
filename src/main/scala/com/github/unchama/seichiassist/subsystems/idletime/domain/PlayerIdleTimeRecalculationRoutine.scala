@@ -11,7 +11,7 @@ trait PlayerIdleTimeRecalculationRoutine[Player] {
   /**
    * @return リポジトリのデータを現在のプレイヤーの位置と放置時間に更新する作用
    */
-  def updatePlayerLocationAndPlayerIdleMinute(): SyncIO[Unit]
+  def updatePlayerLocationAndPlayerIdleMinute: SyncIO[Unit]
 
   final def start(
     implicit repeatingTaskContext: RepeatingTaskContext,
@@ -24,7 +24,7 @@ trait PlayerIdleTimeRecalculationRoutine[Player] {
     RepeatingRoutine.permanentRoutine(
       repeatInterval,
       onMainThread.runAction {
-        updatePlayerLocationAndPlayerIdleMinute()
+        updatePlayerLocationAndPlayerIdleMinute
       }
     )
   }

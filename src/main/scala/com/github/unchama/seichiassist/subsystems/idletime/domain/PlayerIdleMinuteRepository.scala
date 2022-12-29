@@ -16,11 +16,11 @@ class PlayerIdleMinuteRepository[F[_]: Sync] {
   /**
    * @return リポジトリの値を1増加させる作用
    */
-  def addOneMinute(): F[Unit] = idleMinuteRepository.update(_.increment)
+  def addOneMinute: F[Unit] = idleMinuteRepository.update(_.increment)
 
   /**
    * @return リポジトリの値を初期値に戻す作用
    */
-  def reset(): F[Unit] = idleMinuteRepository.set(IdleMinute.initial)
+  def reset: F[Unit] = idleMinuteRepository.set(IdleMinute.initial)
 
 }

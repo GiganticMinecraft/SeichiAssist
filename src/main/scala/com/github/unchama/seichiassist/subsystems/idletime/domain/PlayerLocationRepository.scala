@@ -9,7 +9,7 @@ trait PlayerLocationRepository[F[_], Location, Player] {
   /**
    * @return リポジトリの値を新しい[[PlayerLocation]]に更新する作用
    */
-  def updateNowLocation(): F[Unit]
+  def updateNowLocation: F[Unit]
 
   /**
    * @return リポジトリから値を取得する作用
