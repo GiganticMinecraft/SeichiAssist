@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy
 
+import cats.data.Kleisli
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairySpawnRequestErrorOrSpawn
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property._
 
@@ -87,9 +88,9 @@ trait FairySpeechAPI[F[_], Player] {
   def doPlaySoundOnSpeak(uuid: UUID): F[Boolean]
 
   /**
-   * @return 妖精がいつ帰るのかを`player`に送信する作用
+   * @return 妖精がいつ帰るのかを送信する作用
    */
-  def sendDisappearTimeToChat(player: Player): F[Unit]
+  def sendDisappearTimeToChat: Kleisli[F, Player, Unit]
 
 }
 

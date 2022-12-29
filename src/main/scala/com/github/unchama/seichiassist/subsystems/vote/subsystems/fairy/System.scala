@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy
 
+import cats.data.Kleisli
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
 import com.github.unchama.concurrent.RepeatingTaskContext
 import com.github.unchama.datarepository.bukkit.player.{
@@ -130,7 +131,7 @@ object System {
               persistence.appleAteByFairyMyRanking(player.getUniqueId)
 
             override def rankingByMostConsumedApple(
-                                                     top: Int
+              top: Int
             ): IO[Vector[Option[AppleAteByFairyRank]]] =
               persistence.appleAteByFairyRanking(top)
 
@@ -144,8 +145,9 @@ object System {
               isPlayFairySpeechSound <- doPlaySoundOnSpeak(uuid)
             } yield persistence.toggleFairySpeechSound(uuid, !isPlayFairySpeechSound)
 
-            override def sendDisappearTimeToChat(player: Player): IO[Unit] =
-              fairySpeech.speechEndTime(player)
+            override def sendDisappearTimeToChat: Kleisli[IO, Player, Unit] = Kleisli {
+              player => fairySpeech.speechEndTime(player)
+            }
 
             override def fairySummonRequest(
               player: Player

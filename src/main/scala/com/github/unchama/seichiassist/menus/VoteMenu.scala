@@ -317,9 +317,7 @@ object VoteMenu extends Menu {
           .build(),
         LeftClickButtonEffect {
           SequentialEffect(
-            UnfocusedEffect {
-              fairyAPI.sendDisappearTimeToChat(player).unsafeRunAsyncAndForget()
-            },
+            DeferredEffect(IO(fairyAPI.sendDisappearTimeToChat)),
             closeInventoryEffect
           )
         }
