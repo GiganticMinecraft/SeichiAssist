@@ -27,7 +27,7 @@ class BukkitReceiveVoteBenefits[F[_]: OnMinecraftServerThread: Sync, G[
   override def receive(player: Player): F[Unit] = {
     val uuid = player.getUniqueId
     for {
-      totalVote <- votePersistence.voteCounter(uuid)
+      totalVote <- votePersistence.currentVoteCount(uuid)
       receivedVote <- votePersistence.receivedVoteBenefits(uuid)
       pendingCount = VoteBenefit(totalVote.value - receivedVote.value)
       // 受け取ってない分を受け取ったことにする

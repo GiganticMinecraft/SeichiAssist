@@ -12,22 +12,22 @@ trait VotePersistence[F[_]] {
   /**
    * 投票回数をインクリメントする作用
    */
-  def voteCounterIncrement(playerName: PlayerName): F[Unit]
+  def incrementVoteCount(playerName: PlayerName): F[Unit]
 
   /**
    * 投票回数を返す作用
    */
-  def voteCounter(uuid: UUID): F[VoteCounter]
+  def currentVoteCount(uuid: UUID): F[VoteCounter]
 
   /**
    * 連続投票回数を更新する作用
    */
-  def updateChainVote(playerName: PlayerName): F[Unit]
+  def updateConsecutiveVoteStreak(playerName: PlayerName): F[Unit]
 
   /**
    * 連続投票日数を返す作用
    */
-  def chainVoteDays(uuid: UUID): F[ChainVoteDayNumber]
+  def currentConsecutiveVoteStreakDay(uuid: UUID): F[ChainVoteDayNumber]
 
   /**
    * [[EffectPoint]]を指定分だけ増加させる作用

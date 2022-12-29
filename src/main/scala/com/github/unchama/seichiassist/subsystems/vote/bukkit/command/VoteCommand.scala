@@ -29,8 +29,8 @@ class VoteCommand[F[_]: ConcurrentEffect](implicit votePersistence: VotePersiste
           UnfocusedEffect {
             val playerName = PlayerName(lowerCasePlayerName)
             val eff = for {
-              _ <- votePersistence.voteCounterIncrement(playerName)
-              _ <- votePersistence.updateChainVote(playerName)
+              _ <- votePersistence.incrementVoteCount(playerName)
+              _ <- votePersistence.updateConsecutiveVoteStreak(playerName)
             } yield ()
             eff.toIO.unsafeRunAsyncAndForget()
           }

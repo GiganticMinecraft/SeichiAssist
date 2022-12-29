@@ -20,7 +20,7 @@ class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
     }
   }
 
-  override def voteCounterIncrement(playerName: PlayerName): F[Unit] = Sync[F].delay {
+  override def incrementVoteCount(playerName: PlayerName): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
       sql"UPDATE vote SET vote_number = vote_number + 1 WHERE uuid = (SELECT uuid FROM playerdata WHERE name = ${playerName.name})"
         .execute()
@@ -28,7 +28,7 @@ class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
     }
   }
 
-  override def voteCounter(uuid: UUID): F[VoteCounter] = Sync[F].delay {
+  override def currentVoteCount(uuid: UUID): F[VoteCounter] = Sync[F].delay {
     DB.readOnly { implicit session =>
       val votePoint = sql"SELECT vote_number FROM vote WHERE uuid = ${uuid.toString}"
         .map(_.int("vote_number"))
@@ -39,7 +39,7 @@ class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
     }
   }
 
-  override def updateChainVote(playerName: PlayerName): F[Unit] = Sync[F].delay {
+  override def updateConsecutiveVoteStreak(playerName: PlayerName): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
       /*
         NOTE: 最終投票日時より(連続投票許容幅 - 1)した日時よりも
@@ -58,7 +58,7 @@ class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
     }
   }
 
-  override def chainVoteDays(uuid: UUID): F[ChainVoteDayNumber] = Sync[F].delay {
+  override def currentConsecutiveVoteStreakDay(uuid: UUID): F[ChainVoteDayNumber] = Sync[F].delay {
     DB.readOnly { implicit session =>
       val chainVoteDays = sql"SELECT chain_vote_number FROM vote WHERE uuid = ${uuid.toString}"
         .map(_.int("chain_vote_number"))
