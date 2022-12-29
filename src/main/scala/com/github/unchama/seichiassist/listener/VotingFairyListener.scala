@@ -161,14 +161,14 @@ object VotingFairyListener {
       }
 
       // りんご所持数で値変更
-      val gachaimoObject =
+      val gachaRingo =
         mineStackAPI.mineStackObjectList.findByName("gachaimo").unsafeRunSync().get
-      val l = mineStackAPI
+      val quantity = mineStackAPI
         .mineStackRepository
-        .getStackedAmountOf(player, gachaimoObject)
+        .getStackedAmountOf(player, gachaRingo)
         .unsafeRunSync()
-      if (m > l) {
-        if (l == 0) {
+      if (m > quantity) {
+        if (quantity == 0) {
           n /= 2
           if (playerdata.toggleGiveApple == 1) n /= 2
           if (playerdata.toggleGiveApple == 2 && oldManaAmount.ratioToCap.exists(_ < 0.75))
@@ -176,11 +176,11 @@ object VotingFairyListener {
           player.sendMessage(s"$RESET$YELLOW${BOLD}MineStackにがちゃりんごがないようです。。。")
         } else {
           val M = m
-          val L = l
+          val L = quantity
           n = if ((L / M) <= 0.5) (n * 0.5).toInt else (n * L / M).toInt
         }
 
-        m = l.toInt
+        m = quantity.toInt
       }
 
       // 回復量に若干乱数をつける
@@ -192,7 +192,7 @@ object VotingFairyListener {
       // りんごを減らす
       mineStackAPI
         .mineStackRepository
-        .subtractStackedAmountOf(player, gachaimoObject, m)
+        .subtractStackedAmountOf(player, gachaRingo, m)
         .unsafeRunAsyncAndForget()
 
       // 減ったりんごの数をplayerdataに加算
