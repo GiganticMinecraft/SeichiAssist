@@ -87,7 +87,7 @@ trait FairySpeechAPI[F[_], Player] {
   def doPlaySoundOnSpeak(uuid: UUID): F[Boolean]
 
   /**
-   * @return 妖精がいつ帰るのかを`player`に送信する作用作用
+   * @return 妖精がいつ帰るのかを`player`に送信する作用
    */
   def sendDisappearTimeToChat(player: Player): F[Unit]
 
