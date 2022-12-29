@@ -23,6 +23,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.p
   AppleOpenStateDependency,
   FairySummonCost
 }
+import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects.closeInventoryEffect
@@ -276,7 +277,9 @@ object VoteMenu extends Menu {
                 }
               case Right(process) =>
                 DeferredEffect {
-                  process.map(program => Kleisli { _ => IO(program) })
+                  for {
+                    _ <- process
+                  } yield emptyEffect
                 }
             },
             closeInventoryEffect

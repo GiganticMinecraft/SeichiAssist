@@ -31,16 +31,11 @@ class BukkitReceiveVoteBenefits[F[_]: OnMinecraftServerThread: Sync, G[
       receivedVote <- votePersistence.receivedVoteBenefits(uuid)
       pendingCount = VoteBenefit(totalVote.value - receivedVote.value)
       // 受け取ってない分を受け取ったことにする
-      _ <- votePersistence.increaseVoteBenefits(
-        uuid,
-        pendingCount
-      )
+      _ <- votePersistence.increaseVoteBenefits(uuid, pendingCount)
       playerLevel <- ContextCoercion(breakCountAPI.seichiAmountDataRepository(player).read.map {
         _.levelCorrespondingToExp.level
       })
-      gachaTicketAmount = Seq.fill(10 * pendingCount.value)(
-        BukkitGachaSkullData.gachaForVoting
-      )
+      gachaTicketAmount = Seq.fill(10 * pendingCount.value)(BukkitGachaSkullData.gachaForVoting)
       additionalVoteBenefit = Seq.fill(pendingCount.value)(
         if (playerLevel < 50) ItemData.getSuperPickaxe(1)
         else ItemData.getVotingGift(1)
