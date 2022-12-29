@@ -7,8 +7,8 @@ import org.bukkit.ChatColor
 object BukkitNameColorByIdleMinute extends NameColorByIdleMinute[ChatColor] {
 
   override def getNameColor(idleMinute: IdleMinute): ChatColor = {
-    if (idleMinute.minute >= 10) ChatColor.DARK_GRAY
-    else if (idleMinute.minute >= 3) ChatColor.GRAY
+    if (idleMinute.minutes >= 10) ChatColor.DARK_GRAY
+    else if (idleMinute.minutes >= 3) ChatColor.GRAY
     else ChatColor.RESET
   }
 

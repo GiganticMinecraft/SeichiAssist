@@ -1,13 +1,13 @@
 package com.github.unchama.seichiassist.subsystems.idletime.domain
 
-case class IdleMinute(minute: Int) {
-  require(minute >= 0, "IdleMinuteは0以上である必要があります。")
+case class IdleMinute(minutes: Int) {
+  require(minutes >= 0, "IdleMinuteは0以上である必要があります。")
 
   /**
    * @return minuteを1だけ増加したものを返す
    */
   def increment: IdleMinute =
-    this.copy(minute = minute + 1)
+    this.copy(minutes = minutes + 1)
 
 }
 

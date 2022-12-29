@@ -66,7 +66,7 @@ class BukkitPlayerFlyStatusManipulation[AsyncContext[
       for {
         currentIdleMinute <- idleTimeAPI.currentIdleMinute(player)
       } yield {
-        if (currentIdleMinute.minute >= 10) Idle
+        if (currentIdleMinute.minutes >= 10) Idle
         else HasMovedRecently
       }
   }
