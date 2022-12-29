@@ -34,7 +34,6 @@ import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
 import com.github.unchama.seichiassist.SeichiAssist.seichiAssistConfig
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
-import com.github.unchama.seichiassist.commands.legacy.DonationCommand
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
   asyncShift,
@@ -62,6 +61,7 @@ import com.github.unchama.seichiassist.subsystems.breakcount.{BreakCountAPI, Bre
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
+import com.github.unchama.seichiassist.subsystems.donate.DonatePremiumPointAPI
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
   FastDiggingEffectApi,
@@ -74,6 +74,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
+import com.github.unchama.seichiassist.subsystems.idletime.IdleTimeAPI
 import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository
@@ -225,6 +226,8 @@ class SeichiAssist extends JavaPlugin() {
       .managedfly
       .application
       .SystemConfiguration(expConsumptionAmount = seichiAssistConfig.getFlyExp)
+
+    implicit val idleTimeAPI: IdleTimeAPI[IO, Player] = idleTimeSystem.api
 
     subsystems.managedfly.System.wired[IO, SyncIO](configuration).unsafeRunSync()
   }
@@ -392,8 +395,14 @@ class SeichiAssist extends JavaPlugin() {
       .wired[SyncIO, IO](seichiAssistConfig.getAnywhereEnderConfiguration)
   }
 
+
   private implicit lazy val mineStackAPI: MineStackAPI[IO, Player, ItemStack] =
     mineStackSystem.api
+
+  private lazy val sharedInventorySystem: subsystems.sharedinventory.System[IO] = {
+    import PluginExecutionContexts.timer
+    subsystems.sharedinventory.System.wired[IO, IO].unsafeRunSync()
+  }
 
   private lazy val gachaPrizeSystem: subsystems.gachaprize.System[IO] =
     subsystems.gachaprize.System.wired.unsafeRunSync()
@@ -424,8 +433,24 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.tradesystems.subsystems.gachatrade.System.wired[IO, SyncIO]
   }
 
-  private lazy val sharedInventorySystem: subsystems.sharedinventory.System[IO] =
-    subsystems.sharedinventory.System.wired[IO]
+  private lazy val lastQuitSystem: subsystems.lastquit.System[IO] =
+    subsystems.lastquit.System.wired[IO]
+
+  private lazy val donateSystem: subsystems.donate.System[IO] =
+    subsystems.donate.System.wired[IO]
+
+  private lazy val idleTimeSystem: subsystems.idletime.System[IO, Player] = {
+    import PluginExecutionContexts.{onMainThread, sleepAndRoutineContext}
+    subsystems.idletime.System.wired[IO].unsafeRunSync()
+  }
+
+  private lazy val awayScreenNameSystem: Subsystem[IO] = {
+    import PluginExecutionContexts.{onMainThread, sleepAndRoutineContext}
+
+    implicit val idleTimeAPI: IdleTimeAPI[IO, Player] = idleTimeSystem.api
+
+    subsystems.idletime.subsystems.awayscreenname.System.wired[IO].unsafeRunSync()
+  }
 
   /* TODO: mineStackSystemは本来privateであるべきだが、mineStackにアイテムを格納するAPIが現状の
       BreakUtilの実装から呼び出されている都合上やむを得ずpublicになっている。*/
@@ -453,6 +478,11 @@ class SeichiAssist extends JavaPlugin() {
     presentSystem,
     anywhereEnderSystem,
     gachaPrizeSystem,
+    awayScreenNameSystem,
+    idleTimeSystem,
+    lastQuitSystem,
+    donateSystem,
+    gachaSystem,
     gachaTicketSystem,
     gtToSiinaSystem,
     gachaTradeSystem,
@@ -608,6 +638,7 @@ class SeichiAssist extends JavaPlugin() {
       anywhereEnderSystem.accessApi
     implicit val sharedInventoryAPI: SharedInventoryAPI[IO, Player] =
       sharedInventorySystem.api
+    implicit val donateAPI: DonatePremiumPointAPI[IO] = donateSystem.api
     implicit val gachaTicketAPI: GachaTicketAPI[IO] =
       gachaTicketSystem.api
     implicit val gachaAPI: GachaDrawAPI[IO, Player] = gachaSystem.api
@@ -632,11 +663,9 @@ class SeichiAssist extends JavaPlugin() {
     // コマンドの登録
     Map(
       "vote" -> VoteCommand.executor,
-      "donation" -> new DonationCommand,
       "map" -> MapCommand.executor,
       "ef" -> new EffectCommand(fastDiggingEffectSystem.settingsApi).executor,
       "seichiassist" -> SeichiAssistCommand.executor,
-      "lastquit" -> LastQuitCommand.executor,
       "stick" -> StickCommand.executor,
       "rmp" -> RmpCommand.executor,
       "halfguard" -> HalfBlockProtectCommand.executor,

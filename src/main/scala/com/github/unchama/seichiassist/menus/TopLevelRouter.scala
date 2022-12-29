@@ -30,6 +30,7 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmount
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
+import com.github.unchama.seichiassist.subsystems.donate.DonatePremiumPointAPI
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
   FastDiggingEffectApi,
   FastDiggingSettingsApi
@@ -79,6 +80,7 @@ object TopLevelRouter {
     homeReadApi: HomeReadAPI[IO],
     enderChestAccessApi: AnywhereEnderChestAPI[IO],
     sharedInventoryAPI: SharedInventoryAPI[IO, Player],
+    donateAPI: DonatePremiumPointAPI[IO],
     gachaTicketAPI: GachaTicketAPI[IO],
     gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
     mineStackAPI: MineStackAPI[IO, Player, ItemStack],

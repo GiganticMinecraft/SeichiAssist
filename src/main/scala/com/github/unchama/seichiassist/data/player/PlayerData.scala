@@ -61,8 +61,6 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
   var votecooldownflag = true
   // ガチャボタン連打防止用
   var gachacooldownflag = true
-  // インベントリ共有ボタン連打防止用
-  var shareinvcooldownflag = true
   var samepageflag = false // 実績ショップ用
 
   // endregion
@@ -178,12 +176,6 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
   def setDisplayName(): Unit = {
     val playerName = player.getName
 
-    // 放置時に色を変える
-    val idleColor: String =
-      if (idleMinute >= 10) s"$DARK_GRAY"
-      else if (idleMinute >= 3) s"$GRAY"
-      else ""
-
     val amountData =
       SeichiAssist
         .instance
@@ -196,7 +188,7 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
     val level = amountData.levelCorrespondingToExp.level
     val starLevel = amountData.starLevelCorrespondingToExp
 
-    val newDisplayName = idleColor + {
+    val newDisplayName = {
       val nicknameSettings = settings.nickname
       val currentNickname =
         Option

@@ -48,7 +48,7 @@ EULAに同意しデバッグを続行する場合、`./docker/spigot/serverfiles
 
 サーバーやDB等を停止する場合、 `docker-compose down` を実行してください。
 
-なお、SeichiAssistがJava 8以外でコンパイルされた場合は、実行時にエラーとなります。必ず揃えるようにしてください。
+なお、SeichiAssistがJava 8以外でコンパイルされた場合は、実行時にエラーとなります。必ずJDKのバージョンを揃えるようにしてください。
 
 ### デバッグ用環境への接続
 
@@ -57,7 +57,7 @@ DockerマシンのIPアドレス(Linux等なら`localhost`)を`DOCKER_IP`とし�
 `docker`により各サービスが起動したら、`DOCKER_IP`へとMinecraftを接続することができます。
 また、`DOCKER_IP:8080`へとWebブラウザでアクセスすることで、phpMyAdminを介してデータベースを操作することができます。
 
-`op`やコマンド実行等などでSpigotのコンソールにアクセスする必要がある場合、
+`/op`などのコマンドを実行するためにSpigotのコンソールにアクセスする必要がある場合、
 `spigota`または`spigotb`へのコンテナ名とともに `docker attach [CONTAINER_NAME]` を実行してください。
 コンテナ名は `docker ps` を実行すると `seichiassist_spigotb_1` のような形式で表示されます。
 コンソールからは `Ctrl+C` で抜けることができます(サーバーは停止されません)。
@@ -83,41 +83,42 @@ protocol以下のファイルは`git clone`では入手することができま�
 * `git clone --recursive`
 * `git submodule update --init --recursive`
 
-## ドキュメンテーション
+## 開発スタイル
+### ドキュメンテーション
 publicなメソッドについては、ドキュメンテーションを記載するよう心がけてください。
 その他は各自が必要だと判断した場合のみ記載してください。
 
-## Commit Style
+### Commit Style
 1コミットあたりの情報は最小限としてください。
 コミットメッセージは[コンベンショナルコミット](https://www.conventionalcommits.org/ja/v1.0.0/)を採用することを推奨しています。
 
-## Branch Model
+### デプロイ
+#### ブランチ
 [Git-flow](https://qiita.com/KosukeSone/items/514dd24828b485c69a05) を簡略化したものを使用します。
-新規に機能を開発する際は develop ブランチから <任意の文字列> ブランチを作り、そこで作業してください。
-開発が終了したらdevelopブランチにマージします。
-masterブランチは本番環境に反映されます。
-本番環境を更新するタイミングでdevelopブランチをmasterブランチにマージします。
+新規機能の開発など、変更を加える際は`develop`ブランチから <任意の文字列> ブランチを作り、そこで作業してください。
+開発が終了したら`develop`ブランチにマージします。`develop`ブランチへ直接コミットすることは避けてください (CIによる検査がコミットの事後となってしまうため)。
+`master`ブランチは本番環境に反映されます。
 
-## フォーマットおよびlintに関して
+#### リリース
+- `develop`ブランチが更新されると、そのコードを基に実行用jarがビルドされ、デバッグ環境に配布されます。デバッグ環境はjarの配布を検知すると自動で再起動し、最新のjarを使用して稼働します。
+  - デバッグ環境へは、Minecraft Java Editionで`play-debug.seichi.click`に接続し、`T`キーでチャットを開き、`/server deb112`と入力して`Enter`を押すとアクセスできます。
+- `master`ブランチが更新されると、そのコードを基に実行用jarがビルドされ、本番環境に配布されます。本番環境は翌再起動時に自動で最新のjarを取り込んで稼働します。
+  - `master`ブランチの更新は必ず `develop` または `hotfix-*` からのPull Requestによって行ってください。
+    また、 `develop` からのリリース用 Pull Request は [`create_new_release`](https://github.com/GiganticMinecraft/SeichiAssist/actions/workflows/create_new_release.yml) ワークフローを実行することで作成してください(`build.sbt` の自動更新などが行われます)。
+- jar以外の自動リリースは未対応です(`config.yml`など)。運営チームへ更新を依頼する必要があります。
+  - 各サーバーや環境で共通で構わないパラメータは`config.yml`を読まず、コードへの直接実装を推奨します。
+
+### フォーマットおよびlintに関して
 フォーマットには[scalafmt](https://scalameta.org/scalafmt)、lintには[scalafix](https://scalacenter.github.io/scalafix/)を利用しています。
 
 コード品質を最低限保つため、PRが受け入れられるにはscalafmtとscalafixの両方のチェックが通る必要があります。そのため、
- - IntelliJ IDEAの設定でフォーマットに `scalafix` を使う
+ - IntelliJ IDEAの設定でフォーマットに `scalafmt` を使う
    - `Editor` > `Code Style` > `Scala` で
      - `Formatter` を `Scalafmt` に変更
      - `Reformat on file save` にチェックを付ける
- - PRを送った後は `sbt` コンソールで `scalafixAll` と `scalafmtAll` を実行する
+ - PRを送る前に `sbt` コンソールで `scalafixAll` と `scalafmtAll` を実行する
 
 ようにお願いします。
-
-## AutoRelease
-- developブランチが更新されると、そのコードを基に実行用jarがビルドされ、デバッグ環境に配布されます。デバッグ環境はjarの配布を検知すると自動で再起動し、最新のjarを使用して稼働します。
-  - デバッグ環境へは、Minecraft Java Editionで`play-debug.seichi.click`に接続し、`T`キーでチャットを開き、`/server deb112`と入力して`Enter`を押すとアクセスできます。
-- masterブランチが更新されると、そのコードを基に実行用jarがビルドされ、本番環境に配布されます。本番環境は翌再起動時に自動で最新のjarを取り込んで稼働します。
-  - masterブランチの更新は必ず `develop` または `hotfix-*` からのPull Requestによって行ってください。
-    また、 `develop` からのリリース用 Pull Request は [`create_new_release`](https://github.com/GiganticMinecraft/SeichiAssist/actions/workflows/create_new_release.yml) ワークフローを実行することで作成してください(`build.sbt` の自動更新などが行われます)。
-- jar以外の自動リリースは未対応です(config.ymlなど)。運営チームへ更新を依頼する必要があります。
-  - 各サーバーや環境で共通で構わないパラメータはconfig.ymlを読まず、コードへの直接実装を推奨します。
 
 ## 利用条件
 - [GPLv3ライセンス](https://github.com/GiganticMinecraft/SeichiAssist/blob/develop/LICENSE) での公開です。ソースコードの使用規約等はGPLv3ライセンスに従います。

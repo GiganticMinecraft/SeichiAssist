@@ -70,7 +70,7 @@ class ValentineListener[F[_]: ConcurrentEffect: NonServerThreadContextShift](
   def onPlayerJoinEvent(event: PlayerJoinEvent): Unit = {
     if (isInEvent) {
       Seq(
-        s"$LIGHT_PURPLE${END_DATE}までの期間限定で、イベント『＜ブラックバレンタイン＞リア充 vs 整地民！』を開催しています。",
+        s"$LIGHT_PURPLE${END_DATE_TIME}までの期間限定で、イベント『＜ブラックバレンタイン＞リア充 vs 整地民！』を開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",
         s"$DARK_GREEN$UNDERLINE$blogArticleUrl"
       ).foreach(event.getPlayer.sendMessage(_))
@@ -94,7 +94,7 @@ class ValentineListener[F[_]: ConcurrentEffect: NonServerThreadContextShift](
         val effects =
           if (hasNotJoinedBeforeYet)
             SequentialEffect(
-              grantItemStacksEffect(cookieOf(player.getName, playerUuid)),
+              grantItemStacksEffect(giftedCookieOf(player.getName, playerUuid)),
               MessageEffect(s"${AQUA}チョコチップクッキーを付与しました。"),
               FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
             )

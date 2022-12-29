@@ -115,7 +115,6 @@ object PlayerDataSaveTask {
 
           + ",rgnum = " + playerdata.regionCount
           + ",playtick = " + playerdata.playTick
-          + ",lastquit = cast( now() as datetime )"
           + ",killlogflag = " + playerdata.settings.shouldDisplayDeathMessages
           + ",worldguardlogflag = " + playerdata.settings.shouldDisplayWorldGuardLogs
 
