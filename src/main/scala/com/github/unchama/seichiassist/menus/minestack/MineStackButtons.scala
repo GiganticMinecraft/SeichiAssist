@@ -36,7 +36,7 @@ private[minestack] case class MineStackButtons(player: Player)(
     mineStackObjectGroup: MineStackObjectGroup[ItemStack]
   ): MineStackObject[ItemStack] = {
     mineStackObjectGroup match {
-      case Left(mineStackObject: MineStackObject[ItemStack]) =>
+      case Left(mineStackObject) =>
         mineStackObject
       case Right(MineStackObjectWithColorVariants(representative, _)) =>
         representative
