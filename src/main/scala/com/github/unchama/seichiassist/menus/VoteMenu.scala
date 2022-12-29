@@ -226,8 +226,8 @@ object VoteMenu extends Menu {
     val fairyPlaySoundToggleButton: IO[Button] = {
       val description =
         List(s"$RESET$DARK_GRAY※この機能はデフォルトでONです。", s"$RESET$DARK_RED${UNDERLINE}クリックで切り替え")
-      val playSoundOnLore = List(s"$RESET${GREEN}現在音が鳴る設定になっています。") ++ description
-      val playSoundOffLore = List(s"$RESET${RED}現在音が鳴らない設定になっています。") ++ description
+      val playSoundOnLore = s"$RESET${GREEN}現在音が鳴る設定になっています。" +: description
+      val playSoundOffLore = s"$RESET${RED}現在音が鳴らない設定になっています。" +: description
 
       RecomputedButton(for {
         fairySpeechSound <- fairyAPI.isPlayFairySpeechSound(player.getUniqueId)
