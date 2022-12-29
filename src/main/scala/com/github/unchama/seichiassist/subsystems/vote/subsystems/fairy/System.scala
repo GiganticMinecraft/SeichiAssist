@@ -99,7 +99,7 @@ object System {
 
         override implicit val api: FairyAPI[IO, SyncIO, Player] =
           new FairyAPI[IO, SyncIO, Player] {
-            override def appleOpenState(uuid: UUID): IO[FairyAppleConsumeStrategy] =
+            override def consumeStrategy(uuid: UUID): IO[FairyAppleConsumeStrategy] =
               persistence.appleOpenState(uuid)
 
             override def updateAppleOpenState(
@@ -109,7 +109,7 @@ object System {
               persistence.changeAppleOpenState(uuid, appleConsumeStrategy)
 
             override def getFairyLore(uuid: UUID): IO[FairyLore] = for {
-              state <- appleOpenState(uuid)
+              state <- consumeStrategy(uuid)
             } yield FairyLoreTable.loreTable(state)
 
             override def updateFairySummonCost(
@@ -121,30 +121,30 @@ object System {
             override def fairySummonCost(player: Player): IO[FairySummonCost] =
               persistence.fairySummonCost(player.getUniqueId)
 
-            override def isFairyUsing(player: Player): IO[Boolean] =
+            override def isFairyAppearing(player: Player): IO[Boolean] =
               persistence.isFairyUsing(player.getUniqueId)
 
-            override def appleAteByFairyMyRanking(
+            override def rankByMostConsumedApple(
               player: Player
             ): IO[Option[AppleAteByFairyRank]] =
               persistence.appleAteByFairyMyRanking(player.getUniqueId)
 
-            override def appleAteByFairyRanking(
-              number: Int
+            override def rankingByMostConsumedApple(
+                                                     top: Int
             ): IO[Vector[Option[AppleAteByFairyRank]]] =
-              persistence.appleAteByFairyRanking(number)
+              persistence.appleAteByFairyRanking(top)
 
-            override def allEatenAppleAmount: IO[AppleAmount] =
+            override def totalConsumedApple: IO[AppleAmount] =
               persistence.allEatenAppleAmount
 
-            override def isPlayFairySpeechSound(uuid: UUID): IO[Boolean] =
+            override def doPlaySoundOnSpeak(uuid: UUID): IO[Boolean] =
               persistence.fairySpeechSound(uuid)
 
-            override def toggleFairySpeechSound(uuid: UUID): IO[Unit] = for {
-              isPlayFairySpeechSound <- isPlayFairySpeechSound(uuid)
+            override def toggleSoundOnSpeak(uuid: UUID): IO[Unit] = for {
+              isPlayFairySpeechSound <- doPlaySoundOnSpeak(uuid)
             } yield persistence.toggleFairySpeechSound(uuid, !isPlayFairySpeechSound)
 
-            override def speechEndTime(player: Player): IO[Unit] =
+            override def sendDisappearTimeToChat(player: Player): IO[Unit] =
               fairySpeech.speechEndTime(player)
 
             override def fairySummonRequest(

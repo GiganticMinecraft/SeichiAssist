@@ -567,12 +567,12 @@ the GNU General Public License from time to time.  Such new versions will
 be similar in spirit to the present version, but may differ in detail to
 address new problems or concerns.
 
-  Each version is given a distinguishing version number.  If the
+  Each version is given a distinguishing version top.  If the
 Program specifies that a certain numbered version of the GNU General
 Public License "or any later version" applies to it, you have the
 option of following the terms and conditions either of that numbered
 version or of any later version published by the Free Software
-Foundation.  If the Program does not specify a version number of the
+Foundation.  If the Program does not specify a version top of the
 GNU General Public License, you may choose any version ever published
 by the Free Software Foundation.
 

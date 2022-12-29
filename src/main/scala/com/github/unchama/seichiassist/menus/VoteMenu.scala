@@ -76,7 +76,7 @@ object VoteMenu extends Menu {
         .traverse(_.sequence)
 
     for {
-      isFairyUsing <- environment.fairyAPI.isFairyUsing(constantButtons.player)
+      isFairyUsing <- environment.fairyAPI.isFairyAppearing(constantButtons.player)
       computeButtons <- computeButtonsIO
       dynamicButtons <- dynamicButtonsIO
     } yield {
@@ -200,7 +200,7 @@ object VoteMenu extends Menu {
     val fairyContractSettingToggle: IO[Button] =
       RecomputedButton(for {
         fairyLore <- fairyAPI.getFairyLore(uuid)
-        appleOpenState <- fairyAPI.appleOpenState(uuid)
+        appleOpenState <- fairyAPI.consumeStrategy(uuid)
       } yield {
         Button(
           new IconItemStackBuilder(Material.PAPER)
@@ -230,7 +230,7 @@ object VoteMenu extends Menu {
       val playSoundOffLore = s"$RESET${RED}現在音が鳴らない設定になっています。" +: description
 
       RecomputedButton(for {
-        fairySpeechSound <- fairyAPI.isPlayFairySpeechSound(player.getUniqueId)
+        fairySpeechSound <- fairyAPI.doPlaySoundOnSpeak(player.getUniqueId)
       } yield {
         Button(
           new IconItemStackBuilder(Material.JUKEBOX)
@@ -244,7 +244,7 @@ object VoteMenu extends Menu {
             SequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
               UnfocusedEffect {
-                fairyAPI.toggleFairySpeechSound(player.getUniqueId).unsafeRunAsyncAndForget()
+                fairyAPI.toggleSoundOnSpeak(player.getUniqueId).unsafeRunAsyncAndForget()
               }
             )
           }
@@ -318,7 +318,7 @@ object VoteMenu extends Menu {
         LeftClickButtonEffect {
           SequentialEffect(
             UnfocusedEffect {
-              fairyAPI.speechEndTime(player).unsafeRunAsyncAndForget()
+              fairyAPI.sendDisappearTimeToChat(player).unsafeRunAsyncAndForget()
             },
             closeInventoryEffect
           )
@@ -327,9 +327,9 @@ object VoteMenu extends Menu {
     }
 
     val gachaRingoInformation: IO[Button] = for {
-      myRank <- fairyAPI.appleAteByFairyMyRanking(player)
-      topFourRanking <- fairyAPI.appleAteByFairyRanking(4)
-      allEatenAppleAmount <- fairyAPI.allEatenAppleAmount
+      myRank <- fairyAPI.rankByMostConsumedApple(player)
+      topFourRanking <- fairyAPI.rankingByMostConsumedApple(4)
+      allEatenAppleAmount <- fairyAPI.totalConsumedApple
     } yield {
       val staticLore = List(
         s"$RESET$RED$BOLD※ﾆﾝｹﾞﾝに見られないように気を付けること！",

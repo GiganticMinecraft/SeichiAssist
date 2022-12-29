@@ -32,7 +32,7 @@ trait FairyReadAPI[F[_], G[_], Player] {
   /**
    * @return 妖精にあげるりんごの開放状態を取得する作用
    */
-  def appleOpenState(uuid: UUID): F[FairyAppleConsumeStrategy]
+  def consumeStrategy(uuid: UUID): F[FairyAppleConsumeStrategy]
 
   /**
    * @return 妖精を召喚するためのコストを取得する作用
@@ -47,22 +47,22 @@ trait FairyReadAPI[F[_], G[_], Player] {
   /**
    * @return 妖精を使っているかを取得する作用
    */
-  def isFairyUsing(player: Player): F[Boolean]
+  def isFairyAppearing(player: Player): F[Boolean]
 
   /**
    * @return 自分の妖精に食べさせたりんごの量の順位を返す作用
    */
-  def appleAteByFairyMyRanking(player: Player): F[Option[AppleAteByFairyRank]]
+  def rankByMostConsumedApple(player: Player): F[Option[AppleAteByFairyRank]]
 
   /**
-   * @return 妖精に食べさせたりんごの量の順位上`number`件を返す作用
+   * @return 妖精に食べさせたりんごの量の順位上`top`件を返す作用
    */
-  def appleAteByFairyRanking(number: Int): F[Vector[Option[AppleAteByFairyRank]]]
+  def rankingByMostConsumedApple(top: Int): F[Vector[Option[AppleAteByFairyRank]]]
 
   /**
    * @return 妖精が食べたりんごの合計数を返す作用
    */
-  def allEatenAppleAmount: F[AppleAmount]
+  def totalConsumedApple: F[AppleAmount]
 
 }
 
@@ -79,17 +79,17 @@ trait FairySpeechAPI[F[_], Player] {
   /**
    * @return 妖精が喋るときに音をだすかをトグルする作用
    */
-  def toggleFairySpeechSound(uuid: UUID): F[Unit]
+  def toggleSoundOnSpeak(uuid: UUID): F[Unit]
 
   /**
    * @return 妖精が喋ったときに音を再生するか取得する作用
    */
-  def isPlayFairySpeechSound(uuid: UUID): F[Boolean]
+  def doPlaySoundOnSpeak(uuid: UUID): F[Boolean]
 
   /**
    * @return 妖精がいつ帰るのかを`player`に送信する作用作用
    */
-  def speechEndTime(player: Player): F[Unit]
+  def sendDisappearTimeToChat(player: Player): F[Unit]
 
 }
 
