@@ -11,7 +11,7 @@ trait FairyWriteAPI[F[_], G[_], Player] {
   /**
    * @return 妖精にあげるりんごの開放状態を変更する作用
    */
-  def updateAppleOpenState(uuid: UUID, appleConsumeStrategy: FairyAppleConsumeStrategy): F[Unit]
+  def updateAppleOpenState(appleConsumeStrategy: FairyAppleConsumeStrategy): Kleisli[F, Player, Unit]
 
   /**
    * @return 妖精を召喚するためのコストを変更する作用

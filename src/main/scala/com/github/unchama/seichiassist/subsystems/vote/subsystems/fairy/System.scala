@@ -105,10 +105,10 @@ object System {
               persistence.appleOpenState(uuid)
 
             override def updateAppleOpenState(
-              uuid: UUID,
               appleConsumeStrategy: FairyAppleConsumeStrategy
-            ): IO[Unit] =
-              persistence.changeAppleOpenState(uuid, appleConsumeStrategy)
+            ): Kleisli[IO, Player, Unit] = Kleisli { player =>
+              persistence.changeAppleOpenState(player.getUniqueId, appleConsumeStrategy)
+            }
 
             override def getFairyLore(uuid: UUID): IO[FairyLore] = for {
               state <- consumeStrategy(uuid)
