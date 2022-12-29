@@ -38,14 +38,14 @@ class BukkitReceiveVoteBenefits[F[_]: OnMinecraftServerThread: Sync, G[
       playerLevel <- ContextCoercion(breakCountAPI.seichiAmountDataRepository(player).read.map {
         _.levelCorrespondingToExp.level
       })
-      gachaSkulls = Seq.fill(10 * pendingCount.value)(
+      gachaTicketAmount = Seq.fill(10 * pendingCount.value)(
         BukkitGachaSkullData.gachaForVoting
       )
-      elseVoteBenefits = Seq.fill(pendingCount.value)(
+      additionalVoteBenefit = Seq.fill(pendingCount.value)(
         if (playerLevel < 50) ItemData.getSuperPickaxe(1)
         else ItemData.getVotingGift(1)
       )
-      grantItems = gachaSkulls ++ elseVoteBenefits
+      grantItems = gachaTicketAmount ++ additionalVoteBenefit
       _ <- {
         ContextCoercion(votePersistence.increaseEffectPoints(uuid, EffectPoint(10)))
           .replicateA(pendingCount.value) >>
