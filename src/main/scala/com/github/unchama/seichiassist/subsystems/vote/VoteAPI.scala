@@ -8,7 +8,7 @@ import java.util.UUID
 trait VoteWriteAPI[F[_]] {
 
   /**
-   * effectPointを減少させる作用
+   * @return effectPointを減少させる作用
    */
   def decreaseEffectPoint(uuid: UUID, effectPoint: EffectPoint): F[Unit]
 
@@ -23,22 +23,22 @@ object VoteWriteAPI {
 trait VoteReadAPI[F[_], Player] {
 
   /**
-   * 投票回数を返す作用
+   * @return 投票回数を返す作用
    */
   def voteCounter(uuid: UUID): F[VoteCounter]
 
   /**
-   * 連続投票日数を返す作用
+   * @return 連続投票日数を返す作用
    */
   def chainVoteDayNumber(uuid: UUID): F[ChainVoteDayNumber]
 
   /**
-   * effectPointを返す作用
+   * @return effectPointを返す作用
    */
   def effectPoints(player: Player): F[EffectPoint]
 
   /**
-   * 投票特典を受け取った回数を返す作用
+   * @return 投票特典を受け取った回数を返す作用
    */
   def receivedVoteBenefits(uuid: UUID): F[VoteBenefit]
 
