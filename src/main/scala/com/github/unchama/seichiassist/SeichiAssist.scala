@@ -418,6 +418,9 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.tradesystems.subsystems.gachatrade.System.wired[IO, SyncIO]
   }
 
+  private lazy val lastQuitSystem: subsystems.lastquit.System[IO] =
+    subsystems.lastquit.System.wired[IO]
+
   private lazy val donateSystem: subsystems.donate.System[IO] =
     subsystems.donate.System.wired[IO]
 
@@ -441,6 +444,7 @@ class SeichiAssist extends JavaPlugin() {
     homeSystem,
     presentSystem,
     anywhereEnderSystem,
+    lastQuitSystem,
     donateSystem,
     gachaSystem,
     gachaTicketSystem,
@@ -630,7 +634,6 @@ class SeichiAssist extends JavaPlugin() {
       "map" -> MapCommand.executor,
       "ef" -> new EffectCommand(fastDiggingEffectSystem.settingsApi).executor,
       "seichiassist" -> SeichiAssistCommand.executor,
-      "lastquit" -> LastQuitCommand.executor,
       "stick" -> StickCommand.executor,
       "rmp" -> RmpCommand.executor,
       "halfguard" -> HalfBlockProtectCommand.executor,
