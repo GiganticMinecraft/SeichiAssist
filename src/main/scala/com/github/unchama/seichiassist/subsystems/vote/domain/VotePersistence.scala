@@ -5,6 +5,8 @@ import java.util.UUID
 trait VotePersistence[F[_]] {
 
   /**
+   * プレイヤーの投票データを初期化します。この作用はプレイヤーがサーバーに参加するたびに呼ばれるため、作用が冪等でなければなりません。
+   *
    * @return プレイヤーデータを作成する作用
    */
   def createPlayerData(uuid: UUID): F[Unit]
