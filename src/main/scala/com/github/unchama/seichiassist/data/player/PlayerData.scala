@@ -65,8 +65,6 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
   var votecooldownflag = true
   // ガチャボタン連打防止用
   var gachacooldownflag = true
-  // インベントリ共有ボタン連打防止用
-  var shareinvcooldownflag = true
   var samepageflag = false // 実績ショップ用
 
   // endregion

@@ -389,6 +389,11 @@ class SeichiAssist extends JavaPlugin() {
       .wired[SyncIO, IO](seichiAssistConfig.getAnywhereEnderConfiguration)
   }
 
+  private lazy val sharedInventorySystem: subsystems.sharedinventory.System[IO] = {
+    import PluginExecutionContexts.timer
+    subsystems.sharedinventory.System.wired[IO, IO].unsafeRunSync()
+  }
+
   private lazy implicit val gachaAPI: GachaAPI[IO, ItemStack, Player] = gachaSystem.api
 
   private lazy val gachaSystem: subsystems.gacha.System[IO] = {
@@ -412,9 +417,6 @@ class SeichiAssist extends JavaPlugin() {
     implicit val gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
     subsystems.tradesystems.subsystems.gachatrade.System.wired[IO, SyncIO]
   }
-
-  private lazy val sharedInventorySystem: subsystems.sharedinventory.System[IO] =
-    subsystems.sharedinventory.System.wired[IO]
 
   private lazy val lastQuitSystem: subsystems.lastquit.System[IO] =
     subsystems.lastquit.System.wired[IO]
