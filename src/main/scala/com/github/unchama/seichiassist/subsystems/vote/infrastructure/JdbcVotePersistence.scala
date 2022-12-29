@@ -28,14 +28,14 @@ class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
     }
   }
 
-  override def currentVoteCount(uuid: UUID): F[VoteCounter] = Sync[F].delay {
+  override def currentVoteCount(uuid: UUID): F[VoteCount] = Sync[F].delay {
     DB.readOnly { implicit session =>
       val votePoint = sql"SELECT vote_number FROM vote WHERE uuid = ${uuid.toString}"
         .map(_.int("vote_number"))
         .single()
         .apply()
         .get
-      VoteCounter(votePoint)
+      VoteCount(votePoint)
     }
   }
 

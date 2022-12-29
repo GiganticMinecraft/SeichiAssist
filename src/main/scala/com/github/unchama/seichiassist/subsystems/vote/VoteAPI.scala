@@ -25,7 +25,7 @@ trait VoteReadAPI[F[_], Player] {
   /**
    * @return 投票回数を返す作用
    */
-  def count(uuid: UUID): F[VoteCounter]
+  def count(uuid: UUID): F[VoteCount]
 
   /**
    * @return 連続投票日数を返す作用

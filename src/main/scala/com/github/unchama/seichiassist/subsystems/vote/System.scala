@@ -32,7 +32,7 @@ object System {
 
     new System[F, Player] {
       override implicit val api: VoteAPI[F, Player] = new VoteAPI[F, Player] {
-        override def count(uuid: UUID): F[VoteCounter] =
+        override def count(uuid: UUID): F[VoteCount] =
           _votePersistence.currentVoteCount(uuid)
 
         override def currentConsecutiveVoteStreakDays(uuid: UUID): F[ChainVoteDayNumber] =
