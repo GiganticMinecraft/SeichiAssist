@@ -18,21 +18,17 @@ class BukkitPlayerIdleTimeRecalculationRoutine(player: Player)(
   ]
 ) extends PlayerIdleTimeRecalculationRoutine[Player] {
 
-  /**
-   * @return リポジトリのデータを現在のプレイヤーの位置と放置時間を更新する作用
-   */
   override def updatePlayerLocationAndPlayerIdleMinute: SyncIO[Unit] = {
     val playerIdleTimeRepository = idleTimeRepository(player)
     val playerLocationRepository = locationRepository(player)
     for {
       playerLocation <- playerLocationRepository.getRepositoryLocation
       _ <- playerLocationRepository.updateNowLocation
-      _ <-
-        if (playerLocation.location == player.getLocation) {
-          playerIdleTimeRepository.addOneMinute
-        } else {
-          playerIdleTimeRepository.reset
-        }
+      _ <- if (playerLocation.location == player.getLocation) {
+        playerIdleTimeRepository.addOneMinute
+      } else {
+        playerIdleTimeRepository.reset
+      }
     } yield ()
   }
 

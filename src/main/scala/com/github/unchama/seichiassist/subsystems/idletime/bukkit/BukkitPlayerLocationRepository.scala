@@ -15,9 +15,6 @@ class BukkitPlayerLocationRepository[F[_]: Sync](player: Player)
   override protected val locationRepository: Ref[F, PlayerLocation[Location]] =
     Ref.unsafe[F, PlayerLocation[Location]](PlayerLocation(player.getLocation))
 
-  /**
-   * @return リポジトリの値を新しい[[PlayerLocation]]に更新する作用
-   */
-  override def updateNowLocation(): F[Unit] =
+  override def updateNowLocation: F[Unit] =
     locationRepository.set(PlayerLocation[Location](player.getLocation))
 }
