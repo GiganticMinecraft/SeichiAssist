@@ -93,11 +93,11 @@ object MineStackCommand {
             player <- IO(context.sender)
             inventory <- IO(player.getInventory)
             targetIndexes <- inventory.getContents.toList.zipWithIndex.traverse {
-              case (itemStack, index) =>
+              case (itemStack, index) if itemStack != null =>
                 mineStackAPI
                   .mineStackRepository
                   .tryIntoMineStack(player, itemStack, itemStack.getAmount)
-                  .map(isSucceed => Option.when(itemStack != null && isSucceed)(index))
+                  .map(Option.when(_)(index))
             }
             _ <- IO(targetIndexes.foreach(_.foreach(index => inventory.clear(index))))
           } yield MessageEffect(s"${YELLOW}インベントリの中身をすべてマインスタックに収納しました。")
