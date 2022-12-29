@@ -6,7 +6,7 @@ import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
 class RemainingFlyDurationSpec extends AnyWordSpec with ScalaCheckPropertyChecks with Matchers {
   "RemainingFlyDuration#tickOneMinute" should {
-    "decrement remaining minutes if greater than 1" in {
+    "decrement remaining minute if greater than 1" in {
       forAll { minute: Int =>
         whenever(minute > 1) {
           RemainingFlyDuration
@@ -19,7 +19,7 @@ class RemainingFlyDurationSpec extends AnyWordSpec with ScalaCheckPropertyChecks
       }
     }
 
-    "tick to None if only a minutes remains" in {
+    "tick to None if only a minute remains" in {
       RemainingFlyDuration.PositiveMinutes.fromPositive(1).tickOneMinute
     }
 

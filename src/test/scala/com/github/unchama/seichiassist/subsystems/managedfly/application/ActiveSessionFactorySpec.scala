@@ -181,7 +181,7 @@ class ActiveSessionFactorySpec
       awaitForProgram(runConcurrent(program)(100), 1.second)
     }
 
-    "not consume player experience in first 1 minutes even if terminated" in {
+    "not consume player experience in first 1 minute even if terminated" in {
       val originalExp = FiniteNonNegativeExperience(150)
 
       // given
@@ -221,7 +221,7 @@ class ActiveSessionFactorySpec
       awaitForProgram(runConcurrent(program)(100), 1.minute)
     }
 
-    "consume player experience every minutes as specified by the configuration" in {
+    "consume player experience every minute as specified by the configuration" in {
       val originalExp = 100000
       val minutesToWait = 100
 
@@ -418,7 +418,7 @@ class ActiveSessionFactorySpec
       awaitForProgram(runConcurrent(program)(100), 150.minutes)
     }
 
-    "terminate when player's experience is below per-minutes experience consumption" in {
+    "terminate when player's experience is below per-minute experience consumption" in {
       val originalExp = 10000
 
       // given
@@ -500,7 +500,7 @@ class ActiveSessionFactorySpec
       awaitForProgram(runConcurrent(program)(100), 1.second)
     }
 
-    "send appropriate notification of remaining fly time every minutes" in {
+    "send appropriate notification of remaining fly time every minute" in {
       // given
       implicit val configuration: SystemConfiguration =
         SystemConfiguration(expConsumptionAmount = 0)
@@ -584,7 +584,7 @@ class ActiveSessionFactorySpec
   }
 
   "Finite fly session" should {
-    "terminate exactly when the minutes specified has passed if the player has enough experience" in {
+    "terminate exactly when the minute specified has passed if the player has enough experience" in {
       // given
       implicit val configuration: SystemConfiguration =
         SystemConfiguration(expConsumptionAmount = 100)
