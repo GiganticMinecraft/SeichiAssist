@@ -14,7 +14,7 @@ case class IdleMinute(minutes: Int) {
 object IdleMinute {
 
   /**
-   * IdleMinuteの初期値
+   * [[IdleMinute]]の初期値
    */
   val initial: IdleMinute = IdleMinute(0)
 
