@@ -52,9 +52,10 @@ object ActiveSkillEffectMenu extends Menu {
     }
   }
 
-  private def unlockOrSet(
-    effect: ActiveSkillEffect
-  )(implicit voteAPI: VoteAPI[IO, Player], donateAPI: DonatePremiumPointAPI[IO]): TargetedEffect[Player] = Kleisli { player =>
+  private def unlockOrSet(effect: ActiveSkillEffect)(
+    implicit voteAPI: VoteAPI[IO, Player],
+    donateAPI: DonatePremiumPointAPI[IO]
+  ): TargetedEffect[Player] = Kleisli { player =>
     val playerData = SeichiAssist.playermap(player.getUniqueId)
 
     def unlockNormalEffect(effect: ActiveSkillNormalEffect): IO[Unit] =
