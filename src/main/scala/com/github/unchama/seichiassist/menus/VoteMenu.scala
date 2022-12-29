@@ -26,7 +26,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.p
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects.closeInventoryEffect
-import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect, UnfocusedEffect}
+import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect, UnfocusedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
@@ -124,9 +124,7 @@ object VoteMenu extends Menu {
             .build(),
           LeftClickButtonEffect {
             SequentialEffect(
-              TargetedEffect.delay { player =>
-                voteAPI.receiveVoteBenefits(player).unsafeRunAsyncAndForget()
-              },
+              DeferredEffect(IO(voteAPI.receiveVoteBenefits)),
               MessageEffect(
                 s"${GOLD}投票特典$WHITE(${voteCounter.value - benefits.value}票分)を受け取りました"
               )

@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote
 
+import cats.data.Kleisli
 import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
@@ -46,8 +47,9 @@ object System {
         override def receivedVoteBenefits(uuid: UUID): F[VoteBenefit] =
           _votePersistence.receivedVoteBenefits(uuid)
 
-        override def receiveVoteBenefits(player: Player): F[Unit] =
+        override def receiveVoteBenefits: Kleisli[F, Player, Unit] = Kleisli { player =>
           _receiveVoteBenefits.receive(player)
+        }
       }
 
       override val commands: Map[String, TabExecutor] = Map(

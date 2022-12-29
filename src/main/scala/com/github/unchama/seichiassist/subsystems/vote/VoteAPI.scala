@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote
 
+import cats.data.Kleisli
 import com.github.unchama.seichiassist.subsystems.vote.domain._
 
 import java.util.UUID
@@ -54,7 +55,7 @@ trait VoteReceiveAPI[F[_], Player] {
   /**
    * @return 投票特典を受け取る作用
    */
-  def receiveVoteBenefits(player: Player): F[Unit]
+  def receiveVoteBenefits: Kleisli[F, Player, Unit]
 
 }
 
