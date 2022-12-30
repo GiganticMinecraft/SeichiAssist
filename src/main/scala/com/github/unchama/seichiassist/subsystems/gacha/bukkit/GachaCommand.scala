@@ -408,7 +408,7 @@ class GachaCommand[
             IO(MessageEffect(s"${RED}イベント名は30字以内で指定してください。"))
           } else {
             val eff = for {
-              isExistsEvent <- gachaPrizeAPI.existsGachaEvent(eventName)
+              existsEvent <- gachaPrizeAPI.existsGachaEvent(eventName)
               _ <- gachaPrizeAPI
                 .createGachaEvent(
                   GachaEvent(
@@ -417,10 +417,10 @@ class GachaCommand[
                     LocalDate.parse(endDate, dateTimeFormatter)
                   )
                 )
-                .unlessA(isExistsEvent)
+                .unlessA(existsEvent)
 
             } yield {
-              if (isExistsEvent) MessageEffect(s"${RED}指定された名前のイベントが既に存在します。")
+              if (existsEvent) MessageEffect(s"${RED}指定された名前のイベントが既に存在します。")
               else MessageEffect(s"${AQUA}イベントを作成しました。")
             }
 
