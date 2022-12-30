@@ -46,6 +46,7 @@ services:
       - seichi
     volumes:
       - spigot_b:/data
+      - ./localDependencies:/plugins
     ports:
       - "25567:25565"
       - "7092:7091"
