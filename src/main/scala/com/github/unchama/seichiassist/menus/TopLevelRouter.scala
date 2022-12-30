@@ -36,12 +36,14 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
   FastDiggingSettingsApi
 }
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
-import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gacha.GachaDrawAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket.ConsumeGachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
+import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.ranking.api.AssortedRankingApi
 import com.github.unchama.seichiassist.subsystems.ranking.domain.values.{LoginTime, VoteCount}
 import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
@@ -65,6 +67,7 @@ object TopLevelRouter {
     implicit javaTime: JavaTime[IO],
     layoutPreparationContext: LayoutPreparationContext,
     onMainThread: OnMinecraftServerThread[IO],
+    nonServerThreadContextShift: NonServerThreadContextShift[IO],
     breakCountApi: BreakCountAPI[IO, SyncIO, Player],
     breakCountBarAPI: BreakCountBarAPI[SyncIO, Player],
     manaApi: ManaApi[IO, SyncIO, Player],
@@ -79,8 +82,9 @@ object TopLevelRouter {
     sharedInventoryAPI: SharedInventoryAPI[IO, Player],
     donateAPI: DonatePremiumPointAPI[IO],
     gachaTicketAPI: GachaTicketAPI[IO],
-    nonServerThreadContextShift: NonServerThreadContextShift[IO],
-    gachaAPI: GachaAPI[IO, ItemStack, Player],
+    gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
+    mineStackAPI: MineStackAPI[IO, Player, ItemStack],
+    gachaDrawAPI: GachaDrawAPI[IO, Player],
     consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player]
   ): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     import assortedRankingApi._

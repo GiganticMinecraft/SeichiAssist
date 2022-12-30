@@ -340,6 +340,8 @@ object BreakUtil {
     shouldPlayBreakSound: Boolean,
     toMaterial: Material = Material.AIR
   ): IO[Unit] = {
+    import cats.implicits._
+
     for {
       // 非同期実行ではワールドに触れないので必要な情報をすべて抜く
       targetBlocksInformation <- PluginExecutionContexts
@@ -365,8 +367,6 @@ object BreakUtil {
         })
 
       breakResults = {
-        import cats.implicits._
-
         val plainBreakResult = targetBlocksInformation.flatMap(dropItemOnTool(miningTool))
         val drops = plainBreakResult.mapFilter {
           case BlockBreakResult.ItemDrop(itemStack) => Some(itemStack)
@@ -382,16 +382,18 @@ object BreakUtil {
         (ItemStackUtil.amalgamate(drops), silverFishLocations)
       }
 
-      itemsToBeDropped <- IO {
+      itemsToBeDropped <-
         // アイテムのマインスタック自動格納を試みる
         // 格納できなかったらドロップするアイテムとしてリストに入れる
-        breakResults._1.flatMap { itemStack =>
-          if (!tryAddItemIntoMineStack(player, itemStack))
-            Some(itemStack)
-          else
-            None
+        breakResults._1.toList.traverse { itemStack =>
+          SeichiAssist
+            .instance
+            .mineStackSystem
+            .api
+            .mineStackRepository
+            .tryIntoMineStack(player, itemStack, itemStack.getAmount)
+            .map(Option.when(_)(itemStack))
         }
-      }
 
       _ <- IO {
         // 壊した時の音を再生する
@@ -420,52 +422,14 @@ object BreakUtil {
         .onMainThread
         .runAction(SyncIO {
           // アイテムドロップは非同期スレッドで行ってはならない
-          itemsToBeDropped.foreach(dropLocation.getWorld.dropItemNaturally(dropLocation, _))
+          itemsToBeDropped
+            .flatten
+            .foreach(dropLocation.getWorld.dropItemNaturally(dropLocation, _))
           breakResults._2.foreach { location =>
             location.getWorld.spawnEntity(location, EntityType.SILVERFISH)
           }
         })
     } yield ()
-  }
-
-  // TODO BreakUtilにあるのおかしくない？？？？
-  // P.S. BreakUtilにあるのはおかしいと思うが、どこに属するのかがよくわからないのでとりあえず放置
-  def tryAddItemIntoMineStack(player: Player, itemstack: ItemStack): Boolean = {
-    // もしサバイバルでなければ処理を終了
-    if (player.getGameMode != GameMode.SURVIVAL) return false
-
-    if (SeichiAssist.DEBUG) {
-      player.sendMessage(s"${RED}minestackAdd:$itemstack")
-      player.sendMessage(s"${RED}mineDurability:${itemstack.getDurability}")
-    }
-
-    val playerData = SeichiAssist.playermap(player.getUniqueId)
-
-    // minestackflagがfalseの時は処理を終了
-    if (!playerData.settings.autoMineStack) return false
-
-    val amount = itemstack.getAmount
-
-    // 線路・キノコなどの、拾った時と壊した時とでサブIDが違う場合の処理
-    // 拾った時のサブIDに合わせる
-    if (
-      itemstack.getType == Material.RAILS
-      || itemstack.getType == Material.HUGE_MUSHROOM_1
-      || itemstack.getType == Material.HUGE_MUSHROOM_2
-      || itemstack.getType == Material.PURPUR_STAIRS
-      || itemstack.getType == Material.BONE_BLOCK
-    ) {
-
-      itemstack.setDurability(0.toShort)
-    }
-    MineStackObjectList
-      .findByItemStack(itemstack, player.getName)
-      .unsafeRunSync()
-      .foreach(mineStackObj => {
-        playerData.minestack.addStackedAmountOf(mineStackObj, amount.toLong)
-        return true
-      })
-    false
   }
 
   def calcManaDrop(player: Player): Double = {

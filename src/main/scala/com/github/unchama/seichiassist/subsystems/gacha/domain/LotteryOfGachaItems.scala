@@ -1,10 +1,14 @@
 package com.github.unchama.seichiassist.subsystems.gacha.domain
 
 import cats.effect.Sync
-import cats.effect.concurrent.Ref
-import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.{
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
   GachaPrize,
   GachaPrizeId
+}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
+  GachaProbability,
+  StaticGachaPrizeFactory,
+  gachaprize
 }
 
 import scala.annotation.tailrec
@@ -17,14 +21,15 @@ class LotteryOfGachaItems[F[_]: Sync, ItemStack](
 
   def runLottery(
     amount: Int,
-    gachaPrizesListRepository: Ref[F, Vector[GachaPrize[ItemStack]]]
+    gachaPrizesListRepository: Vector[GachaPrize[ItemStack]]
   ): F[Vector[GachaPrize[ItemStack]]] =
     for {
-      gachaPrizes <- gachaPrizesListRepository.get
       randomList <-
         (0 until amount).toList.traverse(_ => Sync[F].delay(Math.random()))
     } yield randomList
-      .map(random => lottery(GachaProbability(1.0), GachaProbability(random), gachaPrizes))
+      .map(random =>
+        lottery(GachaProbability(1.0), GachaProbability(random), gachaPrizesListRepository)
+      )
       .toVector
 
   /**
@@ -46,7 +51,8 @@ class LotteryOfGachaItems[F[_]: Sync, ItemStack](
         staticGachaPrizeFactory.gachaRingo,
         GachaProbability(1.0),
         signOwner = false,
-        GachaPrizeId(0)
+        GachaPrizeId(0),
+        None
       )
     } else {
       val prizeAtHead = gachaPrizes.head

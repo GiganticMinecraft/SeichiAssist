@@ -34,8 +34,8 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
 }
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.PocketSize
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.BukkitGachaSkullData
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
+import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.factories.BukkitGachaSkullData
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.ranking.api.RankingProvider
 import com.github.unchama.seichiassist.task.CoolDownTask

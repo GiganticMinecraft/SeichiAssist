@@ -1,10 +1,10 @@
 package com.github.unchama.seichiassist.task
 
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.player._
 import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings
 import com.github.unchama.seichiassist.database.DatabaseConstants
-import com.github.unchama.seichiassist.minestack.MineStackObject
 import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillEffect.NoEffect
 import com.github.unchama.seichiassist.seichiskill.effect.{
   ActiveSkillNormalEffect,
@@ -17,7 +17,6 @@ import com.github.unchama.seichiassist.seichiskill.{
   SeichiSkill,
   SeichiSkillUsageMode
 }
-import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.util.MillisecondTimer
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
@@ -58,42 +57,6 @@ object PlayerDataLoading {
         + "where uuid = '" + stringUuid + "'")
 
       stmt.executeUpdate(loginInfoUpdateCommand)
-    }
-
-    def loadMineStack(stmt: Statement): Unit = {
-      val mineStackDataQuery = ("select * from "
-        + db + "." + DatabaseConstants.MINESTACK_TABLENAME + " where "
-        + "player_uuid = '" + stringUuid + "'")
-
-      /**
-       * TODO:これはここにあるべきではない 格納可能なアイテムのリストはプラグインインスタンスの中に動的に持たれるべきで、
-       * そのリストをラップするオブジェクトに同期された形でこのオブジェクトがもたれるべきであり、 ロードされるたびに再計算されるべきではない
-       */
-      val nameObjectMappings: Map[String, MineStackObject] =
-        MineStackObjectList
-          .getAllMineStackObjects
-          .unsafeRunSync()
-          .map(obj => obj.mineStackObjectName -> obj)
-          .toMap
-
-      val objectAmounts = mutable.HashMap[MineStackObject, Long]()
-
-      stmt.executeQuery(mineStackDataQuery).recordIteration { lrs: ResultSet =>
-        import lrs._
-        val objectName = getString("object_name")
-        val objectAmount = getLong("amount")
-
-        nameObjectMappings.get(objectName) match {
-          case Some(mineStackObj) =>
-            objectAmounts(mineStackObj) = objectAmount
-          case None =>
-            Bukkit
-              .getLogger
-              .warning(s"プレーヤー $playerName のMineStackオブジェクト $objectName は収納可能リストに見つかりませんでした。")
-        }
-      }
-
-      playerData.minestack = new MineStack(objectAmounts)
     }
 
     def loadGridTemplate(stmt: Statement): Unit = {
@@ -189,8 +152,6 @@ object PlayerDataLoading {
           rs.getInt("displayTitle2No"),
           rs.getInt("displayTitle3No")
         )
-
-        playerData.settings.autoMineStack = rs.getBoolean("minestackflag")
 
         playerData.skillEffectState = {
           val selectedEffect =
@@ -338,7 +299,6 @@ object PlayerDataLoading {
       loadPlayerData(newStmt)
       updateLoginInfo(newStmt)
       loadGridTemplate(newStmt)
-      loadMineStack(newStmt)
     }
 
     timer.sendLapTimeMessage(s"$GREEN${playerName}のプレイヤーデータ読込完了")

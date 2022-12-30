@@ -2,8 +2,8 @@ package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttos
 
 import cats.effect.ConcurrentEffect
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
-import com.github.unchama.seichiassist.subsystems.gacha.domain.CanBeSignedAsGachaPrize
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.bukkit.BukkitStaticTradeItemFactory
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.bukkit.listeners.GtToSiinaringo
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.domain.StaticTradeItemFactory
@@ -20,10 +20,10 @@ trait System[F[_], ItemStack] extends Subsystem[F] {
 object System {
 
   def wired[F[_]: ConcurrentEffect](
-    implicit gachaAPI: GachaAPI[F, ItemStack, Player]
+    implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player]
   ): System[F, ItemStack] = {
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
-      gachaAPI.canBeSignedAsGachaPrize
+      gachaPrizeAPI.canBeSignedAsGachaPrize
     implicit val tradeItemFactory: StaticTradeItemFactory[ItemStack] =
       BukkitStaticTradeItemFactory
 
