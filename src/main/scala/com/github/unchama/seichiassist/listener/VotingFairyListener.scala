@@ -1,15 +1,17 @@
 package com.github.unchama.seichiassist.listener
 
 import cats.effect.{IO, SyncIO}
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaReadApi}
+import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.TimeUtils
-import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
+import org.bukkit.inventory.ItemStack
 
 import java.util.{Calendar, GregorianCalendar}
 import scala.util.Random
@@ -98,7 +100,10 @@ object VotingFairyListener {
     else msg
   }
 
-  def regeneMana(player: Player)(implicit manaApi: ManaApi[IO, SyncIO, Player]): Unit = {
+  def regeneMana(player: Player)(
+    implicit manaApi: ManaApi[IO, SyncIO, Player],
+    mineStackAPI: MineStackAPI[IO, Player, ItemStack]
+  ): Unit = {
     val playermap = SeichiAssist.playermap
     val uuid = player.getUniqueId
     val playerdata = playermap.apply(uuid)
@@ -156,10 +161,12 @@ object VotingFairyListener {
       }
 
       // りんご所持数で値変更
-      val gachaimoObject = MineStackObjectList.findByName("gachaimo").unsafeRunSync().get
-      val l = playerdata.minestack.getStackedAmountOf(gachaimoObject)
-      if (m > l) {
-        if (l == 0) {
+      val gachaRingo =
+        mineStackAPI.mineStackObjectList.findByName("gachaimo").unsafeRunSync().get
+      val quantity =
+        mineStackAPI.mineStackRepository.getStackedAmountOf(player, gachaRingo).unsafeRunSync()
+      if (m > quantity) {
+        if (quantity == 0) {
           n /= 2
           if (playerdata.toggleGiveApple == 1) n /= 2
           if (playerdata.toggleGiveApple == 2 && oldManaAmount.ratioToCap.exists(_ < 0.75))
@@ -167,11 +174,11 @@ object VotingFairyListener {
           player.sendMessage(s"$RESET$YELLOW${BOLD}MineStackにがちゃりんごがないようです。。。")
         } else {
           val M = m
-          val L = l
+          val L = quantity
           n = if ((L / M) <= 0.5) (n * 0.5).toInt else (n * L / M).toInt
         }
 
-        m = l.toInt
+        m = quantity.toInt
       }
 
       // 回復量に若干乱数をつける
@@ -181,12 +188,10 @@ object VotingFairyListener {
       manaApi.manaAmount(player).restoreAbsolute(ManaAmount(n)).unsafeRunSync()
 
       // りんごを減らす
-      playerdata
-        .minestack
-        .subtractStackedAmountOf(
-          MineStackObjectList.findByName("gachaimo").unsafeRunSync().get,
-          m
-        )
+      mineStackAPI
+        .mineStackRepository
+        .subtractStackedAmountOf(player, gachaRingo, m)
+        .unsafeRunAsyncAndForget()
 
       // 減ったりんごの数をplayerdataに加算
       playerdata.p_apple += m

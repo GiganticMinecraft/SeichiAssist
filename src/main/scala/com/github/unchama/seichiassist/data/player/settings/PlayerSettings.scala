@@ -10,7 +10,6 @@ import org.bukkit.entity.Player
 class PlayerSettings {
 
   import com.github.unchama.targetedeffect._
-  var autoMineStack = true
   // キルログ表示トグル
   var shouldDisplayDeathMessages = false
   // ワールドガード保護ログ表示トグル
@@ -29,10 +28,6 @@ class PlayerSettings {
   // ハーフブロック破壊抑制用
   private var allowBreakingHalfBlocks = false
 
-  val toggleAutoMineStack: TargetedEffect[Any] =
-    UnfocusedEffect {
-      this.autoMineStack = !this.autoMineStack
-    }
   val toggleWorldGuardLogEffect: TargetedEffect[Any] =
     UnfocusedEffect {
       this.shouldDisplayWorldGuardLogs = !this.shouldDisplayWorldGuardLogs

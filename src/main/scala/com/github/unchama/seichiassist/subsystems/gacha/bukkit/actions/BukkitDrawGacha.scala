@@ -7,12 +7,9 @@ import com.github.unchama.seichiassist.subsystems.gacha.application.actions.{
   DrawGacha,
   GrantGachaPrize
 }
-import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity._
-import com.github.unchama.seichiassist.subsystems.gacha.domain.{
-  GlobalGachaPrizeList,
-  GrantState,
-  LotteryOfGachaItems
-}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.{GrantState, LotteryOfGachaItems}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaRarity._
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.GachaPrize
 import com.github.unchama.seichiassist.util.SendMessageEffect.sendMessageToEveryone
 import com.github.unchama.seichiassist.util._
 import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
@@ -22,7 +19,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 class BukkitDrawGacha[F[_]: Sync: OnMinecraftServerThread](
-  gachaPrizesRepository: GlobalGachaPrizeList[F, ItemStack]
+  gachaPrizesRepository: Vector[GachaPrize[ItemStack]]
 )(
   implicit lotteryOfGachaItems: LotteryOfGachaItems[F, ItemStack],
   grantGachaPrize: GrantGachaPrize[F, ItemStack]

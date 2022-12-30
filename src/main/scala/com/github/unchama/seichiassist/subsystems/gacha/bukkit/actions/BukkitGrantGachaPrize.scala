@@ -5,28 +5,25 @@ import cats.data.Kleisli
 import cats.effect.Sync
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.domain.gachaprize.GachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.domain.{
-  CanBeSignedAsGachaPrize,
-  GrantState
-}
-import com.github.unchama.seichiassist.util.{BreakUtil, InventoryOperations}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.GrantState
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.GachaPrize
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.CanBeSignedAsGachaPrize
+import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
+import com.github.unchama.seichiassist.util.InventoryOperations
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 class BukkitGrantGachaPrize[F[_]: Sync: OnMinecraftServerThread](
-  implicit canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
+  implicit canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack],
+  mineStackAPI: MineStackAPI[F, Player, ItemStack]
 ) extends GrantGachaPrize[F, ItemStack] {
 
   override def tryInsertIntoMineStack(
     prize: GachaPrize[ItemStack]
   ): Kleisli[F, Player, Boolean] =
     Kleisli { player =>
-      Sync[F].delay {
-        val signedItemStack =
-          prize.materializeWithOwnerSignature(player.getName)
-        BreakUtil.tryAddItemIntoMineStack(player, signedItemStack)
-      }
+      val itemStack = prize.itemStack
+      mineStackAPI.mineStackRepository.tryIntoMineStack(player, itemStack, itemStack.getAmount)
     }
 
   import cats.implicits._
