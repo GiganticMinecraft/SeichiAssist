@@ -41,11 +41,6 @@ sbtタブからSeichiAssist -> SeichiAssist -> sbt tasks -> assemblyを実行す
 Linux環境では、`./prepare-docker.sh`、Windowsでは`prepare-docker.bat`を実行することで
 デバッグ用のBungeecord + Spigot環境を構築することができます。
 
-初回起動時にはSpigotのビルドに時間がかかります。
-さらに、[Minecraft EULA](https://account.mojang.com/documents/minecraft_eula) に同意する必要があるため実行が中断されます。
-EULAに同意しデバッグを続行する場合、`./docker/spigot/serverfiles/eula.txt`を参照し、
-`eula=false` を `eula=true` に書き換えてください。
-
 サーバーやDB等を停止する場合、 `docker-compose down` を実行してください。
 
 なお、SeichiAssistがJava 8以外でコンパイルされた場合は、実行時にエラーとなります。必ずJDKのバージョンを揃えるようにしてください。
