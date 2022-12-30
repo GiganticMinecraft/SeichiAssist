@@ -12,18 +12,21 @@ volumes:
 
 services:
   spigota:
-    build:
-      context: .
-      dockerfile: ./docker/spigot/Dockerfile
-    image: spigot
+    image: itzg/minecraft-server:java8-multiarch
     networks:
       - seichi
     volumes:
-      - spigot_a:/spigot/
+      - spigot_a:/data
+      - ./localDependencies:/plugins
     ports:
       - "25566:25565"
       - "7091:7091"
     environment:
+      - VERSION=1.12.2
+      - EULA=TRUE
+      - TYPE=SPIGOT
+      - LEVEL=WORLD_SW
+      - ENABLE_JMX=true
       - JMX_PORT=7091
       - JMX_BINDING=0.0.0.0
       - JMX_HOST=localhost
@@ -38,18 +41,20 @@ services:
       - redis
     stdin_open: true
   spigotb:
-    build:
-      context: .
-      dockerfile: ./docker/spigot/Dockerfile
-    image: spigot
+    image: itzg/minecraft-server:java8-multiarch
     networks:
       - seichi
     volumes:
-      - spigot_b:/spigot/
+      - spigot_b:/data
     ports:
       - "25567:25565"
       - "7092:7091"
     environment:
+      - VERSION=1.12.2
+      - EULA=TRUE
+      - TYPE=SPIGOT
+      - LEVEL=WORLD_SW
+      - ENABLE_JMX=true
       - JMX_PORT=7091
       - JMX_BINDING=0.0.0.0
       - JMX_HOST=localhost
@@ -63,12 +68,12 @@ services:
       - db
       - redis
     stdin_open: true
-  bungeecord_1:
-    build:
-      context: .
-      dockerfile: ./docker/bungeecord/Dockerfile
+  bungeecord:
+    image: itzg/bungeecord:java8
     ports:
       - "25565:25577"
+    volumes:
+      - ./docker/bungeecord/serverfiles:/config
     networks:
       - seichi
     environment:
@@ -79,23 +84,6 @@ services:
       - spigota
       - spigotb
     stdin_open: true
-  bungeecord_2:
-    build:
-      context: .
-      dockerfile: ./docker/bungeecord/Dockerfile
-    ports:
-      - "25564:25577"
-    networks:
-      - seichi
-    environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - SERVER_ID=bungeecord_2
-    depends_on:
-      - spigota
-      - spigotb
-    stdin_open: true
-
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:4.8.5
     environment:

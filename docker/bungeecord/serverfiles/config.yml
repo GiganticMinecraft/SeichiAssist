@@ -1,3 +1,7 @@
+server_connect_timeout: 5000
+enforce_secure_profile: false
+remote_ping_cache: -1
+forge_support: false
 player_limit: -1
 ip_forward: true
 permissions:
@@ -10,6 +14,7 @@ permissions:
   - bungeecord.command.ip
   - bungeecord.command.reload
 timeout: 30000
+log_commands: false
 online_mode: false
 servers:
   s1:
@@ -28,16 +33,24 @@ listeners:
   forced_hosts:
     pvp.md-5.net: pvp
   ping_passthrough: false
-  default_server: s1
   bind_local_address: true
-  fallback_server: s1
   host: 0.0.0.0:25577
   max_players: 1
   tab_size: 60
   force_default_server: false
+  proxy_protocol: false
+  priorities:
+  - s1
+  - s1
+remote_ping_timeout: 5000
 disabled_commands:
+- disabledcommandhere
 network_compression_threshold: 256
+prevent_proxy_connections: false
 groups:
   md_5:
   - admin
 connection_throttle: 4000
+stats: 656ad427-f26a-42a5-ae62-2bf5a4d07241
+connection_throttle_limit: 3
+log_pings: true
