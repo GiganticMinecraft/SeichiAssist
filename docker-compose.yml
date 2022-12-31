@@ -15,11 +15,17 @@ services:
     build:
       context: .
       dockerfile: ./docker/spigot/Dockerfile
+      args:
+        - SERVER_NUM=1
+        - SERVER_ID=s1
+        - DB_HOST=db
+        - DB_PASSWORD=unchamaisgod
+        - REDIS_HOST=redis
+        - REDIS_PORT=6379
     networks:
       - seichi
     volumes:
       - spigot_a:/data
-      - ./localDependencies:/plugins
     ports:
       - "25566:25565"
       - "7091:7091"
@@ -32,12 +38,6 @@ services:
       - JMX_PORT=7091
       - JMX_BINDING=0.0.0.0
       - JMX_HOST=localhost
-      - SERVER_NUM=1
-      - SERVER_ID=s1
-      - DB_HOST=db
-      - DB_PASSWORD=unchamaisgod
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
     depends_on:
       - db
       - redis
@@ -46,11 +46,17 @@ services:
     build:
       context: .
       dockerfile: ./docker/spigot/Dockerfile
+      args:
+        - SERVER_NUM=2
+        - SERVER_ID=s2
+        - DB_HOST=db
+        - DB_PASSWORD=unchamaisgod
+        - REDIS_HOST=redis
+        - REDIS_PORT=6379
     networks:
       - seichi
     volumes:
       - spigot_b:/data
-      - ./localDependencies:/plugins
     ports:
       - "25567:25565"
       - "7092:7091"
@@ -63,12 +69,6 @@ services:
       - JMX_PORT=7091
       - JMX_BINDING=0.0.0.0
       - JMX_HOST=localhost
-      - SERVER_NUM=2
-      - SERVER_ID=s2
-      - DB_HOST=db
-      - DB_PASSWORD=unchamaisgod
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
     depends_on:
       - db
       - redis
