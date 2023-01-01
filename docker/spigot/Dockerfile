@@ -1,4 +1,7 @@
-FROM itzg/minecraft-server:java8-multiarch
+FROM ghcr.io/giganticminecraft/chunk-search-rs:sha-598517c as chunk-search-provider
+FROM ghcr.io/giganticminecraft/seichiassist-runner:ba2aa54
+
+FROM itzg/minecraft-server:java8-multiarch as minecraft-server
 
 ARG SERVER_NUM
 ARG SERVER_ID
@@ -13,9 +16,7 @@ RUN curl -LJO https://github.com/mikefarah/yq/releases/latest/download/yq_linux_
 RUN mv yq_linux_amd64 /usr/local/bin/yq
 RUN chmod a+x /usr/local/bin/yq
 
-#FROM ghcr.io/giganticminecraft/chunk-search-rs:ea37d2d as chunk-search-provider
-#
-#COPY --from=chunk-search-provider /build/chunk-search-rs /usr/local/bin/chunk-search-rs
+COPY --from=chunk-search-provider /build/chunk-search-rs /usr/bin/chunk-search-rs
 
 COPY ./localDependencies/ /data/plugins/
 COPY ./target/build/ /data/
@@ -41,3 +42,5 @@ ARG config_update_expr="\
 RUN jar xf /data/plugins/SeichiAssist.jar config.yml && mv config.yml /data/plugins/SeichiAssist/config.yml
 
 RUN yq e "${config_update_expr}" /data/plugins/SeichiAssist/config.yml > /data/plugins/SeichiAssist/tmpfile ; mv /data/plugins/SeichiAssist/tmpfile /data/plugins/SeichiAssist/config.yml
+
+ENTRYPOINT [ "/start" ]
