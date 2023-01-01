@@ -10,25 +10,31 @@ ARG DB_PASSWORD
 ARG REDIS_HOST
 ARG REDOS_PORT
 
+# Javaとyqをインストール
 RUN apt install openjdk-8-jdk -y
 
 RUN curl -LJO https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
 RUN mv yq_linux_amd64 /usr/local/bin/yq
 RUN chmod a+x /usr/local/bin/yq
 
+# chunk-search-rsをインストール
 COPY --from=chunk-search-provider /build/chunk-search-rs /usr/bin/chunk-search-rs
 
+# プラグインをローカルからコピーする
 COPY ./localDependencies/ /data/plugins/
 COPY ./target/build/ /data/
-COPY ./docker/spigot/ /data/
 
-RUN rm -f /data/plugins/SeichiAssist* || true
 
-RUN mkdir -p /data/plugins/SeichiAssist
-RUN cd /data/plugins
+WORKDIR /data/plugins/
 
-RUN mv /data/SeichiAssist.jar /data/plugins/SeichiAssist.jar
+# 既存のSeichiAssistの設定ファイルを削除
+RUN rm -f SeichiAssist* || true
+RUN mkdir -p SeichiAssist
 
+# ビルドされたSeichiAssistをコンテナにコピーする
+RUN mv ../SeichiAssist.jar SeichiAssist.jar
+
+# SeichiAssistのconfigを環境変数を利用して上書きする
 ARG config_update_expr="\
       .servernum = \"${SERVER_NUM}\" |\
       .server-id = \"${SERVER_ID}\" |\
@@ -39,8 +45,11 @@ ARG config_update_expr="\
       .RedisBungee.redis-host = \"${REDIS_HOST}\" |\
       .RedisBungee.redis-port = \"${REDIS_PORT}\""
 
-RUN jar xf /data/plugins/SeichiAssist.jar config.yml && mv config.yml /data/plugins/SeichiAssist/config.yml
+RUN jar xf SeichiAssist.jar config.yml && mv config.yml SeichiAssist/config.yml
 
-RUN yq e "${config_update_expr}" /data/plugins/SeichiAssist/config.yml > /data/plugins/SeichiAssist/tmpfile ; mv /data/plugins/SeichiAssist/tmpfile /data/plugins/SeichiAssist/config.yml
+WORKDIR /data/plugins/SeichiAssist/
 
-ENTRYPOINT [ "/start" ]
+RUN yq e "${config_update_expr}" config.yml > tmpfile ; mv tmpfile config.yml
+
+# ワールドデータなどが読み書きできず、エラーになるので/data/以下の所有者をrootにする
+RUN chown root -R /data/
