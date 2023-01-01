@@ -33,7 +33,7 @@ services:
       - VERSION=1.12.2
       - EULA=TRUE
       - TYPE=SPIGOT
-      - LEVEL=WORLD_SW
+      - ONLINE_MODE=FALSE
       - ENABLE_JMX=true
       - JMX_PORT=7091
       - JMX_BINDING=0.0.0.0
@@ -64,7 +64,7 @@ services:
       - VERSION=1.12.2
       - EULA=TRUE
       - TYPE=SPIGOT
-      - LEVEL=WORLD_SW
+      - ONLINE_MODE=FALSE
       - ENABLE_JMX=true
       - JMX_PORT=7091
       - JMX_BINDING=0.0.0.0
