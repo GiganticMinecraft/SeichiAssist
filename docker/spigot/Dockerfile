@@ -3,13 +3,6 @@ FROM ghcr.io/giganticminecraft/seichiassist-runner:ba2aa54
 
 FROM itzg/minecraft-server:java8-multiarch
 
-ARG SERVER_NUM
-ARG SERVER_ID
-ARG DB_HOST
-ARG DB_PASSWORD
-ARG REDIS_HOST
-ARG REDIS_PORT
-
 # Javaとyqをインストール
 RUN apt install openjdk-8-jdk -y && \
 curl -LJO https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 && \
