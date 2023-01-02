@@ -8,10 +8,7 @@ build_image() {
   ## ソースコードからSeichiAssist.jarをビルド
   ./sbt assembly
 
-  ## 実際にサーバーに送る用のeula.txtを生成する
-  cp -n docker/spigot/eula.txt docker/spigot/serverfiles/eula.txt || true
-
-  ## dockerイメージのビルド（初回は数十分かかります）
+  ## dockerイメージのビルド
   docker-compose build -m 2g
 }
 
