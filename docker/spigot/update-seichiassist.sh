@@ -30,4 +30,5 @@ yq e "$config_update_expr" config.yml > tmpfile ; mv tmpfile config.yml
 # 初期状態ではワールドデータなどが読み書きできず、エラーになるので/data/以下の所有者をrootにする
 chown root -R /data/
 
+# itzg/docker-minecraft-serverを起動する
 /start
