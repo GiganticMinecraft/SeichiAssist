@@ -9,6 +9,10 @@ CREATE TABLE IF NOT EXISTS donate_usage_history(
     PRIMARY KEY(id, uuid)
 );
 
+-- donatedataテーブルの中に2016年に挿入されたplayeruuidがNULLという意味を持たないデータが存在しており、
+-- donate_usage_historyのuuidに対してかける制約(NOT NULL)が成り立たなくなるので削除する
+DELETE FROM donatedata WHERE playeruuid IS NULL;
+
 INSERT INTO donate_usage_history(
     uuid,
     effect_name,
