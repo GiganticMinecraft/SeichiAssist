@@ -86,7 +86,9 @@ private[minestack] case class MineStackButtons(player: Player)(
             setDisplayName {
               val name = mineStackObject
                 .uiName
-                .fold(if (hasDisplayName) getDisplayName else getType.toString)(_)
+                .fold(if (hasDisplayName) getDisplayName else getType.toString)(itemName =>
+                  itemName
+                )
 
               s"$YELLOW$UNDERLINE$BOLD$name"
             }
