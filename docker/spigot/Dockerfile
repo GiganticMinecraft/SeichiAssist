@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.4
 FROM ghcr.io/giganticminecraft/chunk-search-rs:sha-598517c as chunk-search-provider
 FROM ghcr.io/giganticminecraft/seichiassist-runner:ba2aa54
 
@@ -10,12 +11,12 @@ mv yq_linux_amd64 /usr/local/bin/yq && \
 chmod a+x /usr/local/bin/yq
 
 # chunk-search-rsをインストール
-COPY --from=chunk-search-provider /build/chunk-search-rs /usr/bin/chunk-search-rs
+COPY --link --from=chunk-search-provider /build/chunk-search-rs /usr/bin/chunk-search-rs
 
 # プラグインとスクリプトをローカルからコピーする
-COPY ./localDependencies/ /data/plugins/
-COPY ./target/build/ /SeichiAssist/
-COPY ./docker/spigot/ /data/
+COPY --link ./localDependencies/ /data/plugins/
+COPY --link ./target/build/ /SeichiAssist/
+COPY --link ./docker/spigot/ /data/
 
 RUN chmod a+x /data/update-seichiassist.sh
 ENTRYPOINT ["/data/update-seichiassist.sh"]
