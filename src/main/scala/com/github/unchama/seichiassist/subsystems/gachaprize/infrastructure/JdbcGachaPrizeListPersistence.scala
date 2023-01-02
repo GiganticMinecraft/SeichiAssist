@@ -33,7 +33,7 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack](
                   itemStack,
                   GachaProbability(probability),
                   probability < 0.1,
-                  GachaPrizeId(rs.int("gacha_prize_id")),
+                  GachaPrizeId(rs.int("id")),
                   rs.stringOpt("event_name").map(GachaEventName)
                 )
               }
