@@ -4,6 +4,7 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
   CanBeSignedAsGachaPrize,
   GachaProbability
 }
+import com.github.unchama.generic.Cloneable
 
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.GachaEventName
 
@@ -14,7 +15,7 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.G
  * @param gachaEventName ガチャイベントで排出されるアイテムの場合は設定してください。
  *                       `None`の場合は通常排出アイテムとして扱います。
  */
-case class GachaPrize[ItemStack](
+case class GachaPrize[ItemStack: Cloneable](
   itemStack: ItemStack,
   probability: GachaProbability,
   signOwner: Boolean,
@@ -26,7 +27,7 @@ case class GachaPrize[ItemStack](
     ownerName: String
   )(implicit sign: CanBeSignedAsGachaPrize[ItemStack]): ItemStack = {
     if (signOwner) sign.signWith(ownerName)(this)
-    else this.itemStack
+    else Cloneable[ItemStack].clone(itemStack)
   }
 
 }
