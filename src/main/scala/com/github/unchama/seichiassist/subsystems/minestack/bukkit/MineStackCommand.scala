@@ -41,12 +41,12 @@ object MineStackCommand {
           IO {
             SequentialEffect(
               DeferredEffect {
-                IO(mineStackAPI.toggleAutoMineStack)
+                IO(mineStackAPI.setAutoMineStack(autoMineStack))
               },
               if (autoMineStack)
-                MessageEffect("mineStack自動収集をonにしました。")
+                MessageEffect("MineStack自動収集をONにしました。")
               else
-                MessageEffect("mineStack自動収集をoffにしました。")
+                MessageEffect("MineStack自動収集をOFFにしました。")
             )
           }
         }

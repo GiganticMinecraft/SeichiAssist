@@ -127,15 +127,23 @@ object System {
               )
             }
 
+            override def setAutoMineStack(
+              isItemCollectedAutomatically: Boolean
+            ): Kleisli[F, Player, Unit] = Kleisli { player =>
+              for {
+                _ <- ContextCoercion {
+                  if (isItemCollectedAutomatically)
+                    mineStackSettingRepository(player).turnOnAutoCollect
+                  else mineStackSettingRepository(player).turnOffAutoCollect
+                }
+              } yield ()
+            }
+
             override def toggleAutoMineStack: Kleisli[F, Player, Unit] =
               Kleisli { player =>
                 for {
                   currentState <- autoMineStack(player)
-                  _ <- ContextCoercion {
-                    if (currentState)
-                      mineStackSettingRepository(player).turnOffAutoCollect
-                    else mineStackSettingRepository(player).turnOnAutoCollect
-                  }
+                  _ <- setAutoMineStack(!currentState).apply(player)
                 } yield ()
               }
 
