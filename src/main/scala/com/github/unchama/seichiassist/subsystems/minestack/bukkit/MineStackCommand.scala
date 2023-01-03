@@ -24,8 +24,8 @@ object MineStackCommand {
   ): TabExecutor =
     BranchedExecutor(
       Map(
-        "on" -> ChildExecutors.setAutoCollectionExecutor(autoMineStack = true),
-        "off" -> ChildExecutors.setAutoCollectionExecutor(autoMineStack = false),
+        "on" -> ChildExecutors.setAutoCollectionExecutor(isItemCollectedAutomatically = true),
+        "off" -> ChildExecutors.setAutoCollectionExecutor(isItemCollectedAutomatically = false),
         "open" -> ChildExecutors.openCategorizedMineStackMenu,
         "store-all" -> ChildExecutors.storeEverythingInInventory
       )
@@ -34,16 +34,16 @@ object MineStackCommand {
   object ChildExecutors {
 
     def setAutoCollectionExecutor(
-      autoMineStack: Boolean
+      isItemCollectedAutomatically: Boolean
     )(implicit mineStackAPI: MineStackAPI[IO, Player, ItemStack]): ContextualExecutor =
       playerCommandBuilder
         .execution { _ =>
           IO {
             SequentialEffect(
               DeferredEffect {
-                IO(mineStackAPI.setAutoMineStack(autoMineStack))
+                IO(mineStackAPI.setAutoMineStack(isItemCollectedAutomatically))
               },
-              if (autoMineStack)
+              if (isItemCollectedAutomatically)
                 MessageEffect("MineStack自動収集をONにしました。")
               else
                 MessageEffect("MineStack自動収集をOFFにしました。")
