@@ -16,7 +16,7 @@ trait MineStackWriteAPI[F[_], Player, ItemStack] {
 
   /**
    * @param isItemCollectedAutomatically 自動収集を行うかどうか
-   * @return 自動収集のステータスを指定されたものに更新する作用
+   * @return 自動収集のステータスを`isItemCollectedAutomatically`に更新する作用
    */
   def setAutoMineStack(isItemCollectedAutomatically: Boolean): Kleisli[F, Player, Unit]
 
