@@ -50,7 +50,7 @@ object System {
       override val commands: Map[String, TabExecutor] =
         Map(
           "home" -> new HomeCommand().executor,
-          "sethome" -> new HomeCommand().setLocationExecutor().asNonBlockingTabExecutor()
+          "sethome" -> new HomeCommand().setHomeExecutor().asNonBlockingTabExecutor()
         )
 
       override val listeners: Seq[Listener] = Seq(new RespawnLocationOverwriter[F])

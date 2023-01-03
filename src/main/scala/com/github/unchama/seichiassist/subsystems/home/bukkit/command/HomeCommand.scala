@@ -72,7 +72,7 @@ class HomeCommand[F[
   def executor: TabExecutor = BranchedExecutor(
     Map(
       "warp" -> warpExecutor,
-      "set" -> setLocationExecutor(),
+      "set" -> setHomeExecutor(),
       "name" -> nameExecutor(),
       "remove" -> removeExecutor(),
       "list" -> listExecutor()
@@ -167,7 +167,7 @@ class HomeCommand[F[
       }
       .build()
 
-  def setLocationExecutor(): ContextualExecutor =
+  def setHomeExecutor(): ContextualExecutor =
     argsAndSenderConfiguredBuilder
       .execution { context =>
         val homeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
