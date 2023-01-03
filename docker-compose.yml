@@ -41,6 +41,7 @@ services:
       - db
       - redis
     tty: true
+    stdin_open: true
   spigotb:
     build:
       context: .
@@ -71,6 +72,7 @@ services:
       - db
       - redis
     tty: true
+    stdin_open: true
   bungeecord:
     image: itzg/bungeecord:java8
     ports:
