@@ -6,6 +6,7 @@ import cats.effect.{ConcurrentEffect, Effect, IO, SyncEffect}
 import com.github.unchama.chatinterceptor.CancellationReason.Overridden
 import com.github.unchama.chatinterceptor.ChatInterceptionScope
 import com.github.unchama.concurrent.NonServerThreadContextShift
+import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.generic.ContextCoercion
@@ -166,7 +167,7 @@ class HomeCommand[F[
       }
       .build()
 
-  private def setExecutor() =
+  def setExecutor(): ContextualExecutor =
     argsAndSenderConfiguredBuilder
       .execution { context =>
         val homeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
