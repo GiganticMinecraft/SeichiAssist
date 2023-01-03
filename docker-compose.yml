@@ -40,7 +40,7 @@ services:
     depends_on:
       - db
       - redis
-    tty: true
+    stdin_open: true
   spigotb:
     build:
       context: .
@@ -70,7 +70,7 @@ services:
     depends_on:
       - db
       - redis
-    tty: true
+    stdin_open: true
   bungeecord:
     image: itzg/bungeecord:java8
     ports:
