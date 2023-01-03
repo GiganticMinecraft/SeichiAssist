@@ -2,8 +2,8 @@ call rd /s /q target\build
 
 call sbt assembly || goto :onerror
 
-call docker-compose down
-call docker-compose up --build
+call docker compose down
+call docker compose up --build
 
 exit /b
 

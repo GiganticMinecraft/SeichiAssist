@@ -37,11 +37,11 @@ sbtタブからSeichiAssist -> SeichiAssist -> sbt tasks -> assemblyを実行す
 
 ## デバッグ用docker環境
 
-`docker`、`docker-compose`及び`sbt`が実行可能であるとします。
+`docker`及び`sbt`が実行可能であるとします。
 Linux環境では、`./prepare-docker.sh`、Windowsでは`prepare-docker.bat`を実行することで
 デバッグ用のBungeecord + Spigot環境を構築することができます。
 
-サーバーやDB等を停止する場合、 `docker-compose down` を実行してください。
+サーバーやDB等を停止する場合、 `docker compose down` を実行してください。
 
 なお、SeichiAssistがJava 8以外でコンパイルされた場合は、実行時にエラーとなります。必ずJDKのバージョンを揃えるようにしてください。
 
@@ -70,7 +70,7 @@ $ rm -rf target/build # 再ビルドしたいなら既存のターゲットは�
 $ docker run --rm -it -v `pwd`:/app ghcr.io/giganticminecraft/seichiassist-builder:1a64049 sh -c "cd /app && sbt assembly"
 $ sudo chown -R `whoami` target/build # docker上でsbtを実行するとrootになってしまうため権限を変える
 $ cp -n docker/spigot/eula.txt docker/spigot/serverfiles/eula.txt || true
-$ docker-compose up --build -d
+$ docker compose up --build -d
 ```
 
 ## protocolディレクトリ以下のクローン

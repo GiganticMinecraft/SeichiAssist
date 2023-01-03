@@ -80,6 +80,10 @@ commands:
     description: Home operation command.
     permission: seichiassist.home
     permission-message: *denied
+  sethome:
+    description: Set HomePoint command.
+    permission: seichiassist.home
+    permission-message: *denied
   gtfever:
     description: GiganticFever start command.
     permission: seichiassist.gtfever
