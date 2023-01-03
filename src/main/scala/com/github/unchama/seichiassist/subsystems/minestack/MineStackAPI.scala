@@ -15,6 +15,12 @@ trait MineStackWriteAPI[F[_], Player, ItemStack] {
   def addUsageHistory(mineStackObject: MineStackObject[ItemStack]): Kleisli[F, Player, Unit]
 
   /**
+   * @param isItemCollectedAutomatically 自動収集を行うかどうか
+   * @return 自動収集のステータスを`isItemCollectedAutomatically`に更新する作用
+   */
+  def setAutoMineStack(isItemCollectedAutomatically: Boolean): Kleisli[F, Player, Unit]
+
+  /**
    * @return 自動収集のステータスをトグルする作用
    */
   def toggleAutoMineStack: Kleisli[F, Player, Unit]
