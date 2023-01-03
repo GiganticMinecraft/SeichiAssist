@@ -99,7 +99,7 @@ class HomeCommand[F[
                 ManagedWorld.fromName(worldName).map(_.japaneseName).getOrElse(worldName)
               f"${YELLOW}ID ${homeId.value}%2d $displayWorldName(${toBlockPos(x)}, ${toBlockPos(
                   y
-                )}, ${toBlockPos(z)}): ${displayHomeName}"
+                )}, ${toBlockPos(z)}): $displayHomeName"
           }
           MessageEffect(messages)
         }
