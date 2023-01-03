@@ -77,7 +77,7 @@ class HomeCommand[F[
       "list" -> listExecutor()
     ),
     whenArgInsufficient = Some(printDescriptionExecutor),
-    whenBranchNotFound = Some(printDescriptionExecutor)
+    whenBranchNotFound = Some(warpExecutor)
   ).asNonBlockingTabExecutor()
 
   private def listExecutor() = {
