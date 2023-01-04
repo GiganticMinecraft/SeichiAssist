@@ -8,6 +8,6 @@ trait BroadcastMinecraftMessage[F[_]] {
 
 object BroadcastMinecraftMessage {
 
-  def apply[F[_]](implicit ev: BroadcastMinecraftMessage[F]): BroadcastMinecraftMessage[F] = ev
+  def apply[F[_]](using ev: BroadcastMinecraftMessage[F]): BroadcastMinecraftMessage[F] = ev
 
 }

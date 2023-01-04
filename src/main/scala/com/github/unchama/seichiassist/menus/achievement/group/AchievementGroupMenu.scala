@@ -88,7 +88,7 @@ case class AchievementGroupMenu(group: AchievementGroup, pageNumber: Int = 1) ex
   private val maxPageNumber = Math.ceil(groupAchievementsCount / 27.0).toInt
 
   override def open(
-    implicit environment: AchievementGroupMenu.Environment,
+    using environment: AchievementGroupMenu.Environment,
     ctx: LayoutPreparationContext,
     onMainThread: OnMinecraftServerThread[IO]
   ): TargetedEffect[Player] = {
@@ -104,7 +104,7 @@ case class AchievementGroupMenu(group: AchievementGroup, pageNumber: Int = 1) ex
 
   override def computeMenuLayout(
     player: Player
-  )(implicit environment: AchievementGroupMenu.Environment): IO[MenuSlotLayout] = {
+  )(using environment: AchievementGroupMenu.Environment): IO[MenuSlotLayout] = {
     import cats.implicits._
     import environment._
     import eu.timepit.refined.auto._

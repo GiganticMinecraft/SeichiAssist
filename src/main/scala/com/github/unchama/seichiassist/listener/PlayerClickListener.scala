@@ -27,7 +27,7 @@ import org.bukkit.material.{MaterialData, Openable}
 import org.bukkit.{GameMode, Material, Sound}
 
 class PlayerClickListener(
-  implicit effectEnvironment: EffectEnvironment,
+  using effectEnvironment: EffectEnvironment,
   manaApi: ManaApi[IO, SyncIO, Player],
   ioCanOpenStickMenu: IO CanOpen FirstPage.type,
   ioOnMainThread: OnMinecraftServerThread[IO]

@@ -68,7 +68,7 @@ object AchievementCommand {
   )
 
   def executor[F[_]: ConcurrentEffect](
-    implicit service: AchievementBookingService[F]
+    using service: AchievementBookingService[F]
   ): TabExecutor = ContextualExecutorBuilder
     .beginConfiguration()
     .argumentsParsers(

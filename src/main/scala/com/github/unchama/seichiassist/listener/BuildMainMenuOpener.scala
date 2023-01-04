@@ -12,7 +12,7 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.EquipmentSlot
 
 class BuildMainMenuOpener(
-  implicit effectEnvironment: EffectEnvironment,
+  using effectEnvironment: EffectEnvironment,
   ioCanOpenBuildMainMenu: IO CanOpen BuildMainMenu.type
 ) extends Listener {
 

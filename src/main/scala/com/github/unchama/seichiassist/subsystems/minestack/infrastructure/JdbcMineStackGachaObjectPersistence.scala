@@ -8,14 +8,14 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.persistence.M
 import scalikejdbc._
 
 class JdbcMineStackGachaObjectPersistence[F[_]: Sync, ItemStack, Player](
-  implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player]
+  using gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player]
 ) extends MineStackGachaObjectPersistence[F, ItemStack] {
   import cats.implicits._
 
   override def getAllMineStackGachaObjects: F[Vector[MineStackGachaObject[ItemStack]]] = for {
     allGachaPrizeList <- gachaPrizeAPI.allGachaPrizeList
     mineStackGachaObjects <- Sync[F].delay {
-      DB.readOnly { implicit session =>
+      DB.readOnly { using session =>
         sql"SELECT id, mine_stack_object_name FROM mine_stack_gacha_objects"
           .map { rs =>
             val id = rs.int("id")

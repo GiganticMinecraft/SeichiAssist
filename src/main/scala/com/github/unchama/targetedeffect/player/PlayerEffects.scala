@@ -13,7 +13,7 @@ object PlayerEffects {
 
   def openInventoryEffect(
     inventory: => Inventory
-  )(implicit onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] =
+  )(using onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] =
     Kleisli { player =>
       // インベントリを開く操作はサーバースレッドでなければならない(Spigot 1.12.2)
       onMainThread
@@ -25,7 +25,7 @@ object PlayerEffects {
 
   def connectToServerEffect(
     serverIdentifier: String
-  )(implicit onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] =
+  )(using onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] =
     Kleisli { player =>
       // BungeeCordのサーバ移動はサーバスレッドでなければならない(Spigot 1.12.2)
       onMainThread.runAction(SyncIO {

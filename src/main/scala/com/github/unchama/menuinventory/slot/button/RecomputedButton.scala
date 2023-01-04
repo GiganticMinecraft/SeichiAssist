@@ -12,7 +12,7 @@ object RecomputedButton {
    * クリックされるたびに[buttonComputation]に基づいてスロット自体が更新される[Button]を作成する.
    */
   def apply(buttonComputation: IO[Button])(
-    implicit ctx: LayoutPreparationContext,
+    using ctx: LayoutPreparationContext,
     onMainThread: OnMinecraftServerThread[IO]
   ): IO[Button] =
     buttonComputation.map { computedButton =>

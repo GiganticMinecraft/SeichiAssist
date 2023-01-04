@@ -39,7 +39,7 @@ import org.bukkit.inventory.ItemFlag
 import org.bukkit.{Material, Sound}
 
 private case class ButtonComputations(player: Player)(
-  implicit ioOnMainThread: OnMinecraftServerThread[IO]
+  using ioOnMainThread: OnMinecraftServerThread[IO]
 ) {
 
   import BuildMainMenu._
@@ -76,7 +76,7 @@ private case class ButtonComputations(player: Player)(
   }
 
   def computeButtonToShowStateOfFlying(
-    implicit flyApi: ManagedFlyApi[SyncIO, Player]
+    using flyApi: ManagedFlyApi[SyncIO, Player]
   ): IO[Button] = {
     for {
       flyStatus <- flyApi.playerFlyDurations(player).read.toIO
@@ -163,7 +163,7 @@ private case class ButtonComputations(player: Player)(
   )
 
   def computeButtonToOpenRangedPlaceSkillMenu(
-    implicit canOpenBlockPlacementSkillMenu: CanOpen[IO, BlockPlacementSkillMenu.type]
+    using canOpenBlockPlacementSkillMenu: CanOpen[IO, BlockPlacementSkillMenu.type]
   ): IO[Button] =
     BuildAssist.instance.buildAmountDataRepository(player).read.toIO.flatMap { amountData =>
       IO {
@@ -277,7 +277,7 @@ private case class ButtonComputations(player: Player)(
   }
 
   def computeButtonToOpenMenuToCraftItemsWhereMineStack(
-    implicit canOpenMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu]
+    using canOpenMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu]
   ): IO[Button] = IO {
     val iconItemStackBuilder = new IconItemStackBuilder(Material.WORKBENCH)
       .title(s"$YELLOW${EMPHASIZE}MineStackブロック一括クラフト画面へ")
@@ -407,7 +407,7 @@ object BuildMainMenu extends Menu {
 
   override def computeMenuLayout(
     player: Player
-  )(implicit environment: Environment): IO[MenuSlotLayout] = {
+  )(using environment: Environment): IO[MenuSlotLayout] = {
     import ConstantButtons._
     import environment._
 

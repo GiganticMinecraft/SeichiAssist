@@ -10,12 +10,12 @@ import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID
 
-class JdbcSeichiAmountDataPersistence[F[_]](implicit F: Sync[F])
+class JdbcSeichiAmountDataPersistence[F[_]](using F: Sync[F])
     extends SeichiAmountDataPersistence[F] {
 
   override def read(key: UUID): F[Option[SeichiAmountData]] =
     F.delay {
-      DB.localTx { implicit session =>
+      DB.localTx { using session =>
         sql"select totalbreaknum from playerdata where uuid = ${key.toString}"
           .map { rs =>
             SeichiAmountData(
@@ -29,7 +29,7 @@ class JdbcSeichiAmountDataPersistence[F[_]](implicit F: Sync[F])
 
   override def write(key: UUID, value: SeichiAmountData): F[Unit] =
     F.delay {
-      DB.localTx { implicit session =>
+      DB.localTx { using session =>
         sql"update playerdata set totalbreaknum = ${value.expAmount.amount} where uuid = ${key.toString}"
           .update()
           .apply()

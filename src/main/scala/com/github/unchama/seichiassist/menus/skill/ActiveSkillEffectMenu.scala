@@ -51,7 +51,7 @@ object ActiveSkillEffectMenu extends Menu {
 
   def unlockOrSet(
     effect: ActiveSkillEffect
-  )(implicit donateAPI: DonatePremiumPointAPI[IO]): TargetedEffect[Player] = Kleisli { player =>
+  )(using donateAPI: DonatePremiumPointAPI[IO]): TargetedEffect[Player] = Kleisli { player =>
     val playerData = SeichiAssist.playermap(player.getUniqueId)
 
     def unlockNormalEffect(effect: ActiveSkillNormalEffect): IO[Unit] =
@@ -123,7 +123,7 @@ object ActiveSkillEffectMenu extends Menu {
     }
   }
 
-  private case class ButtonComputations(player: Player)(implicit environment: Environment) {
+  private case class ButtonComputations(player: Player)(using environment: Environment) {
 
     import environment._
     import player._
@@ -198,7 +198,7 @@ object ActiveSkillEffectMenu extends Menu {
   }
 
   private object ConstantButtons {
-    def resetEffectButton(implicit environment: Environment): Button = {
+    def resetEffectButton(using environment: Environment): Button = {
       import environment._
       ReloadingButton(ActiveSkillEffectMenu) {
         Button(
@@ -215,7 +215,7 @@ object ActiveSkillEffectMenu extends Menu {
     }
 
     def effectPurchaseHistoryMenuButton(
-      implicit ioCanOpenPremiumPointMenu: IO CanOpen PremiumPointTransactionHistoryMenu
+      using ioCanOpenPremiumPointMenu: IO CanOpen PremiumPointTransactionHistoryMenu
     ): Button =
       Button(
         new IconItemStackBuilder(Material.BOOKSHELF)
@@ -229,7 +229,7 @@ object ActiveSkillEffectMenu extends Menu {
       )
 
     def goBackToSkillMenuButton(
-      implicit ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type
+      using ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type
     ): Button =
       CommonButtons.transferButton(
         new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
@@ -244,7 +244,7 @@ object ActiveSkillEffectMenu extends Menu {
    */
   override def computeMenuLayout(
     player: Player
-  )(implicit environment: Environment): IO[MenuSlotLayout] = {
+  )(using environment: Environment): IO[MenuSlotLayout] = {
     val c = ButtonComputations(player)
 
     import ConstantButtons._

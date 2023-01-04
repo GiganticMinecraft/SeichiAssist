@@ -28,7 +28,7 @@ object IncrementBuildExpWhenBuiltByHand {
   import cats.implicits._
 
   def apply[F[_], Player](
-    implicit ev: IncrementBuildExpWhenBuiltByHand[F, Player]
+    using ev: IncrementBuildExpWhenBuiltByHand[F, Player]
   ): IncrementBuildExpWhenBuiltByHand[F, Player] = ev
 
   def using[F[_]: ClassifyPlayerWorld[*[_], Player], G[_]: Effect: ContextCoercion[
@@ -39,7 +39,7 @@ object IncrementBuildExpWhenBuiltByHand {
     dataRepository: KeyedDataRepository[Player, Ref[F, BuildAmountData]],
     dataTopic: Fs3Topic[G, (Player, BuildAmountData)]
   )(
-    implicit multiplier: BuildExpMultiplier,
+    using multiplier: BuildExpMultiplier,
     sync: Sync[F]
   ): IncrementBuildExpWhenBuiltByHand[F, Player] =
     (player: Player, by: BuildExpAmount) => {

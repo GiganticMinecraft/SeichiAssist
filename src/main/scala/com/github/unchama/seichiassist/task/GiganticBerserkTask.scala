@@ -19,7 +19,7 @@ class GiganticBerserkTask {
     _
   ]: ConcurrentEffect: NonServerThreadContextShift: DiscordNotificationAPI](
     p: Player
-  )(implicit manaApi: ManaApi[IO, SyncIO, Player]): Unit = {
+  )(using manaApi: ManaApi[IO, SyncIO, Player]): Unit = {
     val player = p
     val uuid = p.getUniqueId
     val playerdata = SeichiAssist.playermap(uuid)

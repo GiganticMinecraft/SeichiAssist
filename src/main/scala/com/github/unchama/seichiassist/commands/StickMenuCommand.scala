@@ -16,21 +16,21 @@ import org.bukkit.command.TabExecutor
  */
 object StickMenuCommand {
   def executorA(
-    implicit ioCanOpenStickMenuFirstPage: IO CanOpen FirstPage.type
+    using ioCanOpenStickMenuFirstPage: IO CanOpen FirstPage.type
   ): ContextualExecutor =
     playerCommandBuilder
       .execution { _ => IO.pure(ioCanOpenStickMenuFirstPage.open(StickMenu.firstPage)) }
       .build()
 
   def executorB(
-    implicit ioCanOpenBuildMainMenu: IO CanOpen BuildMainMenu.type
+    using ioCanOpenBuildMainMenu: IO CanOpen BuildMainMenu.type
   ): ContextualExecutor =
     playerCommandBuilder
       .execution { _ => IO.pure(ioCanOpenBuildMainMenu.open(BuildMainMenu)) }
       .build()
 
   def executor(
-    implicit ioCanOpenStickMenuFirstPage: IO CanOpen FirstPage.type,
+    using ioCanOpenStickMenuFirstPage: IO CanOpen FirstPage.type,
     ioCanOpenBuildMainMenu: IO CanOpen BuildMainMenu.type
   ): TabExecutor =
     BranchedExecutor(

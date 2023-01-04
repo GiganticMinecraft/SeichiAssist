@@ -20,7 +20,7 @@ import scala.util.control.Breaks
 class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[
   _
 ]: IncrementBuildExpWhenBuiltWithSkill[*[_], Player]: SyncEffect](
-  implicit mineStackAPI: MineStackAPI[G, Player, ItemStack]
+  using mineStackAPI: MineStackAPI[G, Player, ItemStack]
 ) extends Listener {
 
   // 範囲設置スキルの発動を担うハンドラメソッド

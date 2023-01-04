@@ -10,7 +10,7 @@ import org.bukkit.command.TabExecutor
  */
 object EnderChestCommand {
   def executor[F[_]: Effect](
-    implicit enderChestAccessApi: AnywhereEnderChestAPI[F]
+    using enderChestAccessApi: AnywhereEnderChestAPI[F]
   ): TabExecutor =
     playerCommandBuilder
       .argumentsParsers(List())

@@ -19,7 +19,7 @@ object RepeatingRoutine {
     getInterval: F[FiniteDuration],
     action: F[U]
   ): F[Nothing] = {
-    Slf4jLogger.create.flatMap[Nothing] { implicit logger =>
+    Slf4jLogger.create.flatMap[Nothing] { using logger =>
       foreverMRecovering[F, U, Nothing](action)(getInterval)
     }
   }
@@ -65,7 +65,7 @@ object RepeatingRoutine {
   )(action: State => F[Option[State]])(getInterval: F[FiniteDuration]): F[Unit] = {
     Slf4jLogger
       .create
-      .flatMap(implicit logger => whileDefinedMRecovering(init)(action)(getInterval))
+      .flatMap(using logger => whileDefinedMRecovering(init)(action)(getInterval))
   }
 
   /**

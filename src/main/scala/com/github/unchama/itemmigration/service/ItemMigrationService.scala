@@ -11,12 +11,12 @@ import com.github.unchama.itemmigration.domain.{
 case class ItemMigrationService[F[_], -T <: ItemMigrationTarget[F]](
   persistence: ItemMigrationVersionRepository[F, T],
   logger: ItemMigrationLogger[F, T]
-)(implicit F: Bracket[F, Throwable]) {
+)(using F: Bracket[F, Throwable]) {
 
   def runMigration(migrations: ItemMigrations)(target: T): F[Unit] = {
     import cats.implicits._
 
-    persistence.lockVersionPersistence(target).use { implicit lock =>
+    persistence.lockVersionPersistence(target).use { using lock =>
       for {
         appliedVersions <- persistence.getVersionsAppliedTo(target)(lock)
         migrationsToApply = migrations.yetToBeApplied(appliedVersions)
@@ -46,7 +46,7 @@ object ItemMigrationService {
     def apply[T <: ItemMigrationTarget[F]](
       persistence: ItemMigrationVersionRepository[F, T],
       logger: ItemMigrationLogger[F, T]
-    )(implicit F: Bracket[F, Throwable]): ItemMigrationService[F, T] = {
+    )(using F: Bracket[F, Throwable]): ItemMigrationService[F, T] = {
       ItemMigrationService[F, T](persistence, logger)
     }
   }

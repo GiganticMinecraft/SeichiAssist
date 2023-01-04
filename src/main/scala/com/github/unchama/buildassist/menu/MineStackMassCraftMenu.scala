@@ -68,7 +68,7 @@ object MineStackMassCraftMenu {
      *   このボタンが表示される一括クラフト画面のページ番号
      */
     def computeButton(player: Player, requiredMassCraftLevel: Int, menuPageNumber: Int)(
-      implicit environment: Environment
+      using environment: Environment
     ): IO[Button] = {
       import cats.implicits._
 
@@ -203,7 +203,7 @@ object MineStackMassCraftMenu {
     requiredBuildLevel: Int
   ) {
     def toLayout(player: Player, beginIndex: Int, pageNumber: Int)(
-      implicit environment: Environment
+      using environment: Environment
     ): IO[List[(Int, Slot)]] = {
       import cats.implicits._
 
@@ -610,7 +610,7 @@ case class MineStackMassCraftMenu(pageNumber: Int = 1) extends Menu {
 
   override def computeMenuLayout(
     player: Player
-  )(implicit environment: Environment): IO[MenuSlotLayout] = {
+  )(using environment: Environment): IO[MenuSlotLayout] = {
     import environment._
 
     def buttonToTransferTo(

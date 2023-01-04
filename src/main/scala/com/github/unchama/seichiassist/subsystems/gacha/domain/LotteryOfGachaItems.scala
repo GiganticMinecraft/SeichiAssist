@@ -15,7 +15,7 @@ import com.github.unchama.generic.Cloneable
 import scala.annotation.tailrec
 
 class LotteryOfGachaItems[F[_]: Sync, ItemStack: Cloneable](
-  implicit staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack]
+  using staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack]
 ) {
 
   import cats.implicits._

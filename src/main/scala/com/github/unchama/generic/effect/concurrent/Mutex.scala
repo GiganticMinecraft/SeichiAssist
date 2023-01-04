@@ -9,7 +9,7 @@ final class Mutex[
   ReadContext[_]: ContextCoercion[*[_], MutexContext],
   A
 ] private (mVar: MVar2[MutexContext, A], previous: Ref[ReadContext, A])(
-  implicit fBracket: Bracket[MutexContext, Throwable]
+  using fBracket: Bracket[MutexContext, Throwable]
 ) {
 
   import ContextCoercion._

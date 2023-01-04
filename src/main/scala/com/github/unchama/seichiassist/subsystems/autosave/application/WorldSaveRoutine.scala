@@ -7,7 +7,7 @@ import org.bukkit.ChatColor.AQUA
 
 object WorldSaveRoutine {
   def apply[F[_]: Sync: CanSaveWorlds: CanNotifySaves: Timer]()(
-    implicit configuration: SystemConfiguration
+    using configuration: SystemConfiguration
   ): F[Nothing] = {
     import cats.implicits._
 

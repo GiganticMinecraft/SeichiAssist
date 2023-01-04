@@ -52,7 +52,7 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
   )
 
   private def mineStackMainMenuButtonSection(
-    implicit ioCanOpenMineStackMainMenu: IO CanOpen MineStackMainMenu.type
+    using ioCanOpenMineStackMainMenu: IO CanOpen MineStackMainMenu.type
   ): Seq[(Int, Button)] =
     Seq(
       ChestSlotRef(5, 0) -> CommonButtons.transferButton(
@@ -64,7 +64,7 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
 
   // ページ操作等のボタンを含むレイアウトセクション
   def uiOperationSection(totalNumberOfPages: Int)(category: MineStackObjectCategory, page: Int)(
-    implicit environment: Environment
+    using environment: Environment
   ): Seq[(Int, Button)] = {
     import environment._
 
@@ -89,7 +89,7 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
   }
 
   override def open(
-    implicit environment: CategorizedMineStackMenu.Environment,
+    using environment: CategorizedMineStackMenu.Environment,
     ctx: LayoutPreparationContext,
     onMainThread: OnMinecraftServerThread[IO]
   ): TargetedEffect[Player] = DeferredEffect {
@@ -114,7 +114,7 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
 
   override def computeMenuLayout(
     player: Player
-  )(implicit environment: Environment): IO[MenuSlotLayout] = {
+  )(using environment: Environment): IO[MenuSlotLayout] = {
     import cats.implicits._
     import environment._
 

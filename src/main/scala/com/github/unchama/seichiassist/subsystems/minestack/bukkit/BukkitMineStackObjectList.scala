@@ -18,7 +18,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 class BukkitMineStackObjectList[F[_]: Sync](
-  implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
+  using gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
   mineStackGachaObjectPersistence: MineStackGachaObjectPersistence[F, ItemStack],
   minecraftMaterial: MinecraftMaterial[Material, ItemStack]
 ) extends MineStackObjectList[F, ItemStack, Player] {

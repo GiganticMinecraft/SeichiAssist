@@ -116,7 +116,7 @@ object AsymmetricTryableDeferred {
   }
 
   final private class ConcurrentAsymmetricDeferred[F[_], A](ref: AtomicReference[State[A]])(
-    implicit F: Concurrent[F]
+    using F: Concurrent[F]
   ) extends AsymmetricTryableDeferred[F, A] {
     def get: F[A] =
       F.suspend {

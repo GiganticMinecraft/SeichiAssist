@@ -11,7 +11,7 @@ object ExternalServices {
 
   def getChunkCoordinates[F[_]: Sync](
     chunkSearchCommand: String
-  )(world: World)(implicit logger: Logger): F[Seq[(Int, Int)]] = {
+  )(world: World)(using logger: Logger): F[Seq[(Int, Int)]] = {
     import cats.implicits._
 
     // 普通、この検索にはかなりの時間がかかるので要した時間をログに表示する

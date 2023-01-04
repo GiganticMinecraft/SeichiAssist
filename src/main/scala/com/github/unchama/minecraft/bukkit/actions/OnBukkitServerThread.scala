@@ -8,7 +8,7 @@ import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 
 class OnBukkitServerThread[F[_]](
-  implicit hostPlugin: JavaPlugin,
+  using hostPlugin: JavaPlugin,
   shift: ContextShift[F],
   F: ConcurrentEffect[F]
 ) extends OnMinecraftServerThread[F] {

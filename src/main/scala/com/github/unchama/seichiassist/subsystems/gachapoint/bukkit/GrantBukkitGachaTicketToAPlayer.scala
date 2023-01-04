@@ -14,7 +14,7 @@ import org.bukkit.Sound
 import org.bukkit.entity.Player
 
 case class GrantBukkitGachaTicketToAPlayer[F[_]: LiftIO](player: Player)(
-  implicit ioOnMainThread: OnMinecraftServerThread[IO]
+  using ioOnMainThread: OnMinecraftServerThread[IO]
 ) extends GrantGachaTicketToAPlayer[F] {
 
   override def give(count: Int): F[Unit] = {

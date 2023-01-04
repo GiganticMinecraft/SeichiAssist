@@ -26,7 +26,7 @@ case class Button(override val itemStack: ItemStack, private val effects: List[B
     extends Slot {
   override def effectOn(
     event: InventoryClickEvent
-  )(implicit cs: ContextShift[IO]): TargetedEffect[Player] = {
+  )(using cs: ContextShift[IO]): TargetedEffect[Player] = {
 
     import com.github.unchama.generic.syntax._
 

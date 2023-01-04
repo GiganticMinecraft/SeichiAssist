@@ -34,7 +34,7 @@ object Home {
     *[_],
     F
   ], Player](player: Player)(
-    implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player],
+    using breakCountReadAPI: BreakCountReadAPI[F, G, Player],
     buildCountReadAPI: BuildCountAPI[F, G, Player]
   ): F[Int] = {
     for {

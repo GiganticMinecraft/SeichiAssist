@@ -11,7 +11,7 @@ import org.bukkit.ChatColor._
 import scala.concurrent.duration.FiniteDuration
 
 object PlayerDataBackupRoutine {
-  def apply()(implicit context: RepeatingTaskContext): IO[Nothing] = {
+  def apply()(using context: RepeatingTaskContext): IO[Nothing] = {
     val getRepeatInterval: IO[FiniteDuration] = IO {
       import scala.concurrent.duration._
 

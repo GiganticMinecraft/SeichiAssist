@@ -69,7 +69,7 @@ object UnfocusedEffect {
 }
 
 object DelayEffect {
-  def apply(duration: FiniteDuration)(implicit timer: Timer[IO]): TargetedEffect[Any] =
+  def apply(duration: FiniteDuration)(using timer: Timer[IO]): TargetedEffect[Any] =
     Kleisli.liftF(IO.sleep(duration))
 }
 

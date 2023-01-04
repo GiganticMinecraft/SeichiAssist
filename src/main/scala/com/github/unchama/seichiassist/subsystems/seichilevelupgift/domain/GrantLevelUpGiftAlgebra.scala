@@ -34,7 +34,7 @@ trait GrantLevelUpGiftAlgebra[F[_], Player] {
 object GrantLevelUpGiftAlgebra {
 
   def apply[F[_], Player](
-    implicit ev: GrantLevelUpGiftAlgebra[F, Player]
+    using ev: GrantLevelUpGiftAlgebra[F, Player]
   ): GrantLevelUpGiftAlgebra[F, Player] = implicitly
 
 }

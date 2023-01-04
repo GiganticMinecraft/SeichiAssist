@@ -15,7 +15,7 @@ object RefillToCap {
 
   def using[F[_]: Functor, G[_]: Monad: ContextCoercion[*[_], F], Player](
     repository: KeyedDataRepository[Player, Ref[G, LevelCappedManaAmount]]
-  )(implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player]): fs2.Stream[F, Unit] = {
+  )(using breakCountReadAPI: BreakCountReadAPI[F, G, Player]): fs2.Stream[F, Unit] = {
     breakCountReadAPI.seichiStarLevelUpdates.evalMap {
       case (player, Diff(_, _)) =>
         ContextCoercion {

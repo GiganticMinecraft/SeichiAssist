@@ -82,7 +82,7 @@ object AsymmetricSignallingRef {
   private final class AsymmetricSignallingRefImpl[G[_], F[_], A](
     state: Ref[G, TimeStamped[A]],
     changeTopic: Fs3Topic[F, TimeStamped[A]]
-  )(implicit G: Sync[G], F: ConcurrentEffect[F], GToF: ContextCoercion[G, F])
+  )(using G: Sync[G], F: ConcurrentEffect[F], GToF: ContextCoercion[G, F])
       extends AsymmetricSignallingRef[G, F, A] {
 
     private val topicQueueSize = 10

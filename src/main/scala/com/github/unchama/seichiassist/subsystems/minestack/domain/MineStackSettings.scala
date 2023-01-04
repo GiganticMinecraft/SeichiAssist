@@ -6,7 +6,7 @@ import com.github.unchama.minecraft.algebra.HasUuid
 import com.github.unchama.seichiassist.subsystems.minestack.domain.persistence.PlayerSettingPersistence
 
 class MineStackSettings[F[_]: Sync, Player: HasUuid](player: Player)(
-  implicit playerSettingPersistence: PlayerSettingPersistence[F]
+  using playerSettingPersistence: PlayerSettingPersistence[F]
 ) {
 
   import cats.implicits._

@@ -8,7 +8,7 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.Seichi
 
 class ObtainChatPermission[F[_], G[_]: Monad, Player](
   rateLimiterRepository: KeyedDataRepository[Player, RateLimiter[G, ChatCount]]
-)(implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player]) {
+)(using breakCountReadAPI: BreakCountReadAPI[F, G, Player]) {
   import cats.implicits._
 
   def forPlayer(player: Player): G[ChatPermissionRequestResult] =

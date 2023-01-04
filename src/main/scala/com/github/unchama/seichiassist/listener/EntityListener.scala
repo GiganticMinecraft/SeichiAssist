@@ -20,7 +20,7 @@ import org.bukkit.event.entity._
 import org.bukkit.event.{EventHandler, Listener}
 
 class EntityListener(
-  implicit effectEnvironment: EffectEnvironment,
+  using effectEnvironment: EffectEnvironment,
   ioOnMainThread: OnMinecraftServerThread[IO],
   manaApi: ManaApi[IO, SyncIO, Player],
   globalNotification: DiscordNotificationAPI[IO]

@@ -73,7 +73,7 @@ object ActiveSkillMenu extends Menu {
 
   private def totalActiveSkillPoint(
     player: Player
-  )(implicit environment: Environment): IO[Int] =
+  )(using environment: Environment): IO[Int] =
     environment
       .breakCountApi
       .seichiAmountDataRepository(player)
@@ -84,7 +84,7 @@ object ActiveSkillMenu extends Menu {
       }
       .toIO
 
-  private class ButtonComputations(player: Player)(implicit environment: Environment) {
+  private class ButtonComputations(player: Player)(using environment: Environment) {
 
     import environment._
     import player._
@@ -136,7 +136,7 @@ object ActiveSkillMenu extends Menu {
 
     def computeSkillButtonFor(
       skill: SeichiSkill
-    )(implicit environment: Environment): IO[Button] = {
+    )(using environment: Environment): IO[Button] = {
       for {
         ref <- skillStateRef(player)
         state <- ref.get
@@ -287,7 +287,7 @@ object ActiveSkillMenu extends Menu {
     ]: ConcurrentEffect: NonServerThreadContextShift: DiscordNotificationAPI](
       state: SkillSelectionState,
       skill: SeichiSkill
-    )(implicit environment: Environment): Button = {
+    )(using environment: Environment): Button = {
       import environment._
 
       val itemStack = {
@@ -465,7 +465,7 @@ object ActiveSkillMenu extends Menu {
 
   private object ConstantButtons {
     def skillEffectMenuButton(
-      implicit ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type
+      using ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type
     ): Button = {
       Button(
         new IconItemStackBuilder(Material.BOOKSHELF)
@@ -479,7 +479,7 @@ object ActiveSkillMenu extends Menu {
       )
     }
 
-    def resetSkillsButton(implicit environment: Environment): Button = {
+    def resetSkillsButton(using environment: Environment): Button = {
       import environment._
 
       ReloadingButton(ActiveSkillMenu) {
@@ -505,7 +505,7 @@ object ActiveSkillMenu extends Menu {
 
   override def computeMenuLayout(
     player: Player
-  )(implicit environment: Environment): IO[MenuSlotLayout] = {
+  )(using environment: Environment): IO[MenuSlotLayout] = {
     import cats.implicits._
     import environment._
     import eu.timepit.refined.auto._

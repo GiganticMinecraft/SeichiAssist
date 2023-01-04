@@ -12,7 +12,7 @@ trait ClassifyPlayerWorld[F[_], Player] {
 object ClassifyPlayerWorld {
 
   def apply[F[_], Player](
-    implicit ev: ClassifyPlayerWorld[F, Player]
+    using ev: ClassifyPlayerWorld[F, Player]
   ): ClassifyPlayerWorld[F, Player] = ev
 
 }

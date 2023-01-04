@@ -24,7 +24,7 @@ class FixedWindowRateLimiterSpec
 
   override def newRandomRateLimiter(
     seed: Int
-  )(implicit monixTimer: Timer[Task]): Task[RateLimiter[Task, Natural]] = {
+  )(using monixTimer: Timer[Task]): Task[RateLimiter[Task, Natural]] = {
     val random = new Random(seed)
     val maxPermit = refineV[NonNegative].unsafeFrom(random.nextInt(1000))
     val sleepTime = random.nextInt(60000).millis

@@ -20,7 +20,7 @@ object MebiusSpeechRoutineFiberRepositoryDefinitions {
 
   // TODO PeriodicMebiusSpeechRoutineはbukkitに依存しているため、抽象化層をもう一層置くべき
   def initialization[G[_]: Sync](
-    implicit serviceRepository: KeyedDataRepository[Player, MebiusSpeechService[SyncIO]],
+    using serviceRepository: KeyedDataRepository[Player, MebiusSpeechService[SyncIO]],
     repeatingTaskContext: RepeatingTaskContext,
     onMainThread: OnMinecraftServerThread[IO],
     ioConcurrent: ConcurrentEffect[IO]

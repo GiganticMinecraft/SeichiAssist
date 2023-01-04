@@ -13,7 +13,7 @@ class JdbcBuildRankingRecordPersistence[F[_]: Sync]
     extends RankingRecordPersistence[F, BuildAmountData] {
 
   override def getAllRankingRecords: F[Vector[RankingRecord[BuildAmountData]]] = Sync[F].delay {
-    DB.readOnly { implicit session =>
+    DB.readOnly { using session =>
       sql"SELECT name,build_count from playerdata"
         .map { rs =>
           RankingRecord(

@@ -33,7 +33,7 @@ object System {
   import cats.implicits._
 
   def wired[F[_]: ConcurrentEffect: ContextShift, G[_]: SyncEffect: ContextCoercion[*[_], F]](
-    implicit effectEnvironment: EffectEnvironment,
+    using effectEnvironment: EffectEnvironment,
     logger: Logger
   ): G[System[F]] = for {
     migrations <- Sync[G].delay {

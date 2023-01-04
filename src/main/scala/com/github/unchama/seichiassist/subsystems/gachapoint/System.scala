@@ -38,7 +38,7 @@ object System {
     _
   ]: SyncEffect: ContextCoercion[*[_], F]](
     breakCountReadAPI: BreakCountReadAPI[F, G, Player]
-  )(implicit ioOnMainThread: OnMinecraftServerThread[IO]): G[System[F, G, Player]] = {
+  )(using ioOnMainThread: OnMinecraftServerThread[IO]): G[System[F, G, Player]] = {
     import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 
     val gachaPointPersistence = new JdbcGachaPointPersistence[G]

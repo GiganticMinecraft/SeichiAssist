@@ -11,7 +11,7 @@ import org.bukkit.entity.Player
  */
 object FourDimensionalPocketCommand {
   def executor[F[_]: ConcurrentEffect](
-    implicit api: FourDimensionalPocketApi[F, Player]
+    using api: FourDimensionalPocketApi[F, Player]
   ): TabExecutor = {
     playerCommandBuilder
       .executionF(context => api.openPocketInventory(context.sender))

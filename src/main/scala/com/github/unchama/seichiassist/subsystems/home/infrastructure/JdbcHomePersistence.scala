@@ -20,7 +20,7 @@ class JdbcHomePersistence[F[_]: Sync: NonServerThreadContextShift] extends HomeP
 
   override def upsert(ownerUuid: UUID, id: HomeId)(home: Home): F[Unit] =
     NonServerThreadContextShift[F].shift >> Sync[F].delay[Unit] {
-      DB.localTx { implicit session =>
+      DB.localTx { using session =>
         val HomeLocation(worldName, x, y, z, pitch, yaw) = home.location
 
         // NOTE 2021/05/19: 何故かDB上のIDは1少ない。つまり、ID 1のホームはDB上ではid=0である。
@@ -42,7 +42,7 @@ class JdbcHomePersistence[F[_]: Sync: NonServerThreadContextShift] extends HomeP
 
   override def list(ownerUuid: UUID): F[Map[HomeId, Home]] =
     NonServerThreadContextShift[F].shift >> Sync[F].delay {
-      DB.readOnly { implicit session =>
+      DB.readOnly { using session =>
         // NOTE 2021/05/19: 何故かDB上のIDは1少ない。つまり、ID 1のホームはDB上ではid=0である。
         sql"""SELECT id, name, location_x, location_y, location_z, world_name, pitch, yaw
              |  FROM seichiassist.home
@@ -73,7 +73,7 @@ class JdbcHomePersistence[F[_]: Sync: NonServerThreadContextShift] extends HomeP
 
   override def remove(ownerUuid: UUID, id: HomeId): F[Boolean] = {
     NonServerThreadContextShift[F].shift >> Sync[F].delay {
-      DB.localTx { implicit session =>
+      DB.localTx { using session =>
         // NOTE 2022/04/16: 何故かDB上のIDは1少ない。つまり、ID 1のホームはDB上ではid=0である。
         sql"""delete from seichiassist.home 
              |  where server_id = $serverId 

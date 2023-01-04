@@ -22,7 +22,7 @@ class MillisecondTimer private () {
     startTime = System.nanoTime()
   }
 
-  def sendLapTimeMessageWithLogger(message: String)(implicit logger: Logger): Unit = {
+  def sendLapTimeMessageWithLogger(message: String)(using logger: Logger): Unit = {
     val recordedNanoSecondDuration = System.nanoTime() - startTime
 
     logger.info(s"$message(time: ${recordedNanoSecondDuration / 1000000L} ms)")
@@ -40,7 +40,7 @@ object MillisecondTimer {
 
   import cats.implicits._
 
-  def timeF[F[_]: Sync, R](program: F[R])(message: String)(implicit logger: Logger): F[R] =
+  def timeF[F[_]: Sync, R](program: F[R])(message: String)(using logger: Logger): F[R] =
     for {
       timer <- Sync[F].delay {
         getInitializedTimerInstance

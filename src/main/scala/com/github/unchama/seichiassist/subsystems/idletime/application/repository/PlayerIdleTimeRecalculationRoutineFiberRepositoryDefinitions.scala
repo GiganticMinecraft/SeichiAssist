@@ -18,7 +18,7 @@ object PlayerIdleTimeRecalculationRoutineFiberRepositoryDefinitions {
   def initialization[F[_]: Sync, Player](
     playerIdleTimeRecalculationRoutine: Player => PlayerIdleTimeRecalculationRoutine[Player]
   )(
-    implicit repeatingTaskContext: RepeatingTaskContext,
+    using repeatingTaskContext: RepeatingTaskContext,
     onMainThread: OnMinecraftServerThread[IO],
     concurrentEffect: ConcurrentEffect[IO]
   ): TwoPhasedRepositoryInitialization[F, Player, RepositoryValue[IO]] =

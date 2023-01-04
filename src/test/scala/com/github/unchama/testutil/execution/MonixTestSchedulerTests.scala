@@ -9,7 +9,7 @@ import scala.concurrent.duration.{Duration, FiniteDuration}
 trait MonixTestSchedulerTests extends ScalaFutures {
 
   def awaitForProgram[U](program: Task[U], tickDuration: FiniteDuration = Duration.Zero)(
-    implicit testScheduler: TestScheduler
+    using testScheduler: TestScheduler
   ): U = {
     val future = program.runToFuture
 

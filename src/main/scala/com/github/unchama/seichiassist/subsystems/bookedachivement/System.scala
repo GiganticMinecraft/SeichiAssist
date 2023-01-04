@@ -16,7 +16,7 @@ import java.util.UUID
 
 object System {
   def wired[F[_]: ConcurrentEffect: NonServerThreadContextShift, G[_]](
-    implicit effectEnvironment: EffectEnvironment
+    using effectEnvironment: EffectEnvironment
   ): Subsystem[G] = {
 
     implicit val repository: BookedAchievementPersistenceRepository[F, UUID] =

@@ -16,7 +16,7 @@ trait BuildAssistMenuRouter[F[_]] {
 
 object BuildAssistMenuRouter {
   def apply(
-    implicit flyApi: ManagedFlyApi[SyncIO, Player],
+    using flyApi: ManagedFlyApi[SyncIO, Player],
     mineStackAPI: MineStackAPI[IO, Player, ItemStack],
     layoutPreparationContext: LayoutPreparationContext,
     onMainThread: OnMinecraftServerThread[IO]

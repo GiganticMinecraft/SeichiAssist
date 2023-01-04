@@ -24,7 +24,7 @@ trait RepositoryFinalization[F[_], Player, R] { self =>
    */
   def withIntermediateEffects[S](beforePersisting: S => F[R])(
     beforeFinalization: S => F[R]
-  )(implicit F: FlatMap[F]): RepositoryFinalization[F, Player, S] =
+  )(using F: FlatMap[F]): RepositoryFinalization[F, Player, S] =
     new RepositoryFinalization[F, Player, S] {
       override val persistPair: (Player, S) => F[Unit] =
         (p, s) => beforePersisting(s).flatMap(r => self.persistPair(p, r))
@@ -47,7 +47,7 @@ trait RepositoryFinalization[F[_], Player, R] { self =>
     }
 
   def withIntermediateEffect[S](sFr: S => F[R])(
-    implicit F: FlatMap[F]
+    using F: FlatMap[F]
   ): RepositoryFinalization[F, Player, S] =
     withIntermediateEffects(sFr)(sFr)
 

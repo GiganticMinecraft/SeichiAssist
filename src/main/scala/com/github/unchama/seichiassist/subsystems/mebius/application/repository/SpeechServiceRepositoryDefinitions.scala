@@ -14,7 +14,7 @@ object SpeechServiceRepositoryDefinitions {
   import cats.implicits._
 
   def initialization[F[_]: Monad, Player](
-    implicit getFreshBlockageState: F[MebiusSpeechBlockageState[F]],
+    using getFreshBlockageState: F[MebiusSpeechBlockageState[F]],
     gatewayProvider: Player => MebiusSpeechGateway[F]
   ): TwoPhasedRepositoryInitialization[F, Player, MebiusSpeechService[F]] =
     TwoPhasedRepositoryInitialization.withoutPrefetching[F, Player, MebiusSpeechService[F]] {

@@ -23,7 +23,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.{Material, Sound}
 
 private[minestack] case class MineStackButtons(player: Player)(
-  implicit mineStackAPI: MineStackAPI[IO, Player, ItemStack],
+  using mineStackAPI: MineStackAPI[IO, Player, ItemStack],
   gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player]
 ) {
 
@@ -45,7 +45,7 @@ private[minestack] case class MineStackButtons(player: Player)(
 
   def getMineStackObjectButtonOf(
     mineStackObject: MineStackObject[ItemStack]
-  )(implicit onMainThread: OnMinecraftServerThread[IO]): IO[Button] = RecomputedButton {
+  )(using onMainThread: OnMinecraftServerThread[IO]): IO[Button] = RecomputedButton {
     val mineStackObjectGroup: MineStackObjectGroup[ItemStack] = Left(mineStackObject)
 
     for {
@@ -119,7 +119,7 @@ private[minestack] case class MineStackButtons(player: Player)(
     mineStackObjectGroup: MineStackObjectGroup[ItemStack],
     oldPage: Int
   )(
-    implicit onMainThread: OnMinecraftServerThread[IO],
+    using onMainThread: OnMinecraftServerThread[IO],
     canOpenCategorizedMineStackMenu: IO CanOpen MineStackSelectItemColorMenu
   ): IO[Button] = RecomputedButton {
     for {
@@ -136,7 +136,7 @@ private[minestack] case class MineStackButtons(player: Player)(
   }
 
   private def objectClickEffect(mineStackObject: MineStackObject[ItemStack], amount: Int)(
-    implicit onMainThread: OnMinecraftServerThread[IO]
+    using onMainThread: OnMinecraftServerThread[IO]
   ): Kleisli[IO, Player, Unit] = {
     SequentialEffect(
       withDrawItemEffect(mineStackObject, amount),
@@ -151,7 +151,7 @@ private[minestack] case class MineStackButtons(player: Player)(
     amount: Int,
     oldPage: Int
   )(
-    implicit onMainThread: OnMinecraftServerThread[IO],
+    using onMainThread: OnMinecraftServerThread[IO],
     canOpenMineStackSelectItemColorMenu: IO CanOpen MineStackSelectItemColorMenu
   ): Kleisli[IO, Player, Unit] = {
     mineStackObjectGroup match {
@@ -174,7 +174,7 @@ private[minestack] case class MineStackButtons(player: Player)(
   }
 
   private def withDrawItemEffect(mineStackObject: MineStackObject[ItemStack], amount: Int)(
-    implicit onMainThread: OnMinecraftServerThread[IO]
+    using onMainThread: OnMinecraftServerThread[IO]
   ): TargetedEffect[Player] = {
     for {
       pair <- Kleisli((player: Player) =>
@@ -197,7 +197,7 @@ private[minestack] case class MineStackButtons(player: Player)(
   }
 
   def computeAutoMineStackToggleButton(
-    implicit onMainThread: OnMinecraftServerThread[IO]
+    using onMainThread: OnMinecraftServerThread[IO]
   ): IO[Button] =
     RecomputedButton(for {
       currentAutoMineStackState <- mineStackAPI.autoMineStack(player)

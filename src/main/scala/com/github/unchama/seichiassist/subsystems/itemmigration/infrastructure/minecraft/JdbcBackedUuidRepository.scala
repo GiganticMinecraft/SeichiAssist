@@ -26,7 +26,7 @@ object JdbcBackedUuidRepository {
   def initializeStaticInstance[F[_]: Sync]: F[ApplicativeUuidRepository] = Sync[F].delay {
     import scalikejdbc._
 
-    val databaseEntries = DB.readOnly { implicit session =>
+    val databaseEntries = DB.readOnly { using session =>
       sql"select uuid, name from seichiassist.playerdata"
         .map { rs =>
           // プレーヤー名はcase-insensitive
@@ -45,7 +45,7 @@ object JdbcBackedUuidRepository {
   }
 
   def initializeInstanceIn[F[_]: Sync, G[_]: Applicative](
-    implicit logger: Logger
+    using logger: Logger
   ): F[UuidRepository[G]] = {
     import cats.implicits._
 
@@ -56,6 +56,6 @@ object JdbcBackedUuidRepository {
     }
   }
 
-  def initializeInstance[F[_]: Sync](implicit logger: Logger): F[UuidRepository[F]] =
+  def initializeInstance[F[_]: Sync](using logger: Logger): F[UuidRepository[F]] =
     initializeInstanceIn[F, F]
 }

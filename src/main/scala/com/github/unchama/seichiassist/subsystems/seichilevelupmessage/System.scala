@@ -11,7 +11,7 @@ object System {
 
   def backgroundProcess[F[_]: Async: SendMinecraftMessage[*[_], Player]: ErrorLogger, G[
     _
-  ], Player](implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player]): F[Nothing] = {
+  ], Player](using breakCountReadAPI: BreakCountReadAPI[F, G, Player]): F[Nothing] = {
     StreamExtra.compileToRestartingStream("[SeichiLevelUpMessage]") {
       breakCountReadAPI.seichiLevelUpdates.evalMap {
         case (player, diff) =>

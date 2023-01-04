@@ -8,7 +8,7 @@ import com.github.unchama.itemmigration.domain.{
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.targets.SeichiAssistPersistedItems
 import scalikejdbc._
 
-class PersistedItemsMigrationVersionRepository[F[_]](implicit dbSession: DBSession, F: Sync[F])
+class PersistedItemsMigrationVersionRepository[F[_]](using dbSession: DBSession, F: Sync[F])
     extends ItemMigrationVersionRepository[F, SeichiAssistPersistedItems[F]] {
 
   private type PersistedItems = SeichiAssistPersistedItems[F]

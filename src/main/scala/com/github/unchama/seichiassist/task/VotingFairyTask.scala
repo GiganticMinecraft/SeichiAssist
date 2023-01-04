@@ -15,7 +15,7 @@ import org.bukkit.{Bukkit, Sound}
 object VotingFairyTask {
   // MinuteTaskRunnableから、妖精召喚中のプレイヤーを対象に毎分実行される
   def run(p: Player)(
-    implicit manaApi: ManaApi[IO, SyncIO, Player],
+    using manaApi: ManaApi[IO, SyncIO, Player],
     mineStackAPI: MineStackAPI[IO, Player, ItemStack]
   ): Unit = {
     val playermap = SeichiAssist.playermap

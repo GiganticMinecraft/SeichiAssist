@@ -44,7 +44,7 @@ object PassiveSkillMenu extends Menu {
    */
   override def computeMenuLayout(
     player: Player
-  )(implicit environment: Environment): IO[MenuSlotLayout] = {
+  )(using environment: Environment): IO[MenuSlotLayout] = {
     import cats.implicits._
     import environment._
     import eu.timepit.refined.auto._
@@ -65,7 +65,7 @@ object PassiveSkillMenu extends Menu {
     } yield MenuSlotLayout(constantPart ++ dynamicPart)
   }
 
-  private class ButtonComputations(player: Player)(implicit environment: Environment) {
+  private class ButtonComputations(player: Player)(using environment: Environment) {
 
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
       layoutPreparationContext,

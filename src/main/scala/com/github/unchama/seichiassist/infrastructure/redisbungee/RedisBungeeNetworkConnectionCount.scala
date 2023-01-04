@@ -11,7 +11,7 @@ import redis.protocol.{Bulk, MultiBulk}
 
 class RedisBungeeNetworkConnectionCount[F[_]: Effect: ErrorLogger](
   connectionContextShift: ContextShift[IO]
-)(implicit configuration: RedisBungeeRedisConfiguration, actorSystem: ActorSystem)
+)(using configuration: RedisBungeeRedisConfiguration, actorSystem: ActorSystem)
     extends GetNetworkConnectionCount[F] {
 
   import cats.implicits._

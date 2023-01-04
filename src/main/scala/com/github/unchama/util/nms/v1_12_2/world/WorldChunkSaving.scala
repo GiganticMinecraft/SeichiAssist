@@ -146,7 +146,7 @@ object WorldChunkSaving {
    * This action, when running, relaxes the save-queue throttle. The returned action completes
    * when there are no more chunks to be saved.
    */
-  def relaxFileIOThreadThrottle[F[_]](implicit F: Concurrent[F]): F[Unit] = Sync[F].delay {
+  def relaxFileIOThreadThrottle[F[_]](using F: Concurrent[F]): F[Unit] = Sync[F].delay {
     FileIOThread.relaxThrottle(FileIOThread.instance)()
   }
 
@@ -154,7 +154,7 @@ object WorldChunkSaving {
    * Every world has its internal queue to remove entities or tile-entities. They are normally
    * only cleared when ticking the world, but this method forces to cleanup these queues.
    */
-  def flushEntityRemovalQueue[F[_]](world: org.bukkit.World)(implicit F: Sync[F]): F[Unit] =
+  def flushEntityRemovalQueue[F[_]](world: org.bukkit.World)(using F: Sync[F]): F[Unit] =
     F.delay {
       val nmsWorldServer = CraftWorld.nmsWorld(world)
       val removalQueueAlias = World.entityRemovalQueue(nmsWorldServer)

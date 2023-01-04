@@ -8,12 +8,12 @@ import scalikejdbc._
 import java.util.UUID
 
 class JdbcFlyDurationPersistenceRepository[SyncContext[_]](
-  implicit SyncContext: Sync[SyncContext]
+  using SyncContext: Sync[SyncContext]
 ) extends FlyDurationPersistenceRepository[SyncContext] {
 
   override def write(key: UUID, duration: Option[RemainingFlyDuration]): SyncContext[Unit] =
     SyncContext.delay {
-      DB.localTx { implicit session =>
+      DB.localTx { using session =>
         val serializedDuration = duration match {
           case Some(RemainingFlyDuration.PositiveMinutes(n)) => n
           case Some(RemainingFlyDuration.Infinity)           => -1
@@ -29,7 +29,7 @@ class JdbcFlyDurationPersistenceRepository[SyncContext[_]](
 
   override def read(key: UUID): SyncContext[Option[Option[RemainingFlyDuration]]] =
     SyncContext.delay {
-      DB.localTx { implicit session =>
+      DB.localTx { using session =>
         sql"""
         select remaining_fly_minutes from fly_status_cache
           where player_uuid = ${key.toString}

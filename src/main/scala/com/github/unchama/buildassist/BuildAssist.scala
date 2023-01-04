@@ -22,7 +22,7 @@ import java.util.UUID
 import scala.collection.mutable
 
 class BuildAssist(plugin: Plugin)(
-  implicit flyApi: ManagedFlyApi[SyncIO, Player],
+  using flyApi: ManagedFlyApi[SyncIO, Player],
   buildCountAPI: subsystems.buildcount.BuildCountAPI[IO, SyncIO, Player],
   manaApi: ManaApi[IO, SyncIO, Player],
   mineStackAPI: MineStackAPI[IO, Player, ItemStack],
@@ -86,7 +86,7 @@ object BuildAssist {
   var instance: BuildAssist = _
 
   // 範囲設置ブロックの対象リスト
-  val materiallist: java.util.Set[Material] = util
+  val materiallist: java.util.Set[Material] = java.util
     .EnumSet
     .of(
       Material.STONE // 石
@@ -280,7 +280,7 @@ object BuildAssist {
     )
 
   // 直列設置ブロックの対象リスト
-  val materiallist2: java.util.Set[Material] = util
+  val materiallist2: java.util.Set[Material] = java.util
     .EnumSet
     .of(
       Material.STONE // 石
@@ -424,7 +424,7 @@ object BuildAssist {
     )
 
   // ハーフブロックとして扱うMaterial
-  val material_slab2: java.util.Set[Material] = util
+  val material_slab2: java.util.Set[Material] = java.util
     .EnumSet
     .of(
       Material.STONE_SLAB2 // 赤砂岩
@@ -436,7 +436,7 @@ object BuildAssist {
       Material.STEP // 石
     )
 
-  val material_destruction: java.util.Set[Material] = util
+  val material_destruction: java.util.Set[Material] = java.util
     .EnumSet
     .of(
       Material.LONG_GRASS // 草

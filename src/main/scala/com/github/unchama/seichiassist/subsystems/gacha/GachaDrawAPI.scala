@@ -13,7 +13,7 @@ trait GachaDrawAPI[F[_], Player] {
 
 object GachaDrawAPI {
 
-  def apply[F[_], Player](implicit ev: GachaDrawAPI[F, Player]): GachaDrawAPI[F, Player] =
+  def apply[F[_], Player](using ev: GachaDrawAPI[F, Player]): GachaDrawAPI[F, Player] =
     ev
 
 }

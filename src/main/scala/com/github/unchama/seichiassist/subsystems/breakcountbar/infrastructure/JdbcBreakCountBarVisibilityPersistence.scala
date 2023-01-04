@@ -9,12 +9,12 @@ import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID
 
-class JdbcBreakCountBarVisibilityPersistence[F[_]](implicit F: Sync[F])
+class JdbcBreakCountBarVisibilityPersistence[F[_]](using F: Sync[F])
     extends BreakCountBarVisibilityPersistence[F] {
 
   override def read(key: UUID): F[Option[BreakCountBarVisibility]] =
     F.delay {
-      DB.localTx { implicit session =>
+      DB.localTx { using session =>
         sql"select expvisible from playerdata where uuid = ${key.toString}"
           .map { rs =>
             if (rs.boolean("expvisible")) {
@@ -30,7 +30,7 @@ class JdbcBreakCountBarVisibilityPersistence[F[_]](implicit F: Sync[F])
 
   override def write(key: UUID, value: BreakCountBarVisibility): F[Unit] =
     F.delay {
-      DB.localTx { implicit session =>
+      DB.localTx { using session =>
         sql"update playerdata set expvisible = ${value == BreakCountBarVisibility.Shown} where uuid = ${key.toString}"
           .update()
           .apply()

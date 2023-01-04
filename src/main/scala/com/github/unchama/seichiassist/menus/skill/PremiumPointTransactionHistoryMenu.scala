@@ -37,7 +37,7 @@ case class PremiumPointTransactionHistoryMenu(pageNumber: Int) extends Menu {
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$BLUE${BOLD}プレミアムエフェクト購入履歴")
 
   def buttonToTransferTo(pageNumber: Int, skullOwnerReference: SkullOwnerReference)(
-    implicit ioCanOpenTransactionHistoryMenu: IO CanOpen PremiumPointTransactionHistoryMenu
+    using ioCanOpenTransactionHistoryMenu: IO CanOpen PremiumPointTransactionHistoryMenu
   ): Button =
     CommonButtons.transferButton(
       new SkullItemStackBuilder(skullOwnerReference),
@@ -46,7 +46,7 @@ case class PremiumPointTransactionHistoryMenu(pageNumber: Int) extends Menu {
     )
 
   def computeDynamicParts(player: Player)(
-    implicit environment: PremiumPointTransactionHistoryMenu.Environment
+    using environment: PremiumPointTransactionHistoryMenu.Environment
   ): IO[List[(Int, Button)]] = {
     import environment._
 
@@ -109,7 +109,7 @@ case class PremiumPointTransactionHistoryMenu(pageNumber: Int) extends Menu {
   }
 
   def constantParts(
-    implicit environment: PremiumPointTransactionHistoryMenu.Environment
+    using environment: PremiumPointTransactionHistoryMenu.Environment
   ): Map[Int, Button] = {
     import environment._
 
@@ -124,7 +124,7 @@ case class PremiumPointTransactionHistoryMenu(pageNumber: Int) extends Menu {
   }
 
   override def computeMenuLayout(player: Player)(
-    implicit environment: PremiumPointTransactionHistoryMenu.Environment
+    using environment: PremiumPointTransactionHistoryMenu.Environment
   ): IO[MenuSlotLayout] = {
     for {
       dynamicParts <- computeDynamicParts(player)

@@ -64,7 +64,7 @@ trait TopLevelRouter[F[_]] {
 object TopLevelRouter {
 
   def apply(
-    implicit javaTime: JavaTime[IO],
+    using javaTime: JavaTime[IO],
     layoutPreparationContext: LayoutPreparationContext,
     onMainThread: OnMinecraftServerThread[IO],
     nonServerThreadContextShift: NonServerThreadContextShift[IO],

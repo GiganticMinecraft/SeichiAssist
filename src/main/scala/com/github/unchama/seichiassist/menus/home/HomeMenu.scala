@@ -45,7 +45,7 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
 
   override def computeMenuLayout(
     player: Player
-  )(implicit environment: Environment): IO[MenuSlotLayout] = {
+  )(using environment: Environment): IO[MenuSlotLayout] = {
     import eu.timepit.refined._
     import eu.timepit.refined.auto._
     import eu.timepit.refined.numeric._
@@ -263,7 +263,7 @@ case class HomeChangeConfirmationMenu(changeHomeNumber: Int, homeName: String = 
 
   override def computeMenuLayout(
     player: Player
-  )(implicit environment: Environment): IO[MenuSlotLayout] = {
+  )(using environment: Environment): IO[MenuSlotLayout] = {
     val baseSlotMap =
       Map(ChestSlotRef(1, 2) -> changeButton, ChestSlotRef(1, 6) -> cancelButton)
     val slotMap = baseSlotMap ++ Map(ChestSlotRef(0, 4) -> informationButton)
@@ -282,7 +282,7 @@ case class HomeChangeConfirmationMenu(changeHomeNumber: Int, homeName: String = 
       }
     )
 
-  def cancelButton(implicit environment: Environment): Button =
+  def cancelButton(using environment: Environment): Button =
     Button(
       new IconItemStackBuilder(Material.WOOL, durability = 14).title(s"${RED}変更しない").build(),
       LeftClickButtonEffect {
@@ -315,7 +315,7 @@ case class HomeRemoveConfirmationMenu(removeHomeNumber: Int, homeName: String = 
 
   override def computeMenuLayout(
     player: Player
-  )(implicit environment: Environment): IO[MenuSlotLayout] = {
+  )(using environment: Environment): IO[MenuSlotLayout] = {
     val baseSlotMap =
       Map(ChestSlotRef(1, 2) -> removeButton, ChestSlotRef(1, 6) -> cancelButton)
     val slotMap = baseSlotMap ++ Map(ChestSlotRef(0, 4) -> informationButton)
@@ -334,7 +334,7 @@ case class HomeRemoveConfirmationMenu(removeHomeNumber: Int, homeName: String = 
       }
     )
 
-  def cancelButton(implicit environment: Environment): Button =
+  def cancelButton(using environment: Environment): Button =
     Button(
       new IconItemStackBuilder(Material.WOOL, durability = 14).title(s"${RED}変更しない").build(),
       LeftClickButtonEffect {

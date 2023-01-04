@@ -44,7 +44,7 @@ import scala.util.chaining.scalaUtilChainingOps
 class GachaCommand[
   F[_]: OnMinecraftServerThread: NonServerThreadContextShift: ConcurrentEffect
 ](
-  implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
+  using gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
   canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack],
   gachaTicketAPI: GachaTicketAPI[F],
   mineStackAPI: MineStackAPI[F, Player, ItemStack]

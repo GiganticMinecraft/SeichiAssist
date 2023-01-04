@@ -11,7 +11,7 @@ import org.bukkit.Location
 import org.bukkit.entity.Player
 
 class BukkitPlayerIdleTimeRecalculationRoutine(player: Player)(
-  implicit idleTimeRepository: KeyedDataRepository[Player, PlayerIdleMinuteRepository[SyncIO]],
+  using idleTimeRepository: KeyedDataRepository[Player, PlayerIdleMinuteRepository[SyncIO]],
   locationRepository: KeyedDataRepository[
     Player,
     PlayerLocationRepository[SyncIO, Location, Player]

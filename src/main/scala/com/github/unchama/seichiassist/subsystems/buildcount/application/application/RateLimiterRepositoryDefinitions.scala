@@ -21,7 +21,7 @@ object RateLimiterRepositoryDefinitions {
   import scala.concurrent.duration._
 
   def initialization[G[_]: Sync: JavaTime: Clock](
-    implicit config: Configuration,
+    using config: Configuration,
     persistence: BuildAmountRateLimitPersistence[G]
   ): SinglePhasedRepositoryInitialization[G, RateLimiter[G, BuildExpAmount]] = {
     val max = config.oneMinuteBuildExpLimit
@@ -59,7 +59,7 @@ object RateLimiterRepositoryDefinitions {
   }
 
   def finalization[F[_]: Sync: JavaTime, Player: HasUuid](
-    implicit config: Configuration,
+    using config: Configuration,
     persistence: BuildAmountRateLimitPersistence[F]
   ): RepositoryFinalization[F, Player, RateLimiter[F, BuildExpAmount]] =
     RepositoryFinalization.withoutAnyFinalization {

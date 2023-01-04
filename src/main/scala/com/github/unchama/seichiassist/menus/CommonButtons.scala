@@ -22,7 +22,7 @@ object CommonButtons {
     transferDescription: String,
     target: M,
     actionDescription: String = "クリックで移動"
-  )(implicit canOpenM: CanOpen[IO, M]): Button =
+  )(using canOpenM: CanOpen[IO, M]): Button =
     Button(
       partialBuilder
         .title(navigation(transferDescription))
@@ -33,7 +33,7 @@ object CommonButtons {
       )
     )
 
-  def openStickMenu(implicit canOpenStickMenu: CanOpen[IO, FirstPage.type]): Button = {
+  def openStickMenu(using canOpenStickMenu: CanOpen[IO, FirstPage.type]): Button = {
     transferButton(
       new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
       "木の棒メニューホームへ",

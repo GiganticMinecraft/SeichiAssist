@@ -23,7 +23,7 @@ class BatchedSeichiExpMap[Player] private (private val map: Map[Player, SeichiEx
    * これは整地量集計において厳しすぎる等価性のため、 [[HasUuid]] が提供するUuid情報での等価性によってコレクションをまとめ直す。
    */
   def toUuidCollatedList(
-    implicit playerHasUuid: HasUuid[Player]
+    using playerHasUuid: HasUuid[Player]
   ): List[(Player, SeichiExpAmount)] =
     MapExtra.collapseKeysThrough(playerHasUuid.of)(map).toList
 

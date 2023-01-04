@@ -74,7 +74,7 @@ object AsymmetricTryableFiber {
    * @return
    *   a [[AsymmetricTryableFiber]] which can be used to cancel, join or tryJoin the result
    */
-  def start[F[_], A](fa: F[A])(implicit F: Concurrent[F]): F[AsymmetricTryableFiber[F, A]] = {
+  def start[F[_], A](fa: F[A])(using F: Concurrent[F]): F[AsymmetricTryableFiber[F, A]] = {
     import cats.effect.implicits._
     import cats.implicits._
 
@@ -116,7 +116,7 @@ object AsymmetricTryableFiber {
   /**
    * Creates a trivial value of [[AsymmetricTryableFiber]] which is always complete.
    */
-  def completed[F[_], A](a: A)(implicit F: Monad[F]): AsymmetricTryableFiber[F, A] = {
+  def completed[F[_], A](a: A)(using F: Monad[F]): AsymmetricTryableFiber[F, A] = {
     new AsymmetricTryableFiber[F, A] {
       override def getCurrentStatus[G[_]: Sync]: G[FiberStatus[A]] = Sync[G].pure(Completed(a))
 
@@ -132,5 +132,5 @@ object AsymmetricTryableFiber {
   /**
    * Creates a trivial value of [[AsymmetricTryableFiber]] which is always complete.
    */
-  def unit[F[_]](implicit F: Monad[F]): AsymmetricTryableFiber[F, Unit] = completed[F, Unit](())
+  def unit[F[_]](using F: Monad[F]): AsymmetricTryableFiber[F, Unit] = completed[F, Unit](())
 }

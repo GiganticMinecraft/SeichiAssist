@@ -27,13 +27,13 @@ trait Menu {
    * @return
    * `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
    */
-  def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout]
+  def computeMenuLayout(player: Player)(using environment: Environment): IO[MenuSlotLayout]
 
   /**
    * メニューを[Player]に開かせる[TargetedEffect].
    */
   def open(
-    implicit environment: Environment,
+    using environment: Environment,
     ctx: LayoutPreparationContext,
     onMainThread: OnMinecraftServerThread[IO]
   ): TargetedEffect[Player] = data.Kleisli { player =>

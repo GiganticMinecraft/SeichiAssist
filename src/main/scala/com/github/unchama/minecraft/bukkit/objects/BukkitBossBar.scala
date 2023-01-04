@@ -6,7 +6,7 @@ import com.github.unchama.minecraft.objects.MinecraftBossBar
 import org.bukkit.Bukkit
 import org.bukkit.boss.{BarColor, BarFlag, BarStyle, BossBar}
 
-class BukkitBossBar[F[_]] private (instance: BossBar)(implicit F: Sync[F])
+class BukkitBossBar[F[_]] private (instance: BossBar)(using F: Sync[F])
     extends MinecraftBossBar[F] {
   override type Player = org.bukkit.entity.Player
   override type Style = BarStyle

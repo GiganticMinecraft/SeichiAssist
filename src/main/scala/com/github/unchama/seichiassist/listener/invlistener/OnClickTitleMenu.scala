@@ -31,7 +31,7 @@ object OnClickTitleMenu {
     is.getItemMeta.asInstanceOf[SkullMeta].getOwningPlayer.getName == "MHF_ArrowRight"
 
   def onPlayerClickTitleMenuEvent(event: InventoryClickEvent)(
-    implicit effectEnvironment: EffectEnvironment,
+    using effectEnvironment: EffectEnvironment,
     ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type
   ): Unit = {
     import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver

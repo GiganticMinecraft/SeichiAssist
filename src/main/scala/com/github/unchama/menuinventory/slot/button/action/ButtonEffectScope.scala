@@ -11,13 +11,13 @@ import org.bukkit.event.inventory.InventoryClickEvent
  */
 case class ButtonEffectScope(event: InventoryClickEvent) {
   def overwriteCurrentViewBy(newLayout: MenuSlotLayout)(
-    implicit ctx: LayoutPreparationContext,
+    using ctx: LayoutPreparationContext,
     onMainThread: OnMinecraftServerThread[IO]
   ): IO[Unit] =
     event.getInventory.getHolder.asInstanceOf[MenuSession].overwriteViewWith(newLayout)
 
   def overwriteCurrentSlotBy(newSlot: Slot)(
-    implicit ctx: LayoutPreparationContext,
+    using ctx: LayoutPreparationContext,
     onMainThread: OnMinecraftServerThread[IO]
   ): IO[Unit] = {
     val session = event.getInventory.getHolder.asInstanceOf[MenuSession]

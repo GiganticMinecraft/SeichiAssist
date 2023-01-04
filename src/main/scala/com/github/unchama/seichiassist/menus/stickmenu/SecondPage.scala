@@ -70,7 +70,7 @@ object SecondPage extends Menu {
 
   override def computeMenuLayout(
     player: Player
-  )(implicit environment: Environment): IO[MenuSlotLayout] = {
+  )(using environment: Environment): IO[MenuSlotLayout] = {
     import ConstantButtons._
     import environment._
     val computations = ButtonComputations(player)
@@ -105,7 +105,7 @@ object SecondPage extends Menu {
   }
 
   private case class ButtonComputations(player: Player)(
-    implicit sharedInventoryAPI: SharedInventoryAPI[IO, Player]
+    using sharedInventoryAPI: SharedInventoryAPI[IO, Player]
   ) {
 
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
@@ -334,7 +334,7 @@ object SecondPage extends Menu {
       Button(iconItemStack, LeftClickButtonEffect(CommandEffect("shareinv")))
     })
 
-    def computeBulkDrawGachaButton(implicit environment: Environment): IO[Button] =
+    def computeBulkDrawGachaButton(using environment: Environment): IO[Button] =
       RecomputedButton {
         import environment._
 

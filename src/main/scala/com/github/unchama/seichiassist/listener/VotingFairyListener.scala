@@ -17,7 +17,7 @@ import java.util.{Calendar, GregorianCalendar}
 import scala.util.Random
 
 object VotingFairyListener {
-  def summon(p: Player)(implicit manaApi: ManaReadApi[IO, SyncIO, Player]): Unit = {
+  def summon(p: Player)(using manaApi: ManaReadApi[IO, SyncIO, Player]): Unit = {
     val playermap = SeichiAssist.playermap
     val uuid = p.getUniqueId
     val playerdata = playermap.apply(uuid)
@@ -101,7 +101,7 @@ object VotingFairyListener {
   }
 
   def regeneMana(player: Player)(
-    implicit manaApi: ManaApi[IO, SyncIO, Player],
+    using manaApi: ManaApi[IO, SyncIO, Player],
     mineStackAPI: MineStackAPI[IO, Player, ItemStack]
   ): Unit = {
     val playermap = SeichiAssist.playermap

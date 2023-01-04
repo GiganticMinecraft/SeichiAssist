@@ -10,13 +10,13 @@ import scalikejdbc._
 import java.util.UUID
 
 class JdbcBuildAmountRateLimitPersistence[SyncContext[_]](
-  implicit SyncContext: Sync[SyncContext],
+  using SyncContext: Sync[SyncContext],
   config: Configuration
 ) extends BuildAmountRateLimitPersistence[SyncContext] {
 
   override def read(key: UUID): SyncContext[Option[BuildAmountRateLimiterSnapshot]] =
     SyncContext.delay {
-      DB.localTx { implicit session =>
+      DB.localTx { using session =>
         sql"select available_permission, record_date from build_count_rate_limit where uuid = ${key.toString}"
           .stripMargin
           .map { rs =>
@@ -32,7 +32,7 @@ class JdbcBuildAmountRateLimitPersistence[SyncContext[_]](
 
   override def write(key: UUID, value: BuildAmountRateLimiterSnapshot): SyncContext[Unit] =
     SyncContext.delay {
-      DB.localTx { implicit session =>
+      DB.localTx { using session =>
         sql"""
              |insert into build_count_rate_limit values (${key.toString}, ${value
               .amount

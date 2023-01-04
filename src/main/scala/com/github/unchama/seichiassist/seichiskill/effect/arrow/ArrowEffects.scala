@@ -26,7 +26,7 @@ object ArrowEffects {
   implicit val plugin: JavaPlugin = SeichiAssist.instance
 
   def normalArrowEffect(
-    implicit mainThread: OnMinecraftServerThread[IO]
+    using mainThread: OnMinecraftServerThread[IO]
   ): TargetedEffect[Player] =
     arrowEffect[Arrow](
       ProjectileSpawnConfiguration(1.0, (0.0, 1.6, 0.0)),
@@ -34,7 +34,7 @@ object ArrowEffects {
     )
 
   def singleArrowBlizzardEffect(
-    implicit mainThread: OnMinecraftServerThread[IO]
+    using mainThread: OnMinecraftServerThread[IO]
   ): TargetedEffect[Player] =
     arrowEffect[Snowball](
       ProjectileSpawnConfiguration(1.0, (0.0, 1.6, 0.0)),
@@ -42,7 +42,7 @@ object ArrowEffects {
     )
 
   def singleArrowMagicEffect(
-    implicit mainThread: OnMinecraftServerThread[IO]
+    using mainThread: OnMinecraftServerThread[IO]
   ): TargetedEffect[Player] = {
     import scala.util.chaining._
     val thrownPotionItem = new ItemStack(Material.SPLASH_POTION).tap { itemStack =>
@@ -63,7 +63,7 @@ object ArrowEffects {
   }
 
   def singleArrowMeteoEffect(
-    implicit mainThread: OnMinecraftServerThread[IO]
+    using mainThread: OnMinecraftServerThread[IO]
   ): TargetedEffect[Player] =
     arrowEffect[Arrow](
       ProjectileSpawnConfiguration(1.0, (0.0, 1.6, 0.0)),
@@ -72,7 +72,7 @@ object ArrowEffects {
     )
 
   def singleArrowExplosionEffect(
-    implicit mainThread: OnMinecraftServerThread[IO]
+    using mainThread: OnMinecraftServerThread[IO]
   ): TargetedEffect[Player] =
     arrowEffect[SmallFireball](
       ProjectileSpawnConfiguration(0.4, (0.0, 1.6, 0.0)),
@@ -83,7 +83,7 @@ object ArrowEffects {
     spawnConfiguration: ProjectileSpawnConfiguration,
     sound: Option[Sound] = None,
     projectileModifier: P => Unit = (_: P) => ()
-  )(implicit mainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] = {
+  )(using mainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] = {
 
     val runtimeClass = implicitly[ClassTag[P]].runtimeClass.asInstanceOf[Class[P]]
 

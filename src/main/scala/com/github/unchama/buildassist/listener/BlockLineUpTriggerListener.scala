@@ -20,7 +20,7 @@ import scala.util.control.Breaks
 class BlockLineUpTriggerListener[
   F[_]: IncrementBuildExpWhenBuiltWithSkill[*[_], Player]: SyncEffect
 ](
-  implicit manaApi: ManaApi[IO, SyncIO, Player],
+  using manaApi: ManaApi[IO, SyncIO, Player],
   mineStackAPI: MineStackAPI[IO, Player, ItemStack]
 ) extends Listener {
 

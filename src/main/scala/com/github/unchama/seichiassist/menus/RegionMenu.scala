@@ -31,7 +31,7 @@ object RegionMenu extends Menu {
 
   override def computeMenuLayout(
     player: Player
-  )(implicit environment: Environment): IO[MenuSlotLayout] = {
+  )(using environment: Environment): IO[MenuSlotLayout] = {
     import ConstantButtons._
     val computations = ButtonComputations(player)
     import computations._

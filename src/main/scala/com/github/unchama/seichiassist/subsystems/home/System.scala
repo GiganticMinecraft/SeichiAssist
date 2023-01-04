@@ -27,7 +27,7 @@ object System {
   def wired[F[_]: OnMinecraftServerThread: ConcurrentEffect: NonServerThreadContextShift, G[
     _
   ]: SyncEffect: ContextCoercion[*[_], F]](
-    implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player],
+    using breakCountReadAPI: BreakCountReadAPI[F, G, Player],
     buildCountReadAPI: BuildCountAPI[F, G, Player]
   ): System[F] = {
     val persistence = new JdbcHomePersistence[F]()

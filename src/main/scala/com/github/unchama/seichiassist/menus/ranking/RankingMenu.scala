@@ -123,7 +123,7 @@ case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) 
 
   private def uiOperationSection(
     totalNumberOfPages: Int
-  )(implicit environment: Environment): Seq[(Int, Button)] = {
+  )(using environment: Environment): Seq[(Int, Button)] = {
     import environment._
 
     def buttonToTransferTo(pageIndex: Int, skullOwnerReference: SkullOwnerReference): Button =
@@ -196,7 +196,7 @@ case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) 
    */
   override def computeMenuLayout(
     player: Player
-  )(implicit environment: Environment): IO[MenuSlotLayout] = {
+  )(using environment: Environment): IO[MenuSlotLayout] = {
     for {
       ranking <- environment.rankingApi.ranking.read
     } yield {

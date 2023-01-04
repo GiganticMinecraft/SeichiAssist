@@ -23,7 +23,7 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
   override def addToAllKnownPlayers(amount: GachaTicketAmount): F[Unit] = {
     // NOTE: apply関数はBooleanを返すのでdelayメソッドには型明示が必要
     NonServerThreadContextShift[F].shift >> Sync[F].delay[Unit] {
-      DB.localTx { implicit session =>
+      DB.localTx { using session =>
         sql"update playerdata set numofsorryforbug = numofsorryforbug + ${amount.value}"
           .execute()
           .apply()
@@ -39,7 +39,7 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
     playerName: PlayerName
   ): F[GrantResultOfGachaTicketFromAdminTeam] = {
     NonServerThreadContextShift[F].shift >> Sync[F].delay {
-      DB.localTx { implicit session =>
+      DB.localTx { using session =>
         val affectedRows =
           sql"UPDATE playerdata SET numofsorryforbug = numofsorryforbug + ${amount.value} WHERE name = ${playerName.name}"
             .update
@@ -58,7 +58,7 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
     uuid: UUID
   ): F[GrantResultOfGachaTicketFromAdminTeam] = {
     NonServerThreadContextShift[F].shift >> Sync[F].delay {
-      DB.localTx { implicit session =>
+      DB.localTx { using session =>
         val affectedRows =
           sql"UPDATE playerdata SET numofsorryforbug = numofsorryforbug + ${amount.value} WHERE uuid = ${uuid.toString}"
             .update()
@@ -71,7 +71,7 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
 
   override def receive(uuid: UUID): F[GachaTicketAmount] = {
     NonServerThreadContextShift[F].shift >> Sync[F].delay {
-      DB.localTx { implicit session =>
+      DB.localTx { using session =>
         val hasAmount =
           sql"SELECT numofsorryforbug FROM playerdata WHERE uuid = ${uuid.toString} FOR UPDATE"
             .map(_.int("numofsorryforbug"))

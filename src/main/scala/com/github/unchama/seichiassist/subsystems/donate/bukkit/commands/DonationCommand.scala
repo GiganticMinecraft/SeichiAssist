@@ -15,7 +15,7 @@ import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 
 class DonationCommand[F[_]: ConcurrentEffect](
-  implicit donatePersistence: DonatePersistence[F]
+  using donatePersistence: DonatePersistence[F]
 ) {
 
   import cats.implicits._

@@ -10,12 +10,12 @@ import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID
 
-class JdbcBuildAmountDataPersistence[F[_]](implicit F: Sync[F])
+class JdbcBuildAmountDataPersistence[F[_]](using F: Sync[F])
     extends BuildAmountDataPersistence[F] {
 
   override def read(key: UUID): F[Option[BuildAmountData]] =
     F.delay {
-      DB.localTx { implicit session =>
+      DB.localTx { using session =>
         sql"select build_count from playerdata where uuid = ${key.toString}"
           .stripMargin
           .map { rs =>
@@ -30,7 +30,7 @@ class JdbcBuildAmountDataPersistence[F[_]](implicit F: Sync[F])
 
   override def write(key: UUID, value: BuildAmountData): F[Unit] =
     F.delay {
-      DB.localTx { implicit session =>
+      DB.localTx { using session =>
         sql"update playerdata set build_count = ${value.expAmount.amount} where uuid = ${key.toString}"
           .stripMargin
           .update()

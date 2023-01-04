@@ -98,7 +98,7 @@ trait BreakCountReadAPI[F[_], G[_], Player] {
    * `duration` 毎に纏められた、プレーヤーの整地量増加を流すストリーム。
    */
   def batchedIncreases(duration: FiniteDuration)(
-    implicit FTimer: Timer[F],
+    using FTimer: Timer[F],
     FConcurrent: Concurrent[F]
   ): fs2.Stream[F, BatchedSeichiExpMap[Player]] =
     StreamExtra.foldGate(

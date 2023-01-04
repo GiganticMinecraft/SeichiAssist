@@ -32,7 +32,7 @@ object RankingRootMenu extends Menu {
 
   override def computeMenuLayout(
     player: Player
-  )(implicit environment: Environment): IO[MenuSlotLayout] = {
+  )(using environment: Environment): IO[MenuSlotLayout] = {
     import environment._
 
     def iconOf(rankingName: String): ItemStack =

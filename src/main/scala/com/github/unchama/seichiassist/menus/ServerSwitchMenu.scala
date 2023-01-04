@@ -114,7 +114,7 @@ object ServerSwitchMenu extends Menu {
    */
   override def computeMenuLayout(
     player: Player
-  )(implicit environment: Environment): IO[MenuSlotLayout] =
+  )(using environment: Environment): IO[MenuSlotLayout] =
     IO.pure {
       import environment._
 

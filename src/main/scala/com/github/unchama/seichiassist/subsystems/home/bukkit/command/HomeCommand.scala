@@ -30,7 +30,7 @@ class HomeCommand[F[
 ]: OnMinecraftServerThread: ConcurrentEffect: NonServerThreadContextShift: HomeAPI, G[
   _
 ]: SyncEffect: ContextCoercion[*[_], F]](
-  implicit scope: ChatInterceptionScope,
+  using scope: ChatInterceptionScope,
   breakCountReadAPI: BreakCountReadAPI[F, G, Player],
   buildCountReadAPI: BuildCountAPI[F, G, Player]
 ) {

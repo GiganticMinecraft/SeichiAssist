@@ -11,7 +11,7 @@ import org.bukkit.event.{EventHandler, Listener}
 
 import scala.jdk.CollectionConverters
 
-class GachaItemListener(implicit manaApi: ManaApi[IO, SyncIO, Player]) extends Listener {
+class GachaItemListener(using manaApi: ManaApi[IO, SyncIO, Player]) extends Listener {
 
   @EventHandler def onPlayerItemConsumeEvent(event: PlayerItemConsumeEvent): Unit = {
     val player = event.getPlayer

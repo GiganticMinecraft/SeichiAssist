@@ -19,6 +19,6 @@ trait NotifyLevelUp[F[_], Player] {
 
 object NotifyLevelUp {
 
-  def apply[F[_], Player](implicit ev: NotifyLevelUp[F, Player]): NotifyLevelUp[F, Player] = ev
+  def apply[F[_], Player](using ev: NotifyLevelUp[F, Player]): NotifyLevelUp[F, Player] = ev
 
 }

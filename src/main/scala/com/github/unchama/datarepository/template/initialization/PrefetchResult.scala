@@ -20,7 +20,7 @@ object PrefetchResult {
   implicit val traverseInstance: Traverse[PrefetchResult] = new Traverse[PrefetchResult] {
     override def traverse[G[_], A, B](
       fa: PrefetchResult[A]
-    )(f: A => G[B])(implicit G: Applicative[G]): G[PrefetchResult[B]] =
+    )(f: A => G[B])(using G: Applicative[G]): G[PrefetchResult[B]] =
       fa match {
         case f @ Failed(_) => G.pure(f)
         case Success(data) => G.map(f(data))(PrefetchResult.Success.apply)

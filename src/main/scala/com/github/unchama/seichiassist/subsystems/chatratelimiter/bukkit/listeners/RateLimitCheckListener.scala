@@ -11,7 +11,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent
 import org.bukkit.event.{EventHandler, Listener}
 
 class RateLimitCheckListener[F[_], G[_]: SyncEffect](
-  implicit api: ObtainChatPermission[F, G, Player]
+  using api: ObtainChatPermission[F, G, Player]
 ) extends Listener {
   @EventHandler
   def onEvent(e: AsyncPlayerChatEvent): Unit = {
