@@ -11,9 +11,8 @@ class MineStackUsageHistory[F[_]: Sync, ItemStack] {
 
   import cats.implicits._
 
-  private val _usageHistory: F[Ref[F, Vector[MineStackObject[ItemStack]]]] = for {
-    reference <- Ref.of[F, Vector[MineStackObject[ItemStack]]](Vector.empty)
-  } yield reference
+  private val _usageHistory: Ref[F, Vector[MineStackObject[ItemStack]]] =
+    Ref.unsafe[F, Vector[MineStackObject[ItemStack]]](Vector.empty)
 
   /**
    * 指定されたアイテムを履歴に追加します。
@@ -22,20 +21,17 @@ class MineStackUsageHistory[F[_]: Sync, ItemStack] {
    * @return 履歴を更新する作用
    */
   def addHistory(mineStackObject: MineStackObject[ItemStack]): F[Unit] = for {
-    reference <- _usageHistory
-    _ <- reference.update { oldHistories =>
+    _ <- _usageHistory.update { oldHistories =>
       oldHistories.filterNot(_ == mineStackObject) :+ mineStackObject
     }
-    oldHistories <- reference.get
-    _ <- reference.update(_.drop(1)).whenA(oldHistories.size > maxListSize)
+    oldHistories <- _usageHistory.get
+    _ <- _usageHistory.update(_.drop(1)).whenA(oldHistories.size > maxListSize)
   } yield ()
 
   /**
    * @return MineStackの使用履歴を返す作用
    */
-  def usageHistory: F[Vector[MineStackObject[ItemStack]]] = for {
-    reference <- _usageHistory
-    histories <- reference.get
-  } yield histories
+  def usageHistory: F[Vector[MineStackObject[ItemStack]]] =
+    _usageHistory.get
 
 }
