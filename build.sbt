@@ -184,6 +184,7 @@ lazy val root = (project in file(".")).settings(
     "-Ywarn-unused",
     "-source:3.0-migration",
     "-rewrite",
+    "-Ykind-projector",
   ),
   javacOptions ++= Seq("-encoding", "utf8")
 )
