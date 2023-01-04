@@ -7,6 +7,7 @@ import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.serialization.SerializeAndDeserialize
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.minecraft.bukkit.algebra.BukkitItemStackSerializeAndDeserialize
+import com.github.unchama.minecraft.bukkit.algebra.CloneableBukkitItemStack.instance
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.BukkitItemStackCanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.factories.BukkitStaticGachaPrizeFactory
@@ -22,12 +23,14 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
   CanBeSignedAsGachaPrize,
   GachaPrizeListPersistence,
+  GachaProbability,
   StaticGachaPrizeFactory
 }
 import com.github.unchama.seichiassist.subsystems.gachaprize.infrastructure.{
   JdbcGachaEventPersistence,
   JdbcGachaPrizeListPersistence
 }
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -52,7 +55,15 @@ object System {
     val _gachaEventPersistence: GachaEventPersistence[F] = new JdbcGachaEventPersistence[F]
 
     val system: F[System[F]] = for {
-      gachaPrizes <- _gachaPersistence.list
+      persistedGachaPrizes <- _gachaPersistence.list
+      expBottle = GachaPrize(
+        new ItemStack(Material.EXP_BOTTLE, 1),
+        GachaProbability(0.1),
+        signOwner = false,
+        GachaPrizeId(2),
+        None
+      )
+      gachaPrizes = expBottle +: persistedGachaPrizes
       gachaPrizesListReference <- Ref.of[F, Vector[GachaPrize[ItemStack]]](gachaPrizes)
       allGachaPrizesListReference <- Ref.of[F, Vector[GachaPrize[ItemStack]]](gachaPrizes)
     } yield {

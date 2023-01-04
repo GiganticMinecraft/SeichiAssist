@@ -10,10 +10,11 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
   StaticGachaPrizeFactory,
   gachaprize
 }
+import com.github.unchama.generic.Cloneable
 
 import scala.annotation.tailrec
 
-class LotteryOfGachaItems[F[_]: Sync, ItemStack](
+class LotteryOfGachaItems[F[_]: Sync, ItemStack: Cloneable](
   implicit staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack]
 ) {
 

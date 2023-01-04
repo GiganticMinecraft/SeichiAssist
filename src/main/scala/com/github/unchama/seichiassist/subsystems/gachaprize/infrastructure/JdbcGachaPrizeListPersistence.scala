@@ -9,8 +9,9 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
   GachaPrizeId
 }
 import scalikejdbc._
+import com.github.unchama.generic.Cloneable
 
-class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack](
+class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
   implicit serializeAndDeserialize: SerializeAndDeserialize[Nothing, ItemStack]
 ) extends GachaPrizeListPersistence[F, ItemStack] {
 

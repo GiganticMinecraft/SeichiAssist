@@ -9,6 +9,7 @@ import com.github.unchama.contextualexecutor.builder.ParserResponse.{failWith, s
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.minecraft.bukkit.algebra.CloneableBukkitItemStack.instance
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.BukkitGrantGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.PlayerName
