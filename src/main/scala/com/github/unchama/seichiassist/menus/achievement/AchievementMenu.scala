@@ -25,10 +25,11 @@ object AchievementMenu extends Menu {
   import com.github.unchama.menuinventory.syntax._
   import eu.timepit.refined.auto._
 
-  class Environment(implicit
-                    val ioCanOpenStickMenu: IO CanOpen FirstPage.type,
-                    val ioCanOpenCategoryMenu: IO CanOpen AchievementCategoryMenu,
-                    val ioOnMainThread: OnMinecraftServerThread[IO])
+  class Environment(
+    implicit val ioCanOpenStickMenu: IO CanOpen FirstPage.type,
+    val ioCanOpenCategoryMenu: IO CanOpen AchievementCategoryMenu,
+    val ioOnMainThread: OnMinecraftServerThread[IO]
+  )
 
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$DARK_PURPLE${BOLD}実績・二つ名システム")
 
@@ -43,15 +44,17 @@ object AchievementMenu extends Menu {
       ChestSlotRef(2, 4) -> (Specials, Material.EYE_OF_ENDER)
     )
 
-  def buttonFor(categoryRepr: AchievementCategoryRepr)
-               (implicit ioCanOpenCategoryMenu: IO CanOpen AchievementCategoryMenu): Button =
+  def buttonFor(
+    categoryRepr: AchievementCategoryRepr
+  )(implicit ioCanOpenCategoryMenu: IO CanOpen AchievementCategoryMenu): Button =
     categoryRepr match {
       case (category, material) =>
         val includedGroups =
           AchievementCategoryMenu.groupsLayoutFor(category).values.map(_._1)
 
         val partialBuilder =
-          new IconItemStackBuilder(material).title(ColorScheme.navigation(s"カテゴリ「${category.name}」"))
+          new IconItemStackBuilder(material)
+            .title(ColorScheme.navigation(s"カテゴリ「${category.name}」"))
 
         if (includedGroups.nonEmpty) {
           Button(
@@ -73,19 +76,24 @@ object AchievementMenu extends Menu {
         }
     }
 
-  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
+  override def computeMenuLayout(
+    player: Player
+  )(implicit environment: Environment): IO[MenuSlotLayout] = {
     import environment._
 
-    val categoryButtonsSection = categoryLayout.view.mapValues(category => buttonFor(category)).toMap
+    val categoryButtonsSection =
+      categoryLayout.view.mapValues(category => buttonFor(category)).toMap
 
     val toggleTitleToPlayerLevelButton = Button(
       new IconItemStackBuilder(Material.REDSTONE_TORCH_ON)
         .title(ColorScheme.navigation("整地Lvを表示"))
-        .lore(List(
-          s"${RED}このボタンをクリックすると、",
-          s"$RED「整地Lv」に表示を切り替えます。",
-          s"$YELLOW※反映されるまで最大1分ほどかかります。"
-        ))
+        .lore(
+          List(
+            s"${RED}このボタンをクリックすると、",
+            s"$RED「整地Lv」に表示を切り替えます。",
+            s"$YELLOW※反映されるまで最大1分ほどかかります。"
+          )
+        )
         .build(),
       action.LeftClickButtonEffect(
         FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),

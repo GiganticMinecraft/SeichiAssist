@@ -9,22 +9,20 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.{Inventory, ItemStack}
 
-class InteractBukkitInventory[
-  F[_] : Sync : OnMinecraftServerThread
-] extends InteractInventory[F, Player, Inventory] {
+class InteractBukkitInventory[F[_]: Sync: OnMinecraftServerThread]
+    extends InteractInventory[F, Player, Inventory] {
 
   import cats.implicits._
 
   import scala.jdk.CollectionConverters._
 
   override def open(inventory: Inventory)(player: Player): F[Unit] =
-  // インベントリの開閉はパケットが送られるためメインスレッドからのみ許可される(Spigot 1.12.2)
+    // インベントリの開閉はパケットが送られるためメインスレッドからのみ許可される(Spigot 1.12.2)
     OnMinecraftServerThread[F].runAction(SyncIO[Unit] {
       player.openInventory(inventory)
     })
 
-  override def extendSize(newSize: PocketSize)
-                         (inventory: Inventory): F[Inventory] = {
+  override def extendSize(newSize: PocketSize)(inventory: Inventory): F[Inventory] = {
     val shouldCreateNew: F[Boolean] = Sync[F].delay(inventory.getSize < newSize.totalStackCount)
 
     Monad[F].ifM(shouldCreateNew)(
@@ -37,9 +35,10 @@ class InteractBukkitInventory[
         newInventory <- new CreateBukkitInventory[F].create(newSize)
         _ <- Sync[F].delay {
           // 内容物を移動する。
-          inventory.asScala.zipWithIndex.foreach { case (stack, i) =>
-            inventory.setItem(i, new ItemStack(Material.AIR, 0))
-            newInventory.setItem(i, stack)
+          inventory.asScala.zipWithIndex.foreach {
+            case (stack, i) =>
+              inventory.setItem(i, new ItemStack(Material.AIR, 0))
+              newInventory.setItem(i, stack)
           }
         }
       } yield newInventory,

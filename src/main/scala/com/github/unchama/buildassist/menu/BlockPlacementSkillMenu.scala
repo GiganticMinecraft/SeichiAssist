@@ -11,7 +11,12 @@ import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.BuildMainMenu
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect, TargetedEffect, UnfocusedEffect}
+import com.github.unchama.targetedeffect.{
+  DeferredEffect,
+  SequentialEffect,
+  TargetedEffect,
+  UnfocusedEffect
+}
 import com.github.unchama.{menuinventory, targetedeffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -19,11 +24,13 @@ import org.bukkit.{Material, Sound}
 
 object BlockPlacementSkillMenu extends Menu {
 
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, onMainThread}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
+    asyncShift,
+    onMainThread
+  }
   import menuinventory.syntax._
 
-  class Environment(implicit
-                    val canOpenMainMenu: CanOpen[IO, BuildMainMenu.type])
+  class Environment(implicit val canOpenMainMenu: CanOpen[IO, BuildMainMenu.type])
 
   override val frame: MenuFrame =
     MenuFrame(4.chestRows, s"$DARK_PURPLE$BOLD「範囲設置スキル」設定画面")
@@ -47,6 +54,12 @@ object BlockPlacementSkillMenu extends Menu {
 
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
     import player._
+
+    private def computeCurrentSkillAreaInt(range: Int): Int = (range - 1) / 2
+    private val maxRange = 15
+    private val maxAreaInt = computeCurrentSkillAreaInt(maxRange)
+    private val minRange = 3
+    private val minAreaInt = computeCurrentSkillAreaInt(minRange)
 
     implicit class PlayerDataOps(val playerData: TemporaryMutableBuildAssistPlayerData) {
       def computeCurrentSkillRange(): Int = playerData.AREAint * 2 + 1
@@ -106,9 +119,9 @@ object BlockPlacementSkillMenu extends Menu {
         .title(s"$RED$UNDERLINE${BOLD}範囲設定を最大値に変更")
         .lore(
           s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange",
-          s"$RESET$AQUA${UNDERLINE}変更後の範囲設定： 11×11"
+          s"$RESET$AQUA${UNDERLINE}変更後の範囲設定： $maxRange×$maxRange"
         )
-        .amount(11)
+        .amount(maxRange)
         .build()
 
       Button(
@@ -116,9 +129,36 @@ object BlockPlacementSkillMenu extends Menu {
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
           targetedeffect.UnfocusedEffect {
-            playerData.AREAint = 5
+            playerData.AREAint = maxAreaInt
           },
-          MessageEffect(s"${RED}現在の範囲設定は 11×11 です"),
+          MessageEffect(s"${RED}現在の範囲設定は $maxRange×$maxRange です"),
+          open
+        )
+      )
+    }
+
+    def computeButtonToIncreaseRangeTo11(): IO[Button] = IO {
+      val playerData = BuildAssist.instance.temporaryData(getUniqueId)
+      val currentRange = playerData.computeCurrentSkillRange()
+      val changedRange = 11
+
+      val iconItemStack = new SkullItemStackBuilder("MHF_ArrowUp")
+        .title(s"$RED$UNDERLINE${BOLD}範囲設定を$changedRange×${changedRange}に変更")
+        .lore(
+          s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange",
+          s"$RESET$AQUA${UNDERLINE}変更後の範囲設定： $changedRange×$changedRange"
+        )
+        .amount(changedRange)
+        .build()
+
+      Button(
+        iconItemStack,
+        LeftClickButtonEffect(
+          FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+          targetedeffect.UnfocusedEffect {
+            playerData.AREAint = computeCurrentSkillAreaInt(changedRange)
+          },
+          MessageEffect(s"${RED}現在の範囲設定は $changedRange×$changedRange です"),
           open
         )
       )
@@ -133,53 +173,48 @@ object BlockPlacementSkillMenu extends Menu {
         .title(s"$YELLOW$UNDERLINE${BOLD}範囲設定を一段階大きくする")
         .lore {
           List(s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange").concat(
-            if (playerData.AREAint == 5) {
-              Seq(
-                s"$RESET${RED}これ以上範囲設定を大きくできません。"
-              )
+            if (playerData.AREAint == maxAreaInt) {
+              Seq(s"$RESET${RED}これ以上範囲設定を大きくできません。")
             } else {
               Seq(
                 s"$RESET$AQUA${UNDERLINE}変更後の範囲設定： $changedRange×$changedRange",
-                s"$RESET$RED※範囲設定の最大値は11×11※"
+                s"$RESET$RED※範囲設定の最大値は$maxRange×$maxRange※"
               )
             }
           )
         }
-        .amount(7)
+        .amount(maxAreaInt)
         .build()
 
       Button(
         iconItemStack,
-        LeftClickButtonEffect(
-          DeferredEffect(
-            IO {
-              if (playerData.AREAint < 5)
-                SequentialEffect(
-                  FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-                  UnfocusedEffect {
-                    playerData.AREAint += 1
-                  },
-                  MessageEffect(s"${RED}現在の範囲設定は $changedRange×$changedRange です"),
-                  open
-                )
-              else TargetedEffect.emptyEffect
-            }
-          )
-        )
+        LeftClickButtonEffect(DeferredEffect(IO {
+          if (playerData.AREAint < maxAreaInt)
+            SequentialEffect(
+              FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+              UnfocusedEffect {
+                playerData.AREAint += 1
+              },
+              MessageEffect(s"${RED}現在の範囲設定は $changedRange×$changedRange です"),
+              open
+            )
+          else TargetedEffect.emptyEffect
+        }))
       )
     }
 
     def computeButtonToResetRange(): IO[Button] = IO {
       val playerData = BuildAssist.instance.temporaryData(getUniqueId)
       val currentRange = playerData.computeCurrentSkillRange()
+      val changedRange = 5
 
       val iconItemStack = new SkullItemStackBuilder("MHF_TNT")
         .title(s"$RED$UNDERLINE${BOLD}範囲設定を初期値に変更")
         .lore(
           s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange",
-          s"$RESET$AQUA${UNDERLINE}変更後の範囲設定： 5×5"
+          s"$RESET$AQUA${UNDERLINE}変更後の範囲設定： $changedRange×$changedRange"
         )
-        .amount(5)
+        .amount(changedRange)
         .build()
 
       Button(
@@ -187,9 +222,9 @@ object BlockPlacementSkillMenu extends Menu {
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
           targetedeffect.UnfocusedEffect {
-            playerData.AREAint = 2
+            playerData.AREAint = computeCurrentSkillAreaInt(changedRange)
           },
-          MessageEffect(s"${RED}現在の範囲設定は 5×5 です"),
+          MessageEffect(s"${RED}現在の範囲設定は $changedRange×$changedRange です"),
           open
         )
       )
@@ -198,45 +233,38 @@ object BlockPlacementSkillMenu extends Menu {
     def computeButtonToDecreaseRange(): IO[Button] = IO {
       val playerData = BuildAssist.instance.temporaryData(getUniqueId)
       val currentRange = playerData.computeCurrentSkillRange()
-      val changedRange = currentRange + -2
+      val changedRange = currentRange - 2
 
       val iconItemStack = new SkullItemStackBuilder("MHF_ArrowDown")
         .title(s"$YELLOW$UNDERLINE${BOLD}範囲設定を一段階小さくする")
         .lore(
-          List(s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange").concat(
-            if (playerData.AREAint == 1) {
-              List(
-                s"${RED}これ以上範囲設定を小さくできません。"
-              )
+          List(s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange")
+            .concat(if (playerData.AREAint == minAreaInt) {
+              List(s"${RED}これ以上範囲設定を小さくできません。")
             } else {
               List(
                 s"$RESET$AQUA${UNDERLINE}変更後の範囲設定： $changedRange×$changedRange",
-                s"$RESET$RED※範囲設定の最小値は3×3※"
+                s"$RESET$RED※範囲設定の最小値は$minRange×$minRange※"
               )
-            }
-          )
+            })
         )
-        .amount(3)
+        .amount(minRange)
         .build()
 
       Button(
         iconItemStack,
-        LeftClickButtonEffect(
-          DeferredEffect(
-            IO {
-              if (playerData.AREAint > 1)
-                SequentialEffect(
-                  FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-                  UnfocusedEffect {
-                    playerData.AREAint -= 1
-                  },
-                  MessageEffect(s"${RED}現在の範囲設定は $changedRange×$changedRange です"),
-                  open
-                )
-              else TargetedEffect.emptyEffect
-            }
-          )
-        )
+        LeftClickButtonEffect(DeferredEffect(IO {
+          if (playerData.AREAint > minAreaInt)
+            SequentialEffect(
+              FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+              UnfocusedEffect {
+                playerData.AREAint -= 1
+              },
+              MessageEffect(s"${RED}現在の範囲設定は $changedRange×$changedRange です"),
+              open
+            )
+          else TargetedEffect.emptyEffect
+        }))
       )
     }
 
@@ -248,9 +276,9 @@ object BlockPlacementSkillMenu extends Menu {
         .title(s"$RED$UNDERLINE${BOLD}範囲設定を最小値に変更")
         .lore(
           s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange",
-          s"$RESET$AQUA${UNDERLINE}変更後の範囲設定： 3×3"
+          s"$RESET$AQUA${UNDERLINE}変更後の範囲設定： $minRange×$minRange"
         )
-        .amount(1)
+        .amount(minAreaInt)
         .build()
 
       Button(
@@ -258,9 +286,9 @@ object BlockPlacementSkillMenu extends Menu {
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
           targetedeffect.UnfocusedEffect {
-            playerData.AREAint = 1
+            playerData.AREAint = minAreaInt
           },
-          MessageEffect(s"${RED}現在の範囲設定は 3×3 です"),
+          MessageEffect(s"${RED}現在の範囲設定は $minRange×$minRange です"),
           open
         )
       )
@@ -274,7 +302,9 @@ object BlockPlacementSkillMenu extends Menu {
           val currentStatus = playerData.zs_minestack_flag
 
           val iconItemStackBuilder = new IconItemStackBuilder(Material.CHEST)
-            .title(s"$YELLOW$UNDERLINE${BOLD}MineStack優先設定: ${if (currentStatus) "ON" else "OFF"}")
+            .title(
+              s"$YELLOW$UNDERLINE${BOLD}MineStack優先設定: ${if (currentStatus) "ON" else "OFF"}"
+            )
             .lore(
               s"$RESET${GRAY}スキルでブロックを並べるとき",
               s"$RESET${GRAY}MineStackの在庫を優先して消費します。",
@@ -289,7 +319,11 @@ object BlockPlacementSkillMenu extends Menu {
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
               DeferredEffect {
                 IO {
-                  if (amountData.levelCorrespondingToExp.level < BuildAssist.config.getZoneskillMinestacklevel)
+                  if (
+                    amountData
+                      .levelCorrespondingToExp
+                      .level < BuildAssist.config.getZoneskillMinestacklevel
+                  )
                     MessageEffect(s"${RED}建築Lvが足りません")
                   else
                     SequentialEffect(
@@ -308,13 +342,13 @@ object BlockPlacementSkillMenu extends Menu {
     }
   }
 
-  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
+  override def computeMenuLayout(
+    player: Player
+  )(implicit environment: Environment): IO[MenuSlotLayout] = {
     val computations = ButtonComputations(player)
     import computations._
 
-    val constantPart = Map(
-      0 -> buttonToOpenPreviousPage
-    )
+    val constantPart = Map(0 -> buttonToOpenPreviousPage)
 
     import cats.implicits._
 
@@ -323,14 +357,13 @@ object BlockPlacementSkillMenu extends Menu {
         4 -> computeButtonToToggleDirtPlacement(),
         13 -> computeButtonToShowCurrentStatus(),
         19 -> computeButtonToMaximizeRange(),
-        20 -> computeButtonToIncreaseRange(),
+        20 -> computeButtonToIncreaseRangeTo11(),
+        21 -> computeButtonToIncreaseRange(),
         22 -> computeButtonToResetRange(),
-        24 -> computeButtonToDecreaseRange(),
-        25 -> computeButtonToMinimizeRange(),
+        23 -> computeButtonToDecreaseRange(),
+        24 -> computeButtonToMinimizeRange(),
         35 -> computeButtonToToggleConsumingMineStack()
-      )
-        .map(_.sequence)
-        .sequence
+      ).traverse(_.sequence)
 
     for {
       dynamicPart <- dynamicPartComputation

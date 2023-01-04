@@ -18,7 +18,14 @@ object SpawnRegionProjectileInterceptor extends Listener {
     "world-spawn"
   )
   val projectiles = Set(
-    BOW, EGG, LINGERING_POTION, SPLASH_POTION, ENDER_PEARL, EYE_OF_ENDER, SNOW_BALL, EXP_BOTTLE
+    BOW,
+    EGG,
+    LINGERING_POTION,
+    SPLASH_POTION,
+    ENDER_PEARL,
+    EYE_OF_ENDER,
+    SNOW_BALL,
+    EXP_BOTTLE
   )
 
   @EventHandler
@@ -27,10 +34,12 @@ object SpawnRegionProjectileInterceptor extends Listener {
     val action = event.getAction
 
     // Projectileを持った状態で右クリックし、playerがいる保護がspawn保護の中であった場合はイベントをキャンセルする
-    if (event.hasItem
+    if (
+      event.hasItem
       && projectiles.contains(event.getItem.getType)
       && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)
-      && getRegions(player.getLocation).asScala.map(_.getId).exists(spawnRegions.contains)) {
+      && getRegions(player.getLocation).asScala.map(_.getId).exists(spawnRegions.contains)
+    ) {
       event.setCancelled(true)
     }
   }

@@ -6,27 +6,29 @@ import com.github.unchama.contextualexecutor.{ContextualExecutor, RawCommandCont
 /**
  * コマンドの枝分かれでのルーティングを静的に行うアクションを返す[ContextualExecutor]
  */
-case class BranchedExecutor(branches: Map[String, ContextualExecutor],
-                            whenArgInsufficient: Option[ContextualExecutor] = Some(PrintUsageExecutor),
-                            whenBranchNotFound: Option[ContextualExecutor] = Some(PrintUsageExecutor)) extends ContextualExecutor {
+case class BranchedExecutor(
+  branches: Map[String, ContextualExecutor],
+  whenArgInsufficient: Option[ContextualExecutor] = Some(PrintUsageExecutor),
+  whenBranchNotFound: Option[ContextualExecutor] = Some(PrintUsageExecutor)
+) extends ContextualExecutor {
 
-  override def executeWith(rawContext: RawCommandContext): IO[Unit] = {
+  override def executionWith(rawContext: RawCommandContext): IO[Unit] = {
     def executeOptionally(executor: Option[ContextualExecutor]): IO[Unit] =
       executor match {
-        case Some(executor) => executor.executeWith(rawContext)
-        case None => IO.pure(())
+        case Some(executor) => executor.executionWith(rawContext)
+        case None           => IO.pure(())
       }
 
     val (argHead, argTail) = rawContext.args match {
       case ::(head, tl) => (head, tl)
-      case Nil => return executeOptionally(whenArgInsufficient)
+      case Nil          => return executeOptionally(whenArgInsufficient)
     }
 
     val branch = branches.getOrElse(argHead, return executeOptionally(whenBranchNotFound))
 
     val argShiftedContext = rawContext.copy(args = argTail)
 
-    branch.executeWith(argShiftedContext)
+    branch.executionWith(argShiftedContext)
   }
 
   override def tabCandidatesFor(context: RawCommandContext): List[String] = {

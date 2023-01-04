@@ -5,7 +5,12 @@ import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.effect.concurrent.TryableFiber
-import com.github.unchama.itemstackbuilder.{AbstractItemStackBuilder, IconItemStackBuilder, SkullItemStackBuilder, TippedArrowItemStackBuilder}
+import com.github.unchama.itemstackbuilder.{
+  AbstractItemStackBuilder,
+  IconItemStackBuilder,
+  SkullItemStackBuilder,
+  TippedArrowIconItemStackBuilder
+}
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{ButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, ReloadingButton}
@@ -23,7 +28,7 @@ import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
-import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.SendMessageEffect
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -44,16 +49,20 @@ object ActiveSkillMenu extends Menu {
   private case object Selected extends SkillSelectionState
 
   import com.github.unchama.menuinventory.syntax._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, layoutPreparationContext}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
+    asyncShift,
+    layoutPreparationContext
+  }
 
-  class Environment(implicit
-                    val breakCountApi: BreakCountAPI[IO, SyncIO, Player],
-                    val manaApi: ManaApi[IO, SyncIO, Player],
-                    val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type,
-                    val ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
-                    val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
-                    val ioOnMainThread: OnMinecraftServerThread[IO],
-                    val globalNotification: DiscordNotificationAPI[IO])
+  class Environment(
+    implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player],
+    val manaApi: ManaApi[IO, SyncIO, Player],
+    val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type,
+    val ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
+    val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
+    val ioOnMainThread: OnMinecraftServerThread[IO],
+    val globalNotification: DiscordNotificationAPI[IO]
+  )
 
   override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整地スキル選択")
 
@@ -62,9 +71,12 @@ object ActiveSkillMenu extends Menu {
       SeichiAssist.playermap(player.getUniqueId).skillState
     }
 
-  private def totalActiveSkillPoint(player: Player)(implicit environment: Environment): IO[Int] =
+  private def totalActiveSkillPoint(
+    player: Player
+  )(implicit environment: Environment): IO[Int] =
     environment
-      .breakCountApi.seichiAmountDataRepository(player)
+      .breakCountApi
+      .seichiAmountDataRepository(player)
       .read
       .map { data =>
         val level = data.levelCorrespondingToExp.level
@@ -86,42 +98,45 @@ object ActiveSkillMenu extends Menu {
         totalPoint - skillState.consumedActiveSkillPoint
       }
 
-    val computeStatusButton: IO[Button] = RecomputedButton(
-      for {
-        ref <- skillStateRef(player)
-        state <- ref.get
-        availablePoints <- availableActiveSkillPoint
-      } yield {
-        val activeSkillSelectionLore: Option[String] =
-          state.activeSkill.map(activeSkill =>
-            s"$RESET${GREEN}現在選択しているアクティブスキル：${activeSkill.name}"
+    val computeStatusButton: IO[Button] = RecomputedButton(for {
+      ref <- skillStateRef(player)
+      state <- ref.get
+      availablePoints <- availableActiveSkillPoint
+    } yield {
+      val activeSkillSelectionLore: Option[String] =
+        state
+          .activeSkill
+          .map(activeSkill => s"$RESET${GREEN}現在選択しているアクティブスキル：${activeSkill.name}")
+
+      val assaultSkillSelectionLore: Option[String] =
+        state.assaultSkill.map { assaultSkill =>
+          val heading =
+            if (assaultSkill == SeichiSkill.AssaultArmor)
+              s"$RESET${GREEN}現在選択しているアサルトスキル："
+            else
+              s"$RESET${GREEN}現在選択している凝固スキル："
+
+          s"$heading${assaultSkill.name}"
+        }
+
+      val itemStack =
+        new SkullItemStackBuilder(getUniqueId)
+          .title(s"$YELLOW$UNDERLINE$BOLD${getName}のアクティブスキルデータ")
+          .lore(
+            activeSkillSelectionLore.toList ++
+              assaultSkillSelectionLore.toList ++
+              List(
+                s"$RESET${YELLOW}使えるアクティブスキルポイント：$availablePoints",
+                s"$RESET${GRAY}整地レベルアップでポイントが貰えます。"
+              )
           )
+          .build()
+      Button(itemStack)
+    })
 
-        val assaultSkillSelectionLore: Option[String] =
-          state.assaultSkill.map { assaultSkill =>
-            val heading =
-              if (assaultSkill == SeichiSkill.AssaultArmor)
-                s"$RESET${GREEN}現在選択しているアサルトスキル："
-              else
-                s"$RESET${GREEN}現在選択している凝固スキル："
-
-            s"$heading${assaultSkill.name}"
-          }
-
-        val itemStack =
-          new SkullItemStackBuilder(getUniqueId)
-            .title(s"$YELLOW$UNDERLINE$BOLD${getName}のアクティブスキルデータ")
-            .lore(
-              activeSkillSelectionLore.toList ++
-                assaultSkillSelectionLore.toList ++
-                List(s"$RESET${YELLOW}使えるアクティブスキルポイント：$availablePoints")
-            )
-            .build()
-        Button(itemStack)
-      }
-    )
-
-    def computeSkillButtonFor(skill: SeichiSkill)(implicit environment: Environment): IO[Button] = {
+    def computeSkillButtonFor(
+      skill: SeichiSkill
+    )(implicit environment: Environment): IO[Button] = {
       for {
         ref <- skillStateRef(player)
         state <- ref.get
@@ -172,17 +187,17 @@ object ActiveSkillMenu extends Menu {
               new IconItemStackBuilder(Material.HOPPER_MINECART)
 
             case SeichiSkill.EbifriDrive =>
-              new TippedArrowItemStackBuilder(PotionType.REGEN)
+              new TippedArrowIconItemStackBuilder(PotionType.REGEN)
             case SeichiSkill.HolyShot =>
-              new TippedArrowItemStackBuilder(PotionType.FIRE_RESISTANCE)
+              new TippedArrowIconItemStackBuilder(PotionType.FIRE_RESISTANCE)
             case SeichiSkill.TsarBomba =>
-              new TippedArrowItemStackBuilder(PotionType.INSTANT_HEAL)
+              new TippedArrowIconItemStackBuilder(PotionType.INSTANT_HEAL)
             case SeichiSkill.ArcBlast =>
-              new TippedArrowItemStackBuilder(PotionType.NIGHT_VISION)
+              new TippedArrowIconItemStackBuilder(PotionType.NIGHT_VISION)
             case SeichiSkill.PhantasmRay =>
-              new TippedArrowItemStackBuilder(PotionType.SPEED)
+              new TippedArrowIconItemStackBuilder(PotionType.SPEED)
             case SeichiSkill.Supernova =>
-              new TippedArrowItemStackBuilder(PotionType.INSTANT_DAMAGE)
+              new TippedArrowIconItemStackBuilder(PotionType.INSTANT_DAMAGE)
           }
         case skill: AssaultSkill =>
           skill match {
@@ -207,9 +222,7 @@ object ActiveSkillMenu extends Menu {
     }
 
     def prerequisiteSkillName(skill: SeichiSkill): String =
-      SkillDependency.prerequisites(skill)
-        .headOption.map(_.name)
-        .getOrElse("なし")
+      SkillDependency.prerequisites(skill).headOption.map(_.name).getOrElse("なし")
 
     def breakRangeDescription(range: SkillRange): String = {
       val colorPrefix = s"$RESET$GREEN"
@@ -244,14 +257,17 @@ object ActiveSkillMenu extends Menu {
 
     def coolDownDescription(skill: SeichiSkill): String = {
       val colorPrefix = s"$RESET$DARK_GRAY"
-      val coolDownAmount = skill.maxCoolDownTicks.map { ticks =>
-        String.format("%.2f", ticks * 50 / 1000.0)
-      }.getOrElse("なし")
+      val coolDownAmount = skill
+        .maxCoolDownTicks
+        .map { ticks => String.format("%.2f", ticks * 50 / 1000.0) }
+        .getOrElse("なし")
 
       colorPrefix + coolDownAmount
     }
 
-    def selectionStateOf(skill: SeichiSkill)(skillState: PlayerSkillState): SkillSelectionState = {
+    def selectionStateOf(
+      skill: SeichiSkill
+    )(skillState: PlayerSkillState): SkillSelectionState = {
       if (skillState.obtainedSkills.contains(skill)) {
         val selected = skill match {
           case skill: ActiveSkill =>
@@ -266,10 +282,12 @@ object ActiveSkillMenu extends Menu {
       }
     }
 
-    def seichiSkillButton[
-      F[_] : ConcurrentEffect : NonServerThreadContextShift : DiscordNotificationAPI
-    ](state: SkillSelectionState, skill: SeichiSkill)
-     (implicit environment: Environment): Button = {
+    def seichiSkillButton[F[
+      _
+    ]: ConcurrentEffect: NonServerThreadContextShift: DiscordNotificationAPI](
+      state: SkillSelectionState,
+      skill: SeichiSkill
+    )(implicit environment: Environment): Button = {
       import environment._
 
       val itemStack = {
@@ -293,18 +311,19 @@ object ActiveSkillMenu extends Menu {
               )
 
             skill match {
-              case skill: AssaultSkill => skill match {
-                case SeichiSkill.VenderBlizzard =>
-                  List(
-                    requiredPointDescription,
-                    s"$RESET${DARK_RED}水凝固/熔岩凝固の双方を扱える者にのみ発現する上位凝固スキル",
-                    s"$RESET${DARK_RED}アサルト・アーマーの取得には必要ない",
-                    s"$RESET$AQUA${UNDERLINE}クリックで解除"
-                  )
-                case SeichiSkill.AssaultArmor =>
-                  List(s"$RESET${YELLOW}全てのスキルを獲得すると解除されます")
-                case _ => defaultDescription
-              }
+              case skill: AssaultSkill =>
+                skill match {
+                  case SeichiSkill.VenderBlizzard =>
+                    List(
+                      requiredPointDescription,
+                      s"$RESET${DARK_RED}水凝固/熔岩凝固の双方を扱える者にのみ発現する上位凝固スキル",
+                      s"$RESET${DARK_RED}アサルト・アーマーの取得には必要ない",
+                      s"$RESET$AQUA${UNDERLINE}クリックで解除"
+                    )
+                  case SeichiSkill.AssaultArmor =>
+                    List(s"$RESET${YELLOW}全てのスキルを獲得すると解除されます")
+                  case _ => defaultDescription
+                }
               case _: ActiveSkill => defaultDescription
             }
           case Unlocked => List(s"$RESET$DARK_RED${UNDERLINE}クリックでセット")
@@ -317,7 +336,7 @@ object ActiveSkillMenu extends Menu {
             List(
               s"$RESET$GREEN${breakRangeDescription(skill.range)}",
               s"$RESET${DARK_GRAY}クールダウン：${coolDownDescription(skill)}",
-              s"$RESET${BLUE}消費マナ：${skill.manaCost}",
+              s"$RESET${BLUE}消費マナ：${skill.manaCost}"
             ) ++ clickEffectDescription
           )
 
@@ -342,10 +361,13 @@ object ActiveSkillMenu extends Menu {
                     case None =>
                       val unlockedState = skillState.obtained(skill)
                       val (newState, assaultSkillUnlockEffects) =
-                        if (!unlockedState.obtainedSkills.contains(AssaultArmor) &&
-                          unlockedState.lockedDependency(SeichiSkill.AssaultArmor).isEmpty) {
+                        if (
+                          !unlockedState.obtainedSkills.contains(AssaultArmor) &&
+                          unlockedState.lockedDependency(SeichiSkill.AssaultArmor).isEmpty
+                        ) {
 
-                          val notificationMessage = s"${player.getName}が全てのスキルを習得し、アサルト・アーマーを解除しました！"
+                          val notificationMessage =
+                            s"${player.getName}が全てのスキルを習得し、アサルト・アーマーを解除しました！"
 
                           import cats.effect.implicits._
 
@@ -353,11 +375,17 @@ object ActiveSkillMenu extends Menu {
                             unlockedState.obtained(SeichiSkill.AssaultArmor),
                             SequentialEffect(
                               MessageEffect(s"$YELLOW${BOLD}全てのスキルを習得し、アサルト・アーマーを解除しました"),
-                              Kleisli.liftF(DiscordNotificationAPI[F].send(notificationMessage).toIO),
+                              Kleisli.liftF(
+                                DiscordNotificationAPI[F]
+                                  .sendPlainText(notificationMessage)
+                                  .toIO
+                              ),
                               Kleisli.liftF(IO {
-                                Util.sendMessageToEveryoneIgnoringPreference(s"$GOLD$BOLD$notificationMessage")
+                                SendMessageEffect.sendMessageToEveryoneIgnoringPreference(
+                                  s"$GOLD$BOLD$notificationMessage"
+                                )
                               }),
-                              BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f),
+                              BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
                             )
                           )
                         } else (unlockedState, emptyEffect)
@@ -390,7 +418,7 @@ object ActiveSkillMenu extends Menu {
               case Unlocked =>
                 val skillType =
                   skill match {
-                    case _: ActiveSkill => "アクティブスキル"
+                    case _: ActiveSkill  => "アクティブスキル"
                     case _: AssaultSkill => "アサルトスキル"
                   }
 
@@ -403,7 +431,8 @@ object ActiveSkillMenu extends Menu {
                         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
                         import environment.manaApi
 
-                        val tryStartRoutine = TryableFiber.start(AssaultRoutine.tryStart(player, skill))
+                        val tryStartRoutine =
+                          TryableFiber.start(AssaultRoutine.tryStart(player, skill))
                         val fiberRepository = SeichiAssist.instance.assaultSkillRoutines
                         val tryStart =
                           fiberRepository(player).stopAnyFiber >>
@@ -435,16 +464,13 @@ object ActiveSkillMenu extends Menu {
   }
 
   private object ConstantButtons {
-    def skillEffectMenuButton(implicit
-                              ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
-                              ioOnMainThread: OnMinecraftServerThread[IO]): Button = {
+    def skillEffectMenuButton(
+      implicit ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type
+    ): Button = {
       Button(
         new IconItemStackBuilder(Material.BOOKSHELF)
           .title(s"$UNDERLINE$BOLD${LIGHT_PURPLE}演出効果設定")
-          .lore(
-            s"$RESET${GRAY}スキル使用時の演出を選択できるゾ",
-            s"$RESET$UNDERLINE${DARK_RED}クリックで演出一覧を開く",
-          )
+          .lore(s"$RESET${GRAY}スキル使用時の演出を選択できるゾ", s"$RESET$UNDERLINE${DARK_RED}クリックで演出一覧を開く")
           .build(),
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_BREWING_STAND_BREW, 1f, 0.5f),
@@ -477,7 +503,9 @@ object ActiveSkillMenu extends Menu {
     }
   }
 
-  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
+  override def computeMenuLayout(
+    player: Player
+  )(implicit environment: Environment): IO[MenuSlotLayout] = {
     import cats.implicits._
     import environment._
     import eu.timepit.refined.auto._
@@ -496,21 +524,18 @@ object ActiveSkillMenu extends Menu {
 
     val dynamicPartComputation = List(
       ChestSlotRef(0, 0) -> computeStatusButton,
-
       ChestSlotRef(0, 3) -> computeSkillButtonFor(EbifriDrive),
       ChestSlotRef(0, 4) -> computeSkillButtonFor(HolyShot),
       ChestSlotRef(0, 5) -> computeSkillButtonFor(TsarBomba),
       ChestSlotRef(0, 6) -> computeSkillButtonFor(ArcBlast),
       ChestSlotRef(0, 7) -> computeSkillButtonFor(PhantasmRay),
       ChestSlotRef(0, 8) -> computeSkillButtonFor(Supernova),
-
       ChestSlotRef(1, 3) -> computeSkillButtonFor(TomBoy),
       ChestSlotRef(1, 4) -> computeSkillButtonFor(Thunderstorm),
       ChestSlotRef(1, 5) -> computeSkillButtonFor(StarlightBreaker),
       ChestSlotRef(1, 6) -> computeSkillButtonFor(EarthDivide),
       ChestSlotRef(1, 7) -> computeSkillButtonFor(HeavenGaeBolg),
       ChestSlotRef(1, 8) -> computeSkillButtonFor(Decision),
-
       ChestSlotRef(2, 0) -> computeSkillButtonFor(DualBreak),
       ChestSlotRef(2, 1) -> computeSkillButtonFor(TrialBreak),
       ChestSlotRef(2, 2) -> computeSkillButtonFor(Explosion),
@@ -520,20 +545,15 @@ object ActiveSkillMenu extends Menu {
       ChestSlotRef(2, 6) -> computeSkillButtonFor(BrilliantDetonation),
       ChestSlotRef(2, 7) -> computeSkillButtonFor(LemuriaImpact),
       ChestSlotRef(2, 8) -> computeSkillButtonFor(EternalVice),
-
       ChestSlotRef(3, 3) -> computeSkillButtonFor(WhiteBreath),
       ChestSlotRef(3, 4) -> computeSkillButtonFor(AbsoluteZero),
       ChestSlotRef(3, 5) -> computeSkillButtonFor(DiamondDust),
-
       ChestSlotRef(4, 3) -> computeSkillButtonFor(LavaCondensation),
       ChestSlotRef(4, 4) -> computeSkillButtonFor(MoerakiBoulders),
       ChestSlotRef(4, 5) -> computeSkillButtonFor(Eldfell),
-
       ChestSlotRef(4, 7) -> computeSkillButtonFor(VenderBlizzard),
-      ChestSlotRef(4, 8) -> computeSkillButtonFor(AssaultArmor),
-    )
-      .map(_.sequence)
-      .sequence
+      ChestSlotRef(4, 8) -> computeSkillButtonFor(AssaultArmor)
+    ).traverse(_.sequence)
 
     for {
       dynamicPart <- dynamicPartComputation

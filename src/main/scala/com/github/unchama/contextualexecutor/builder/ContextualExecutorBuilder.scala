@@ -1,9 +1,14 @@
 package com.github.unchama.contextualexecutor.builder
 
 import cats.data.{Kleisli, OptionT}
-import cats.effect.{ConcurrentEffect, IO}
+import cats.effect.{Effect, IO}
 import com.github.unchama.contextualexecutor.executors.PrintUsageExecutor
-import com.github.unchama.contextualexecutor.{ContextualExecutor, ParsedArgCommandContext, PartiallyParsedArgs, RawCommandContext}
+import com.github.unchama.contextualexecutor.{
+  ContextualExecutor,
+  ParsedArgCommandContext,
+  PartiallyParsedArgs,
+  RawCommandContext
+}
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -17,36 +22,51 @@ import scala.reflect.ClassTag
  * 各引数はビルドされる[ContextualExecutor]において異常系を見つけるとすぐに[RawCommandContext.sender]に応答を送り返す.
  * この副作用を内包させるために[[IO]]への関数として宣言されている.
  *
- * @tparam CS 生成するExecutorが受け付ける[CommandSender]のサブタイプの上限
- * @param senderTypeValidation [CommandSender]の[CS]へのダウンキャストを試みる関数
- * @param argumentsParser      [RawCommandContext]から[PartiallyParsedArgs]の作成を試みる関数
- * @param contextualExecution  [ParsedArgCommandContext]に基づいてコマンドの副作用を計算する関数
+ * @tparam CS
+ *   生成するExecutorが受け付ける[CommandSender]のサブタイプの上限
+ * @param senderTypeValidation
+ *   [CommandSender]の[CS]へのダウンキャストを試みる関数
+ * @param argumentsParser
+ *   [RawCommandContext]から[PartiallyParsedArgs]の作成を試みる関数
+ * @param contextualExecution
+ *   [ParsedArgCommandContext]に基づいてコマンドの副作用を計算する関数
  */
-case class ContextualExecutorBuilder[CS <: CommandSender](senderTypeValidation: SenderTypeValidation[CS],
-                                                          argumentsParser: CommandArgumentsParser[CS],
-                                                          contextualExecution: ScopedContextualExecution[CS]) {
+case class ContextualExecutorBuilder[CS <: CommandSender](
+  senderTypeValidation: SenderTypeValidation[CS],
+  argumentsParser: CommandArgumentsParser[CS],
+  contextualExecution: ScopedContextualExecution[CS]
+) {
 
   /**
-   * @param parsers            i番目にi番目の引数の変換を試みるような関数が入ったリスト
-   * @param onMissingArguments 引数がパーサに対して不足しているときに[RawCommandContext]を用いて実行する[ContextualExecutor]
-   * @return [argumentsParser]に, [parsers]と[onMissingArguments]が組み合わされた関数が入った新しい[ContextualExecutorBuilder].
+   * @param parsers
+   *   i番目にi番目の引数の変換を試みるような関数が入ったリスト
+   * @param onMissingArguments
+   *   引数がパーサに対して不足しているときに[RawCommandContext]を用いて実行する[ContextualExecutor]
+   * @return
+   *   [argumentsParser]に,
+   *   [parsers]と[onMissingArguments]が組み合わされた関数が入った新しい[ContextualExecutorBuilder].
    */
-  def argumentsParsers(parsers: List[SingleArgumentParser],
-                       onMissingArguments: ContextualExecutor = PrintUsageExecutor): ContextualExecutorBuilder[CS] = {
+  def argumentsParsers(
+    parsers: List[SingleArgumentParser],
+    onMissingArguments: ContextualExecutor = PrintUsageExecutor
+  ): ContextualExecutorBuilder[CS] = {
     val combinedParser: CommandArgumentsParser[CS] = {
       case (refinedSender, context: RawCommandContext) =>
         @scala.annotation.tailrec
-        def parse(remainingParsers: List[SingleArgumentParser],
-                  remainingArgs: List[String],
-                  reverseAccumulator: List[Any] = List()): Either[IO[Unit], PartiallyParsedArgs] = {
+        def parse(
+          remainingParsers: List[SingleArgumentParser],
+          remainingArgs: List[String],
+          reverseAccumulator: List[Any] = List()
+        ): Either[IO[Unit], PartiallyParsedArgs] = {
           val (parserHead, parserTail) = remainingParsers match {
             case ::(head, next) => (head, next)
-            case Nil => return Right(PartiallyParsedArgs(reverseAccumulator.reverse, remainingArgs))
+            case Nil =>
+              return Right(PartiallyParsedArgs(reverseAccumulator.reverse, remainingArgs))
           }
 
           val (argHead, argTail) = remainingArgs match {
             case ::(head, next) => (head, next)
-            case Nil => return Left(onMissingArguments.executeWith(context))
+            case Nil            => return Left(onMissingArguments.executionWith(context))
           }
 
           parserHead(argHead) match {
@@ -57,7 +77,7 @@ case class ContextualExecutorBuilder[CS <: CommandSender](senderTypeValidation: 
 
         parse(parsers, context.args) match {
           case Right(partiallyParsed) => IO.pure(Some(partiallyParsed))
-          case Left(effect) => effect.map(_ => None)
+          case Left(effect)           => effect.map(_ => None)
         }
     }
 
@@ -78,14 +98,23 @@ case class ContextualExecutorBuilder[CS <: CommandSender](senderTypeValidation: 
    *
    * [ContextualExecutor]の制約にあるとおり, [execution]は任意スレッドでの実行に対応しなければならない.
    */
-  def executionF[F[_]: ConcurrentEffect, U](execution: ExecutionF[F, CS, U]): ContextualExecutorBuilder[CS] =
-    this.copy(
-      contextualExecution = context => {
-        ConcurrentEffect[F]
-          .toIO(execution(context))
-          .as(TargetedEffect.emptyEffect)
-      }
-    )
+  def executionF[F[_]: Effect, U](
+    execution: ExecutionF[F, CS, U]
+  ): ContextualExecutorBuilder[CS] =
+    this.copy(contextualExecution = context => {
+      Effect[F].toIO(execution(context)).as(TargetedEffect.emptyEffect)
+    })
+
+  /**
+   * [contextualExecution]に[execution]に相当する関数が入った新しい[ContextualExecutorBuilder]を作成する.
+   * ここで、`execution` はコンテキストを受け取って、 コマンド実行者に対する作用(`Kleisli[F, CS, U]`) を起こすようなプログラムである.
+   *
+   * [ContextualExecutor]の制約にあるとおり, [execution]は任意スレッドでの実行に対応しなければならない.
+   */
+  def executionCSEffect[F[_]: Effect, U](
+    execution: ExecutionCSEffect[F, CS, U]
+  ): ContextualExecutorBuilder[CS] =
+    executionF[F, U](context => execution(context).run(context.sender))
 
   /**
    * [[contextualExecution]]に、コンテキストを利用せずに走る `effect` が入った
@@ -97,33 +126,39 @@ case class ContextualExecutorBuilder[CS <: CommandSender](senderTypeValidation: 
     execution(_ => IO.pure(effect.map(_ => ())))
 
   /**
-   * @return [CS]を[CS1]へ狭めるキャストを試み,
-   *         失敗すると[message]がエラーメッセージとして返る[senderTypeValidation]が入った
-   *         新しい[ContextualExecutorBuilder]
+   * @return
+   *   [CS]を[CS1]へ狭めるキャストを試み, 失敗すると[message]がエラーメッセージとして返る[senderTypeValidation]が入った
+   *   新しい[ContextualExecutorBuilder]
    */
-  def refineSenderWithError[CS1 <: CS : ClassTag](message: String): ContextualExecutorBuilder[CS1] =
+  def refineSenderWithError[CS1 <: CS: ClassTag](
+    message: String
+  ): ContextualExecutorBuilder[CS1] =
     refineSender(MessageEffect(message))
 
   /**
-   * @return [CS]を[CS1]へ狭めるキャストを試み,
-   *         失敗すると[messages]がエラーメッセージとして返る[senderTypeValidation]が入った
-   *         新しい[ContextualExecutorBuilder]
+   * @return
+   *   [CS]を[CS1]へ狭めるキャストを試み, 失敗すると[messages]がエラーメッセージとして返る[senderTypeValidation]が入った
+   *   新しい[ContextualExecutorBuilder]
    */
-  def refineSenderWithError[CS1 <: CS : ClassTag](messages: List[String]): ContextualExecutorBuilder[CS1] =
+  def refineSenderWithError[CS1 <: CS: ClassTag](
+    messages: List[String]
+  ): ContextualExecutorBuilder[CS1] =
     refineSender(MessageEffect(messages))
 
   /**
-   * @return [CS]を[CS1]へ狭めるキャストを試み,
-   *         失敗したら[errorMessageOnFail]が返るような[senderTypeValidation]が入った
-   *         新しい[ContextualExecutorBuilder]
+   * @return
+   *   [CS]を[CS1]へ狭めるキャストを試み, 失敗したら[errorMessageOnFail]が返るような[senderTypeValidation]が入った
+   *   新しい[ContextualExecutorBuilder]
    */
-  def refineSender[CS1 <: CS : ClassTag](effectOnFail: TargetedEffect[CommandSender]): ContextualExecutorBuilder[CS1] = {
+  def refineSender[CS1 <: CS: ClassTag](
+    effectOnFail: TargetedEffect[CommandSender]
+  ): ContextualExecutorBuilder[CS1] = {
     val newSenderTypeValidation: SenderTypeValidation[CS1] = { sender =>
       val verificationProgram = for {
         refined1 <- OptionT(senderTypeValidation(sender))
         refined2: CS1 <- refined1 match {
           case refined1: CS1 => OptionT.pure[IO](refined1)
-          case _ => OptionT[IO, Nothing](effectOnFail(sender).map(_ => None))
+          case _             => OptionT[IO, Nothing](effectOnFail(sender).map(_ => None))
         }
       } yield refined2
 
@@ -138,12 +173,11 @@ case class ContextualExecutorBuilder[CS <: CommandSender](senderTypeValidation: 
    *
    * 生成された[ContextualExecutor]は,
    *
-   *  - 先ず, 送信者が[CS]であるかを確認する
-   *  - 次に, 引数のパースを試みる
-   *  - 最後に, 変換された引数を用いて[ParsedArgCommandContext]を作成し,
-   * それを用いて[contextualExecution]で指定される動作を行う
+   *   - 先ず, 送信者が[CS]であるかを確認する
+   *   - 次に, 引数のパースを試みる
+   *   - 最後に, 変換された引数を用いて[ParsedArgCommandContext]を作成し, それを用いて[contextualExecution]で指定される動作を行う
    *
-   * 処理を[ContextualExecutor.executeWith]内で行う.
+   * 処理を[ContextualExecutor.executionWith]内で行う.
    */
   def build(): ContextualExecutor = (rawContext: RawCommandContext) => {
     val optionalExecution = for {
@@ -162,7 +196,9 @@ object ContextualExecutorBuilder {
   private val defaultArgumentParser: CommandArgumentsParser[CommandSender] = {
     case (_, context) => IO.pure(Some(PartiallyParsedArgs(List(), context.args)))
   }
-  private val defaultExecution: ScopedContextualExecution[CommandSender] = { _ => IO(emptyEffect) }
+  private val defaultExecution: ScopedContextualExecution[CommandSender] = { _ =>
+    IO(emptyEffect)
+  }
   private val defaultSenderValidation: SenderTypeValidation[CommandSender] = {
     sender: CommandSender => IO.pure(Some(sender))
   }

@@ -5,98 +5,96 @@ import com.github.unchama.generic.CachedFunction
 import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, XYZTuple, syntax}
 import com.github.unchama.seichiassist.seichiskill.SeichiSkill._
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Active
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.CardinalDirection
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.entity.Player
 
 class BreakArea private (skill: SeichiSkill, usageIntention: SeichiSkillUsageMode) {
-  //南向きを基準として破壊の範囲座標
+  // 南向きを基準として破壊の範囲座標
   val breakLength: XYZTuple = skill.range.effectChunkSize
 
-  //破壊回数
+  // 破壊回数
   val breakNum: Int = skill.range match {
-    case range: ActiveSkillRange => range match {
-      case ActiveSkillRange.MultiArea(_, areaCount) => areaCount
-      case ActiveSkillRange.RemoteArea(_) => 1
-    }
+    case range: ActiveSkillRange =>
+      range match {
+        case ActiveSkillRange.MultiArea(_, areaCount) => areaCount
+        case ActiveSkillRange.RemoteArea(_)           => 1
+      }
     case _: AssaultSkillRange => 1
   }
 
   val isAssaultSkill: Boolean = skill.range.isInstanceOf[AssaultSkillRange]
 
-  private val breakAreaListFromDirection: String => List[AxisAlignedCuboid] = CachedFunction { dir: String =>
-    import BreakArea.CoordinateManipulation._
-    import syntax._
+  private val breakAreaListFromDirection: CardinalDirection => List[AxisAlignedCuboid] =
+    CachedFunction { dir =>
+      import BreakArea.CoordinateManipulation._
+      import syntax._
 
-    val firstShift: AxisAlignedCuboid => AxisAlignedCuboid =
-      if (isAssaultSkill) {
-        if (skill == AssaultArmor) {
-          areaShift(XYZTuple(0, (breakLength.y - 1) / 2 - 1, 0))
+      val firstShift: AxisAlignedCuboid => AxisAlignedCuboid =
+        if (isAssaultSkill) {
+          if (skill == AssaultArmor) {
+            areaShift(XYZTuple(0, (breakLength.y - 1) / 2 - 1, 0))
+          } else {
+            identity
+          }
+        } else if (dir == CardinalDirection.Up || dir == CardinalDirection.Down) {
+          // 上向きまたは下向きの時
+          if (Seq(DualBreak, TrialBreak).contains(skill)) {
+            identity
+          } else {
+            areaShift(XYZTuple(0, (breakLength.y - 1) / 2, 0))
+          }
         } else {
-          identity
+          // それ以外の範囲
+          areaShift(XYZTuple(0, (breakLength.y - 1) / 2 - 1, (breakLength.z - 1) / 2))
         }
-      } else if (dir == "U" || dir == "D") {
-        //上向きまたは下向きの時
-        if (Seq(DualBreak, TrialBreak).contains(skill)) {
+
+      val secondShift: AxisAlignedCuboid => AxisAlignedCuboid =
+        if (Seq(DualBreak, TrialBreak).contains(skill))
+          incrementYOfEnd
+        else
           identity
-        } else  {
-          areaShift(XYZTuple(0, (breakLength.y - 1) / 2, 0))
+
+      val thirdShift: AxisAlignedCuboid => AxisAlignedCuboid =
+        if (Seq(DualBreak, TrialBreak).contains(skill) && usageIntention == Active)
+          areaShift(XYZTuple(0, 1, 0))
+        else
+          identity
+
+      val directionalShift: AxisAlignedCuboid => AxisAlignedCuboid =
+        dir match {
+          case CardinalDirection.North | CardinalDirection.East | CardinalDirection.South |
+              CardinalDirection.West =>
+            areaShift(XYZTuple(0, 0, breakLength.z))
+          case CardinalDirection.Up | CardinalDirection.Down
+              if !Seq(DualBreak, TrialBreak).contains(skill) =>
+            areaShift(XYZTuple(0, breakLength.y, 0))
+          case _ => identity
         }
-      } else {
-        //それ以外の範囲
-        areaShift(XYZTuple(0, (breakLength.y - 1) / 2 - 1, (breakLength.z - 1) / 2))
+
+      val rotation: AxisAlignedCuboid => AxisAlignedCuboid =
+        dir match {
+          case CardinalDirection.North                   => rotateXZ(180)
+          case CardinalDirection.East                    => rotateXZ(270)
+          case CardinalDirection.West                    => rotateXZ(90)
+          case CardinalDirection.Down if !isAssaultSkill => invertY
+          // 横向きのスキル発動の場合Sが基準となり、
+          // 縦向きの場合Uが基準となっているため回転しないで良い
+          case CardinalDirection.South | CardinalDirection.Up | _ => identity
+        }
+
+      val firstArea = {
+        // 中心が(0,0,0)である領域(start = -end)を変形していく。
+        val end = (breakLength - XYZTuple(1, 1, 1)) / 2.0
+        val start = end.negative
+
+        import scala.util.chaining._
+
+        AxisAlignedCuboid(end, start).pipe(firstShift).pipe(secondShift).pipe(thirdShift)
       }
 
-    val secondShift: AxisAlignedCuboid => AxisAlignedCuboid =
-      if (Seq(DualBreak, TrialBreak).contains(skill))
-        incrementYOfEnd
-      else
-        identity
-
-    val thirdShift: AxisAlignedCuboid => AxisAlignedCuboid =
-      if (Seq(DualBreak, TrialBreak).contains(skill) && usageIntention == Active)
-        areaShift(XYZTuple(0, 1, 0))
-      else
-        identity
-
-    val directionalShift: AxisAlignedCuboid => AxisAlignedCuboid =
-      dir match {
-        case "N" | "E" | "S" | "W" =>
-          areaShift(XYZTuple(0, 0, breakLength.z))
-        case "U" | "D" if !Seq(DualBreak, TrialBreak).contains(skill) =>
-          areaShift(XYZTuple(0, breakLength.y, 0))
-        case _ => identity
-      }
-
-    val rotation: AxisAlignedCuboid => AxisAlignedCuboid =
-      dir match {
-        case "N" => rotateXZ(180)
-        case "E" => rotateXZ(270)
-        case "W" => rotateXZ(90)
-        case "D" if !isAssaultSkill => invertY
-        // 横向きのスキル発動の場合Sが基準となり、
-        // 縦向きの場合Uが基準となっているため回転しないで良い
-        case "S" | "U" | _ => identity
-      }
-
-    val firstArea = {
-      // 中心が(0,0,0)である領域(start = -end)を変形していく。
-      val end = (breakLength - XYZTuple(1, 1, 1)) / 2.0
-      val start = end.negative
-
-      import scala.util.chaining._
-
-      AxisAlignedCuboid(end, start)
-        .pipe(firstShift)
-        .pipe(secondShift)
-        .pipe(thirdShift)
+      LazyList.iterate(firstArea)(directionalShift).map(rotation).take(breakNum).toList
     }
-
-    LazyList
-      .iterate(firstArea)(directionalShift)
-      .map(rotation)
-      .take(breakNum)
-      .toList
-  }
 
   def makeBreakArea(player: Player): IO[List[AxisAlignedCuboid]] =
     BreakArea.getCardinalDirection(player).map(breakAreaListFromDirection)
@@ -104,20 +102,24 @@ class BreakArea private (skill: SeichiSkill, usageIntention: SeichiSkillUsageMod
 }
 
 object BreakArea {
-  private val getCardinalDirection: Player => IO[String] = { player => IO { BreakUtil.getCardinalDirection(player) } }
+  private val getCardinalDirection: Player => IO[CardinalDirection] = { player =>
+    IO { BreakUtil.getCardinalDirection(player) }
+  }
 
   object CoordinateManipulation {
     import syntax._
 
     val incrementYOfEnd: AxisAlignedCuboid => AxisAlignedCuboid = {
-      case area@AxisAlignedCuboid(_, end@XYZTuple(_, y, _)) =>
+      case area @ AxisAlignedCuboid(_, end @ XYZTuple(_, y, _)) =>
         area.copy(end = end.copy(y = y + 1))
     }
 
-    val invertY: AxisAlignedCuboid => AxisAlignedCuboid = { case AxisAlignedCuboid(begin, end) =>
-      def invertYOfVector(vector: XYZTuple): XYZTuple = XYZTuple(vector.x, -vector.y, vector.z)
+    val invertY: AxisAlignedCuboid => AxisAlignedCuboid = {
+      case AxisAlignedCuboid(begin, end) =>
+        def invertYOfVector(vector: XYZTuple): XYZTuple =
+          XYZTuple(vector.x, -vector.y, vector.z)
 
-      AxisAlignedCuboid(invertYOfVector(begin), invertYOfVector(end))
+        AxisAlignedCuboid(invertYOfVector(begin), invertYOfVector(end))
     }
 
     def areaShift(vector: XYZTuple): AxisAlignedCuboid => AxisAlignedCuboid = {
@@ -125,17 +127,27 @@ object BreakArea {
         AxisAlignedCuboid(begin + vector, end + vector)
     }
 
-    def rotateXZ(d: Int): AxisAlignedCuboid => AxisAlignedCuboid = { case AxisAlignedCuboid(begin, end) =>
-      d match {
-        case 90 =>
-          AxisAlignedCuboid(XYZTuple(-end.z, begin.y, begin.x), XYZTuple(-begin.z, end.y, end.x))
-        case 180 =>
-          AxisAlignedCuboid(XYZTuple(begin.x, begin.y, -end.z), XYZTuple(end.x, end.y, -begin.z))
-        case 270 =>
-          AxisAlignedCuboid(XYZTuple(begin.z, begin.y, begin.x), XYZTuple(end.z, end.y, end.x))
-        case 360 =>
-          AxisAlignedCuboid(begin, end)
-      }
+    def rotateXZ(d: Int): AxisAlignedCuboid => AxisAlignedCuboid = {
+      case AxisAlignedCuboid(begin, end) =>
+        d match {
+          case 90 =>
+            AxisAlignedCuboid(
+              XYZTuple(-end.z, begin.y, begin.x),
+              XYZTuple(-begin.z, end.y, end.x)
+            )
+          case 180 =>
+            AxisAlignedCuboid(
+              XYZTuple(begin.x, begin.y, -end.z),
+              XYZTuple(end.x, end.y, -begin.z)
+            )
+          case 270 =>
+            AxisAlignedCuboid(
+              XYZTuple(begin.z, begin.y, begin.x),
+              XYZTuple(end.z, end.y, end.x)
+            )
+          case 360 =>
+            AxisAlignedCuboid(begin, end)
+        }
     }
   }
 

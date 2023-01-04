@@ -2,17 +2,13 @@ package com.github.unchama.seichiassist.subsystems.autosave.application
 
 import cats.Applicative
 import cats.effect.{Sync, Timer}
-import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
+import com.github.unchama.concurrent.RepeatingRoutine
 import org.bukkit.ChatColor.AQUA
 
 object WorldSaveRoutine {
-  def apply[
-    F[_]
-    : Sync
-    : CanSaveWorlds
-    : CanNotifySaves
-    : Timer
-  ]()(implicit configuration: SystemConfiguration, context: RepeatingTaskContext): F[Nothing] = {
+  def apply[F[_]: Sync: CanSaveWorlds: CanNotifySaves: Timer]()(
+    implicit configuration: SystemConfiguration
+  ): F[Nothing] = {
     import cats.implicits._
 
     import scala.concurrent.duration._

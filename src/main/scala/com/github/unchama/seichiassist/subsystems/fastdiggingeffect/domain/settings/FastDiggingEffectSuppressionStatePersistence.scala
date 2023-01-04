@@ -4,4 +4,5 @@ import com.github.unchama.generic.RefDict
 
 import java.util.UUID
 
-trait FastDiggingEffectSuppressionStatePersistence[F[_]] extends RefDict[F, UUID, FastDiggingEffectSuppressionState]
+trait FastDiggingEffectSuppressionStatePersistence[F[_]]
+    extends RefDict[F, UUID, FastDiggingEffectSuppressionState]

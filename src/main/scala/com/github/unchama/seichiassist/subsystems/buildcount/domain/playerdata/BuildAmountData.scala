@@ -2,7 +2,12 @@ package com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata
 
 import cats.Order
 import cats.kernel.Monoid
-import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.{BuildAssistExpTable, BuildExpAmount, BuildLevel, BuildLevelProgress}
+import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.{
+  BuildAssistExpTable,
+  BuildExpAmount,
+  BuildLevel,
+  BuildLevelProgress
+}
 
 /**
  * BuildAssistが管理する建築量データ。
@@ -23,7 +28,10 @@ case class BuildAmountData(expAmount: BuildExpAmount) {
       val (nextThreshold, previousThreshold) = {
         val nextLevel = levelCorrespondingToExp.incremented
 
-        (BuildAssistExpTable.expAt(nextLevel), BuildAssistExpTable.expAt(levelCorrespondingToExp))
+        (
+          BuildAssistExpTable.expAt(nextLevel),
+          BuildAssistExpTable.expAt(levelCorrespondingToExp)
+        )
       }
 
       val required = nextThreshold |-| previousThreshold
@@ -33,7 +41,11 @@ case class BuildAmountData(expAmount: BuildExpAmount) {
     }
   }
 
-  def modifyExpAmount(f: BuildExpAmount => BuildExpAmount): BuildAmountData = copy(expAmount = f(expAmount))
+  def modifyExpAmount(f: BuildExpAmount => BuildExpAmount): BuildAmountData =
+    copy(expAmount = f(expAmount))
+
+  def addExpAmount(another: BuildExpAmount): BuildAmountData =
+    modifyExpAmount(_.add(another))
 
 }
 

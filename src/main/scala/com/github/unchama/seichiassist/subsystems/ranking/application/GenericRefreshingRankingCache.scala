@@ -15,19 +15,22 @@ import scala.concurrent.duration.DurationInt
 
 object GenericRefreshingRankingCache {
 
-  def withPersistence[
-    F[_] : Concurrent : Timer : ErrorLogger, R: Order: Monoid
-  ](persistence: RankingRecordPersistence[F, R]): F[ReadOnlyRef[F, Ranking[R]]] =
+  def withPersistence[F[_]: Concurrent: Timer: ErrorLogger, R: Order: Monoid](
+    persistence: RankingRecordPersistence[F, R]
+  ): F[ReadOnlyRef[F, Ranking[R]]] =
     for {
       initialRankingRecords <- persistence.getAllRankingRecords
       rankingRef <- Ref.of(new Ranking(initialRankingRecords))
       _ <-
-        StreamExtra.compileToRestartingStream[F, Unit]("[GenericRefreshingRankingCache]") {
-          fs2.Stream
-            .awakeEvery[F](30.seconds)
-            .evalMap(_ => persistence.getAllRankingRecords)
-            .evalTap(newRecords => rankingRef.set(new Ranking(newRecords)))
-        }.start
+        StreamExtra
+          .compileToRestartingStream[F, Unit]("[GenericRefreshingRankingCache]") {
+            fs2
+              .Stream
+              .awakeEvery[F](30.seconds)
+              .evalMap(_ => persistence.getAllRankingRecords)
+              .evalTap(newRecords => rankingRef.set(new Ranking(newRecords)))
+          }
+          .start
     } yield ReadOnlyRef.fromRef(rankingRef)
 
 }

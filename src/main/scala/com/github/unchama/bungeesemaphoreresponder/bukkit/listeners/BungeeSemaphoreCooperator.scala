@@ -6,17 +6,20 @@ import com.github.unchama.bungeesemaphoreresponder.Configuration
 import com.github.unchama.bungeesemaphoreresponder.domain.actions.BungeeSemaphoreSynchronization
 import com.github.unchama.bungeesemaphoreresponder.domain.{PlayerDataFinalizer, PlayerName}
 import com.github.unchama.generic.EitherExtra
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
 import scala.concurrent.duration.{Duration, FiniteDuration}
 
-class BungeeSemaphoreCooperator[
-  F[_] : ConcurrentEffect : Timer
-](finalizer: PlayerDataFinalizer[F, Player])
- (implicit synchronization: BungeeSemaphoreSynchronization[F[Unit], PlayerName],
-  configuration: Configuration) extends Listener {
+class BungeeSemaphoreCooperator[F[_]: ConcurrentEffect: Timer](
+  finalizer: PlayerDataFinalizer[F, Player]
+)(
+  implicit synchronization: BungeeSemaphoreSynchronization[F[Unit], PlayerName],
+  configuration: Configuration,
+  effectEnvironment: EffectEnvironment
+) extends Listener {
 
   import cats.effect.implicits._
   import cats.implicits._
@@ -27,21 +30,26 @@ class BungeeSemaphoreCooperator[
     val name = PlayerName(player.getName)
     val timeout = configuration.saveTimeoutDuration match {
       case duration: FiniteDuration => Timer[F].sleep(duration)
-      case _: Duration.Infinite => Async[F].never
+      case _: Duration.Infinite     => Async[F].never
     }
+
+    case object TimeoutReached
+        extends Exception(s"Timeout ${configuration.saveTimeoutDuration} reached!")
 
     val program = for {
       fiber <- finalizer.onQuitOf(player).attempt.start
       result <- ConcurrentEffect[F].race(timeout, fiber.join)
       _ <- EitherExtra.unassociate(result) match {
-        case Left(error) =>
+        case Left(timeoutOrErrorOnFinalization) =>
           synchronization.notifySaveFailureOf(name) >>
-            error.traverse(ApplicativeError[F, Throwable].raiseError[Unit])
+            ApplicativeError[F, Throwable].raiseError[Unit] {
+              timeoutOrErrorOnFinalization.getOrElse(TimeoutReached)
+            }
         case Right(_) =>
           synchronization.confirmSaveCompletionOf(name)
       }
     } yield ()
 
-    program.toIO.unsafeRunAsyncAndForget()
+    effectEnvironment.unsafeRunEffectAsync("[BungeeSemaphoreCooperator] 終了処理を実行する", program)
   }
 }

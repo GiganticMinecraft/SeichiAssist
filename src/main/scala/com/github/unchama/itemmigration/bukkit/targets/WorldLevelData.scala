@@ -17,12 +17,16 @@ import org.slf4j.Logger
  *
  * `enumerateChunkCoordinates` は、ワールドを渡すとそのワールド内で変換すべきチャンク座標(x, z)を列挙する。
  *
- * @param getWorlds                 変換対象であるワールドを列挙するプログラム
- * @param enumerateChunkCoordinates ワールド内で変換すべきチャンク座標を列挙するプログラム
+ * @param getWorlds
+ *   変換対象であるワールドを列挙するプログラム
+ * @param enumerateChunkCoordinates
+ *   ワールド内で変換すべきチャンク座標を列挙するプログラム
  */
-case class WorldLevelData[F[_]](getWorlds: F[IndexedSeq[World]],
-                                enumerateChunkCoordinates: World => F[Seq[(Int, Int)]])
-                               (implicit metricsLogger: Logger, F: Concurrent[F]) extends ItemMigrationTarget[F] {
+case class WorldLevelData[F[_]](
+  getWorlds: F[IndexedSeq[World]],
+  enumerateChunkCoordinates: World => F[Seq[(Int, Int)]]
+)(implicit metricsLogger: Logger, F: Concurrent[F])
+    extends ItemMigrationTarget[F] {
 
   override def runMigration(conversion: ItemStackConversion): F[Unit] = {
     import cats.implicits._
@@ -50,16 +54,20 @@ object WorldLevelData {
 
   import cats.implicits._
 
-  private implicit class ListHasAtEvery[F[_]](val list: List[F[Unit]]) extends AnyVal {
-    def atEvery(interval: Int)(actionAt: Int => F[Unit])(implicit F: Monad[F]): List[F[Unit]] = {
-      list.mapWithIndex { case (x, index) =>
-        if ((index + 1) % interval == 0) x >> actionAt(index) else x
+  private implicit class ListHasAtEvery[F[_]](private val list: List[F[Unit]]) extends AnyVal {
+    def atEvery(
+      interval: Int
+    )(actionAt: Int => F[Unit])(implicit F: Monad[F]): List[F[Unit]] = {
+      list.mapWithIndex {
+        case (x, index) =>
+          if ((index + 1) % interval == 0) x >> actionAt(index) else x
       }
     }
   }
 
-  private def reloadWorld[F[_]](worldRef: Ref[F, World])
-                               (implicit logger: Logger, F: Sync[F]): F[Unit] = {
+  private def reloadWorld[F[_]](
+    worldRef: Ref[F, World]
+  )(implicit logger: Logger, F: Sync[F]): F[Unit] = {
     worldRef.get >>= { world =>
       F.delay {
         logger.info(s"${world.getName}を再読み込みします…")
@@ -69,14 +77,13 @@ object WorldLevelData {
           logger.warn(s"${world.getName}はアンロードされませんでした。")
         }
         Bukkit.createWorld(creator)
-      }.flatTap {
-        newWorld => F.delay(logger.info(s"${newWorld.getName}を再読み込みしました"))
-      }
+      }.flatTap { newWorld => F.delay(logger.info(s"${newWorld.getName}を再読み込みしました")) }
     } >>= worldRef.set
   }
 
-  private def migrateChunk[F[_]](conversion: ItemStackConversion, chunkCoordinate: (Int, Int))
-                                (world: World)(implicit F: Sync[F], logger: Logger): F[Unit] = F.delay {
+  private def migrateChunk[F[_]](conversion: ItemStackConversion, chunkCoordinate: (Int, Int))(
+    world: World
+  )(implicit F: Sync[F], logger: Logger): F[Unit] = F.delay {
     val chunk = world.getChunkAt(chunkCoordinate._1, chunkCoordinate._2)
 
     chunk.getTileEntities.foreach {
@@ -106,21 +113,24 @@ object WorldLevelData {
 
     F.delay {
       logger.info("チャンクの保存キューの処理を要求します…")
-    } >> F.start {
-      WorldChunkSaving.relaxFileIOThreadThrottle[F] >> F.delay {
-        logger.info("チャンクの保存キューが処理されました")
+    } >> F
+      .start {
+        WorldChunkSaving.relaxFileIOThreadThrottle[F] >> F.delay {
+          logger.info("チャンクの保存キューが処理されました")
+        }
       }
-    }.as(())
+      .as(())
   }
 
-  private def flushEntityRemovalQueue[F[_] : Sync](worldRef: Ref[F, World]): F[Unit] = {
+  private def flushEntityRemovalQueue[F[_]: Sync](worldRef: Ref[F, World]): F[Unit] = {
     import com.github.unchama.util.nms.v1_12_2.world.WorldChunkSaving
 
     worldRef.get >>= WorldChunkSaving.flushEntityRemovalQueue[F]
   }
 
-  private def logProgress[F[_]](chunkIndex: Int, totalChunks: Int)(worldRef: Ref[F, World])
-                               (implicit F: Sync[F], logger: Logger): F[Unit] = {
+  private def logProgress[F[_]](chunkIndex: Int, totalChunks: Int)(
+    worldRef: Ref[F, World]
+  )(implicit F: Sync[F], logger: Logger): F[Unit] = {
     worldRef.get >>= { world =>
       F.delay {
         val processed = chunkIndex + 1
@@ -133,17 +143,18 @@ object WorldLevelData {
   private final val progressLogInterval = 1000
   private final val reloadWorldInterval = 10000
 
-  def convertChunkWise[F[_]](originalWorld: World, targetChunks: Seq[(Int, Int)], conversion: ItemStack => ItemStack)
-                            (implicit F: Concurrent[F], logger: Logger): F[Unit] =
+  def convertChunkWise[F[_]](
+    originalWorld: World,
+    targetChunks: Seq[(Int, Int)],
+    conversion: ItemStack => ItemStack
+  )(implicit F: Concurrent[F], logger: Logger): F[Unit] =
     for {
       worldRef <- Ref.of(originalWorld)
       _ <- {
         val chunkConversionEffects: List[F[Unit]] = {
-          targetChunks
-            .map { chunkCoordinate =>
-              worldRef.get >>= migrateChunk[F](conversion, chunkCoordinate)
-            }
-            .toList
+          targetChunks.map { chunkCoordinate =>
+            worldRef.get >>= migrateChunk[F](conversion, chunkCoordinate)
+          }.toList
         }
 
         /*
@@ -159,8 +170,12 @@ object WorldLevelData {
          * GC Rootからの参照パスを特定することを推奨する。
          */
         chunkConversionEffects
-          .atEvery(chunkSaverQueueFlushInterval)(_ => flushEntityRemovalQueue(worldRef) >> queueChunkSaverFlush)
-          .atEvery(progressLogInterval)(index => logProgress(index, chunkConversionEffects.size)(worldRef))
+          .atEvery(chunkSaverQueueFlushInterval)(_ =>
+            flushEntityRemovalQueue(worldRef) >> queueChunkSaverFlush
+          )
+          .atEvery(progressLogInterval)(index =>
+            logProgress(index, chunkConversionEffects.size)(worldRef)
+          )
           .atEvery(reloadWorldInterval)(_ => reloadWorld(worldRef))
           .sequence >> reloadWorld(worldRef)
       }

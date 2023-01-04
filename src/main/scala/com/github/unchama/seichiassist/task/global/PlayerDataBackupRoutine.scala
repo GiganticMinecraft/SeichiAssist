@@ -4,7 +4,7 @@ import cats.effect.{IO, Timer}
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
-import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.SendMessageEffect
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 
@@ -28,24 +28,25 @@ object PlayerDataBackupRoutine {
 
         for {
           _ <- IO {
-            Util.sendMessageToEveryoneIgnoringPreference(s"${AQUA}プレイヤーデータセーブ中…")
+            SendMessageEffect.sendMessageToEveryoneIgnoringPreference(s"${AQUA}プレイヤーデータセーブ中…")
             Bukkit.getLogger.info(s"${AQUA}プレイヤーデータセーブ中…")
           }
           players <- IO {
             Bukkit.getOnlinePlayers.asScala.toList
           }
           _ <- players.traverse { player =>
-            PlayerDataSaveTask.savePlayerData[IO](player, SeichiAssist.playermap(player.getUniqueId))
+            PlayerDataSaveTask
+              .savePlayerData[IO](player, SeichiAssist.playermap(player.getUniqueId))
           }
           _ <- IO {
-            Util.sendMessageToEveryoneIgnoringPreference(s"${AQUA}プレイヤーデータセーブ完了")
+            SendMessageEffect.sendMessageToEveryoneIgnoringPreference(s"${AQUA}プレイヤーデータセーブ完了")
             Bukkit.getLogger.info(s"${AQUA}プレイヤーデータセーブ完了")
           }
         } yield ()
       }
 
       val updateRankingData = IO {
-        //ランキングリストを最新情報に更新する
+        // ランキングリストを最新情報に更新する
         if (!SeichiAssist.databaseGateway.playerDataManipulator.successRankingUpdate()) {
           SeichiAssist.instance.getLogger.info("ランキングデータの作成に失敗しました")
         }

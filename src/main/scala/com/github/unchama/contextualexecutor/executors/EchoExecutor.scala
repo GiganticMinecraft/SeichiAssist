@@ -9,5 +9,7 @@ import org.bukkit.command.CommandSender
  * 実行されたときに[effect]を送り返すだけの[ContextualExecutor].
  */
 case class EchoExecutor(effect: TargetedEffect[CommandSender]) extends ContextualExecutor {
-  override def executeWith(rawContext: RawCommandContext): IO[Unit] = effect(rawContext.sender)
+  override def executionWith(rawContext: RawCommandContext): IO[Unit] = effect(
+    rawContext.sender
+  )
 }

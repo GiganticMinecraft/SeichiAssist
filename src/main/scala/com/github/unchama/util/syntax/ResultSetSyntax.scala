@@ -1,9 +1,8 @@
 package com.github.unchama.util.syntax
 
-import java.sql.ResultSet
-
 import com.github.unchama.util.syntax
 
+import java.sql.ResultSet
 import scala.language.implicitConversions
 
 trait ResultSetSyntax {

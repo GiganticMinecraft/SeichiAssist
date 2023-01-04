@@ -6,7 +6,8 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
 import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.randomlyDropItemAt
 import com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki.Seizonsiki._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki.SeizonsikiItemData._
-import com.github.unchama.seichiassist.util.Util.sendMessageToEveryoneIgnoringPreference
+import com.github.unchama.seichiassist.util.SendMessageEffect.sendMessageToEveryoneIgnoringPreference
+import com.github.unchama.seichiassist.util.EntityDeathCause.isEntityKilledByThornsEnchant
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor.{DARK_GREEN, LIGHT_PURPLE, UNDERLINE}
 import org.bukkit.Sound
@@ -18,10 +19,8 @@ import org.bukkit.event.{EventHandler, Listener}
 import java.time.LocalDate
 import java.util.Random
 
-class SeizonsikiListener[
-  F[_],
-  G[_] : SyncEffect
-](implicit manaApi: ManaWriteApi[G, Player]) extends Listener {
+class SeizonsikiListener[F[_], G[_]: SyncEffect](implicit manaApi: ManaWriteApi[G, Player])
+    extends Listener {
 
   import cats.effect.implicits._
 
@@ -29,9 +28,13 @@ class SeizonsikiListener[
   def onZombieKilledByPlayer(event: EntityDeathEvent): Unit = {
     val entity = event.getEntity
     if (!isInEvent || entity == null) return
+    val killer = entity.getKiller
+    if (entity.getType != EntityType.ZOMBIE || killer == null) return
 
-    if (entity.getType == EntityType.ZOMBIE && entity.getKiller != null) {
-      randomlyDropItemAt(entity, seizonsikiZongo, itemDropRate)
+    killer match {
+      case _: Player if isEntityKilledByThornsEnchant(entity) =>
+        randomlyDropItemAt(entity, seizonsikiZongo, itemDropRate)
+      case _ =>
     }
   }
 
@@ -42,9 +45,7 @@ class SeizonsikiListener[
         s"$LIGHT_PURPLE${END_DATE}までの期間限定で、イベント『チャラゾンビたちの成ゾン式！』を開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",
         s"$DARK_GREEN$UNDERLINE$blogArticleUrl"
-      ).foreach(
-        event.getPlayer.sendMessage(_)
-      )
+      ).foreach(event.getPlayer.sendMessage(_))
     }
   }
 
@@ -59,7 +60,7 @@ class SeizonsikiListener[
     if (today.isBefore(exp)) {
       // マナを10%回復する
       manaApi.manaAmount(player).restoreFraction(0.1).runSync[SyncIO].unsafeRunSync()
-      player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
+      player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0f, 1.2f)
     } else {
       // END_DATEと同じ日かその翌日以降なら
       // 死ぬ

@@ -7,7 +7,11 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, XYZTuple}
 import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{DualBreak, TrialBreak}
-import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillNormalEffect.{Blizzard, Explosion, Meteor}
+import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillNormalEffect.{
+  Blizzard,
+  Explosion,
+  Meteor
+}
 import com.github.unchama.seichiassist.seichiskill.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.seichiskill.{ActiveSkill, ActiveSkillRange}
 import com.github.unchama.seichiassist.util.BreakUtil
@@ -27,29 +31,41 @@ sealed trait ActiveSkillEffect {
 
   def arrowEffect(implicit ioOnMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player]
 
-  def runBreakEffect(player: Player,
-                     usedSkill: ActiveSkill,
-                     tool: BreakTool,
-                     breakBlocks: Set[BlockBreakableBySkill],
-                     breakArea: AxisAlignedCuboid,
-                     standard: Location)(implicit ioOnMainThread: OnMinecraftServerThread[IO]): IO[Unit]
+  def runBreakEffect(
+    player: Player,
+    usedSkill: ActiveSkill,
+    tool: BreakTool,
+    breakBlocks: Set[BlockBreakableBySkill],
+    breakArea: AxisAlignedCuboid,
+    standard: Location
+  )(implicit ioOnMainThread: OnMinecraftServerThread[IO]): IO[Unit]
 }
 
 object ActiveSkillEffect {
   object NoEffect extends ActiveSkillEffect {
     override val nameOnUI: String = "未設定"
 
-    override def arrowEffect(implicit ioOnMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] =
+    override def arrowEffect(
+      implicit ioOnMainThread: OnMinecraftServerThread[IO]
+    ): TargetedEffect[Player] =
       ArrowEffects.normalArrowEffect
 
-    override def runBreakEffect(player: Player,
-                                usedSkill: ActiveSkill,
-                                tool: BreakTool,
-                                breakBlocks: Set[BlockBreakableBySkill],
-                                breakArea: AxisAlignedCuboid,
-                                standard: Location)
-                               (implicit ioOnMainThread: OnMinecraftServerThread[IO]): IO[Unit] =
-      BreakUtil.massBreakBlock(player, breakBlocks, player.getLocation, tool, shouldPlayBreakSound = false, Material.AIR)
+    override def runBreakEffect(
+      player: Player,
+      usedSkill: ActiveSkill,
+      tool: BreakTool,
+      breakBlocks: Set[BlockBreakableBySkill],
+      breakArea: AxisAlignedCuboid,
+      standard: Location
+    )(implicit ioOnMainThread: OnMinecraftServerThread[IO]): IO[Unit] =
+      BreakUtil.massBreakBlock(
+        player,
+        breakBlocks,
+        player.getLocation,
+        tool,
+        shouldPlayBreakSound = false,
+        Material.AIR
+      )
   }
 }
 
@@ -65,22 +81,24 @@ object UnlockableActiveSkillEffect extends Enum[UnlockableActiveSkillEffect] {
     ActiveSkillNormalEffect.values ++ ActiveSkillPremiumEffect.values
 }
 
-sealed abstract class ActiveSkillNormalEffect(stringId: String,
-                                              override val nameOnUI: String,
-                                              override val explanation: String,
-                                              override val usePoint: Int,
-                                              override val materialOnUI: Material)
-  extends UnlockableActiveSkillEffect {
+sealed abstract class ActiveSkillNormalEffect(
+  stringId: String,
+  override val nameOnUI: String,
+  override val explanation: String,
+  override val usePoint: Int,
+  override val materialOnUI: Material
+) extends UnlockableActiveSkillEffect {
 
   override val entryName: String = stringId
 
-  override def runBreakEffect(player: Player,
-                              usedSkill: ActiveSkill,
-                              tool: BreakTool,
-                              breakBlocks: Set[BlockBreakableBySkill],
-                              breakArea: AxisAlignedCuboid,
-                              standard: Location)
-                             (implicit ioOnMainThread: OnMinecraftServerThread[IO]): IO[Unit] = {
+  override def runBreakEffect(
+    player: Player,
+    usedSkill: ActiveSkill,
+    tool: BreakTool,
+    breakBlocks: Set[BlockBreakableBySkill],
+    breakArea: AxisAlignedCuboid,
+    standard: Location
+  )(implicit ioOnMainThread: OnMinecraftServerThread[IO]): IO[Unit] = {
     import PluginExecutionContexts.{asyncShift, cachedThreadPool}
     import com.github.unchama.concurrent.syntax._
     import com.github.unchama.seichiassist.data.syntax._
@@ -103,7 +121,13 @@ sealed abstract class ActiveSkillNormalEffect(stringId: String,
               .map(XYZTuple.of(standard) + _)
               .filter(PositionSearching.containsOneOfPositionsAround(_, 1, blockPositions))
           }
-          _ <- BreakUtil.massBreakBlock(player, breakBlocks, standard, tool, isSkillDualBreakOrTrialBreak)
+          _ <- BreakUtil.massBreakBlock(
+            player,
+            breakBlocks,
+            standard,
+            tool,
+            isSkillDualBreakOrTrialBreak
+          )
           _ <- IO {
             explosionLocations.foreach(coordinates =>
               world.createExplosion(coordinates.toLocation(world), 0f, false)
@@ -115,19 +139,24 @@ sealed abstract class ActiveSkillNormalEffect(stringId: String,
         for {
           _ <-
             BreakUtil.massBreakBlock(
-              player, breakBlocks, standard, tool,
-              shouldPlayBreakSound = false, Material.PACKED_ICE
+              player,
+              breakBlocks,
+              standard,
+              tool,
+              shouldPlayBreakSound = false,
+              Material.PACKED_ICE
             )
           _ <- IO.sleep(10.ticks)
           _ <- ioOnMainThread.runAction(SyncIO {
             breakBlocks
               .map(_.getLocation)
               .foreach(location =>
-                player.getWorld.spawnParticle(Particle.SNOWBALL, location, 1))
+                player.getWorld.spawnParticle(Particle.SNOWBALL, location, 1)
+              )
 
             val setEffectRadius = usedSkill.range match {
               case ActiveSkillRange.MultiArea(_, areaCount) => areaCount == 1
-              case ActiveSkillRange.RemoteArea(_) => false
+              case ActiveSkillRange.RemoteArea(_)           => false
             }
 
             breakBlocks.foreach { b =>
@@ -156,7 +185,10 @@ sealed abstract class ActiveSkillNormalEffect(stringId: String,
               val effectCoordinate = XYZTuple.of(standard) + xyzTuple
               val effectLocation = effectCoordinate.toLocation(world)
 
-              if (PositionSearching.containsOneOfPositionsAround(effectCoordinate, 1, blockPositions)) {
+              if (
+                PositionSearching
+                  .containsOneOfPositionsAround(effectCoordinate, 1, blockPositions)
+              ) {
                 world.spawnParticle(Particle.EXPLOSION_HUGE, effectLocation, 1)
               }
             }
@@ -164,7 +196,13 @@ sealed abstract class ActiveSkillNormalEffect(stringId: String,
           // [0.8, 1.2)
           vol <- IO { new Random().nextFloat() * 0.4f + 0.8f }
           _ <- FocusedSoundEffect(Sound.ENTITY_WITHER_BREAK_BLOCK, 1.0f, vol).run(player)
-          _ <- BreakUtil.massBreakBlock(player, breakBlocks, standard, tool, isSkillDualBreakOrTrialBreak)
+          _ <- BreakUtil.massBreakBlock(
+            player,
+            breakBlocks,
+            standard,
+            tool,
+            isSkillDualBreakOrTrialBreak
+          )
         } yield ()
     }
   }
@@ -172,11 +210,13 @@ sealed abstract class ActiveSkillNormalEffect(stringId: String,
   /**
    * エフェクト選択時の遠距離エフェクト
    */
-  override def arrowEffect(implicit ioOnMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] =
+  override def arrowEffect(
+    implicit ioOnMainThread: OnMinecraftServerThread[IO]
+  ): TargetedEffect[Player] =
     this match {
       case Explosion => ArrowEffects.singleArrowExplosionEffect
-      case Blizzard => ArrowEffects.singleArrowBlizzardEffect
-      case Meteor => ArrowEffects.singleArrowMeteoEffect
+      case Blizzard  => ArrowEffects.singleArrowBlizzardEffect
+      case Meteor    => ArrowEffects.singleArrowMeteoEffect
     }
 }
 
@@ -184,41 +224,53 @@ object ActiveSkillNormalEffect extends Enum[ActiveSkillNormalEffect] {
 
   val values: IndexedSeq[ActiveSkillNormalEffect] = findValues
 
-  case object Explosion extends ActiveSkillNormalEffect(
-    "ef_explosion",
-    s"${RED}エクスプロージョン", "単純な爆発", 50,
-    Material.TNT
-  )
+  case object Explosion
+      extends ActiveSkillNormalEffect(
+        "ef_explosion",
+        s"${RED}エクスプロージョン",
+        "単純な爆発",
+        50,
+        Material.TNT
+      )
 
-  case object Blizzard extends ActiveSkillNormalEffect(
-    "ef_blizzard",
-    s"${AQUA}ブリザード", "凍らせる", 70,
-    Material.PACKED_ICE
-  )
+  case object Blizzard
+      extends ActiveSkillNormalEffect(
+        "ef_blizzard",
+        s"${AQUA}ブリザード",
+        "凍らせる",
+        70,
+        Material.PACKED_ICE
+      )
 
-  case object Meteor extends ActiveSkillNormalEffect(
-    "ef_meteor",
-    s"${DARK_RED}メテオ", "隕石を落とす", 100,
-    Material.FIREBALL
-  )
+  case object Meteor
+      extends ActiveSkillNormalEffect(
+        "ef_meteor",
+        s"${DARK_RED}メテオ",
+        "隕石を落とす",
+        100,
+        Material.FIREBALL
+      )
 
 }
 
-sealed abstract class ActiveSkillPremiumEffect(stringId: String,
-                                               override val nameOnUI: String,
-                                               override val explanation: String,
-                                               override val usePoint: Int,
-                                               override val materialOnUI: Material)
-  extends UnlockableActiveSkillEffect {
+sealed abstract class ActiveSkillPremiumEffect(
+  stringId: String,
+  override val nameOnUI: String,
+  override val explanation: String,
+  override val usePoint: Int,
+  override val materialOnUI: Material
+) extends UnlockableActiveSkillEffect {
 
   override val entryName: String = stringId
 
-  def runBreakEffect(player: Player,
-                     usedSkill: ActiveSkill,
-                     tool: BreakTool,
-                     breakBlocks: Set[BlockBreakableBySkill],
-                     breakArea: AxisAlignedCuboid,
-                     standard: Location)(implicit ioOnMainThread: OnMinecraftServerThread[IO]): IO[Unit] = {
+  def runBreakEffect(
+    player: Player,
+    usedSkill: ActiveSkill,
+    tool: BreakTool,
+    breakBlocks: Set[BlockBreakableBySkill],
+    breakArea: AxisAlignedCuboid,
+    standard: Location
+  )(implicit ioOnMainThread: OnMinecraftServerThread[IO]): IO[Unit] = {
     import PluginExecutionContexts.{asyncShift, timer}
     import com.github.unchama.concurrent.syntax._
     import com.github.unchama.seichiassist.data.syntax._
@@ -227,18 +279,23 @@ sealed abstract class ActiveSkillPremiumEffect(stringId: String,
       case ActiveSkillPremiumEffect.MAGIC =>
         val colors = Array(DyeColor.RED, DyeColor.BLUE, DyeColor.YELLOW, DyeColor.GREEN)
 
-        //破壊するブロックの中心位置
+        // 破壊するブロックの中心位置
         val centerBreak: Location = standard + ((breakArea.begin + breakArea.end) / 2)
 
         for {
           randomColor <- IO { colors(Random.nextInt(colors.length)) }
-          _ <- BreakUtil.massBreakBlock(player, breakBlocks, standard, tool, shouldPlayBreakSound = false, Material.WOOL)
+          _ <- BreakUtil.massBreakBlock(
+            player,
+            breakBlocks,
+            standard,
+            tool,
+            shouldPlayBreakSound = false,
+            Material.WOOL
+          )
           _ <- IO {
             breakBlocks.foreach { b =>
               val state = b.getState
-              state
-                .getData.asInstanceOf[Wool]
-                .setColor(randomColor)
+              state.getData.asInstanceOf[Wool].setColor(randomColor)
               state.update()
             }
           }
@@ -246,8 +303,13 @@ sealed abstract class ActiveSkillPremiumEffect(stringId: String,
           period <- IO { if (SeichiAssist.DEBUG) 100 else 10 }
           _ <- IO.sleep(period.ticks)
 
-          _ <- SeichiAssist.instance.magicEffectEntityScope
-            .useTrackedForSome(BukkitResources.vanishingEntityResource[IO, Chicken](centerBreak, classOf[Chicken])) { e =>
+          _ <- SeichiAssist
+            .instance
+            .magicEffectEntityScope
+            .useTrackedForSome(
+              BukkitResources
+                .vanishingEntityResource[IO, Chicken](centerBreak, classOf[Chicken])
+            ) { e =>
               for {
                 _ <- IO {
                   e.playEffect(EntityEffect.WITCH_MAGIC)
@@ -271,7 +333,9 @@ sealed abstract class ActiveSkillPremiumEffect(stringId: String,
   /**
    * エフェクト選択時の遠距離エフェクト
    */
-  override def arrowEffect(implicit ioOnMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] =
+  override def arrowEffect(
+    implicit ioOnMainThread: OnMinecraftServerThread[IO]
+  ): TargetedEffect[Player] =
     this match {
       case ActiveSkillPremiumEffect.MAGIC => ArrowEffects.singleArrowMagicEffect
     }
@@ -281,10 +345,13 @@ case object ActiveSkillPremiumEffect extends Enum[ActiveSkillPremiumEffect] {
 
   val values: IndexedSeq[ActiveSkillPremiumEffect] = findValues
 
-  case object MAGIC extends ActiveSkillPremiumEffect(
-    "ef_magic",
-    s"$RED$UNDERLINE${BOLD}マジック", "鶏が出る手品", 10,
-    Material.RED_ROSE
-  )
+  case object MAGIC
+      extends ActiveSkillPremiumEffect(
+        "ef_magic",
+        s"$RED$UNDERLINE${BOLD}マジック",
+        "鶏が出る手品",
+        10,
+        Material.RED_ROSE
+      )
 
 }

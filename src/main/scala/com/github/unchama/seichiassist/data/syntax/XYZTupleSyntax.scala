@@ -11,13 +11,15 @@ trait XYZTupleSyntax {
   implicit class XYZTupleOps(a: XYZTuple) {
     def mapEachComponent(f: Int => Int): XYZTuple = XYZTuple(f(a.x), f(a.y), f(a.z))
 
-    def +(another: XYZTuple): XYZTuple = XYZTuple(a.x + another.x, a.y + another.y, a.z + another.z)
+    def +(another: XYZTuple): XYZTuple =
+      XYZTuple(a.x + another.x, a.y + another.y, a.z + another.z)
 
     def negative: XYZTuple = (-1) * a
 
     def -(another: XYZTuple): XYZTuple = a + another.negative
 
-    def toLocation(world: World): Location = new Location(world, a.x.toDouble, a.y.toDouble, a.z.toDouble)
+    def toLocation(world: World): Location =
+      new Location(world, a.x.toDouble, a.y.toDouble, a.z.toDouble)
 
     def /(k: Double): XYZTuple = mapEachComponent(c => (c / k).toInt)
 

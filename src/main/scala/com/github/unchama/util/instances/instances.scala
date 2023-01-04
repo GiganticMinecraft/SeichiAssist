@@ -1,4 +1,3 @@
 package com.github.unchama.util
 
-package object instances extends
-  GregorianCalendarInstances
+package object instances extends GregorianCalendarInstances

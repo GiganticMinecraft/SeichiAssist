@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Ann
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemData._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.halloween.HalloweenItemData._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYearItemData._
-import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.targetedeffect.TargetedEffect._
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
@@ -17,29 +17,22 @@ class EventCommand(implicit ioOnMainThread: OnMinecraftServerThread[IO]) {
   import com.github.unchama.targetedeffect._
 
   val christsmasGrantEffect: TargetedEffect[Player] =
-    Util.grantItemStacksEffect(
+    InventoryOperations.grantItemStacksEffect(
       christmasCake(christmasCakeDefaultPieces),
       christmasTurkey,
       christmasPotion,
       christmasChestPlate,
-      christmasPickaxe,
       christmasSock
     )
 
   val newYearGrantEffect: TargetedEffect[Player] =
-    Util.grantItemStacksEffect(
-      newYearApple,
-      newYearBag
-    )
+    InventoryOperations.grantItemStacksEffect(newYearApple, newYearBag)
 
   val halloweenGrantEffect: TargetedEffect[Player] =
-    Util.grantItemStacksEffect(
-      halloweenPotion,
-      halloweenHoe
-    )
+    InventoryOperations.grantItemStacksEffect(halloweenPotion, halloweenHoe)
 
   val anniversaryGrantEffect: TargetedEffect[Player] =
-    Util.grantItemStacksEffect(
+    InventoryOperations.grantItemStacksEffect(
       mineHead,
       strangeSapling,
       mendingBook,
@@ -50,10 +43,10 @@ class EventCommand(implicit ioOnMainThread: OnMinecraftServerThread[IO]) {
     .execution { context =>
       val effect = context.args.yetToBeParsed match {
         case "anniversary" :: _ => anniversaryGrantEffect
-        case "christmas" :: _ => christsmasGrantEffect
-        case "newyear" :: _ => newYearGrantEffect
-        case "halloween" :: _ => halloweenGrantEffect
-        case _ => emptyEffect
+        case "christmas" :: _   => christsmasGrantEffect
+        case "newyear" :: _     => newYearGrantEffect
+        case "halloween" :: _   => halloweenGrantEffect
+        case _                  => emptyEffect
       }
 
       IO.pure(effect)

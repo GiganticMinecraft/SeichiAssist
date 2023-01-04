@@ -2,11 +2,10 @@ package com.github.unchama.util
 
 import cats.Functor
 import cats.effect.Sync
-import simulacrum.typeclass
 
 import scala.util.Random
 
-@typeclass trait RandomEffect[F[_]] {
+trait RandomEffect[F[_]] {
 
   import cats.implicits._
 
@@ -37,7 +36,7 @@ import scala.util.Random
 
 object RandomEffect {
 
-  def createFromRandom[F[_] : Sync](random: Random): RandomEffect[F] = new RandomEffect[F] {
+  def createFromRandom[F[_]: Sync](random: Random): RandomEffect[F] = new RandomEffect[F] {
     override def getNaturalLessThan(n: Int): F[Int] = Sync[F].delay {
       random.nextInt(n)
     }
@@ -50,5 +49,7 @@ object RandomEffect {
       random.nextDouble()
     }
   }
+
+  def apply[F[_]: RandomEffect]: RandomEffect[F] = implicitly
 
 }

@@ -21,18 +21,14 @@ object V1_0_0_MigrateMebiusToNewCodec {
 
   val ownerResolutionError = s"$RESET${DARK_RED}エラー：所有者が見つかりません。"
 
-  //noinspection DuplicatedCode
+  // noinspection DuplicatedCode
   object OldBukkitMebiusItemStackCodec {
 
     import de.tr7zw.itemnbtapi.NBTItem
     import org.bukkit.inventory.ItemStack
 
-    private val mebiusLoreHead = List(
-      s"$RESET",
-      s"$RESET${AQUA}初心者をサポートする不思議なヘルメット。",
-      s"$RESET${AQUA}整地により成長する。",
-      ""
-    )
+    private val mebiusLoreHead =
+      List(s"$RESET", s"$RESET${AQUA}初心者をサポートする不思議なヘルメット。", s"$RESET${AQUA}整地により成長する。", "")
     private val ownerLoreRowPrefix = s"$RESET${DARK_GREEN}所有者："
     private val levelLoreRowPrefix = s"$RESET$RED${BOLD}アイテムLv. "
     def isNewMebius(itemStack: ItemStack): Boolean = {
@@ -75,18 +71,20 @@ object V1_0_0_MigrateMebiusToNewCodec {
       Some(OldMebiusRawProperty(ownerName, mebiusLevel, nickname, mebiusName))
     }
 
-    case class OldMebiusRawProperty(ownerPlayerId: String,
-                                    level: Int,
-                                    ownerNicknameOverride: Option[String] = None,
-                                    mebiusName: String)
+    case class OldMebiusRawProperty(
+      ownerPlayerId: String,
+      level: Int,
+      ownerNicknameOverride: Option[String] = None,
+      mebiusName: String
+    )
 
   }
 
   import eu.timepit.refined.auto._
 
-  def migrationFunction(itemStack: ItemStack)(implicit
-                                              repository: UuidRepository[SyncIO],
-                                              logger: Logger): ItemStack = {
+  def migrationFunction(
+    itemStack: ItemStack
+  )(implicit repository: UuidRepository[SyncIO], logger: Logger): ItemStack = {
     val OldMebiusRawProperty(ownerPlayerId, level, ownerNicknameOverride, mebiusName) =
       OldBukkitMebiusItemStackCodec
         .decodeOldMebiusProperty(itemStack)
@@ -133,7 +131,10 @@ object V1_0_0_MigrateMebiusToNewCodec {
     nbtItem.getItem
   }
 
-  def migration(implicit uuidRepository: UuidRepository[SyncIO], logger: Logger): ItemMigration = ItemMigration(
+  def migration(
+    implicit uuidRepository: UuidRepository[SyncIO],
+    logger: Logger
+  ): ItemMigration = ItemMigration(
     ItemMigrationVersionNumber(1, 0, 0),
     MigrationHelper.delegateConversionForContainers(migrationFunction)
   )

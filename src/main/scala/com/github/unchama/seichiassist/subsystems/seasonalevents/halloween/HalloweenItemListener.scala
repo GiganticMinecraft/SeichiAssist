@@ -1,7 +1,14 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.halloween
 
-import com.github.unchama.seichiassist.subsystems.seasonalevents.halloween.Halloween.{blogArticleUrl, END_DATE, isInEvent}
-import com.github.unchama.seichiassist.subsystems.seasonalevents.halloween.HalloweenItemData.{isHalloweenHoe, isHalloweenPotion}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.halloween.Halloween.{
+  END_DATE,
+  blogArticleUrl,
+  isInEvent
+}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.halloween.HalloweenItemData.{
+  isHalloweenHoe,
+  isHalloweenPotion
+}
 import com.github.unchama.util.external.WorldGuardWrapper.isRegionMember
 import org.bukkit.ChatColor.{DARK_GREEN, LIGHT_PURPLE, UNDERLINE}
 import org.bukkit.Material
@@ -22,9 +29,7 @@ object HalloweenItemListener extends Listener {
         s"$LIGHT_PURPLE${END_DATE}までの期間限定で、ハロウィンイベントを開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",
         s"$DARK_GREEN$UNDERLINE$blogArticleUrl"
-      ).foreach(
-        event.getPlayer.sendMessage(_)
-      )
+      ).foreach(event.getPlayer.sendMessage(_))
     }
   }
 
@@ -33,7 +38,9 @@ object HalloweenItemListener extends Listener {
     if (isHalloweenPotion(event.getItem)) {
       // 1.12.2では、Saturationのポーションは効果がないので、PotionEffectとして直接Playerに付与する
       // 10分
-      event.getPlayer.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 20 * 60 * 10, 0), true)
+      event
+        .getPlayer
+        .addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 20 * 60 * 10, 0), true)
     }
   }
 
@@ -65,6 +72,9 @@ object HalloweenItemListener extends Listener {
   }
 
   private def canBeReplacedWithSoil(player: Player, block: Block) = {
-    (block.getType == Material.DIRT || block.getType == Material.GRASS) && isRegionMember(player, block.getLocation)
+    (block.getType == Material.DIRT || block.getType == Material.GRASS) && isRegionMember(
+      player,
+      block.getLocation
+    )
   }
 }

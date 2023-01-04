@@ -3,11 +3,9 @@ package com.github.unchama.generic
 import cats.{Contravariant, ~>}
 
 /**
- * [[Key]] をキーとした参照セルの辞書型データ構造の抽象。
- * 読み書きは [[F]] のコンテキストで行われる作用として記述される。
+ * [[Key]] をキーとした参照セルの辞書型データ構造の抽象。 読み書きは [[F]] のコンテキストで行われる作用として記述される。
  *
- * (特にDBや別マシンにあるKVストアなどでは)アクセスが並列に行われる可能性があることから、
- * このI/Fは一切の等式を保証しない。
+ * (特にDBや別マシンにあるKVストアなどでは)アクセスが並列に行われる可能性があることから、 このI/Fは一切の等式を保証しない。
  */
 trait RefDict[F[_], Key, Value] {
   self =>
@@ -23,7 +21,8 @@ trait RefDict[F[_], Key, Value] {
       override def write(key: Key, value: Value): G[Unit] = fK(self.write(key, value))
     }
 
-  final def coerceContextTo[G[_]](implicit ev: ContextCoercion[F, G]): RefDict[G, Key, Value] = mapK(ev)
+  final def coerceContextTo[G[_]](implicit ev: ContextCoercion[F, G]): RefDict[G, Key, Value] =
+    mapK(ev)
 }
 
 object RefDict {

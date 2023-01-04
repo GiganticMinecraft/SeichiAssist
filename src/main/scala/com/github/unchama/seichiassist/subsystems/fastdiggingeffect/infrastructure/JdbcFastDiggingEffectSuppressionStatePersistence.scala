@@ -2,15 +2,18 @@ package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.infrastruct
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.settings.FastDiggingEffectSuppressionState.EnabledWithLimit
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.settings.{FastDiggingEffectSuppressionState, FastDiggingEffectSuppressionStatePersistence}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.settings.{
+  FastDiggingEffectSuppressionState,
+  FastDiggingEffectSuppressionStatePersistence
+}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID
 
-class JdbcFastDiggingEffectSuppressionStatePersistence[F[_] : Sync]
-  extends FastDiggingEffectSuppressionStatePersistence[F] {
+class JdbcFastDiggingEffectSuppressionStatePersistence[F[_]: Sync]
+    extends FastDiggingEffectSuppressionStatePersistence[F] {
 
-  //region コーデック
+  // region コーデック
 
   private def intToSuppressionState(n: Int): FastDiggingEffectSuppressionState =
     n match {
@@ -35,7 +38,7 @@ class JdbcFastDiggingEffectSuppressionStatePersistence[F[_] : Sync]
       case FastDiggingEffectSuppressionState.Disabled => 5
     }
 
-  //endregion
+  // endregion
 
   override def read(key: UUID): F[Option[FastDiggingEffectSuppressionState]] = Sync[F].delay {
     DB.localTx { implicit session =>
@@ -46,12 +49,15 @@ class JdbcFastDiggingEffectSuppressionStatePersistence[F[_] : Sync]
     }
   }
 
-  override def write(key: UUID, value: FastDiggingEffectSuppressionState): F[Unit] = Sync[F].delay {
-    DB.localTx { implicit session =>
-      val encoded = suppressionStateToInt(value)
+  override def write(key: UUID, value: FastDiggingEffectSuppressionState): F[Unit] =
+    Sync[F].delay {
+      DB.localTx { implicit session =>
+        val encoded = suppressionStateToInt(value)
 
-      sql"update playerdata set effectflag = $encoded where uuid = ${key.toString}".update().apply()
+        sql"update playerdata set effectflag = $encoded where uuid = ${key.toString}"
+          .update()
+          .apply()
+      }
     }
-  }
 
 }

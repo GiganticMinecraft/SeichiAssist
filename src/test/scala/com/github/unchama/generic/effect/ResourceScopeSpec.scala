@@ -1,6 +1,6 @@
 package com.github.unchama.generic.effect
 
-import cats.effect.{ContextShift, IO, Resource, SyncIO, Timer}
+import cats.effect.{ContextShift, IO, Resource, SyncIO}
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.testutil.concurrent.sequencer.LinkedSequencer
 import org.scalamock.scalatest.MockFactory
@@ -15,15 +15,15 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
 
   "Default implementation of ResourceScope" should {
     implicit val shift: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
-    implicit val timer: Timer[IO] = IO.timer(ExecutionContext.global)
 
     val firstResourceScope: ResourceScope[IO, IO, NumberedObject] = ResourceScope.unsafeCreate
     val secondResourceScope: ResourceScope[IO, IO, NumberedObject] = ResourceScope.unsafeCreate
 
-    def useTracked[A](scope: ResourceScope[IO, IO, NumberedObject],
-                      obj: NumberedObject,
-                      impureFinalizer: NumberedObject => Unit = _ => ())
-                     (use: NumberedObject => IO[A]): IO[A] = {
+    def useTracked[A](
+      scope: ResourceScope[IO, IO, NumberedObject],
+      obj: NumberedObject,
+      impureFinalizer: NumberedObject => Unit = _ => ()
+    )(use: NumberedObject => IO[A]): IO[A] = {
       val resource = Resource.make(IO.pure(obj))(o => IO(impureFinalizer(o)))
 
       scope.useTracked(resource)(use)
@@ -34,19 +34,26 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
 
       useTracked(firstResourceScope, NumberedObject(0)) { _ =>
         for {
-          _ <- IO { firstResourceScope.trackedHandlers.unsafeRunSync() mustBe Set(NumberedObject(0)) }
+          _ <- IO {
+            firstResourceScope.trackedHandlers.unsafeRunSync() mustBe Set(NumberedObject(0))
+          }
           _ <- IO { secondResourceScope.trackedHandlers.unsafeRunSync() mustBe Set() }
           _ <- useTracked(firstResourceScope, NumberedObject(1)) { _ =>
             for {
               _ <- IO {
-                firstResourceScope.trackedHandlers.unsafeRunSync() mustBe Set(NumberedObject(0), NumberedObject(1))
+                firstResourceScope.trackedHandlers.unsafeRunSync() mustBe Set(
+                  NumberedObject(0),
+                  NumberedObject(1)
+                )
               }
               _ <- IO {
                 secondResourceScope.trackedHandlers.unsafeRunSync() mustBe Set()
               }
             } yield ()
           }
-          _ <- IO { firstResourceScope.trackedHandlers.unsafeRunSync() mustBe Set(NumberedObject(0)) }
+          _ <- IO {
+            firstResourceScope.trackedHandlers.unsafeRunSync() mustBe Set(NumberedObject(0))
+          }
         } yield ()
       }.unsafeRunSync()
 
@@ -58,7 +65,8 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
 
       resourceEffect.expects(NumberedObject(0)).once()
 
-      useTracked(firstResourceScope, NumberedObject(0)) { o => IO { resourceEffect(o) } }.unsafeRunSync()
+      useTracked(firstResourceScope, NumberedObject(0)) { o => IO { resourceEffect(o) } }
+        .unsafeRunSync()
     }
 
     "call finalizer of the resource exactly once on release" in {
@@ -91,7 +99,7 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
         blockerList <- LinkedSequencer[IO].newBlockerList
         _ <-
           useTracked(firstResourceScope, NumberedObject(0), finalizer) { o =>
-            //noinspection ZeroIndexToHead
+            // noinspection ZeroIndexToHead
             runImpureFunction(o) >>
               blockerList(0).await() >>
               IO.never
@@ -128,7 +136,7 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
         blockerList <- LinkedSequencer[IO].newBlockerList
         _ <-
           useTracked(firstResourceScope, NumberedObject(0), finalizer) { o =>
-            //noinspection ZeroIndexToHead
+            // noinspection ZeroIndexToHead
             runImpureFunction(o) >>
               blockerList(0).await >>
               IO.never
@@ -147,18 +155,22 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
 
   "Singleton resource scope" should {
     implicit val shift: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
-    implicit val timer: Timer[IO] = IO.timer(ExecutionContext.global)
 
-    val firstResourceScope: SingleResourceScope[IO, SyncIO, NumberedObject] = ResourceScope.unsafeCreateSingletonScope
-    val secondResourceScope: SingleResourceScope[IO, SyncIO, NumberedObject] = ResourceScope.unsafeCreateSingletonScope
+    val firstResourceScope: SingleResourceScope[IO, SyncIO, NumberedObject] =
+      ResourceScope.unsafeCreateSingletonScope
+    val secondResourceScope: SingleResourceScope[IO, SyncIO, NumberedObject] =
+      ResourceScope.unsafeCreateSingletonScope
 
-    def useTrackedForSome[A](scope: SingleResourceScope[IO, SyncIO, NumberedObject],
-                             obj: NumberedObject,
-                             impureFinalizer: NumberedObject => Unit = _ => ())
-                            (use: NumberedObject => IO[A]): IO[Option[A]] = {
-      val resource = Resource.make(IO.pure(obj))(o => IO {
-        impureFinalizer(o)
-      })
+    def useTrackedForSome[A](
+      scope: SingleResourceScope[IO, SyncIO, NumberedObject],
+      obj: NumberedObject,
+      impureFinalizer: NumberedObject => Unit = _ => ()
+    )(use: NumberedObject => IO[A]): IO[Option[A]] = {
+      val resource = Resource.make(IO.pure(obj))(o =>
+        IO {
+          impureFinalizer(o)
+        }
+      )
 
       scope.useTrackedForSome(resource)(use)
     }
@@ -239,7 +251,7 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
         blockerList <- LinkedSequencer[IO].newBlockerList
         _ <-
           useTrackedForSome(firstResourceScope, NumberedObject(0), finalizer) { o =>
-            //noinspection ZeroIndexToHead
+            // noinspection ZeroIndexToHead
             runImpureFunction(o) >>
               blockerList(0).await >>
               IO.never
@@ -276,7 +288,7 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
         blockerList <- LinkedSequencer[IO].newBlockerList
         _ <-
           useTrackedForSome(firstResourceScope, NumberedObject(0), finalizer) { o =>
-            //noinspection ZeroIndexToHead
+            // noinspection ZeroIndexToHead
             runImpureFunction(o) >>
               blockerList(0).await() >>
               IO.never

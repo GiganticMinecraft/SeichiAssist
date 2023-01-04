@@ -1,9 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.autosave.application
 
-import simulacrum.typeclass
-
-@typeclass trait CanNotifySaves[F[_]] {
+trait CanNotifySaves[F[_]] {
 
   def notify(message: String): F[Unit]
 
+}
+
+object CanNotifySaves {
+  def apply[F[_]: CanNotifySaves]: CanNotifySaves[F] = implicitly
 }
