@@ -4,8 +4,9 @@ import eu.timepit.refined.api.Refined
 import eu.timepit.refined.numeric.{Interval, NonNegative}
 
 object ChestSlotRef {
-  type ChestRowIndexRef = Int Refined NonNegative
-  type ChestColumnIndexRef = Int Refined Interval.ClosedOpen[0, 9]
+  // TODO: 後で直す
+  type ChestRowIndexRef = Int // Refined NonNegative
+  type ChestColumnIndexRef = Int // Refined Interval.ClosedOpen[0, 9]
 
   /**
    * チェストインベントリでのスロットへの参照を計算する
@@ -17,5 +18,5 @@ object ChestSlotRef {
    *   `rowIndex`と`columnIndex`により指定されたスロットのスロットid
    */
   def apply(rowIndex: ChestRowIndexRef, columnIndex: ChestColumnIndexRef): Int =
-    rowIndex.value * 9 + columnIndex.value
+    rowIndex * 9 + columnIndex.value
 }
