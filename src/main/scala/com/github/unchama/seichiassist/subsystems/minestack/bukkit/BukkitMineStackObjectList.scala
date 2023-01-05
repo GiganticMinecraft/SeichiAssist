@@ -669,12 +669,18 @@ class BukkitMineStackObjectList[F[_]: Sync](
     isGachaPrize = foundGachaPrizeOpt.nonEmpty
     mineStackObjects <- allMineStackObjects
   } yield {
-    val targetItemStack = if (isGachaPrize && foundGachaPrizeOpt.get.signOwner) {
-      foundGachaPrizeOpt.get.itemStack
+    val isSignedItemStack = itemStack.getItemMeta.getLore.contains("所有者：")
+    if (isGachaPrize && foundGachaPrizeOpt.get.signOwner) {
+      mineStackObjects.find { mineStackObject =>
+        foundGachaPrizeOpt.get.itemStack.isSimilar(mineStackObject.itemStack)
+      }
+    } else if (isSignedItemStack) {
+      // 所有者名が違うとガチャ景品として認識しないが、違ったらそもそも見つかっていない
+      // 記名が入っていないアイテムは収納できてしまうが仕様
+      None
     } else {
-      itemStack
+      mineStackObjects.find(_.itemStack.isSimilar(itemStack))
     }
-    mineStackObjects.find(_.itemStack.isSimilar(targetItemStack))
   }
 
   override protected implicit val F: Functor[F] = implicitly
