@@ -65,5 +65,5 @@ class BukkitMineStackRepository[F[_]: Sync](
     for {
       foundMineStackObject <- mineStackObjectList.findByItemStack(itemStack, player)
       _ <- foundMineStackObject.traverse(addStackedAmountOf(player, _, amount))
-    } yield foundMineStackObject.nonEmpty
+    } yield foundMineStackObject.isDefined
 }
