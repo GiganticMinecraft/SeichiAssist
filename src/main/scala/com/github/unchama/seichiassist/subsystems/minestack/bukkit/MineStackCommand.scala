@@ -98,6 +98,7 @@ object MineStackCommand {
                   .mineStackRepository
                   .tryIntoMineStack(player, itemStack, itemStack.getAmount)
                   .map(Option.when(_)(index))
+              case _ => IO.pure(None)
             }
             _ <- IO(targetIndexes.foreach(_.foreach(index => inventory.clear(index))))
           } yield MessageEffect(s"${YELLOW}インベントリの中身をすべてマインスタックに収納しました。")
