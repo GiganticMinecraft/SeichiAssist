@@ -669,12 +669,12 @@ class BukkitMineStackObjectList[F[_]: Sync](
     isGachaPrize = foundGachaPrizeOpt.nonEmpty
     mineStackObjects <- allMineStackObjects
   } yield {
-    val isSignedItemStack = itemStack.getItemMeta.getLore.contains("所有者：")
+    val hasItemMeta = itemStack.hasItemMeta
     if (isGachaPrize && foundGachaPrizeOpt.get.signOwner) {
       mineStackObjects.find { mineStackObject =>
         foundGachaPrizeOpt.get.itemStack.isSimilar(mineStackObject.itemStack)
       }
-    } else if (isSignedItemStack) {
+    } else if (hasItemMeta && itemStack.getItemMeta.getLore.contains("所有者：")) {
       // 所有者名が違うとガチャ景品として認識しないが、違ったらそもそも見つかっていない
       // 記名が入っていないアイテムは収納できてしまうが仕様
       None
