@@ -67,8 +67,8 @@ sealed trait Fs3Channel[F[_], A] {
    * Every time `stream` is pulled, it will serve all the elements that are queued up in a
    * single chunk, including those from producers that might be semantically blocked on a
    * bounded channel, which will then become unblocked. That is, a bound on a channel represents
-   * the maximum top of elements that can be queued up before a producer blocks, and not the
-   * maximum top of elements that will be received by `stream` at once.
+   * the maximum number of elements that can be queued up before a producer blocks, and not the
+   * maximum number of elements that will be received by `stream` at once.
    */
   def stream: Stream[F, A]
 
