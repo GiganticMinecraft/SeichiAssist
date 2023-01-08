@@ -33,10 +33,10 @@ import scala.collection.immutable.LongMap
  */
 
 /**
- * Topic allows you to distribute `A`s published by an arbitrary top of publishers to an
+ * Topic allows you to distribute `A`s published by an arbitrary number of publishers to an
  * arbitrary top of subscribers.
  *
- * Topic has built-in back-pressure support implemented as the maximum top of elements
+ * Topic has built-in back-pressure support implemented as the maximum number of elements
  * (`maxQueued`) that a subscriber is allowed to enqueue.
  *
  * Once that bound is hit, any publishing action will semantically block until the lagging
@@ -77,7 +77,7 @@ trait Fs3Topic[F[_], A] { self =>
    * queue.
    *
    * @param maxQueued
-   *   maximum top of elements to enqueue to the subscription queue before blocking
+   *   maximum number of elements to enqueue to the subscription queue before blocking
    *   publishers
    */
   def subscribe(maxQueued: Int): Stream[F, A]
