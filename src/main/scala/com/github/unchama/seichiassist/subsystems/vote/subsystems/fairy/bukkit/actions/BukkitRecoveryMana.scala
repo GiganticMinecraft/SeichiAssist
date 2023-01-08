@@ -107,7 +107,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
    */
   private def computeAppleConsumptionAmount: F[Int] = for {
     seichiAmountData <- ContextCoercion(breakCountAPI.seichiAmountDataRepository(player).read)
-    chainVoteNumber <- voteAPI.currentConsecutiveVoteStreakDays(uuid)
+    voteStreaks <- voteAPI.currentConsecutiveVoteStreakDays(uuid)
     appleOpenState <- fairyPersistence.appleOpenState(uuid)
     oldManaAmount <- ContextCoercion {
       manaApi.readManaAmount(player)
@@ -115,28 +115,28 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
   } yield {
     val playerLevel = seichiAmountData.levelCorrespondingToExp
 
-    val isAppleOpenStateIsOpenOrOpenALittle =
+    val isStrategyConsumeOrLessConsume =
       appleOpenState == FairyAppleConsumeStrategy.LessConsume || appleOpenState == FairyAppleConsumeStrategy.Consume
     val isEnoughMana = oldManaAmount.ratioToCap.exists(_ >= 0.75)
 
     val defaultAmount = Math.pow(playerLevel.level / 10, 2)
 
-    val chainVoteDayNumber = chainVoteNumber.value
+    val voteStreakDays = voteStreaks.value
     // 連続投票を適用した除算量
-    val chainVoteDivisionAmount =
-      if (chainVoteDayNumber >= 30) 2
-      else if (chainVoteDayNumber >= 10) 1.5
-      else if (chainVoteDayNumber >= 3) 1.25
+    val chainVoteDivisor =
+      if (voteStreakDays >= 30) 2
+      else if (voteStreakDays >= 10) 1.5
+      else if (voteStreakDays >= 3) 1.25
       else 1
 
     // りんごの開放状況を適用した除算量
-    val appleOpenStateDivisionAmount =
-      if (isAppleOpenStateIsOpenOrOpenALittle && isEnoughMana) 2
+    val appleConsumeStrategyDivisor =
+      if (isStrategyConsumeOrLessConsume && isEnoughMana) 2
       else 1
 
     // りんごの開放状況まで適用したりんごの消費量 (暫定)
     val appleOpenStateReflectedAmount =
-      (defaultAmount / chainVoteDivisionAmount).toInt / appleOpenStateDivisionAmount
+      (defaultAmount / chainVoteDivisor).toInt / appleConsumeStrategyDivisor
 
     // 妖精がつまみ食いする量
     val amountEatenByKnob =
