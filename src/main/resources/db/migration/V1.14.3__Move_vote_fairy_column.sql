@@ -34,11 +34,11 @@ SELECT
 FROM
  playerdata;
 
-ALTER TABLE
- playerdata DROP toggleGiveApple,
- DROP toggleVotingFairy,
- DROP canVotingFairyUse,
- DROP VotingFairyRecoveryValue,
- DROP newVotingFairyTime,
- DROP p_apple,
- DROP is_fairy_speech_play_sound
+ALTER TABLE playerdata
+ DROP IF EXISTS toggleGiveApple,
+ DROP IF EXISTS toggleVotingFairy,
+ DROP IF EXISTS canVotingFairyUse,
+ DROP IF EXISTS VotingFairyRecoveryValue,
+ DROP IF EXISTS newVotingFairyTime,
+ DROP IF EXISTS p_apple,
+ DROP IF EXISTS is_fairy_speech_play_sound
