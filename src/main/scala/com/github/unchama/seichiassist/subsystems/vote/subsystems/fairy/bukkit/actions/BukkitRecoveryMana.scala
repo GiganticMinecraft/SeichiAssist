@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions
 
-import cats.effect.{ConcurrentEffect, LiftIO}
+import cats.effect.{ConcurrentEffect, LiftIO, Sync}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
@@ -44,13 +44,13 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
       isFairyUsing <- fairyPersistence.isFairyUsing(uuid)
       fairyEndTimeOpt <- fairyPersistence.fairyEndTime(uuid)
       endTime = fairyEndTimeOpt.get.endTimeOpt.get
+      finishUse <- Sync[F]
+        .delay(LocalDateTime.now())
+        .map(now => isFairyUsing && endTime.isBefore(now))
       _ <- {
         fairySpeech
           .bye(player) >> fairyPersistence.updateIsFairyUsing(uuid, isFairyUsing = false)
-      }.whenA(
-        // 終了時間が今よりも過去だったとき(つまり有効時間終了済み)
-        isFairyUsing && endTime.isBefore(LocalDateTime.now())
-      )
+      }.whenA(finishUse)
       oldManaAmount <- ContextCoercion {
         manaApi.readManaAmount(player)
       }
@@ -212,10 +212,10 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
             else if (appleOpenState == FairyAppleConsumeStrategy.LessConsume) 4
             else 2
           )
-        } else if ((mineStackedGachaRingoAmount / appleConsumptionAmount) <= 0.5)
-          (reflectedAppleOpenStateAmount * 0.5).toInt
-        else
-          (reflectedAppleOpenStateAmount * mineStackedGachaRingoAmount / appleConsumptionAmount).toInt
+        } else {
+          val multiplier = Math.max(mineStackedGachaRingoAmount / appleConsumptionAmount, 0.5)
+          (reflectedAppleOpenStateAmount * multiplier).toInt
+        }
       } else reflectedAppleOpenStateAmount
 
     val randomizedAdd =
