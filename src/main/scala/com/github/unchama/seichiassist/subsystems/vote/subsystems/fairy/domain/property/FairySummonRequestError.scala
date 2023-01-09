@@ -15,7 +15,7 @@ object FairySummonRequestError {
   /**
    * 妖精がすでに召喚されている
    */
-  case object AlreadyFairySpawned extends FairySummonRequestError
+  case object AlreadyFairySummoned extends FairySummonRequestError
 
   /**
    * 妖精の召喚ポイントが足りなかった

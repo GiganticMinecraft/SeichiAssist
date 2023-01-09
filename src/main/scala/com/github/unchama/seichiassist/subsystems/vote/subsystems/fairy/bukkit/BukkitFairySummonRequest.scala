@@ -36,7 +36,7 @@ class BukkitFairySummonRequest[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
       if (seichiLevel < 10)
         Left(FairySummonRequestError.NotEnoughSeichiLevel)
       else if (usingState)
-        Left(FairySummonRequestError.AlreadyFairySpawned)
+        Left(FairySummonRequestError.AlreadyFairySummoned)
       else if (effectPoints.value < fairySummonCost.value * 2)
         Left(FairySummonRequestError.NotEnoughEffectPoint)
       else

@@ -15,7 +15,7 @@ import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairySummonRequestError.{
-  AlreadyFairySpawned,
+  AlreadyFairySummoned,
   NotEnoughEffectPoint,
   NotEnoughSeichiLevel
 }
@@ -270,7 +270,7 @@ object VoteMenu extends Menu {
                 errorResult match {
                   case NotEnoughSeichiLevel =>
                     errorEffectOnSpawn(s"${GOLD}プレイヤーレベルが足りません")
-                  case AlreadyFairySpawned =>
+                  case AlreadyFairySummoned =>
                     errorEffectOnSpawn(s"${GOLD}既に妖精を召喚しています")
                   case NotEnoughEffectPoint =>
                     errorEffectOnSpawn(s"${GOLD}投票ptが足りません")
