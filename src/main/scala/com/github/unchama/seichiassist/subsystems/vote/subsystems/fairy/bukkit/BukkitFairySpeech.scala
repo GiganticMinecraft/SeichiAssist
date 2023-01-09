@@ -59,9 +59,9 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
     val messages = fairyManaRecoveryState match {
       case FairyManaRecoveryState.Full =>
         FairyMessageTable.manaFullMessages
-      case FairyManaRecoveryState.ConsumptionApple =>
+      case FairyManaRecoveryState.RecoveredWithApple =>
         FairyMessageTable.consumed
-      case FairyManaRecoveryState.NotConsumptionApple =>
+      case FairyManaRecoveryState.RecoveredWithoutApple =>
         FairyMessageTable.notConsumed
     }
     for {

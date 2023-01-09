@@ -15,11 +15,11 @@ object FairyManaRecoveryState {
   /**
    * マナを回復したがりんごを消費しなかった
    */
-  case object NotConsumptionApple extends FairyManaRecoveryState
+  case object RecoveredWithoutApple extends FairyManaRecoveryState
 
   /**
    * りんごを消費してマナを回復した
    */
-  case object ConsumptionApple extends FairyManaRecoveryState
+  case object RecoveredWithApple extends FairyManaRecoveryState
 
 }

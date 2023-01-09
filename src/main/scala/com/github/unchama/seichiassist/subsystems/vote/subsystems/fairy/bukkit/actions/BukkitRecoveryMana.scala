@@ -87,8 +87,8 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
           fairySpeech.speechRandomly(
             player,
             if (finallyAppleConsumptionAmount > mineStackedGachaRingoAmount)
-              FairyManaRecoveryState.NotConsumptionApple
-            else FairyManaRecoveryState.ConsumptionApple
+              FairyManaRecoveryState.RecoveredWithoutApple
+            else FairyManaRecoveryState.RecoveredWithApple
           ) >>
           SequentialEffect(
             MessageEffectF(s"$RESET$YELLOW${BOLD}マナ妖精が${recoveryManaAmount}マナを回復してくれました"),
