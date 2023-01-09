@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.
 sealed trait FairySummonRequestError
 
 /**
- * 妖精の召喚をする際に発生する可能性がある一覧を定義したobject
+ * 妖精の召喚をする際に発生する可能性があるエラーを列挙する
  */
 object FairySummonRequestError {
 
