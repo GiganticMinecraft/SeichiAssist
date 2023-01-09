@@ -5,7 +5,7 @@ import enumeratum._
 /**
  * がちゃりんごの消費戦略を管理するクラス
  * @param serializedValue
- *  消費戦略を永続化する際に必要な番号
+ *  消費戦略を永続化する際に必要な番号であり、その値は戦略ごとに異なっていなければならない。
  */
 sealed class FairyAppleConsumeStrategy(val serializedValue: Int) extends EnumEntry
 
