@@ -16,14 +16,12 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.util._
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.external.ExternalPlugins
-import com.github.unchama.util.external.WorldGuardWrapper.isRegionOwner
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import org.bukkit.inventory.EquipmentSlot
-import org.bukkit.material.{MaterialData, Openable}
 import org.bukkit.{GameMode, Material, Sound}
 
 class PlayerClickListener(
