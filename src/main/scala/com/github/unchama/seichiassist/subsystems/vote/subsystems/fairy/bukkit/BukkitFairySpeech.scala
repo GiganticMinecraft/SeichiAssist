@@ -25,7 +25,7 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
    */
   private def getSummonMessagesByStartHour(
     startHour: Int,
-    nameCalledByFairy: NameCalledByFairy
+    nameCalledByFairy: ScreenNameForFairy
   ): FairyMessageChoice = {
     if (4 <= startHour && startHour < 10)
       FairyMessageTable.morningMessages(nameCalledByFairy)
@@ -38,7 +38,7 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
   override def summonSpeech(player: Player): F[Unit] =
     for {
       startHour <- Sync[F].delay(LocalTime.now().getHour)
-      nameCalledByFairy = NameCalledByFairy(player.getName)
+      nameCalledByFairy = ScreenNameForFairy(player.getName)
       fairyMessages = getSummonMessagesByStartHour(startHour, nameCalledByFairy)
       message <- randomMessage(fairyMessages)
 
@@ -55,7 +55,7 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
     player: Player,
     fairyManaRecoveryState: FairyManaRecoveryState
   ): F[Unit] = {
-    val nameCalledByFairy = NameCalledByFairy(player.getName)
+    val nameCalledByFairy = ScreenNameForFairy(player.getName)
     val messages = fairyManaRecoveryState match {
       case FairyManaRecoveryState.Full =>
         FairyMessageTable.manaFullMessages
