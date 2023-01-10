@@ -34,7 +34,7 @@ import scala.collection.immutable.LongMap
 
 /**
  * Topic allows you to distribute `A`s published by an arbitrary number of publishers to an
- * arbitrary top of subscribers.
+ * arbitrary number of subscribers.
  *
  * Topic has built-in back-pressure support implemented as the maximum number of elements
  * (`maxQueued`) that a subscriber is allowed to enqueue.
