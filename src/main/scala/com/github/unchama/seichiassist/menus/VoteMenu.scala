@@ -14,15 +14,9 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMain
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairySummonRequestError.{
-  AlreadyFairySummoned,
-  NotEnoughEffectPoint,
-  NotEnoughSeichiLevel
-}
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
-  AppleOpenStateDependency,
-  FairySummonCost
-}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairyAppleConsumeStrategy.{Consume, LessConsume, NoConsume, Permissible}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairySummonRequestError.{AlreadyFairySummoned, NotEnoughEffectPoint, NotEnoughSeichiLevel}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{FairyAppleConsumeStrategy, FairySummonCost}
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -195,10 +189,19 @@ object VoteMenu extends Menu {
       })
     }
 
-    val fairyContractSettingToggle: IO[Button] =
+    val fairyContractSettingToggle: IO[Button] = {
+      val appleConsumeStrategyDependency
+      : Map[FairyAppleConsumeStrategy, FairyAppleConsumeStrategy] =
+        Map(
+          Permissible -> Consume,
+          Consume -> LessConsume,
+          LessConsume -> NoConsume,
+          NoConsume -> Permissible
+        )
+
       RecomputedButton(for {
         fairyLore <- fairyAPI.getFairyLore(uuid)
-        appleOpenState <- fairyAPI.consumeStrategy(uuid)
+        consumeStrategy <- fairyAPI.consumeStrategy(uuid)
       } yield {
         Button(
           new IconItemStackBuilder(Material.PAPER)
@@ -210,7 +213,7 @@ object VoteMenu extends Menu {
               DeferredEffect(
                 IO(
                   fairyAPI
-                    .updateAppleOpenState(AppleOpenStateDependency.dependency(appleOpenState))
+                    .updateAppleOpenState(appleConsumeStrategyDependency(consumeStrategy))
                 )
               ),
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
@@ -218,6 +221,7 @@ object VoteMenu extends Menu {
           }
         )
       })
+    }
 
     val fairyPlaySoundToggleButton: IO[Button] = {
       val description =
