@@ -16,7 +16,7 @@ trait FairySpeech[F[_], Player] {
   def speechRandomly(player: Player, fairyManaRecoveryState: FairyManaRecoveryState): F[Unit]
 
   /**
-   * @return 妖精がいつ帰るのかを[[Player]]へ送信する作用
+   * @return 妖精がいつ帰るのかを[[Player]]へ知らせる作用
    */
   def speechEndTime(player: Player): F[Unit]
 
