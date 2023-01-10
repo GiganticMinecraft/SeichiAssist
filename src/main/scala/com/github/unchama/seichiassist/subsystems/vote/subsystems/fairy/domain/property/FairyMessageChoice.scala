@@ -2,4 +2,4 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.
 
 import cats.data.NonEmptyVector
 
-case class FairyMessages(messages: NonEmptyVector[FairyMessage])
+case class FairyMessageChoice(messages: NonEmptyVector[FairyMessage])

@@ -26,7 +26,7 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
   private def getSummonMessagesByStartHour(
     startHour: Int,
     nameCalledByFairy: NameCalledByFairy
-  ): FairyMessages = {
+  ): FairyMessageChoice = {
     if (4 <= startHour && startHour < 10)
       FairyMessageTable.morningMessages(nameCalledByFairy)
     else if (10 <= startHour && startHour < 18)
@@ -106,7 +106,7 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
     }
   } yield ()
 
-  private def randomMessage(fairyMessages: FairyMessages): F[FairyMessage] = Sync[F].delay {
+  private def randomMessage(fairyMessages: FairyMessageChoice): F[FairyMessage] = Sync[F].delay {
     val messages = fairyMessages.messages.toVector
     messages(Random.nextInt(messages.size))
   }

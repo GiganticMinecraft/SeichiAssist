@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.
 import cats.data.NonEmptyVector
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
   FairyMessage,
-  FairyMessages,
+  FairyMessageChoice,
   NameCalledByFairy
 }
 
@@ -12,8 +12,8 @@ object FairyMessageTable {
   /**
    *   朝に妖精を召喚したときに表示されるメッセージ
    */
-  val morningMessages: NameCalledByFairy => FairyMessages = (name: NameCalledByFairy) =>
-    FairyMessages(
+  val morningMessages: NameCalledByFairy => FairyMessageChoice = (name: NameCalledByFairy) =>
+    FairyMessageChoice(
       NonEmptyVector.of(
         FairyMessage(s"おはよ！${name.value}"),
         FairyMessage(s"ヤッホー${name.value}"),
@@ -26,8 +26,8 @@ object FairyMessageTable {
   /**
    * 昼に妖精を召喚したときに表示されるメッセージ
    */
-  val dayMessages: NameCalledByFairy => FairyMessages = (name: NameCalledByFairy) =>
-    FairyMessages(
+  val dayMessages: NameCalledByFairy => FairyMessageChoice = (name: NameCalledByFairy) =>
+    FairyMessageChoice(
       NonEmptyVector.of(
         FairyMessage(s"やあ！${name.value}"),
         FairyMessage(s"ヤッホー${name.value}！"),
@@ -38,8 +38,8 @@ object FairyMessageTable {
     )
 
   // 夜に妖精を召喚したときに表示されるメッセージ
-  val nightMessages: NameCalledByFairy => FairyMessages = (name: NameCalledByFairy) =>
-    FairyMessages(
+  val nightMessages: NameCalledByFairy => FairyMessageChoice = (name: NameCalledByFairy) =>
+    FairyMessageChoice(
       NonEmptyVector.of(
         FairyMessage(s"やあ！${name.value}"),
         FairyMessage(s"ヤッホー${name.value}！"),
@@ -52,8 +52,8 @@ object FairyMessageTable {
   /**
    * マナが満タンだったときに表示されるメッセージ
    */
-  val manaFullMessages: NameCalledByFairy => FairyMessages = (name: NameCalledByFairy) =>
-    FairyMessages(
+  val manaFullMessages: NameCalledByFairy => FairyMessageChoice = (name: NameCalledByFairy) =>
+    FairyMessageChoice(
       NonEmptyVector.of(
         FairyMessage("整地しないのー？"),
         FairyMessage("たくさん働いて、たくさんりんごを食べようね！"),
@@ -67,8 +67,8 @@ object FairyMessageTable {
   /**
    * 妖精にりんごが消費されたときに表示されるメッセージ
    */
-  val consumed: NameCalledByFairy => FairyMessages = (name: NameCalledByFairy) =>
-    FairyMessages(
+  val consumed: NameCalledByFairy => FairyMessageChoice = (name: NameCalledByFairy) =>
+    FairyMessageChoice(
       NonEmptyVector.of(
         FairyMessage("(´～｀)ﾓｸﾞﾓｸﾞ…"),
         FairyMessage("がちゃりんごって美味しいよね！"),
@@ -81,8 +81,8 @@ object FairyMessageTable {
   /**
    * 妖精がりんごを消費しなかったときに表示されるメッセージ
    */
-  val notConsumed: NameCalledByFairy => FairyMessages = (name: NameCalledByFairy) =>
-    FairyMessages(
+  val notConsumed: NameCalledByFairy => FairyMessageChoice = (name: NameCalledByFairy) =>
+    FairyMessageChoice(
       NonEmptyVector.of(
         FairyMessage("お腹空いたなぁー。"),
         FairyMessage("がちゃりんごがっ！食べたいっ！"),
