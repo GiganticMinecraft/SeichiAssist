@@ -487,7 +487,8 @@ class SeichiAssist extends JavaPlugin() {
     gachaTradeSystem,
     sharedInventorySystem,
     mineStackSystem,
-    consumeGachaTicketSystem
+    consumeGachaTicketSystem,
+    openirontrapdoor.System.wired
   )
 
   private lazy val buildAssist: BuildAssist = {
