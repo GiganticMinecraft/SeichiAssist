@@ -487,6 +487,7 @@ class SeichiAssist extends JavaPlugin() {
   lazy val mineStackSystem: subsystems.minestack.System[IO, Player, ItemStack] =
     subsystems.minestack.System.wired[IO, SyncIO].unsafeRunSync()
 
+
   private lazy val gridRegionSystem: subsystems.gridregion.System[IO, Player, Location] =
     subsystems.gridregion.System.wired[IO, SyncIO].unsafeRunSync()
 
@@ -526,7 +527,7 @@ class SeichiAssist extends JavaPlugin() {
     mineStackSystem,
     consumeGachaTicketSystem,
     openirontrapdoor.System.wired,
-    gridRegionSystem
+    gridRegionSystem,
   )
 
   private lazy val buildAssist: BuildAssist = {
