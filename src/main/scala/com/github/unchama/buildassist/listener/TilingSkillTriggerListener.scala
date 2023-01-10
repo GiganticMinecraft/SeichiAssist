@@ -1,10 +1,11 @@
 package com.github.unchama.buildassist.listener
 
-import cats.effect.{SyncEffect, SyncIO}
+import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
+import cats.effect.{ConcurrentEffect, SyncEffect, SyncIO}
 import com.github.unchama.buildassist.{BuildAssist, Util}
 import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.IncrementBuildExpWhenBuiltWithSkill
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
-import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
+import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import org.bukkit.ChatColor.RED
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
@@ -16,9 +17,11 @@ import org.bukkit.{Location, Material}
 import scala.util.chaining._
 import scala.util.control.Breaks
 
-class TilingSkillTriggerListener[
-  F[_]: IncrementBuildExpWhenBuiltWithSkill[*[_], Player]: SyncEffect
-] extends Listener {
+class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[
+  _
+]: IncrementBuildExpWhenBuiltWithSkill[*[_], Player]: SyncEffect](
+  implicit mineStackAPI: MineStackAPI[G, Player, ItemStack]
+) extends Listener {
 
   // 範囲設置スキルの発動を担うハンドラメソッド
   @EventHandler
@@ -29,7 +32,6 @@ class TilingSkillTriggerListener[
     val playerWorld = player.getWorld
 
     val buildAssistPlayerData = BuildAssist.instance.temporaryData(playerUuid)
-    val seichiAssistPlayerData = SeichiAssist.playermap(playerUuid)
 
     val playerInventory = player.getInventory
     val offHandItem = playerInventory.getItemInOffHand
@@ -67,8 +69,10 @@ class TilingSkillTriggerListener[
     var placementCount = 0
 
     val minestackObjectToUse =
-      MineStackObjectList
-        .findByItemStack(offHandItem, player.getName)
+      mineStackAPI
+        .mineStackObjectList
+        .findByItemStack(offHandItem, player)
+        .toIO
         .unsafeRunSync()
         .filter(_ => buildAssistPlayerData.zs_minestack_flag)
 
@@ -183,9 +187,15 @@ class TilingSkillTriggerListener[
               minestackObjectToUse match {
                 case Some(mineStackObject) =>
                   if (
-                    seichiAssistPlayerData.minestack.getStackedAmountOf(mineStackObject) > 0
+                    mineStackAPI
+                      .mineStackRepository
+                      .getStackedAmountOf(player, mineStackObject)
+                      .toIO
+                      .unsafeRunSync() > 0
                   ) {
-                    seichiAssistPlayerData.minestack.subtractStackedAmountOf(mineStackObject, 1)
+                    mineStackAPI
+                      .mineStackRepository
+                      .subtractStackedAmountOf(player, mineStackObject, 1)
 
                     commitPlacement()
                     b2.break()

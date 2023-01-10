@@ -37,16 +37,11 @@ sbtタブからSeichiAssist -> SeichiAssist -> sbt tasks -> assemblyを実行す
 
 ## デバッグ用docker環境
 
-`docker`、`docker-compose`及び`sbt`が実行可能であるとします。
+`docker`及び`sbt`が実行可能であるとします。
 Linux環境では、`./prepare-docker.sh`、Windowsでは`prepare-docker.bat`を実行することで
 デバッグ用のBungeecord + Spigot環境を構築することができます。
 
-初回起動時にはSpigotのビルドに時間がかかります。
-さらに、[Minecraft EULA](https://account.mojang.com/documents/minecraft_eula) に同意する必要があるため実行が中断されます。
-EULAに同意しデバッグを続行する場合、`./docker/spigot/serverfiles/eula.txt`を参照し、
-`eula=false` を `eula=true` に書き換えてください。
-
-サーバーやDB等を停止する場合、 `docker-compose down` を実行してください。
+サーバーやDB等を停止する場合、 `docker compose down` を実行してください。
 
 なお、SeichiAssistがJava 8以外でコンパイルされた場合は、実行時にエラーとなります。必ずJDKのバージョンを揃えるようにしてください。
 
@@ -63,9 +58,8 @@ DockerマシンのIPアドレス(Linux等なら`localhost`)を`DOCKER_IP`とし�
 コンソールからは `Ctrl+C` で抜けることができます(サーバーは停止されません)。
 
 ## DBの準備
-初回起動後、DBが作成されますが、ガチャ景品およびMineStackに格納可能なガチャ景品のデータがありません。その為、以下SQLdumpをインポートしてください。
+初回起動後、DBが作成されますが、ガチャ景品のデータがありません。その為、以下SQLdumpをインポートしてください。
 - [gachadata.sql](https://redmine.seichi.click/attachments/download/992/gachadata.sql) -> import to "gachadata" table.
-- [msgachadata.sql](https://redmine.seichi.click/attachments/download/993/msgachadata.sql) -> import to "msgachadata" table.
 
 ### どうしてもローカルにJavaとかsbtを入れたくない人のための救済策
 
@@ -76,7 +70,7 @@ $ rm -rf target/build # 再ビルドしたいなら既存のターゲットは�
 $ docker run --rm -it -v `pwd`:/app ghcr.io/giganticminecraft/seichiassist-builder:1a64049 sh -c "cd /app && sbt assembly"
 $ sudo chown -R `whoami` target/build # docker上でsbtを実行するとrootになってしまうため権限を変える
 $ cp -n docker/spigot/eula.txt docker/spigot/serverfiles/eula.txt || true
-$ docker-compose up --build -d
+$ docker compose up --build -d
 ```
 
 ## protocolディレクトリ以下のクローン

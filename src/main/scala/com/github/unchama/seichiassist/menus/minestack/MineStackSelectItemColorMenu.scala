@@ -8,21 +8,28 @@ import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlot
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.menus.CommonButtons
-import com.github.unchama.seichiassist.minestack.MineStackObjectWithColorVariants
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
+import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectWithColorVariants
 import eu.timepit.refined.auto._
 import org.bukkit.ChatColor.{BOLD, DARK_BLUE}
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 
 object MineStackSelectItemColorMenu {
 
   class Environment(
-    implicit val canOpenCategorizedMineStackMenu: CanOpen[IO, CategorizedMineStackMenu]
+    implicit val canOpenCategorizedMineStackMenu: CanOpen[IO, CategorizedMineStackMenu],
+    implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack],
+    implicit val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player]
   )
 
 }
 
-case class MineStackSelectItemColorMenu(group: MineStackObjectWithColorVariants, oldPage: Int)
-    extends Menu {
+case class MineStackSelectItemColorMenu(
+  group: MineStackObjectWithColorVariants[ItemStack],
+  oldPage: Int
+) extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
 
@@ -32,8 +39,8 @@ case class MineStackSelectItemColorMenu(group: MineStackObjectWithColorVariants,
 
   override def computeMenuLayout(
     player: Player
-  )(implicit environment: MineStackSelectItemColorMenu.Environment): IO[MenuSlotLayout] = {
-    import environment.canOpenCategorizedMineStackMenu
+  )(implicit environment: Environment): IO[MenuSlotLayout] = {
+    import environment._
     val buttonMapping = (List(group.representative) ++ group.coloredVariants).zipWithIndex.map {
       case (inListMineStackObj, index) =>
         index -> MineStackButtons(player).getMineStackObjectButtonOf(inListMineStackObj)
