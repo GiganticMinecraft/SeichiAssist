@@ -16,16 +16,10 @@ object MathExtra {
   def recurrenceRelation[A](order: Map[A, A], initial: A)(
     computedValues: List[A] = List(initial)
   ): List[A] = {
-    val isOrderExists = order.exists(_._1 == initial)
-    val _computedValues = if (isOrderExists) {
-      order(initial) +: computedValues
-    } else {
-      computedValues
-    }
-
-    val isWentAround = computedValues.last == initial
-    if (!isOrderExists || isWentAround) computedValues.reverse
-    else recurrenceRelation(order, order(initial))(_computedValues)
+    if (order.size == computedValues.size)
+      computedValues.reverse
+    else
+      recurrenceRelation(order, order(initial))(order(initial) +: computedValues)
   }
 
 }
