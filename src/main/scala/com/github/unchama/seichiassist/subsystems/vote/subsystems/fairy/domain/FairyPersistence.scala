@@ -14,93 +14,97 @@ import java.util.UUID
 trait FairyPersistence[F[_]] {
 
   /**
-   * プレイヤーデータを作成する
+   * プレイヤーデータを作成する。このメソッドの実装が返す作用は、冪等でなければならない。
+   * @return プレイヤーデータを作成するべき等な作用
    */
-  def createPlayerData(uuid: UUID): F[Unit]
+  def initializePlayerData(player: UUID): F[Unit]
 
   /**
-   * 妖精に開放するりんごの状態を変更する
+   * @return 妖精に開放するりんごの状態を変更する作用
    */
-  def changeAppleOpenState(uuid: UUID, openState: FairyAppleConsumeStrategy): F[Unit]
+  def updateAppleConsumeStrategy(player: UUID, openState: FairyAppleConsumeStrategy): F[Unit]
 
   /**
-   * 妖精に開放するりんごの状態を取得する
+   *  @return 妖精に開放するりんごの状態を取得する作用
    */
-  def appleOpenState(uuid: UUID): F[FairyAppleConsumeStrategy]
+  def appleConsumeStrategy(player: UUID): F[FairyAppleConsumeStrategy]
 
   /**
-   * 妖精が召喚するためのコストを変更する
+   * @return 妖精が召喚するためのコストを変更する作用
    */
-  def updateFairySummonCost(uuid: UUID, fairySummonCost: FairySummonCost): F[Unit]
+  def updateFairySummonCost(player: UUID, fairySummonCost: FairySummonCost): F[Unit]
 
   /**
-   * 妖精を召喚するためのコストを取得する
+   * @return 妖精を召喚するためのコストを取得する作用
    */
-  def fairySummonCost(uuid: UUID): F[FairySummonCost]
+  def fairySummonCost(player: UUID): F[FairySummonCost]
 
   /**
-   * 妖精が召喚されているかを更新する
+   * @return 妖精が召喚されているかを更新する作用
    */
-  def updateIsFairyUsing(uuid: UUID, isFairyUsing: Boolean): F[Unit]
+  def updateIsFairyUsing(player: UUID, isFairyUsing: Boolean): F[Unit]
 
   /**
-   * 妖精が召喚されているかを取得する
+   * @return 妖精が召喚されているかを取得する作用
    */
-  def isFairyUsing(uuid: UUID): F[Boolean]
+  def isFairyUsing(player: UUID): F[Boolean]
 
   /**
-   * 妖精が回復するマナの量を変更する
+   * @return 妖精が回復するマナの量を変更する作用
    */
-  def updateFairyRecoveryMana(uuid: UUID, fairyRecoveryMana: FairyRecoveryMana): F[Unit]
+  def updateFairyRecoveryMana(player: UUID, fairyRecoveryMana: FairyRecoveryMana): F[Unit]
 
   /**
-   * 妖精が回復するマナの量を取得する
+   * @return 妖精が回復するマナの量を取得する作用
    */
-  def fairyRecoveryMana(uuid: UUID): F[FairyRecoveryMana]
+  def fairyRecoveryMana(player: UUID): F[FairyRecoveryMana]
 
   /**
-   * 妖精の効果が終了する時刻を変更する
+   * @return 妖精の効果が終了する時刻を変更する作用
    */
-  def updateFairyEndTime(uuid: UUID, fairyEndTime: FairyEndTime): F[Unit]
+  def updateFairyEndTime(player: UUID, fairyEndTime: FairyEndTime): F[Unit]
 
   /**
-   * 妖精の効果が終了する時刻を取得する
+   * @return 妖精の効果が終了する時刻を取得する作用
    */
-  def fairyEndTime(uuid: UUID): F[Option[FairyEndTime]]
+  def fairyEndTime(player: UUID): F[Option[FairyEndTime]]
 
   /**
-   * 妖精が食べたりんごの量を増加させる
+   * @return 妖精が指定プレイヤーから食べたりんごの量を増加させる作用
    */
-  def increaseAppleAteByFairy(uuid: UUID, appleAmount: AppleAmount): F[Unit]
+  def increaseConsumedAppleAmountByFairy(player: UUID, appleAmount: AppleAmount): F[Unit]
 
   /**
-   * 妖精が食べたりんごの量を取得する
+   * @return 妖精が食べたりんごの量を取得する作用
    */
-  def appleAteByFairy(uuid: UUID): F[Option[AppleAmount]]
+  def consumedAppleAmountByFairy(player: UUID): F[Option[AppleAmount]]
 
   /**
-   * 自分の妖精に食べさせたりんごの量の順位を返す
+   * @return 自分の妖精に食べさせたりんごの量の順位を返す作用
    */
-  def appleAteByFairyMyRanking(uuid: UUID): F[Option[AppleAteByFairyRank]]
+  def rankByConsumedAppleAmountByFairy(player: UUID): F[Option[AppleAteByFairyRank]]
 
   /**
-   * 妖精に食べさせたりんごの量の順位上位`top`件を返す
+   * 妖精に食べさせたりんごの量が多いプレイヤーを上位とし、そのランキングの上から指定した件数を返す
+   *
+   * @param top 最上位から何番目まで取得するか件数を指定する。0以下であってはならない。
+   * @return 指定した件数が要素数となり、その並びが消費量の降順になっているような順序つきのコレクションを返す作用。
    */
-  def appleAteByFairyRanking(number: Int): F[Vector[Option[AppleAteByFairyRank]]]
+  def fetchMostConsumedApplePlayersByFairy(top: Int): F[Vector[Option[AppleAteByFairyRank]]]
 
   /**
-   * 妖精が食べたりんごの合計数を返す
+   * @return 妖精が今まで食べたりんごの合計数を返す作用
    */
-  def allEatenAppleAmount: F[AppleAmount]
+  def totalConsumedAppleAmount: F[AppleAmount]
 
   /**
-   * 妖精が喋るときに音をだすかをトグルする
+   * @return 妖精が喋るときに音をだすかをトグルする作用
    */
-  def toggleFairySpeechSound(uuid: UUID, fairyPlaySound: Boolean): F[Unit]
+  def setPlaySoundOnSpeech(player: UUID, playOnSpeech: Boolean): F[Unit]
 
   /**
-   * 妖精が喋ったときに音を再生するか取得する
+   * @return 妖精が喋ったときに音を再生するか取得する作用
    */
-  def fairySpeechSound(uuid: UUID): F[Boolean]
+  def playSoundOnFairySpeech(player: UUID): F[Boolean]
 
 }

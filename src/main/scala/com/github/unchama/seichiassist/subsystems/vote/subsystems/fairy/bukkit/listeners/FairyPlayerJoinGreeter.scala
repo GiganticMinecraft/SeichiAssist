@@ -23,7 +23,7 @@ class FairyPlayerJoinGreeter(
     val player = e.getPlayer
     val uuid = player.getUniqueId
     val program = for {
-      _ <- fairyPersistence.createPlayerData(uuid)
+      _ <- fairyPersistence.initializePlayerData(uuid)
       isUsing <- fairyPersistence.isFairyUsing(uuid)
       endTime <- fairyPersistence.fairyEndTime(uuid)
       isEnd = endTime.get.endTimeOpt.get.isBefore(LocalDateTime.now())

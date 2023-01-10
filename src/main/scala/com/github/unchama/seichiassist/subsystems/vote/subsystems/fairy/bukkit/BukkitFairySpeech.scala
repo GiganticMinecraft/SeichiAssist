@@ -44,7 +44,7 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
 
       serviceRepository = fairySpeechServiceRepository(player)
       fairySpeechSound <- ContextCoercion {
-        fairyPersistence.fairySpeechSound(player.getUniqueId)
+        fairyPersistence.playSoundOnFairySpeech(player.getUniqueId)
       }
       _ <- ContextCoercion {
         serviceRepository.makeSpeech(Seq(message), fairySpeechSound)
@@ -66,7 +66,7 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
     }
     for {
       message <- randomMessage(messages(nameCalledByFairy))
-      fairyPlaySound <- fairyPersistence.fairySpeechSound(player.getUniqueId)
+      fairyPlaySound <- fairyPersistence.playSoundOnFairySpeech(player.getUniqueId)
       _ <- ContextCoercion {
         fairySpeechServiceRepository(player).makeSpeech(Seq(message), fairyPlaySound)
       }
@@ -76,7 +76,7 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
   override def speechEndTime(player: Player): F[Unit] = {
     for {
       endTimeOpt <- fairyPersistence.fairyEndTime(player.getUniqueId)
-      playSound <- fairyPersistence.fairySpeechSound(player.getUniqueId)
+      playSound <- fairyPersistence.playSoundOnFairySpeech(player.getUniqueId)
       endTime = endTimeOpt.get.endTimeOpt.get
       _ <- ContextCoercion {
         fairySpeechServiceRepository(player).makeSpeech(
@@ -88,7 +88,7 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
   }
 
   override def welcomeBack(player: Player): F[Unit] = for {
-    playSound <- fairyPersistence.fairySpeechSound(player.getUniqueId)
+    playSound <- fairyPersistence.playSoundOnFairySpeech(player.getUniqueId)
     _ <- ContextCoercion {
       fairySpeechServiceRepository(player)
         .makeSpeech(Seq(FairyMessage(s"おかえり！${player.getName}")), playSound)
@@ -96,7 +96,7 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
   } yield ()
 
   override def bye(player: Player): F[Unit] = for {
-    playSound <- fairyPersistence.fairySpeechSound(player.getUniqueId)
+    playSound <- fairyPersistence.playSoundOnFairySpeech(player.getUniqueId)
     repository = fairySpeechServiceRepository(player)
     _ <- ContextCoercion {
       repository.makeSpeech(

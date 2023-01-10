@@ -101,12 +101,12 @@ object System {
         override implicit val api: FairyAPI[IO, SyncIO, Player] =
           new FairyAPI[IO, SyncIO, Player] {
             override def consumeStrategy(uuid: UUID): IO[FairyAppleConsumeStrategy] =
-              persistence.appleOpenState(uuid)
+              persistence.appleConsumeStrategy(uuid)
 
             override def updateAppleOpenState(
               appleConsumeStrategy: FairyAppleConsumeStrategy
             ): Kleisli[IO, Player, Unit] = Kleisli { player =>
-              persistence.changeAppleOpenState(player.getUniqueId, appleConsumeStrategy)
+              persistence.updateAppleConsumeStrategy(player.getUniqueId, appleConsumeStrategy)
             }
 
             override def getFairyLore(uuid: UUID): IO[FairyLore] = for {
@@ -128,24 +128,24 @@ object System {
             override def rankByMostConsumedApple(
               player: Player
             ): IO[Option[AppleAteByFairyRank]] =
-              persistence.appleAteByFairyMyRanking(player.getUniqueId)
+              persistence.rankByConsumedAppleAmountByFairy(player.getUniqueId)
 
             override def rankingByMostConsumedApple(
               top: Int
             ): IO[Vector[Option[AppleAteByFairyRank]]] =
-              persistence.appleAteByFairyRanking(top)
+              persistence.fetchMostConsumedApplePlayersByFairy(top)
 
             override def totalConsumedApple: IO[AppleAmount] =
-              persistence.allEatenAppleAmount
+              persistence.totalConsumedAppleAmount
 
             override def doPlaySoundOnSpeak(uuid: UUID): IO[Boolean] =
-              persistence.fairySpeechSound(uuid)
+              persistence.playSoundOnFairySpeech(uuid)
 
             override def toggleSoundOnSpeak: Kleisli[IO, Player, Unit] = Kleisli { player =>
               val uuid = player.getUniqueId
               for {
                 isPlayFairySpeechSound <- doPlaySoundOnSpeak(uuid)
-              } yield persistence.toggleFairySpeechSound(uuid, !isPlayFairySpeechSound)
+              } yield persistence.setPlaySoundOnSpeech(uuid, !isPlayFairySpeechSound)
             }
 
             override def sendDisappearTimeToChat: Kleisli[IO, Player, Unit] = Kleisli {

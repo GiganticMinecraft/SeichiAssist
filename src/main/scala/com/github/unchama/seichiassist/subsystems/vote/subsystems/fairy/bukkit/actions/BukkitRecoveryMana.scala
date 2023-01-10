@@ -77,7 +77,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
         )
 
       _ <- {
-        fairyPersistence.increaseAppleAteByFairy(
+        fairyPersistence.increaseConsumedAppleAmountByFairy(
           uuid,
           AppleAmount(finallyAppleConsumptionAmount)
         ) >>
@@ -108,7 +108,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
   private def computeAppleConsumptionAmount: F[Int] = for {
     seichiAmountData <- ContextCoercion(breakCountAPI.seichiAmountDataRepository(player).read)
     voteStreaks <- voteAPI.currentConsecutiveVoteStreakDays(uuid)
-    appleOpenState <- fairyPersistence.appleOpenState(uuid)
+    appleOpenState <- fairyPersistence.appleConsumeStrategy(uuid)
     oldManaAmount <- ContextCoercion {
       manaApi.readManaAmount(player)
     }
@@ -157,7 +157,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
    * がちゃりんごの消費量を計算します。
    */
   private def computeFinallyAppleConsumptionAmount(appleConsumptionAmount: Int): F[Int] = for {
-    appleOpenState <- fairyPersistence.appleOpenState(uuid)
+    appleOpenState <- fairyPersistence.appleConsumeStrategy(uuid)
     gachaRingoObject <- LiftIO[F].liftIO {
       MineStackObjectList.findByName("gachaimo")
     }
@@ -178,7 +178,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
    */
   private def computeManaRecoveryAmount(appleConsumptionAmount: Int): F[Int] = for {
     defaultRecoveryManaAmount <- fairyPersistence.fairyRecoveryMana(uuid)
-    appleOpenState <- fairyPersistence.appleOpenState(uuid)
+    appleOpenState <- fairyPersistence.appleConsumeStrategy(uuid)
     oldManaAmount <- ContextCoercion {
       manaApi.readManaAmount(player)
     }
