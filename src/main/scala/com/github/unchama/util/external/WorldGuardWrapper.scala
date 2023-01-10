@@ -1,11 +1,11 @@
-package com.github.unchama.util.external;
+package com.github.unchama.util.external
 
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin
 import com.sk89q.worldguard.protection.managers.RegionManager
 import com.sk89q.worldguard.protection.regions.ProtectedRegion
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
+import org.bukkit.Location
+import org.bukkit.World
+import org.bukkit.entity.Player
 
 import scala.jdk.CollectionConverters._
 
@@ -19,7 +19,7 @@ object WorldGuardWrapper {
   /**
    * WorldGuardのインスタンス
    */
-  private val plugin = ExternalPlugins.getWorldGuard;
+  private val plugin = ExternalPlugins.getWorldGuard
 
   /**
    * [[RegionManager]]を返す
