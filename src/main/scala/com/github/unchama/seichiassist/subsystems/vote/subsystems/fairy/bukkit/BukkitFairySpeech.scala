@@ -20,9 +20,6 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
 
   import cats.implicits._
 
-  /**
-   * @return 時間から妖精の召喚メッセージを返す
-   */
   private def getSummonMessagesByStartHour(
     startHour: Int,
     nameCalledByFairy: ScreenNameForFairy
