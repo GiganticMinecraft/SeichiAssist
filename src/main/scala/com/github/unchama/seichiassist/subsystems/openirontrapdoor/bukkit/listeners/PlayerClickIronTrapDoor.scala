@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.openirontrapdoor.bukkit.listeners
 
-import com.github.unchama.util.external.WorldGuardWrapper.isRegionOwner
+import com.github.unchama.util.external.WorldGuardWrapper.isRegionMember
 import org.bukkit.Material
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
@@ -13,7 +13,7 @@ object PlayerClickIronTrapDoor extends Listener {
   def onPlayerRightClickIronTrapDoor(event: PlayerInteractEvent): Unit = {
     val clickedBlock = event.getClickedBlock
     if (clickedBlock == null) return
-    if (!isRegionOwner(event.getPlayer, clickedBlock.getLocation)) return
+    if (!isRegionMember(event.getPlayer, clickedBlock.getLocation)) return
 
     if (event.getHand != EquipmentSlot.HAND) return
     if (
