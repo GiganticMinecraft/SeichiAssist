@@ -9,10 +9,19 @@ import java.util.UUID
 
 class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
 
-  def createPlayerData(uuid: UUID): F[Unit] = Sync[F].delay {
-    DB.localTx { implicit session =>
-      // ここでIGNOREするのは、作成するデータが既に存在していた場合に発生するエラーを無視するため
-      sql"INSERT IGNORE INTO vote_fairy (uuid) VALUES (${uuid.toString})".execute().apply()
+  override def createPlayerData(uuid: UUID): F[Unit] = Sync[F].delay {
+    val hasPlayerDataCreated = DB.readOnly { implicit session =>
+      sql"SELECT COUNT(*) as c FROM vote_fairy where uuid = ${uuid.toString}"
+        .map(_.int("c"))
+        .single()
+        .apply()
+        .nonEmpty
+    }
+
+    if (!hasPlayerDataCreated) {
+      DB.localTx { implicit session =>
+        sql"INSERT INTO vote_fairy (uuid) VALUES (${uuid.toString})".execute().apply()
+      }
     }
   }
 
