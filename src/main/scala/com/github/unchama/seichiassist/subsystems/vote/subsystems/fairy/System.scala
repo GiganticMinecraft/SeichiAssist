@@ -12,6 +12,7 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
+import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.SummonFairy
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.repository.{
@@ -40,6 +41,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.infrastr
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.service.FairySpeechService
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
+import org.bukkit.inventory.ItemStack
 
 import java.util.UUID
 
@@ -53,6 +55,7 @@ object System {
     implicit breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
     voteAPI: VoteAPI[IO, Player],
     manaApi: ManaApi[IO, SyncIO, Player],
+    mineStackAPI: MineStackAPI[IO, Player, ItemStack],
     repeatingTaskContext: RepeatingTaskContext,
     concurrentEffect: ConcurrentEffect[IO],
     minecraftServerThread: OnMinecraftServerThread[IO]

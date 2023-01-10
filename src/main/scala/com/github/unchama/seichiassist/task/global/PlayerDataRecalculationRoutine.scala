@@ -6,8 +6,6 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.SeichiAchievement
 import org.bukkit.Bukkit
-import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 
 import scala.concurrent.duration.FiniteDuration
 

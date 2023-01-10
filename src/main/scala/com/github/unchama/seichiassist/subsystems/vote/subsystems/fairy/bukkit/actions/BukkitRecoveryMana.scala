@@ -1,24 +1,25 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions
 
-import cats.effect.{ConcurrentEffect, LiftIO, Sync}
+import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
+import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.RecoveryMana
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyPersistence
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
   AppleAmount,
   FairyAppleConsumeStrategy,
   FairyManaRecoveryState
 }
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyPersistence
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.FairySpeech
-import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffectF
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 
 import java.time.LocalDateTime
 import java.util.UUID
@@ -31,11 +32,11 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
   implicit breakCountAPI: BreakCountAPI[F, G, Player],
   voteAPI: VoteAPI[F, Player],
   manaApi: ManaApi[F, G, Player],
-  fairyPersistence: FairyPersistence[F]
+  fairyPersistence: FairyPersistence[F],
+  mineStackAPI: MineStackAPI[F, Player, ItemStack]
 ) extends RecoveryMana[F] {
 
   private val uuid: UUID = player.getUniqueId
-  private val playerdata = SeichiAssist.playermap(uuid)
 
   import cats.implicits._
 
@@ -64,11 +65,11 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
       )
       recoveryManaAmount <- computeManaRecoveryAmount(appleConsumptionAmount)
 
-      gachaRingoObject <- LiftIO[F].liftIO {
-        MineStackObjectList.findByName("gachaimo")
-      }
-      mineStackedGachaRingoAmount =
-        playerdata.minestack.getStackedAmountOf(gachaRingoObject.get)
+      gachaRingoObject <- mineStackAPI.mineStackObjectList.findByName("gachaimo")
+
+      mineStackedGachaRingoAmount <- mineStackAPI
+        .mineStackRepository
+        .getStackedAmountOf(player, gachaRingoObject.get)
 
       _ <- MessageEffectF(s"$RESET$YELLOW${BOLD}MineStackにがちゃりんごがないようです。。。")
         .apply(player)
@@ -158,13 +159,11 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
    */
   private def computeFinallyAppleConsumptionAmount(appleConsumptionAmount: Int): F[Int] = for {
     appleOpenState <- fairyPersistence.appleConsumeStrategy(uuid)
-    gachaRingoObject <- LiftIO[F].liftIO {
-      MineStackObjectList.findByName("gachaimo")
-    }
+    gachaRingoObject <- mineStackAPI.mineStackObjectList.findByName("gachaimo")
+    mineStackedGachaRingoAmount <- mineStackAPI
+      .mineStackRepository
+      .getStackedAmountOf(player, gachaRingoObject.get)
   } yield {
-    val mineStackedGachaRingoAmount =
-      playerdata.minestack.getStackedAmountOf(gachaRingoObject.get)
-
     // りんごの消費量
     if (appleOpenState == FairyAppleConsumeStrategy.NoConsume)
       0
@@ -182,16 +181,14 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
     oldManaAmount <- ContextCoercion {
       manaApi.readManaAmount(player)
     }
-    gachaRingoObject <- LiftIO[F].liftIO {
-      MineStackObjectList.findByName("gachaimo")
-    }
+    gachaRingoObject <- mineStackAPI.mineStackObjectList.findByName("gachaimo")
+    mineStackedGachaRingoAmount <- mineStackAPI
+      .mineStackRepository
+      .getStackedAmountOf(player, gachaRingoObject.get)
   } yield {
     val isAppleOpenStateIsOpenOrOpenALittle =
       appleOpenState == FairyAppleConsumeStrategy.LessConsume || appleOpenState == FairyAppleConsumeStrategy.Consume
     val isEnoughMana = oldManaAmount.ratioToCap.exists(_ >= 0.75)
-
-    val mineStackedGachaRingoAmount =
-      playerdata.minestack.getStackedAmountOf(gachaRingoObject.get)
 
     // マナの回復量を算出する
 

@@ -5,7 +5,7 @@ import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.data.ItemData
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.factories.BukkitGachaSkullData
+import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.factories.BukkitGachaSkullData
 import com.github.unchama.seichiassist.subsystems.vote.application.actions.ReceiveVoteBenefits
 import com.github.unchama.seichiassist.subsystems.vote.domain.{
   EffectPoint,

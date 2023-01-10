@@ -452,7 +452,6 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.idletime.subsystems.awayscreenname.System.wired[IO].unsafeRunSync()
   }
 
-
   // TODO: これはprivateであるべきだが、Achievementシステムが再実装されるまでやむを得ずpublicにする
   lazy val voteSystem: subsystems.vote.System[IO, Player] = {
     implicit val breakCountAPI: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
@@ -474,7 +473,6 @@ class SeichiAssist extends JavaPlugin() {
       BreakUtilの実装から呼び出されている都合上やむを得ずpublicになっている。*/
   lazy val mineStackSystem: subsystems.minestack.System[IO, Player, ItemStack] =
     subsystems.minestack.System.wired[IO, SyncIO].unsafeRunSync()
-
 
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
