@@ -109,10 +109,6 @@ object System {
               persistence.updateAppleConsumeStrategy(player.getUniqueId, appleConsumeStrategy)
             }
 
-            override def getFairyLore(uuid: UUID): IO[FairyLore] = for {
-              state <- consumeStrategy(uuid)
-            } yield FairyLoreTable.loreTable(state)
-
             override def updateFairySummonCost(
               fairySummonCost: FairySummonCost
             ): Kleisli[IO, Player, Unit] = Kleisli { player =>

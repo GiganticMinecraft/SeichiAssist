@@ -43,11 +43,6 @@ trait FairyReadAPI[F[_], G[_], Player] {
   def fairySummonCost(player: Player): F[FairySummonCost]
 
   /**
-   * @return `FairyLoreTable`からLoreを取得する作用
-   */
-  def getFairyLore(uuid: UUID): F[FairyLore]
-
-  /**
    * @return 妖精を使っているかを取得する作用
    */
   def isFairyAppearing(player: Player): F[Boolean]

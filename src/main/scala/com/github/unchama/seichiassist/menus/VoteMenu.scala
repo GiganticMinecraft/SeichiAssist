@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.menus
 
-import cats.data.Kleisli
+import cats.data.{Kleisli, NonEmptyList}
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
 import cats.implicits._
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
@@ -16,7 +16,7 @@ import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairyAppleConsumeStrategy.{Consume, LessConsume, NoConsume, Permissible}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairySummonRequestError.{AlreadyFairySummoned, NotEnoughEffectPoint, NotEnoughSeichiLevel}
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{FairyAppleConsumeStrategy, FairySummonCost}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{FairyAppleConsumeStrategy, FairyLore, FairySummonCost}
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -199,14 +199,41 @@ object VoteMenu extends Menu {
           NoConsume -> Permissible
         )
 
+      val fairyLoreTable: Map[FairyAppleConsumeStrategy, FairyLore] = Map(
+        Permissible -> FairyLore(
+          NonEmptyList.of(
+            s"$RED$UNDERLINE${BOLD}ガンガンたべるぞ",
+            s"$RESET${GRAY}とにかく妖精さんにりんごを開放します。",
+            s"$RESET${GRAY}めっちゃ喜ばれます。"
+          )
+        ),
+        Consume -> FairyLore(
+          NonEmptyList.of(
+            s"$YELLOW$UNDERLINE${BOLD}バッチリたべよう",
+            s"$RESET${GRAY}食べ過ぎないように注意しつつ",
+            s"$RESET${GRAY}妖精さんにりんごを開放します。",
+            s"$RESET${GRAY}喜ばれます。"
+          )
+        ),
+        LessConsume -> FairyLore(
+          NonEmptyList.of(
+            s"$GREEN$UNDERLINE${BOLD}リンゴだいじに",
+            s"$RESET${GRAY}少しだけ妖精さんにりんごを開放します。",
+            s"$RESET${GRAY}伝えると大抵落ち込みます。"
+          )
+        ),
+        NoConsume -> FairyLore(
+          NonEmptyList.of(s"$BLUE$UNDERLINE${BOLD}リンゴつかうな", s"$RESET${GRAY}絶対にりんごを開放しません。", "")
+        )
+      )
+
       RecomputedButton(for {
-        fairyLore <- fairyAPI.getFairyLore(uuid)
         consumeStrategy <- fairyAPI.consumeStrategy(uuid)
       } yield {
         Button(
           new IconItemStackBuilder(Material.PAPER)
             .title(s"$GOLD$UNDERLINE${BOLD}妖精とのお約束")
-            .lore(fairyLore.lore.toList)
+            .lore(fairyLoreTable(consumeStrategy).lore.toList)
             .build(),
           LeftClickButtonEffect {
             SequentialEffect(
