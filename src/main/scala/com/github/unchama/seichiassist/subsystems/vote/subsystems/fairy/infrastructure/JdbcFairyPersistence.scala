@@ -149,7 +149,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
     }
   }
 
-  override def rankByConsumedAppleAmountByFairy(player: UUID): F[Option[AppleAteByFairyRank]] =
+  override def rankByConsumedAppleAmountByFairy(player: UUID): F[Option[AppleConsumeAmountRank]] =
     Sync[F].delay {
       DB.readOnly { implicit session =>
         sql"""SELECT vote_fairy.uuid AS uuid,name,given_apple_amount,COUNT(*) AS rank 
@@ -159,7 +159,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
              | ORDER BY rank DESC;"""
           .stripMargin
           .map(rs =>
-            rs.string("uuid") -> AppleAteByFairyRank(
+            rs.string("uuid") -> AppleConsumeAmountRank(
               rs.string("name"),
               rs.int("rank"),
               AppleAmount(rs.int("given_apple_amount"))
@@ -172,7 +172,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
       }
     }
 
-  override def fetchMostConsumedApplePlayersByFairy(top: Int): F[Vector[Option[AppleAteByFairyRank]]] =
+  override def fetchMostConsumedApplePlayersByFairy(top: Int): F[Vector[Option[AppleConsumeAmountRank]]] =
     Sync[F].delay {
       DB.readOnly { implicit session =>
         sql"""SELECT name,given_apple_amount,COUNT(*) AS rank FROM vote_fairy 
@@ -184,7 +184,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
           .apply()
           .map(data =>
             if (data._1.nonEmpty)
-              Some(AppleAteByFairyRank(data._1.get, data._2.get, AppleAmount(data._3.get)))
+              Some(AppleConsumeAmountRank(data._1.get, data._2.get, AppleAmount(data._3.get)))
             else None
           )
           .toVector

@@ -344,7 +344,7 @@ object VoteMenu extends Menu {
             val rankData = rankDataOpt.get.get
             List(
               s"${GRAY}たくさんくれたﾆﾝｹﾞﾝ第${rankData.rank}位！",
-              s"${GRAY}なまえ：${rankData.name} りんご：${rankData.appleAmount.amount}個"
+              s"${GRAY}なまえ：${rankData.playerName} りんご：${rankData.consumed.amount}個"
             )
           } else Nil
         }
@@ -352,7 +352,7 @@ object VoteMenu extends Menu {
         s"${AQUA}ぜーんぶで${allEatenAppleAmount.amount}個もらえた！",
         "",
         s"$GREEN↓呼び出したﾆﾝｹﾞﾝの情報↓",
-        s"${GREEN}今までに${myRank.get.appleAmount.amount}個もらった",
+        s"${GREEN}今までに${myRank.get.consumed.amount}個もらった",
         s"${GREEN}ﾆﾝｹﾞﾝの中では${myRank.get.rank}番目にたくさんくれる！"
       )
 

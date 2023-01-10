@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain
 
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
   AppleAmount,
-  AppleAteByFairyRank,
+  AppleConsumeAmountRank,
   FairyAppleConsumeStrategy,
   FairyEndTime,
   FairyRecoveryMana,
@@ -82,7 +82,7 @@ trait FairyPersistence[F[_]] {
   /**
    * @return 自分の妖精に食べさせたりんごの量の順位を返す作用
    */
-  def rankByConsumedAppleAmountByFairy(player: UUID): F[Option[AppleAteByFairyRank]]
+  def rankByConsumedAppleAmountByFairy(player: UUID): F[Option[AppleConsumeAmountRank]]
 
   /**
    * 妖精に食べさせたりんごの量が多いプレイヤーを上位とし、そのランキングの上から指定した件数を返す
@@ -90,7 +90,7 @@ trait FairyPersistence[F[_]] {
    * @param top 最上位から何番目まで取得するか件数を指定する。0以下であってはならない。
    * @return 指定した件数が要素数となり、その並びが消費量の降順になっているような順序つきのコレクションを返す作用。
    */
-  def fetchMostConsumedApplePlayersByFairy(top: Int): F[Vector[Option[AppleAteByFairyRank]]]
+  def fetchMostConsumedApplePlayersByFairy(top: Int): F[Vector[Option[AppleConsumeAmountRank]]]
 
   /**
    * @return 妖精が今まで食べたりんごの合計数を返す作用

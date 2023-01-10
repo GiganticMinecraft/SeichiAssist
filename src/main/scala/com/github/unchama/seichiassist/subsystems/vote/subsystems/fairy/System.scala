@@ -127,12 +127,12 @@ object System {
 
             override def rankByMostConsumedApple(
               player: Player
-            ): IO[Option[AppleAteByFairyRank]] =
+            ): IO[Option[AppleConsumeAmountRank]] =
               persistence.rankByConsumedAppleAmountByFairy(player.getUniqueId)
 
             override def rankingByMostConsumedApple(
               top: Int
-            ): IO[Vector[Option[AppleAteByFairyRank]]] =
+            ): IO[Vector[Option[AppleConsumeAmountRank]]] =
               persistence.fetchMostConsumedApplePlayersByFairy(top)
 
             override def totalConsumedApple: IO[AppleAmount] =
