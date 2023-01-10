@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.applica
 trait FairyRoutine[F[_], Player] {
 
   /**
-   * 妖精の定期実行プロセスを開始する作用
+   * @return 妖精の定期実行プロセスを開始する作用
    */
   def start(player: Player): F[Nothing]
 

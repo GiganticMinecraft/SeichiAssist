@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.applica
 trait SummonFairy[F[_], Player] {
 
   /**
-   * 妖精を召喚する作用
+   * @return 妖精を召喚する作用
    */
   def summon(player: Player): F[Unit]
 

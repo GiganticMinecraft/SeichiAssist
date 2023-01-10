@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.applica
 trait RecoveryMana[F[_]] {
 
   /**
-   * 妖精がマナを回復する作用
+   * @return 妖精がマナを回復する作用
    */
   def recovery: F[Unit]
 
