@@ -11,7 +11,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
 
   override def initializePlayerData(player: UUID): F[Unit] = Sync[F].delay {
     val hasPlayerDataCreated = DB.readOnly { implicit session =>
-      sql"SELECT COUNT(*) as c FROM vote_fairy where uuid = ${uuid.toString}"
+      sql"SELECT COUNT(*) as c FROM vote_fairy where uuid = ${player.toString}"
         .map(_.int("c"))
         .single()
         .apply()
@@ -20,15 +20,18 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
 
     if (!hasPlayerDataCreated) {
       DB.localTx { implicit session =>
-        sql"INSERT INTO vote_fairy (uuid) VALUES (${uuid.toString})".execute().apply()
+        sql"INSERT INTO vote_fairy (uuid) VALUES (${player.toString})".execute().apply()
       }
     }
   }
 
-  override def updateAppleConsumeStrategy(player: UUID, openState: FairyAppleConsumeStrategy): F[Unit] =
+  override def updateAppleConsumeStrategy(
+    player: UUID,
+    openState: FairyAppleConsumeStrategy
+  ): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
-        sql"UPDATE vote_fairy SET apple_open_state = ${openState.serializedValue} WHERE uuid = ${uuid.toString}"
+        sql"UPDATE vote_fairy SET apple_open_state = ${openState.serializedValue} WHERE uuid = ${player.toString}"
           .execute()
           .apply()
       }
@@ -37,7 +40,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   override def appleConsumeStrategy(player: UUID): F[FairyAppleConsumeStrategy] =
     Sync[F].delay {
       val serializedValue = DB.readOnly { implicit session =>
-        sql"SELECT apple_open_state FROM vote_fairy WHERE uuid = ${uuid.toString}"
+        sql"SELECT apple_open_state FROM vote_fairy WHERE uuid = ${player.toString}"
           .map(_.int("apple_open_state"))
           .single()
           .apply()
@@ -88,8 +91,8 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   }
 
   override def updateFairyRecoveryMana(
-                                        player: UUID,
-                                        fairyRecoveryMana: FairyRecoveryMana
+    player: UUID,
+    fairyRecoveryMana: FairyRecoveryMana
   ): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
       sql"UPDATE vote_fairy SET fairy_recovery_mana_value = ${fairyRecoveryMana.recoveryMana} WHERE uuid = ${player.toString}"
@@ -129,7 +132,10 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
     }
   }
 
-  override def increaseConsumedAppleAmountByFairy(player: UUID, appleAmount: AppleAmount): F[Unit] =
+  override def increaseConsumedAppleAmountByFairy(
+    player: UUID,
+    appleAmount: AppleAmount
+  ): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
         sql"UPDATE vote_fairy SET given_apple_amount = given_apple_amount + ${appleAmount.amount} WHERE uuid = ${player.toString}"
@@ -138,18 +144,21 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
       }
     }
 
-  override def consumedAppleAmountByFairy(player: UUID): F[Option[AppleAmount]] = Sync[F].delay {
-    DB.readOnly { implicit session =>
-      val appleAmountOpt =
-        sql"SELECT given_apple_amount FROM vote_fairy WHERE uuid = ${player.toString}"
-          .map(_.int("given_apple_amount"))
-          .single()
-          .apply()
-      appleAmountOpt.map(AppleAmount)
+  override def consumedAppleAmountByFairy(player: UUID): F[Option[AppleAmount]] =
+    Sync[F].delay {
+      DB.readOnly { implicit session =>
+        val appleAmountOpt =
+          sql"SELECT given_apple_amount FROM vote_fairy WHERE uuid = ${player.toString}"
+            .map(_.int("given_apple_amount"))
+            .single()
+            .apply()
+        appleAmountOpt.map(AppleAmount)
+      }
     }
-  }
 
-  override def rankByConsumedAppleAmountByFairy(player: UUID): F[Option[AppleConsumeAmountRank]] =
+  override def rankByConsumedAppleAmountByFairy(
+    player: UUID
+  ): F[Option[AppleConsumeAmountRank]] =
     Sync[F].delay {
       DB.readOnly { implicit session =>
         sql"""SELECT vote_fairy.uuid AS uuid,name,given_apple_amount,COUNT(*) AS rank 
@@ -172,7 +181,9 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
       }
     }
 
-  override def fetchMostConsumedApplePlayersByFairy(top: Int): F[Vector[Option[AppleConsumeAmountRank]]] =
+  override def fetchMostConsumedApplePlayersByFairy(
+    top: Int
+  ): F[Vector[Option[AppleConsumeAmountRank]]] =
     Sync[F].delay {
       DB.readOnly { implicit session =>
         sql"""SELECT name,given_apple_amount,COUNT(*) AS rank FROM vote_fairy 

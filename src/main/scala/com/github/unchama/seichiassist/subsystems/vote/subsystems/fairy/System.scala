@@ -27,7 +27,6 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.{
   BukkitFairySummonRequest
 }
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property._
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.resources.bukkit.FairyLoreTable
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.{
   FairySpeech,
   FairySpeechGateway

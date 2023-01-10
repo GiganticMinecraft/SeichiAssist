@@ -106,9 +106,10 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
     }
   } yield ()
 
-  private def randomMessage(fairyMessages: FairyMessageChoice): F[FairyMessage] = Sync[F].delay {
-    val messages = fairyMessages.messages.toVector
-    messages(Random.nextInt(messages.size))
-  }
+  private def randomMessage(fairyMessages: FairyMessageChoice): F[FairyMessage] =
+    Sync[F].delay {
+      val messages = fairyMessages.messages.toVector
+      messages(Random.nextInt(messages.size))
+    }
 
 }
