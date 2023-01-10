@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.p
 object FairyMessageTable {
 
   /**
-   *   朝に妖精を召喚したときに表示されるメッセージ
+   * 朝に妖精を召喚したときに表示されるメッセージ
    */
   val morningMessages: ScreenNameForFairy => FairyMessageChoice = (name: ScreenNameForFairy) =>
     FairyMessageChoice(
