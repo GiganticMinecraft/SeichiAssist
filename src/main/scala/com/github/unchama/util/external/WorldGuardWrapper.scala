@@ -74,10 +74,20 @@ object WorldGuardWrapper {
   def isRegionMember(player: Player, location: Location): Boolean =
     getOneRegion(location).exists(rg => rg.isMember(plugin.wrapPlayer(player)))
 
+  /**
+   * [[Location]]の座標にある保護を1つだけ取得する
+   * @param location どの座標か
+   * @return [[ProtectedRegion]]。存在しない場合は[[None]]
+   */
   def getOneRegion(location: Location): Option[ProtectedRegion] = getRegions(
     location
   ).headOption
 
+  /**
+   * [[Location]]の座標にある保護をすべて取得する
+   * @param location どの座標か
+   * @return [[ProtectedRegion]]の[[Set]]
+   */
   def getRegions(location: Location): Set[ProtectedRegion] =
     getRegionManager(location.getWorld)
       .map(manager => manager.getApplicableRegions(location).getRegions.asScala.toSet)
