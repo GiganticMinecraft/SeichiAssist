@@ -35,7 +35,7 @@ object MineStackMassCraftMenu {
   type MineStackItemId = String
 
   class Environment(
-    implicit val canOpenBuildMainMenu: CanOpen[IO, BuildMainMenu.type],
+    using val canOpenBuildMainMenu: CanOpen[IO, BuildMainMenu.type],
     val canOpenItself: CanOpen[IO, MineStackMassCraftMenu],
     val mineStackAPI: MineStackAPI[IO, Player, ItemStack]
   )

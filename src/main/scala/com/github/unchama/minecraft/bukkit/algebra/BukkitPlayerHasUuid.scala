@@ -13,6 +13,6 @@ class BukkitPlayerHasUuid extends HasUuid[Player] {
 
 object BukkitPlayerHasUuid {
 
-  implicit val instance: HasUuid[Player] = new BukkitPlayerHasUuid
+  given instance: HasUuid[Player] = new BukkitPlayerHasUuid
 
 }

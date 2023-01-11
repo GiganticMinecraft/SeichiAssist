@@ -24,7 +24,7 @@ class ReorderingPipeSpec
 
   implicit override val patienceConfig: PatienceConfig =
     PatienceConfig(timeout = 5.seconds, interval = 10.millis)
-  implicit val monixScheduler: TestScheduler = TestScheduler(
+  given monixScheduler: TestScheduler = TestScheduler(
     ExecutionModel.AlwaysAsyncExecution
   )
 

@@ -38,16 +38,16 @@ object System {
   ]: SyncEffect: ContextCoercion[*[_], AsyncContext]](configuration: SystemConfiguration)(
     implicit idleTimeAPI: IdleTimeAPI[AsyncContext, Player]
   ): SyncContext[System[SyncContext, AsyncContext]] = {
-    implicit val _configuration: SystemConfiguration = configuration
+    given _configuration: SystemConfiguration = configuration
 
-    implicit val _jdbcRepository: FlyDurationPersistenceRepository[SyncContext] =
+    given _jdbcRepository: FlyDurationPersistenceRepository[SyncContext] =
       new JdbcFlyDurationPersistenceRepository[SyncContext]
 
-    implicit val _playerKleisliManipulation
+    given _playerKleisliManipulation
       : PlayerFlyStatusManipulation[Kleisli[AsyncContext, Player, *]] =
       new BukkitPlayerFlyStatusManipulation[AsyncContext]
 
-    implicit val _factory: ActiveSessionFactory[AsyncContext, Player] =
+    given _factory: ActiveSessionFactory[AsyncContext, Player] =
       new ActiveSessionFactory[AsyncContext, Player]()
 
     import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid._
@@ -57,7 +57,7 @@ object System {
         ActiveSessionReferenceRepositoryDefinition.withContext(_factory, _jdbcRepository)
       )
       .map { controls =>
-        implicit val _repository
+        given _repository
           : PlayerDataRepository[ActiveSessionReference[AsyncContext, SyncContext]] =
           controls.repository
 

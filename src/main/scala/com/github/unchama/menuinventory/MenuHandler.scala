@@ -14,7 +14,7 @@ import org.bukkit.event.{EventHandler, Listener}
  * @author
  *   karayuu
  */
-class MenuHandler(implicit val cs: NonServerThreadContextShift[IO], env: EffectEnvironment)
+class MenuHandler(using cs: NonServerThreadContextShift[IO], env: EffectEnvironment)
     extends Listener {
   @EventHandler(ignoreCancelled = true)
   def onInventoryClick(event: InventoryClickEvent): Unit = {

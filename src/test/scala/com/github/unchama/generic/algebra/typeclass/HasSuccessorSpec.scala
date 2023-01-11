@@ -13,9 +13,9 @@ class HasSuccessorSpec extends AnyWordSpec with ScalaCheckPropertyChecks with Ma
 
   type T = Int
 
-  implicit val intArbitrary: Arbitrary[T] = Arbitrary(Gen.choose(-10000, 10000))
+  given intArbitrary: Arbitrary[T] = Arbitrary(Gen.choose(-10000, 10000))
 
-  implicit val testTInstance: HasSuccessor[T] = new HasSuccessor[T] {
+  given testTInstance: HasSuccessor[T] = new HasSuccessor[T] {
     override val order: Order[T] = implicitly
 
     override def successor(x: T): Option[T] = Some(x + 1)

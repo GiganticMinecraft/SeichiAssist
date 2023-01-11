@@ -26,12 +26,12 @@ import org.bukkit.{Material, Sound}
 object HomeMenu {
 
   class Environment(
-    implicit val ioCanOpenConfirmationMenu: IO CanOpen HomeChangeConfirmationMenu,
-    implicit val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
-    implicit val ioCanOpenHome: IO CanOpen HomeMenu,
+    using val ioCanOpenConfirmationMenu: IO CanOpen HomeChangeConfirmationMenu,
+    using val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
+    using val ioCanOpenHome: IO CanOpen HomeMenu,
     val ioCanOpenHomeRemoveConfirmationMenu: IO CanOpen HomeRemoveConfirmationMenu,
-    implicit val homeReadAPI: HomeReadAPI[IO],
-    implicit val asyncShift: NonServerThreadContextShift[IO]
+    using val homeReadAPI: HomeReadAPI[IO],
+    using val asyncShift: NonServerThreadContextShift[IO]
   )
 
 }

@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack
  */
 case class ItemMigrations(migrations: IndexedSeq[ItemMigration]) {
 
-  private implicit val versionComponentOrdering: Ordering[ItemMigrationVersionComponent] = {
+  private given versionComponentOrdering: Ordering[ItemMigrationVersionComponent] = {
     Ordering.by(_.value)
   }
 

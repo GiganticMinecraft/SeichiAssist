@@ -32,15 +32,15 @@ class FixedWindowRateLimiterSpec
     FixedWindowRateLimiter.in[Task, Natural](maxPermit, sleepTime)
   }
 
-  implicit override val patienceConfig: PatienceConfig =
+  given patienceConfig: PatienceConfig =
     PatienceConfig(timeout = 5.seconds, interval = 10.millis)
-  implicit override val discreteEventuallyConfig: DiscreteEventuallyConfig =
+  given discreteEventuallyConfig: DiscreteEventuallyConfig =
     DiscreteEventuallyConfig(10000)
 
-  implicit val monixScheduler: TestScheduler = TestScheduler(
+  given monixScheduler: TestScheduler = TestScheduler(
     ExecutionModel.SynchronousExecution
   )
-  implicit val monixTimer: Timer[Task] = SchedulerEffect.timer(monixScheduler)
+  given monixTimer: Timer[Task] = SchedulerEffect.timer(monixScheduler)
 
   "Fixed window limiter" should {
     keepPermitsEqual()

@@ -25,7 +25,7 @@ class TryableFiberSpec extends AnyWordSpec {
   }
 
   "Started fiber" should {
-    implicit val shift: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
+    given shift: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
 
     "never be complete for non-terminating IO" in {
       val assertionProgram =

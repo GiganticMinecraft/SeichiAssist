@@ -11,7 +11,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 trait BuildAssistMenuRouter[F[_]] {
-  implicit val canOpenBuildMainMenu: F CanOpen BuildMainMenu.type
+  given canOpenBuildMainMenu: F CanOpen BuildMainMenu.type
 }
 
 object BuildAssistMenuRouter {

@@ -20,10 +20,10 @@ class System[F[_]: ConcurrentEffect: Timer](
 ) {
   // We wish to be more explicit on the context shift that will be used within this system,
   // so we don't receive it as an implicit parameter
-  implicit val _contextShift: ContextShift[IO] = messagePublishingContext
+  given _contextShift: ContextShift[IO] = messagePublishingContext
 
   val listenersToBeRegistered: Seq[Listener] = {
-    implicit val _synchronization: BungeeSemaphoreSynchronization[F[Unit], PlayerName] = {
+    given _synchronization: BungeeSemaphoreSynchronization[F[Unit], PlayerName] = {
       new RedisBungeeSemaphoreSynchronization[F]()
     }
     Seq(new BungeeSemaphoreCooperator[F](finalizer))

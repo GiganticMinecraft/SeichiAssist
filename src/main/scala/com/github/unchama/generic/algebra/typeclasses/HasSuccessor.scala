@@ -17,7 +17,7 @@ import scala.language.implicitConversions
   /**
    * [[T]] の順序。
    */
-  implicit val order: Order[T]
+  given order: Order[T]
 
   /**
    * 与えられた値の「次」の値を計算する部分関数。
@@ -57,7 +57,7 @@ object HasSuccessor {
 
   implicit def positiveIntHasSuccessor[T: PositiveInt]: HasSuccessor[T] =
     new HasSuccessor[T] {
-      override implicit val order: Order[T] = PositiveInt.positiveIntHasOrder[T]
+      g order: Order[T] = PositiveInt.positiveIntHasOrder[T]
 
       override def successor(x: T): Option[T] = Some {
         PositiveInt[T].wrapPositive(PositiveInt[T].asInt(x) + 1)

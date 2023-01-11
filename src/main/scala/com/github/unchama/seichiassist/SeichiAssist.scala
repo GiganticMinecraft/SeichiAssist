@@ -120,7 +120,7 @@ class SeichiAssist extends JavaPlugin() {
    * このため `NamedJULLogger` で一旦ラップしたものをLogManagerに登録し、
    * それをSlf4jにアダプトしたロガーを利用している。
    */
-  implicit val logger: Logger = {
+  given logger: Logger = {
     // TODO すべてのロギングをlog4cats経由で行えばこれは要らなさそう？
     //      適当なルートロガーをJUL経由で引っ張ってきてPrefixedLogger("[SeichiAssist]")を使う
     val pluginLogger = getLogger
@@ -131,7 +131,7 @@ class SeichiAssist extends JavaPlugin() {
     new JDK14LoggerFactory().getLogger(newLogger.getName)
   }
 
-  implicit val loggerF: io.chrisdavenport.log4cats.Logger[IO] =
+  given loggerF: io.chrisdavenport.log4cats.Logger[IO] =
     Slf4jLogger.getLoggerFromSlf4j(logger)
 
   // endregion
@@ -205,14 +205,14 @@ class SeichiAssist extends JavaPlugin() {
 
   private lazy val expBottleStackSystem: subsystems.expbottlestack.System[IO, SyncIO, IO] = {
     import PluginExecutionContexts.asyncShift
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    given effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
     subsystems.expbottlestack.System.wired[IO, SyncIO, IO].unsafeRunSync()
   }
 
   private lazy val itemMigrationSystem: subsystems.itemmigration.System[IO] = {
     import PluginExecutionContexts.asyncShift
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    given effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
     subsystems.itemmigration.System.wired[IO, SyncIO].unsafeRunSync()
   }
@@ -220,14 +220,14 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val managedFlySystem: subsystems.managedfly.System[SyncIO, IO] = {
     import PluginExecutionContexts.{asyncShift, cachedThreadPool, onMainThread}
 
-    implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
+    given timer: Timer[IO] = IO.timer(cachedThreadPool)
 
     val configuration = subsystems
       .managedfly
       .application
       .SystemConfiguration(expConsumptionAmount = seichiAssistConfig.getFlyExp)
 
-    implicit val idleTimeAPI: IdleTimeAPI[IO, Player] = idleTimeSystem.api
+    given idleTimeAPI: IdleTimeAPI[IO, Player] = idleTimeSystem.api
 
     subsystems.managedfly.System.wired[IO, SyncIO](configuration).unsafeRunSync()
   }
@@ -235,8 +235,8 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val bookedAchievementSystem: Subsystem[IO] = {
     import PluginExecutionContexts.asyncShift
 
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
-    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+    given effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    given concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
 
     subsystems.bookedachivement.System.wired[IO, IO]
   }
@@ -244,12 +244,12 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val buildCountSystem: subsystems.buildcount.System[IO, SyncIO] = {
     import PluginExecutionContexts.asyncShift
 
-    implicit val configuration: subsystems.buildcount.application.Configuration =
+    given configuration: subsystems.buildcount.application.Configuration =
       seichiAssistConfig.buildCountConfiguration
 
-    implicit val syncIoClock: Clock[SyncIO] = Clock.create
+    given syncIoClock: Clock[SyncIO] = Clock.create
 
-    implicit val globalNotification: DiscordNotificationAPI[IO] =
+    given globalNotification: DiscordNotificationAPI[IO] =
       discordNotificationSystem.globalNotification
 
     subsystems.buildcount.System.wired[IO, SyncIO].unsafeRunSync()
@@ -259,20 +259,20 @@ class SeichiAssist extends JavaPlugin() {
   lazy val breakCountSystem: subsystems.breakcount.System[IO, SyncIO] = {
     import PluginExecutionContexts.{asyncShift, onMainThread}
 
-    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-    implicit val globalNotification: DiscordNotificationAPI[IO] =
+    given concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+    given globalNotification: DiscordNotificationAPI[IO] =
       discordNotificationSystem.globalNotification
     subsystems.breakcount.System.wired[IO, SyncIO]().unsafeRunSync()
   }
 
   private lazy val manaSystem: subsystems.mana.System[IO, SyncIO, Player] = {
-    implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
+    given breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
 
     subsystems.mana.System.wired[IO, SyncIO].unsafeRunSync()
   }
 
   private lazy val manaBarSystem: Subsystem[IO] = {
-    implicit val manaApi: ManaReadApi[IO, SyncIO, Player] = manaSystem.manaApi
+    given manaApi: ManaReadApi[IO, SyncIO, Player] = manaSystem.manaApi
 
     subsystems.manabar.System.wired[IO, SyncIO].unsafeRunSync()
   }
@@ -280,10 +280,10 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val seasonalEventsSystem: subsystems.seasonalevents.System[IO] = {
     import PluginExecutionContexts.{asyncShift, onMainThread}
 
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
-    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-    implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
-    implicit val gtToSiinaAPI: GtToSiinaAPI[ItemStack] = gtToSiinaSystem.api
+    given effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    given concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+    given manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
+    given gtToSiinaAPI: GtToSiinaAPI[ItemStack] = gtToSiinaSystem.api
 
     subsystems.seasonalevents.System.wired[IO, SyncIO, IO](this)
   }
@@ -303,9 +303,9 @@ class SeichiAssist extends JavaPlugin() {
     : subsystems.fourdimensionalpocket.System[IO, Player] = {
     import PluginExecutionContexts.{asyncShift, onMainThread}
 
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
-    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-    implicit val syncIOUuidRepository: UuidRepository[SyncIO] =
+    given effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    given concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+    given syncIOUuidRepository: UuidRepository[SyncIO] =
       JdbcBackedUuidRepository.initializeStaticInstance[SyncIO].unsafeRunSync().apply[SyncIO]
 
     subsystems
@@ -319,15 +319,15 @@ class SeichiAssist extends JavaPlugin() {
     : subsystems.fastdiggingeffect.System[IO, IO, Player] = {
     import PluginExecutionContexts.{asyncShift, onMainThread, timer}
 
-    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-    implicit val configuration: Configuration =
+    given concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+    given configuration: Configuration =
       seichiAssistConfig.getFastDiggingEffectSystemConfiguration
-    implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
-    implicit val getConnectedPlayers: GetConnectedPlayers[IO, Player] =
+    given breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
+    given getConnectedPlayers: GetConnectedPlayers[IO, Player] =
       new GetConnectedBukkitPlayers[IO]
-    implicit val redisBungeeConfig: RedisBungeeRedisConfiguration =
+    given redisBungeeConfig: RedisBungeeRedisConfiguration =
       seichiAssistConfig.getRedisBungeeRedisConfiguration
-    implicit val networkConnectionCount: GetNetworkConnectionCount[IO] =
+    given networkConnectionCount: GetNetworkConnectionCount[IO] =
       new RedisBungeeNetworkConnectionCount[IO](asyncShift)
 
     subsystems.fastdiggingeffect.System.wired[SyncIO, IO, SyncIO].unsafeRunSync()
@@ -336,8 +336,8 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val gachaPointSystem: subsystems.gachapoint.System[IO, SyncIO, Player] = {
     import PluginExecutionContexts.{asyncShift, onMainThread, timer}
 
-    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-    implicit val getConnectedPlayers: GetConnectedPlayers[IO, Player] =
+    given concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+    given getConnectedPlayers: GetConnectedPlayers[IO, Player] =
       new GetConnectedBukkitPlayers[IO]
 
     subsystems.gachapoint.System.wired[IO, SyncIO](breakCountSystem.api).unsafeRunSync()
@@ -346,9 +346,9 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val mebiusSystem: Subsystem[IO] = {
     import PluginExecutionContexts.{onMainThread, sleepAndRoutineContext, timer}
 
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
-    implicit val syncClock: Clock[SyncIO] = Clock.create[SyncIO]
-    implicit val syncSeasonalEventsSystemAPI: SeasonalEventsAPI[SyncIO] =
+    given effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    given syncClock: Clock[SyncIO] = Clock.create[SyncIO]
+    given syncSeasonalEventsSystemAPI: SeasonalEventsAPI[SyncIO] =
       seasonalEventsSystem.api[SyncIO]
 
     subsystems.mebius.System.wired[IO, SyncIO].unsafeRunSync()
@@ -358,7 +358,7 @@ class SeichiAssist extends JavaPlugin() {
     : subsystems.discordnotification.System[IO] = {
     import PluginExecutionContexts.asyncShift
 
-    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+    given concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
 
     subsystems
       .discordnotification
@@ -369,9 +369,9 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val homeSystem: home.System[IO] = {
     import PluginExecutionContexts.{asyncShift, onMainThread}
 
-    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-    implicit val breakCountReadAPI: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
-    implicit val buildCountReadAPI: BuildCountAPI[IO, SyncIO, Player] = buildCountSystem.api
+    given concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+    given breakCountReadAPI: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
+    given buildCountReadAPI: BuildCountAPI[IO, SyncIO, Player] = buildCountSystem.api
 
     home.System.wired[IO, SyncIO]
   }
@@ -379,16 +379,16 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val presentSystem: Subsystem[IO] = {
     import PluginExecutionContexts.{asyncShift, onMainThread}
 
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
-    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-    implicit val uuidToLastSeenName: UuidToLastSeenName[IO] = new GlobalPlayerAccessor[IO]
+    given effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    given concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+    given uuidToLastSeenName: UuidToLastSeenName[IO] = new GlobalPlayerAccessor[IO]
     subsystems.present.System.wired
   }
 
   private lazy val anywhereEnderSystem: subsystems.anywhereender.System[IO] = {
     import PluginExecutionContexts.onMainThread
 
-    implicit val seichiAmountReadApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
+    given seichiAmountReadApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
     subsystems
       .anywhereender
       .System
@@ -410,7 +410,7 @@ class SeichiAssist extends JavaPlugin() {
     gachaPrizeSystem.api
 
   private lazy val gachaSystem: subsystems.gacha.System[IO, Player] = {
-    implicit val gachaTicketAPI: GachaTicketAPI[IO] = gachaTicketSystem.api
+    given gachaTicketAPI: GachaTicketAPI[IO] = gachaTicketSystem.api
 
     subsystems.gacha.System.wired[IO].unsafeRunSync()
   }
@@ -428,7 +428,7 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.tradesystems.subsystems.gttosiina.System.wired[IO]
 
   private lazy val gachaTradeSystem: Subsystem[IO] = {
-    implicit val gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
+    given gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
     subsystems.tradesystems.subsystems.gachatrade.System.wired[IO, SyncIO]
   }
 
@@ -446,7 +446,7 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val awayScreenNameSystem: Subsystem[IO] = {
     import PluginExecutionContexts.{onMainThread, sleepAndRoutineContext}
 
-    implicit val idleTimeAPI: IdleTimeAPI[IO, Player] = idleTimeSystem.api
+    given idleTimeAPI: IdleTimeAPI[IO, Player] = idleTimeSystem.api
 
     subsystems.idletime.subsystems.awayscreenname.System.wired[IO].unsafeRunSync()
   }
@@ -491,17 +491,17 @@ class SeichiAssist extends JavaPlugin() {
   )
 
   private lazy val buildAssist: BuildAssist = {
-    implicit val flyApi: ManagedFlyApi[SyncIO, Player] = managedFlySystem.api
-    implicit val buildCountAPI: BuildCountAPI[IO, SyncIO, Player] = buildCountSystem.api
-    implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
+    given flyApi: ManagedFlyApi[SyncIO, Player] = managedFlySystem.api
+    given buildCountAPI: BuildCountAPI[IO, SyncIO, Player] = buildCountSystem.api
+    given manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
 
     new BuildAssist(this)
   }
 
   private lazy val bungeeSemaphoreResponderSystem: BungeeSemaphoreResponderSystem[IO] = {
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
-    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-    implicit val systemConfiguration
+    given effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    given concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+    given systemConfiguration
       : com.github.unchama.bungeesemaphoreresponder.Configuration =
       seichiAssistConfig.getBungeeSemaphoreSystemConfiguration
 
@@ -530,7 +530,7 @@ class SeichiAssist extends JavaPlugin() {
 
   // endregion
 
-  private implicit val _akkaSystem: ActorSystem =
+  private given _akkaSystem: ActorSystem =
     ConfiguredActorSystemProvider("reference.conf").provide()
 
   /**
@@ -551,7 +551,7 @@ class SeichiAssist extends JavaPlugin() {
       throw new IllegalStateException("SeichiAssistは2度enableされることを想定されていません！シャットダウンします…")
     }
 
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    given effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
     // チャンネルを追加
     Bukkit.getMessenger.registerOutgoingPluginChannel(this, "BungeeCord")
@@ -620,28 +620,28 @@ class SeichiAssist extends JavaPlugin() {
     )
 
     import PluginExecutionContexts._
-    implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
-    implicit val breakCountBarApi: BreakCountBarAPI[SyncIO, Player] = breakCountBarSystem.api
-    implicit val fastDiggingEffectApi: FastDiggingEffectApi[IO, Player] =
+    given breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
+    given breakCountBarApi: BreakCountBarAPI[SyncIO, Player] = breakCountBarSystem.api
+    given fastDiggingEffectApi: FastDiggingEffectApi[IO, Player] =
       fastDiggingEffectSystem.effectApi
-    implicit val fastDiggingSettingsApi: FastDiggingSettingsApi[IO, Player] =
+    given fastDiggingSettingsApi: FastDiggingSettingsApi[IO, Player] =
       fastDiggingEffectSystem.settingsApi
-    implicit val fourDimensionalPocketApi: FourDimensionalPocketApi[IO, Player] =
+    given fourDimensionalPocketApi: FourDimensionalPocketApi[IO, Player] =
       fourDimensionalPocketSystem.api
-    implicit val gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
-    implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
-    implicit val globalNotification: DiscordNotificationAPI[IO] =
+    given gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
+    given manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
+    given globalNotification: DiscordNotificationAPI[IO] =
       discordNotificationSystem.globalNotification
-    implicit val subHomeReadApi: HomeReadAPI[IO] = homeSystem.api
-    implicit val everywhereEnderChestApi: AnywhereEnderChestAPI[IO] =
+    given subHomeReadApi: HomeReadAPI[IO] = homeSystem.api
+    given everywhereEnderChestApi: AnywhereEnderChestAPI[IO] =
       anywhereEnderSystem.accessApi
-    implicit val sharedInventoryAPI: SharedInventoryAPI[IO, Player] =
+    given sharedInventoryAPI: SharedInventoryAPI[IO, Player] =
       sharedInventorySystem.api
-    implicit val donateAPI: DonatePremiumPointAPI[IO] = donateSystem.api
-    implicit val gachaTicketAPI: GachaTicketAPI[IO] =
+    given donateAPI: DonatePremiumPointAPI[IO] = donateSystem.api
+    given gachaTicketAPI: GachaTicketAPI[IO] =
       gachaTicketSystem.api
-    implicit val gachaAPI: GachaDrawAPI[IO, Player] = gachaSystem.api
-    implicit val consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player] =
+    given gachaAPI: GachaDrawAPI[IO, Player] = gachaSystem.api
+    given consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player] =
       consumeGachaTicketSystem.api
 
     val menuRouter = TopLevelRouter.apply
@@ -650,13 +650,13 @@ class SeichiAssist extends JavaPlugin() {
 
     buildAssist.onEnable()
 
-    implicit val managedFlyApi: ManagedFlyApi[SyncIO, Player] = managedFlySystem.api
+    given managedFlyApi: ManagedFlyApi[SyncIO, Player] = managedFlySystem.api
     // 本来は曖昧さ回避のためにRouterのインスタンスを生成するべきではないが、生成を回避しようとすると
     // 巨大な変更が必要となる。そのため、Routerのインスタンスを新しく生成することで、それまでの間
     // 機能を果たそうとするものである。
-    implicit val canOpenBuildMainMenu: CanOpen[IO, BuildMainMenu.type] =
+    given canOpenBuildMainMenu: CanOpen[IO, BuildMainMenu.type] =
       BuildAssistMenuRouter.apply.canOpenBuildMainMenu
-    implicit val ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu =
+    given ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu =
       menuRouter.ioCanOpenCategorizedMineStackMenu
 
     // コマンドの登録
@@ -721,7 +721,7 @@ class SeichiAssist extends JavaPlugin() {
 
       import scala.concurrent.duration._
 
-      implicit val ioConcurrent: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+      given ioConcurrent: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
 
       val interval = IO.pure(1.minute)
 
@@ -763,7 +763,7 @@ class SeichiAssist extends JavaPlugin() {
     val startTask = {
       val dataRecalculationRoutine = {
         import PluginExecutionContexts._
-        implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
+        given manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
         PlayerDataRecalculationRoutine()
       }
 
@@ -774,14 +774,14 @@ class SeichiAssist extends JavaPlugin() {
 
       import PluginExecutionContexts._
 
-      implicit val breakCountApi: BreakCountReadAPI[IO, SyncIO, Player] = breakCountSystem.api
-      implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
-      implicit val gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
-      implicit val fastDiggingEffectApi: FastDiggingEffectApi[IO, Player] =
+      given breakCountApi: BreakCountReadAPI[IO, SyncIO, Player] = breakCountSystem.api
+      given manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
+      given gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
+      given fastDiggingEffectApi: FastDiggingEffectApi[IO, Player] =
         fastDiggingEffectSystem.effectApi
-      implicit val gachaDrawAPI: GachaDrawAPI[IO, Player] = gachaSystem.api
-      implicit val ioConcurrent: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-      implicit val sendMessages: SendMinecraftMessage[IO, Player] = new SendBukkitMessage[IO]
+      given gachaDrawAPI: GachaDrawAPI[IO, Player] = gachaSystem.api
+      given ioConcurrent: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+      given sendMessages: SendMinecraftMessage[IO, Player] = new SendBukkitMessage[IO]
 
       val dragonNightTimeProcess: IO[Nothing] =
         subsystems.dragonnighttime.System.backgroundProcess[IO, SyncIO, Player]
@@ -815,7 +815,7 @@ class SeichiAssist extends JavaPlugin() {
         ) ++
           halfHourRankingRoutineOption.toList
 
-      implicit val ioParallel: Aux[IO, effect.IO.Par] = IO.ioParallel(asyncShift)
+      given ioParallel: Aux[IO, effect.IO.Par] = IO.ioParallel(asyncShift)
       programs.parSequence.start(asyncShift)
     }
 
@@ -884,7 +884,7 @@ object SeichiAssist {
   var allplayergiveapplelong = 0L
 
   object Scopes {
-    implicit val globalChatInterceptionScope: InterceptionScope[UUID, String] = {
+    given globalChatInterceptionScope: InterceptionScope[UUID, String] = {
       import PluginExecutionContexts.asyncShift
 
       new InterceptionScope[UUID, String]()

@@ -16,7 +16,7 @@ class StreamExtraSpec
 
   "StreamExtra.takeEvery" should {
     "be equivalent to accessing every n elements" in {
-      implicit val positiveIntGenerator: Arbitrary[Int] =
+      given positiveIntGenerator: Arbitrary[Int] =
         Arbitrary(Gen.chooseNum(1, Int.MaxValue))
 
       val n = 3

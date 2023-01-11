@@ -14,7 +14,7 @@ import cats.{FlatMap, Monad}
  * [[Fiber]] which can tell its completion status. [[TryableFiber]] serves this purpose.
  */
 trait TryableFiber[F[_], A] extends Fiber[F, A] {
-  implicit val fFMap: FlatMap[F]
+  given fFMap: FlatMap[F]
 
   /**
    * Obtains the current value of the `Fiber`, or None if it hasn't completed.
@@ -54,7 +54,7 @@ object TryableFiber {
       promise <- Deferred.tryable[F, A]
       fiber <- fConc.start(fa >>= promise.complete)
     } yield new TryableFiber[F, A] {
-      override implicit val fFMap: Concurrent[F] = fConc
+      given fFMap: Concurrent[F] = fConc
       override def tryJoin: F[Option[A]] = promise.tryGet
       override def cancel: CancelToken[F] = fiber.cancel
       override def join: F[A] = promise.get
@@ -65,7 +65,7 @@ object TryableFiber {
    * Creates a trivial value of TryableFiber which is always complete.
    */
   def unit[F[_]](using fMonad: Monad[F]): TryableFiber[F, Unit] = new TryableFiber[F, Unit] {
-    override implicit val fFMap: Monad[F] = fMonad
+    given fFMap: Monad[F] = fMonad
 
     override def tryJoin: F[Option[Unit]] = fMonad.pure(Some(()))
     override def cancel: CancelToken[F] = fMonad.unit

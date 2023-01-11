@@ -30,13 +30,13 @@ class ActiveSessionReferenceSpec
 
   import scala.concurrent.duration._
 
-  implicit override val patienceConfig: PatienceConfig =
+  given patienceConfig: PatienceConfig =
     PatienceConfig(timeout = 5.seconds, interval = 10.millis)
-  implicit override val discreteEventuallyConfig: DiscreteEventuallyConfig =
+  given discreteEventuallyConfig: DiscreteEventuallyConfig =
     DiscreteEventuallyConfig(1000000)
 
-  implicit val monixScheduler: TestScheduler = TestScheduler()
-  implicit val monixTimer: Timer[Task] = SchedulerEffect.timer(monixScheduler)
+  given monixScheduler: TestScheduler = TestScheduler()
+  given monixTimer: Timer[Task] = SchedulerEffect.timer(monixScheduler)
 
   val mock = new Mock[Task, SyncIO]
 
@@ -56,10 +56,10 @@ class ActiveSessionReferenceSpec
   "Active fly session reference" should {
     "correctly expose the fly status of a started session" in {
       // given
-      implicit val configuration: SystemConfiguration =
+      given configuration: SystemConfiguration =
         SystemConfiguration(expConsumptionAmount = 0)
 
-      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
+      given manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
         playerMockFlyStatusManipulation
       val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
@@ -104,10 +104,10 @@ class ActiveSessionReferenceSpec
 
     "be able to stop a running session" in {
       // given
-      implicit val configuration: SystemConfiguration =
+      given configuration: SystemConfiguration =
         SystemConfiguration(expConsumptionAmount = 0)
 
-      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
+      given manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
         playerMockFlyStatusManipulation
       val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
@@ -146,10 +146,10 @@ class ActiveSessionReferenceSpec
 
     "be able to replace a session" in {
       // given
-      implicit val configuration: SystemConfiguration =
+      given configuration: SystemConfiguration =
         SystemConfiguration(expConsumptionAmount = 0)
 
-      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
+      given manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
         playerMockFlyStatusManipulation
       val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
@@ -194,10 +194,10 @@ class ActiveSessionReferenceSpec
 
     "not allow more than one session to be present" in {
       // given
-      implicit val configuration: SystemConfiguration =
+      given configuration: SystemConfiguration =
         SystemConfiguration(expConsumptionAmount = 0)
 
-      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
+      given manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
         playerMockFlyStatusManipulation
       val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 

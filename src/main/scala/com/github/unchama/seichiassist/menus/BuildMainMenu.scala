@@ -395,7 +395,7 @@ object BuildMainMenu extends Menu {
   import menuinventory.syntax._
 
   class Environment(
-    implicit val flyApi: ManagedFlyApi[SyncIO, Player],
+    using val flyApi: ManagedFlyApi[SyncIO, Player],
     val ioOnMainThread: OnMinecraftServerThread[IO],
     val canOpenBlockPlacementSkillMenu: CanOpen[IO, BlockPlacementSkillMenu.type],
     val canOpenMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu]

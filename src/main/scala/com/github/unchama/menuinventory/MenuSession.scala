@@ -47,7 +47,7 @@ class MenuSession private (private val frame: MenuFrame) extends InventoryHolder
         }
       }
 
-      implicit val slotEq: Eq[Slot] = (x: Slot, y: Slot) => x eq y
+      given slotEq: Eq[Slot] = (x: Slot, y: Slot) => x eq y
 
       mapDifferences(oldLayout.layoutMap, newLayout.layoutMap)
     }
@@ -60,7 +60,7 @@ class MenuSession private (private val frame: MenuFrame) extends InventoryHolder
         itemStack = slotOption.map(_.itemStack).getOrElse(new ItemStack(Material.AIR))
       } yield IO { sessionInventory.setItem(slotIndex, itemStack) }
 
-      implicit val ioParallel: Aux[IO, effect.IO.Par] = IO.ioParallel(IO.contextShift(ctx))
+      given ioParallel: Aux[IO, effect.IO.Par] = IO.ioParallel(IO.contextShift(ctx))
       effects.parSequence_
     }
 

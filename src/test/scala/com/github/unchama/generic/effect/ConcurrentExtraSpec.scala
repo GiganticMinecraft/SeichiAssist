@@ -11,7 +11,7 @@ import scala.concurrent.ExecutionContext
 
 class ConcurrentExtraSpec extends AnyWordSpec with Matchers with MockFactory {
   "withSelfCancellationToken" should {
-    implicit val shift: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
+    given shift: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
 
     "not interrupt execution of non-cancelling action" in {
       ConcurrentExtra.withSelfCancellation[IO, Int](_ => IO.pure(42)).unsafeRunSync() mustBe 42

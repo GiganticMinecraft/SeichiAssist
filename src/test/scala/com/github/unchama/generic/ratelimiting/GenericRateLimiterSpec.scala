@@ -35,7 +35,7 @@ trait GenericRateLimiterSpec
 
   type Natural = Int Refined NonNegative
 
-  implicit val natOrderedMonus: OrderedMonus[Natural] = new OrderedMonus[Natural] {
+  given natOrderedMonus: OrderedMonus[Natural] with {
     override def empty: Natural = 0
 
     override def |-|(x: Natural, y: Natural): Natural =

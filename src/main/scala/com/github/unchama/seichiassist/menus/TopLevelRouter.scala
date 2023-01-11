@@ -53,11 +53,11 @@ import org.bukkit.inventory.ItemStack
 
 trait TopLevelRouter[F[_]] {
 
-  implicit val canOpenStickMenu: F CanOpen FirstPage.type
+  using val canOpenStickMenu: F CanOpen FirstPage.type
 
-  implicit val canOpenAchievementMenu: F CanOpen AchievementMenu.type
+  using val canOpenAchievementMenu: F CanOpen AchievementMenu.type
 
-  implicit val ioCanOpenCategorizedMineStackMenu: F CanOpen CategorizedMineStackMenu
+  using val ioCanOpenCategorizedMineStackMenu: F CanOpen CategorizedMineStackMenu
 
 }
 

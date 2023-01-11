@@ -211,7 +211,7 @@ class EntityListener(
 
   @EventHandler def onDeath(event: EntityDeathEvent): Unit = {
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
-    implicit val ioCE: ConcurrentEffect[IO] = IO.ioConcurrentEffect
+    given val ioCE: ConcurrentEffect[IO] = IO.ioConcurrentEffect
     /*GiganticBerserk用*/
     // 死んだMOBがGiganticBerserkの対象MOBでなければ終了
     val entity = event.getEntity

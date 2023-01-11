@@ -17,7 +17,7 @@ object PrefetchResult {
 
   case class Success[+R](data: R) extends PrefetchResult[R]
 
-  implicit val traverseInstance: Traverse[PrefetchResult] = new Traverse[PrefetchResult] {
+  given traverseInstance: Traverse[PrefetchResult] with {
     override def traverse[G[_], A, B](
       fa: PrefetchResult[A]
     )(f: A => G[B])(using G: Applicative[G]): G[PrefetchResult[B]] =

@@ -47,7 +47,7 @@ class BuildAssist(plugin: Plugin)(
   }
 
   def onEnable(): Unit = {
-    implicit val menuRouter: BuildAssistMenuRouter[IO] = {
+    given menuRouter: BuildAssistMenuRouter[IO] = {
       import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
         layoutPreparationContext,
         onMainThread
@@ -63,7 +63,7 @@ class BuildAssist(plugin: Plugin)(
     import buildCountAPI._
     import menuRouter._
 
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    given effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
     val listeners = List(
       new BuildMainMenuOpener(),

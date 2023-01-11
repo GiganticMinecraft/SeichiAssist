@@ -1,6 +1,6 @@
 package com.github.unchama.generic
 
-class ClosedRange[E](val start: E, val endInclusive: E)(implicit val ord: Ordering[E]) {
+class ClosedRange[E](val start: E, val endInclusive: E)(using ord: Ordering[E]) {
 
   import ord._
 

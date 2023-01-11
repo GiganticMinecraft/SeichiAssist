@@ -21,14 +21,14 @@ class AsymmetricSignallingRefSpec
 
   import scala.concurrent.duration._
 
-  implicit override val patienceConfig: PatienceConfig =
+  given patienceConfig: PatienceConfig =
     PatienceConfig(timeout = 5.seconds, interval = 10.millis)
-  implicit val monixScheduler: TestScheduler = TestScheduler(
+  given monixScheduler: TestScheduler = TestScheduler(
     ExecutionModel.AlwaysAsyncExecution
   )
-  implicit val monixTimer: Timer[Task] = Task.timer(monixScheduler)
+  given monixTimer: Timer[Task] = Task.timer(monixScheduler)
 
-  implicit val contextShift: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
+  given contextShift: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
 
   type Value = Int
 

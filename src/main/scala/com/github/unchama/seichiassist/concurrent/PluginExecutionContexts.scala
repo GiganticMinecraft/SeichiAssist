@@ -16,20 +16,20 @@ import scala.concurrent.ExecutionContext
 
 object PluginExecutionContexts {
 
-  implicit val pluginInstance: JavaPlugin = SeichiAssist.instance
+  given pluginInstance: JavaPlugin = SeichiAssist.instance
 
   val cachedThreadPool: ExecutionContext =
     ExecutionContext.fromExecutor(Executors.newCachedThreadPool())
 
-  implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
+  given timer: Timer[IO] = IO.timer(cachedThreadPool)
 
-  implicit val asyncShift: NonServerThreadContextShift[IO] = {
+  given asyncShift: NonServerThreadContextShift[IO] = {
     tag.apply[NonServerThreadContextShiftTag][ContextShift[IO]](
       IO.contextShift(cachedThreadPool)
     )
   }
 
-  implicit val onMainThread: OnMinecraftServerThread[IO] = {
+  given onMainThread: OnMinecraftServerThread[IO] = {
     new OnBukkitServerThread[IO]()(
       pluginInstance,
       asyncShift,
@@ -37,10 +37,10 @@ object PluginExecutionContexts {
     )
   }
 
-  implicit val layoutPreparationContext: LayoutPreparationContext =
+  given layoutPreparationContext: LayoutPreparationContext =
     generic.tag.tag[LayoutPreparationContextTag][ExecutionContext](cachedThreadPool)
 
-  implicit val sleepAndRoutineContext: RepeatingTaskContext =
+  given sleepAndRoutineContext: RepeatingTaskContext =
     generic.tag.tag[RepeatingTaskContextTag][ExecutionContext](cachedThreadPool)
 
 }

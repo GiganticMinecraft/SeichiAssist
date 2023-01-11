@@ -30,7 +30,7 @@ object BlockPlacementSkillMenu extends Menu {
   }
   import menuinventory.syntax._
 
-  class Environment(implicit val canOpenMainMenu: CanOpen[IO, BuildMainMenu.type])
+  class Environment(using val canOpenMainMenu: CanOpen[IO, BuildMainMenu.type])
 
   override val frame: MenuFrame =
     MenuFrame(4.chestRows, s"$DARK_PURPLE$BOLD「範囲設置スキル」設定画面")

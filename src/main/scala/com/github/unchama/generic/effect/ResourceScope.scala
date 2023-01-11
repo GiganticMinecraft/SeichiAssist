@@ -26,8 +26,8 @@ import scala.collection.immutable
  * 解放処理を要求すると、解放に必要なキャンセル処理を受け付けなくなるため、 ハングすることが想定される。
  */
 trait ResourceScope[ResourceUsageContext[_], DataAccessContext[_], ResourceHandler] {
-  implicit val ResourceUsageContext: Monad[ResourceUsageContext]
-  implicit val DataAccessContext: Monad[DataAccessContext]
+  given ResourceUsageContext: Monad[ResourceUsageContext]
+  given DataAccessContext: Monad[DataAccessContext]
 
   import cats.implicits._
 
@@ -124,7 +124,7 @@ object ResourceScope {
    * `ResourceScope` の標準的な実装。
    */
   class MultiDictResourceScope[F[_], G[_], ResourceHandler] private[ResourceScope] (
-    implicit val ResourceUsageContext: Concurrent[F],
+    using ResourceUsageContext: Concurrent[F],
     val DataAccessContext: Sync[G],
     contextCoercion: ContextCoercion[G, F]
   ) extends ResourceScope[F, G, ResourceHandler] {
