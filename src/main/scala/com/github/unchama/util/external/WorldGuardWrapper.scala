@@ -23,10 +23,9 @@ object WorldGuardWrapper {
 
   /**
    * [[RegionManager]]を返す
-   *
-   * The expression is nullable: WorldConfiguration#useRegions is false => null
    */
   def getRegionManager(world: World): Option[RegionManager] = Option(
+    // The expression is nullable: WorldConfiguration#useRegions is false => null
     plugin.getRegionManager(world)
   )
 
