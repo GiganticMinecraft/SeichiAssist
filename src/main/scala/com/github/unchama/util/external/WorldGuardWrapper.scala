@@ -25,7 +25,7 @@ object WorldGuardWrapper {
   /**
    * [[LocalPlayer]]を返す
    */
-  def wrapPlayer(player: Player): LocalPlayer = plugin.wrapPlayer(player)
+  private def wrapPlayer(player: Player): LocalPlayer = plugin.wrapPlayer(player)
 
   /**
    * [[RegionManager]]を返す
@@ -34,6 +34,14 @@ object WorldGuardWrapper {
     // The expression is nullable: WorldConfiguration#useRegions is false => null
     plugin.getRegionManager(world)
   )
+
+  /**
+   * [[Player]]が[[World]]の中で持っている保護の数を返す
+   *
+   * @return [[Player]]が[[World]]の中で持っている保護の数。[[getRegionManager]]が[[None]]であれば0。
+   */
+  def getRegionCountOfPlayer(player: Player, world: World): Int =
+    getRegionManager(world).map(_.getRegionCountOfPlayer(wrapPlayer(player))).getOrElse(0)
 
   /**
    * 与えられた [[World]] の [[Player]] の最大保護可能数を取得します.

@@ -266,14 +266,15 @@ object FirstPage extends Menu {
 
     val computeRegionMenuButton: IO[Button] = IO {
       val (buttonLore, effect) = {
-        val regionManager = WorldGuardWrapper.getRegionManager(getWorld)
+        val world = getWorld
+        val regionManager = WorldGuardWrapper.getRegionManager(world)
 
-        regionManager.fold(
+        if (regionManager.isEmpty) {
           (List(s"${GRAY}このワールドでは土地の保護は行なえません"), LeftClickButtonEffect(emptyEffect))
-        ) { regionManager =>
-          val maxRegionCount = WorldGuardWrapper.getMaxRegionCount(player, getWorld)
+        } else {
+          val maxRegionCount = WorldGuardWrapper.getMaxRegionCount(player, world)
           val currentPlayerRegionCount =
-            regionManager.getRegionCountOfPlayer(WorldGuardWrapper.wrapPlayer(player))
+            WorldGuardWrapper.getRegionCountOfPlayer(player, world)
 
           (
             List(
