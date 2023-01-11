@@ -270,10 +270,7 @@ object FirstPage extends Menu {
         val regionManager = WorldGuardWrapper.getRegionManager(getWorld)
 
         regionManager.fold(
-          (
-            List(s"${GRAY}このワールドでは土地の保護は行なえません"),
-            LeftClickButtonEffect(emptyEffect)
-          )
+          (List(s"${GRAY}このワールドでは土地の保護は行なえません"), LeftClickButtonEffect(emptyEffect))
         ) { regionManager =>
           val maxRegionCount = WorldGuardWrapper.getMaxRegionCount(player, getWorld)
           val currentPlayerRegionCount =
