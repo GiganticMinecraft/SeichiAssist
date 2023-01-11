@@ -18,12 +18,12 @@ object SpawnRegionProjectileInterceptor extends Listener {
   private val projectiles = Set(
     BOW,
     EGG,
-    LINGERING_POTION,
-    SPLASH_POTION,
     ENDER_PEARL,
+    EXP_BOTTLE,
     EYE_OF_ENDER,
+    LINGERING_POTION,
     SNOW_BALL,
-    EXP_BOTTLE
+    SPLASH_POTION
   )
 
   @EventHandler
