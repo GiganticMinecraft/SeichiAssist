@@ -7,7 +7,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
 
 object SpawnRegionProjectileInterceptor extends Listener {
-  val spawnRegions = Set(
+  private val spawnRegions = Set(
     // 基本の保護名
     "spawn",
     // メインワールドにおいて、スポーン地点を保護している保護名
@@ -15,7 +15,7 @@ object SpawnRegionProjectileInterceptor extends Listener {
     // 公共施設サーバーのスポーン地点名
     "world-spawn"
   )
-  val projectiles = Set(
+  private val projectiles = Set(
     BOW,
     EGG,
     LINGERING_POTION,
