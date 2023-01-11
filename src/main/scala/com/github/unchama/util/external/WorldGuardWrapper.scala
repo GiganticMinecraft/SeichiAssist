@@ -86,7 +86,7 @@ object WorldGuardWrapper {
   def getOneRegion(location: Location): Option[ProtectedRegion] = {
     val regions = getRegions(location)
 
-    regions.headOption.filter(_ => regions.size == 1)
+    if (regions.size == 1) regions.headOption else None
   }
 
   /**
