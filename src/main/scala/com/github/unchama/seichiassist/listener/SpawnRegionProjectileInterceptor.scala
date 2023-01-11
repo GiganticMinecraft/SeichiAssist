@@ -6,8 +6,6 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
 
-import scala.jdk.CollectionConverters._
-
 object SpawnRegionProjectileInterceptor extends Listener {
   val spawnRegions = Set(
     // 基本の保護名
@@ -38,7 +36,7 @@ object SpawnRegionProjectileInterceptor extends Listener {
       event.hasItem
       && projectiles.contains(event.getItem.getType)
       && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)
-      && getRegions(player.getLocation).asScala.map(_.getId).exists(spawnRegions.contains)
+      && getRegions(player.getLocation).map(_.getId).exists(spawnRegions.contains)
     ) {
       event.setCancelled(true)
     }
