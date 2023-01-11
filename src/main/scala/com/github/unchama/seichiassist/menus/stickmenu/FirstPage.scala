@@ -45,7 +45,7 @@ import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
 import com.github.unchama.util.InventoryUtil
-import com.github.unchama.util.external.{ExternalPlugins, WorldGuardWrapper}
+import com.github.unchama.util.external.WorldGuardWrapper
 import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
