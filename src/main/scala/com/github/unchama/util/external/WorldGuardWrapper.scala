@@ -91,8 +91,11 @@ object WorldGuardWrapper {
    * @param location どの座標か
    * @return [[ProtectedRegion]]。保護が1個もないか、2個以上ある場合は[[None]]
    */
-  def getOneRegion(location: Location): Option[ProtectedRegion] =
-    getRegions(location).take(2).headOption
+  def getOneRegion(location: Location): Option[ProtectedRegion] = {
+    val regions = getRegions(location)
+
+    Option.when(regions.size == 1)(regions.head)
+  }
 
   /**
    * [[Location]]の座標にある保護をすべて取得する
