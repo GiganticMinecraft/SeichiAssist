@@ -59,10 +59,7 @@ object WorldGuardWrapper {
    */
   def getNumberOfRegions(who: Player, where: World): Int =
     // TODO: migrate this to OptionalInt
-    plugin
-      .getRegionContainer
-      .get(where)
-      .getRegionCountOfPlayer(wrapPlayer(who))
+    plugin.getRegionContainer.get(where).getRegionCountOfPlayer(wrapPlayer(who))
 
   /**
    * 現在[[Player]]が[[Location]]の座標でOwnerになっている保護があるかどうかを返す。
