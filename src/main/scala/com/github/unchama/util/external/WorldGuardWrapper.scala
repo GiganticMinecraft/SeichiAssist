@@ -48,8 +48,7 @@ object WorldGuardWrapper {
    */
   def getNumberOfRegions(who: Player, where: World): Int =
     // TODO: migrate this to OptionalInt
-    WorldGuardPlugin
-      .inst()
+    plugin
       .getRegionContainer
       .get(where)
       .getRegionCountOfPlayer(WorldGuardPlugin.inst().wrapPlayer(who))
