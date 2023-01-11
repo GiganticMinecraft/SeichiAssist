@@ -1,5 +1,6 @@
 package com.github.unchama.util.external
 
+import com.sk89q.worldguard.LocalPlayer
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin
 import com.sk89q.worldguard.protection.managers.RegionManager
 import com.sk89q.worldguard.protection.regions.ProtectedRegion
@@ -20,6 +21,11 @@ object WorldGuardWrapper {
    * WorldGuardのインスタンス
    */
   private val plugin = ExternalPlugins.getWorldGuard
+
+  /**
+   * [[LocalPlayer]]を返す
+   */
+  def wrapPlayer(player: Player): LocalPlayer = plugin.wrapPlayer(player)
 
   /**
    * [[RegionManager]]を返す

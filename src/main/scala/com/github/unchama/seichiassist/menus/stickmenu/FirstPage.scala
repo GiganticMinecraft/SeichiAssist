@@ -266,7 +266,6 @@ object FirstPage extends Menu {
 
     val computeRegionMenuButton: IO[Button] = IO {
       val (buttonLore, effect) = {
-        val worldGuardPlugin = ExternalPlugins.getWorldGuard
         val regionManager = WorldGuardWrapper.getRegionManager(getWorld)
 
         regionManager.fold(
@@ -274,7 +273,7 @@ object FirstPage extends Menu {
         ) { regionManager =>
           val maxRegionCount = WorldGuardWrapper.getMaxRegionCount(player, getWorld)
           val currentPlayerRegionCount =
-            regionManager.getRegionCountOfPlayer(worldGuardPlugin.wrapPlayer(player))
+            regionManager.getRegionCountOfPlayer(WorldGuardWrapper.wrapPlayer(player))
 
           (
             List(
