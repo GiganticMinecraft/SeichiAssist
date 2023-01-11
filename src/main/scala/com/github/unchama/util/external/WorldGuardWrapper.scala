@@ -44,11 +44,8 @@ object WorldGuardWrapper {
     getRegionManager(world).map(_.getRegionCountOfPlayer(wrapPlayer(player))).getOrElse(0)
 
   /**
-   * 与えられた [[World]] の [[Player]] の最大保護可能数を取得します.
-   *
-   * @param player 最大保護可能数を取得したい [[Player]] (`null`は許容されない)
-   * @param world  最大保護可能数を取得したい [[World]] (`null`は許容されない)
-   * @return [[Player]] の [[World]] における最大保護可能数
+   * [[World]]における[[Player]] の最大保護可能数を取得します.
+   * @return [[Player]]の[[World]] における最大保護可能数
    */
   def getMaxRegionCount(player: Player, world: World): Int =
     // TODO: migrate this to OptionalInt
@@ -77,8 +74,8 @@ object WorldGuardWrapper {
     getOneRegion(location).exists(_.isOwner(plugin.wrapPlayer(player)))
 
   /**
-   * 現在[[Player]]が[[Location]]の座標でMemberになっている保護があるかどうかを返す。
-   * ※Ownerでもある場合も含まれる。
+   * [[Player]]が[[Location]]の座標でMemberになっている保護があるかどうかを返す。
+   * NOTE: Ownerでもある場合も含まれる。
    * @param player 調べる対象であるPlayer
    * @param location どの座標か
    * @return Memberである保護が1つだけあればtrue、ないか保護が2個以上重なっていて判定できなければfalse
