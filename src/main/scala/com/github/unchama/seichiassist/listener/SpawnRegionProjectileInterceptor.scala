@@ -7,7 +7,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
 
 object SpawnRegionProjectileInterceptor extends Listener {
-  private val spawnRegions = Set(
+  private val spawnRegionNames = Set(
     // 基本の保護名
     "spawn",
     // メインワールドにおいて、スポーン地点を保護している保護名
@@ -36,7 +36,7 @@ object SpawnRegionProjectileInterceptor extends Listener {
       event.hasItem
       && projectiles.contains(event.getItem.getType)
       && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)
-      && getRegions(player.getLocation).map(_.getId).exists(spawnRegions.contains)
+      && getRegions(player.getLocation).map(_.getId).exists(spawnRegionNames.contains)
     ) {
       event.setCancelled(true)
     }
