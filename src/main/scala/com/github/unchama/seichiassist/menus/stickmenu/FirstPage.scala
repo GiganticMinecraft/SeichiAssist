@@ -45,7 +45,7 @@ import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
 import com.github.unchama.util.InventoryUtil
-import com.github.unchama.util.external.{ExternalPlugins, WorldGuardWrapper}
+import com.github.unchama.util.external.WorldGuardWrapper
 import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -265,20 +265,30 @@ object FirstPage extends Menu {
     }
 
     val computeRegionMenuButton: IO[Button] = IO {
-      val buttonLore = {
-        val worldGuardPlugin = ExternalPlugins.getWorldGuard
-        val regionManager = worldGuardPlugin.getRegionManager(getWorld)
+      val (buttonLore, effect) = {
+        val world = getWorld
+        val regionManager = WorldGuardWrapper.getRegionManager(world)
 
-        val maxRegionCount = WorldGuardWrapper.getMaxRegionCount(player, getWorld)
-        val currentPlayerRegionCount =
-          regionManager.getRegionCountOfPlayer(worldGuardPlugin.wrapPlayer(player))
+        if (regionManager.isEmpty) {
+          (List(s"${GRAY}このワールドでは土地の保護は行なえません"), LeftClickButtonEffect(emptyEffect))
+        } else {
+          val maxRegionCount = WorldGuardWrapper.getMaxRegionCount(player, world)
+          val currentPlayerRegionCount =
+            WorldGuardWrapper.getRegionCountOfPlayer(player, world)
 
-        List(
-          s"${GRAY}土地の保護が行えます",
-          s"$DARK_RED${UNDERLINE}クリックで開く",
-          s"${GRAY}保護作成上限：$AQUA$maxRegionCount",
-          s"${GRAY}現在のあなたの保護作成数：$AQUA$currentPlayerRegionCount"
-        )
+          (
+            List(
+              s"${GRAY}土地の保護が行えます",
+              s"$DARK_RED${UNDERLINE}クリックで開く",
+              s"${GRAY}保護作成上限：$AQUA$maxRegionCount",
+              s"${GRAY}現在のあなたの保護作成数：$AQUA$currentPlayerRegionCount"
+            ),
+            LeftClickButtonEffect(
+              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.5f),
+              environment.ioCanOpenRegionMenu.open(RegionMenu)
+            )
+          )
+        }
       }
 
       Button(
@@ -286,10 +296,7 @@ object FirstPage extends Menu {
           .title(s"$YELLOW${UNDERLINE}土地保護メニュー")
           .lore(buttonLore)
           .build(),
-        LeftClickButtonEffect(
-          FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.5f),
-          environment.ioCanOpenRegionMenu.open(RegionMenu)
-        )
+        effect
       )
     }
 
