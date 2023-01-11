@@ -71,7 +71,7 @@ object WorldGuardWrapper {
    * @return Ownerである保護が1つだけあればtrue、ないか保護が2個以上重なっていて判定できなければfalse
    */
   def isRegionOwner(player: Player, location: Location): Boolean =
-    getOneRegion(location).exists(_.isOwner(plugin.wrapPlayer(player)))
+    getOneRegion(location).exists(_.isOwner(wrapPlayer(player)))
 
   /**
    * [[Player]]が[[Location]]の座標でMemberになっている保護があるかどうかを返す。
