@@ -81,7 +81,7 @@ object WorldGuardWrapper {
    * @return Memberである保護が1つだけあればtrue、ないか保護が2個以上重なっていて判定できなければfalse
    */
   def isRegionMember(player: Player, location: Location): Boolean =
-    getOneRegion(location).exists(_.isMember(plugin.wrapPlayer(player)))
+    getOneRegion(location).exists(_.isMember(wrapPlayer(player)))
 
   /**
    * [[Location]]の座標にある保護を1つだけ取得する
