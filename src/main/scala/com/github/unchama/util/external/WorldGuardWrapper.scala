@@ -62,7 +62,7 @@ object WorldGuardWrapper {
     plugin
       .getRegionContainer
       .get(where)
-      .getRegionCountOfPlayer(WorldGuardPlugin.inst().wrapPlayer(who))
+      .getRegionCountOfPlayer(wrapPlayer(who))
 
   /**
    * 現在[[Player]]が[[Location]]の座標でOwnerになっている保護があるかどうかを返す。
