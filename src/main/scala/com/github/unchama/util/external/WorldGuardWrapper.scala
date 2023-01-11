@@ -62,7 +62,7 @@ object WorldGuardWrapper {
    * @return Ownerである保護が1つだけあればtrue、ないか保護が2個以上重なっていて判定できなければfalse
    */
   def isRegionOwner(player: Player, location: Location): Boolean =
-    getOneRegion(location).exists(rg => rg.isOwner(plugin.wrapPlayer(player)))
+    getOneRegion(location).exists(_.isOwner(plugin.wrapPlayer(player)))
 
   /**
    * 現在[[Player]]が[[Location]]の座標でMemberになっている保護があるかどうかを返す。
@@ -72,7 +72,7 @@ object WorldGuardWrapper {
    * @return Memberである保護が1つだけあればtrue、ないか保護が2個以上重なっていて判定できなければfalse
    */
   def isRegionMember(player: Player, location: Location): Boolean =
-    getOneRegion(location).exists(rg => rg.isMember(plugin.wrapPlayer(player)))
+    getOneRegion(location).exists(_.isMember(plugin.wrapPlayer(player)))
 
   /**
    * [[Location]]の座標にある保護を1つだけ取得する
@@ -92,6 +92,6 @@ object WorldGuardWrapper {
    */
   def getRegions(location: Location): Set[ProtectedRegion] =
     getRegionManager(location.getWorld)
-      .map(manager => manager.getApplicableRegions(location).getRegions.asScala.toSet)
+      .map(_.getApplicableRegions(location).getRegions.asScala.toSet)
       .getOrElse(Set.empty)
 }
