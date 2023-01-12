@@ -15,7 +15,8 @@ import org.bukkit.{Location, Material}
 
 object GridTemplateMenu extends Menu {
 
-  private val aisleAmount = SeichiAssist.seichiAssistConfig.getTemplateKeepAmount + 1
+  private val aisleAmount =
+    Math.ceil(SeichiAssist.seichiAssistConfig.getTemplateKeepAmount / 9.0).toInt + 1
 
   class Environment(
     implicit val canOpenGridRegionMenu: IO CanOpen GridRegionMenu.type,
@@ -36,7 +37,7 @@ object GridTemplateMenu extends Menu {
       templateButtons <- gridTemplateButtons
     } yield {
       MenuSlotLayout(
-        (aisleAmount * 9) -> CommonButtons.transferButton(
+        (aisleAmount * 9 - 1) -> CommonButtons.transferButton(
           new IconItemStackBuilder(Material.BARRIER).lore(List(s"$RED${UNDERLINE}クリックで戻る")),
           "グリッド式保護メニューに戻る",
           GridRegionMenu
