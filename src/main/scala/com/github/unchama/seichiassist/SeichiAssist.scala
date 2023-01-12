@@ -749,7 +749,6 @@ class SeichiAssist extends JavaPlugin() {
       new EntityListener(),
       new PlayerDeathEventListener(),
       new GachaItemListener(),
-      new RegionInventoryListener(),
       new WorldRegenListener(),
       new ChatInterceptor(List(globalChatInterceptionScope)),
       new MenuHandler(),
