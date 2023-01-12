@@ -25,7 +25,7 @@ object PropertyModificationBukkitMessages extends PropertyModificationMessages {
         List(s"$RESET${GREEN}おめでとうございます。$mebiusDisplayName$RESET${GREEN}のレベルが最大になりました。")
       } else {
         List(
-          s"$mebiusDisplayName${RESET}がレベルアップしました。: Lv${oldMebiusProperty.level.value} -> Lv${newMebiusProperty.level.value}"
+          s"$mebiusDisplayName${RESET}がレベルアップしました。: Lv.${oldMebiusProperty.level.value} -> Lv.${newMebiusProperty.level.value}"
         )
       }
 
