@@ -36,15 +36,17 @@ object GridTemplateMenu extends Menu {
     for {
       templateButtons <- gridTemplateButtons
     } yield {
-      MenuSlotLayout(
-        ((aisleAmount - 1) * 9) -> CommonButtons.transferButton(
-          new IconItemStackBuilder(Material.BARRIER).lore(List(s"$RED${UNDERLINE}クリックで戻る")),
-          "グリッド式保護メニューに戻る",
-          GridRegionMenu
-        )
-      ).merge(MenuSlotLayout(templateButtons.zipWithIndex.map {
+      val templateButtonLayout = MenuSlotLayout(templateButtons.zipWithIndex.map {
         case (button: Button, index: Int) => index -> button
-      }: _*))
+      }: _*)
+      val backMenuButtonPosition = (aisleAmount - 1) * 9
+      val backMenuButton = CommonButtons.transferButton(
+        new IconItemStackBuilder(Material.BARRIER).lore(List(s"$RED${UNDERLINE}クリックで戻る")),
+        "グリッド式保護メニューに戻る",
+        GridRegionMenu
+      )
+
+      MenuSlotLayout(backMenuButtonPosition -> backMenuButton).merge(templateButtonLayout)
     }
   }
 
