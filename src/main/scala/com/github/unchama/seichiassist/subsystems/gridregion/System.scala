@@ -143,7 +143,8 @@ object System {
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
           regionUnitPerClickSettingRepositoryControls,
           regionUnitsRepositoryControls,
-          regionCountRepositoryControls
+          regionCountRepositoryControls,
+          regionTemplateRepositoryControls
         ).map(_.coerceFinalizationContextTo[F])
       }
     }
