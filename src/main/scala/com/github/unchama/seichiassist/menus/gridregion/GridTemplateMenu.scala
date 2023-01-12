@@ -55,7 +55,7 @@ object GridTemplateMenu extends Menu {
 
     def gridTemplateButtons: IO[List[Button]] = {
       for {
-        templates <- gridRegionAPI.gridRegionTemplate(player)
+        templates <- gridRegionAPI.savedGridRegionTemplate(player)
       } yield {
         templates.map {
           case (id, regionUnits) =>
