@@ -15,8 +15,9 @@ import org.bukkit.{Location, Material}
 
 object GridTemplateMenu extends Menu {
 
-  private val aisleAmount =
-    Math.ceil(SeichiAssist.seichiAssistConfig.getTemplateKeepAmount / 9.0).toInt + 1
+  private val templateKeepAmount = SeichiAssist.seichiAssistConfig.getTemplateKeepAmount
+
+  private val aisleAmount = Math.ceil(templateKeepAmount / 9.0).toInt + 1
 
   class Environment(
     implicit val canOpenGridRegionMenu: IO CanOpen GridRegionMenu.type,
@@ -34,7 +35,7 @@ object GridTemplateMenu extends Menu {
     import computeButtons._
 
     for {
-      templateButtons <- gridTemplateButtons
+      templateButtons <- gridTemplateButtons(templateKeepAmount)
     } yield {
       val templateButtonLayout = MenuSlotLayout(templateButtons.zipWithIndex.map {
         case (button: Button, index: Int) => index -> button
@@ -53,7 +54,7 @@ object GridTemplateMenu extends Menu {
   private case class ComputeButtons(player: Player)(implicit environment: Environment) {
     import environment._
 
-    def gridTemplateButtons: IO[List[Button]] = {
+    def gridTemplateButtons(templateKeepAmount: Int): IO[List[Button]] = {
       for {
         templates <- gridRegionAPI.savedGridRegionTemplate(player)
       } yield {

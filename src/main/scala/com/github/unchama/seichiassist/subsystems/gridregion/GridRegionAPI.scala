@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.subsystems.gridregion.domain._
 trait GridRegionAPI[F[_], Player, Location] {
 
   /**
-   * @return 1回のクリックで増減させる[[RegionUnit]]の量をトグルする作用を返す
+   * @return 1回のクリックで増減させる[[RegionUnit]]の量をトグルする作用
    */
   def toggleUnitPerClick: Kleisli[F, Player, Unit]
 
