@@ -177,8 +177,10 @@ object GridRegionMenu extends Menu {
         .build()
 
       val leftClickButtonEffect = LeftClickButtonEffect {
-        ioCanOpenGridTemplateMenu.open(GridTemplateMenu)
-        SequentialEffect(FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f))
+        SequentialEffect(
+          ioCanOpenGridTemplateMenu.open(GridTemplateMenu),
+          FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+        )
       }
 
       Button(itemStack, leftClickButtonEffect)
