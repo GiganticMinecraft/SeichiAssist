@@ -37,7 +37,7 @@ object GridTemplateMenu extends Menu {
       templateButtons <- gridTemplateButtons
     } yield {
       MenuSlotLayout(
-        (aisleAmount * 9 - 1) -> CommonButtons.transferButton(
+        ((aisleAmount - 1) * 9) -> CommonButtons.transferButton(
           new IconItemStackBuilder(Material.BARRIER).lore(List(s"$RED${UNDERLINE}クリックで戻る")),
           "グリッド式保護メニューに戻る",
           GridRegionMenu
