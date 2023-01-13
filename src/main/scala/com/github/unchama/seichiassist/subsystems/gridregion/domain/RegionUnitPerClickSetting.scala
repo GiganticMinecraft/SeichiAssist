@@ -5,7 +5,7 @@ import cats.effect.concurrent.Ref
 
 class RegionUnitPerClickSetting[F[_]: Sync] {
 
-  private def unitPerClickReference: Ref[F, RegionUnit] = Ref.unsafe(RegionUnit.initial)
+  private val unitPerClickReference: Ref[F, RegionUnit] = Ref.unsafe(RegionUnit.initial)
 
   import cats.implicits._
 
@@ -17,7 +17,7 @@ class RegionUnitPerClickSetting[F[_]: Sync] {
   } yield regionUnitValue
 
   private val regionUnitOrder: Map[RegionUnit, RegionUnit] =
-    Map(1 -> 10, 10 -> 100, 100 -> 1).map {
+    Map(0 -> 1, 1 -> 10, 10 -> 100, 100 -> 0).map {
       case (first, second) => RegionUnit(first) -> RegionUnit(second)
     }
 

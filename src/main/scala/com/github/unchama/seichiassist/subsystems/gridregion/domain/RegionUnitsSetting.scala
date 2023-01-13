@@ -5,7 +5,7 @@ import cats.effect.concurrent.Ref
 
 class RegionUnitsSetting[F[_]: Sync] {
 
-  private def regionUnitsReference: Ref[F, RegionUnits] = Ref.unsafe(RegionUnits.initial)
+  private val regionUnitsReference: Ref[F, RegionUnits] = Ref.unsafe(RegionUnits.initial)
 
   def regionUnits: F[RegionUnits] = regionUnitsReference.get
 
