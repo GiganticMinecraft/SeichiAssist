@@ -34,55 +34,67 @@ class BukkitRegionOperations[F[_]: Sync](
     val (startPosition, endPosition) = direction match {
       case Direction.East =>
         (
-          currentLocation.subtract(
-            regionUnits.behind.unitPerBlockAmount,
-            0.0,
-            regionUnits.left.unitPerBlockAmount
-          ),
-          currentLocation.add(
-            regionUnits.ahead.unitPerBlockAmount,
-            0.0,
-            regionUnits.right.unitPerBlockAmount
-          )
+          currentLocation
+            .clone()
+            .subtract(
+              regionUnits.behind.computeBlockAmount,
+              0.0,
+              regionUnits.left.computeBlockAmount
+            ),
+          currentLocation
+            .clone()
+            .add(
+              regionUnits.ahead.computeBlockAmount,
+              0.0,
+              regionUnits.right.computeBlockAmount
+            )
         )
       case Direction.North =>
         (
-          currentLocation.subtract(
-            regionUnits.left.unitPerBlockAmount,
-            0.0,
-            regionUnits.ahead.unitPerBlockAmount
-          ),
-          currentLocation.add(
-            regionUnits.right.unitPerBlockAmount,
-            0.0,
-            regionUnits.behind.unitPerBlockAmount
-          )
+          currentLocation
+            .clone()
+            .subtract(
+              regionUnits.left.computeBlockAmount,
+              0.0,
+              regionUnits.ahead.computeBlockAmount
+            ),
+          currentLocation
+            .clone()
+            .add(
+              regionUnits.right.computeBlockAmount,
+              0.0,
+              regionUnits.behind.computeBlockAmount
+            )
         )
       case Direction.South =>
         (
-          currentLocation.subtract(
-            regionUnits.right.unitPerBlockAmount,
-            0.0,
-            regionUnits.behind.unitPerBlockAmount
-          ),
-          currentLocation.add(
-            regionUnits.left.unitPerBlockAmount,
-            0.0,
-            regionUnits.ahead.unitPerBlockAmount
-          )
+          currentLocation
+            .clone()
+            .subtract(
+              regionUnits.right.computeBlockAmount,
+              0.0,
+              regionUnits.behind.computeBlockAmount
+            ),
+          currentLocation
+            .clone()
+            .add(regionUnits.left.computeBlockAmount, 0.0, regionUnits.ahead.computeBlockAmount)
         )
       case Direction.West =>
         (
-          currentLocation.subtract(
-            regionUnits.ahead.unitPerBlockAmount,
-            0.0,
-            regionUnits.right.unitPerBlockAmount
-          ),
-          currentLocation.add(
-            regionUnits.behind.unitPerBlockAmount,
-            0.0,
-            regionUnits.left.unitPerBlockAmount
-          )
+          currentLocation
+            .clone()
+            .subtract(
+              regionUnits.ahead.computeBlockAmount,
+              0.0,
+              regionUnits.right.computeBlockAmount
+            ),
+          currentLocation
+            .clone()
+            .add(
+              regionUnits.behind.computeBlockAmount,
+              0.0,
+              regionUnits.left.computeBlockAmount
+            )
         )
     }
 
