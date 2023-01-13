@@ -62,7 +62,7 @@ DockerマシンのIPアドレス(Linux等なら`localhost`)を`DOCKER_IP`とし�
 ### ガチャ景品データの準備
 
 初回起動後、DBが作成されますが、ガチャ景品のデータがありません。そのため、次のSQLdumpをインポートします。
-- [gachadata.sql](https://redmine.seichi.click/attachments/download/992/gachadata.sql) -> import to "gachadata" table.
+- [gachadata.sql](https://redmine.seichi.click/attachments/download/992/gachadata.sql)
 
 手順は以下の通りです。
 1. 一旦サーバーを起動させる
