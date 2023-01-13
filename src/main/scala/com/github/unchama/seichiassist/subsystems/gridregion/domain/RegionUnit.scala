@@ -16,7 +16,11 @@ case class RegionUnit(units: Int) {
   /**
    * 指定[[RegionUnit]]分だけ減算する
    */
-  def subtract(_units: RegionUnit): RegionUnit = RegionUnit(units - _units.units)
+  def subtract(_units: RegionUnit): RegionUnit = {
+    val subtractedUnits = units - _units.units
+    if (subtractedUnits >= 0) RegionUnit(subtractedUnits)
+    else RegionUnit(0)
+  }
 
   /**
    * 1[[RegionUnit]]あたりのブロック数
