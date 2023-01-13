@@ -25,7 +25,7 @@ case class RegionUnit(units: Int) {
   /**
    * 1[[RegionUnit]]あたりのブロック数
    */
-  val unitPerBlockAmount = 15
+  private val unitPerBlockAmount = 15
 
   /**
    * [[RegionUnit]]からブロック数を計算する
