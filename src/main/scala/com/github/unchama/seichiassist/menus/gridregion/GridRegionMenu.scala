@@ -83,12 +83,10 @@ object GridRegionMenu extends Menu {
           )
           .build()
 
-        val leftClickEffect = LeftClickButtonEffect {
-          SequentialEffect(
-            DeferredEffect(IO(gridRegionAPI.toggleUnitPerClick)),
-            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
-          )
-        }
+        val leftClickEffect = LeftClickButtonEffect(
+          DeferredEffect(IO(gridRegionAPI.toggleUnitPerClick)),
+          FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+        )
 
         Button(iconItemStack, leftClickEffect)
       }
@@ -183,12 +181,10 @@ object GridRegionMenu extends Menu {
         .lore(List(s"$RED${UNDERLINE}クリックで開く"))
         .build()
 
-      val leftClickButtonEffect = LeftClickButtonEffect {
-        SequentialEffect(
-          ioCanOpenGridTemplateMenu.open(GridTemplateMenu),
-          FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
-        )
-      }
+      val leftClickButtonEffect = LeftClickButtonEffect(
+        ioCanOpenGridTemplateMenu.open(GridTemplateMenu),
+        FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+      )
 
       Button(itemStack, leftClickButtonEffect)
     }
@@ -199,13 +195,11 @@ object GridRegionMenu extends Menu {
         .lore(List(s"$RED${UNDERLINE}取り扱い注意！！"))
         .build()
 
-      val leftClickButtonEffect = LeftClickButtonEffect {
-        SequentialEffect(
-          DeferredEffect(IO(gridRegionAPI.saveRegionUnits(RegionUnits.initial))),
-          CommandEffect("/;"),
-          FocusedSoundEffect(Sound.BLOCK_ANVIL_DESTROY, 0.5f, 1.0f)
-        )
-      }
+      val leftClickButtonEffect = LeftClickButtonEffect(
+        DeferredEffect(IO(gridRegionAPI.saveRegionUnits(RegionUnits.initial))),
+        CommandEffect("/;"),
+        FocusedSoundEffect(Sound.BLOCK_ANVIL_DESTROY, 0.5f, 1.0f)
+      )
 
       Button(itemStack, leftClickButtonEffect)
     }
