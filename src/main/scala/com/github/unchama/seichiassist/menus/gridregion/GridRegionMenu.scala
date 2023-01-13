@@ -45,7 +45,7 @@ object GridRegionMenu extends Menu {
     import buttons._
 
     for {
-      toggleUnitPerClick <- toggleUnitPerClickButton()
+      toggleUnitPerClick <- toggleUnitPerClickButton
       nowRegionSettings <- nowRegionSettingButton
       regionUnitExpansionAhead <- regionUnitExpansionButton(RelativeDirection.Ahead)
       regionUnitExpansionLeft <- regionUnitExpansionButton(RelativeDirection.Left)
@@ -58,9 +58,9 @@ object GridRegionMenu extends Menu {
       2 -> openGridRegionSettingMenuButton,
       3 -> regionUnitExpansionLeft,
       4 -> nowRegionSettings,
-      5 -> regionUnitExpansionBehind,
+      5 -> regionUnitExpansionRight,
       6 -> resetSettingButton,
-      7 -> regionUnitExpansionRight,
+      7 -> regionUnitExpansionBehind,
       8 -> createRegion
     )
   }
@@ -68,7 +68,7 @@ object GridRegionMenu extends Menu {
   case class computeButtons(player: Player)(implicit environment: Environment) {
     import environment._
 
-    def toggleUnitPerClickButton(): IO[Button] = RecomputedButton {
+    def toggleUnitPerClickButton: IO[Button] = RecomputedButton {
       for {
         currentRegionUnit <- gridRegionAPI.unitPerClick(player)
       } yield {
@@ -135,11 +135,18 @@ object GridRegionMenu extends Menu {
             case RelativeDirection.Right  => "右へ"
           }
 
+          val stainedGlassPaneDurability = relativeDirection match {
+            case RelativeDirection.Ahead  => 14
+            case RelativeDirection.Left   => 10
+            case RelativeDirection.Behind => 13
+            case RelativeDirection.Right  => 5
+          }
+
           val itemStack =
-            new IconItemStackBuilder(Material.STAINED_GLASS_PANE, 1)
-              .title(s"$DARK_GREEN${relativeDirectionString}ユニット増やす/減らす")
-              .lore(lore)
-              .build()
+            new IconItemStackBuilder(
+              Material.STAINED_GLASS_PANE,
+              stainedGlassPaneDurability.toShort
+            ).title(s"$DARK_GREEN${relativeDirectionString}ユニット増やす/減らす").lore(lore).build()
 
           val regionSelection =
             gridRegionAPI.regionSelection(player, contractedRegionUnits, direction)
