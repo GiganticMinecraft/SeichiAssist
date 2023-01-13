@@ -3,17 +3,30 @@ package com.github.unchama.seichiassist.menus.gridregion
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.router.CanOpen
-import com.github.unchama.menuinventory.slot.button.Button
-import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
+import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
+import com.github.unchama.menuinventory.slot.button.action.{
+  ClickEventFilter,
+  FilteredButtonEffect,
+  LeftClickButtonEffect
+}
 import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
-import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.menuinventory.{
+  LayoutPreparationContext,
+  Menu,
+  MenuFrame,
+  MenuSlotLayout
+}
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.subsystems.gridregion.GridRegionAPI
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.{RegionTemplate, RegionTemplateId}
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
+  RegionTemplate,
+  RegionTemplateId
+}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect}
-import org.bukkit.ChatColor._
+import org.bukkit.ChatColor.{GRAY, _}
 import org.bukkit.entity.Player
 import org.bukkit.{Location, Material}
 
@@ -25,11 +38,15 @@ object GridTemplateMenu extends Menu {
 
   class Environment(
     implicit val canOpenGridRegionMenu: IO CanOpen GridRegionMenu.type,
-    implicit val gridRegionAPI: GridRegionAPI[IO, Player, Location]
+    implicit val gridRegionAPI: GridRegionAPI[IO, Player, Location],
+    implicit val layoutPreparationContext: LayoutPreparationContext,
+    implicit val onMinecraftServerThread: OnMinecraftServerThread[IO]
   )
 
   override val frame: MenuFrame =
     MenuFrame(aisleAmount.chestRows, s"${LIGHT_PURPLE}グリッド式保護・設定保存")
+
+  import cats.implicits._
 
   override def computeMenuLayout(
     player: Player
@@ -39,7 +56,9 @@ object GridTemplateMenu extends Menu {
     import computeButtons._
 
     for {
-      templateButtons <- gridTemplateButtons(templateKeepAmount)
+      templateButtons <- (1 to templateKeepAmount).toList.traverse { id =>
+        gridTemplateButton(id)
+      }
     } yield {
       val templateButtonLayout = MenuSlotLayout(templateButtons.zipWithIndex.map {
         case (button: Button, index: Int) => index -> button
@@ -58,11 +77,11 @@ object GridTemplateMenu extends Menu {
   private case class ComputeButtons(player: Player)(implicit environment: Environment) {
     import environment._
 
-    def gridTemplateButtons(templateKeepAmount: Int): IO[List[Button]] = {
+    def gridTemplateButton(id: Int): IO[Button] = RecomputedButton {
       for {
         templates <- gridRegionAPI.savedGridRegionTemplate(player)
         currentRegionUnits <- gridRegionAPI.regionUnits(player)
-      } yield (1 to templateKeepAmount).toList.map { id =>
+      } yield {
         val template = templates.find { regionTemplate =>
           regionTemplate.templateId.value == id
         }
