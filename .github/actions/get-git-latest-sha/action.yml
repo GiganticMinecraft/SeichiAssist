@@ -1,0 +1,14 @@
+name: get-git-latest-sha
+description: Get SHA value of latest commit in git.
+outputs:
+  sha:
+    description: SHA short value of latest commit in git.
+    value: ${{ steps.output-sha.outputs.sha }}
+runs:
+  using: composite
+  steps:
+    - id: output-sha
+      run: |
+        VALUE=$(git show --format='%h' --no-patch)
+        echo "sha=$VALUE" >> $GITHUB_OUTPUT
+      shell: bash
