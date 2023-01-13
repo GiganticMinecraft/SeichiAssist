@@ -4,12 +4,16 @@ import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
+import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.subsystems.gridregion.GridRegionAPI
-import org.bukkit.ChatColor.{GRAY, _}
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.{RegionTemplate, RegionTemplateId}
+import com.github.unchama.targetedeffect.commandsender.MessageEffect
+import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect}
+import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.{Location, Material}
 
@@ -57,35 +61,64 @@ object GridTemplateMenu extends Menu {
     def gridTemplateButtons(templateKeepAmount: Int): IO[List[Button]] = {
       for {
         templates <- gridRegionAPI.savedGridRegionTemplate(player)
+        currentRegionUnits <- gridRegionAPI.regionUnits(player)
       } yield (1 to templateKeepAmount).toList.map { id =>
-        val template = templates.find { case (templateId, _) => templateId.value == id }
+        val template = templates.find { regionTemplate =>
+          regionTemplate.templateId.value == id
+        }
 
-        val itemStack = template match {
-          case Some((id, regionUnits)) =>
+        template match {
+          case Some(regionTemplate) =>
             val lore = List(
               s"${GREEN}設定内容",
-              s"${GRAY}前方向：$AQUA${regionUnits.ahead.units}${GRAY}ユニット",
-              s"${GRAY}後ろ方向：$AQUA${regionUnits.behind.units}${GRAY}ユニット",
-              s"${GRAY}右方向：$AQUA${regionUnits.right.units}${GRAY}ユニット",
-              s"${GRAY}左方向：$AQUA${regionUnits.left.units}${GRAY}ユニット",
+              s"${GRAY}前方向：$AQUA${regionTemplate.regionUnits.ahead.units}${GRAY}ユニット",
+              s"${GRAY}後ろ方向：$AQUA${regionTemplate.regionUnits.behind.units}${GRAY}ユニット",
+              s"${GRAY}右方向：$AQUA${regionTemplate.regionUnits.right.units}${GRAY}ユニット",
+              s"${GRAY}左方向：$AQUA${regionTemplate.regionUnits.left.units}${GRAY}ユニット",
               s"${GREEN}左クリックで設定を読み込み",
               s"${RED}右クリックで現在の設定で上書き"
             )
 
-            new IconItemStackBuilder(Material.CHEST)
-              .title(s"${GREEN}テンプレNo.${id.value + 1}(設定済み)")
+            val itemStack = new IconItemStackBuilder(Material.CHEST)
+              .title(s"${GREEN}テンプレNo.${regionTemplate.templateId.value + 1}(設定済み)")
               .lore(lore)
               .build()
+
+            val leftClickButtonEffect = FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
+              SequentialEffect(
+                DeferredEffect(IO(gridRegionAPI.saveRegionUnits(regionTemplate.regionUnits))),
+                MessageEffect(s"${GREEN}グリッド式保護設定データ読み込み完了")
+              )
+            }
+
+            val rightClickButtonEffect =
+              FilteredButtonEffect(ClickEventFilter.RIGHT_CLICK) { _ =>
+                val template = RegionTemplate(regionTemplate.templateId, currentRegionUnits)
+                SequentialEffect(
+                  DeferredEffect(IO(gridRegionAPI.saveGridRegionTemplate(template))),
+                  MessageEffect(s"${GREEN}グリッド式保護の現在の設定を保存しました。")
+                )
+              }
+
+            Button(itemStack, leftClickButtonEffect, rightClickButtonEffect)
+
           case None =>
             val lore = List(s"${GREEN}未設定", s"${RED}左クリックで現在の設定を保存")
 
-            new IconItemStackBuilder(Material.PAPER)
+            val itemStack = new IconItemStackBuilder(Material.PAPER)
               .title(s"${RED}テンプレNo.$id")
               .lore(lore)
               .build()
-        }
 
-        Button(itemStack)
+            val template = RegionTemplate(RegionTemplateId(id), currentRegionUnits)
+
+            val leftClickButtonEffect = LeftClickButtonEffect(
+              DeferredEffect(IO(gridRegionAPI.saveGridRegionTemplate(template))),
+              MessageEffect(s"${GREEN}グリッド式保護の現在の設定を保存しました。")
+            )
+
+            Button(itemStack, leftClickButtonEffect)
+        }
       }
     }
 
