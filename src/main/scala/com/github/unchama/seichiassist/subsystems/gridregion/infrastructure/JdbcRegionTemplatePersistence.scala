@@ -50,15 +50,16 @@ class JdbcRegionTemplatePersistence[F[_]: Sync] extends RegionTemplatePersistenc
             gridTemplate.regionUnits.right.units,
             gridTemplate.regionUnits.behind.units,
             gridTemplate.regionUnits.left.units,
+            uuid.toString,
             gridTemplate.templateId.value
           )
         }
 
         sql"""UPDATE grid_template SET ahead_length = ?, right_length = ?, behind_length = ?, left_length = ?
-             | WHERE designer_uuid = ${uuid.toString} AND id = ?"""
+             | WHERE designer_uuid = ? AND id = ?"""
           .stripMargin
           .batch(batchParams: _*)
-          .apply[List]()
+          .apply[Vector]()
       }
     }
 
