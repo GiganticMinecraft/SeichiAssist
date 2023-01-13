@@ -96,7 +96,6 @@ jobs:
         with:
           files: target/build/SeichiAssist.jar
           tag_name: "v${{ needs.bump_version.outputs.new_version }}"
-          release_name: "バージョン ${{ needs.bump_version.outputs.new_version }} リリース"
           draft: false
           prerelease: false
 
