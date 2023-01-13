@@ -181,13 +181,17 @@ jobs:
           cd SeichiAssist
           jar xf ../SeichiAssist.jar config.yml
 
+      - name: Output SHA value of latest commit
+        id: sha
+        uses: ./.github/actions/get-git-latest-sha
+
       # 二回pushするのを防ぐため、gitコマンドを直操作している
       - name: Push jar and config.yml
         run: |
           API_TOKEN_GITHUB=${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_TOKEN }}
           user_name=${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_USER }}
           destination_folder=debug-servers/services/spigot/files/base/plugins
-          short_sha=$(echo "$GITHUB_SHA" | cut -c1-6)
+          short_sha=${{ steps.sha.outputs.sha }}
           commit_url=https://github.com/GiganticMinecraft/SeichiAssist/commit/$GITHUB_SHA
 
           git clone --depth 1 \
