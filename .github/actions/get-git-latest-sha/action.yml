@@ -9,6 +9,6 @@ runs:
   steps:
     - id: output-sha
       run: |
-        VALUE=$(git show --format='%h' --no-patch)
+        VALUE=$(git log --format='%h' -n 1)
         echo "sha=$VALUE" >> $GITHUB_OUTPUT
       shell: bash
