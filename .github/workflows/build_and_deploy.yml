@@ -124,18 +124,29 @@ jobs:
           username: GitHub Actions
           avatar_url: ${{ secrets.DISCORD_AVATAR_URL }}
 
+  output-sha:
+    name: 最終コミットのSHA値を取得する
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.output-sha.outputs.sha }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Outputs the value
+        id: output-sha
+        run: |
+          VALUE=$(git log --format='%h' -n 1)
+          echo "sha=$VALUE" >> $GITHUB_OUTPUT
+        shell: bash
+
   create_prerelease:
     name: GitHub ReleasesにPreReleaseを作成する
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/develop'
     needs:
       - build_test_and_upload
+      - output-sha
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Output SHA value of latest commit
-        id: sha
-        uses: ./.github/actions/get-git-latest-sha
       - name: Create and push a tag
         id: tag-name
         run: |
@@ -154,7 +165,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: ./SeichiAssist.jar
-          tag_name: ${{ steps.tag-name.outputs.value }}
+          tag_name: ${{ needs.output-sha.outputs.sha }}
           draft: false
           prerelease: true
 
@@ -163,6 +174,7 @@ jobs:
     if: github.ref == 'refs/heads/develop'
     needs:
       - build_test_and_upload
+      - output-sha
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
@@ -180,17 +192,13 @@ jobs:
           cd SeichiAssist
           jar xf ../SeichiAssist.jar config.yml
 
-      - name: Output SHA value of latest commit
-        id: sha
-        uses: ./.github/actions/get-git-latest-sha
-
       # 二回pushするのを防ぐため、gitコマンドを直操作している
       - name: Push jar and config.yml
         run: |
           API_TOKEN_GITHUB=${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_TOKEN }}
           user_name=${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_USER }}
           destination_folder=debug-servers/services/spigot/files/base/plugins
-          short_sha=${{ steps.sha.outputs.sha }}
+          short_sha=${{ needs.output-sha.outputs.sha }}
           commit_url=https://github.com/GiganticMinecraft/SeichiAssist/commit/$GITHUB_SHA
 
           git clone --depth 1 \
