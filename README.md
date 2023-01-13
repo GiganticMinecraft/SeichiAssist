@@ -66,7 +66,7 @@ DockerマシンのIPアドレス(Linux等なら`localhost`)を`DOCKER_IP`とし�
 
 手順は以下の通りです。
 1. 一旦サーバーを起動させる
-2. PHPMyAdminを開く
+2. phpMyAdminを開く
 3. トップ画面の上部メニューから「データベース」を開く
 4. `seichiassist`と`flyway_managed_schema`にチェックを入れて、「削除」、「OK」
 5. 「データベースを作成する」の下にあるテキストボックスに`seichiassist`と入力し、「作成」
