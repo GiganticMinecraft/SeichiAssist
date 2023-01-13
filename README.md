@@ -58,8 +58,22 @@ DockerマシンのIPアドレス(Linux等なら`localhost`)を`DOCKER_IP`とし�
 コンソールからは `Ctrl+C` で抜けることができます(サーバーは停止されません)。
 
 ## DBの準備
-初回起動後、DBが作成されますが、ガチャ景品のデータがありません。その為、以下SQLdumpをインポートしてください。
+
+### ガチャ景品データの準備
+
+初回起動後、DBが作成されますが、ガチャ景品のデータがありません。そのため、次のSQLdumpをインポートします。
 - [gachadata.sql](https://redmine.seichi.click/attachments/download/992/gachadata.sql) -> import to "gachadata" table.
+
+手順は以下の通りです。
+1. 一旦サーバーを起動させる
+2. PHPMyAdminを開く
+3. トップ画面の上部メニューから「データベース」を開く
+4. `seichiassist`と`flyway_managed_schema`にチェックを入れて、「削除」、「OK」
+5. 「データベースを作成する」の下にあるテキストボックスに`seichiassist`と入力し、「作成」
+6. `seichiassist`のデータベースを開き、上部メニューから「インポート」
+7. 「File to import」の「ファイルを選択」から、ダウンロードした`gachadata.sql`を選択
+8. 画面下部の「実行」
+9. サーバーを再起動させる
 
 ### どうしてもローカルにJavaとかsbtを入れたくない人のための救済策
 
