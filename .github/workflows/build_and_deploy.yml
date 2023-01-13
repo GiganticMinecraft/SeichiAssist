@@ -155,7 +155,6 @@ jobs:
         with:
           files: ./SeichiAssist.jar
           tag_name: ${{ steps.tag-name.outputs.value }}
-          release_name: "${{ steps.tag-name.outputs.value }} リリース"
           draft: false
           prerelease: true
 
