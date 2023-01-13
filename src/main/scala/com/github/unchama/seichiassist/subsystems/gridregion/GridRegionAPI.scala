@@ -13,7 +13,7 @@ trait GridRegionTemplateAPI[F[_], Player] {
   /**
    * @return [[Player]]が[[RegionTemplate]]を保存する作用
    */
-  def saveGridRegionTemplate(gridTemplate: RegionTemplate): Kleisli[F, Player, Unit]
+  def saveGridRegionTemplate(regionTemplate: RegionTemplate): Kleisli[F, Player, Unit]
 
 }
 

@@ -10,18 +10,10 @@ import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.gridregion.application.repository.{
-  RegionCountRepositoryDefinition,
-  RegionTemplateRepositoryDefinition,
-  RegionUnitPerClickSettingRepositoryDefinition,
-  RegionUnitsRepositoryDefinition
-}
+import com.github.unchama.seichiassist.subsystems.gridregion.application.repository.{RegionCountRepositoryDefinition, RegionTemplateRepositoryDefinition, RegionUnitPerClickSettingRepositoryDefinition, RegionUnitsRepositoryDefinition}
 import com.github.unchama.seichiassist.subsystems.gridregion.bukkit.BukkitRegionOperations
 import com.github.unchama.seichiassist.subsystems.gridregion.domain._
-import com.github.unchama.seichiassist.subsystems.gridregion.infrastructure.{
-  JdbcRegionCountPersistence,
-  JdbcRegionTemplatePersistence
-}
+import com.github.unchama.seichiassist.subsystems.gridregion.infrastructure.{JdbcRegionCountPersistence, JdbcRegionTemplatePersistence}
 import com.github.unchama.util.external.ExternalPlugins
 import com.sk89q.worldedit.bukkit.WorldEditPlugin
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin
@@ -136,6 +128,19 @@ object System {
 
             override def savedGridRegionTemplate(player: Player): F[Vector[RegionTemplate]] =
               ContextCoercion(regionTemplateRepositoryControls.repository(player).get)
+
+            override def saveGridRegionTemplate(
+              regionTemplate: RegionTemplate
+            ): Kleisli[F, Player, Unit] = Kleisli { player =>
+              ContextCoercion(
+                regionTemplateRepositoryControls.repository(player).update { oldTemplates =>
+                  val templateListExcludingSameTemplateId =
+                    oldTemplates.filterNot(_.templateId == regionTemplate.templateId)
+
+                  regionTemplate +: templateListExcludingSameTemplateId
+                }
+              )
+            }
           }
 
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
