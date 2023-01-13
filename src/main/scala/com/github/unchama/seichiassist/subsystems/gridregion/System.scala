@@ -134,9 +134,7 @@ object System {
             override def regionCount(player: Player): F[RegionCount] =
               ContextCoercion(regionCountRepository(player).get)
 
-            override def savedGridRegionTemplate(
-              player: Player
-            ): F[Map[RegionTemplateId, RegionUnits]] =
+            override def savedGridRegionTemplate(player: Player): F[Vector[GridTemplate]] =
               ContextCoercion(regionTemplateRepositoryControls.repository(player).get)
           }
 
