@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.gridregion.infrastructure
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
-  GridTemplate,
+  RegionTemplate,
   RegionTemplateId,
   RegionTemplatePersistence,
   RegionUnit,
@@ -14,7 +14,7 @@ import java.util.UUID
 
 class JdbcRegionTemplatePersistence[F[_]: Sync] extends RegionTemplatePersistence[F] {
 
-  override def read(uuid: UUID): F[Option[Vector[GridTemplate]]] = Sync[F].delay {
+  override def read(uuid: UUID): F[Option[Vector[RegionTemplate]]] = Sync[F].delay {
     DB.readOnly { implicit session =>
       val regionUnits =
         sql"""SELECT ahead_length, right_length, behind_length, left_length
@@ -31,7 +31,7 @@ class JdbcRegionTemplatePersistence[F[_]: Sync] extends RegionTemplatePersistenc
               RegionUnit(rs.int("left_length"))
             )
 
-            GridTemplate(id, regionUnits)
+            RegionTemplate(id, regionUnits)
           }
           .toList()
           .apply()
@@ -41,7 +41,7 @@ class JdbcRegionTemplatePersistence[F[_]: Sync] extends RegionTemplatePersistenc
     }
   }
 
-  override def write(uuid: UUID, value: Vector[GridTemplate]): F[Unit] =
+  override def write(uuid: UUID, value: Vector[RegionTemplate]): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
         val batchParams = value.map { gridTemplate =>

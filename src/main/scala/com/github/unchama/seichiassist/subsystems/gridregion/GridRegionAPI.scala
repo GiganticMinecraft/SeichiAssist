@@ -6,14 +6,14 @@ import com.github.unchama.seichiassist.subsystems.gridregion.domain._
 trait GridRegionTemplateAPI[F[_], Player] {
 
   /**
-   * @return `player`が保存した[[GridTemplate]]の一覧を返す作用
+   * @return `player`が保存した[[RegionTemplate]]の一覧を返す作用
    */
-  def savedGridRegionTemplate(player: Player): F[Vector[GridTemplate]]
+  def savedGridRegionTemplate(player: Player): F[Vector[RegionTemplate]]
 
   /**
-   * @return [[Player]]が[[GridTemplate]]を保存する作用
+   * @return [[Player]]が[[RegionTemplate]]を保存する作用
    */
-  def saveGridRegionTemplate(gridTemplate: GridTemplate): Kleisli[F, Player, Unit]
+  def saveGridRegionTemplate(gridTemplate: RegionTemplate): Kleisli[F, Player, Unit]
 
 }
 
