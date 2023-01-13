@@ -9,7 +9,7 @@ import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.subsystems.gridregion.GridRegionAPI
-import org.bukkit.ChatColor._
+import org.bukkit.ChatColor.{GRAY, _}
 import org.bukkit.entity.Player
 import org.bukkit.{Location, Material}
 
@@ -57,9 +57,11 @@ object GridTemplateMenu extends Menu {
     def gridTemplateButtons(templateKeepAmount: Int): IO[List[Button]] = {
       for {
         templates <- gridRegionAPI.savedGridRegionTemplate(player)
-      } yield {
-        templates.map {
-          case (id, regionUnits) =>
+      } yield (1 to templateKeepAmount).toList.map { id =>
+        val template = templates.find { case (templateId, _) => templateId.value == id }
+
+        val itemStack = template match {
+          case Some((id, regionUnits)) =>
             val lore = List(
               s"${GREEN}設定内容",
               s"${GRAY}前方向：$AQUA${regionUnits.ahead.units}${GRAY}ユニット",
@@ -70,13 +72,20 @@ object GridTemplateMenu extends Menu {
               s"${RED}右クリックで現在の設定で上書き"
             )
 
-            val itemStack = new IconItemStackBuilder(Material.CHEST)
+            new IconItemStackBuilder(Material.CHEST)
               .title(s"${GREEN}テンプレNo.${id.value + 1}(設定済み)")
               .lore(lore)
               .build()
+          case None =>
+            val lore = List(s"${GREEN}未設定", s"${RED}左クリックで現在の設定を保存")
 
-            Button(itemStack)
-        }.toList
+            new IconItemStackBuilder(Material.PAPER)
+              .title(s"${RED}テンプレNo.$id")
+              .lore(lore)
+              .build()
+        }
+
+        Button(itemStack)
       }
     }
 
