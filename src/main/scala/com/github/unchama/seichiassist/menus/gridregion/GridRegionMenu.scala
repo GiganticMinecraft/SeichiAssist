@@ -92,14 +92,23 @@ object GridRegionMenu extends Menu {
       }
     }
 
-    private def gridLore(direction: Direction): IO[List[String]] = for {
-      currentRegionUnit <- gridRegionAPI.unitPerClick(player)
+    private def gridLore(
+      direction: Direction,
+      relativeDirection: RelativeDirection
+    ): IO[List[String]] = for {
+      currentRegionUnits <- gridRegionAPI.regionUnits(player)
+      regionUnit = relativeDirection match {
+        case RelativeDirection.Ahead  => currentRegionUnits.ahead
+        case RelativeDirection.Behind => currentRegionUnits.behind
+        case RelativeDirection.Left   => currentRegionUnits.left
+        case RelativeDirection.Right  => currentRegionUnits.right
+      }
     } yield List(
       s"${GREEN}左クリックで増加",
       s"${RED}右クリックで減少",
       s"$GRAY---------------",
       s"${GRAY}方向：$AQUA${direction.uiLabel}",
-      s"${GRAY}現在の指定方向のユニット数：$AQUA${currentRegionUnit.units}$GRAY($AQUA${currentRegionUnit.computeBlockAmount}${GRAY}ブロック)"
+      s"${GRAY}現在の指定方向のユニット数：$AQUA${regionUnit.units}$GRAY($AQUA${regionUnit.computeBlockAmount}${GRAY}ブロック)"
     )
 
     def regionUnitExpansionButton(relativeDirection: RelativeDirection): IO[Button] =
@@ -107,7 +116,7 @@ object GridRegionMenu extends Menu {
         val yaw = player.getEyeLocation.getYaw
         val direction = Direction.relativeDirection(yaw)(relativeDirection)
         for {
-          gridLore <- gridLore(direction)
+          gridLore <- gridLore(direction, relativeDirection)
           regionUnits <- gridRegionAPI.regionUnits(player)
           currentPerClickRegionUnit <- gridRegionAPI.unitPerClick(player)
         } yield {
@@ -146,12 +155,12 @@ object GridRegionMenu extends Menu {
               stainedGlassPaneDurability.toShort
             ).title(s"$DARK_GREEN${relativeDirectionString}ユニット増やす/減らす").lore(lore).build()
 
-          val regionSelection =
-            gridRegionAPI.regionSelection(player, contractedRegionUnits, direction)
-          val startPosition = regionSelection.startPosition
-          val endPosition = regionSelection.endPosition
-
           val leftClickButtonEffect = FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
+            val regionSelection =
+              gridRegionAPI.regionSelection(player, expandedRegionUnits, direction)
+            val startPosition = regionSelection.startPosition
+            val endPosition = regionSelection.endPosition
+
             SequentialEffect(
               DeferredEffect(IO(gridRegionAPI.saveRegionUnits(expandedRegionUnits))),
               CommandEffect("/;"),
@@ -162,6 +171,11 @@ object GridRegionMenu extends Menu {
           }
 
           val rightClickButtonEffect = FilteredButtonEffect(ClickEventFilter.RIGHT_CLICK) { _ =>
+            val regionSelection =
+              gridRegionAPI.regionSelection(player, contractedRegionUnits, direction)
+            val startPosition = regionSelection.startPosition
+            val endPosition = regionSelection.endPosition
+
             SequentialEffect(
               DeferredEffect(IO(gridRegionAPI.saveRegionUnits(contractedRegionUnits))),
               CommandEffect("/;"),
