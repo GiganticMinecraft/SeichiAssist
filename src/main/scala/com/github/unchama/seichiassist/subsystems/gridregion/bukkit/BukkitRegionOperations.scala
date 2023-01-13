@@ -135,7 +135,7 @@ class BukkitRegionOperations[F[_]: Sync](
     regionUnits: RegionUnits,
     direction: Direction
   ): F[CreateRegionResult] = {
-    val selection = Some(we.getSelection(player))
+    val selection = Option(we.getSelection(player))
     for {
       regionCount <- regionCountRepository(player).get
       result <-
