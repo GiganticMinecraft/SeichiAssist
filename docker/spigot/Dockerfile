@@ -5,7 +5,7 @@ FROM ghcr.io/giganticminecraft/seichiassist-runner:ba2aa54
 FROM itzg/minecraft-server:java8-multiarch
 
 # Javaとnkfをインストール
-RUN apt install openjdk-8-jdk nkf -y
+RUN apt-get install openjdk-8-jdk nkf -y
 
 #yqをインストール
 RUN curl -LJO https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 && \
