@@ -25,21 +25,6 @@ object ItemInformation {
     skullMeta.hasLore && skullMeta.getLore.asScala.exists(containsRightClickMessage)
   }
 
-  def itemStackContainsOwnerName(itemstack: ItemStack, name: String): Boolean = {
-    val meta = itemstack.getItemMeta
-
-    val lore: List[String] =
-      if (meta.hasLore)
-        meta.getLore.asScala.toList
-      else
-        Nil
-
-    lore.exists(line =>
-      line.contains("所有者：") && line.drop(line.indexOf("所有者：") + 4).toLowerCase == name
-        .toLowerCase()
-    )
-  }
-
   def isMineHeadItem(itemstack: ItemStack): Boolean = {
     itemstack.getType == Material.CARROT_STICK &&
     loreIndexOf(itemstack.getItemMeta.getLore.asScala.toList, "頭を狩り取る形をしている...") >= 0
