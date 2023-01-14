@@ -12,13 +12,14 @@ import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.menus.gridregion.GridRegionMenu
+import com.github.unchama.seichiassist.subsystems.gridregion.GridRegionAPI
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
 import com.github.unchama.util.external.ExternalPlugins
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryType
-import org.bukkit.{Material, Sound}
+import org.bukkit.{Location, Material, Sound}
 
 object RegionMenu extends Menu {
 
@@ -26,7 +27,10 @@ object RegionMenu extends Menu {
   import com.github.unchama.targetedeffect._
   import com.github.unchama.targetedeffect.player.PlayerEffects._
 
-  class Environment(implicit val ioCanOpenGridRegionMenu: IO CanOpen GridRegionMenu.type)
+  class Environment(
+    implicit val ioCanOpenGridRegionMenu: IO CanOpen GridRegionMenu.type,
+    implicit val gridRegionAPI: GridRegionAPI[IO, Player, Location]
+  )
 
   override val frame: MenuFrame = MenuFrame(Right(InventoryType.HOPPER), s"${BLACK}保護メニュー")
 
@@ -57,12 +61,13 @@ object RegionMenu extends Menu {
     }
   }
 
-  private case class ButtonComputations(player: Player) {
+  private case class ButtonComputations(player: Player)(implicit environment: Environment) {
 
     import player._
 
-    val computeButtonToClaimRegion: IO[Button] = IO {
-      val openerData = SeichiAssist.playermap(player.getUniqueId)
+    val computeButtonToClaimRegion: IO[Button] = for {
+      regionCount <- environment.gridRegionAPI.regionCount(player)
+    } yield {
       val selection = ExternalPlugins.getWorldEdit.getSelection(player)
 
       val playerHasPermission = player.hasPermission("worldguard.region.claim")
@@ -90,7 +95,7 @@ object RegionMenu extends Menu {
             Seq(
               s"${GRAY}Y座標は自動で全範囲保護されます",
               s"${YELLOW}A new region has been claimed",
-              s"${YELLOW}named '${getName}_${openerData.regionCount}'.",
+              s"${YELLOW}named '${getName}_$regionCount'.",
               s"${GRAY}と出れば保護設定完了です",
               s"${RED}赤色で別の英文が出た場合",
               s"${GRAY}保護の設定に失敗しています",
@@ -127,8 +132,8 @@ object RegionMenu extends Menu {
           else
             SequentialEffect(
               CommandEffect("/expand vert"),
-              CommandEffect(s"rg claim ${player.getName}_${openerData.regionCount}"),
-              openerData.incrementRegionNumber,
+              CommandEffect(s"rg claim ${player.getName}_$regionCount"),
+              DeferredEffect(IO(environment.gridRegionAPI.createRegion)),
               CommandEffect("/sel"),
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
             )

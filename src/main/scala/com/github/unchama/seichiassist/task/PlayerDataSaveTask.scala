@@ -27,29 +27,6 @@ object PlayerDataSaveTask {
   def savePlayerData[F[_]: Sync](player: Player, playerdata: PlayerData): F[Unit] = {
     val databaseGateway = SeichiAssist.databaseGateway
 
-    def updateGridTemplate(stmt: Statement): Unit = {
-      val playerUuid = player.getUniqueId.toString
-
-      // 既存データをすべてクリアする
-      stmt.executeUpdate(
-        s"delete from seichiassist.grid_template where designer_uuid = '$playerUuid'"
-      )
-
-      // 各グリッドテンプレートについてデータを保存する
-      playerdata.templateMap.toList.map {
-        case (gridTemplateId, gridTemplate) =>
-          val updateCommand = "insert into seichiassist.grid_template set " +
-            "id = " + gridTemplateId + ", " +
-            "designer_uuid = '" + playerUuid + "', " +
-            "ahead_length = " + gridTemplate.getAheadAmount + ", " +
-            "behind_length = " + gridTemplate.getBehindAmount + ", " +
-            "right_length = " + gridTemplate.getRightAmount + ", " +
-            "left_length = " + gridTemplate.getLeftAmount
-
-          stmt.executeUpdate(updateCommand)
-      }
-    }
-
     def updateActiveSkillEffectUnlockState(stmt: Statement): Unit = {
       val playerUuid = player.getUniqueId.toString
       val effectsObtained = playerdata.skillEffectState.obtainedEffects
@@ -170,7 +147,6 @@ object PlayerDataSaveTask {
         updateActiveSkillEffectUnlockState(localStatement)
         updateSeichiSkillUnlockState(localStatement)
         updatePlayerDataColumns(localStatement)
-        updateGridTemplate(localStatement)
         ActionStatus.Ok
       } catch {
         case exception: SQLException =>
