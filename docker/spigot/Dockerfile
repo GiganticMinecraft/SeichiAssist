@@ -4,7 +4,7 @@ FROM ghcr.io/giganticminecraft/seichiassist-runner:ba2aa54
 
 FROM itzg/minecraft-server:java8-multiarch
 
-# Javaとnkfをインストール
+# JDKとnkfをインストール
 RUN apt-get update && apt-get install -y \
     nkf \
     openjdk-8-jdk \
