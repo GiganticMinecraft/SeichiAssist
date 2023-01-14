@@ -38,8 +38,8 @@ object RegionMenu extends Menu {
     player: Player
   )(implicit environment: Environment): IO[MenuSlotLayout] = {
     val constantButtons = ConstantButtons(environment)
+    val computations = ButtonComputations(environment)(player)
     import constantButtons._
-    val computations = ButtonComputations(player)
     import computations._
 
     for {
@@ -61,7 +61,7 @@ object RegionMenu extends Menu {
     }
   }
 
-  private case class ButtonComputations(player: Player)(implicit environment: Environment) {
+  private case class ButtonComputations(environment: Environment)(player: Player) {
 
     import player._
 
