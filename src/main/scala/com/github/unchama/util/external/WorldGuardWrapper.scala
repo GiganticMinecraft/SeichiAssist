@@ -1,8 +1,9 @@
 package com.github.unchama.util.external
 
+import com.sk89q.worldedit.BlockVector
 import com.sk89q.worldguard.LocalPlayer
 import com.sk89q.worldguard.protection.managers.RegionManager
-import com.sk89q.worldguard.protection.regions.ProtectedRegion
+import com.sk89q.worldguard.protection.regions.{ProtectedCuboidRegion, ProtectedRegion}
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Player
@@ -99,4 +100,22 @@ object WorldGuardWrapper {
     getRegionManager(location.getWorld)
       .map(_.getApplicableRegions(location).getRegions.asScala.toSet)
       .getOrElse(Set.empty)
+
+  /**
+   * `minimumPoint`と`maximumPoint`の範囲内にある保護の数を取得する
+   * @param world 調べたいワールド
+   * @param regionName 保護名
+   * @param minimumPoint 範囲の対角の1つ
+   * @param maximumPoint 範囲の対角の1つ
+   * @return 指定した範囲の保護の数を返す作用
+   */
+  def getApplicableRegionCount(
+    world: World,
+    regionName: String,
+    minimumPoint: BlockVector,
+    maximumPoint: BlockVector
+  ): Int = {
+    val region = new ProtectedCuboidRegion(regionName, minimumPoint, maximumPoint)
+    getRegionManager(world).map(_.getApplicableRegions(region).size).getOrElse(0)
+  }
 }

@@ -5,6 +5,7 @@ import cats.effect.concurrent.Ref
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gridregion.domain._
+import com.github.unchama.util.external.WorldGuardWrapper
 import com.sk89q.worldedit.bukkit.WorldEditPlugin
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin
 import com.sk89q.worldguard.bukkit.commands.AsyncCommandHelper
@@ -138,26 +139,26 @@ class BukkitRegionOperations[F[_]: Sync](
     val selection = Option(we.getSelection(player))
     for {
       regionCount <- regionCountRepository(player).get
+      world <- Sync[F].delay(player.getWorld)
+      wgManager = WorldGuardWrapper.getRegionManager(world)
       result <-
-        if (!SeichiAssist.seichiAssistConfig.isGridProtectionEnabled(player.getWorld)) {
+        if (!SeichiAssist.seichiAssistConfig.isGridProtectionEnabled(world)) {
           Sync[F].pure(CreateRegionResult.ThisWorldRegionCanNotBeCreated)
-        } else if (selection.isEmpty) {
+        } else if (selection.isEmpty || wgManager.isEmpty) {
           Sync[F].pure(CreateRegionResult.RegionCanNotBeCreatedByOtherError)
         } else {
           Sync[F].delay {
-            val region = new ProtectedCuboidRegion(
+            val regions = WorldGuardWrapper.getApplicableRegionCount(
+              world,
               s"${player.getName}_${regionCount.value}",
               selection.get.getNativeMinimumPoint.toBlockVector,
               selection.get.getNativeMaximumPoint.toBlockVector
             )
-            val wgManager = wg.getRegionManager(player.getWorld)
-            val regions = wgManager.getApplicableRegions(region)
-            if (regions.size != 0) {
+            if (regions != 0) {
               CreateRegionResult.RegionCanNotBeCreatedByOtherError
             } else {
-              val wgConfig = wg.getGlobalStateManager.get(player.getWorld)
-              val maxRegionCount = wgConfig.getMaxRegionCount(player)
-              val regionCountPerPlayer = wgManager.getRegionCountOfPlayer(wg.wrapPlayer(player))
+              val maxRegionCount = WorldGuardWrapper.getMaxRegionCount(player, world)
+              val regionCountPerPlayer = WorldGuardWrapper.getRegionCountOfPlayer(player, world)
 
               if (maxRegionCount >= 0 && regionCountPerPlayer >= maxRegionCount) {
                 CreateRegionResult.RegionCanNotBeCreatedByOtherError
