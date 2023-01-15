@@ -237,16 +237,6 @@ jobs:
           noprefix: true
           avatar_url: ${{ secrets.DISCORD_AVATAR_URL }}
 
-      - name: Notify to plugin-dev notification channel on discord
-        uses: sarisia/actions-status-discord@v1
-        if: always()
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          title: "デバッグサーバーへデプロイ"
-          description: "deb_s1等にプラグインを配置する"
-          username: GitHub Actions
-          avatar_url: ${{ secrets.DISCORD_AVATAR_URL }}
-
   deploy_artifact_to_production:
     runs-on: ubuntu-20.04
     if: github.ref == 'refs/heads/master'
