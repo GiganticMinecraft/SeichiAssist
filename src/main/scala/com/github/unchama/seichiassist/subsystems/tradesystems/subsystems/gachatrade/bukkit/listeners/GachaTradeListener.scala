@@ -6,6 +6,7 @@ import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.GachaPoint
+import com.github.unchama.seichiassist.subsystems.tradesystems.domain.TradeSuccessResult
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.traderules.BigOrRegular
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.domain.{
   GachaListProvider,
