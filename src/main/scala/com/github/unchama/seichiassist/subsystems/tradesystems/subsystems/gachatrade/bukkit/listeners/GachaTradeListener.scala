@@ -77,7 +77,8 @@ class GachaTradeListener[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
       case result if result.transactionInfo._1 == BigOrRegular.Big => result.transactionInfo._2
     }.sum
     val regularItemStackAmounts = tradableItemStacks.collect {
-      case result if result.transactionInfo._1 == BigOrRegular.Regular => result.transactionInfo._2
+      case result if result.transactionInfo._1 == BigOrRegular.Regular =>
+        result.transactionInfo._2
     }.sum
 
     if (tradeAmount == 0) {
