@@ -147,6 +147,8 @@ jobs:
       - build_test_and_upload
       - output-sha
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
       - name: Create and push a tag
         id: tag-name
         run: |
