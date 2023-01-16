@@ -7,13 +7,11 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gridregion.domain._
 import com.github.unchama.util.external.WorldGuardWrapper
 import com.sk89q.worldedit.bukkit.WorldEditPlugin
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
 class BukkitRegionOperations[F[_]: Sync](
   implicit we: WorldEditPlugin,
-  wg: WorldGuardPlugin,
   regionCountRepository: KeyedDataRepository[Player, Ref[F, RegionCount]]
 ) extends RegionOperations[F, Location, Player] {
 

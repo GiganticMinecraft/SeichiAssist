@@ -76,7 +76,6 @@ object System {
       implicit val regionCountRepository: KeyedDataRepository[Player, Ref[G, RegionCount]] =
         regionCountRepositoryControls.repository
       implicit val we: WorldEditPlugin = ExternalPlugins.getWorldEdit
-      implicit val wg: WorldGuardPlugin = ExternalPlugins.getWorldGuard
       val regionOperations: RegionOperations[G, Location, Player] = new BukkitRegionOperations
 
       new System[F, Player, Location] {
