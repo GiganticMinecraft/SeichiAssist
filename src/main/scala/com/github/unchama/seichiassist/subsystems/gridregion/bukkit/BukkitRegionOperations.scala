@@ -5,7 +5,7 @@ import cats.effect.concurrent.Ref
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gridregion.domain._
-import com.github.unchama.util.external.WorldGuardWrapper
+import com.github.unchama.util.external.{WorldEditWrapper, WorldGuardWrapper}
 import com.sk89q.worldedit.bukkit.WorldEditPlugin
 import org.bukkit.Location
 import org.bukkit.entity.Player
@@ -101,16 +101,19 @@ class BukkitRegionOperations[F[_]: Sync](
   override def createRegion(player: Player): F[Unit] = for {
     regionCount <- regionCountRepository(player).get
     _ <- Sync[F].delay {
-      val selection = we.getSelection(player)
-      val regionName = s"${player.getName}_${regionCount.value}"
+      WorldEditWrapper.getSelection(player) match {
+        case Some(selection) =>
+          val regionName = s"${player.getName}_${regionCount.value}"
 
-      WorldGuardWrapper.tryCreateRegion(
-        regionName,
-        player,
-        player.getWorld,
-        selection.getNativeMinimumPoint.toBlockVector,
-        selection.getNativeMaximumPoint.toBlockVector
-      )
+          WorldGuardWrapper.tryCreateRegion(
+            regionName,
+            player,
+            player.getWorld,
+            selection.getNativeMinimumPoint.toBlockVector,
+            selection.getNativeMaximumPoint.toBlockVector
+          )
+        case None => ()
+      }
     }
     _ <- regionCountRepository(player).update(_.increment)
   } yield ()
@@ -120,7 +123,7 @@ class BukkitRegionOperations[F[_]: Sync](
     regionUnits: RegionUnits,
     direction: Direction
   ): F[CreateRegionResult] = {
-    val selection = Option(we.getSelection(player))
+    val selection = WorldEditWrapper.getSelection(player)
     for {
       regionCount <- regionCountRepository(player).get
       world <- Sync[F].delay(player.getWorld)
