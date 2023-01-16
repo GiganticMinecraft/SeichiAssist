@@ -79,7 +79,7 @@ trait GridRegionWriteAPI[F[_], Player, Location] {
   /**
    * @return 保護を作成する作用
    */
-  def createRegion: Kleisli[F, Player, Unit]
+  def createRegion: Kleisli[F, Player, Boolean]
 
 }
 

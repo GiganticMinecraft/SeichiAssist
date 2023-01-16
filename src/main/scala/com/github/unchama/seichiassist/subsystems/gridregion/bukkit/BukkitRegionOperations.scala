@@ -6,13 +6,11 @@ import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gridregion.domain._
 import com.github.unchama.util.external.{WorldEditWrapper, WorldGuardWrapper}
-import com.sk89q.worldedit.bukkit.WorldEditPlugin
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
 class BukkitRegionOperations[F[_]: Sync](
-  implicit we: WorldEditPlugin,
-  regionCountRepository: KeyedDataRepository[Player, Ref[F, RegionCount]]
+  implicit regionCountRepository: KeyedDataRepository[Player, Ref[F, RegionCount]]
 ) extends RegionOperations[F, Location, Player] {
 
   override def getSelection(
@@ -98,9 +96,9 @@ class BukkitRegionOperations[F[_]: Sync](
 
   import cats.implicits._
 
-  override def createRegion(player: Player): F[Unit] = for {
+  override def tryCreateRegion(player: Player): F[Boolean] = for {
     regionCount <- regionCountRepository(player).get
-    _ <- Sync[F].delay {
+    regionCreateResult <- Sync[F].delay {
       WorldEditWrapper.getSelection(player) match {
         case Some(selection) =>
           val regionName = s"${player.getName}_${regionCount.value}"
@@ -112,11 +110,11 @@ class BukkitRegionOperations[F[_]: Sync](
             selection.getNativeMinimumPoint.toBlockVector,
             selection.getNativeMaximumPoint.toBlockVector
           )
-        case None => ()
+        case None => false
       }
     }
     _ <- regionCountRepository(player).update(_.increment)
-  } yield ()
+  } yield regionCreateResult
 
   override def canCreateRegion(
     player: Player,

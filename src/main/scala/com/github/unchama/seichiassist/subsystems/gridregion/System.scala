@@ -22,9 +22,6 @@ import com.github.unchama.seichiassist.subsystems.gridregion.infrastructure.{
   JdbcRegionCountPersistence,
   JdbcRegionTemplatePersistence
 }
-import com.github.unchama.util.external.ExternalPlugins
-import com.sk89q.worldedit.bukkit.WorldEditPlugin
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
@@ -75,7 +72,6 @@ object System {
         regionUnitsRepositoryControls.repository
       implicit val regionCountRepository: KeyedDataRepository[Player, Ref[G, RegionCount]] =
         regionCountRepositoryControls.repository
-      implicit val we: WorldEditPlugin = ExternalPlugins.getWorldEdit
       val regionOperations: RegionOperations[G, Location, Player] = new BukkitRegionOperations
 
       new System[F, Player, Location] {
@@ -126,8 +122,8 @@ object System {
             ): RegionSelection[Location] =
               regionOperations.getSelection(player.getLocation, regionUnits, direction)
 
-            override def createRegion: Kleisli[F, Player, Unit] = Kleisli { player =>
-              ContextCoercion(regionOperations.createRegion(player))
+            override def createRegion: Kleisli[F, Player, Boolean] = Kleisli { player =>
+              ContextCoercion(regionOperations.tryCreateRegion(player))
             }
 
             override def regionCount(player: Player): F[RegionCount] =
