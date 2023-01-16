@@ -8,10 +8,6 @@ import com.github.unchama.seichiassist.subsystems.gridregion.domain._
 import com.github.unchama.util.external.WorldGuardWrapper
 import com.sk89q.worldedit.bukkit.WorldEditPlugin
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin
-import com.sk89q.worldguard.bukkit.commands.AsyncCommandHelper
-import com.sk89q.worldguard.bukkit.commands.task.RegionAdder
-import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion
-import com.sk89q.worldguard.protection.util.DomainInputResolver
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
@@ -110,23 +106,13 @@ class BukkitRegionOperations[F[_]: Sync](
       val selection = we.getSelection(player)
       val regionName = s"${player.getName}_${regionCount.value}"
 
-      val region = new ProtectedCuboidRegion(
+      WorldGuardWrapper.tryCreateRegion(
         regionName,
+        player,
+        player.getWorld,
         selection.getNativeMinimumPoint.toBlockVector,
         selection.getNativeMaximumPoint.toBlockVector
       )
-      val manager = wg.getRegionManager(player.getWorld)
-
-      val task = new RegionAdder(wg, manager, region)
-      task.setLocatorPolicy(DomainInputResolver.UserLocatorPolicy.UUID_ONLY)
-      task.setOwnersInput(Array(player.getName))
-      val future = wg.getExecutorService.submit(task)
-
-      AsyncCommandHelper
-        .wrap(future, wg, player)
-        .formatUsing(regionName)
-        .registerWithSupervisor("保護申請中")
-        .thenRespondWith("保護申請完了。保護名: '%s'", "保護作成失敗")
     }
     _ <- regionCountRepository(player).update(_.increment)
   } yield ()
