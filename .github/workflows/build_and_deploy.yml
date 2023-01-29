@@ -101,6 +101,7 @@ jobs:
 
       - name: Run reviewdog for Scalafmt
         uses: .//github/actions/run-review-dog
+        if: ${{ (github.event_name == 'pull_request') && failure() }}
         with:
           reviewdog-name: scalafmt
 
@@ -109,6 +110,7 @@ jobs:
 
       - name: Run reviewdog for Scalafix
         uses: .//github/actions/run-review-dog
+        if: ${{ (github.event_name == 'pull_request') && failure() }}
         with:
           reviewdog-name: scalafix
 
