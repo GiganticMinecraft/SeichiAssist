@@ -12,7 +12,7 @@ on:
       - .scalafmt.conf
       - project/*
       - .github/workflows/*.yml
-      
+
   pull_request:
     branches:
       - develop
@@ -96,11 +96,21 @@ jobs:
             touch -t "$timestamp" $proto
           done
 
-      - name: Check format with Scalafmt
-        run: sbt scalafmtCheckAll
+      - name: Run format with Scalafmt
+        run: sbt scalafmtAll
 
-      - name: Check lint with Scalafix
-        run: sbt "scalafix --check"
+      - name: Run reviewdog for Scalafmt
+        uses: .//github/actions/run-review-dog
+        with:
+          reviewdog-name: scalafmt
+
+      - name: Run lint with Scalafix
+        run: sbt scalafixAll
+
+      - name: Run reviewdog for Scalafix
+        uses: .//github/actions/run-review-dog
+        with:
+          reviewdog-name: scalafix
 
       - name: Test and build artifact
         run: sbt assembly
