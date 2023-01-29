@@ -96,10 +96,10 @@ jobs:
             touch -t "$timestamp" $proto
           done
 
-      - name: Check format with Scalafmt
+      - name: Check format with Scalafmt on push
         if: ${{ (github.event_name == 'push')}}
         run: sbt scalafmtCheckAll
-      - name: Run format with Scalafmt
+      - name: Run format with Scalafmt on PR
         if: ${{ (github.event_name == 'pull_request')}}
         run: sbt scalafmtAll
       - name: Run reviewdog for Scalafmt
@@ -108,10 +108,10 @@ jobs:
         with:
           reviewdog-name: scalafmt
 
-      - name: Check lint with Scalafix
+      - name: Check lint with Scalafix on push
         if: ${{ (github.event_name == 'push')}}
         run: sbt "scalafix --check"
-      - name: Run lint with Scalafix
+      - name: Run lint with Scalafix on PR
         if: ${{ (github.event_name == 'pull_request')}}
         run: sbt scalafixAll
       - name: Run reviewdog for Scalafix
