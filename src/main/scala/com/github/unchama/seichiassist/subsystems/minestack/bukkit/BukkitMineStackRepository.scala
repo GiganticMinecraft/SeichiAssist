@@ -36,8 +36,13 @@ class BukkitMineStackRepository[F[_]: Sync](
     mineStackObject: MineStackObject[ItemStack],
     amount: Int
   ): F[Unit] = mineStackObjectRepository(player).update { mineStackObjects =>
-    ListExtra
-      .rePrepend(mineStackObjects)(_.mineStackObject == mineStackObject, _.increase(amount))
+    ListExtra.rePrependOrAdd(mineStackObjects)(
+      _.mineStackObject == mineStackObject,
+      {
+        case Some(value) => value.increase(amount)
+        case None        => MineStackObjectWithAmount(mineStackObject, amount)
+      }
+    )
   }
 
   override def subtractStackedAmountOf(
