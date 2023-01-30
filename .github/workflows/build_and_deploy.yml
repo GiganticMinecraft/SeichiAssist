@@ -103,7 +103,7 @@ jobs:
         if: ${{ (github.event_name == 'pull_request')}}
         run: sbt scalafmtAll
       - name: Run reviewdog for Scalafmt
-        uses: .//github/actions/run-review-dog
+        uses: .github/actions/run-review-dog
         if: ${{ (github.event_name == 'pull_request') && failure() }}
         with:
           reviewdog-name: scalafmt
