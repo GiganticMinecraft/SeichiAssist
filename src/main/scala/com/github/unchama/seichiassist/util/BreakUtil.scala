@@ -231,6 +231,12 @@ object BreakUtil {
               new ItemStack(Material.REDSTONE, withBonus)
             case Material.QUARTZ_ORE =>
               new ItemStack(Material.QUARTZ, bonus)
+            // グロウストーンは幸運エンチャントがついていると高確率でより多くのダストをドロップする
+            // しかし、最大でも4個までしかドロップしない
+            case Material.GLOWSTONE =>
+              val withBonus = bonus * (rand * 3 + 2).toInt
+              val amount = if (withBonus > 4) 4 else withBonus
+              new ItemStack(Material.GLOWSTONE_DUST, amount)
             case _ =>
               // unreachable
               new ItemStack(blockMaterial, bonus)
@@ -254,6 +260,12 @@ object BreakUtil {
           Some(BlockBreakResult.ItemDrop(new ItemStack(Material.REDSTONE, (rand + 4).toInt)))
         case Material.QUARTZ_ORE =>
           Some(BlockBreakResult.ItemDrop(new ItemStack(Material.QUARTZ)))
+        // グロウストーンは、2から4個のグロウストーンダストをドロップする
+        case Material.GLOWSTONE =>
+          Some(
+            BlockBreakResult
+              .ItemDrop(new ItemStack(Material.GLOWSTONE_DUST, (rand * 3 + 2).toInt))
+          )
         case Material.STONE =>
           Some {
             BlockBreakResult.ItemDrop {
