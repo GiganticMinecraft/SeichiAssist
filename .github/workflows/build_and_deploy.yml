@@ -11,8 +11,9 @@ on:
       - .scalafix.conf
       - .scalafmt.conf
       - project/*
-      - .github/workflows/*.yml
-      
+      - .github/workflows/**.yml
+      - .github/actions/**/**.yml
+
   pull_request:
     branches:
       - develop
@@ -22,7 +23,8 @@ on:
       - .scalafix.conf
       - .scalafmt.conf
       - project/*
-      - .github/workflows/*.yml
+      - .github/workflows/**.yml
+      - .github/actions/**/**.yml
 
 jobs:
   build_test_and_upload:
@@ -96,11 +98,29 @@ jobs:
             touch -t "$timestamp" $proto
           done
 
-      - name: Check format with Scalafmt
+      - name: Check format with Scalafmt on push
+        if: ${{ (github.event_name == 'push')}}
         run: sbt scalafmtCheckAll
+      - name: Run format with Scalafmt on PR
+        if: ${{ (github.event_name == 'pull_request')}}
+        run: sbt scalafmtAll
+      - name: Run reviewdog for Scalafmt
+        uses: ./.github/actions/run-review-dog
+        if: ${{ (github.event_name == 'pull_request') && failure() }}
+        with:
+          reviewdog-name: scalafmt
 
-      - name: Check lint with Scalafix
+      - name: Check lint with Scalafix on push
+        if: ${{ (github.event_name == 'push')}}
         run: sbt "scalafix --check"
+      - name: Run lint with Scalafix on PR
+        if: ${{ (github.event_name == 'pull_request')}}
+        run: sbt scalafixAll
+      - name: Run reviewdog for Scalafix
+        uses: ./.github/actions/run-review-dog
+        if: ${{ (github.event_name == 'pull_request') && failure() }}
+        with:
+          reviewdog-name: scalafix
 
       - name: Test and build artifact
         run: sbt assembly
