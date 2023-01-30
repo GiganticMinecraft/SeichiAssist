@@ -11,7 +11,8 @@ on:
       - .scalafix.conf
       - .scalafmt.conf
       - project/*
-      - .github/**/*.yml
+      - .github/workflows/**.yml
+      - .github/actions/**/**.yml
 
   pull_request:
     branches:
@@ -22,7 +23,8 @@ on:
       - .scalafix.conf
       - .scalafmt.conf
       - project/*
-      - .github/**/*.yml
+      - .github/workflows/**.yml
+      - .github/actions/**/**.yml
 
 jobs:
   build_test_and_upload:
