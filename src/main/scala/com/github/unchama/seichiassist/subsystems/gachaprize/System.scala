@@ -147,16 +147,29 @@ object System {
               _canBeSignedAsGachaPrize
 
             override def findOfRegularPrizesByItemStack(
-              itemStack: ItemStack,
+              itemStack: ItemStack, // 記名されていないitemStack
               name: String
             ): F[Option[GachaPrize[ItemStack]]] = for {
               prizes <- allGachaPrizesListReference.get
               defaultGachaPrizes = prizes.filter(_.gachaEventName.isEmpty)
+            } yield {
+              defaultGachaPrizes.find { gachaPrize =>
+                if (gachaPrize.signOwner) {
+                  val signedItemStack = canBeSignedAsGachaPrize
+                  gachaPrize.materializeWithOwnerSignature(name).isSimilar()
+                } else {
+                  gachaPrize.itemStack.isSimilar(itemStack)
+                }
+              }
+            }
+
+            override def findOfRegularGachaPrizesByUnSignedItemStack(
+              itemStack: ItemStack
+            ): F[Option[GachaPrize[ItemStack]]] = for {
+              prizes <- allGachaPrizesListReference.get
+              defaultGachaPrizes = prizes.filter(_.gachaEventName.isEmpty)
             } yield defaultGachaPrizes.find { gachaPrize =>
-              if (gachaPrize.signOwner)
-                gachaPrize.materializeWithOwnerSignature(name).isSimilar(itemStack)
-              else
-                gachaPrize.itemStack.isSimilar(itemStack)
+              gachaPrize.itemStack.isSimilar(itemStack)
             }
           }
 
