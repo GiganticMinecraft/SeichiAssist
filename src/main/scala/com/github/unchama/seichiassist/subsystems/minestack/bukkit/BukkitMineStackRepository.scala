@@ -68,7 +68,7 @@ class BukkitMineStackRepository[F[_]: Sync](
 
   override def tryIntoMineStack(player: Player, itemStack: ItemStack, amount: Int): F[Boolean] =
     for {
-      foundMineStackObject <- mineStackObjectList.findByItemStack(itemStack, player)
+      foundMineStackObject <- mineStackObjectList.findBySignedItemStack(itemStack, player)
       _ <- foundMineStackObject.traverse(addStackedAmountOf(player, _, amount))
     } yield foundMineStackObject.isDefined
 }
