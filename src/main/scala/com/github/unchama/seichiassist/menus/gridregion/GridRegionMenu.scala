@@ -121,13 +121,13 @@ object GridRegionMenu extends Menu {
           val contractedRegionUnits =
             regionUnits.contractRegionUnits(relativeDirection, currentPerClickRegionUnit)
 
-          val lore = gridLore ++ {
+          val lore = gridLore :+ {
             if (gridRegionAPI.isWithinLimits(expandedRegionUnits, worldName))
-              List(s"$RED${UNDERLINE}これ以上拡張できません")
+              s"$RED${UNDERLINE}これ以上拡張できません"
             else if (gridRegionAPI.isWithinLimits(contractedRegionUnits, worldName))
-              List(s"$RED${UNDERLINE}これ以上縮小できません")
+              s"$RED${UNDERLINE}これ以上縮小できません"
             else
-              List.empty
+              ""
           }
 
           val relativeDirectionString = relativeDirection match {
