@@ -11,20 +11,6 @@ case class RegionUnit(units: Int) {
   require(units >= 0)
 
   /**
-   * 指定[[RegionUnit]]分だけ加算する
-   */
-  def add(_units: RegionUnit): RegionUnit = RegionUnit(units + _units.units)
-
-  /**
-   * 指定[[RegionUnit]]分だけ減算する
-   */
-  def subtract(_units: RegionUnit): RegionUnit = {
-    val subtractedUnits = units - _units.units
-    if (subtractedUnits >= 0) RegionUnit(subtractedUnits)
-    else RegionUnit(0)
-  }
-
-  /**
    * 1[[RegionUnit]]あたりのブロック数
    */
   private val unitPerBlockAmount = 15
@@ -113,8 +99,11 @@ case class RegionUnits(
     最初に保護をしようとした時点で1ユニットの保護をすることになる。
     そのために1ユニット分だけ最後に加算をする。
    */
-  def computeTotalRegionUnits: RegionUnit =
-    RegionUnit(ahead.add(behind).units * right.add(left).units).add(RegionUnit(1))
+  def computeTotalRegionUnits: RegionUnit = {
+    val vertical = (ahead |+| behind).units
+    val horizontal = (right |+| left).units
+    RegionUnit(vertical * horizontal) |+| RegionUnit(1)
+  }
 
 }
 
