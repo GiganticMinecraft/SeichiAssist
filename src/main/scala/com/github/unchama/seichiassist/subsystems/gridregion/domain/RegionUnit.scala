@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.gridregion.domain
 
-import cats.implicits.catsSyntaxSemigroup
+import cats.implicits._
 import com.github.unchama.generic.algebra.typeclasses.OrderedMonus
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.RelativeDirection._
 
