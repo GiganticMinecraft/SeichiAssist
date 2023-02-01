@@ -1,10 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.gridregion.infrastructure
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
-  RegionCount,
-  RegionCountPersistence
-}
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.RegionCount
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.persistence.RegionCountPersistence
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID

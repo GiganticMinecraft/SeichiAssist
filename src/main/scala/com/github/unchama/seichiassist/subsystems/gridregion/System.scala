@@ -10,18 +10,11 @@ import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.gridregion.application.repository.{
-  RegionCountRepositoryDefinition,
-  RegionTemplateRepositoryDefinition,
-  RegionUnitPerClickSettingRepositoryDefinition,
-  RegionUnitsRepositoryDefinition
-}
+import com.github.unchama.seichiassist.subsystems.gridregion.application.repository.{RegionCountRepositoryDefinition, RegionTemplateRepositoryDefinition, RegionUnitPerClickSettingRepositoryDefinition, RegionUnitsRepositoryDefinition}
 import com.github.unchama.seichiassist.subsystems.gridregion.bukkit.BukkitRegionOperations
 import com.github.unchama.seichiassist.subsystems.gridregion.domain._
-import com.github.unchama.seichiassist.subsystems.gridregion.infrastructure.{
-  JdbcRegionCountPersistence,
-  JdbcRegionTemplatePersistence
-}
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.persistence.{RegionCountPersistence, RegionTemplatePersistence}
+import com.github.unchama.seichiassist.subsystems.gridregion.infrastructure.{JdbcRegionCountPersistence, JdbcRegionTemplatePersistence}
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
