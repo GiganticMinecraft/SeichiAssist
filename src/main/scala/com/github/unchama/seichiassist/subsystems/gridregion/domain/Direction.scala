@@ -40,7 +40,7 @@ abstract class Direction(val uiLabel: String, private val range: DirectionRange*
   /**
    * @return `yaw`が`range`の範囲内ならばtrueを返す
    */
-  def isWithinRange(yaw: Float): Boolean =
+  private def isWithinRange(yaw: Float): Boolean =
     range.exists(range => range.start <= yaw && yaw <= range.end)
 
 }
