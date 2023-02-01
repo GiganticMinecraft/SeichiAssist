@@ -64,9 +64,10 @@ object RegionMenu extends Menu {
   private case class ButtonComputations(environment: Environment)(player: Player) {
 
     import player._
+    import environment._
 
     val computeButtonToClaimRegion: IO[Button] = for {
-      regionCount <- environment.gridRegionAPI.regionCount(player)
+      regionCount <- gridRegionAPI.regionCount(player)
     } yield {
       val selection = ExternalPlugins.getWorldEdit.getSelection(player)
 
@@ -133,7 +134,7 @@ object RegionMenu extends Menu {
             SequentialEffect(
               CommandEffect("/expand vert"),
               CommandEffect(s"rg claim ${player.getName}_$regionCount"),
-              DeferredEffect(IO(environment.gridRegionAPI.createRegion)),
+              DeferredEffect(IO(gridRegionAPI.createRegion)),
               CommandEffect("/sel"),
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
             )

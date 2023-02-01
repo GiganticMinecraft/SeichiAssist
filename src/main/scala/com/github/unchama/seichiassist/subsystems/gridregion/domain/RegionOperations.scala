@@ -14,7 +14,7 @@ trait RegionOperations[F[_], Location, Player] {
   /**
    * @return 保護の作成を試みる作用
    */
-  def tryCreateRegion(player: Player): F[Boolean]
+  def tryCreateRegion(player: Player): F[Unit]
 
   /**
    * @return 保護範囲を作成できるか確認する作用

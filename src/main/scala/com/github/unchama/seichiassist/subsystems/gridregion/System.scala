@@ -122,7 +122,7 @@ object System {
             ): RegionSelection[Location] =
               regionOperations.getSelection(player.getLocation, regionUnits, direction)
 
-            override def createRegion: Kleisli[F, Player, Boolean] = Kleisli { player =>
+            override def createRegion: Kleisli[F, Player, Unit] = Kleisli { player =>
               ContextCoercion(regionOperations.tryCreateRegion(player))
             }
 

@@ -96,11 +96,12 @@ class BukkitRegionOperations[F[_]: Sync](
 
   import cats.implicits._
 
-  override def tryCreateRegion(player: Player): F[Boolean] = for {
+  override def tryCreateRegion(player: Player): F[Unit] = for {
     regionCount <- regionCountRepository(player).get
     regionCreateResult <- Sync[F].delay {
-      WorldEditWrapper.getSelection(player) match {
-        case Some(selection) =>
+      WorldEditWrapper
+        .getSelection(player)
+        .map { selection =>
           val regionName = s"${player.getName}_${regionCount.value}"
 
           WorldGuardWrapper.tryCreateRegion(
@@ -110,8 +111,8 @@ class BukkitRegionOperations[F[_]: Sync](
             selection.getNativeMinimumPoint.toBlockVector,
             selection.getNativeMaximumPoint.toBlockVector
           )
-        case None => false
-      }
+        }
+        .getOrElse(())
     }
     _ <- regionCountRepository(player).update(_.increment)
   } yield regionCreateResult

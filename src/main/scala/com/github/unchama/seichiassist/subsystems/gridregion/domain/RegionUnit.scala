@@ -24,9 +24,6 @@ case class RegionUnit(units: Int) {
 
 object RegionUnit {
 
-  /**
-   * @return [[RegionUnit]]の初期値
-   */
   val zero: RegionUnit = RegionUnit(0)
 
   implicit lazy val orderedMonus: OrderedMonus[RegionUnit] =
