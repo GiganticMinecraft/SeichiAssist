@@ -3,9 +3,18 @@ package com.github.unchama.seichiassist.menus.gridregion
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.router.CanOpen
-import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
+import com.github.unchama.menuinventory.slot.button.action.{
+  ClickEventFilter,
+  FilteredButtonEffect,
+  LeftClickButtonEffect
+}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
-import com.github.unchama.menuinventory.{LayoutPreparationContext, Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.menuinventory.{
+  LayoutPreparationContext,
+  Menu,
+  MenuFrame,
+  MenuSlotLayout
+}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.gridregion.GridRegionAPI
 import com.github.unchama.seichiassist.subsystems.gridregion.domain._
@@ -88,12 +97,7 @@ object GridRegionMenu extends Menu {
       relativeDirection: RelativeDirection
     ): IO[List[String]] = for {
       currentRegionUnits <- gridRegionAPI.regionUnits(player)
-      regionUnit = relativeDirection match {
-        case RelativeDirection.Ahead  => currentRegionUnits.ahead
-        case RelativeDirection.Behind => currentRegionUnits.behind
-        case RelativeDirection.Left   => currentRegionUnits.left
-        case RelativeDirection.Right  => currentRegionUnits.right
-      }
+      regionUnit = currentRegionUnits.fromRelativeDirectionToRegionUnit(relativeDirection)
     } yield List(
       s"${GREEN}左クリックで増加",
       s"${RED}右クリックで減少",

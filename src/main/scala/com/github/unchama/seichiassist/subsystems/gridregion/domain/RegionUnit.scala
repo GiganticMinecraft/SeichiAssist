@@ -51,6 +51,17 @@ case class RegionUnits(
 ) {
 
   /**
+   * @return [[RegionUnits]]の中から`relativeDirection`に紐づく[[RegionUnit]]を返す
+   */
+  def fromRelativeDirectionToRegionUnit(relativeDirection: RelativeDirection): RegionUnit =
+    relativeDirection match {
+      case RelativeDirection.Ahead  => ahead
+      case RelativeDirection.Behind => behind
+      case RelativeDirection.Left   => left
+      case RelativeDirection.Right  => right
+    }
+
+  /**
    * @return `relativeDirection`方向の[[RegionUnit]]を`extension`だけ拡張した[[RegionUnits]]
    */
   def expansionRegionUnits(
