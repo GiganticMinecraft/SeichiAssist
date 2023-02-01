@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gridregion.domain
 
+import cats.implicits.catsSyntaxSemigroup
+import com.github.unchama.generic.algebra.typeclasses.OrderedMonus
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.RelativeDirection._
 
 /**
@@ -39,7 +41,22 @@ object RegionUnit {
   /**
    * @return [[RegionUnit]]の初期値
    */
-  val initial: RegionUnit = RegionUnit(0)
+  val zero: RegionUnit = RegionUnit(0)
+
+  implicit lazy val orderedMonus: OrderedMonus[RegionUnit] =
+    new OrderedMonus[RegionUnit] {
+      override def |-|(x: RegionUnit, y: RegionUnit): RegionUnit = RegionUnit(
+        if (x.units > y.units) x.units - y.units else 0
+      )
+
+      override def empty: RegionUnit = zero
+
+      override def compare(x: RegionUnit, y: RegionUnit): Int = x.units.compareTo(y.units)
+
+      override def combine(x: RegionUnit, y: RegionUnit): RegionUnit = RegionUnit(
+        x.units + y.units
+      )
+    }
 
 }
 
@@ -49,6 +66,8 @@ case class RegionUnits(
   behind: RegionUnit,
   left: RegionUnit
 ) {
+
+  import com.github.unchama.generic.algebra.typeclasses.OrderedMonus._
 
   /**
    * @return [[RegionUnits]]の中から`relativeDirection`に紐づく[[RegionUnit]]を返す
@@ -69,10 +88,10 @@ case class RegionUnits(
     extension: RegionUnit
   ): RegionUnits =
     relativeDirection match {
-      case Ahead  => this.copy(ahead = ahead.add(extension))
-      case Behind => this.copy(behind = behind.add(extension))
-      case Left   => this.copy(left = left.add(extension))
-      case Right  => this.copy(right = right.add(extension))
+      case Ahead  => this.copy(ahead = ahead |+| extension)
+      case Behind => this.copy(behind = behind |+| extension)
+      case Left   => this.copy(left = left |+| extension)
+      case Right  => this.copy(right = right |+| extension)
     }
 
   /**
@@ -83,10 +102,10 @@ case class RegionUnits(
     extension: RegionUnit
   ): RegionUnits =
     relativeDirection match {
-      case Ahead  => this.copy(ahead = ahead.subtract(extension))
-      case Behind => this.copy(behind = behind.subtract(extension))
-      case Left   => this.copy(left = left.subtract(extension))
-      case Right  => this.copy(right = right.subtract(extension))
+      case Ahead  => this.copy(ahead = ahead |-| extension)
+      case Behind => this.copy(behind = behind |-| extension)
+      case Left   => this.copy(left = left |-| extension)
+      case Right  => this.copy(right = right |-| extension)
     }
 
   /*
@@ -102,6 +121,6 @@ case class RegionUnits(
 object RegionUnits {
 
   val initial: RegionUnits =
-    RegionUnits(RegionUnit.initial, RegionUnit.initial, RegionUnit.initial, RegionUnit.initial)
+    RegionUnits(RegionUnit.zero, RegionUnit.zero, RegionUnit.zero, RegionUnit.zero)
 
 }
