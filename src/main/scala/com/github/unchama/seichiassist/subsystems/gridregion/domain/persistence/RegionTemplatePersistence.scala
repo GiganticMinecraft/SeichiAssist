@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gridregion.domain.persistence
 
 import com.github.unchama.generic.RefDict
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.RegionTemplate
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.regiontemplate.RegionTemplate
 
 import java.util.UUID
 

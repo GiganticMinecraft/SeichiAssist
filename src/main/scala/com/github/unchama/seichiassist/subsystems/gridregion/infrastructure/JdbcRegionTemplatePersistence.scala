@@ -2,12 +2,8 @@ package com.github.unchama.seichiassist.subsystems.gridregion.infrastructure
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.persistence.RegionTemplatePersistence
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
-  RegionTemplate,
-  RegionTemplateId,
-  RegionUnit,
-  RegionUnits
-}
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.regiontemplate.{RegionTemplate, RegionTemplateId}
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.{RegionUnit, RegionUnits, regiontemplate}
 import scalikejdbc._
 
 import java.util.UUID
@@ -31,7 +27,7 @@ class JdbcRegionTemplatePersistence[F[_]: Sync] extends RegionTemplatePersistenc
               RegionUnit(rs.int("left_length"))
             )
 
-            RegionTemplate(id, regionUnits)
+            regiontemplate.RegionTemplate(id, regionUnits)
           }
           .toList()
           .apply()
