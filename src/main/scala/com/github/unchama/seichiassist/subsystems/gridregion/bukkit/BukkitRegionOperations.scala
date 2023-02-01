@@ -18,6 +18,10 @@ class BukkitRegionOperations[F[_]: Sync](
     regionUnits: RegionUnits,
     direction: Direction
   ): RegionSelection[Location] = {
+    val computedAheadBlockAmount = regionUnits.ahead.computeBlockAmount
+    val computedLeftBlockAmount = regionUnits.left.computeBlockAmount
+    val computedBehindBlockAmount = regionUnits.behind.computeBlockAmount
+    val computedRightBlockAmount = regionUnits.right.computeBlockAmount
 
     /*
      * startPosition - 北西
@@ -29,65 +33,29 @@ class BukkitRegionOperations[F[_]: Sync](
         (
           currentLocation
             .clone()
-            .subtract(
-              regionUnits.behind.computeBlockAmount,
-              0.0,
-              regionUnits.left.computeBlockAmount
-            ),
-          currentLocation
-            .clone()
-            .add(
-              regionUnits.ahead.computeBlockAmount,
-              0.0,
-              regionUnits.right.computeBlockAmount
-            )
+            .subtract(computedBehindBlockAmount, 0.0, computedLeftBlockAmount),
+          currentLocation.clone().add(computedAheadBlockAmount, 0.0, computedRightBlockAmount)
         )
       case Direction.North =>
         (
           currentLocation
             .clone()
-            .subtract(
-              regionUnits.left.computeBlockAmount,
-              0.0,
-              regionUnits.ahead.computeBlockAmount
-            ),
-          currentLocation
-            .clone()
-            .add(
-              regionUnits.right.computeBlockAmount,
-              0.0,
-              regionUnits.behind.computeBlockAmount
-            )
+            .subtract(computedLeftBlockAmount, 0.0, computedAheadBlockAmount),
+          currentLocation.clone().add(computedRightBlockAmount, 0.0, computedBehindBlockAmount)
         )
       case Direction.South =>
         (
           currentLocation
             .clone()
-            .subtract(
-              regionUnits.right.computeBlockAmount,
-              0.0,
-              regionUnits.behind.computeBlockAmount
-            ),
-          currentLocation
-            .clone()
-            .add(regionUnits.left.computeBlockAmount, 0.0, regionUnits.ahead.computeBlockAmount)
+            .subtract(computedRightBlockAmount, 0.0, computedBehindBlockAmount),
+          currentLocation.clone().add(computedLeftBlockAmount, 0.0, computedAheadBlockAmount)
         )
       case Direction.West =>
         (
           currentLocation
             .clone()
-            .subtract(
-              regionUnits.ahead.computeBlockAmount,
-              0.0,
-              regionUnits.right.computeBlockAmount
-            ),
-          currentLocation
-            .clone()
-            .add(
-              regionUnits.behind.computeBlockAmount,
-              0.0,
-              regionUnits.left.computeBlockAmount
-            )
+            .subtract(computedAheadBlockAmount, 0.0, computedRightBlockAmount),
+          currentLocation.clone().add(computedBehindBlockAmount, 0.0, computedLeftBlockAmount)
         )
     }
 
