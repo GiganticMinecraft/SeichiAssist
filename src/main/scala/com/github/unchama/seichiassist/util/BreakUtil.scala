@@ -404,7 +404,7 @@ object BreakUtil {
             .api
             .mineStackRepository
             .tryIntoMineStack(player, itemStack, itemStack.getAmount)
-            .map(Option.when(_)(itemStack))
+            .map(Option.unless(_)(itemStack))
         }
 
       _ <- IO {
