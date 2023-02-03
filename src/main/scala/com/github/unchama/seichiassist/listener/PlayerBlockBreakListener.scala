@@ -320,6 +320,7 @@ class PlayerBlockBreakListener(
           .map(if (_) event.setDropItems(false) else ())
       }
       .unsafeRunSync()
+      .foreach(program => program)
   }
 
   /**
