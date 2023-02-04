@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.IncrementBuildExpWhenBuiltWithSkill
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
-import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
+import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.util.external.ExternalPlugins
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
@@ -19,8 +19,10 @@ import scala.util.control.Breaks
 
 class BlockLineUpTriggerListener[
   F[_]: IncrementBuildExpWhenBuiltWithSkill[*[_], Player]: SyncEffect
-](implicit manaApi: ManaApi[IO, SyncIO, Player])
-    extends Listener {
+](
+  implicit manaApi: ManaApi[IO, SyncIO, Player],
+  mineStackAPI: MineStackAPI[IO, Player, ItemStack]
+) extends Listener {
 
   import scala.jdk.CollectionConverters._
 
@@ -30,10 +32,7 @@ class BlockLineUpTriggerListener[
     val action = event.getAction
     val playerWorld = player.getWorld
 
-    val seichiAssistData = SeichiAssist.playermap(player.getUniqueId)
     val buildAssistData = BuildAssist.instance.temporaryData(player.getUniqueId)
-
-    val playerMineStack = seichiAssistData.minestack
 
     // スキルOFFなら終了
     if (buildAssistData.line_up_flg == 0) return
@@ -102,18 +101,22 @@ class BlockLineUpTriggerListener[
 
     val mineStackObjectToBeUsed =
       if (buildAssistData.line_up_minestack_flg == 1) {
-        MineStackObjectList.findByItemStack(mainHandItem, player.getName).unsafeRunSync()
+        mineStackAPI
+          .mineStackObjectList
+          .findBySignedItemStack(mainHandItem, player)
+          .unsafeRunSync()
       } else None
 
     val maxBlockUsage = {
       val availableOnHand = mainHandItem.getAmount.toLong
       val availableInMineStack = mineStackObjectToBeUsed
-        .map {
-          playerMineStack.getStackedAmountOf
+        .map { mineStackObject =>
+          mineStackAPI
+            .mineStackRepository
+            .getStackedAmountOf(player, mineStackObject)
+            .unsafeRunSync()
         }
-        .getOrElse {
-          0L
-        }
+        .getOrElse(0L)
 
       val available = availableOnHand + availableInMineStack
 
@@ -204,10 +207,14 @@ class BlockLineUpTriggerListener[
 
     val consumptionFromMainHand = mineStackObjectToBeUsed match {
       case Some(obj) =>
-        val mineStackAmount = playerMineStack.getStackedAmountOf(obj)
+        val mineStackAmount =
+          mineStackAPI.mineStackRepository.getStackedAmountOf(player, obj).unsafeRunSync()
         val consumptionFromMineStack = Math.min(placedBlockCount.toLong, mineStackAmount)
 
-        playerMineStack.subtractStackedAmountOf(obj, consumptionFromMineStack)
+        mineStackAPI
+          .mineStackRepository
+          .subtractStackedAmountOf(player, obj, consumptionFromMineStack)
+          .unsafeRunSync()
 
         placedBlockCount - consumptionFromMineStack.toInt
       case _ => placedBlockCount

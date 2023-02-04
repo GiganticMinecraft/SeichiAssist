@@ -6,6 +6,7 @@ import cats.effect.{ConcurrentEffect, Effect, IO, SyncEffect}
 import com.github.unchama.chatinterceptor.CancellationReason.Overridden
 import com.github.unchama.chatinterceptor.ChatInterceptionScope
 import com.github.unchama.concurrent.NonServerThreadContextShift
+import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.generic.ContextCoercion
@@ -71,13 +72,13 @@ class HomeCommand[F[
   def executor: TabExecutor = BranchedExecutor(
     Map(
       "warp" -> warpExecutor,
-      "set" -> setExecutor(),
+      "set" -> setHomeExecutor(),
       "name" -> nameExecutor(),
       "remove" -> removeExecutor(),
       "list" -> listExecutor()
     ),
     whenArgInsufficient = Some(printDescriptionExecutor),
-    whenBranchNotFound = Some(printDescriptionExecutor)
+    whenBranchNotFound = Some(warpExecutor)
   ).asNonBlockingTabExecutor()
 
   private def listExecutor() = {
@@ -98,7 +99,7 @@ class HomeCommand[F[
                 ManagedWorld.fromName(worldName).map(_.japaneseName).getOrElse(worldName)
               f"${YELLOW}ID ${homeId.value}%2d $displayWorldName(${toBlockPos(x)}, ${toBlockPos(
                   y
-                )}, ${toBlockPos(z)}): ${displayHomeName}"
+                )}, ${toBlockPos(z)}): $displayHomeName"
           }
           MessageEffect(messages)
         }
@@ -166,7 +167,7 @@ class HomeCommand[F[
       }
       .build()
 
-  private def setExecutor() =
+  def setHomeExecutor(): ContextualExecutor =
     argsAndSenderConfiguredBuilder
       .execution { context =>
         val homeId = HomeId(context.args.parsed.head.asInstanceOf[Int])

@@ -1,22 +1,30 @@
-FROM openjdk:8-jdk as spigot-builder
-
-WORKDIR /work
-ADD https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar BuildTools.jar
-RUN java -jar BuildTools.jar -o /artifact --rev 1.12.2
-
-FROM ghcr.io/giganticminecraft/chunk-search-rs:ea37d2d as chunk-search-provider
-
+# syntax=docker/dockerfile:1.4
+FROM ghcr.io/giganticminecraft/chunk-search-rs:sha-598517c as chunk-search-provider
 FROM ghcr.io/giganticminecraft/seichiassist-runner:ba2aa54
 
-# /spigot-filesをコンテナが提供するファイル群とする
+FROM itzg/minecraft-server:java8-multiarch
 
-COPY --from=chunk-search-provider /build/chunk-search-rs /usr/local/bin/chunk-search-rs
-COPY --from=spigot-builder /artifact/ /spigot-files/
+# JDKとnkfをインストール
+RUN apt-get update && apt-get install -y \
+    nkf \
+    openjdk-8-jdk \
+&& apt-get clean \
+&& rm -rf /var/lib/apt/lists/*
 
-COPY docker/spigot/serverfiles/ /spigot-files/
-COPY localDependencies/ /spigot-files/plugins/
-COPY target/build /spigot-files/plugins/
+#yqをインストール
+RUN curl -LJO https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 && \
+mv yq_linux_amd64 /usr/local/bin/yq && \
+chmod a+x /usr/local/bin/yq
 
-RUN nkf -Lu --overwrite /spigot-files/start-server.sh
+# chunk-search-rsをインストール
+COPY --link --from=chunk-search-provider /build/chunk-search-rs /usr/bin/chunk-search-rs
 
-CMD bash /spigot-files/start-server.sh
+# プラグインとスクリプトをローカルからコピーする
+COPY --link ./localDependencies/ /data/plugins/
+COPY --link ./target/build/ /SeichiAssist/
+COPY --link ./docker/spigot/ /data/
+
+RUN chmod a+x /data/update-seichiassist.sh
+RUN nkf -Lu --overwrite /data/update-seichiassist.sh
+
+ENTRYPOINT ["/data/update-seichiassist.sh"]

@@ -12,6 +12,7 @@ import com.github.unchama.seichiassist.seichiskill.{BlockSearching, BreakArea}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
+import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.util.BreakUtil
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -33,7 +34,8 @@ import scala.util.control.Breaks
 class PlayerBlockBreakListener(
   implicit effectEnvironment: EffectEnvironment,
   ioOnMainThread: OnMinecraftServerThread[IO],
-  manaApi: ManaApi[IO, SyncIO, Player]
+  manaApi: ManaApi[IO, SyncIO, Player],
+  mineStackAPI: MineStackAPI[IO, Player, ItemStack]
 ) extends Listener {
   private val plugin = SeichiAssist.instance
 
@@ -310,10 +312,15 @@ class PlayerBlockBreakListener(
       .getBlock
       .getDrops(event.getPlayer.getInventory.getItemInMainHand)
       .asScala
-      .foreach(droppedItemStack => {
-        if (BreakUtil.tryAddItemIntoMineStack(player, droppedItemStack))
-          event.setDropItems(false)
-      })
+      .toList
+      .traverse { droppedItemStack =>
+        mineStackAPI
+          .mineStackRepository
+          .tryIntoMineStack(player, droppedItemStack, droppedItemStack.getAmount)
+          .map(if (_) event.setDropItems(false) else ())
+      }
+      .unsafeRunSync()
+      .foreach(program => program)
   }
 
   /**

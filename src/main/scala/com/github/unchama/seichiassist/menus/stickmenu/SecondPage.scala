@@ -18,7 +18,7 @@ import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSetti
   ReceiveMessageOnly
 }
 import com.github.unchama.seichiassist.menus.CommonButtons
-import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gacha.GachaDrawAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket.ConsumeGachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.GachaPoint
@@ -60,7 +60,7 @@ object SecondPage extends Menu {
   class Environment(
     implicit val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
     val sharedInventoryAPI: SharedInventoryAPI[IO, Player],
-    val gachaAPI: GachaAPI[IO, ItemStack, Player],
+    val gachaDrawAPI: GachaDrawAPI[IO, Player],
     val gachaPointAPI: GachaPointApi[IO, SyncIO, Player],
     val consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player]
   )
@@ -378,7 +378,7 @@ object SecondPage extends Menu {
                       )
                     }),
                     DeferredEffect(IO {
-                      gachaAPI.drawGacha(currentConsumeGachaTicketAmount.value)
+                      gachaDrawAPI.drawGacha(currentConsumeGachaTicketAmount.value)
                     })
                   )
                 }

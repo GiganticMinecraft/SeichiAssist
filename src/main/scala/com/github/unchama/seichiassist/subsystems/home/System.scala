@@ -48,7 +48,10 @@ object System {
           persistence.remove(ownerUuid, id)
       }
       override val commands: Map[String, TabExecutor] =
-        Map("home" -> new HomeCommand().executor)
+        Map(
+          "home" -> new HomeCommand().executor,
+          "sethome" -> new HomeCommand().setHomeExecutor().asNonBlockingTabExecutor()
+        )
 
       override val listeners: Seq[Listener] = Seq(new RespawnLocationOverwriter[F])
     }

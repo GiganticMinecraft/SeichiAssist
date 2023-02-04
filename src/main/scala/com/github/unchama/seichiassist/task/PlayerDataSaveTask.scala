@@ -27,19 +27,6 @@ object PlayerDataSaveTask {
   def savePlayerData[F[_]: Sync](player: Player, playerdata: PlayerData): F[Unit] = {
     val databaseGateway = SeichiAssist.databaseGateway
 
-    def updatePlayerMineStack(stmt: Statement): Unit = {
-      val playerUuid = player.getUniqueId.toString
-      playerdata.minestack.getObjectCounts.foreach {
-        case (mineStackObj, amount) =>
-          val updateCommand = ("insert into seichiassist.mine_stack"
-            + "(player_uuid, object_name, amount) values "
-            + "('" + playerUuid + "', '" + mineStackObj.mineStackObjectName + "', '" + amount + "') "
-            + "on duplicate key update amount = values(amount)")
-
-          stmt.executeUpdate(updateCommand)
-      }
-    }
-
     def updateGridTemplate(stmt: Statement): Unit = {
       val playerUuid = player.getUniqueId.toString
 
@@ -110,8 +97,6 @@ object PlayerDataSaveTask {
         ("update seichiassist.playerdata set"
           + " name = '" + playerdata.name + "'"
 
-          + ",minestackflag = " + playerdata.settings.autoMineStack
-
           + ",serialized_usage_mode = " + skillState.usageMode.value
           + ",selected_effect = " + {
             playerdata.skillEffectState.selection match {
@@ -130,7 +115,6 @@ object PlayerDataSaveTask {
 
           + ",rgnum = " + playerdata.regionCount
           + ",playtick = " + playerdata.playTick
-          + ",lastquit = cast( now() as datetime )"
           + ",killlogflag = " + playerdata.settings.shouldDisplayDeathMessages
           + ",worldguardlogflag = " + playerdata.settings.shouldDisplayWorldGuardLogs
 
@@ -197,7 +181,6 @@ object PlayerDataSaveTask {
         updateActiveSkillEffectUnlockState(localStatement)
         updateSeichiSkillUnlockState(localStatement)
         updatePlayerDataColumns(localStatement)
-        updatePlayerMineStack(localStatement)
         updateGridTemplate(localStatement)
         ActionStatus.Ok
       } catch {

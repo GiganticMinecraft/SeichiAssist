@@ -88,7 +88,7 @@ world_size: 2000
 
 #GiganticBerserk
 #1分間上限
-GBLimit: 50
+GBLimit: 75
 
 #各種URL
 Url:

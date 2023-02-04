@@ -1,18 +1,21 @@
 package com.github.unchama.seichiassist.menus.minestack
 
 import cats.effect.IO
+import com.github.unchama.generic.MapExtra
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerReference}
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.MineStackObjectList.getAllObjectGroupsInCategory
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.CommonButtons
-import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
+import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
+import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory
 import com.github.unchama.targetedeffect.{DeferredEffect, TargetedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 
 object CategorizedMineStackMenu {
 
@@ -20,7 +23,9 @@ object CategorizedMineStackMenu {
     implicit val ioCanOpenMineStackMainMenu: IO CanOpen MineStackMainMenu.type,
     val ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu,
     val ioCanOpenSelectItemColorMenu: IO CanOpen MineStackSelectItemColorMenu,
-    val onMainThread: OnMinecraftServerThread[IO]
+    val onMainThread: OnMinecraftServerThread[IO],
+    val mineStackAPI: MineStackAPI[IO, Player, ItemStack],
+    implicit val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player]
   )
 
 }
@@ -37,7 +42,7 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
   /**
    * マインスタックオブジェクトボタンを置くセクションの行数
    */
-  val objectSectionRows = 5
+  private val objectSectionRows = 5
 
   override type Environment = CategorizedMineStackMenu.Environment
 
@@ -46,7 +51,7 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
     s"$DARK_BLUE${BOLD}MineStack(${category.uiLabel})"
   )
 
-  def mineStackMainMenuButtonSection(
+  private def mineStackMainMenuButtonSection(
     implicit ioCanOpenMineStackMainMenu: IO CanOpen MineStackMainMenu.type
   ): Seq[(Int, Button)] =
     Seq(
@@ -71,16 +76,14 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
       )
 
     val previousPageButtonSection =
-      if (page > 0)
-        Seq(ChestSlotRef(5, 7) -> buttonToTransferTo(page - 1, SkullOwners.MHF_ArrowUp))
-      else
-        Seq()
+      MapExtra.when(page > 0)(
+        Map(ChestSlotRef(5, 7) -> buttonToTransferTo(page - 1, SkullOwners.MHF_ArrowUp))
+      )
 
     val nextPageButtonSection =
-      if (page + 1 < totalNumberOfPages)
-        Seq(ChestSlotRef(5, 8) -> buttonToTransferTo(page + 1, SkullOwners.MHF_ArrowDown))
-      else
-        Seq()
+      MapExtra.when(page + 1 < totalNumberOfPages)(
+        Map(ChestSlotRef(5, 8) -> buttonToTransferTo(page + 1, SkullOwners.MHF_ArrowDown))
+      )
 
     mineStackMainMenuButtonSection ++ previousPageButtonSection ++ nextPageButtonSection
   }
@@ -93,7 +96,11 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
 
     for {
       categoryGroupCount <-
-        getAllObjectGroupsInCategory(category).map(_.length)
+        environment
+          .mineStackAPI
+          .mineStackObjectList
+          .getAllObjectGroupsInCategory(category)
+          .map(_.length)
     } yield {
       val totalNumberOfPages = Math.ceil(categoryGroupCount / 45.0).toInt
 
@@ -121,7 +128,7 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
       List(ChestSlotRef(5, 4) -> computeAutoMineStackToggleButton).traverse(_.sequence)
 
     for {
-      categoryGroups <- getAllObjectGroupsInCategory(category)
+      categoryGroups <- mineStackAPI.mineStackObjectList.getAllObjectGroupsInCategory(category)
       totalNumberOfPages = Math.ceil(categoryGroups.length / 45.0).toInt
       categorizedItemSection <-
         categoryGroups // カテゴリ内のMineStackアイテム取り出しボタンを含むセクションの計算

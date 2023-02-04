@@ -6,9 +6,11 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.SeichiAchievement
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
+import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -17,7 +19,8 @@ object PlayerDataRecalculationRoutine {
   def apply()(
     implicit onMainThread: OnMinecraftServerThread[IO],
     context: RepeatingTaskContext,
-    manaApi: ManaApi[IO, SyncIO, Player]
+    manaApi: ManaApi[IO, SyncIO, Player],
+    mineStackAPI: MineStackAPI[IO, Player, ItemStack]
   ): IO[Nothing] = {
     val getRepeatInterval: IO[FiniteDuration] = IO {
       import scala.concurrent.duration._
@@ -34,17 +37,6 @@ object PlayerDataRecalculationRoutine {
       // プレイヤーマップに記録されているすべてのplayerdataについての処理
       for (player <- onlinePlayers) {
         val playerData = SeichiAssist.playermap(player.getUniqueId)
-
-        // 放置判定
-        if (playerData.loc.contains(player.getLocation)) {
-          // idletime加算
-          playerData.idleMinute = playerData.idleMinute + 1
-        } else {
-          // 現在地点再取得
-          playerData.loc = Some(player.getLocation)
-          // idletimeリセット
-          playerData.idleMinute = 0
-        }
 
         // 表示名とマナをレベルと同期する
         playerData.synchronizeDisplayNameToLevelState()
