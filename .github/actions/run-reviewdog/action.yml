@@ -1,5 +1,5 @@
 # See: https://xuwei-k.hatenablog.com/entry/2023/01/28/102226
-name: run-actiondog
+name: run-reviewdog
 description: Install and run actiondog
 inputs:
   reviewdog-name:
