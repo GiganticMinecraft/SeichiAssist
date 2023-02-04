@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS unknown_player_donation(
     effect_name VARCHAR(20) NOT NULL,
     use_points INT NOT NULL,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    PRIMARY KEY(id, uuid)
+    PRIMARY KEY(id)
 );
 
 INSERT INTO unknown_player_donation(
