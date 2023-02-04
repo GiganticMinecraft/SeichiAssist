@@ -5,7 +5,7 @@ USE seichiassist;
 
 CREATE TABLE IF NOT EXISTS unknown_player_donation(
     id INT AUTO_INCREMENT NOT NULL,
-    uuid CHAR(36) NOT NULL,
+    uuid CHAR(36),
     effect_name VARCHAR(20) NOT NULL,
     use_points INT NOT NULL,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
