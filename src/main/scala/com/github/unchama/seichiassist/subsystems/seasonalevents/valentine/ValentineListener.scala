@@ -70,7 +70,7 @@ class ValentineListener[F[_]: ConcurrentEffect: NonServerThreadContextShift](
   def onPlayerJoinEvent(event: PlayerJoinEvent): Unit = {
     if (isInEvent) {
       Seq(
-        s"$LIGHT_PURPLE${END_DATE_TIME}までの期間限定で、イベント『＜ブラックバレンタイン＞リア充 vs 整地民！』を開催しています。",
+        s"$LIGHT_PURPLE${END_DATE_TIME}までの期間限定で、イベント『バレンタインイベント2023』を開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",
         s"$DARK_GREEN$UNDERLINE$blogArticleUrl"
       ).foreach(event.getPlayer.sendMessage(_))
