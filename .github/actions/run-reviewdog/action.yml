@@ -1,6 +1,6 @@
 # See: https://xuwei-k.hatenablog.com/entry/2023/01/28/102226
 name: run-reviewdog
-description: Install and run actiondog
+description: Install and run reviewdog
 inputs:
   reviewdog-name:
     description: The reviewdog's name.
