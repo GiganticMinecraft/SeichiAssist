@@ -10,7 +10,7 @@ INSERT INTO
 	mine_stack_gacha_objects(id, mine_stack_object_name)
 SELECT
 	id,
-	CONCAT('gachadata0_', id)
+	CONCAT('gachadata0_', id - 2)
 FROM
 	gachadata
 WHERE
