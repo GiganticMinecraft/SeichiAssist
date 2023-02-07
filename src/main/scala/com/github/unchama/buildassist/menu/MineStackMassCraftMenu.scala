@@ -160,7 +160,7 @@ object MineStackMassCraftMenu {
           } else if (!allIngredientsAvailable) {
             MessageEffect(s"${RED}クラフト材料が足りません")
           } else emptyEffect
-        _ <- ingredientObjects.traverse {
+        _ <- (ingredientObjects.traverse {
           case (mineStackObject, amount) =>
             environment
               .mineStackAPI
@@ -177,7 +177,7 @@ object MineStackMassCraftMenu {
             s"${enumerateChunkDetails(productObjects)}変換"
 
           MessageEffectF[IO](successMessage).apply(player)
-        }.whenA(!isLowerBuildLevel && allIngredientsAvailable)
+        }).whenA(!isLowerBuildLevel && allIngredientsAvailable)
       } yield LeftClickButtonEffect(
         SequentialEffect(
           errorEffect,
