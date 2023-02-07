@@ -75,10 +75,14 @@ $ docker compose up --build -d
 また画面が切り替わります。画面左上に書かれた文字が「GiganticMinecraft/SeichiAssist」ではなく、「(あなたのID)/SeichiAssist」になっていることを確認できたら次へ進みます。
 
 ### SeichiAssistを自分の手元にコピーする
-(TODO: 自分のレポジトリから`git clone`する方法の説明)
+SeichiAssistは、Gitというバージョンを管理するシステムを使っています。そのため、どうにかして自分のパソコンにSeichiAssistを自分の手元にコピーしてくる必要があります。
+
+#### IntelliJの場合
+[JetBrainsのヘルプ](https://www.jetbrains.com/help/idea/cloning-repository.html) (英語) をご覧ください。
+
 
 #### protocol以下のファイルを入手
-(注意: この手順は統合環境を使わない場合の手順です。)
+(注意: この手順は統合開発環境を使わない場合の手順です。)
 
 (注意: この手順は最初に一度だけ行う必要があります。)
 
@@ -87,9 +91,9 @@ protocol以下のファイルは`git clone`では入手することができま�
 * `git submodule update --init --recursive`
 
 ### issueを見る
-一旦[GiganticMinecraftのページ][gm-gh-repo]へ戻って、画面上部のIssuesと書かれたタブをクリックしてみましょう。
+一旦[GiganticMinecraftのページ][gm-gh-repo]へ戻って、画面上部の[Issues](https://github.com/GiganticMinecraft/SeichiAssist/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc)と書かれたタブをクリックしてみましょう。
 
-すると画面が切り替わり、たくさんのやりたいこと (主にRedmineで承認されたもの) や、バグ報告が出てきます。
+すると画面が切り替わり、たくさんのやりたいこと (主に[Redmineで承認されたもの](https://github.com/GiganticMinecraft/SeichiAssist/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3A%22Status%2FIdea%3A+Accepted%E2%9C%85%22+label%3A%22Tracked%3A+Redmine%22)) や、[バグ報告](https://github.com/GiganticMinecraft/SeichiAssist/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3Abug)が出てきます。
 
 はじめはこの中からできそうなものを探すと良いと思います。初めての場合は、"good first issue"というラベルがつけられた中から探すのがおすすめです。[
 ここ](https://github.com/GiganticMinecraft/SeichiAssist/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)から飛べます。
@@ -102,9 +106,24 @@ IntelliJ IDEAの設定でフォーマットに `scalafmt` を使う
 
 
 ### 変更を加える
-1. (TODO: ブランチの切り替え)
+1. developというブランチ (セーブデータのスロットのようなもの) を元に、新しいブランチを作ります。
 1. 必要な変更を加えてファイルを保存します
-2. 統合開発環境からコミットします (TODO: コンベンショナルコミット、コミットメッセージ、docs)
+2. コミット (Gitに対するセーブ) します。コミットする時、メッセージを書くように求められます。[コンベンショナルコミット](https://www.conventionalcommits.org/ja/v1.0.0/)という、メッセージの書き方を推奨しています。わからなければ、今は飛ばしても大丈夫です。
+    * メッセージの1行目には変更した点の大まかな内容を書くように心がけてみてください。
+        * 1行目は45文字以内で書くことを推奨します。
+        * コンベンショナルコミット：1行目は「変更の区分」、半角コロン、半角スペースで始める方法を推奨しています。
+            * 新しい機能を実装したときは`feat: [大まかな内容]`とします。
+            * バグを修正したときは`fix: [大まかな内容]`とします。
+            * ドキュメントを触ったときは`docs: [大まかな内容]`とします。
+            * GitHub Actionsを触ったときは`ci: [大まかな内容]`とします。
+            * リファクタリングしたときは`refactor: [大まかな内容]`とします。
+            * テストを書いたときは`test: [大まかな内容]`とします。
+            * scalafmtやscalafixを反映したときは`style: [大まかな内容]`とします。
+            * パフォーマンスを改善したときは`perf: [大まかな内容]`とします。
+            * その他のコード品質に関わらない変更をしたときは、`chore: [大まかな内容]`とします。
+        * 発展的な内容：コンベンショナルコミットにおいて複数の種別に該当する場合、引き返して複数のコミットに分割することが推奨されています。
+    * メッセージの2行目以降は、より詳しい内容を書くことができます。
+    * メッセージは日本語か英語で書くことを推奨します。
 3. 良くなるまで繰り返します
 
 #### 手元でデバッグ
@@ -126,7 +145,7 @@ Linux環境では、`./prepare-docker.sh`、Windowsでは`prepare-docker.bat`を
 初回起動後、データベースが作成されますが、ガチャ景品のデータがありません。そのため、次のSQLのダンプをインポートします。
 - [`gachadata.sql`](https://redmine.seichi.click/attachments/download/992/gachadata.sql)
 
-手順は以下の通りです。
+SQLのダンプをインポートする手順は以下の通りです。
 1. 一旦サーバーを起動させる
 2. phpMyAdminを開く
 3. トップ画面の上部メニューから「データベース」を開く
@@ -141,13 +160,13 @@ Linux環境では、`./prepare-docker.sh`、Windowsでは`prepare-docker.bat`を
 
 DockerマシンのIPアドレス(Linux等なら`localhost`)を`DOCKER_IP`とします。
 
-`docker`により各サービスが起動したら、`DOCKER_IP`へとMinecraftを接続することができます。
+`docker`により各サービスが起動したら、マルチプレイヤーのメニューで`DOCKER_IP`へと接続することができます。
 また、`DOCKER_IP:8080`へとWebブラウザでアクセスすることで、phpMyAdminを介してデータベースを操作することができます。
 
 `/op`などのコマンドを実行するためにSpigotのコンソールにアクセスする必要がある場合、
 `spigota`または`spigotb`へのコンテナ名とともに `docker attach [CONTAINER_NAME]` を実行してください。
 コンテナ名は `docker ps` を実行すると `seichiassist_spigotb_1` のような形式で表示されます。
-コンソールからは `Ctrl+C` で抜けることができます(サーバーは停止されません)。
+コンソールからは <kbd>Ctrl</kbd>キーと<kbd>C</kbd>キーを同時押しすることで出ることができます。サーバーは停止されません。
 
 ### 反映する
 さあ、いよいよ反映の時間がやってきました。
@@ -164,7 +183,7 @@ DockerマシンのIPアドレス(Linux等なら`localhost`)を`DOCKER_IP`とし�
 
 ### コードレビューを待つ
 Pull Requestが作成されたら、GitHubのサーバーでコンパイルやファイルのチェックが自動的に始まります。
-また、確認できる人が方向性が正しいかどうかレビューを行います。それまでは優雅に紅茶を飲んだりして待つことができます。
+また、[確認できる人](https://github.com/orgs/GiganticMinecraft/people) (主に@kory33、@rito528、@KisaragiEffective、@Lucky3028)が方向性が正しいかどうかレビューを行います。それまでは優雅に紅茶を飲んだりして待つことができます。
 
 SeichiAssistでPull Requestが受け入れられる (マージされる) には、下の条件をすべてクリアする必要があります。
 * コンパイルやファイルのチェックがすべてエラーなく終わる
