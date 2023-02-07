@@ -143,7 +143,7 @@ Linux環境では、`./prepare-docker.sh`、Windowsでは`prepare-docker.bat`を
 (注: この手順は初めてDockerを立ち上げた場合のみ必要です)
 
 初回起動後、データベースが作成されますが、ガチャ景品のデータがありません。そのため、次のSQLのダンプをインポートします。
-- [`gachadata.sql`](https://redmine.seichi.click/attachments/download/992/gachadata.sql)
+- [`gachadata.sql`](https://redmine.seichi.click/attachments/download/995/gachadata.sql)
 
 SQLのダンプをインポートする手順は以下の通りです。
 1. 一旦サーバーを起動させる
