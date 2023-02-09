@@ -14,6 +14,7 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.util.BreakUtil
+import com.github.unchama.seichiassist.util.BreakUtil.BlockBreakResult
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.effect.BukkitResources
@@ -301,6 +302,12 @@ class PlayerBlockBreakListener(
       SeichiAssist.instance.breakCountSystem.api.incrementSeichiExp.of(player, amount).toIO
     )
 
+    val tool: BreakTool = MaterialSets
+      .refineItemStack(player.getInventory.getItemInMainHand, MaterialSets.breakToolMaterials)
+      .getOrElse(
+        return
+      )
+
     /**
      * 手彫りで破壊したアイテムを直接MineStackに入れる
      * 一つのBlockBreakEventから複数の種類のアイテムが出てくることはない。
@@ -308,19 +315,21 @@ class PlayerBlockBreakListener(
      * 破壊された`b`のみが`BlockBreakEvent`のドロップ対象となるため、
      * 中身のドロップがキャンセルされることはない。
      */
-    event
-      .getBlock
-      .getDrops(event.getPlayer.getInventory.getItemInMainHand)
-      .asScala
-      .toList
-      .traverse { droppedItemStack =>
+    val drops = BreakUtil
+      .dropItemOnTool(tool)((block.getLocation(), block.getType, block.getData))
+      .getOrElse(
+        return
+      )
+
+    drops match {
+      case BlockBreakResult.ItemDrop(itemStack) =>
         mineStackAPI
           .mineStackRepository
-          .tryIntoMineStack(player, droppedItemStack, droppedItemStack.getAmount)
+          .tryIntoMineStack(player, itemStack, itemStack.getAmount)
           .map(if (_) event.setDropItems(false) else ())
-      }
-      .unsafeRunSync()
-      .foreach(program => program)
+          .unsafeRunSync()
+      case _ => ()
+    }
   }
 
   /**

@@ -154,9 +154,9 @@ object BreakUtil {
       massBreakBlock(player, Set(targetBlock), dropLocation, tool, shouldPlayBreakSound)
     )
 
-  private sealed trait BlockBreakResult
+  sealed trait BlockBreakResult
 
-  private object BlockBreakResult {
+  object BlockBreakResult {
 
     case class ItemDrop(itemStack: ItemStack) extends BlockBreakResult
 
@@ -170,7 +170,7 @@ object BreakUtil {
    * Bukkit/Spigotが提供するBlock.getDropsは信頼できる値を返さない。 本来はNMSのメソッドを呼ぶのが確実らしいが、一時的な実装として使用している。 参考:
    * https://www.spigotmc.org/threads/getdrops-on-crops-not-functioning-as-expected.167751/#post-1779788
    */
-  private def dropItemOnTool(
+  def dropItemOnTool(
     tool: BreakTool
   )(blockInformation: (Location, Material, Byte)): Option[BlockBreakResult] = {
     val fortuneLevel = tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS)
