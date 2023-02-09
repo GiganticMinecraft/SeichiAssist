@@ -12,10 +12,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @deprecated Please use BukkitItemStackSerializeAndDeserialize
- */
-@Deprecated
 public final class ItemListSerialization {
     private ItemListSerialization() {
 
