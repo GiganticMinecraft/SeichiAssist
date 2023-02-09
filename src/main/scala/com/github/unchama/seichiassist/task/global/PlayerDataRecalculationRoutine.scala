@@ -39,7 +39,7 @@ object PlayerDataRecalculationRoutine {
         val playerData = SeichiAssist.playermap(player.getUniqueId)
 
         // 表示名とマナをレベルと同期する
-        playerData.synchronizeDisplayNameToLevelState()
+//        playerData.synchronizeDisplayNameToLevelState()
 
         // 総プレイ時間更新
         playerData.updatePlayTick()

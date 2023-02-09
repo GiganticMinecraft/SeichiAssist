@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.bukkit
 
 import cats.effect.Sync
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.idletime.IdleTimeAPI
 import com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.domain.{
   NameColorByIdleMinute,
@@ -23,6 +24,17 @@ class BukkitUpdatePlayerScreenName[F[_]: Sync](
       currentPlayerListName = player.getPlayerListName
       newPlayerNameColor = nameColorByIdleMinute.getNameColor(currentIdleMinute)
       _ <- Sync[F].delay {
+        /*
+         * 表示名とマナをレベルと同期する
+         * FIXME: ここの更新は、もともとPlayerDataRecalculationRoutine.scalaで行われていたもので、
+         *  https://github.com/GiganticMinecraft/SeichiAssist/issues/1878
+         *  を修正するためにやむを得ずここに記載している。
+         *  この処理は本来ここにあるべきではなく、プレイヤー名関連の処理をリファクタリングする際に
+         *  適切な場所へ配置するべきである。
+         */
+        val playerData = SeichiAssist.playermap(player.getUniqueId)
+        playerData.synchronizeDisplayNameToLevelState()
+
         player.setDisplayName(s"$newPlayerNameColor$currentDisplayName")
         player.setPlayerListName(s"$newPlayerNameColor$currentPlayerListName")
       }
