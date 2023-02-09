@@ -22,14 +22,11 @@ class JdbcDonatePersistence[F[_]: Sync] extends DonatePersistence[F] {
   ): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
       sql"""INSERT INTO donate_purchase_history 
-           | (uuid, get_points)
+           | (uuid, get_points, timestamp)
            | VALUES 
            | ((SELECT uuid FROM playerdata WHERE name = ${playerName.name}),
            | ${obtainedPremiumEffectPoint.effectPoint.value},
-           | ${obtainedPremiumEffectPoint.purchaseDate})"""
-        .stripMargin
-        .execute()
-        .apply()
+           | ${obtainedPremiumEffectPoint.purchaseDate})""".stripMargin.execute().apply()
     }
   }
 
