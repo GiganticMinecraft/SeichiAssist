@@ -23,8 +23,8 @@ class BukkitUpdatePlayerScreenName[F[_]: Sync](
       currentPlayerListName = player.getPlayerListName
       newPlayerNameColor = nameColorByIdleMinute.getNameColor(currentIdleMinute)
       _ <- Sync[F].delay {
-        player.setDisplayName(newPlayerNameColor + currentDisplayName)
-        player.setPlayerListName(newPlayerNameColor + currentPlayerListName)
+        player.setDisplayName(s"$newPlayerNameColor$currentDisplayName")
+        player.setPlayerListName(s"$newPlayerNameColor$currentPlayerListName")
       }
     } yield ()
 
