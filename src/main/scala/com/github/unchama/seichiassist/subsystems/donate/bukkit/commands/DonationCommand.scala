@@ -54,7 +54,7 @@ class DonationCommand[F[_]: ConcurrentEffect](
             .addDonatePremiumEffectPoint(playerName, Obtained(donatePoint, date))
             .whenA(isMatchedPattern)
         } yield {
-          if (isMatchedPattern)
+          if (!isMatchedPattern)
             MessageEffect(s"${RED}購入日はyyyy-MM-ddの形式で指定してください。")
           else
             MessageEffect(
