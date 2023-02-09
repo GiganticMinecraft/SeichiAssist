@@ -18,13 +18,15 @@ class JdbcDonatePersistence[F[_]: Sync] extends DonatePersistence[F] {
 
   override def addDonatePremiumEffectPoint(
     playerName: PlayerName,
-    donatePremiumEffectPoint: DonatePremiumEffectPoint
+    obtainedPremiumEffectPoint: Obtained
   ): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
       sql"""INSERT INTO donate_purchase_history 
-           | (uuid, get_points) 
+           | (uuid, get_points)
            | VALUES 
-           | ((SELECT uuid FROM playerdata WHERE name = ${playerName.name}), ${donatePremiumEffectPoint.value})"""
+           | ((SELECT uuid FROM playerdata WHERE name = ${playerName.name}),
+           | ${obtainedPremiumEffectPoint.effectPoint.value},
+           | ${obtainedPremiumEffectPoint.purchaseDate})"""
         .stripMargin
         .execute()
         .apply()
