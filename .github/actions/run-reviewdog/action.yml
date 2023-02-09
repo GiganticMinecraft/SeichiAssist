@@ -27,7 +27,7 @@ runs:
       shell: bash
     - name: Run reviewdog
       run: |
-        export REVIEWDOG_GITHUB_API_TOKEN="${GITHUB_TOKEN}"
+        REVIEWDOG_GITHUB_API_TOKEN="${GITHUB_TOKEN}"
         TMPFILE="$(mktemp)"
         git diff > "${TMPFILE}"
         reviewdog \
