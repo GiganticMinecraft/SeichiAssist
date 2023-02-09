@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.donate.bukkit.commands
 
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
-import cats.effect.{ConcurrentEffect, IO}
+import cats.effect.{ConcurrentEffect, IO, Sync}
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
@@ -42,14 +42,15 @@ class DonationCommand[F[_]: ConcurrentEffect](
         val dateOpt = context.args.yetToBeParsed.headOption
         val isMatchedPattern = dateOpt.forall(date => dateRegex.matches(date))
 
-        val date = dateOpt
-          .map { date =>
-            val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-            LocalDate.parse(date, dateTimeFormatter)
-          }
-          .getOrElse(LocalDate.now)
-
         val eff = for {
+          date <- Sync[F].delay {
+            dateOpt match {
+              case Some(date) if isMatchedPattern =>
+                val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                LocalDate.parse(date, dateTimeFormatter)
+              case _ => LocalDate.now()
+            }
+          }
           _ <- donatePersistence
             .addDonatePremiumEffectPoint(playerName, Obtained(donatePoint, date))
             .whenA(isMatchedPattern)
