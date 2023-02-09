@@ -35,6 +35,7 @@ class ValentineListener[F[_]: ConcurrentEffect: NonServerThreadContextShift](
   ioOnMainThread: OnMinecraftServerThread[IO]
 ) extends Listener {
 
+  // クリーパーの自爆の場合、確率でアイテムをドロップ
   @EventHandler
   def onEntityExplode(event: EntityExplodeEvent): Unit = {
     val entity = event.getEntity
