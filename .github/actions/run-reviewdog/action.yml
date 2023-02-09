@@ -6,6 +6,9 @@ inputs:
     description: The reviewdog's name.
     required: true
     default: reviewdog
+  github-token:
+    description: The GitHub Actions's token
+    required: true
 runs:
   using: composite
   steps:
@@ -37,5 +40,5 @@ runs:
           -level="warning" <"${TMPFILE}"
       env:
         REVIEWDOG_NAME: ${{ inputs.reviewdog-name }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
       shell: bash

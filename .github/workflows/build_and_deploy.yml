@@ -109,6 +109,7 @@ jobs:
         if: ${{ (github.event_name == 'pull_request') && failure() }}
         with:
           reviewdog-name: scalafmt
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check lint with Scalafix on push
         if: ${{ (github.event_name == 'push')}}
@@ -121,6 +122,7 @@ jobs:
         if: ${{ (github.event_name == 'pull_request') && failure() }}
         with:
           reviewdog-name: scalafix
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Test and build artifact
         run: sbt assembly
