@@ -21,7 +21,7 @@ runs:
           tar -zxf "${FILE_NAME}"
           rm -rf "${FILE_NAME}"
           chmod +x ./reviewdog
-          sudo mv reviewdog /usr/local/bin
+          mv reviewdog /usr/local/bin
         fi
         reviewdog -version
       shell: bash
