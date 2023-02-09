@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.util
 
 import cats.Monad
 import cats.effect.{IO, SyncIO}
+import com.github.unchama.generic.ApplicativeExtra.whenAOrElse
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist._
@@ -394,17 +395,25 @@ object BreakUtil {
         (ItemStackUtil.amalgamate(drops), silverFishLocations)
       }
 
+      currentAutoMineStackState <- SeichiAssist
+        .instance
+        .mineStackSystem
+        .api
+        .autoMineStack(player)
+
       itemsToBeDropped <-
         // アイテムのマインスタック自動格納を試みる
         // 格納できなかったらドロップするアイテムとしてリストに入れる
         breakResults._1.toList.traverse { itemStack =>
-          SeichiAssist
-            .instance
-            .mineStackSystem
-            .api
-            .mineStackRepository
-            .tryIntoMineStack(player, itemStack, itemStack.getAmount)
-            .map(Option.unless(_)(itemStack))
+          whenAOrElse(currentAutoMineStackState)(
+            SeichiAssist
+              .instance
+              .mineStackSystem
+              .api
+              .mineStackRepository
+              .tryIntoMineStack(player, itemStack, itemStack.getAmount),
+            false
+          ).map(Option.unless(_)(itemStack))
         }
 
       _ <- IO {
