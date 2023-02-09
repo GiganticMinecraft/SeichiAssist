@@ -27,7 +27,6 @@ runs:
       shell: bash
     - name: Run reviewdog
       run: |
-        REVIEWDOG_GITHUB_API_TOKEN="${GITHUB_TOKEN}"
         TMPFILE="$(mktemp)"
         git diff > "${TMPFILE}"
         reviewdog \
@@ -40,5 +39,5 @@ runs:
           -level="warning" <"${TMPFILE}"
       env:
         REVIEWDOG_NAME: ${{ inputs.reviewdog-name }}
-        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+        REVIEWDOG_GITHUB_API_TOKEN: ${{ inputs.github-token }}
       shell: bash
