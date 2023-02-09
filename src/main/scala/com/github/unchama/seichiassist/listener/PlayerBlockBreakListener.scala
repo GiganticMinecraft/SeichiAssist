@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.listener
 
 import cats.effect.{Fiber, IO, SyncIO}
+import com.github.unchama.generic.ApplicativeExtra.whenAOrElse
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.ManagedWorld._
@@ -314,10 +315,18 @@ class PlayerBlockBreakListener(
       .asScala
       .toList
       .traverse { droppedItemStack =>
-        mineStackAPI
-          .mineStackRepository
-          .tryIntoMineStack(player, droppedItemStack, droppedItemStack.getAmount)
-          .map(if (_) event.setDropItems(false) else ())
+        for {
+          currentAutoMineStackState <- mineStackAPI.autoMineStack(player)
+          isSucceedTryIntoMineStack <- whenAOrElse(currentAutoMineStackState)(
+            mineStackAPI
+              .mineStackRepository
+              .tryIntoMineStack(player, droppedItemStack, droppedItemStack.getAmount),
+            false
+          )
+        } yield {
+          if (isSucceedTryIntoMineStack) event.setCancelled(false)
+          else ()
+        }
       }
       .unsafeRunSync()
       .foreach(program => program)
