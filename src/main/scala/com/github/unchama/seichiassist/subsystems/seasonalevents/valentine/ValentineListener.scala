@@ -38,11 +38,12 @@ class ValentineListener[F[_]: ConcurrentEffect: NonServerThreadContextShift](
   // クリーパーの自爆の場合、確率でアイテムをドロップ
   @EventHandler
   def onEntityExplode(event: EntityExplodeEvent): Unit = {
-    val entity = event.getEntity
-    if (!isInEvent || entity == null) return
+    if (!isInEvent) return
 
-    if (entity.isInstanceOf[Monster] && entity.isDead) {
-      randomlyDropItemAt(entity, droppedCookie, itemDropRate)
+    event.getEntity match {
+      case monster: Monster if monster.isDead && monster.getType == EntityType.CREEPER =>
+        randomlyDropItemAt(monster, droppedCookie, itemDropRate)
+      case _ =>
     }
   }
 
