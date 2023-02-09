@@ -18,7 +18,7 @@ runs:
           REVIEWDOG_VERSION="0.14.1"
           FILE_NAME="reviewdog_${REVIEWDOG_VERSION}_Linux_x86_64.tar.gz"
           wget -q https://github.com/reviewdog/reviewdog/releases/download/v${REVIEWDOG_VERSION}/${FILE_NAME}
-          tar -zxvf "${FILE_NAME}"
+          tar -zxf "${FILE_NAME}"
           rm -rf "${FILE_NAME}"
           chmod +x ./reviewdog
           sudo mv reviewdog /usr/local/bin
