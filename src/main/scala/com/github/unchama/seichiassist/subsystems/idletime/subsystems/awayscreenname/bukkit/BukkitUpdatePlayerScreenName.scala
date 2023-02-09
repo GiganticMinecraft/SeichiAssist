@@ -19,13 +19,13 @@ class BukkitUpdatePlayerScreenName[F[_]: Sync](
   override def updatePlayerNameColor(player: Player): F[Unit] =
     for {
       currentIdleMinute <- idleTimeAPI.currentIdleMinute(player)
-    } yield {
-      val currentDisplayName = player.getDisplayName
-      val currentPlayerListName = player.getPlayerListName
-      val newPlayerNameColor = nameColorByIdleMinute.getNameColor(currentIdleMinute)
-
-      player.setDisplayName(newPlayerNameColor + currentDisplayName)
-      player.setPlayerListName(newPlayerNameColor + currentPlayerListName)
-    }
+      currentDisplayName = player.getDisplayName
+      currentPlayerListName = player.getPlayerListName
+      newPlayerNameColor = nameColorByIdleMinute.getNameColor(currentIdleMinute)
+      _ <- Sync[F].delay {
+        player.setDisplayName(newPlayerNameColor + currentDisplayName)
+        player.setPlayerListName(newPlayerNameColor + currentPlayerListName)
+      }
+    } yield ()
 
 }
