@@ -20,8 +20,6 @@ class BukkitUpdatePlayerScreenName[F[_]: Sync](
   override def updatePlayerNameColor(player: Player): F[Unit] =
     for {
       currentIdleMinute <- idleTimeAPI.currentIdleMinute(player)
-      currentDisplayName = player.getDisplayName
-      currentPlayerListName = player.getPlayerListName
       newPlayerNameColor = nameColorByIdleMinute.getNameColor(currentIdleMinute)
       _ <- Sync[F].delay {
         /*
@@ -33,10 +31,10 @@ class BukkitUpdatePlayerScreenName[F[_]: Sync](
          *  適切な場所へ配置するべきである。
          */
         val playerData = SeichiAssist.playermap(player.getUniqueId)
-        playerData.synchronizeDisplayNameToLevelState()
+        val displayName = playerData.displayName()
 
-        player.setDisplayName(s"$newPlayerNameColor$currentDisplayName")
-        player.setPlayerListName(s"$newPlayerNameColor$currentPlayerListName")
+        player.setDisplayName(s"$newPlayerNameColor$displayName")
+        player.setPlayerListName(s"$newPlayerNameColor$displayName")
       }
     } yield ()
 
