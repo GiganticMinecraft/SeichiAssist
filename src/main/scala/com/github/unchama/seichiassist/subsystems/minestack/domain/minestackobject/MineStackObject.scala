@@ -25,7 +25,6 @@ case class MineStackObject[ItemStack: Cloneable](
     name: String
   )(implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player]): F[Option[ItemStack]] = {
     if (category != MineStackObjectCategory.GACHA_PRIZES) return Sync[F].pure(None)
-    println("gachaPrize")
 
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
       gachaPrizeAPI.canBeSignedAsGachaPrize
@@ -33,7 +32,6 @@ case class MineStackObject[ItemStack: Cloneable](
     for {
       foundGachaPrize <- gachaPrizeAPI.findOfRegularGachaPrizesByNotSignedItemStack(itemStack)
     } yield {
-      println(s"foundGachaPrize: ${foundGachaPrize.isDefined}")
       foundGachaPrize.map { gachaPrize => gachaPrize.materializeWithOwnerSignature(name) }
     }
   }

@@ -11,7 +11,7 @@ trait DonatePersistence[F[_]] {
    */
   def addDonatePremiumEffectPoint(
     playerName: PlayerName,
-    donatePremiumEffectPoint: DonatePremiumEffectPoint
+    obtainedPremiumEffectPoint: Obtained
   ): F[Unit]
 
   /**

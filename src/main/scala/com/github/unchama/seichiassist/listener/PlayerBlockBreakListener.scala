@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.listener
 
 import cats.effect.{Fiber, IO, SyncIO}
+import com.github.unchama.generic.ApplicativeExtra.whenAOrElse
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.ManagedWorld._
@@ -14,6 +15,7 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.util.BreakUtil
+import com.github.unchama.seichiassist.util.BreakUtil.BlockBreakResult
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.effect.BukkitResources
@@ -28,7 +30,6 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import org.bukkit.inventory.ItemStack
 
 import scala.collection.mutable.ArrayBuffer
-import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.util.control.Breaks
 
 class PlayerBlockBreakListener(
@@ -301,6 +302,12 @@ class PlayerBlockBreakListener(
       SeichiAssist.instance.breakCountSystem.api.incrementSeichiExp.of(player, amount).toIO
     )
 
+    val tool: BreakTool = MaterialSets
+      .refineItemStack(player.getInventory.getItemInMainHand, MaterialSets.breakToolMaterials)
+      .getOrElse(
+        return
+      )
+
     /**
      * 手彫りで破壊したアイテムを直接MineStackに入れる
      * 一つのBlockBreakEventから複数の種類のアイテムが出てくることはない。
@@ -308,19 +315,29 @@ class PlayerBlockBreakListener(
      * 破壊された`b`のみが`BlockBreakEvent`のドロップ対象となるため、
      * 中身のドロップがキャンセルされることはない。
      */
-    event
-      .getBlock
-      .getDrops(event.getPlayer.getInventory.getItemInMainHand)
-      .asScala
-      .toList
-      .traverse { droppedItemStack =>
-        mineStackAPI
-          .mineStackRepository
-          .tryIntoMineStack(player, droppedItemStack, droppedItemStack.getAmount)
-          .map(if (_) event.setDropItems(false) else ())
-      }
-      .unsafeRunSync()
-      .foreach(program => program)
+    val drops = BreakUtil
+      .dropItemOnTool(tool)((block.getLocation(), block.getType, block.getData))
+      .getOrElse(
+        return
+      )
+
+    drops match {
+      case BlockBreakResult.ItemDrop(itemStack) =>
+        val program = for {
+          currentAutoMineStackState <- mineStackAPI.autoMineStack(player)
+          isSucceedTryIntoMineStack <- whenAOrElse(currentAutoMineStackState)(
+            mineStackAPI
+              .mineStackRepository
+              .tryIntoMineStack(player, itemStack, itemStack.getAmount),
+            false
+          )
+        } yield {
+          if (isSucceedTryIntoMineStack) event.setCancelled(false)
+          else ()
+        }
+        program.unsafeRunSync()
+      case _ => ()
+    }
   }
 
   /**

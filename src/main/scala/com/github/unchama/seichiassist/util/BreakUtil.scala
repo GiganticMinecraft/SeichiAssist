@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.util
 
 import cats.Monad
 import cats.effect.{IO, SyncIO}
+import com.github.unchama.generic.ApplicativeExtra.whenAOrElse
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist._
@@ -154,9 +155,9 @@ object BreakUtil {
       massBreakBlock(player, Set(targetBlock), dropLocation, tool, shouldPlayBreakSound)
     )
 
-  private sealed trait BlockBreakResult
+  sealed trait BlockBreakResult
 
-  private object BlockBreakResult {
+  object BlockBreakResult {
 
     case class ItemDrop(itemStack: ItemStack) extends BlockBreakResult
 
@@ -170,7 +171,7 @@ object BreakUtil {
    * Bukkit/Spigotが提供するBlock.getDropsは信頼できる値を返さない。 本来はNMSのメソッドを呼ぶのが確実らしいが、一時的な実装として使用している。 参考:
    * https://www.spigotmc.org/threads/getdrops-on-crops-not-functioning-as-expected.167751/#post-1779788
    */
-  private def dropItemOnTool(
+  def dropItemOnTool(
     tool: BreakTool
   )(blockInformation: (Location, Material, Byte)): Option[BlockBreakResult] = {
     val fortuneLevel = tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS)
@@ -394,17 +395,25 @@ object BreakUtil {
         (ItemStackUtil.amalgamate(drops), silverFishLocations)
       }
 
+      currentAutoMineStackState <- SeichiAssist
+        .instance
+        .mineStackSystem
+        .api
+        .autoMineStack(player)
+
       itemsToBeDropped <-
         // アイテムのマインスタック自動格納を試みる
         // 格納できなかったらドロップするアイテムとしてリストに入れる
         breakResults._1.toList.traverse { itemStack =>
-          SeichiAssist
-            .instance
-            .mineStackSystem
-            .api
-            .mineStackRepository
-            .tryIntoMineStack(player, itemStack, itemStack.getAmount)
-            .map(Option.unless(_)(itemStack))
+          whenAOrElse(currentAutoMineStackState)(
+            SeichiAssist
+              .instance
+              .mineStackSystem
+              .api
+              .mineStackRepository
+              .tryIntoMineStack(player, itemStack, itemStack.getAmount),
+            false
+          ).map(Option.unless(_)(itemStack))
         }
 
       _ <- IO {

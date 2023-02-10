@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions
 import cats.Monad
 import cats.data.Kleisli
 import cats.effect.Sync
+import com.github.unchama.generic.ApplicativeExtra.whenAOrElse
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GrantState
@@ -18,15 +19,23 @@ class BukkitGrantGachaPrize[F[_]: Sync: OnMinecraftServerThread](
   mineStackAPI: MineStackAPI[F, Player, ItemStack]
 ) extends GrantGachaPrize[F, ItemStack] {
 
+  import cats.implicits._
+
   override def tryInsertIntoMineStack(
     prize: GachaPrize[ItemStack]
   ): Kleisli[F, Player, Boolean] =
     Kleisli { player =>
       val itemStack = prize.itemStack
-      mineStackAPI.mineStackRepository.tryIntoMineStack(player, itemStack, itemStack.getAmount)
+      for {
+        currentAutoMineStackState <- mineStackAPI.autoMineStack(player)
+        isSucceedTryIntoMineStack <- whenAOrElse(currentAutoMineStackState)(
+          mineStackAPI
+            .mineStackRepository
+            .tryIntoMineStack(player, itemStack, itemStack.getAmount),
+          false
+        )
+      } yield isSucceedTryIntoMineStack
     }
-
-  import cats.implicits._
 
   override def insertIntoPlayerInventoryOrDrop(
     prize: GachaPrize[ItemStack],
