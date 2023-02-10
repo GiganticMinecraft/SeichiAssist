@@ -332,7 +332,7 @@ class PlayerBlockBreakListener(
             false
           )
         } yield {
-          if (isSucceedTryIntoMineStack) event.setCancelled(true)
+          if (isSucceedTryIntoMineStack) event.setDropItems(false)
           else ()
         }
         program.unsafeRunSync()
