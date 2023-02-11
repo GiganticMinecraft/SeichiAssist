@@ -38,6 +38,22 @@ object NickNameMenu extends Menu {
         .build()
     )
 
+    val pointConvertButton: Button = Button(
+      new IconItemStackBuilder(Material.EMERALD)
+        .title(s"$YELLOW$UNDERLINE${BOLD}ポイント変換ボタン")
+        .lore(
+          List(
+            s"${RED}JMS投票で手に入るポイントを",
+            s"${RED}実績ポイントに変換できます。",
+            s"$YELLOW${BOLD}投票pt 10pt → 実績pt 3pt",
+            s"${AQUA}クリックで変換を一回行います。",
+            s"${GREEN}所有投票pt：${playerData.effectPoint}",
+            s"${GREEN}所有実績pt；${playerData.achievePoint.left}"
+          )
+        )
+        .build()
+    )
+
   }
 
 }
