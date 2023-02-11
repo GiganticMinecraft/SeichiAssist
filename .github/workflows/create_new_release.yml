@@ -61,7 +61,7 @@ jobs:
           TOKEN=${{ secrets.VERSION_BUMP_WORKFLOW_PUSH_TOKEN }}
 
           git add -A
-          git commit -m "[bump] ${{ steps.bump.outputs.old_version }} -> ${{ steps.bump.outputs.new_version }}"
+          git commit -m "chore(bump): ${{ steps.bump.outputs.old_version }} -> ${{ steps.bump.outputs.new_version }}"
 
           # masterへのマージはブランチが最新であることが要求されるため、ここでマージしておく
           git fetch origin master
