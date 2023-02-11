@@ -196,6 +196,8 @@ class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[
                     mineStackAPI
                       .mineStackRepository
                       .subtractStackedAmountOf(player, mineStackObject, 1)
+                      .toIO
+                      .unsafeRunSync()
 
                     commitPlacement()
                     b2.break()
