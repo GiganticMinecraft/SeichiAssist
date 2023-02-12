@@ -82,6 +82,20 @@ object NickNameMenu extends Menu {
         .build()
     )
 
+    val middlePartsSelect: Button = Button(
+      new IconItemStackBuilder(Material.MILK_BUCKET)
+        .title(s"$YELLOW$UNDERLINE${BOLD}中パーツ選択画面")
+        .lore(List(s"${RED}クリックで移動します"))
+        .build()
+    )
+
+    val tailPartsSelect: Button = Button(
+      new IconItemStackBuilder(Material.LAVA_BUCKET)
+        .title(s"$YELLOW$UNDERLINE${BOLD}後パーツ選択画面")
+        .lore(List(s"${RED}クリックで移動します。"))
+        .build()
+    )
+
   }
 
 }
