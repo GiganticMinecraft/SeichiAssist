@@ -6,6 +6,7 @@ import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.achievement.Nicknames
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.ChatColor._
@@ -53,6 +54,19 @@ object NickNameMenu extends Menu {
         )
         .build()
     )
+
+    val currentNickName: Button = {
+      val nickname = playerData.settings.nickname
+      val playerTitle =
+        Nicknames.getCombinedNicknameFor(nickname.id1, nickname.id2, nickname.id3)
+
+      Button(
+        new IconItemStackBuilder(Material.BOOK)
+          .title(s"$YELLOW$UNDERLINE${BOLD}現在の二つ名の確認")
+          .lore(List(s"$RED「$playerTitle」"))
+          .build()
+      )
+    }
 
   }
 
