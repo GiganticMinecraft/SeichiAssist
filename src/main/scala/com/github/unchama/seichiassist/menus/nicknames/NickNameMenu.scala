@@ -68,6 +68,20 @@ object NickNameMenu extends Menu {
       )
     }
 
+    val achievementPointShop: Button = Button(
+      new IconItemStackBuilder(Material.ITEM_FRAME)
+        .title(s"$YELLOW$UNDERLINE${BOLD}実績ポイントショップ")
+        .lore(List(s"${GREEN}クリックで開きます"))
+        .build()
+    )
+
+    val headPartsSelect: Button = Button(
+      new IconItemStackBuilder(Material.WATER_BUCKET)
+        .title(s"$YELLOW$UNDERLINE${BOLD}前パーツ選択画面")
+        .lore(List(s"${RED}クリックで移動します。"))
+        .build()
+    )
+
   }
 
 }
