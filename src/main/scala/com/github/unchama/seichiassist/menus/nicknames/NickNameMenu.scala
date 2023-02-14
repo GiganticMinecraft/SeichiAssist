@@ -9,9 +9,13 @@ import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import com.github.unchama.seichiassist.achievement.Nicknames
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
+import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
+import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.player.PlayerEffects.openInventoryEffect
 import org.bukkit.{Material, Sound}
 import org.bukkit.entity.Player
 import org.bukkit.ChatColor._
@@ -106,12 +110,22 @@ object NickNameMenu extends Menu {
       )
     }
 
-    val achievementPointShop: Button = Button(
-      new IconItemStackBuilder(Material.ITEM_FRAME)
+    val achievementPointShop: Button = {
+      val itemStack = new IconItemStackBuilder(Material.ITEM_FRAME)
         .title(s"$YELLOW$UNDERLINE${BOLD}実績ポイントショップ")
         .lore(List(s"${GREEN}クリックで開きます"))
         .build()
-    )
+
+      Button(
+        itemStack,
+        LeftClickButtonEffect {
+          SequentialEffect(
+            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 0.1f),
+            openInventoryEffect(MenuInventoryData.computePartsShopMenu(player))
+          )
+        }
+      )
+    }
 
     val headPartsSelect: Button = Button(
       new IconItemStackBuilder(Material.WATER_BUCKET)
