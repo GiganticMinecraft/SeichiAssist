@@ -18,7 +18,7 @@ import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
-import org.bukkit.entity.{EntityType, Monster, Player}
+import org.bukkit.entity.{Creeper, EntityType, Monster, Player}
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
 import org.bukkit.event.entity.{EntityDamageByEntityEvent, EntityExplodeEvent}
 import org.bukkit.event.player.{PlayerItemConsumeEvent, PlayerJoinEvent}
@@ -41,8 +41,8 @@ class ValentineListener[F[_]: ConcurrentEffect: NonServerThreadContextShift](
     if (!isInEvent) return
 
     event.getEntity match {
-      case monster: Monster if monster.getType == EntityType.CREEPER =>
-        randomlyDropItemAt(monster, droppedCookie, itemDropRate)
+      case creeper: Creeper =>
+        randomlyDropItemAt(creeper, droppedCookie, itemDropRate)
       case _ =>
     }
   }
