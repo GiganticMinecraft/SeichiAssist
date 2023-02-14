@@ -41,7 +41,7 @@ class ValentineListener[F[_]: ConcurrentEffect: NonServerThreadContextShift](
     if (!isInEvent) return
 
     event.getEntity match {
-      case monster: Monster if monster.isDead && monster.getType == EntityType.CREEPER =>
+      case monster: Monster if monster.getType == EntityType.CREEPER =>
         randomlyDropItemAt(monster, droppedCookie, itemDropRate)
       case _ =>
     }
