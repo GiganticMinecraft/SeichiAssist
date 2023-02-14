@@ -127,26 +127,56 @@ object NickNameMenu extends Menu {
       )
     }
 
-    val headPartsSelect: Button = Button(
-      new IconItemStackBuilder(Material.WATER_BUCKET)
+    val headPartsSelect: Button = {
+      val itemStack = new IconItemStackBuilder(Material.WATER_BUCKET)
         .title(s"$YELLOW$UNDERLINE${BOLD}前パーツ選択画面")
         .lore(List(s"${RED}クリックで移動します。"))
         .build()
-    )
 
-    val middlePartsSelect: Button = Button(
-      new IconItemStackBuilder(Material.MILK_BUCKET)
+      Button(
+        itemStack,
+        LeftClickButtonEffect {
+          SequentialEffect(
+            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 0.1f),
+            openInventoryEffect(MenuInventoryData.computeHeadPartCustomMenu(player))
+          )
+        }
+      )
+    }
+
+    val middlePartsSelect: Button = {
+      val itemStack = new IconItemStackBuilder(Material.MILK_BUCKET)
         .title(s"$YELLOW$UNDERLINE${BOLD}中パーツ選択画面")
         .lore(List(s"${RED}クリックで移動します"))
         .build()
-    )
 
-    val tailPartsSelect: Button = Button(
-      new IconItemStackBuilder(Material.LAVA_BUCKET)
+      Button(
+        itemStack,
+        LeftClickButtonEffect {
+          SequentialEffect(
+            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 0.1f),
+            openInventoryEffect(MenuInventoryData.computeMiddlePartCustomMenu(player))
+          )
+        }
+      )
+    }
+
+    val tailPartsSelect: Button = {
+      val itemStack = new IconItemStackBuilder(Material.LAVA_BUCKET)
         .title(s"$YELLOW$UNDERLINE${BOLD}後パーツ選択画面")
         .lore(List(s"${RED}クリックで移動します。"))
         .build()
-    )
+
+      Button(
+        itemStack,
+        LeftClickButtonEffect {
+          SequentialEffect(
+            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 0.1f),
+            openInventoryEffect(MenuInventoryData.computeTailPartCustomMenu(player))
+          )
+        }
+      )
+    }
 
   }
 
