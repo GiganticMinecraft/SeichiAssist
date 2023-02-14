@@ -18,7 +18,7 @@ import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
-import org.bukkit.entity.{EntityType, Monster, Player}
+import org.bukkit.entity.{Creeper, EntityType, Monster, Player}
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
 import org.bukkit.event.entity.{EntityDamageByEntityEvent, EntityExplodeEvent}
 import org.bukkit.event.player.{PlayerItemConsumeEvent, PlayerJoinEvent}
@@ -41,8 +41,8 @@ class ValentineListener[F[_]: ConcurrentEffect: NonServerThreadContextShift](
     if (!isInEvent) return
 
     event.getEntity match {
-      case monster: Monster if monster.isDead && monster.getType == EntityType.CREEPER =>
-        randomlyDropItemAt(monster, droppedCookie, itemDropRate)
+      case creeper: Creeper =>
+        randomlyDropItemAt(creeper, droppedCookie, itemDropRate)
       case _ =>
     }
   }
@@ -60,7 +60,7 @@ class ValentineListener[F[_]: ConcurrentEffect: NonServerThreadContextShift](
     event.getEntity match {
       case damaged: Monster if !excludedMonsters.contains(damaged.getType) =>
         val entityMaxHealth = damaged.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue
-        // damagedが死んだならば
+        // 巻き込まれたMonsterが死んだならば
         if (entityMaxHealth <= event.getDamage) {
           randomlyDropItemAt(damaged, droppedCookie, itemDropRate)
         }
