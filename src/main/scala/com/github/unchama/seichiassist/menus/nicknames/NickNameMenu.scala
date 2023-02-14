@@ -4,13 +4,15 @@ import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
+import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
-import org.bukkit.Material
+import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import org.bukkit.{Material, Sound}
 import org.bukkit.entity.Player
 import org.bukkit.ChatColor._
 
@@ -54,8 +56,8 @@ object NickNameMenu extends Menu {
 
     private val playerData = SeichiAssist.playermap.apply(player.getUniqueId)
 
-    val achievementPointsInformation: Button = Button(
-      new IconItemStackBuilder(Material.EMERALD_ORE)
+    val achievementPointsInformation: Button = {
+      val itemStack = new IconItemStackBuilder(Material.EMERALD_ORE)
         .title(s"$YELLOW$UNDERLINE${BOLD}実績ポイント情報")
         .lore(
           List(
@@ -66,7 +68,14 @@ object NickNameMenu extends Menu {
           )
         )
         .build()
-    )
+
+      Button(
+        itemStack,
+        LeftClickButtonEffect {
+          FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+        }
+      )
+    }
 
     val pointConvertButton: Button = Button(
       new IconItemStackBuilder(Material.EMERALD)
