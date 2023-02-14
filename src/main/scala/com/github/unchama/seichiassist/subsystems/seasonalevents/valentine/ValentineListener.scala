@@ -60,7 +60,7 @@ class ValentineListener[F[_]: ConcurrentEffect: NonServerThreadContextShift](
     event.getEntity match {
       case damaged: Monster if !excludedMonsters.contains(damaged.getType) =>
         val entityMaxHealth = damaged.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue
-        // damagedが死んだならば
+        // 巻き込まれたMonsterが死んだならば
         if (entityMaxHealth <= event.getDamage) {
           randomlyDropItemAt(damaged, droppedCookie, itemDropRate)
         }
