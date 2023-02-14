@@ -13,7 +13,7 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMain
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
-import com.github.unchama.targetedeffect.SequentialEffect
+import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects.openInventoryEffect
 import org.bukkit.{Material, Sound}
@@ -81,8 +81,8 @@ object NickNameMenu extends Menu {
       )
     }
 
-    val pointConvertButton: Button = Button(
-      new IconItemStackBuilder(Material.EMERALD)
+    val pointConvertButton: Button = {
+      val itemStack = new IconItemStackBuilder(Material.EMERALD)
         .title(s"$YELLOW$UNDERLINE${BOLD}ポイント変換ボタン")
         .lore(
           List(
@@ -95,7 +95,20 @@ object NickNameMenu extends Menu {
           )
         )
         .build()
-    )
+
+      Button(
+        itemStack,
+        LeftClickButtonEffect {
+          UnfocusedEffect {
+            if (playerData.effectPoint >= 10) {
+              playerData.convertEffectPointToAchievePoint()
+            } else {
+              player.sendMessage("エフェクトポイントが不足しています。")
+            }
+          }
+        }
+      )
+    }
 
     val currentNickName: Button = {
       val nickname = playerData.settings.nickname
