@@ -16,6 +16,7 @@ import com.github.unchama.seichiassist.menus.minestack.{
   MineStackMainMenu,
   MineStackSelectItemColorMenu
 }
+import com.github.unchama.seichiassist.menus.nicknames.NickNameMenu
 import com.github.unchama.seichiassist.menus.ranking.{RankingMenu, RankingRootMenu}
 import com.github.unchama.seichiassist.menus.skill.{
   ActiveSkillEffectMenu,
@@ -104,6 +105,8 @@ object TopLevelRouter {
       new PremiumPointTransactionHistoryMenu.Environment
     implicit lazy val serverSwitchMenuEnv: ServerSwitchMenu.Environment =
       new ServerSwitchMenu.Environment
+    implicit lazy val nickNameMenuEnv: NickNameMenu.Environment =
+      new NickNameMenu.Environment
     implicit lazy val achievementMenuEnv: AchievementMenu.Environment =
       new AchievementMenu.Environment
     implicit lazy val homeMenuEnv: HomeMenu.Environment = new HomeMenu.Environment
@@ -133,6 +136,7 @@ object TopLevelRouter {
 
     implicit lazy val stickMenuEnv: FirstPage.Environment = new FirstPage.Environment
 
+    implicit lazy val ioCanOpenNickNameMenu: IO CanOpen NickNameMenu.type = _.open
     implicit lazy val ioCanOpenSelectItemColorMenu: IO CanOpen MineStackSelectItemColorMenu =
       _.open
     implicit lazy val ioCanOpenAchievementGroupMenu: IO CanOpen AchievementGroupMenu = _.open
