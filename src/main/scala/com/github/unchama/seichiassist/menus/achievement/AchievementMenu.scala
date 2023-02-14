@@ -9,13 +9,12 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementCategory
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementCategory._
-import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.player.NicknameStyle
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.nicknames.NickNameMenu
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
-import com.github.unchama.targetedeffect.player.{FocusedSoundEffect, PlayerEffects}
+import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player

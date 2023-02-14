@@ -7,9 +7,7 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.MenuInventoryData.MenuType
-import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
-import com.github.unchama.targetedeffect.SequentialEffect
 import org.bukkit.entity.{EntityType, Player}
 import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}
 import org.bukkit.inventory.ItemStack
@@ -24,8 +22,7 @@ object OnClickTitleMenu {
   private def clickedSound(player: Player, sound: Sound, pitch: Float): Unit =
     player.playSound(player.getLocation, sound, 1f, pitch)
 
-  private def isApplicableAsPrevPageButton(is: ItemStack): Boolean =
-    is.getItemMeta.asInstanceOf[SkullMeta].getOwningPlayer.getName == "MHF_ArrowLeft"
+  
 
   private def isApplicableAsNextPageButton(is: ItemStack): Boolean =
     is.getItemMeta.asInstanceOf[SkullMeta].getOwningPlayer.getName == "MHF_ArrowRight"
