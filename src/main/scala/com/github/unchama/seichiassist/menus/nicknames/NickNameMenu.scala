@@ -1,25 +1,54 @@
 package com.github.unchama.seichiassist.menus.nicknames
 
 import cats.effect.IO
-import com.github.unchama.itemstackbuilder.IconItemStackBuilder
+import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
-import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
-import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import com.github.unchama.seichiassist.achievement.Nicknames
+import com.github.unchama.seichiassist.menus.CommonButtons
+import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.ChatColor._
 
 object NickNameMenu extends Menu {
 
-  override type Environment = this.type
+  class Environment(implicit val ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type)
 
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$DARK_PURPLE${BOLD}二つ名組み合わせシステム")
 
-  override def computeMenuLayout(player: Player)(
-    implicit environment: Environment
-  ): IO[MenuSlotLayout] = ???
+  import eu.timepit.refined.auto._
+
+  override def computeMenuLayout(
+    player: Player
+  )(implicit environment: Environment): IO[MenuSlotLayout] = {
+    import environment._
+
+    val backToAchievementMenu = CommonButtons.transferButton(
+      new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
+      s"$YELLOW$BOLD${UNDERLINE}実績・二つ名メニューへ",
+      AchievementMenu
+    )
+
+    val buttons = NickNameMenuButtons(player)
+    import buttons._
+
+    IO(
+      MenuSlotLayout(
+        ChestSlotRef(0, 0) -> achievementPointsInformation,
+        ChestSlotRef(0, 1) -> pointConvertButton,
+        ChestSlotRef(0, 4) -> currentNickName,
+        ChestSlotRef(1, 0) -> achievementPointShop,
+        ChestSlotRef(1, 2) -> headPartsSelect,
+        ChestSlotRef(1, 4) -> middlePartsSelect,
+        ChestSlotRef(1, 6) -> tailPartsSelect,
+        ChestSlotRef(3, 0) -> backToAchievementMenu
+      )
+    )
+  }
 
   private case class NickNameMenuButtons(player: Player) {
 
