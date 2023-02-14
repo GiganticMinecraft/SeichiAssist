@@ -8,6 +8,7 @@ import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.MenuInventoryData.MenuType
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
+import com.github.unchama.seichiassist.menus.nicknames.NickNameMenu
 import org.bukkit.entity.{EntityType, Player}
 import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}
 import org.bukkit.inventory.ItemStack
@@ -22,14 +23,13 @@ object OnClickTitleMenu {
   private def clickedSound(player: Player, sound: Sound, pitch: Float): Unit =
     player.playSound(player.getLocation, sound, 1f, pitch)
 
-  
-
   private def isApplicableAsNextPageButton(is: ItemStack): Boolean =
     is.getItemMeta.asInstanceOf[SkullMeta].getOwningPlayer.getName == "MHF_ArrowRight"
 
   def onPlayerClickTitleMenuEvent(event: InventoryClickEvent)(
     implicit effectEnvironment: EffectEnvironment,
-    ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type
+    ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type,
+    ioCanOpenNicknameMenu: IO CanOpen NickNameMenu.type
   ): Unit = {
     import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 
@@ -81,7 +81,7 @@ object OnClickTitleMenu {
         mat match {
           case Material.EMERALD_ORE | Material.EMERALD =>
             pd.recalculateAchievePoint()
-            player.openInventory(MenuInventoryData.computeRefreshedCombineMenu(player))
+            ioCanOpenNicknameMenu.open(NickNameMenu).apply(player).unsafeRunAsyncAndForget()
 
           case _ =>
         }
@@ -116,7 +116,7 @@ object OnClickTitleMenu {
 
           case Material.BARRIER =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            player.openInventory(MenuInventoryData.computeRefreshedCombineMenu(player))
+            ioCanOpenNicknameMenu.open(NickNameMenu).apply(player).unsafeRunAsyncAndForget()
 
           case _ if isSkull && isApplicableAsNextPageButton(current) =>
             // 次ページ
@@ -162,7 +162,7 @@ object OnClickTitleMenu {
 
           case Material.BARRIER =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            player.openInventory(MenuInventoryData.computeRefreshedCombineMenu(player))
+            ioCanOpenNicknameMenu.open(NickNameMenu).apply(player).unsafeRunAsyncAndForget()
 
           case _ if isSkull && isApplicableAsNextPageButton(current) =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
@@ -207,7 +207,7 @@ object OnClickTitleMenu {
 
           case Material.BARRIER =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            player.openInventory(MenuInventoryData.computeRefreshedCombineMenu(player))
+            ioCanOpenNicknameMenu.open(NickNameMenu).apply(player).unsafeRunAsyncAndForget()
 
           case _ if isSkull && isApplicableAsNextPageButton(current) =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
@@ -255,7 +255,7 @@ object OnClickTitleMenu {
 
           case Material.BARRIER =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            player.openInventory(MenuInventoryData.computeRefreshedCombineMenu(player))
+            ioCanOpenNicknameMenu.open(NickNameMenu).apply(player).unsafeRunAsyncAndForget()
 
           case _ if isSkull && isApplicableAsNextPageButton(current) =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)

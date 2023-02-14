@@ -680,6 +680,7 @@ class SeichiAssist extends JavaPlugin() {
     }
 
     import menuRouter.canOpenAchievementMenu
+    import menuRouter.ioCanOpenNickNameMenu
     // リスナーの登録
     val listeners = Seq(
       new PlayerJoinListener(),

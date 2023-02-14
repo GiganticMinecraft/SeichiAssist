@@ -10,6 +10,7 @@ import com.github.unchama.seichiassist.data.{ItemData, MenuInventoryData}
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
+import com.github.unchama.seichiassist.menus.nicknames.NickNameMenu
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
 import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.factories.BukkitGachaSkullData
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
@@ -31,6 +32,7 @@ class PlayerInventoryListener(
   manaApi: ManaApi[IO, SyncIO, Player],
   ioCanOpenFirstPage: IO CanOpen FirstPage.type,
   ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type,
+  ioCanOpenNicknameMenu: IO CanOpen NickNameMenu.type,
   ioOnMainThread: OnMinecraftServerThread[IO]
 ) extends Listener {
 
