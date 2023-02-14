@@ -87,7 +87,7 @@ object NickNameMenu extends Menu {
     val currentNickName: Button = {
       val nickname = playerData.settings.nickname
       val playerTitle =
-        Nicknames.getCombinedNicknameFor(nickname.id1, nickname.id2, nickname.id3)
+        Nicknames.getCombinedNicknameFor(nickname.id1, nickname.id2, nickname.id3).getOrElse("")
 
       Button(
         new IconItemStackBuilder(Material.BOOK)
