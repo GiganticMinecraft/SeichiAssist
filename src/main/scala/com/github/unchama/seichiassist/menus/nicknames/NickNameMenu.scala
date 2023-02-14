@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.menus.nicknames
 
-import cats.effect.IO
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
@@ -13,9 +13,9 @@ import com.github.unchama.menuinventory.{
   MenuFrame,
   MenuSlotLayout
 }
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import com.github.unchama.seichiassist.achievement.Nicknames
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
@@ -30,7 +30,8 @@ object NickNameMenu extends Menu {
 
   class Environment(
     implicit val ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type,
-    implicit val layoutPreparationContext: LayoutPreparationContext
+    implicit val layoutPreparationContext: LayoutPreparationContext,
+    implicit val onMinecraftServerThread: OnMinecraftServerThread[IO]
   )
 
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$DARK_PURPLE${BOLD}二つ名組み合わせシステム")
@@ -117,10 +118,14 @@ object NickNameMenu extends Menu {
           itemStack,
           LeftClickButtonEffect {
             UnfocusedEffect {
-              if (playerData.effectPoint >= 10) {
-                playerData.convertEffectPointToAchievePoint()
-              } else {
-                player.sendMessage("エフェクトポイントが不足しています。")
+              onMinecraftServerThread.runAction {
+                SyncIO {
+                  if (playerData.effectPoint >= 10) {
+                    playerData.convertEffectPointToAchievePoint()
+                  } else {
+                    player.sendMessage("エフェクトポイントが不足しています。")
+                  }
+                }
               }
             }
           }
