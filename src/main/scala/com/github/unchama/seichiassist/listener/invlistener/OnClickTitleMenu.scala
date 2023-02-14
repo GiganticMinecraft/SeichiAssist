@@ -79,52 +79,6 @@ object OnClickTitleMenu {
     topInventory.getTitle match {
       case MenuType.COMBINE.invName =>
         event.setCancelled(true)
-        // 二つ名組み合わせトップ
-        mat match {
-          // 実績ポイント最新化
-          case Material.EMERALD_ORE =>
-            clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
-
-          // エフェクトポイント→実績ポイント変換
-          case Material.EMERALD =>
-            clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
-            if (pd.effectPoint >= 10) {
-              pd.convertEffectPointToAchievePoint()
-            } else {
-              player.sendMessage("エフェクトポイントが不足しています。")
-            }
-
-          // パーツショップ
-          case Material.ITEM_FRAME =>
-            clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            player.openInventory(MenuInventoryData.computePartsShopMenu(player))
-
-          // 前パーツ
-          case Material.WATER_BUCKET =>
-            clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            player.openInventory(MenuInventoryData.computeHeadPartCustomMenu(player))
-
-          // 中パーツ
-          case Material.MILK_BUCKET =>
-            clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            player.openInventory(MenuInventoryData.computeMiddlePartCustomMenu(player))
-
-          // 後パーツ
-          case Material.LAVA_BUCKET =>
-            clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            player.openInventory(MenuInventoryData.computeTailPartCustomMenu(player))
-
-          case _ if isSkull && isApplicableAsPrevPageButton(current) =>
-            effectEnvironment.unsafeRunAsyncTargetedEffect(player)(
-              SequentialEffect(
-                CommonSoundEffects.menuTransitionFenceSound,
-                ioCanOpenAchievementMenu.open(AchievementMenu)
-              ),
-              "実績メニューを開く"
-            )
-
-          case _ =>
-        }
 
         // refresh if needed
         mat match {
