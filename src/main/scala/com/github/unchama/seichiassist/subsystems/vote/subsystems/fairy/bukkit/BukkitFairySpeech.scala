@@ -3,15 +3,15 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit
 import cats.effect.Sync
 import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyPersistence
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property._
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.resources.FairyMessageTable
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyPersistence
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.FairySpeech
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.service.FairySpeechService
 import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.entity.Player
 
-import java.time.{LocalTime, ZoneId}
+import java.time.ZoneId
 import scala.util.Random
 
 class BukkitFairySpeech[F[_]: Sync: JavaTime, G[_]: ContextCoercion[*[_], F]](

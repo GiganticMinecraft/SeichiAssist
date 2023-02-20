@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions
 
-import cats.effect.{ConcurrentEffect, Sync}
+import cats.effect.ConcurrentEffect
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
@@ -9,23 +9,20 @@ import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.RecoveryMana
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyPersistence
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
-  AppleAmount,
-  FairyAppleConsumeStrategy,
-  FairyManaRecoveryState
-}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{AppleAmount, FairyAppleConsumeStrategy, FairyManaRecoveryState}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.FairySpeech
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffectF
+import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.UUID
 import scala.util.Random
 
-class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
+class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion[*[_], F]](
   player: Player,
   fairySpeech: FairySpeech[F, Player]
 )(
@@ -45,8 +42,8 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
       isFairyUsing <- fairyPersistence.isFairyUsing(uuid)
       fairyEndTimeOpt <- fairyPersistence.fairyEndTime(uuid)
       endTime = fairyEndTimeOpt.get.endTimeOpt.get
-      finishUse <- Sync[F]
-        .delay(LocalDateTime.now())
+      finishUse <- JavaTime[F]
+        .getLocalDateTime(ZoneId.systemDefault())
         .map(now => isFairyUsing && endTime.isBefore(now))
       _ <- {
         fairySpeech
