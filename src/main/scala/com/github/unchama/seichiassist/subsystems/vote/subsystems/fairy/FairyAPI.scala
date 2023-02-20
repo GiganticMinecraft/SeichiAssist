@@ -53,7 +53,7 @@ trait FairyReadAPI[F[_], G[_], Player] {
   def rankByMostConsumedApple(player: Player): F[Option[AppleConsumeAmountRank]]
 
   /**
-   * @return 妖精に食べさせたりんごの量の順位上`top`件を返す作用
+   * @return 妖精に食べさせたりんごの量の上位`top`件を返す作用
    */
   def rankingByMostConsumedApple(top: Int): F[Vector[Option[AppleConsumeAmountRank]]]
 
@@ -75,7 +75,7 @@ object FairyReadAPI {
 trait FairySpeechAPI[F[_], Player] {
 
   /**
-   * @return 妖精が喋るときに音をだすかをトグルする作用
+   * @return 妖精が喋るときに音を再生するかをトグルする作用
    */
   def toggleSoundOnSpeak: Kleisli[F, Player, Unit]
 
