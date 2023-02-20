@@ -8,12 +8,13 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.r
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyPersistence
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.FairySpeech
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.service.FairySpeechService
+import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.entity.Player
 
-import java.time.LocalTime
+import java.time.{LocalTime, ZoneId}
 import scala.util.Random
 
-class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
+class BukkitFairySpeech[F[_]: Sync: JavaTime, G[_]: ContextCoercion[*[_], F]](
   fairySpeechServiceRepository: PlayerDataRepository[FairySpeechService[G]],
   fairyPersistence: FairyPersistence[F]
 ) extends FairySpeech[F, Player] {
@@ -34,7 +35,7 @@ class BukkitFairySpeech[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
 
   override def summonSpeech(player: Player): F[Unit] =
     for {
-      startHour <- Sync[F].delay(LocalTime.now().getHour)
+      startHour <- JavaTime[F].getLocalDateTime(ZoneId.systemDefault()).map(_.getHour)
       nameCalledByFairy = ScreenNameForFairy(player.getName)
       fairyMessages = getSummonMessagesByStartHour(startHour, nameCalledByFairy)
       message <- randomMessage(fairyMessages)
