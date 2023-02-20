@@ -30,8 +30,10 @@ case class MineStackObject[ItemStack: Cloneable](
       gachaPrizeAPI.canBeSignedAsGachaPrize
 
     for {
-      foundGachaPrize <- gachaPrizeAPI.findOfRegularPrizesByItemStack(itemStack, name)
-    } yield foundGachaPrize.map { gachaPrize => gachaPrize.materializeWithOwnerSignature(name) }
+      foundGachaPrize <- gachaPrizeAPI.findOfRegularGachaPrizesByNotSignedItemStack(itemStack)
+    } yield {
+      foundGachaPrize.map { gachaPrize => gachaPrize.materializeWithOwnerSignature(name) }
+    }
   }
 
 }

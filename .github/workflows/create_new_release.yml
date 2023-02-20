@@ -61,7 +61,7 @@ jobs:
           TOKEN=${{ secrets.VERSION_BUMP_WORKFLOW_PUSH_TOKEN }}
 
           git add -A
-          git commit -m "[bump] ${{ steps.bump.outputs.old_version }} -> ${{ steps.bump.outputs.new_version }}"
+          git commit -m "chore(bump): ${{ steps.bump.outputs.old_version }} -> ${{ steps.bump.outputs.new_version }}"
 
           # masterへのマージはブランチが最新であることが要求されるため、ここでマージしておく
           git fetch origin master
@@ -96,7 +96,6 @@ jobs:
         with:
           files: target/build/SeichiAssist.jar
           tag_name: "v${{ needs.bump_version.outputs.new_version }}"
-          release_name: "バージョン ${{ needs.bump_version.outputs.new_version }} リリース"
           draft: false
           prerelease: false
 

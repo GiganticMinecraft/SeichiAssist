@@ -18,7 +18,7 @@ import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
-import org.bukkit.entity.{EntityType, Monster, Player}
+import org.bukkit.entity.{Creeper, EntityType, Monster, Player}
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
 import org.bukkit.event.entity.{EntityDamageByEntityEvent, EntityExplodeEvent}
 import org.bukkit.event.player.{PlayerItemConsumeEvent, PlayerJoinEvent}
@@ -35,13 +35,15 @@ class ValentineListener[F[_]: ConcurrentEffect: NonServerThreadContextShift](
   ioOnMainThread: OnMinecraftServerThread[IO]
 ) extends Listener {
 
+  // クリーパーが爆発した場合、確率でアイテムをドロップ
   @EventHandler
   def onEntityExplode(event: EntityExplodeEvent): Unit = {
-    val entity = event.getEntity
-    if (!isInEvent || entity == null) return
+    if (!isInEvent) return
 
-    if (entity.isInstanceOf[Monster] && entity.isDead) {
-      randomlyDropItemAt(entity, droppedCookie, itemDropRate)
+    event.getEntity match {
+      case creeper: Creeper =>
+        randomlyDropItemAt(creeper, droppedCookie, itemDropRate)
+      case _ =>
     }
   }
 
@@ -49,20 +51,20 @@ class ValentineListener[F[_]: ConcurrentEffect: NonServerThreadContextShift](
   @EventHandler
   def onEntityDeath(event: EntityDamageByEntityEvent): Unit = {
     if (!isInEvent) return
+    if (event.getCause != DamageCause.ENTITY_EXPLOSION) return
 
     val damager = event.getDamager
-    if (damager == null) return
+    if (damager == null || damager.getType != EntityType.CREEPER) return
 
-    if (event.getCause != DamageCause.ENTITY_EXPLOSION || damager.getType != EntityType.CREEPER)
-      return
-
+    val excludedMonsters = Set(EntityType.WITCH, EntityType.PIG_ZOMBIE)
     event.getEntity match {
-      case monster: Monster =>
-        val entityMaxHealth = monster.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue
-        // monsterが死んだならば
+      case damaged: Monster if !excludedMonsters.contains(damaged.getType) =>
+        val entityMaxHealth = damaged.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue
+        // 巻き込まれたMonsterが死んだならば
         if (entityMaxHealth <= event.getDamage) {
-          randomlyDropItemAt(monster, droppedCookie, itemDropRate)
+          randomlyDropItemAt(damaged, droppedCookie, itemDropRate)
         }
+      case _ =>
     }
   }
 
@@ -70,7 +72,7 @@ class ValentineListener[F[_]: ConcurrentEffect: NonServerThreadContextShift](
   def onPlayerJoinEvent(event: PlayerJoinEvent): Unit = {
     if (isInEvent) {
       Seq(
-        s"$LIGHT_PURPLE${END_DATE_TIME}までの期間限定で、イベント『＜ブラックバレンタイン＞リア充 vs 整地民！』を開催しています。",
+        s"$LIGHT_PURPLE${END_DATE_TIME}までの期間限定で、イベント『バレンタインイベント$EVENT_YEAR』を開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",
         s"$DARK_GREEN$UNDERLINE$blogArticleUrl"
       ).foreach(event.getPlayer.sendMessage(_))

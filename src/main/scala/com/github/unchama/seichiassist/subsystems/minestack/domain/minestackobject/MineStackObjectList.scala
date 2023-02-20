@@ -10,9 +10,10 @@ trait MineStackObjectList[F[_], ItemStack, Player] {
   def allMineStackObjects: F[Vector[MineStackObject[ItemStack]]]
 
   /**
+   * @param itemStack 記名することのできるアイテムは、既に記名されていることを想定している
    * @return [[ItemStack]]から[[MineStackObject]]を取得しようとする作用
    */
-  def findByItemStack(
+  def findBySignedItemStack(
     itemStack: ItemStack,
     player: Player
   ): F[Option[MineStackObject[ItemStack]]]

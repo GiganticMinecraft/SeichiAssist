@@ -10,9 +10,9 @@ import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, LocalDateTime}
 
 object Valentine {
-  val EVENT_YEAR: Int = 2022
+  val EVENT_YEAR: Int = 2023
 
-  private val START_DATE = LocalDate.of(EVENT_YEAR, 2, 17)
+  private val START_DATE = LocalDate.of(EVENT_YEAR, 2, 13)
   private val END_DATE: LocalDate = LocalDate.of(EVENT_YEAR, 2, 27)
   val EVENT_DURATION: DateTimeDuration = DateTimeDuration.fromLocalDate(START_DATE, END_DATE)
   val END_DATE_TIME: String =

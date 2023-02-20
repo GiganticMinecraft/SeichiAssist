@@ -9,7 +9,11 @@ import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.RecoveryMana
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyPersistence
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{AppleAmount, FairyAppleConsumeStrategy, FairyManaRecoveryState}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
+  AppleAmount,
+  FairyAppleConsumeStrategy,
+  FairyManaRecoveryState
+}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.FairySpeech
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffectF

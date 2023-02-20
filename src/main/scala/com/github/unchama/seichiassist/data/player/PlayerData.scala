@@ -157,12 +157,13 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
   }
 
   // レベルを更新
-  def synchronizeDisplayNameToLevelState(): Unit = {
-    setDisplayName()
+  private def synchronizeDisplayNameToLevelState(): Unit = {
+    player.setDisplayName(displayName())
+    player.setPlayerListName(displayName())
   }
 
   // 表示される名前に整地Lvor二つ名を追加
-  def setDisplayName(): Unit = {
+  def displayName(): String = {
     val playerName = player.getName
 
     val amountData =
@@ -201,8 +202,7 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
       } { nickname => s"[$nickname]$playerName$WHITE" }
     }
 
-    player.setDisplayName(newDisplayName)
-    player.setPlayerListName(newDisplayName)
+    newDisplayName
   }
 
   /**

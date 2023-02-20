@@ -658,11 +658,11 @@ class BukkitMineStackObjectList[F[_]: Sync](
     allMineStackGroups.map(_.filter { group => categoryOf(group) == category })
   }
 
-  override def findByItemStack(
+  override def findBySignedItemStack(
     itemStack: ItemStack,
     player: Player
   ): F[Option[MineStackObject[ItemStack]]] = for {
-    foundGachaPrizeOpt <- gachaPrizeAPI.findOfRegularPrizesByItemStack(
+    foundGachaPrizeOpt <- gachaPrizeAPI.findOfRegularPrizesBySignedItemStack(
       itemStack,
       player.getName
     )

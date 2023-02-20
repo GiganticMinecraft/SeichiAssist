@@ -4,8 +4,6 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.achievement.Nicknames;
 import com.github.unchama.seichiassist.data.player.AchievementPoint;
 import com.github.unchama.seichiassist.data.player.PlayerData;
-import com.github.unchama.seichiassist.data.player.PlayerNickname;
-import com.github.unchama.seichiassist.subsystems.vote.domain.EffectPoint;
 import com.github.unchama.seichiassist.util.AsyncInventorySetter;
 import com.github.unchama.seichiassist.util.ItemMetaFactory;
 import org.bukkit.Bukkit;
@@ -63,128 +61,6 @@ public final class MenuInventoryData {
             ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "二つ名組合せメインメニューへ",
             ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
     );
-
-    /**
-     * 二つ名組み合わせ
-     * @param p プレイヤー
-     * @return メニュー
-     * 本来ならここにeffectPointではなくVoteAPIを渡したいところだが、
-     * VoteAPIを呼び出すにはcats.ioが必要で、Javaではcats.ioが呼び出せないのでこうするしかない。
-     */
-    public static Inventory computeRefreshedCombineMenu(final Player p, EffectPoint effectPoint) {
-        final UUID uuid = p.getUniqueId();
-        final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
-        //念のためエラー分岐
-        if (isError(p, playerdata, "二つ名組み合わせ")) return null;
-        final Inventory inventory = getEmptyInventory(4, MenuType.COMBINE.invName);
-
-        //各ボタンの設定
-        finishedHeadPageBuild.put(uuid, false);
-        finishedMiddlePageBuild.put(uuid, false);
-        finishedTailPageBuild.put(uuid, false);
-        finishedShopPageBuild.put(uuid, false);
-        headPartIndex.put(uuid, 0);
-        middlePartIndex.put(uuid, 0);
-        tailPartIndex.put(uuid, 0);
-        shopIndex.put(uuid, 0);
-        taihiIndex.put(uuid, 0);
-
-        //実績ポイントの最新情報反映ボタン
-        {
-            // dynamic button
-            final List<String> lore = Arrays.asList(
-                    ChatColor.RESET + "" + ChatColor.GREEN + "クリックで情報を最新化",
-                    ChatColor.RESET + "" + ChatColor.RED + "累計獲得量：" + playerdata.achievePoint().cumulativeTotal(),
-                    ChatColor.RESET + "" + ChatColor.RED + "累計消費量：" + playerdata.achievePoint().used(),
-                    ChatColor.RESET + "" + ChatColor.AQUA + "使用可能量：" + playerdata.achievePoint().left()
-            );
-
-            final ItemStack itemstack = build(
-                    Material.EMERALD_ORE,
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績ポイント 情報",
-                    lore
-            );
-
-            AsyncInventorySetter.setItemAsync(inventory, 0,  itemstack);
-        }
-        //パーツショップ
-        {
-            // const button
-            final ItemStack itemstack = build(
-                    Material.ITEM_FRAME,
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績ポイントショップ",
-                    ChatColor.RESET + "" + ChatColor.GREEN + "クリックで開きます"
-            );
-            AsyncInventorySetter.setItemAsync(inventory, 9,  itemstack);
-        }
-        //エフェクトポイントからの変換ボタン
-        {
-            // dynamic button
-            final List<String> lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "JMS投票で手に入るポイントを",
-                    ChatColor.RESET + "" + ChatColor.RED + "実績ポイントに変換できます。",
-                    ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "投票pt 10pt → 実績pt 3pt",
-                    ChatColor.RESET + "" + ChatColor.AQUA + "クリックで変換を一回行います。",
-                    ChatColor.RESET + "" + ChatColor.GREEN + "所有投票pt :" + effectPoint.value(),
-                    ChatColor.RESET + "" + ChatColor.GREEN + "所有実績pt :" + playerdata.achievePoint().left()
-            );
-
-            final ItemStack itemstack = build(
-                    Material.EMERALD,
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ポイント変換ボタン",
-                    lore
-            );
-            AsyncInventorySetter.setItemAsync(inventory, 1,  itemstack);
-        }
-
-        {
-            final PlayerNickname nickname = playerdata.settings().nickname();
-            final String playerTitle = Nicknames.getTitleFor(nickname.id1(), nickname.id2(), nickname.id3());
-            final ItemStack itemStack = build(
-                    Material.BOOK,
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "現在の二つ名の確認",
-                    ChatColor.RESET + "" + ChatColor.RED + "「" + playerTitle + "」"
-            );
-            AsyncInventorySetter.setItemAsync(inventory, 4,  itemStack);
-        }
-
-        {
-            // const button
-            final ItemStack toHeadSelection = build(
-                    Material.WATER_BUCKET,
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "前パーツ選択画面",
-                    ChatColor.RESET + "" + ChatColor.RED + "クリックで移動します"
-            );
-
-            // const button
-            final ItemStack toMiddleSelection = build(
-                    Material.MILK_BUCKET,
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "中パーツ選択画面",
-                    ChatColor.RESET + "" + ChatColor.RED + "クリックで移動します"
-            );
-
-            // const button
-            final ItemStack toTailSelection = build(
-                    Material.LAVA_BUCKET,
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "後パーツ選択画面",
-                    ChatColor.RESET + "" + ChatColor.RED + "クリックで移動します"
-            );
-            AsyncInventorySetter.setItemAsync(inventory, 11, toHeadSelection);
-            AsyncInventorySetter.setItemAsync(inventory, 13, toMiddleSelection);
-            AsyncInventorySetter.setItemAsync(inventory, 15, toTailSelection);
-        }
-
-        // 1ページ目を開く
-        {
-            // const Button
-            final ItemStack itemstack = buildPlayerSkull(
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績・二つ名メニューへ",
-                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動",
-                    "MHF_ArrowLeft"
-            );
-            AsyncInventorySetter.setItemAsync(inventory, 27, itemstack.clone());
-        }
-        return inventory;
-    }
 
     public enum MenuType {
         HEAD("" + ChatColor.DARK_PURPLE + ChatColor.BOLD + "二つ名組合せ「前」"),

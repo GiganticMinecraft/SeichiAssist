@@ -36,8 +36,13 @@ class BukkitMineStackRepository[F[_]: Sync](
     mineStackObject: MineStackObject[ItemStack],
     amount: Int
   ): F[Unit] = mineStackObjectRepository(player).update { mineStackObjects =>
-    ListExtra
-      .rePrepend(mineStackObjects)(_.mineStackObject == mineStackObject, _.increase(amount))
+    ListExtra.rePrependOrAdd(mineStackObjects)(
+      _.mineStackObject == mineStackObject,
+      {
+        case Some(value) => value.increase(amount)
+        case None        => MineStackObjectWithAmount(mineStackObject, amount)
+      }
+    )
   }
 
   override def subtractStackedAmountOf(
@@ -63,7 +68,7 @@ class BukkitMineStackRepository[F[_]: Sync](
 
   override def tryIntoMineStack(player: Player, itemStack: ItemStack, amount: Int): F[Boolean] =
     for {
-      foundMineStackObject <- mineStackObjectList.findByItemStack(itemStack, player)
+      foundMineStackObject <- mineStackObjectList.findBySignedItemStack(itemStack, player)
       _ <- foundMineStackObject.traverse(addStackedAmountOf(player, _, amount))
     } yield foundMineStackObject.isDefined
 }

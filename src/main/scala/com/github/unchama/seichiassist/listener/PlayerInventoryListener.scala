@@ -8,9 +8,8 @@ import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.player.GiganticBerserk
 import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
-import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
-import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.util.InventoryOperations
+import com.github.unchama.seichiassist.menus.nicknames.NickNameMenu
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
@@ -23,8 +22,7 @@ import org.bukkit.{Bukkit, Material, Sound}
 
 class PlayerInventoryListener(
   implicit effectEnvironment: EffectEnvironment,
-  voteAPI: VoteAPI[IO, Player],
-  ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type,
+  ioCanOpenNicknameMenu: IO CanOpen NickNameMenu.type,
   ioOnMainThread: OnMinecraftServerThread[IO]
 ) extends Listener {
 

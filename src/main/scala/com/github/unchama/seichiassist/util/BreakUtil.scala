@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.util
 
 import cats.Monad
 import cats.effect.{IO, SyncIO}
+import com.github.unchama.generic.ApplicativeExtra.whenAOrElse
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist._
@@ -154,9 +155,9 @@ object BreakUtil {
       massBreakBlock(player, Set(targetBlock), dropLocation, tool, shouldPlayBreakSound)
     )
 
-  private sealed trait BlockBreakResult
+  sealed trait BlockBreakResult
 
-  private object BlockBreakResult {
+  object BlockBreakResult {
 
     case class ItemDrop(itemStack: ItemStack) extends BlockBreakResult
 
@@ -170,7 +171,7 @@ object BreakUtil {
    * Bukkit/Spigotが提供するBlock.getDropsは信頼できる値を返さない。 本来はNMSのメソッドを呼ぶのが確実らしいが、一時的な実装として使用している。 参考:
    * https://www.spigotmc.org/threads/getdrops-on-crops-not-functioning-as-expected.167751/#post-1779788
    */
-  private def dropItemOnTool(
+  def dropItemOnTool(
     tool: BreakTool
   )(blockInformation: (Location, Material, Byte)): Option[BlockBreakResult] = {
     val fortuneLevel = tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS)
@@ -231,6 +232,12 @@ object BreakUtil {
               new ItemStack(Material.REDSTONE, withBonus)
             case Material.QUARTZ_ORE =>
               new ItemStack(Material.QUARTZ, bonus)
+            // グロウストーンは幸運エンチャントがついていると高確率でより多くのダストをドロップする
+            // しかし、最大でも4個までしかドロップしない
+            case Material.GLOWSTONE =>
+              val withBonus = bonus * (rand * 3 + 2).toInt
+              val amount = if (withBonus > 4) 4 else withBonus
+              new ItemStack(Material.GLOWSTONE_DUST, amount)
             case _ =>
               // unreachable
               new ItemStack(blockMaterial, bonus)
@@ -254,6 +261,12 @@ object BreakUtil {
           Some(BlockBreakResult.ItemDrop(new ItemStack(Material.REDSTONE, (rand + 4).toInt)))
         case Material.QUARTZ_ORE =>
           Some(BlockBreakResult.ItemDrop(new ItemStack(Material.QUARTZ)))
+        // グロウストーンは、2から4個のグロウストーンダストをドロップする
+        case Material.GLOWSTONE =>
+          Some(
+            BlockBreakResult
+              .ItemDrop(new ItemStack(Material.GLOWSTONE_DUST, (rand * 3 + 2).toInt))
+          )
         case Material.STONE =>
           Some {
             BlockBreakResult.ItemDrop {
@@ -382,17 +395,25 @@ object BreakUtil {
         (ItemStackUtil.amalgamate(drops), silverFishLocations)
       }
 
+      currentAutoMineStackState <- SeichiAssist
+        .instance
+        .mineStackSystem
+        .api
+        .autoMineStack(player)
+
       itemsToBeDropped <-
         // アイテムのマインスタック自動格納を試みる
         // 格納できなかったらドロップするアイテムとしてリストに入れる
         breakResults._1.toList.traverse { itemStack =>
-          SeichiAssist
-            .instance
-            .mineStackSystem
-            .api
-            .mineStackRepository
-            .tryIntoMineStack(player, itemStack, itemStack.getAmount)
-            .map(Option.when(_)(itemStack))
+          whenAOrElse(currentAutoMineStackState)(
+            SeichiAssist
+              .instance
+              .mineStackSystem
+              .api
+              .mineStackRepository
+              .tryIntoMineStack(player, itemStack, itemStack.getAmount),
+            false
+          ).map(Option.unless(_)(itemStack))
         }
 
       _ <- IO {

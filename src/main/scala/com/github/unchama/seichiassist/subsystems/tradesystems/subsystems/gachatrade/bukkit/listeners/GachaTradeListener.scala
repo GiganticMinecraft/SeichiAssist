@@ -6,6 +6,7 @@ import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.GachaPoint
+import com.github.unchama.seichiassist.subsystems.tradesystems.domain.TradeSuccessResult
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.traderules.BigOrRegular
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.domain.{
   GachaListProvider,
@@ -74,10 +75,11 @@ class GachaTradeListener[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]]
      */
     val tradableItemStacks = tradedInformation.tradedSuccessResult
     val bigItemStackAmounts = tradableItemStacks.collect {
-      case result if result.transactionInfo._1 == BigOrRegular.Big => result.amount
+      case TradeSuccessResult(_, _, (rarity, amount)) if rarity == BigOrRegular.Big => amount
     }.sum
     val regularItemStackAmounts = tradableItemStacks.collect {
-      case result if result.transactionInfo._1 == BigOrRegular.Regular => result.amount
+      case TradeSuccessResult(_, _, (rarity, amount)) if rarity == BigOrRegular.Regular =>
+        amount
     }.sum
 
     if (tradeAmount == 0) {

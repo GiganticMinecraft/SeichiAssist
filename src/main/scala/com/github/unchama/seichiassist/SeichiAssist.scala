@@ -507,7 +507,8 @@ class SeichiAssist extends JavaPlugin() {
     gachaTradeSystem,
     sharedInventorySystem,
     mineStackSystem,
-    consumeGachaTicketSystem
+    consumeGachaTicketSystem,
+    openirontrapdoor.System.wired
   )
 
   private lazy val buildAssist: BuildAssist = {
@@ -699,7 +700,7 @@ class SeichiAssist extends JavaPlugin() {
       case (commandName, executor) => getCommand(commandName).setExecutor(executor)
     }
 
-    import menuRouter.canOpenAchievementMenu
+    import menuRouter.ioCanOpenNickNameMenu
     // リスナーの登録
     val listeners = Seq(
       new PlayerJoinListener(),

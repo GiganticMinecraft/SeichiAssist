@@ -1,6 +1,6 @@
 package com.github.unchama.buildassist.menu
 
-import cats.data.NonEmptyList
+import cats.data.{Kleisli, NonEmptyList}
 import cats.effect.IO
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerReference}
@@ -160,7 +160,7 @@ object MineStackMassCraftMenu {
           } else if (!allIngredientsAvailable) {
             MessageEffect(s"${RED}クラフト材料が足りません")
           } else emptyEffect
-        _ <- ingredientObjects.traverse {
+        craftEffect = ingredientObjects.traverse {
           case (mineStackObject, amount) =>
             environment
               .mineStackAPI
@@ -177,13 +177,20 @@ object MineStackMassCraftMenu {
             s"${enumerateChunkDetails(productObjects)}変換"
 
           MessageEffectF[IO](successMessage).apply(player)
-        }.whenA(!isLowerBuildLevel && allIngredientsAvailable)
-      } yield LeftClickButtonEffect(
-        SequentialEffect(
-          errorEffect,
-          FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+        }
+      } yield {
+        val effect =
+          if (!isLowerBuildLevel && allIngredientsAvailable)
+            Kleisli { _: Player => craftEffect }
+          else errorEffect
+
+        LeftClickButtonEffect(
+          SequentialEffect(
+            effect,
+            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+          )
         )
-      )
+      }
 
       for {
         icon <- iconComputation

@@ -57,7 +57,7 @@ object System {
     val system: F[System[F]] = for {
       persistedGachaPrizes <- _gachaPersistence.list
       expBottle = GachaPrize(
-        new ItemStack(Material.EXP_BOTTLE, 1),
+        new ItemStack(Material.EXP_BOTTLE, 20),
         GachaProbability(0.1),
         signOwner = false,
         GachaPrizeId(2),
@@ -146,17 +146,27 @@ object System {
             override def canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
               _canBeSignedAsGachaPrize
 
-            override def findOfRegularPrizesByItemStack(
+            override def findOfRegularPrizesBySignedItemStack(
               itemStack: ItemStack,
               name: String
             ): F[Option[GachaPrize[ItemStack]]] = for {
               prizes <- allGachaPrizesListReference.get
               defaultGachaPrizes = prizes.filter(_.gachaEventName.isEmpty)
             } yield defaultGachaPrizes.find { gachaPrize =>
-              if (gachaPrize.signOwner)
+              if (gachaPrize.signOwner) {
                 gachaPrize.materializeWithOwnerSignature(name).isSimilar(itemStack)
-              else
+              } else {
                 gachaPrize.itemStack.isSimilar(itemStack)
+              }
+            }
+
+            override def findOfRegularGachaPrizesByNotSignedItemStack(
+              itemStack: ItemStack
+            ): F[Option[GachaPrize[ItemStack]]] = for {
+              prizes <- allGachaPrizesListReference.get
+              defaultGachaPrizes = prizes.filter(_.gachaEventName.isEmpty)
+            } yield defaultGachaPrizes.find { gachaPrize =>
+              gachaPrize.itemStack.isSimilar(itemStack)
             }
           }
 
