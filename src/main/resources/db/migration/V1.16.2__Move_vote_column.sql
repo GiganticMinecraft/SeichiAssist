@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS vote(
  chain_vote_number INT NOT NULL,
  effect_point INT NOT NULL,
  given_effect_point INT NOT NULL,
- last_vote DATETIME NOT NULL
+ last_vote DATETIME
 );
 
 INSERT INTO
