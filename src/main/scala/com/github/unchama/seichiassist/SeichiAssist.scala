@@ -39,7 +39,6 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
   asyncShift,
   onMainThread
 }
-import com.github.unchama.seichiassist.data.RankData
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.domain.actions.{
@@ -85,6 +84,8 @@ import com.github.unchama.seichiassist.subsystems.minestack.bukkit.MineStackComm
 import com.github.unchama.seichiassist.subsystems.present.infrastructure.GlobalPlayerAccessor
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
+import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.GtToSiinaAPI
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global._
@@ -451,6 +452,23 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.idletime.subsystems.awayscreenname.System.wired[IO].unsafeRunSync()
   }
 
+  // TODO: これはprivateであるべきだが、Achievementシステムが再実装されるまでやむを得ずpublicにする
+  lazy val voteSystem: subsystems.vote.System[IO, Player] = {
+    implicit val breakCountAPI: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
+
+    subsystems.vote.System.wired[IO, SyncIO]
+  }
+
+  private lazy val fairySystem: subsystems.vote.subsystems.fairy.System[IO, SyncIO, Player] = {
+    import PluginExecutionContexts.{asyncShift, sleepAndRoutineContext}
+    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+    implicit val breakCountAPI: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
+    implicit val voteAPI: VoteAPI[IO, Player] = voteSystem.api
+    implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
+
+    subsystems.vote.subsystems.fairy.System.wired.unsafeRunSync()
+  }
+
   /* TODO: mineStackSystemは本来privateであるべきだが、mineStackにアイテムを格納するAPIが現状の
       BreakUtilの実装から呼び出されている都合上やむを得ずpublicになっている。*/
   lazy val mineStackSystem: subsystems.minestack.System[IO, Player, ItemStack] =
@@ -476,6 +494,8 @@ class SeichiAssist extends JavaPlugin() {
     homeSystem,
     presentSystem,
     anywhereEnderSystem,
+    voteSystem,
+    fairySystem,
     gachaPrizeSystem,
     idleTimeSystem,
     awayScreenNameSystem,
@@ -638,6 +658,8 @@ class SeichiAssist extends JavaPlugin() {
       anywhereEnderSystem.accessApi
     implicit val sharedInventoryAPI: SharedInventoryAPI[IO, Player] =
       sharedInventorySystem.api
+    implicit val voteAPI: VoteAPI[IO, Player] = voteSystem.api
+    implicit val fairyAPI: FairyAPI[IO, SyncIO, Player] = fairySystem.api
     implicit val donateAPI: DonatePremiumPointAPI[IO] = donateSystem.api
     implicit val gachaTicketAPI: GachaTicketAPI[IO] =
       gachaTicketSystem.api
@@ -662,7 +684,6 @@ class SeichiAssist extends JavaPlugin() {
 
     // コマンドの登録
     Map(
-      "vote" -> VoteCommand.executor,
       "map" -> MapCommand.executor,
       "ef" -> new EffectCommand(fastDiggingEffectSystem.settingsApi).executor,
       "seichiassist" -> SeichiAssistCommand.executor,
@@ -679,7 +700,6 @@ class SeichiAssist extends JavaPlugin() {
       case (commandName, executor) => getCommand(commandName).setExecutor(executor)
     }
 
-    import menuRouter.canOpenAchievementMenu
     import menuRouter.ioCanOpenNickNameMenu
     // リスナーの登録
     val listeners = Seq(
@@ -708,11 +728,6 @@ class SeichiAssist extends JavaPlugin() {
 
     listeners.foreach {
       getServer.getPluginManager.registerEvents(_, this)
-    }
-
-    // ランキングリストを最新情報に更新する
-    if (!SeichiAssist.databaseGateway.playerDataManipulator.successRankingUpdate()) {
-      throw new RuntimeException("ランキングデータの作成に失敗しました。サーバーを停止します…")
     }
 
     startRepeatedJobs()
@@ -869,12 +884,6 @@ class SeichiAssist extends JavaPlugin() {
 object SeichiAssist {
   // Playerdataに依存するデータリスト
   val playermap: mutable.HashMap[UUID, PlayerData] = mutable.HashMap()
-  // プレイ時間ランキング表示用データリスト
-  val ranklist_playtick: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
-  // 投票ポイント表示用データリスト
-  val ranklist_p_vote: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
-  // マナ妖精表示用のデータリスト
-  val ranklist_p_apple: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
 
   var instance: SeichiAssist = _
   // デバッグフラグ(デバッグモード使用時はここで変更するのではなくconfig.ymlの設定値を変更すること！)
@@ -883,7 +892,6 @@ object SeichiAssist {
   // TODO staticであるべきではない
   var databaseGateway: DatabaseGateway = _
   var seichiAssistConfig: Config = _
-  var allplayergiveapplelong = 0L
 
   object Scopes {
     implicit val globalChatInterceptionScope: InterceptionScope[UUID, String] = {

@@ -1,13 +1,11 @@
 package com.github.unchama.seichiassist.listener.invlistener
 
 import cats.effect.IO
-import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.MenuInventoryData.MenuType
-import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.menus.nicknames.NickNameMenu
 import org.bukkit.entity.{EntityType, Player}
 import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}
@@ -26,11 +24,9 @@ object OnClickTitleMenu {
   private def isApplicableAsNextPageButton(is: ItemStack): Boolean =
     is.getItemMeta.asInstanceOf[SkullMeta].getOwningPlayer.getName == "MHF_ArrowRight"
 
-  def onPlayerClickTitleMenuEvent(event: InventoryClickEvent)(
-    implicit effectEnvironment: EffectEnvironment,
-    ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type,
-    ioCanOpenNicknameMenu: IO CanOpen NickNameMenu.type
-  ): Unit = {
+  def onPlayerClickTitleMenuEvent(
+    event: InventoryClickEvent
+  )(implicit ioCanOpenNicknameMenu: IO CanOpen NickNameMenu.type): Unit = {
     import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 
     // 外枠のクリック処理なら終了
@@ -74,18 +70,6 @@ object OnClickTitleMenu {
     val mat = current.getType
     val isSkull = mat == Material.SKULL_ITEM
     topInventory.getTitle match {
-      case MenuType.COMBINE.invName =>
-        event.setCancelled(true)
-
-        // refresh if needed
-        mat match {
-          case Material.EMERALD_ORE | Material.EMERALD =>
-            pd.recalculateAchievePoint()
-            ioCanOpenNicknameMenu.open(NickNameMenu).apply(player).unsafeRunAsyncAndForget()
-
-          case _ =>
-        }
-
       case MenuType.HEAD.invName =>
         event.setCancelled(true)
         mat match {

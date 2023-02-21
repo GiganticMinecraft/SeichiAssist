@@ -19,6 +19,7 @@ import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
+import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects.openInventoryEffect
@@ -31,7 +32,8 @@ object NickNameMenu extends Menu {
   class Environment(
     implicit val ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type,
     implicit val layoutPreparationContext: LayoutPreparationContext,
-    implicit val onMinecraftServerThread: OnMinecraftServerThread[IO]
+    implicit val onMinecraftServerThread: OnMinecraftServerThread[IO],
+    implicit val voteAPI: VoteAPI[IO, Player]
   )
 
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$DARK_PURPLE${BOLD}二つ名組み合わせシステム")
@@ -72,6 +74,7 @@ object NickNameMenu extends Menu {
   private case class NickNameMenuButtons(player: Player)(implicit environment: Environment) {
 
     import environment._
+    import cats.implicits._
 
     private val playerData = SeichiAssist.playermap.apply(player.getUniqueId)
 
@@ -99,8 +102,9 @@ object NickNameMenu extends Menu {
     }
 
     val pointConvertButton: IO[Button] = RecomputedButton {
-      IO {
-        val itemStack = new IconItemStackBuilder(Material.EMERALD)
+      for {
+        effectPoint <- voteAPI.effectPoints(player).map(_.value)
+        itemStack = new IconItemStackBuilder(Material.EMERALD)
           .title(s"$YELLOW$UNDERLINE${BOLD}ポイント変換ボタン")
           .lore(
             List(
@@ -108,29 +112,28 @@ object NickNameMenu extends Menu {
               s"${RED}実績ポイントに変換できます。",
               s"$YELLOW${BOLD}投票pt 10pt → 実績pt 3pt",
               s"${AQUA}クリックで変換を一回行います。",
-              s"${GREEN}所有投票pt：${playerData.effectPoint}",
+              s"${GREEN}所有投票pt：$effectPoint",
               s"${GREEN}所有実績pt；${playerData.achievePoint.left}"
             )
           )
           .build()
-
-        Button(
+        button = Button(
           itemStack,
           LeftClickButtonEffect {
             UnfocusedEffect {
               onMinecraftServerThread.runAction {
-                SyncIO {
-                  if (playerData.effectPoint >= 10) {
-                    playerData.convertEffectPointToAchievePoint()
-                  } else {
-                    player.sendMessage("エフェクトポイントが不足しています。")
-                  }
-                }
+                for {
+                  _ <- SyncIO {
+                    if (effectPoint >= 10)
+                      playerData.convertEffectPointToAchievePoint
+                    else player.sendMessage("エフェクトポイントが不足しています。")
+                  }.whenA(effectPoint >= 10)
+                } yield ()
               }
             }
           }
         )
-      }
+      } yield button
     }
 
     val currentNickName: Button = {

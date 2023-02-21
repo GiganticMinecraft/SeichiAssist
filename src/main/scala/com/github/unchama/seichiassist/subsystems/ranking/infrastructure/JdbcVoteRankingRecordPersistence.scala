@@ -12,8 +12,8 @@ class JdbcVoteRankingRecordPersistence[F[_]: Sync]
     extends RankingRecordPersistence[F, VoteCount] {
   override def getAllRankingRecords: F[Vector[RankingRecord[VoteCount]]] = Sync[F].delay {
     DB.readOnly { implicit session =>
-      sql"SELECT name,p_vote from playerdata"
-        .map { rs => RankingRecord(rs.string("name"), VoteCount(rs.int("p_vote"))) }
+      sql"SELECT playerdata.name,vote_number FROM vote INNER JOIN playerdata ON vote.uuid = playerdata.uuid"
+        .map { rs => RankingRecord(rs.string("name"), VoteCount(rs.int("vote_number"))) }
         .list()
         .apply()
         .toVector

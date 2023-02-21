@@ -48,6 +48,8 @@ import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.ranking.api.AssortedRankingApi
 import com.github.unchama.seichiassist.subsystems.ranking.domain.values.{LoginTime, VoteCount}
 import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
+import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -83,6 +85,8 @@ object TopLevelRouter {
     homeReadApi: HomeReadAPI[IO],
     enderChestAccessApi: AnywhereEnderChestAPI[IO],
     sharedInventoryAPI: SharedInventoryAPI[IO, Player],
+    voteAPI: VoteAPI[IO, Player],
+    fairyAPI: FairyAPI[IO, SyncIO, Player],
     donateAPI: DonatePremiumPointAPI[IO],
     gachaTicketAPI: GachaTicketAPI[IO],
     gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
@@ -136,9 +140,14 @@ object TopLevelRouter {
     implicit lazy val rankingRootMenuEnv: RankingRootMenu.Environment =
       new RankingRootMenu.Environment
 
+    implicit lazy val voteMenuEnv: VoteMenu.Environment = new VoteMenu.Environment
+
     implicit lazy val stickMenuEnv: FirstPage.Environment = new FirstPage.Environment
 
+    implicit lazy val ioCanOpenVoteMenu: IO CanOpen VoteMenu.type = _.open
+
     implicit lazy val ioCanOpenNickNameMenu: IO CanOpen NickNameMenu.type = _.open
+
     implicit lazy val ioCanOpenSelectItemColorMenu: IO CanOpen MineStackSelectItemColorMenu =
       _.open
     implicit lazy val ioCanOpenAchievementGroupMenu: IO CanOpen AchievementGroupMenu = _.open

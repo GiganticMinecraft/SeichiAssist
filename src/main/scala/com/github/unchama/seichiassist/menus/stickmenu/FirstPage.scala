@@ -11,7 +11,6 @@ import com.github.unchama.menuinventory.slot.button.action.{
   LeftClickButtonEffect
 }
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
-import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.descrptions.PlayerStatsLoreGenerator
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
@@ -19,7 +18,12 @@ import com.github.unchama.seichiassist.menus.home.HomeMenu
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
 import com.github.unchama.seichiassist.menus.ranking.RankingRootMenu
 import com.github.unchama.seichiassist.menus.skill.{ActiveSkillMenu, PassiveSkillMenu}
-import com.github.unchama.seichiassist.menus.{CommonButtons, RegionMenu, ServerSwitchMenu}
+import com.github.unchama.seichiassist.menus.{
+  CommonButtons,
+  RegionMenu,
+  ServerSwitchMenu,
+  VoteMenu
+}
 import com.github.unchama.seichiassist.subsystems.anywhereender.AnywhereEnderChestAPI
 import com.github.unchama.seichiassist.subsystems.anywhereender.domain.AccessDenialReason
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
@@ -86,6 +90,7 @@ object FirstPage extends Menu {
     val ioCanOpenHomeMenu: IO CanOpen HomeMenu,
     val ioCanOpenPassiveSkillMenu: IO CanOpen PassiveSkillMenu.type,
     val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type,
+    val ioCanOpenVoteMenu: IO CanOpen VoteMenu.type,
     val enderChestAccessApi: AnywhereEnderChestAPI[IO],
     val gachaTicketAPI: GachaTicketAPI[IO]
   )
@@ -737,7 +742,7 @@ object FirstPage extends Menu {
       )
     }
 
-    val votePointMenuButton: Button = {
+    def votePointMenuButton(implicit ioCanOpenVoteMenu: IO CanOpen VoteMenu.type): Button = {
       val iconItemStack =
         new IconItemStackBuilder(Material.DIAMOND)
           .enchanted()
@@ -749,8 +754,7 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           CommonSoundEffects.menuTransitionFenceSound,
-          // TODO メニューに置き換える
-          ComputedEffect(p => openInventoryEffect(MenuInventoryData.getVotingMenuData(p)))
+          ioCanOpenVoteMenu.open(VoteMenu)
         )
       )
     }

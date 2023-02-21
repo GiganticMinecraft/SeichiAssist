@@ -14,6 +14,7 @@ import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.nicknames.NickNameMenu
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
+import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import org.bukkit.ChatColor._
@@ -29,6 +30,7 @@ object AchievementMenu extends Menu {
     implicit val ioCanOpenStickMenu: IO CanOpen FirstPage.type,
     val ioCanOpenCategoryMenu: IO CanOpen AchievementCategoryMenu,
     val ioOnMainThread: OnMinecraftServerThread[IO],
+    val voteAPI: VoteAPI[IO, Player],
     val ioCanOpenNickNameMenu: IO CanOpen NickNameMenu.type
   )
 
