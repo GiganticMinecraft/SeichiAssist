@@ -24,7 +24,9 @@ SELECT
  chainvote,
  effectpoint,
  p_givenvote,
- CONVERT(lastvote, DATE)
+ CASE
+    WHEN lastvote REGEXP '[0-9]{4}/[0-9]{2}/[0-9]{2}' THEN lastvote
+ END
 FROM
  playerdata;
 
