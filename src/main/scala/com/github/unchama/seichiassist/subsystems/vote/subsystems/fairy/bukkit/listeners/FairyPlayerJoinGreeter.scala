@@ -30,7 +30,7 @@ class FairyPlayerJoinGreeter(
     val program = for {
       isUsing <- fairyPersistence.isFairyUsing(uuid)
       endTime <- fairyPersistence.fairyEndTime(uuid)
-      isEnd = endTime.get.endTimeOpt.get.isBefore(LocalDateTime.now())
+      isEnd <- IO(LocalDateTime.now()).map(now => endTime.exists(_.endTime.isBefore(now)))
       _ <- {
         fairyPersistence.updateIsFairyUsing(uuid, isFairyUsing = false) >> IO(
           player.sendMessage(s"$LIGHT_PURPLE${BOLD}妖精は何処かへ行ってしまったようだ...")

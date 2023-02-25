@@ -10,15 +10,15 @@ import java.util.UUID
 class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
 
   override def initializePlayerData(player: UUID): F[Unit] = Sync[F].delay {
-    val hasPlayerDataCreated = DB.readOnly { implicit session =>
+    val playerDataCount = DB.readOnly { implicit session =>
       sql"SELECT COUNT(*) as c FROM vote_fairy where uuid = ${player.toString}"
         .map(_.int("c"))
         .single()
         .apply()
-        .nonEmpty
+        .getOrElse(0)
     }
 
-    if (!hasPlayerDataCreated) {
+    if (playerDataCount == 0) {
       DB.localTx { implicit session =>
         sql"INSERT INTO vote_fairy (uuid) VALUES (${player.toString})".execute().apply()
       }
@@ -116,7 +116,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   override def updateFairyEndTime(player: UUID, fairyEndTime: FairyEndTime): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
-        sql"UPDATE vote_fairy SET fairy_end_time = ${fairyEndTime.endTimeOpt.get} WHERE uuid = ${player.toString}"
+        sql"UPDATE vote_fairy SET fairy_end_time = ${fairyEndTime.endTime} WHERE uuid = ${player.toString}"
           .execute()
           .apply()
       }
@@ -128,7 +128,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
         .map(_.localDateTime("fairy_end_time"))
         .single()
         .apply()
-      dateOpt.map { date => FairyEndTime(Some(date)) }
+      dateOpt.map(FairyEndTime)
     }
   }
 
