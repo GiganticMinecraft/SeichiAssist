@@ -4,7 +4,7 @@
 USE seichiassist;
 
 CREATE TEMPORARY TABLE playerdata_tmp AS SELECT DISTINCT * FROM playerdata;
-DELETE FROM playerdata;
+TRUNCATE TABLE playerdata;
 
 INSERT INTO playerdata SELECT * FROM playerdata_tmp;
 DROP TABLE playerdata_tmp;
