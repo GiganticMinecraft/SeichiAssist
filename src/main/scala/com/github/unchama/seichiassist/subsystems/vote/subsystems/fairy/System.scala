@@ -144,7 +144,8 @@ object System {
               val uuid = player.getUniqueId
               for {
                 isPlayFairySpeechSound <- doPlaySoundOnSpeak(uuid)
-              } yield persistence.setPlaySoundOnSpeech(uuid, !isPlayFairySpeechSound)
+                _ <- persistence.setPlaySoundOnSpeech(uuid, !isPlayFairySpeechSound)
+              } yield ()
             }
 
             override def sendDisappearTimeToChat: Kleisli[IO, Player, Unit] = Kleisli {
