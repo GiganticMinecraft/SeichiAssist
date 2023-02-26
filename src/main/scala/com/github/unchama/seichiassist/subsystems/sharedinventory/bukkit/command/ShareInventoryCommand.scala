@@ -8,6 +8,7 @@ import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventor
 import com.github.unchama.seichiassist.subsystems.sharedinventory.domain.SharedFlag
 import com.github.unchama.seichiassist.subsystems.sharedinventory.domain.bukkit.InventoryContents
 import com.github.unchama.seichiassist.util.InventoryOperations
+import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.CommandEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
@@ -21,19 +22,23 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
   implicit sharedInventoryAPI: SharedInventoryAPI[F, Player]
 ) {
 
+  import cats.implicits._
+
   val executor: TabExecutor = playerCommandBuilder
     .execution { context =>
       val sender = context.sender
-
-      if (sharedInventoryAPI.sharedFlag(sender).toIO.unsafeRunSync() == SharedFlag.Sharing)
-        withdrawFromSharedInventory(sender)
-      else depositToSharedInventory(sender)
-
+      for {
+        sharedFlag <- sharedInventoryAPI.sharedFlag(sender).toIO
+        _ <-
+          if (sharedFlag == SharedFlag.Sharing) {
+            withdrawFromSharedInventory(sender)
+          } else {
+            depositToSharedInventory(sender)
+          }
+      } yield emptyEffect
     }
     .build()
     .asNonBlockingTabExecutor()
-
-  import cats.implicits._
 
   private def withdrawFromSharedInventory(player: Player): IO[TargetedEffect[Player]] = {
     val uuid = player.getUniqueId
@@ -42,12 +47,10 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
       loadedInventory <- sharedInventoryAPI.load(uuid)
       _ <- sharedInventoryAPI.clear(uuid)
       newSharedFlag <- sharedInventoryAPI.sharedFlag(player)
-      playerInventory = player.getInventory
       _ <- Sync[F]
         .delay {
-          val inventoryContents = loadedInventory
-            .getOrElse(return IO.pure(MessageEffect(s"$RESET$RED${BOLD}収納アイテムが存在しません。")))
-            .inventoryContents
+          val playerInventory = player.getInventory
+          val inventoryContents = loadedInventory.get.inventoryContents
           // 手持ちのアイテムをドロップする
           playerInventory
             .getContents
