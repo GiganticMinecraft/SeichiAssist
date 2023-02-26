@@ -129,10 +129,10 @@ assembly / assemblyExcludedJars := {
 
 // protocol配下とルートのLICENSEが衝突してCIが落ちる
 // cf. https://github.com/sbt/sbt-assembly/issues/141
-assemblyMergeStrategy in assembly := {
+assemblyMergeStrategy in ThisBuild := {
   case PathList(ps @ _*) if ps.last endsWith "LICENSE" => MergeStrategy.rename
   case otherFile =>
-    val oldStrategy = (assemblyMergeStrategy in assembly).value
+    val oldStrategy = (assemblyMergeStrategy in ThisBuild).value
     oldStrategy(otherFile)
 }
 
