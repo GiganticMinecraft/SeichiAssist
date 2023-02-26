@@ -11,7 +11,7 @@ class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
   // NOTE: 連続投票日数許容幅を変更する場合はここを変更してください。
   private val consecutiveVoteStreakDaysThreshold = 1
 
-  def createPlayerData(uuid: UUID): F[Unit] = Sync[F].delay {
+  override def createPlayerData(uuid: UUID): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
       sql"""INSERT IGNORE INTO vote 
            | (uuid, vote_number, chain_vote_number, effect_point, given_effect_point, last_vote)
