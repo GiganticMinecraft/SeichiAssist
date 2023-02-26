@@ -45,10 +45,9 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
     for {
       isFairyUsing <- fairyPersistence.isFairyUsing(uuid)
       fairyEndTimeOpt <- fairyPersistence.fairyEndTime(uuid)
-      endTime = fairyEndTimeOpt.get.endTimeOpt.get
       finishUse <- JavaTime[F]
         .getLocalDateTime(ZoneId.systemDefault())
-        .map(now => isFairyUsing && endTime.isBefore(now))
+        .map(now => isFairyUsing && fairyEndTimeOpt.exists(_.endTime.isBefore(now)))
       _ <- {
         fairySpeech
           .bye(player) >> fairyPersistence.updateIsFairyUsing(uuid, isFairyUsing = false)

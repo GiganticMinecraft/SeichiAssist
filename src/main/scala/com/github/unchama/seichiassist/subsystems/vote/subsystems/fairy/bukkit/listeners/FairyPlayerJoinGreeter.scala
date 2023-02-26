@@ -5,8 +5,8 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.F
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.FairySpeech
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
-import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.event.{EventHandler, Listener}
+import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerJoinEvent}
+import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
 import java.time.LocalDateTime
 
@@ -18,15 +18,19 @@ class FairyPlayerJoinGreeter(
 
   import cats.implicits._
 
+  @EventHandler(priority = EventPriority.HIGHEST)
+  def onAsyncPlayerPreLogin(e: AsyncPlayerPreLoginEvent): Unit = {
+    fairyPersistence.initializePlayerData(e.getUniqueId).unsafeRunAsyncAndForget()
+  }
+
   @EventHandler
   def onJoin(e: PlayerJoinEvent): Unit = {
     val player = e.getPlayer
     val uuid = player.getUniqueId
     val program = for {
-      _ <- fairyPersistence.initializePlayerData(uuid)
       isUsing <- fairyPersistence.isFairyUsing(uuid)
       endTime <- fairyPersistence.fairyEndTime(uuid)
-      isEnd = endTime.get.endTimeOpt.get.isBefore(LocalDateTime.now())
+      isEnd <- IO(LocalDateTime.now()).map(now => endTime.exists(_.endTime.isBefore(now)))
       _ <- {
         fairyPersistence.updateIsFairyUsing(uuid, isFairyUsing = false) >> IO(
           player.sendMessage(s"$LIGHT_PURPLE${BOLD}妖精は何処かへ行ってしまったようだ...")

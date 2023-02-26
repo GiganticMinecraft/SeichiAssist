@@ -75,7 +75,7 @@ class BukkitFairySpeech[F[_]: Sync: JavaTime, G[_]: ContextCoercion[*[_], F]](
     for {
       endTimeOpt <- fairyPersistence.fairyEndTime(player.getUniqueId)
       playSound <- fairyPersistence.playSoundOnFairySpeech(player.getUniqueId)
-      endTime = endTimeOpt.get.endTimeOpt.get
+      endTime = endTimeOpt.get.endTime
       _ <- ContextCoercion {
         fairySpeechServiceRepository(player).makeSpeech(
           Seq(FairyMessage(s"僕は${endTime.getHour}:${endTime.getMinute}には帰るよー。")),
