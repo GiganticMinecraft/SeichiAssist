@@ -191,18 +191,14 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
              | ORDER BY rank DESC LIMIT $top;"""
           .stripMargin
           .map { rs =>
-            (rs.stringOpt("name"), rs.intOpt("rank"), rs.intOpt("given_apple_amount"))
+            for {
+              name <- rs.stringOpt("name")
+              rank <- rs.intOpt("rank")
+              givenAppleAmount <- rs.intOpt("given_apple_amount")
+            } yield AppleConsumeAmountRank(name, rank, AppleAmount(givenAppleAmount))
           }
           .toList()
           .apply()
-          .map {
-            case (name, rank, givenAppleAmount) =>
-              for {
-                name <- name
-                rank <- rank
-                givenAppleAmount <- givenAppleAmount
-              } yield AppleConsumeAmountRank(name, rank, AppleAmount(givenAppleAmount))
-          }
           .toVector
       }
     }
