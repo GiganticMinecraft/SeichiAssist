@@ -388,13 +388,15 @@ object VoteMenu extends Menu {
             s"${GRAY}なまえ：${rankData.playerName} りんご：${rankData.consumed.amount}個"
           )
         }
-      val statistics = List(
-        s"${AQUA}ぜーんぶで${allEatenAppleAmount.amount}個もらえた！",
-        "",
-        s"$GREEN↓呼び出したﾆﾝｹﾞﾝの情報↓",
-        s"${GREEN}今までに${myRank.get.consumed.amount}個もらった",
-        s"${GREEN}ﾆﾝｹﾞﾝの中では${myRank.get.rank}番目にたくさんくれる！"
-      )
+      val statistics = myRank.map { rank =>
+        List(
+          s"${AQUA}ぜーんぶで${allEatenAppleAmount.amount}個もらえた！",
+          "",
+          s"$GREEN↓呼び出したﾆﾝｹﾞﾝの情報↓",
+          s"${GREEN}今までに${rank.consumed.amount}個もらった",
+          s"${GREEN}ﾆﾝｹﾞﾝの中では${rank.rank}番目にたくさんくれる！"
+        )
+      }.orEmpty
 
       Button(
         new IconItemStackBuilder(Material.GOLDEN_APPLE)
