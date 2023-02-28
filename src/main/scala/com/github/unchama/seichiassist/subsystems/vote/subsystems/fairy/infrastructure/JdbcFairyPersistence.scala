@@ -190,14 +190,19 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
              | INNER JOIN playerdata ON (vote_fairy.uuid = playerdata.uuid) 
              | ORDER BY rank DESC LIMIT $top;"""
           .stripMargin
-          .map(rs => (rs.stringOpt("name"), rs.intOpt("rank"), rs.intOpt("given_apple_amount")))
+          .map { rs =>
+            (rs.stringOpt("name"), rs.intOpt("rank"), rs.intOpt("given_apple_amount"))
+          }
           .toList()
           .apply()
-          .map(data =>
-            if (data._1.nonEmpty)
-              Some(AppleConsumeAmountRank(data._1.get, data._2.get, AppleAmount(data._3.get)))
-            else None
-          )
+          .map {
+            case (name, rank, givenAppleAmount) =>
+              for {
+                name <- name
+                rank <- rank
+                givenAppleAmount <- givenAppleAmount
+              } yield AppleConsumeAmountRank(name, rank, AppleAmount(givenAppleAmount))
+          }
           .toVector
       }
     }
