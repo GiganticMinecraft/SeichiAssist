@@ -382,14 +382,11 @@ object VoteMenu extends Menu {
           topFourRanking.lift(1),
           topFourRanking.lift(2),
           topFourRanking.lift(3)
-        ).flatMap { rankDataOpt =>
-          if (rankDataOpt.nonEmpty) {
-            val rankData = rankDataOpt.get.get
-            List(
-              s"${GRAY}たくさんくれたﾆﾝｹﾞﾝ第${rankData.rank}位！",
-              s"${GRAY}なまえ：${rankData.playerName} りんご：${rankData.consumed.amount}個"
-            )
-          } else Nil
+        ).flatMap(_.flatten).flatMap { rankData =>
+          List(
+            s"${GRAY}たくさんくれたﾆﾝｹﾞﾝ第${rankData.rank}位！",
+            s"${GRAY}なまえ：${rankData.playerName} りんご：${rankData.consumed.amount}個"
+          )
         }
       val statistics = List(
         s"${AQUA}ぜーんぶで${allEatenAppleAmount.amount}個もらえた！",
