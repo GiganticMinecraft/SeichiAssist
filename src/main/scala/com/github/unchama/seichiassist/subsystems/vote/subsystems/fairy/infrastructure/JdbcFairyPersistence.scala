@@ -186,18 +186,19 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   ): F[Vector[Option[AppleConsumeAmountRank]]] =
     Sync[F].delay {
       DB.readOnly { implicit session =>
-        sql"""SELECT name,given_apple_amount,COUNT(*) AS rank FROM vote_fairy 
+        sql"""SELECT name,given_apple_amount,COUNT(*) AS rank FROM vote_fairy
              | INNER JOIN playerdata ON (vote_fairy.uuid = playerdata.uuid) 
              | ORDER BY rank DESC LIMIT $top;"""
           .stripMargin
-          .map(rs => (rs.stringOpt("name"), rs.intOpt("rank"), rs.intOpt("given_apple_amount")))
+          .map { rs =>
+            for {
+              name <- rs.stringOpt("name")
+              rank <- rs.intOpt("rank")
+              givenAppleAmount <- rs.intOpt("given_apple_amount")
+            } yield AppleConsumeAmountRank(name, rank, AppleAmount(givenAppleAmount))
+          }
           .toList()
           .apply()
-          .map(data =>
-            if (data._1.nonEmpty)
-              Some(AppleConsumeAmountRank(data._1.get, data._2.get, AppleAmount(data._3.get)))
-            else None
-          )
           .toVector
       }
     }
