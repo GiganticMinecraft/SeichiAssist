@@ -79,15 +79,12 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
   var playTick = 0L
   // 合計経験値
   var totalexp = 0L
-  // 特典受け取り済み投票数
-  var p_givenvote = 0
   // 連続・通算ログイン用
   // ロード時に初期化される
   var lastcheckdate: String = _
   var loginStatus: LoginStatus = LoginStatus(null)
   // 期間限定ログイン用
   var LimitedLoginCount = 0
-  var ChainVote = 0
 
   // region スキル関連のデータ
   val skillState: Ref[IO, PlayerSkillState] = Ref.unsafe(PlayerSkillState.initial)

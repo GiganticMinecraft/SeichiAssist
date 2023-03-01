@@ -13,6 +13,7 @@ import com.github.unchama.seichiassist.subsystems.ranking.domain.{
   Ranking,
   RankingRecordWithPosition
 }
+import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.util.TypeConverter
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
@@ -25,7 +26,8 @@ class PlayerStatsLoreGenerator(
   playerData: PlayerData,
   seichiRanking: Ranking[SeichiAmountData],
   seichiAmountData: SeichiAmountData,
-  expBarVisibility: BreakCountBarVisibility
+  expBarVisibility: BreakCountBarVisibility,
+  voteAPI: VoteAPI[IO, Player]
 ) {
   private val targetPlayer: Player = Bukkit.getPlayer(playerData.uuid)
 
@@ -167,11 +169,15 @@ class PlayerStatsLoreGenerator(
   /**
    * 連続投票日数の説明文.
    */
-  private def totalChainVoteDaysDescription(): List[String] =
-    if (playerData.ChainVote > 0)
-      List(s"$RESET${GRAY}連続投票日数：${playerData.ChainVote}日")
+  private def totalChainVoteDaysDescription(): List[String] = {
+    val consecutiveVoteStreakDays =
+      voteAPI.currentConsecutiveVoteStreakDays(targetPlayer.getUniqueId).unsafeRunSync().value
+
+    if (consecutiveVoteStreakDays > 0)
+      List(s"$RESET${GRAY}連続投票日数：${consecutiveVoteStreakDays}日")
     else
       Nil
+  }
 
   /**
    * Expバーの説明文.

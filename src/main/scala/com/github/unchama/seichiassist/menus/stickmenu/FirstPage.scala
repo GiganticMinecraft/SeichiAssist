@@ -44,6 +44,7 @@ import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.ranking.api.RankingProvider
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.ManagedWorld._
+import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners, util}
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -92,7 +93,8 @@ object FirstPage extends Menu {
     val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type,
     val ioCanOpenVoteMenu: IO CanOpen VoteMenu.type,
     val enderChestAccessApi: AnywhereEnderChestAPI[IO],
-    val gachaTicketAPI: GachaTicketAPI[IO]
+    val gachaTicketAPI: GachaTicketAPI[IO],
+    val voteAPI: VoteAPI[IO, Player]
   )
 
   override val frame: MenuFrame =
@@ -175,8 +177,13 @@ object FirstPage extends Menu {
           environment.breakCountAPI.seichiAmountDataRepository(player).read.toIO
         ranking <- environment.rankingApi.ranking.read
         visibility <- visibilityRef.get.toIO
-        lore <- new PlayerStatsLoreGenerator(openerData, ranking, seichiAmountData, visibility)
-          .computeLore()
+        lore <- new PlayerStatsLoreGenerator(
+          openerData,
+          ranking,
+          seichiAmountData,
+          visibility,
+          environment.voteAPI
+        ).computeLore()
       } yield Button(
         new SkullItemStackBuilder(getUniqueId)
           .title(s"$YELLOW$BOLD$UNDERLINE${getName}の統計データ")
