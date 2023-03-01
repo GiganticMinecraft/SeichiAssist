@@ -85,7 +85,6 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
   var loginStatus: LoginStatus = LoginStatus(null)
   // 期間限定ログイン用
   var LimitedLoginCount = 0
-  var ChainVote = 0
 
   // region スキル関連のデータ
   val skillState: Ref[IO, PlayerSkillState] = Ref.unsafe(PlayerSkillState.initial)

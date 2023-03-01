@@ -251,8 +251,6 @@ object PlayerDataLoading {
 
         playerData.lastcheckdate = sdf.format(cal.getTime)
 
-        playerData.ChainVote = rs.getInt("chainvote")
-
         // 実績解除フラグのBitSet型への復元処理
         // 初回nullエラー回避のための分岐
         try {
