@@ -5,7 +5,7 @@ import java.io._
 
 // region 全プロジェクト共通のメタデータ
 
-ThisBuild / scalaVersion := "2.13.11-SNAPSHOT"
+ThisBuild / scalaVersion := "2.13.11-bin-5ecdcf8"
 // ThisBuild / version はGitHub Actionsによって取得/自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
 ThisBuild / version := "76"
@@ -35,6 +35,8 @@ ThisBuild / logLevel := {
 // ScalaTest のオプションは https://www.scalatest.org/user_guide/using_the_runner を参照のこと。
 Compile / testOptions += Tests.Argument("-oS")
 
+ThisBuild / scalaBinaryVersion := "2.13"
+
 // endregion
 
 // region 依存関係
@@ -50,7 +52,8 @@ resolvers ++= Seq(
   "oss.sonatype.org" at "https://oss.sonatype.org/content/repositories/snapshots",
   "nexus.okkero.com" at "https://nexus.okkero.com/repository/maven-releases/",
   "maven.elmakers.com" at "https://maven.elmakers.com/repository/", // spigot-api 1.12.2がhub.spigotmc.orgからダウンロードできなくなったため
-  "repo.phoenix616.dev" at "https://repo.phoenix616.dev" // authlibのための
+  "repo.phoenix616.dev" at "https://repo.phoenix616.dev", // authlibのための
+  "scala-integration" at "https://scala-ci.typesafe.com/artifactory/scala-integration/"
 )
 
 val providedDependencies = Seq(
