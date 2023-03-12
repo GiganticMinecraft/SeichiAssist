@@ -129,10 +129,10 @@ assembly / assemblyExcludedJars := {
 
 // protocol配下とルートのLICENSEが衝突してCIが落ちる
 // cf. https://github.com/sbt/sbt-assembly/issues/141
-assemblyMergeStrategy in assembly := {
-  case PathList(ps @ _*) if ps.last endsWith "LICENSE" => MergeStrategy.rename
+assembly / assemblyMergeStrategy := {
+  case PathList(ps @ _*) if ps.last endsWith "LICENSE" => MergeStrategy.first
   case otherFile =>
-    val oldStrategy = (assemblyMergeStrategy in assembly).value
+    val oldStrategy = (assembly / assemblyMergeStrategy).value
     oldStrategy(otherFile)
 }
 
@@ -158,8 +158,6 @@ Compile / filteredResourceGenerator :=
   )
 
 Compile / resourceGenerators += (Compile / filteredResourceGenerator)
-
-Compile / unmanagedResources += baseDirectory.value / "LICENSE"
 
 // トークン置換を行ったファイルをunmanagedResourcesのコピーから除外する
 unmanagedResources / excludeFilter :=
