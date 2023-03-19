@@ -83,10 +83,10 @@ object ValentineItemData {
 
   // endregion
 
-  // region GiftedCookie -> 棒メニューでもらえるやつ
+  // region GiftedCookie -> イベント期間中にログイン時に入手できる
 
   /**
-   * 棒メニューからチョコチップクッキーのアイテムID。2は有効期限が[[java.time.LocalDate]]のもの
+   * イベント期間中のログインでもらえるチョコチップクッキーのアイテムID。2は有効期限が[[java.time.LocalDate]]のもの
    */
   private val giftedCookieTypeId = 4
 
