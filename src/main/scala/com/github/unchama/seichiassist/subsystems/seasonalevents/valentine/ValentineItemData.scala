@@ -25,7 +25,9 @@ object ValentineItemData {
     s"${AQUA}ステータス変化（10分）$GRAY （期限内）"
   ).map(str => s"$RESET$str")
 
-  private val cookieName = s"$GOLD${BOLD}チョコチップクッキー"
+  // 配布のチョコチップクッキーと区別できるように
+  // FYI: https://github.com/GiganticMinecraft/SeichiAssist/issues/1910
+  private val cookieName = s"$GOLD${BOLD}爆発したカップルの本命チョコチップクッキー"
 
   /**
    * チョコチップクッキーであるかどうかを返す
