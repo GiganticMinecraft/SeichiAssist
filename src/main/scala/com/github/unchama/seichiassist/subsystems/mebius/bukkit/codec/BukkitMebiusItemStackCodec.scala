@@ -117,7 +117,10 @@ object BukkitMebiusItemStackCodec {
     val material = property.forcedMaterial match {
       case MebiusForcedMaterial.None =>
         BukkitMebiusAppearanceMaterialCodec.appearanceMaterialAt(property.level)
-      case MebiusForcedMaterial.Leather => Material.LEATHER_HELMET
+      case MebiusForcedMaterial.Leather => Material.LEATHER_HELMET // 革のヘルメット
+      case MebiusForcedMaterial.Iron    => Material.IRON_HELMET // 鉄のヘルメット
+      case MebiusForcedMaterial.Chain   => Material.CHAINMAIL_HELMET // チェーンのヘルメット
+      case MebiusForcedMaterial.Gold    => Material.GOLD_HELMET // 金のヘルメット
     }
 
     import scala.util.chaining._
