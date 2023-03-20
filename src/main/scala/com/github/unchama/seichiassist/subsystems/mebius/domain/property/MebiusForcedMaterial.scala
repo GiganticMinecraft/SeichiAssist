@@ -2,8 +2,7 @@ package com.github.unchama.seichiassist.subsystems.mebius.domain.property
 
 /**
  * Mebiusの材質を強制的に変更する設定。
- *
- * 「30レベル以上でのみ革に戻すことができる」という機能のため。
+ * 『30レベル以上で革や鉄、金、チェーンなどの素材に変更できる』機能。
  */
 sealed trait MebiusForcedMaterial {
 
