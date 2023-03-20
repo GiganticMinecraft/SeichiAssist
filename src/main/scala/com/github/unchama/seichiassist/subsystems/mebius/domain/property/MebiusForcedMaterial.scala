@@ -25,27 +25,27 @@ object MebiusForcedMaterial {
   // 革
   case object Leather extends MebiusForcedMaterial {
     override def allowedAt(level: MebiusLevel): Boolean = level >= MebiusLevel(30)
-    override def next: MebiusForcedMaterial = None
+    override def next: MebiusForcedMaterial = Gold
   }
 
   // 金
   case object Gold extends MebiusForcedMaterial {
     override def allowedAt(level: MebiusLevel): Boolean = level >= MebiusLevel(30)
 
-    override def next: MebiusForcedMaterial = Gold
+    override def next: MebiusForcedMaterial = Iron
   }
 
   // 鉄
   case object Iron extends MebiusForcedMaterial {
     override def allowedAt(level: MebiusLevel): Boolean = level >= MebiusLevel(30)
 
-    override def next: MebiusForcedMaterial = Iron
+    override def next: MebiusForcedMaterial = Chain
   }
 
   // チェーン
   case object Chain extends MebiusForcedMaterial {
     override def allowedAt(level: MebiusLevel): Boolean = level >= MebiusLevel(30)
 
-    override def next: MebiusForcedMaterial = Chain
+    override def next: MebiusForcedMaterial = None
   }
 }
