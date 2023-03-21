@@ -7,6 +7,7 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Ann
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemData._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.halloween.HalloweenItemData._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYearItemData._
+import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineItemData._
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.targetedeffect.TargetedEffect._
 import org.bukkit.command.TabExecutor
@@ -39,6 +40,9 @@ class EventCommand(implicit ioOnMainThread: OnMinecraftServerThread[IO]) {
       anniversaryShovel
     )
 
+  val valentineGrantEffect: TargetedEffect[Player] =
+    InventoryOperations.grantItemStacksEffect(droppedCookie)
+
   val executor: TabExecutor = playerCommandBuilder
     .execution { context =>
       val effect = context.args.yetToBeParsed match {
@@ -46,6 +50,7 @@ class EventCommand(implicit ioOnMainThread: OnMinecraftServerThread[IO]) {
         case "christmas" :: _   => christsmasGrantEffect
         case "newyear" :: _     => newYearGrantEffect
         case "halloween" :: _   => halloweenGrantEffect
+        case "valentine" :: _   => valentineGrantEffect
         case _                  => emptyEffect
       }
 
