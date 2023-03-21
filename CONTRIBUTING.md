@@ -69,7 +69,10 @@ $ docker compose up --build -d
 最初に、[GiganticMinecraftのページ][gm-gh-repo]を開いて、画面右上にある「fork」と書かれた枝分かれしているアイコンがあるボタンを押します。
 
 すると「Create a new fork」と書かれた画面に移動します。
-![img.png](img.png)
+
+<!-- GitHub の issue とかに貼れば写真が GitHub の CDN 等に置かれるのでそのリンクを使う -->
+![img.png](https://user-images.githubusercontent.com/127779256/226674317-3ad07000-a272-4f2e-905a-15e07b394bae.png)
+
 いくつか入力欄がありますが、何も触らずにCreate forkを押します。
 
 また画面が切り替わります。画面左上に書かれた文字が「GiganticMinecraft/SeichiAssist」ではなく、「(あなたのID)/SeichiAssist」になっていることを確認できたら次へ進みます。
