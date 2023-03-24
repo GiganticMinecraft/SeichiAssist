@@ -28,9 +28,6 @@ object RmpCommand {
       s"$RED/rmp remove [world名] [日数]",
       "全Ownerが[日数]間ログインしていないRegionを削除します(整地ワールドのみ)",
       "",
-      s"$RED/rmp removeAll [world名]",
-      "原則全てのRegionを削除します(整地ワールドのみ)",
-      "",
       s"$RED/rmp list [world名] [日数]",
       "全Ownerが[日数]間ログインしていないRegionを表示します"
     )
@@ -54,16 +51,6 @@ object RmpCommand {
     .execution { context =>
       val world = context.args.parsed.head.asInstanceOf[World]
       val days = context.args.parsed(1).asInstanceOf[Int]
-
-      removeRegions(world, days)
-    }
-    .build()
-
-  private val removeAllExecutor = argsAndSenderConfiguredBuilder
-    .execution { context =>
-      val world = context.args.parsed.head.asInstanceOf[World]
-      // -1を指定することで実質的に原則すべての保護を削除することになる
-      val days = -1
 
       removeRegions(world, days)
     }
@@ -144,7 +131,7 @@ object RmpCommand {
 
   val executor: TabExecutor =
     BranchedExecutor(
-      Map("remove" -> removeExecutor, "removeAll" -> removeAllExecutor, "list" -> listExecutor),
+      Map("remove" -> removeExecutor, "list" -> listExecutor),
       whenArgInsufficient = Some(printDescriptionExecutor),
       whenBranchNotFound = Some(printDescriptionExecutor)
     ).asNonBlockingTabExecutor()
