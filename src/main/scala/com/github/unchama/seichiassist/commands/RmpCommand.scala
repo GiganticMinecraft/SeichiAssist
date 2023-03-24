@@ -79,10 +79,9 @@ object RmpCommand {
     val isSeichiWorldWithWGRegionsOption =
       ManagedWorld.fromBukkitWorld(world).map(_.isSeichiWorldWithWGRegions)
 
-    val commandName = if (days == -1) "removeAll" else "remove"
-
     isSeichiWorldWithWGRegionsOption match {
-      case None | Some(false) => MessageEffect(s"${commandName}コマンドは保護をかけて整地する整地ワールドでのみ使用出来ます")
+      // CHANGED: /rmp removeAll 削除時のエラーメッセージではすこし不親切だったので追加
+      case None | Some(false) => MessageEffect(s"第一整地以外の保護をかけて整地する整地ワールドでのみ使用出来ます")
       case Some(true) =>
         getOldRegionsIn(world, days).map { removalTargets =>
           removalTargets.foreach { target =>
