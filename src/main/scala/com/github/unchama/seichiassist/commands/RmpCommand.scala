@@ -28,9 +28,6 @@ object RmpCommand {
       s"$RED/rmp remove [world名] [日数]",
       "全Ownerが[日数]間ログインしていないRegionを削除します(整地ワールドのみ)",
       "",
-      s"$RED/rmp removeAll [world名]",
-      "原則全てのRegionを削除します(整地ワールドのみ)",
-      "",
       s"$RED/rmp list [world名] [日数]",
       "全Ownerが[日数]間ログインしていないRegionを表示します"
     )
@@ -59,16 +56,6 @@ object RmpCommand {
     }
     .build()
 
-  private val removeAllExecutor = argsAndSenderConfiguredBuilder
-    .execution { context =>
-      val world = context.args.parsed.head.asInstanceOf[World]
-      // -1を指定することで実質的に原則すべての保護を削除することになる
-      val days = -1
-
-      removeRegions(world, days)
-    }
-    .build()
-
   private val listExecutor = argsAndSenderConfiguredBuilder
     .execution { context =>
       val world = context.args.parsed.head.asInstanceOf[World]
@@ -92,10 +79,8 @@ object RmpCommand {
     val isSeichiWorldWithWGRegionsOption =
       ManagedWorld.fromBukkitWorld(world).map(_.isSeichiWorldWithWGRegions)
 
-    val commandName = if (days == -1) "removeAll" else "remove"
-
     isSeichiWorldWithWGRegionsOption match {
-      case None | Some(false) => MessageEffect(s"${commandName}コマンドは保護をかけて整地する整地ワールドでのみ使用出来ます")
+      case None | Some(false) => MessageEffect(s"第1整地以外の保護をかけて整地する整地ワールドでのみ使用出来ます")
       case Some(true) =>
         getOldRegionsIn(world, days).map { removalTargets =>
           removalTargets.foreach { target =>
@@ -144,7 +129,7 @@ object RmpCommand {
 
   val executor: TabExecutor =
     BranchedExecutor(
-      Map("remove" -> removeExecutor, "removeAll" -> removeAllExecutor, "list" -> listExecutor),
+      Map("remove" -> removeExecutor, "list" -> listExecutor),
       whenArgInsufficient = Some(printDescriptionExecutor),
       whenBranchNotFound = Some(printDescriptionExecutor)
     ).asNonBlockingTabExecutor()
