@@ -80,7 +80,7 @@ object RmpCommand {
       ManagedWorld.fromBukkitWorld(world).map(_.isSeichiWorldWithWGRegions)
 
     isSeichiWorldWithWGRegionsOption match {
-      case None | Some(false) => MessageEffect(s"第一整地以外の保護をかけて整地する整地ワールドでのみ使用出来ます")
+      case None | Some(false) => MessageEffect(s"第1整地以外の保護をかけて整地する整地ワールドでのみ使用出来ます")
       case Some(true) =>
         getOldRegionsIn(world, days).map { removalTargets =>
           removalTargets.foreach { target =>
