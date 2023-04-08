@@ -25,7 +25,11 @@ Scalaを書くことができる場合はScalaを使ってください。
 ### 「サブシステム」への分割、依存、及び準拠
 SeichiAssistには複数の関心事があり、その大半が「サブシステム」と呼ばれるひとまとまりとして`com.github.unchama.seichiassist.subsystems`以下にまとめられています。
 [最新の一覧](https://github.com/GiganticMinecraft/SeichiAssist/tree/develop/src/main/scala/com/github/unchama/seichiassist/subsystems)。
-以下に、2023年2月21日現在の[一覧](https://github.com/GiganticMinecraft/SeichiAssist/tree/5f29ce1a095d0e8dd4c301665e088af4c6d5ec3a/src/main/scala/com/github/unchama/seichiassist/subsystems)を示します。
 
-(TODO)
+各サブシステムはそれぞれ他のサブシステムで使うことを想定したAPIを `trait` として持ち、各サブシステムはその抽象に対してのみ依存することができます。サブシステムの実装はAPIに具象的な実装を与える必要があります。
 
+関心事同士の依存 (例: 整地スキルによってマナを減少させるためにマナを操作する) は 抽象の型を `implicit` パラメーターとして渡すことにより表現されます。
+
+抽象同士の循環参照は推奨されません。
+
+新しくサブシステムを作った場合、`SeichiAssist.scala` 内で初期化することを忘れないでください。初期化を忘れると正しく機能しません。
