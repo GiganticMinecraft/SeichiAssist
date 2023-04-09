@@ -56,12 +56,18 @@ object BukkitMebiusItemStackCodec {
   def encodeForcedMaterial(forcedMaterial: MebiusForcedMaterial): Byte = forcedMaterial match {
     case MebiusForcedMaterial.None    => 0
     case MebiusForcedMaterial.Leather => 1
+    case MebiusForcedMaterial.Iron    => 2
+    case MebiusForcedMaterial.Chain   => 3
+    case MebiusForcedMaterial.Gold    => 4
   }
 
   def decodeForcedMaterial(forcedMaterialByte: Byte): MebiusForcedMaterial =
     forcedMaterialByte match {
       case 0 => MebiusForcedMaterial.None
       case 1 => MebiusForcedMaterial.Leather
+      case 2 => MebiusForcedMaterial.Iron
+      case 3 => MebiusForcedMaterial.Chain
+      case 4 => MebiusForcedMaterial.Gold
       case _ => MebiusForcedMaterial.None
     }
 
