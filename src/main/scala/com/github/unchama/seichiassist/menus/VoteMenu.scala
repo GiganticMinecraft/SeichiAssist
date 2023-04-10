@@ -109,7 +109,7 @@ object VoteMenu extends Menu {
     private implicit val ioCE: ConcurrentEffect[IO] =
       IO.ioConcurrentEffect(PluginExecutionContexts.asyncShift)
 
-    val receiveVoteBenefitsButton: IO[Button] = {
+    val receiveVoteBenefitsButton: IO[Button] = RecomputedButton {
       val uuid = player.getUniqueId
       for {
         benefits <- voteAPI.receivedVoteBenefits(uuid)
@@ -132,14 +132,14 @@ object VoteMenu extends Menu {
             .enchanted()
             .build(),
           LeftClickButtonEffect {
-            SequentialEffect(
-              DeferredEffect(IO(voteAPI.receiveVoteBenefits)),
-              MessageEffect(if (notReceivedBenefits == 0) {
-                s"$YELLOW${BOLD}投票特典はすべて受け取り済みのようです"
-              } else {
-                s"${GOLD}投票特典$WHITE(${notReceivedBenefits}票分)を受け取りました"
-              })
-            )
+            if (notReceivedBenefits == 0) {
+              MessageEffect(s"$YELLOW${BOLD}投票特典はすべて受け取り済みのようです")
+            } else {
+              SequentialEffect(
+                DeferredEffect(IO(voteAPI.receiveVoteBenefits)),
+                MessageEffect(s"${GOLD}投票特典$WHITE(${notReceivedBenefits}票分)を受け取りました")
+              )
+            }
           }
         )
       }
