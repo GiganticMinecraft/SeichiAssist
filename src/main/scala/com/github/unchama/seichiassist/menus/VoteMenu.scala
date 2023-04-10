@@ -115,6 +115,7 @@ object VoteMenu extends Menu {
         benefits <- voteAPI.receivedVoteBenefits(uuid)
         voteCounter <- voteAPI.count(uuid)
         effectPoint <- voteAPI.effectPoints(player)
+        notReceivedBenefits = voteCounter.value - benefits.value
       } yield {
         Button(
           new IconItemStackBuilder(Material.DIAMOND)
@@ -124,7 +125,7 @@ object VoteMenu extends Menu {
                 s"$RESET${GRAY}投票特典を受け取るには",
                 s"$RESET${GRAY}投票ページで投票した後",
                 s"$RESET${AQUA}特典受け取り済み投票回数: ${benefits.value}",
-                s"$RESET${AQUA}特典未受け取り投票係数: ${voteCounter.value - benefits.value}",
+                s"$RESET${AQUA}特典未受け取り投票係数: $notReceivedBenefits",
                 s"$RESET${AQUA}所有pt: ${effectPoint.value}"
               )
             )
@@ -133,9 +134,11 @@ object VoteMenu extends Menu {
           LeftClickButtonEffect {
             SequentialEffect(
               DeferredEffect(IO(voteAPI.receiveVoteBenefits)),
-              MessageEffect(
-                s"${GOLD}投票特典$WHITE(${voteCounter.value - benefits.value}票分)を受け取りました"
-              )
+              MessageEffect(if (notReceivedBenefits == 0) {
+                s"$YELLOW${BOLD}投票特典はすべて受け取り済みのようです"
+              } else {
+                s"${GOLD}投票特典$WHITE(${notReceivedBenefits}票分)を受け取りました"
+              })
             )
           }
         )
