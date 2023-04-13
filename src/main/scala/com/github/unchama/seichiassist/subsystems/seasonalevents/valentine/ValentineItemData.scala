@@ -25,7 +25,9 @@ object ValentineItemData {
     s"${AQUA}ステータス変化（10分）$GRAY （期限内）"
   ).map(str => s"$RESET$str")
 
-  private val cookieName = s"$GOLD${BOLD}チョコチップクッキー"
+  // 配布のチョコチップクッキーと区別できるように
+  // ref: https://github.com/GiganticMinecraft/SeichiAssist/issues/1910
+  private val cookieName = s"$GOLD${BOLD}爆発したカップルの本命チョコチップクッキー"
 
   /**
    * チョコチップクッキーであるかどうかを返す
@@ -83,10 +85,10 @@ object ValentineItemData {
 
   // endregion
 
-  // region GiftedCookie -> 棒メニューでもらえるやつ
+  // region GiftedCookie -> イベント期間中にログイン時に入手できる
 
   /**
-   * 棒メニューからチョコチップクッキーのアイテムID。2は有効期限が[[java.time.LocalDate]]のもの
+   * イベント期間中のログインでもらえるチョコチップクッキーのアイテムID。2は有効期限が[[java.time.LocalDate]]のもの
    */
   private val giftedCookieTypeId = 4
 

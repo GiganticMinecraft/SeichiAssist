@@ -126,6 +126,9 @@ class MebiusCommandExecutorProvider(
               val newMaterialName = newProperty.forcedMaterial match {
                 case MebiusForcedMaterial.None    => "ダイヤモンド"
                 case MebiusForcedMaterial.Leather => "革"
+                case MebiusForcedMaterial.Gold    => "金"
+                case MebiusForcedMaterial.Iron    => "鉄"
+                case MebiusForcedMaterial.Chain   => "チェーン"
               }
 
               IO.pure {

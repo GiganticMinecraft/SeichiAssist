@@ -56,12 +56,18 @@ object BukkitMebiusItemStackCodec {
   def encodeForcedMaterial(forcedMaterial: MebiusForcedMaterial): Byte = forcedMaterial match {
     case MebiusForcedMaterial.None    => 0
     case MebiusForcedMaterial.Leather => 1
+    case MebiusForcedMaterial.Iron    => 2
+    case MebiusForcedMaterial.Chain   => 3
+    case MebiusForcedMaterial.Gold    => 4
   }
 
   def decodeForcedMaterial(forcedMaterialByte: Byte): MebiusForcedMaterial =
     forcedMaterialByte match {
       case 0 => MebiusForcedMaterial.None
       case 1 => MebiusForcedMaterial.Leather
+      case 2 => MebiusForcedMaterial.Iron
+      case 3 => MebiusForcedMaterial.Chain
+      case 4 => MebiusForcedMaterial.Gold
       case _ => MebiusForcedMaterial.None
     }
 
@@ -117,7 +123,10 @@ object BukkitMebiusItemStackCodec {
     val material = property.forcedMaterial match {
       case MebiusForcedMaterial.None =>
         BukkitMebiusAppearanceMaterialCodec.appearanceMaterialAt(property.level)
-      case MebiusForcedMaterial.Leather => Material.LEATHER_HELMET
+      case MebiusForcedMaterial.Leather => Material.LEATHER_HELMET // 革のヘルメット
+      case MebiusForcedMaterial.Iron    => Material.IRON_HELMET // 鉄のヘルメット
+      case MebiusForcedMaterial.Chain   => Material.CHAINMAIL_HELMET // チェーンのヘルメット
+      case MebiusForcedMaterial.Gold    => Material.GOLD_HELMET // 金のヘルメット
     }
 
     import scala.util.chaining._
