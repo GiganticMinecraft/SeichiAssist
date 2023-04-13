@@ -5,7 +5,8 @@ import java.io._
 
 // region 全プロジェクト共通のメタデータ
 
-ThisBuild / scalaVersion := "2.13.11-bin-5ecdcf8"
+// TODO: Scala 2.13.11がリリースされたらリリースバージョンに変える
+ThisBuild / scalaVersion := "2.13.11-bin-c1a11b1-SNAPSHOT"
 // ThisBuild / version はGitHub Actionsによって取得/自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
 ThisBuild / version := "76"
@@ -13,14 +14,17 @@ ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
 // Scalafixが要求するため、semanticdbは有効化する
-ThisBuild / semanticdbEnabled := true
+// TODO: Scala 2.13.11がリリースされたらバージョン指定演算子を`%%`に戻す
+addCompilerPlugin("org.scalameta" % "semanticdb-scalac_2.13.10" % "4.7.6")
+ThisBuild / scalacOptions += "-Yrangepos"
 
 // endregion
 
 // region 雑多な設定
 
 // kind-projector 構文を使いたいため
-addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.2" cross CrossVersion.full)
+// TODO: Scala 2.13.11がリリースされたらバージョン指定演算子を`%%`に戻す
+addCompilerPlugin("org.typelevel" % "kind-projector_2.13.10" % "0.13.2")
 
 // CIビルドで詳細なログを確認するため
 ThisBuild / logLevel := {
@@ -53,9 +57,11 @@ resolvers ++= Seq(
   "nexus.okkero.com" at "https://nexus.okkero.com/repository/maven-releases/",
   "maven.elmakers.com" at "https://maven.elmakers.com/repository/", // spigot-api 1.12.2がhub.spigotmc.orgからダウンロードできなくなったため
   "repo.phoenix616.dev" at "https://repo.phoenix616.dev", // authlibのための
-  "scala-integration" at "https://scala-ci.typesafe.com/artifactory/scala-integration/"
+  "scala-snapshots" at "https://scala-ci.typesafe.com/artifactory/scala-pr-validation-snapshots/",
 )
 
+// もし新しいライブラリを追加する場合、現在はプレリリース版を使っているので`... cross CrossVersion.binary`としないとmavenからバージョンを引っ張ってこられずに死ぬので注意
+// TODO: Scala 2.13.11がリリースされたらCrossVersion.binaryは要らなくなるので取り外す
 val providedDependencies = Seq(
   "org.jetbrains" % "annotations" % "17.0.0",
   "org.apache.commons" % "commons-lang3" % "3.9",
@@ -67,36 +73,36 @@ val providedDependencies = Seq(
   "com.mojang" % "authlib" % "1.5.25",
 
   // no runtime
-  "org.typelevel" %% "simulacrum" % "1.0.0"
+  "org.typelevel" %% "simulacrum" % "1.0.0" cross CrossVersion.binary
 ).map(_ % "provided")
 
 val testDependencies = Seq(
-  "org.scalamock" %% "scalamock" % "4.4.0",
-  "org.scalatest" %% "scalatest" % "3.2.2",
-  "org.scalatestplus" %% "scalacheck-1-14" % "3.2.2.0",
+  "org.scalamock" %% "scalamock" % "4.4.0" cross CrossVersion.binary,
+  "org.scalatest" %% "scalatest" % "3.2.2" cross CrossVersion.binary,
+  "org.scalatestplus" %% "scalacheck-1-14" % "3.2.2.0" cross CrossVersion.binary,
   // テスト用のTestSchedulerを使うため
-  "io.monix" %% "monix" % "3.2.2"
+  "io.monix" %% "monix" % "3.2.2" cross CrossVersion.binary,
 ).map(_ % "test")
 
 val dependenciesToEmbed = Seq(
-  "org.scala-lang.modules" %% "scala-collection-contrib" % "0.2.1",
+  "org.scala-lang.modules" %% "scala-collection-contrib" % "0.2.1" cross CrossVersion.binary,
 
   // DB
   "org.flywaydb" % "flyway-core" % "5.2.4",
-  "org.scalikejdbc" %% "scalikejdbc" % "3.5.0",
+  "org.scalikejdbc" %% "scalikejdbc" % "3.5.0" cross CrossVersion.binary,
 
   // redis
-  "com.github.etaty" %% "rediscala" % "1.9.0",
+  "com.github.etaty" %% "rediscala" % "1.9.0" cross CrossVersion.binary,
 
   // effect system
-  "org.typelevel" %% "cats-core" % "2.1.0",
-  "org.typelevel" %% "cats-effect" % "2.1.0",
-  "co.fs2" %% "fs2-core" % "2.5.0",
+  "org.typelevel" %% "cats-core" % "2.1.0" cross CrossVersion.binary,
+  "org.typelevel" %% "cats-effect" % "2.1.0" cross CrossVersion.binary,
+  "co.fs2" %% "fs2-core" % "2.5.0" cross CrossVersion.binary,
 
   // algebra
-  "io.chrisdavenport" %% "log4cats-core" % "1.1.1",
-  "io.chrisdavenport" %% "log4cats-slf4j" % "1.1.1",
-  "io.chrisdavenport" %% "cats-effect-time" % "0.1.2",
+  "io.chrisdavenport" %% "log4cats-core" % "1.1.1" cross CrossVersion.binary,
+  "io.chrisdavenport" %% "log4cats-slf4j" % "1.1.1" cross CrossVersion.binary,
+  "io.chrisdavenport" %% "cats-effect-time" % "0.1.2" cross CrossVersion.binary,
 
   // logging
   "org.slf4j" % "slf4j-api" % "1.7.28",
@@ -104,16 +110,16 @@ val dependenciesToEmbed = Seq(
   "com.typesafe.scala-logging" % "scala-logging-slf4j_2.10" % "2.1.2",
 
   // type-safety utils
-  "eu.timepit" %% "refined" % "0.9.10",
-  "com.beachape" %% "enumeratum" % "1.5.13",
+  "eu.timepit" %% "refined" % "0.9.10" cross CrossVersion.binary,
+  "com.beachape" %% "enumeratum" % "1.5.13" cross CrossVersion.binary,
 
   // protobuf
-  "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
+  "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion cross CrossVersion.binary,
 
   // JSON
-  "io.circe" %% "circe-core" % "0.14.1",
-  "io.circe" %% "circe-generic" % "0.14.1",
-  "io.circe" %% "circe-parser" % "0.14.1",
+  "io.circe" %% "circe-core" % "0.14.1" cross CrossVersion.binary,
+  "io.circe" %% "circe-generic" % "0.14.1" cross CrossVersion.binary,
+  "io.circe" %% "circe-parser" % "0.14.1" cross CrossVersion.binary,
 )
 
 // endregion
