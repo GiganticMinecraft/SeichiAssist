@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech
+package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.domain
 
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairyMessage
 

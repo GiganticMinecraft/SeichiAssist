@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.F
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property._
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.resources.FairyMessageTable
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.FairySpeech
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.service.FairySpeechService
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.service.FairySpeechService
 import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.entity.Player
 

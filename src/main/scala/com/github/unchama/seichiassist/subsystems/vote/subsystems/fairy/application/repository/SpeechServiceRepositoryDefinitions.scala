@@ -4,8 +4,8 @@ import cats.Applicative
 import cats.effect.Sync
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
 import com.github.unchama.datarepository.template.initialization.TwoPhasedRepositoryInitialization
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.FairySpeechGateway
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.service.FairySpeechService
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.domain.FairySpeechGateway
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.service.FairySpeechService
 
 object SpeechServiceRepositoryDefinitions {
 
