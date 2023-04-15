@@ -172,7 +172,7 @@ DockerマシンのIPアドレス(Linux等なら`localhost`)を`DOCKER_IP`とし�
 `spigota` または `spigotb` のコンテナにアタッチする必要があります。
 
 アタッチするには `docker attach [CONTAINER_NAME]` を実行します。
-コンテナを指定する際に使用するIDは `docker ps` を実行すると `seichiassist_spigotb_1` のような形式で表示されます。
+コンテナを指定する際に使用するIDはコマンドプロンプトで `docker ps` を実行すると `seichiassist_spigotb_1` のような形式で表示されます。
 
 コンソールからは <kbd>Ctrl</kbd>キーと<kbd>C</kbd>キーを同時押しすることで出ることができます。サーバーは停止されません。
 
