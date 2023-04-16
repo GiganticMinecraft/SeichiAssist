@@ -12,6 +12,8 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.in
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.service.FairySpeechService
 import org.bukkit.entity.Player
 
+import java.util.UUID
+
 trait System[F[_], Player] extends Subsystem[F] {
 
   val api: FairySpeechAPI[F, Player]
@@ -37,6 +39,11 @@ object System {
           _ <- speechService(player).makeSpeech(messages, fairyPlaySound)
         } yield ()
 
+        override def setPlaySoundOnSpeech(player: UUID, playOnSpeech: Boolean): F[Unit] =
+          persistence.setPlaySoundOnSpeech(player, playOnSpeech)
+
+        override def playSoundOnSpeech(player: UUID): F[Boolean] =
+          persistence.playSoundOnFairySpeech(player)
       }
     }
   }
