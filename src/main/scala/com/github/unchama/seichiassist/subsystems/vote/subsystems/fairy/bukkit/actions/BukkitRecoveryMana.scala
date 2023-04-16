@@ -14,7 +14,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.p
   FairyAppleConsumeStrategy,
   FairyManaRecoveryState
 }
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.FairySpeech
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.domain.FairySpeech
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffectF
 import io.chrisdavenport.cats.effect.time.JavaTime

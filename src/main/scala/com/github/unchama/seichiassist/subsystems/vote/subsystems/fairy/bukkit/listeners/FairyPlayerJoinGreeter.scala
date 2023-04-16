@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.
 
 import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyPersistence
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.FairySpeech
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.domain.FairySpeech
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerJoinEvent}

@@ -23,20 +23,16 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.applicat
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions.BukkitSummonFairy
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.listeners.FairyPlayerJoinGreeter
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.routines.BukkitFairyRoutine
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.{
-  BukkitFairySpeech,
-  BukkitFairySummonRequest
-}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.BukkitFairySummonRequest
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property._
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.FairySpeech
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
   FairyPersistence,
   FairySpawnRequestErrorOrSpawn,
   FairySummonRequest
 }
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.infrastructure.JdbcFairyPersistence
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.bukkit.BukkitFairySpeechGateway
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.domain.FairySpeechGateway
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.bukkit.{BukkitFairySpeech, BukkitFairySpeechGateway}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.domain.{FairySpeech, FairySpeechGateway}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.service.FairySpeechService
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
