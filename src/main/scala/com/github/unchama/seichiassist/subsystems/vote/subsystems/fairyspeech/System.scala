@@ -24,7 +24,7 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_]: Sync](): System[F, Player] = {
+  def wired[F[_]: Sync]: System[F, Player] = {
     val speechGateway: Player => FairySpeechGateway[F] = player =>
       new BukkitFairySpeechGateway[F](player)
     val speechService: Player => FairySpeechService[F] = player =>

@@ -469,6 +469,10 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.vote.subsystems.fairy.System.wired.unsafeRunSync()
   }
 
+  private lazy val fairySpeechSystem
+    : subsystems.vote.subsystems.fairyspeech.System[IO, Player] =
+    subsystems.vote.subsystems.fairyspeech.System.wired[IO]
+
   /* TODO: mineStackSystemは本来privateであるべきだが、mineStackにアイテムを格納するAPIが現状の
       BreakUtilの実装から呼び出されている都合上やむを得ずpublicになっている。*/
   lazy val mineStackSystem: subsystems.minestack.System[IO, Player, ItemStack] =
@@ -508,7 +512,8 @@ class SeichiAssist extends JavaPlugin() {
     sharedInventorySystem,
     mineStackSystem,
     consumeGachaTicketSystem,
-    openirontrapdoor.System.wired
+    openirontrapdoor.System.wired,
+    fairySpeechSystem
   )
 
   private lazy val buildAssist: BuildAssist = {
