@@ -6,24 +6,12 @@ import com.github.unchama.menuinventory.LayoutPreparationContext
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.menus.achievement.group.AchievementGroupMenu
-import com.github.unchama.seichiassist.menus.achievement.{
-  AchievementCategoryMenu,
-  AchievementMenu
-}
+import com.github.unchama.seichiassist.menus.achievement.{AchievementCategoryMenu, AchievementMenu}
 import com.github.unchama.seichiassist.menus.home.{ConfirmationMenuEnvironment, HomeMenu}
-import com.github.unchama.seichiassist.menus.minestack.{
-  CategorizedMineStackMenu,
-  MineStackMainMenu,
-  MineStackSelectItemColorMenu
-}
+import com.github.unchama.seichiassist.menus.minestack.{CategorizedMineStackMenu, MineStackMainMenu, MineStackSelectItemColorMenu}
 import com.github.unchama.seichiassist.menus.nicknames.NickNameMenu
 import com.github.unchama.seichiassist.menus.ranking.{RankingMenu, RankingRootMenu}
-import com.github.unchama.seichiassist.menus.skill.{
-  ActiveSkillEffectMenu,
-  ActiveSkillMenu,
-  PassiveSkillMenu,
-  PremiumPointTransactionHistoryMenu
-}
+import com.github.unchama.seichiassist.menus.skill.{ActiveSkillEffectMenu, ActiveSkillMenu, PassiveSkillMenu, PremiumPointTransactionHistoryMenu}
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, SecondPage}
 import com.github.unchama.seichiassist.subsystems.anywhereender.AnywhereEnderChestAPI
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
@@ -32,10 +20,7 @@ import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.donate.DonatePremiumPointAPI
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
-  FastDiggingEffectApi,
-  FastDiggingSettingsApi
-}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.gacha.GachaDrawAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket.ConsumeGachaTicketAPI
@@ -50,6 +35,7 @@ import com.github.unchama.seichiassist.subsystems.ranking.domain.values.{LoginTi
 import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.FairySpeechAPI
 import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -92,7 +78,8 @@ object TopLevelRouter {
     gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
     mineStackAPI: MineStackAPI[IO, Player, ItemStack],
     gachaDrawAPI: GachaDrawAPI[IO, Player],
-    consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player]
+    consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player],
+    fairySpeechAPI: FairySpeechAPI[IO, Player]
   ): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     import assortedRankingApi._
 
