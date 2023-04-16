@@ -1,13 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech
 
+import cats.data.Kleisli
 import cats.effect.Sync
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairyMessage
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.bukkit.BukkitFairySpeechGateway
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.domain.{
-  FairySpeechGateway,
-  FairySpeechPersistence
-}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.domain.{FairySpeechGateway, FairySpeechPersistence}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.infrastructure.JdbcFairySpeechPersistence
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.service.FairySpeechService
 import org.bukkit.entity.Player
@@ -39,8 +37,12 @@ object System {
           _ <- speechService(player).makeSpeech(messages, fairyPlaySound)
         } yield ()
 
-        override def setPlaySoundOnSpeech(player: UUID, playOnSpeech: Boolean): F[Unit] =
-          persistence.setPlaySoundOnSpeech(player, playOnSpeech)
+        override def togglePlaySoundOnSpeech: Kleisli[F, Player, Unit] = Kleisli { player =>
+          for {
+            fairyPlaySound <- playSoundOnSpeech(player.getUniqueId)
+            _ <- persistence.setPlaySoundOnSpeech(player.getUniqueId, fairyPlaySound)
+          } yield ()
+        }
 
         override def playSoundOnSpeech(player: UUID): F[Boolean] =
           persistence.playSoundOnFairySpeech(player)

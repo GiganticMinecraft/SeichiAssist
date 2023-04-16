@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech
 
+import cats.data.Kleisli
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairyMessage
 
 import java.util.UUID
@@ -13,9 +14,9 @@ trait FairySpeechAPI[F[_], Player] {
   def speech(player: Player, messages: Seq[FairyMessage]): F[Unit]
 
   /**
-   * @return `player`に対して妖精が喋った際に音を再生するかを`playOnSpeech`に設定する作用
+   * @return `player`に対して妖精が喋った際に音を再生するかをトグルする作用
    */
-  def setPlaySoundOnSpeech(player: UUID, playOnSpeech: Boolean): F[Unit]
+  def togglePlaySoundOnSpeech: Kleisli[F, Player, Unit]
 
   /**
    * @return `player`に対して妖精が喋った際に音を再生するかどうかを取得する作用
