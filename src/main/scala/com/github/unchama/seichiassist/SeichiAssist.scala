@@ -466,13 +466,17 @@ class SeichiAssist extends JavaPlugin() {
     implicit val breakCountAPI: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
     implicit val voteAPI: VoteAPI[IO, Player] = voteSystem.api
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
+    implicit val fairySpeechAPI: FairySpeechAPI[IO, Player] = fairySpeechSystem.api
 
     subsystems.vote.subsystems.fairy.System.wired.unsafeRunSync()
   }
 
   private lazy val fairySpeechSystem
-    : subsystems.vote.subsystems.fairyspeech.System[IO, Player] =
+    : subsystems.vote.subsystems.fairyspeech.System[IO, Player] = {
+    import PluginExecutionContexts.timer
+
     subsystems.vote.subsystems.fairyspeech.System.wired[IO]
+  }
 
   /* TODO: mineStackSystemは本来privateであるべきだが、mineStackにアイテムを格納するAPIが現状の
       BreakUtilの実装から呼び出されている都合上やむを得ずpublicになっている。*/
@@ -500,6 +504,7 @@ class SeichiAssist extends JavaPlugin() {
     presentSystem,
     anywhereEnderSystem,
     voteSystem,
+    fairySpeechSystem,
     fairySystem,
     gachaPrizeSystem,
     idleTimeSystem,
@@ -513,8 +518,7 @@ class SeichiAssist extends JavaPlugin() {
     sharedInventorySystem,
     mineStackSystem,
     consumeGachaTicketSystem,
-    openirontrapdoor.System.wired,
-    fairySpeechSystem
+    openirontrapdoor.System.wired
   )
 
   private lazy val buildAssist: BuildAssist = {

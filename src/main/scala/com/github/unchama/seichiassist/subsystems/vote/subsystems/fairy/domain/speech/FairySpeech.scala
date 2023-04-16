@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.domain
+package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech
 
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairyManaRecoveryState
 

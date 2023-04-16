@@ -8,7 +8,7 @@ import com.github.unchama.seichiassist.subsystems.vote.domain.EffectPoint
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.SummonFairy
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyPersistence
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairyRecoveryManaAmount
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.domain.FairySpeech
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.FairySpeech
 import com.github.unchama.targetedeffect.commandsender.MessageEffectF
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
