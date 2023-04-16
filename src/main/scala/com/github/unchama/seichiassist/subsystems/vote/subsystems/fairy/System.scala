@@ -135,17 +135,6 @@ object System {
             override def totalConsumedApple: IO[AppleAmount] =
               persistence.totalConsumedAppleAmount
 
-            override def doPlaySoundOnSpeak(uuid: UUID): IO[Boolean] =
-              persistence.playSoundOnFairySpeech(uuid)
-
-            override def toggleSoundOnSpeak: Kleisli[IO, Player, Unit] = Kleisli { player =>
-              val uuid = player.getUniqueId
-              for {
-                isPlayFairySpeechSound <- doPlaySoundOnSpeak(uuid)
-                _ <- persistence.setPlaySoundOnSpeech(uuid, !isPlayFairySpeechSound)
-              } yield ()
-            }
-
             override def sendDisappearTimeToChat: Kleisli[IO, Player, Unit] = Kleisli {
               player => fairySpeech.speechEndTime(player)
             }
