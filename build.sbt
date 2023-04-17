@@ -50,7 +50,9 @@ resolvers ++= Seq(
   "oss.sonatype.org" at "https://oss.sonatype.org/content/repositories/snapshots",
   "nexus.okkero.com" at "https://nexus.okkero.com/repository/maven-releases/",
   "maven.elmakers.com" at "https://maven.elmakers.com/repository/", // spigot-api 1.12.2がhub.spigotmc.orgからダウンロードできなくなったため
-  "repo.phoenix616.dev" at "https://repo.phoenix616.dev" // authlibのための
+  "repo.phoenix616.dev" at "https://repo.phoenix616.dev", // authlibのための
+  // ajd4jpのミラーのため
+  "jitpack.io" at "https://jitpack.io",
 )
 
 val providedDependencies = Seq(
@@ -111,6 +113,9 @@ val dependenciesToEmbed = Seq(
   "io.circe" %% "circe-core" % "0.14.1",
   "io.circe" %% "circe-generic" % "0.14.1",
   "io.circe" %% "circe-parser" % "0.14.1",
+
+  // ajd4jp
+  "com.github.KisaragiEffective" % "ajd4jp-mirror" % "8.0.2.2021",
 )
 
 // endregion
