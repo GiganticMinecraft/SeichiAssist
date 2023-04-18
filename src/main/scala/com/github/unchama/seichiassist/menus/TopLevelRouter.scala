@@ -50,6 +50,7 @@ import com.github.unchama.seichiassist.subsystems.ranking.domain.values.{LoginTi
 import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.FairySpeechAPI
 import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -92,7 +93,8 @@ object TopLevelRouter {
     gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
     mineStackAPI: MineStackAPI[IO, Player, ItemStack],
     gachaDrawAPI: GachaDrawAPI[IO, Player],
-    consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player]
+    consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player],
+    fairySpeechAPI: FairySpeechAPI[IO, Player]
   ): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     import assortedRankingApi._
 

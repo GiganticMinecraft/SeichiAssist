@@ -87,6 +87,7 @@ import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventor
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.GtToSiinaAPI
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.FairySpeechAPI
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global._
 import com.github.unchama.util.{ActionStatus, ClassUtils}
@@ -465,8 +466,16 @@ class SeichiAssist extends JavaPlugin() {
     implicit val breakCountAPI: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
     implicit val voteAPI: VoteAPI[IO, Player] = voteSystem.api
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
+    implicit val fairySpeechAPI: FairySpeechAPI[IO, Player] = fairySpeechSystem.api
 
     subsystems.vote.subsystems.fairy.System.wired.unsafeRunSync()
+  }
+
+  private lazy val fairySpeechSystem
+    : subsystems.vote.subsystems.fairyspeech.System[IO, Player] = {
+    import PluginExecutionContexts.timer
+
+    subsystems.vote.subsystems.fairyspeech.System.wired[IO]
   }
 
   /* TODO: mineStackSystemは本来privateであるべきだが、mineStackにアイテムを格納するAPIが現状の
@@ -495,6 +504,7 @@ class SeichiAssist extends JavaPlugin() {
     presentSystem,
     anywhereEnderSystem,
     voteSystem,
+    fairySpeechSystem,
     fairySystem,
     gachaPrizeSystem,
     idleTimeSystem,
@@ -660,6 +670,7 @@ class SeichiAssist extends JavaPlugin() {
       sharedInventorySystem.api
     implicit val voteAPI: VoteAPI[IO, Player] = voteSystem.api
     implicit val fairyAPI: FairyAPI[IO, SyncIO, Player] = fairySystem.api
+    implicit val fairySpeechAPI: FairySpeechAPI[IO, Player] = fairySpeechSystem.api
     implicit val donateAPI: DonatePremiumPointAPI[IO] = donateSystem.api
     implicit val gachaTicketAPI: GachaTicketAPI[IO] =
       gachaTicketSystem.api

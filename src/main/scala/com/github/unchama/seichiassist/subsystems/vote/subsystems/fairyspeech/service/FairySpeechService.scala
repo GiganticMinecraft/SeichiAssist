@@ -1,9 +1,9 @@
-package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.service
+package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.service
 
 import cats.effect.Sync
 import cats.implicits._
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairyMessage
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.FairySpeechGateway
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.domain.FairySpeechGateway
 
 class FairySpeechService[F[_]: Sync](gateway: FairySpeechGateway[F]) {
 

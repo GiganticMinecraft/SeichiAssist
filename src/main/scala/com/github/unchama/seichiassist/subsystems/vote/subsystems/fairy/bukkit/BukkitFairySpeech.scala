@@ -1,22 +1,20 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit
 
 import cats.effect.Sync
-import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
-import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyPersistence
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property._
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.resources.FairyMessageTable
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.FairySpeech
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.service.FairySpeechService
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.FairySpeechAPI
 import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.entity.Player
 
 import java.time.ZoneId
 import scala.util.Random
 
-class BukkitFairySpeech[F[_]: Sync: JavaTime, G[_]: ContextCoercion[*[_], F]](
-  fairySpeechServiceRepository: PlayerDataRepository[FairySpeechService[G]],
-  fairyPersistence: FairyPersistence[F]
+class BukkitFairySpeech[F[_]: Sync: JavaTime](
+  implicit fairyPersistence: FairyPersistence[F],
+  fairySpeechAPI: FairySpeechAPI[F, Player]
 ) extends FairySpeech[F, Player] {
 
   import cats.implicits._
@@ -39,14 +37,7 @@ class BukkitFairySpeech[F[_]: Sync: JavaTime, G[_]: ContextCoercion[*[_], F]](
       nameCalledByFairy = ScreenNameForFairy(player.getName)
       fairyMessages = getSummonMessagesByStartHour(startHour, nameCalledByFairy)
       message <- randomMessage(fairyMessages)
-
-      serviceRepository = fairySpeechServiceRepository(player)
-      fairySpeechSound <- ContextCoercion {
-        fairyPersistence.playSoundOnFairySpeech(player.getUniqueId)
-      }
-      _ <- ContextCoercion {
-        serviceRepository.makeSpeech(Seq(message), fairySpeechSound)
-      }
+      _ <- fairySpeechAPI.speech(player, Seq(message))
     } yield ()
 
   override def speechRandomly(
@@ -64,44 +55,30 @@ class BukkitFairySpeech[F[_]: Sync: JavaTime, G[_]: ContextCoercion[*[_], F]](
     }
     for {
       message <- randomMessage(messages(nameCalledByFairy))
-      fairyPlaySound <- fairyPersistence.playSoundOnFairySpeech(player.getUniqueId)
-      _ <- ContextCoercion {
-        fairySpeechServiceRepository(player).makeSpeech(Seq(message), fairyPlaySound)
-      }
+      _ <- fairySpeechAPI.speech(player, Seq(message))
     } yield ()
   }
 
   override def speechEndTime(player: Player): F[Unit] = {
     for {
       endTimeOpt <- fairyPersistence.fairyEndTime(player.getUniqueId)
-      playSound <- fairyPersistence.playSoundOnFairySpeech(player.getUniqueId)
       endTime = endTimeOpt.get.endTime
-      _ <- ContextCoercion {
-        fairySpeechServiceRepository(player).makeSpeech(
-          Seq(FairyMessage(s"僕は${endTime.getHour}:${endTime.getMinute}には帰るよー。")),
-          playSound
-        )
-      }
+      _ <- fairySpeechAPI.speech(
+        player,
+        Seq(FairyMessage(s"僕は${endTime.getHour}:${endTime.getMinute}には帰るよー。"))
+      )
     } yield ()
   }
 
   override def welcomeBack(player: Player): F[Unit] = for {
-    playSound <- fairyPersistence.playSoundOnFairySpeech(player.getUniqueId)
-    _ <- ContextCoercion {
-      fairySpeechServiceRepository(player)
-        .makeSpeech(Seq(FairyMessage(s"おかえり！${player.getName}")), playSound)
-    }
+    _ <- fairySpeechAPI.speech(player, Seq(FairyMessage(s"おかえり！${player.getName}")))
   } yield ()
 
   override def bye(player: Player): F[Unit] = for {
-    playSound <- fairyPersistence.playSoundOnFairySpeech(player.getUniqueId)
-    repository = fairySpeechServiceRepository(player)
-    _ <- ContextCoercion {
-      repository.makeSpeech(
-        Seq(FairyMessage(s"あっ、もうこんな時間だ！"), FairyMessage(s"じゃーねー！${player.getName}")),
-        playSound
-      )
-    }
+    _ <- fairySpeechAPI.speech(
+      player,
+      Seq(FairyMessage(s"あっ、もうこんな時間だ！"), FairyMessage(s"じゃーねー！${player.getName}"))
+    )
   } yield ()
 
   private def randomMessage(fairyMessages: FairyMessageChoice): F[FairyMessage] =
