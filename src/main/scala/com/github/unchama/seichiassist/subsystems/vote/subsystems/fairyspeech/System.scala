@@ -1,17 +1,13 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech
 
 import cats.data.Kleisli
-import cats.effect.Sync
+import cats.effect.{Sync, Timer}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairyMessage
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.bukkit.BukkitFairySpeechGateway
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.domain.{
-  FairySpeechGateway,
-  FairySpeechPersistence
-}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.domain.{FairySpeechGateway, FairySpeechPersistence}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.infrastructure.JdbcFairySpeechPersistence
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.service.FairySpeechService
-import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.entity.Player
 
 import java.util.UUID
@@ -26,7 +22,7 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_]: Sync: JavaTime]: System[F, Player] = {
+  def wired[F[_]: Sync: Timer]: System[F, Player] = {
     val speechGateway: Player => FairySpeechGateway[F] = player =>
       new BukkitFairySpeechGateway[F](player)
     val speechService: Player => FairySpeechService[F] = player =>
