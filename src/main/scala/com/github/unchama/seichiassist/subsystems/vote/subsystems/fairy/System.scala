@@ -13,10 +13,7 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.SummonFairy
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.repository.{
-  FairyManaRecoveryRoutineFiberRepositoryDefinition,
-  SpeechServiceRepositoryDefinitions
-}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.repository.FairyManaRecoveryRoutineFiberRepositoryDefinition
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions.BukkitSummonFairy
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.listeners.FairyPlayerJoinGreeter
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.routines.BukkitFairyRoutine
@@ -32,8 +29,6 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
   FairySummonRequest
 }
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.infrastructure.JdbcFairyPersistence
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.bukkit.BukkitFairySpeechGateway
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.domain.FairySpeechGateway
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import org.bukkit.inventory.ItemStack
@@ -60,26 +55,16 @@ object System {
     minecraftServerThread: OnMinecraftServerThread[IO]
   ): SyncIO[System[IO, SyncIO, Player]] = {
     implicit val persistence: FairyPersistence[IO] = new JdbcFairyPersistence[IO]
-    implicit val fairySpeechGatewayProvider: Player => FairySpeechGateway[SyncIO] =
-      new BukkitFairySpeechGateway[SyncIO](_)
     implicit val fairySpeechProvider: FairySpeech[IO, Player] = new BukkitFairySpeech[IO]
+    val fairyRoutine = new BukkitFairyRoutine(fairySpeechProvider)
 
     for {
-      speechServiceRepositoryControls <- BukkitRepositoryControls.createHandles(
-        RepositoryDefinition
-          .Phased
-          .TwoPhased(
-            SpeechServiceRepositoryDefinitions.initialization[SyncIO, Player],
-            SpeechServiceRepositoryDefinitions.finalization[SyncIO, Player]
-          )
-      )
-      _fairyRoutine = new BukkitFairyRoutine(fairySpeechProvider)
       fairyRecoveryRoutineFiberRepositoryControls <- BukkitRepositoryControls.createHandles(
         RepositoryDefinition
           .Phased
           .TwoPhased(
             FairyManaRecoveryRoutineFiberRepositoryDefinition
-              .initialization[Player](_fairyRoutine),
+              .initialization[Player](fairyRoutine),
             FairyManaRecoveryRoutineFiberRepositoryDefinition.finalization[Player]
           )
       )
@@ -138,7 +123,7 @@ object System {
           }
 
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[IO, _]] =
-          Seq(speechServiceRepositoryControls, fairyRecoveryRoutineFiberRepositoryControls).map(
+          Seq(fairyRecoveryRoutineFiberRepositoryControls).map(
             _.coerceFinalizationContextTo[IO]
           )
 
