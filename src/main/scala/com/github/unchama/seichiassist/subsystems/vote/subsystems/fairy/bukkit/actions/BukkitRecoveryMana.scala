@@ -87,7 +87,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
           ) >>
           fairySpeech.speechRandomly(
             player,
-            if (finallyAppleConsumptionAmount > mineStackedGachaRingoAmount)
+            if (finallyAppleConsumptionAmount == 0)
               FairyManaRecoveryState.RecoveredWithoutApple
             else FairyManaRecoveryState.RecoveredWithApple
           ) >>
