@@ -188,10 +188,6 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
     oldManaAmount <- ContextCoercion {
       manaApi.readManaAmount(player)
     }
-    gachaRingoObject <- mineStackAPI.mineStackObjectList.findByName("gachaimo")
-    mineStackedGachaRingoAmount <- mineStackAPI
-      .mineStackRepository
-      .getStackedAmountOf(player, gachaRingoObject.get)
   } yield {
     val isAppleOpenStateIsOpenOrOpenALittle =
       appleOpenState == FairyAppleConsumeStrategy.LessConsume || appleOpenState == FairyAppleConsumeStrategy.Consume
@@ -201,33 +197,19 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
 
     val appleOpenStateDivision =
       if (isAppleOpenStateIsOpenOrOpenALittle && isEnoughMana) 2
-      else if (appleOpenState == FairyAppleConsumeStrategy.NoConsume) 4
+      else if (
+        appleOpenState == FairyAppleConsumeStrategy.NoConsume || appleConsumptionAmount == 0
+      ) 4
       else 1
-
     val reflectedAppleOpenStateAmount =
       defaultRecoveryManaAmount.recoveryMana / appleOpenStateDivision
 
-    // minestackに入っているりんごの数を適用したマナの回復量
-    val mineStackBasedRegenValue =
-      if (appleConsumptionAmount > mineStackedGachaRingoAmount) {
-        if (mineStackedGachaRingoAmount == 0) {
-          reflectedAppleOpenStateAmount / (
-            if (appleOpenState == FairyAppleConsumeStrategy.Consume) 4
-            else if (appleOpenState == FairyAppleConsumeStrategy.LessConsume) 4
-            else 2
-          )
-        } else {
-          val multiplier = Math.max(mineStackedGachaRingoAmount / appleConsumptionAmount, 0.5)
-          (reflectedAppleOpenStateAmount * multiplier).toInt
-        }
-      } else reflectedAppleOpenStateAmount
-
     val randomizedAdd =
-      if (mineStackBasedRegenValue >= 50)
-        Random.nextInt(mineStackBasedRegenValue / 50)
+      if (reflectedAppleOpenStateAmount >= 50)
+        Random.nextInt(reflectedAppleOpenStateAmount / 50)
       else 0
 
-    (mineStackBasedRegenValue - mineStackBasedRegenValue / 100) + randomizedAdd
+    (reflectedAppleOpenStateAmount - reflectedAppleOpenStateAmount / 100) + randomizedAdd
   }
 
 }
