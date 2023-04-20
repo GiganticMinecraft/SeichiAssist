@@ -63,7 +63,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
       finallyAppleConsumptionAmount <- computeFinallyAppleConsumptionAmount(
         appleConsumptionAmount
       )
-      recoveryManaAmount <- computeManaRecoveryAmount(appleConsumptionAmount)
+      recoveryManaAmount <- computeManaRecoveryAmount(finallyAppleConsumptionAmount)
 
       gachaRingoObject <- mineStackAPI.mineStackObjectList.findByName("gachaimo")
 
@@ -87,15 +87,22 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
           ) >>
           fairySpeech.speechRandomly(
             player,
-            if (finallyAppleConsumptionAmount > mineStackedGachaRingoAmount)
+            if (finallyAppleConsumptionAmount == 0)
               FairyManaRecoveryState.RecoveredWithoutApple
             else FairyManaRecoveryState.RecoveredWithApple
           ) >>
+          mineStackAPI
+            .mineStackRepository
+            .subtractStackedAmountOf(
+              player,
+              gachaRingoObject.get,
+              finallyAppleConsumptionAmount
+            ) >>
           SequentialEffect(
             MessageEffectF(s"$RESET$YELLOW${BOLD}マナ妖精が${recoveryManaAmount}マナを回復してくれました"),
-            if (appleConsumptionAmount != 0)
+            if (finallyAppleConsumptionAmount != 0)
               MessageEffectF(
-                s"$RESET$YELLOW${BOLD}あっ！${appleConsumptionAmount}個のがちゃりんごが食べられてる！"
+                s"$RESET$YELLOW${BOLD}あっ！${finallyAppleConsumptionAmount}個のがちゃりんごが食べられてる！"
               )
             else MessageEffectF(s"$RESET$YELLOW${BOLD}あなたは妖精にりんごを渡しませんでした。")
           ).apply(player)
@@ -181,10 +188,6 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
     oldManaAmount <- ContextCoercion {
       manaApi.readManaAmount(player)
     }
-    gachaRingoObject <- mineStackAPI.mineStackObjectList.findByName("gachaimo")
-    mineStackedGachaRingoAmount <- mineStackAPI
-      .mineStackRepository
-      .getStackedAmountOf(player, gachaRingoObject.get)
   } yield {
     val isAppleOpenStateIsOpenOrOpenALittle =
       appleOpenState == FairyAppleConsumeStrategy.LessConsume || appleOpenState == FairyAppleConsumeStrategy.Consume
@@ -194,33 +197,19 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
 
     val appleOpenStateDivision =
       if (isAppleOpenStateIsOpenOrOpenALittle && isEnoughMana) 2
-      else if (appleOpenState == FairyAppleConsumeStrategy.NoConsume) 4
+      else if (
+        appleOpenState == FairyAppleConsumeStrategy.NoConsume || appleConsumptionAmount == 0
+      ) 4
       else 1
-
     val reflectedAppleOpenStateAmount =
       defaultRecoveryManaAmount.recoveryMana / appleOpenStateDivision
 
-    // minestackに入っているりんごの数を適用したマナの回復量
-    val mineStackBasedRegenValue =
-      if (appleConsumptionAmount > mineStackedGachaRingoAmount) {
-        if (mineStackedGachaRingoAmount == 0) {
-          reflectedAppleOpenStateAmount / (
-            if (appleOpenState == FairyAppleConsumeStrategy.Consume) 4
-            else if (appleOpenState == FairyAppleConsumeStrategy.LessConsume) 4
-            else 2
-          )
-        } else {
-          val multiplier = Math.max(mineStackedGachaRingoAmount / appleConsumptionAmount, 0.5)
-          (reflectedAppleOpenStateAmount * multiplier).toInt
-        }
-      } else reflectedAppleOpenStateAmount
-
     val randomizedAdd =
-      if (mineStackBasedRegenValue >= 50)
-        Random.nextInt(mineStackBasedRegenValue / 50)
+      if (reflectedAppleOpenStateAmount >= 50)
+        Random.nextInt(reflectedAppleOpenStateAmount / 50)
       else 0
 
-    (mineStackBasedRegenValue - mineStackBasedRegenValue / 100) + randomizedAdd
+    (reflectedAppleOpenStateAmount - reflectedAppleOpenStateAmount / 100) + randomizedAdd
   }
 
 }
