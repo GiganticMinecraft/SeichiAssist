@@ -63,7 +63,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
       finallyAppleConsumptionAmount <- computeFinallyAppleConsumptionAmount(
         appleConsumptionAmount
       )
-      recoveryManaAmount <- computeManaRecoveryAmount(appleConsumptionAmount)
+      recoveryManaAmount <- computeManaRecoveryAmount(finallyAppleConsumptionAmount)
 
       gachaRingoObject <- mineStackAPI.mineStackObjectList.findByName("gachaimo")
 
@@ -91,11 +91,18 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
               FairyManaRecoveryState.RecoveredWithoutApple
             else FairyManaRecoveryState.RecoveredWithApple
           ) >>
+          mineStackAPI
+            .mineStackRepository
+            .subtractStackedAmountOf(
+              player,
+              gachaRingoObject.get,
+              finallyAppleConsumptionAmount
+            ) >>
           SequentialEffect(
             MessageEffectF(s"$RESET$YELLOW${BOLD}マナ妖精が${recoveryManaAmount}マナを回復してくれました"),
-            if (appleConsumptionAmount != 0)
+            if (finallyAppleConsumptionAmount != 0)
               MessageEffectF(
-                s"$RESET$YELLOW${BOLD}あっ！${appleConsumptionAmount}個のがちゃりんごが食べられてる！"
+                s"$RESET$YELLOW${BOLD}あっ！${finallyAppleConsumptionAmount}個のがちゃりんごが食べられてる！"
               )
             else MessageEffectF(s"$RESET$YELLOW${BOLD}あなたは妖精にりんごを渡しませんでした。")
           ).apply(player)
