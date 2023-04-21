@@ -94,10 +94,6 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
   // 二つ名解禁フラグ保存用
   var TitleFlags: mutable.BitSet = new mutable.BitSet(10001)
 
-  // 二つ名関連用にp_vote(投票数)を引っ張る。(予期せぬエラー回避のため名前を複雑化)
-  // TODO: Achievementシステムが再実装されたら速攻でこれを消すべき
-  var p_vote_forT: Int =
-    SeichiAssist.instance.voteSystem.api.count(uuid).unsafeRunSync().value
   // 二つ名配布予約NOの保存
   var giveachvNo = 0
   // 実績ポイント用
