@@ -5,6 +5,7 @@ import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.data.player.PlayerData
+import com.github.unchama.seichiassist.menus.StickItemData
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{
@@ -121,12 +122,7 @@ class PlayerJoinListener extends Listener {
 
       // 初見プレイヤーに木の棒、エリトラ、ピッケルを配布
       val inv = player.getInventory
-      val stick = new ItemStack(Material.STICK, 1).tap { itemStack =>
-        import itemStack._
-        val meta = getItemMeta
-        meta.setDisplayName("棒メニューが開ける棒")
-        setItemMeta(meta)
-      }
+      val stick = StickItemData.stick
       inv.addItem(stick)
       inv.addItem(new ItemStack(Material.ELYTRA))
 
