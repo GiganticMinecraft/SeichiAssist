@@ -60,6 +60,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
       }.whenA(isFairyUsing && oldManaAmount.isFull)
 
       appleConsumptionAmount <- computeAppleConsumptionAmount
+      _ = println(s"appleConsumptionAmount: $appleConsumptionAmount")
       finallyAppleConsumptionAmount <- computeFinallyAppleConsumptionAmount(
         appleConsumptionAmount
       )
@@ -117,15 +118,8 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
     seichiAmountData <- ContextCoercion(breakCountAPI.seichiAmountDataRepository(player).read)
     voteStreaks <- voteAPI.currentConsecutiveVoteStreakDays(uuid)
     appleOpenState <- fairyPersistence.appleConsumeStrategy(uuid)
-    oldManaAmount <- ContextCoercion {
-      manaApi.readManaAmount(player)
-    }
   } yield {
     val playerLevel = seichiAmountData.levelCorrespondingToExp
-
-    val isStrategyConsumeOrLessConsume =
-      appleOpenState == FairyAppleConsumeStrategy.LessConsume || appleOpenState == FairyAppleConsumeStrategy.Consume
-    val isEnoughMana = oldManaAmount.ratioToCap.exists(_ >= 0.75)
 
     val defaultAmount = Math.pow(playerLevel.level / 10, 2)
 
@@ -138,9 +132,12 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
       else 1
 
     // りんごの開放状況を適用した除算量
-    val appleConsumeStrategyDivisor =
-      if (isStrategyConsumeOrLessConsume && isEnoughMana) 2
-      else 1
+    val appleConsumeStrategyDivisor = appleOpenState match {
+      case FairyAppleConsumeStrategy.Permissible => 1
+      case FairyAppleConsumeStrategy.Consume     => 2
+      case FairyAppleConsumeStrategy.LessConsume => 3
+      case FairyAppleConsumeStrategy.NoConsume   => 4
+    }
 
     // りんごの開放状況まで適用したりんごの消費量 (暫定)
     val appleOpenStateReflectedAmount =
@@ -185,22 +182,14 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
   private def computeManaRecoveryAmount(appleConsumptionAmount: Int): F[Int] = for {
     defaultRecoveryManaAmount <- fairyPersistence.fairyRecoveryMana(uuid)
     appleOpenState <- fairyPersistence.appleConsumeStrategy(uuid)
-    oldManaAmount <- ContextCoercion {
-      manaApi.readManaAmount(player)
-    }
   } yield {
-    val isAppleOpenStateIsOpenOrOpenALittle =
-      appleOpenState == FairyAppleConsumeStrategy.LessConsume || appleOpenState == FairyAppleConsumeStrategy.Consume
-    val isEnoughMana = oldManaAmount.ratioToCap.exists(_ >= 0.75)
-
-    // マナの回復量を算出する
-
     val appleOpenStateDivision =
-      if (isAppleOpenStateIsOpenOrOpenALittle && isEnoughMana) 2
-      else if (
-        appleOpenState == FairyAppleConsumeStrategy.NoConsume || appleConsumptionAmount == 0
-      ) 4
+      if (appleOpenState == FairyAppleConsumeStrategy.NoConsume || appleConsumptionAmount == 0)
+        4
+      else if (appleOpenState == FairyAppleConsumeStrategy.LessConsume) 3
+      else if (appleOpenState == FairyAppleConsumeStrategy.Consume) 2
       else 1
+
     val reflectedAppleOpenStateAmount =
       defaultRecoveryManaAmount.recoveryMana / appleOpenStateDivision
 
@@ -209,7 +198,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
         Random.nextInt(reflectedAppleOpenStateAmount / 50)
       else 0
 
-    (reflectedAppleOpenStateAmount - reflectedAppleOpenStateAmount / 100) + randomizedAdd
+    reflectedAppleOpenStateAmount + randomizedAdd
   }
 
 }
