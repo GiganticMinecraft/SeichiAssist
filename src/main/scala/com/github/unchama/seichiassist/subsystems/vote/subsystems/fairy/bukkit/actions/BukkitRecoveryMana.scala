@@ -45,13 +45,6 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
     for {
       isFairyUsing <- fairyPersistence.isFairyUsing(uuid)
       fairyEndTimeOpt <- fairyPersistence.fairyEndTime(uuid)
-      finishUse <- JavaTime[F]
-        .getLocalDateTime(ZoneId.systemDefault())
-        .map(now => isFairyUsing && fairyEndTimeOpt.exists(_.endTime.isBefore(now)))
-      _ <- {
-        fairySpeech
-          .bye(player) >> fairyPersistence.updateIsFairyUsing(uuid, isFairyUsing = false)
-      }.whenA(finishUse)
       oldManaAmount <- ContextCoercion {
         manaApi.readManaAmount(player)
       }
@@ -60,7 +53,6 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
       }.whenA(isFairyUsing && oldManaAmount.isFull)
 
       appleConsumptionAmount <- computeAppleConsumptionAmount
-      _ = println(s"appleConsumptionAmount: $appleConsumptionAmount")
       finallyAppleConsumptionAmount <- computeFinallyAppleConsumptionAmount(
         appleConsumptionAmount
       )
@@ -108,6 +100,13 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
             else MessageEffectF(s"$RESET$YELLOW${BOLD}あなたは妖精にりんごを渡しませんでした。")
           ).apply(player)
       }.whenA(isFairyUsing && !oldManaAmount.isFull)
+      finishUse <- JavaTime[F]
+        .getLocalDateTime(ZoneId.systemDefault())
+        .map(now => isFairyUsing && fairyEndTimeOpt.exists(_.endTime.isBefore(now)))
+      _ <- {
+        fairySpeech
+          .bye(player) >> fairyPersistence.updateIsFairyUsing(uuid, isFairyUsing = false)
+      }.whenA(finishUse)
     } yield ()
 
   /**
