@@ -4,7 +4,10 @@ import cats.Monad
 import cats.effect.MonadThrow
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
-import com.github.unchama.datarepository.template.initialization.{PrefetchResult, SinglePhasedRepositoryInitialization}
+import com.github.unchama.datarepository.template.initialization.{
+  PrefetchResult,
+  SinglePhasedRepositoryInitialization
+}
 import com.github.unchama.generic.RefDict
 import com.github.unchama.generic.effect.concurrent.Retry.retryUntilSucceeds
 
@@ -28,7 +31,9 @@ object RefDictBackedRepositoryDefinition {
           .map(PrefetchResult.Success.apply)
 
     val finalization: RepositoryFinalization[F, UUID, R] =
-      RepositoryFinalization.withoutAnyFinalization((uuid, r) => retryUntilSucceeds(refDict.write(uuid, r)))
+      RepositoryFinalization.withoutAnyFinalization((uuid, r) =>
+        retryUntilSucceeds(refDict.write(uuid, r))
+      )
 
     RepositoryDefinition.Phased.SinglePhased.withoutTappingAction(initialization, finalization)
   }

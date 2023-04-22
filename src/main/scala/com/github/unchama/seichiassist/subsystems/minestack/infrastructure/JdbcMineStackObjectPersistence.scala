@@ -1,7 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.minestack.infrastructure
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{MineStackObject, MineStackObjectWithAmount}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
+  MineStackObject,
+  MineStackObjectWithAmount
+}
 import com.github.unchama.seichiassist.subsystems.minestack.domain.persistence.MineStackObjectPersistence
 import scalikejdbc._
 
