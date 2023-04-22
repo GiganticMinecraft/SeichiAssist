@@ -612,7 +612,11 @@ class SeichiAssist extends JavaPlugin() {
     {
       val config = SeichiAssist.seichiAssistConfig
       import config._
-      ScalikeJDBCConfiguration.initializeConnectionPool(s"$getURL/$getDB", getID, getPW)
+      ScalikeJDBCConfiguration.initializeConnectionPool(
+        s"$getURL/$getDB?autoReconnect=true",
+        getID,
+        getPW
+      )
       ScalikeJDBCConfiguration.initializeGlobalConfigs()
 
       /*
