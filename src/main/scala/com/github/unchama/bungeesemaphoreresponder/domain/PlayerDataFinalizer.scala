@@ -1,9 +1,8 @@
 package com.github.unchama.bungeesemaphoreresponder.domain
 
 import cats.effect.ConcurrentEffect
-import cats.{Applicative, ApplicativeError, MonadThrow, ~>}
+import cats.{Applicative, ApplicativeError, ~>}
 import com.github.unchama.generic.ContextCoercion
-import com.github.unchama.generic.effect.MonadThrowExtra.retryUntilSucceeds
 
 /**
  * The type of a pure callback object that should be invoked when a player quits the Minecraft
@@ -25,20 +24,19 @@ trait PlayerDataFinalizer[F[_], Player] {
    */
   def onQuitOf(player: Player): F[Unit]
 
-  def transformContext[G[_]: MonadThrow](trans: F ~> G): PlayerDataFinalizer[G, Player] = {
+  def transformContext[G[_]](trans: F ~> G): PlayerDataFinalizer[G, Player] = {
     PlayerDataFinalizer(player => trans.apply(onQuitOf(player)))
   }
 
-  def coerceContextTo[G[_]: MonadThrow: ContextCoercion[F, *[_]]]
-    : PlayerDataFinalizer[G, Player] =
+  def coerceContextTo[G[_]: ContextCoercion[F, *[_]]]: PlayerDataFinalizer[G, Player] =
     transformContext[G](implicitly)
 
 }
 
 object PlayerDataFinalizer {
 
-  def apply[F[_]: MonadThrow, Player](f: Player => F[Unit]): PlayerDataFinalizer[F, Player] =
-    (player: Player) => retryUntilSucceeds(f(player))
+  def apply[F[_], Player](f: Player => F[Unit]): PlayerDataFinalizer[F, Player] =
+    (player: Player) => f(player)
 
   import cats.effect.implicits._
   import cats.implicits._

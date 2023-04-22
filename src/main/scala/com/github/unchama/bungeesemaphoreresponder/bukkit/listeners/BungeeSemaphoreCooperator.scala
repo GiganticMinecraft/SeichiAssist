@@ -6,6 +6,7 @@ import com.github.unchama.bungeesemaphoreresponder.Configuration
 import com.github.unchama.bungeesemaphoreresponder.domain.actions.BungeeSemaphoreSynchronization
 import com.github.unchama.bungeesemaphoreresponder.domain.{PlayerDataFinalizer, PlayerName}
 import com.github.unchama.generic.EitherExtra
+import com.github.unchama.generic.effect.MonadThrowExtra.retryUntilSucceeds
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
@@ -37,14 +38,12 @@ class BungeeSemaphoreCooperator[F[_]: ConcurrentEffect: Timer](
         extends Exception(s"Timeout ${configuration.saveTimeoutDuration} reached!")
 
     val program = for {
-      fiber <- finalizer.onQuitOf(player).attempt.start
+      fiber <- retryUntilSucceeds(finalizer.onQuitOf(player)).start
       result <- ConcurrentEffect[F].race(timeout, fiber.join)
-      _ <- EitherExtra.unassociate(result) match {
-        case Left(timeoutOrErrorOnFinalization) =>
-          synchronization.notifySaveFailureOf(name) >>
-            ApplicativeError[F, Throwable].raiseError[Unit] {
-              timeoutOrErrorOnFinalization.getOrElse(TimeoutReached)
-            }
+      _ <- result match {
+        case Left(_) =>
+          synchronization.notifySaveFailureOf(name) >> ApplicativeError[F, Throwable]
+            .raiseError[Unit](TimeoutReached)
         case Right(_) =>
           synchronization.confirmSaveCompletionOf(name)
       }

@@ -1,7 +1,7 @@
 package com.github.unchama.datarepository.bukkit.player
 
 import cats.effect.{Sync, SyncEffect, SyncIO}
-import cats.{Monad, MonadThrow, ~>}
+import cats.{Monad, ~>}
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.datarepository.template._
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
@@ -25,9 +25,7 @@ case class BukkitRepositoryControls[F[_], R](
   finalizer: PlayerDataFinalizer[F, Player]
 ) {
 
-  def transformFinalizationContext[G[_]: MonadThrow](
-    trans: F ~> G
-  ): BukkitRepositoryControls[G, R] =
+  def transformFinalizationContext[G[_]](trans: F ~> G): BukkitRepositoryControls[G, R] =
     BukkitRepositoryControls(
       repository,
       initializer,
@@ -40,7 +38,7 @@ case class BukkitRepositoryControls[F[_], R](
   def map[S](f: R => S): BukkitRepositoryControls[F, S] =
     BukkitRepositoryControls(repository.map(f), initializer, backupProcess, finalizer)
 
-  def coerceFinalizationContextTo[G[_]: MonadThrow: ContextCoercion[F, *[_]]]
+  def coerceFinalizationContextTo[G[_]: ContextCoercion[F, *[_]]]
     : BukkitRepositoryControls[G, R] =
     transformFinalizationContext(ContextCoercion.asFunctionK)
 }
