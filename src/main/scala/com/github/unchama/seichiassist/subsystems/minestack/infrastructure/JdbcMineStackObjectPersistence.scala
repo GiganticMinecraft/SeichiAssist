@@ -8,6 +8,7 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
 import com.github.unchama.seichiassist.subsystems.minestack.domain.persistence.MineStackObjectPersistence
 import scalikejdbc._
 
+import java.sql.BatchUpdateException
 import java.util.UUID
 
 class JdbcMineStackObjectPersistence[F[_]: Sync, ItemStack, Player](
@@ -32,8 +33,7 @@ class JdbcMineStackObjectPersistence[F[_]: Sync, ItemStack, Player](
           .apply()
       }
 
-      Some(mineStackObjectsWithAmount.filterNot(_.isEmpty)
-        .map(_.get))
+      Some(mineStackObjectsWithAmount.filterNot(_.isEmpty).map(_.get))
     }
 
   override def write(key: UUID, value: List[MineStackObjectWithAmount[ItemStack]]): F[Unit] =
@@ -43,10 +43,9 @@ class JdbcMineStackObjectPersistence[F[_]: Sync, ItemStack, Player](
         val amount = mineStackObjectWithAmount.amount
         Seq(key.toString, objectName, amount)
       }
-
       DB.localTx { implicit session =>
-        sql"""INSERT INTO mine_stack 
-             | (player_uuid, object_name, amount) 
+        sql"""INSERT INTO mine_stack
+             | (player_uuid, object_name, amount)
              | VALUES (?, ?, ?)
              | ON DUPLICATE KEY UPDATE
              | amount = VALUES(amount)
