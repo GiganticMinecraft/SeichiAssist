@@ -9,7 +9,7 @@ import com.github.unchama.datarepository.template.initialization.{
   SinglePhasedRepositoryInitialization
 }
 import com.github.unchama.generic.RefDict
-import com.github.unchama.generic.effect.concurrent.Retry.retryUntilSucceeds
+import com.github.unchama.generic.effect.MonadThrowExtra.retryUntilSucceeds
 
 import java.util.UUID
 

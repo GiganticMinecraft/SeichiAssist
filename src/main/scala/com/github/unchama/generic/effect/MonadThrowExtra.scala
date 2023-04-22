@@ -1,8 +1,8 @@
-package com.github.unchama.generic.effect.concurrent
+package com.github.unchama.generic.effect
 
 import cats.effect.MonadThrow
 
-object Retry {
+object MonadThrowExtra {
 
   import cats.implicits._
 
