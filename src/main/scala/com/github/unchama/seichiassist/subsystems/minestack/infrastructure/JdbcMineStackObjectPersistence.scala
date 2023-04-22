@@ -30,22 +30,21 @@ class JdbcMineStackObjectPersistence[F[_]: Sync, ItemStack, Player](
           }
           .toList()
           .apply()
-          .filterNot(_.isEmpty)
-          .map(_.get)
       }
 
-      Some(mineStackObjectsWithAmount)
+      Some(mineStackObjectsWithAmount.filterNot(_.isEmpty)
+        .map(_.get))
     }
 
   override def write(key: UUID, value: List[MineStackObjectWithAmount[ItemStack]]): F[Unit] =
     Sync[F].delay {
-      DB.localTx { implicit session =>
-        val batchParams = value.map { mineStackObjectWithAmount =>
-          val objectName = mineStackObjectWithAmount.mineStackObject.mineStackObjectName
-          val amount = mineStackObjectWithAmount.amount
-          Seq(key.toString, objectName, amount)
-        }
+      val batchParams = value.map { mineStackObjectWithAmount =>
+        val objectName = mineStackObjectWithAmount.mineStackObject.mineStackObjectName
+        val amount = mineStackObjectWithAmount.amount
+        Seq(key.toString, objectName, amount)
+      }
 
+      DB.localTx { implicit session =>
         sql"""INSERT INTO mine_stack 
              | (player_uuid, object_name, amount) 
              | VALUES (?, ?, ?)
