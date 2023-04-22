@@ -1,14 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.minestack.infrastructure
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
-  MineStackObject,
-  MineStackObjectWithAmount
-}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{MineStackObject, MineStackObjectWithAmount}
 import com.github.unchama.seichiassist.subsystems.minestack.domain.persistence.MineStackObjectPersistence
 import scalikejdbc._
 
-import java.sql.BatchUpdateException
 import java.util.UUID
 
 class JdbcMineStackObjectPersistence[F[_]: Sync, ItemStack, Player](
@@ -31,21 +27,24 @@ class JdbcMineStackObjectPersistence[F[_]: Sync, ItemStack, Player](
           }
           .toList()
           .apply()
+          .filterNot(_.isEmpty)
+          .map(_.get)
       }
 
-      Some(mineStackObjectsWithAmount.filterNot(_.isEmpty).map(_.get))
+      Some(mineStackObjectsWithAmount)
     }
 
   override def write(key: UUID, value: List[MineStackObjectWithAmount[ItemStack]]): F[Unit] =
     Sync[F].delay {
-      val batchParams = value.map { mineStackObjectWithAmount =>
-        val objectName = mineStackObjectWithAmount.mineStackObject.mineStackObjectName
-        val amount = mineStackObjectWithAmount.amount
-        Seq(key.toString, objectName, amount)
-      }
       DB.localTx { implicit session =>
-        sql"""INSERT INTO mine_stack
-             | (player_uuid, object_name, amount)
+        val batchParams = value.map { mineStackObjectWithAmount =>
+          val objectName = mineStackObjectWithAmount.mineStackObject.mineStackObjectName
+          val amount = mineStackObjectWithAmount.amount
+          Seq(key.toString, objectName, amount)
+        }
+
+        sql"""INSERT INTO mine_stack 
+             | (player_uuid, object_name, amount) 
              | VALUES (?, ?, ?)
              | ON DUPLICATE KEY UPDATE
              | amount = VALUES(amount)
