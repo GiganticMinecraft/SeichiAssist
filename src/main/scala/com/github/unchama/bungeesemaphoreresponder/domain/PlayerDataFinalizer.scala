@@ -43,19 +43,20 @@ object PlayerDataFinalizer {
 
   def concurrently[F[_]: ConcurrentEffect, Player](
     finalizers: List[PlayerDataFinalizer[F, Player]]
-  ): PlayerDataFinalizer[F, Player] =
-    PlayerDataFinalizer { player =>
-      for {
-        fibers <- finalizers.traverse(_.onQuitOf(player).attempt.start)
-        results <- fibers.traverse(_.join)
-        _ <-
-          // TODO: 最初のエラーしか報告されていないが、全部報告すべき
-          results.collectFirst { case Left(error) => error } match {
-            case Some(error) =>
+  ): List[PlayerDataFinalizer[F, Player]] = {
+    finalizers.map { finalizer =>
+      PlayerDataFinalizer { player =>
+        for {
+          fiber <- finalizer.onQuitOf(player).attempt.start
+          result <- fiber.join
+          _ <- result match {
+            case Left(error) =>
               ApplicativeError[F, Throwable].raiseError(error)
-            case None =>
+            case Right(_) =>
               Applicative[F].unit
           }
-      } yield ()
+        } yield ()
+      }
     }
+  }
 }

@@ -869,8 +869,11 @@ class SeichiAssist extends JavaPlugin() {
       .getOnlinePlayers
       .asScala
       .toList
-      .traverse(bungeeSemaphoreResponderSystem.finalizer.onQuitOf)
+      .flatTraverse { player =>
+        bungeeSemaphoreResponderSystem.finalizers.traverse(_.onQuitOf(player))
+      }
       .unsafeRunSync()
+      .foreach(_ => ())
 
     if (SeichiAssist.databaseGateway.disconnect() == ActionStatus.Fail) {
       logger.info("データベース切断に失敗しました")

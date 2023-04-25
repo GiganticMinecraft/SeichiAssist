@@ -14,7 +14,7 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import scala.concurrent.duration.{Duration, FiniteDuration}
 
 class BungeeSemaphoreCooperator[F[_]: ConcurrentEffect: Timer](
-  finalizer: PlayerDataFinalizer[F, Player]
+  finalizers: List[PlayerDataFinalizer[F, Player]]
 )(
   implicit synchronization: BungeeSemaphoreSynchronization[F[Unit], PlayerName],
   configuration: Configuration,
@@ -37,8 +37,11 @@ class BungeeSemaphoreCooperator[F[_]: ConcurrentEffect: Timer](
         extends Exception(s"Timeout ${configuration.saveTimeoutDuration} reached!")
 
     val program = for {
-      fiber <- retryUntilSucceeds(finalizer.onQuitOf(player))(10).start
-      result <- ConcurrentEffect[F].race(timeout, fiber.join)
+      fibers <- finalizers.traverse { finalizer =>
+        retryUntilSucceeds(finalizer.onQuitOf(player))(10).start
+      }
+      joinedFibers = fibers.map(_.join).reduceLeft(_ >> _)
+      result <- ConcurrentEffect[F].race(timeout, joinedFibers)
       _ <- result match {
         case Left(_) =>
           synchronization.notifySaveFailureOf(name) >> ApplicativeError[F, Throwable]

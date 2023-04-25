@@ -11,7 +11,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 
 class System[F[_]: ConcurrentEffect: Timer](
-  val finalizer: PlayerDataFinalizer[F, Player],
+  val finalizers: List[PlayerDataFinalizer[F, Player]],
   messagePublishingContext: ContextShift[IO]
 )(
   implicit configuration: Configuration,
@@ -26,6 +26,6 @@ class System[F[_]: ConcurrentEffect: Timer](
     implicit val _synchronization: BungeeSemaphoreSynchronization[F[Unit], PlayerName] = {
       new RedisBungeeSemaphoreSynchronization[F]()
     }
-    Seq(new BungeeSemaphoreCooperator[F](finalizer))
+    Seq(new BungeeSemaphoreCooperator[F](finalizers))
   }
 }
