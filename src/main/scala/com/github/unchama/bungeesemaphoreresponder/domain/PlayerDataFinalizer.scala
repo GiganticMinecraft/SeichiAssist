@@ -1,7 +1,6 @@
 package com.github.unchama.bungeesemaphoreresponder.domain
 
-import cats.effect.ConcurrentEffect
-import cats.{Applicative, ApplicativeError, ~>}
+import cats.~>
 import com.github.unchama.generic.ContextCoercion
 
 /**
@@ -38,25 +37,4 @@ object PlayerDataFinalizer {
   def apply[F[_], Player](f: Player => F[Unit]): PlayerDataFinalizer[F, Player] =
     (player: Player) => f(player)
 
-  import cats.effect.implicits._
-  import cats.implicits._
-
-  def concurrently[F[_]: ConcurrentEffect, Player](
-    finalizers: List[PlayerDataFinalizer[F, Player]]
-  ): List[PlayerDataFinalizer[F, Player]] = {
-    finalizers.map { finalizer =>
-      PlayerDataFinalizer { player =>
-        for {
-          fiber <- finalizer.onQuitOf(player).attempt.start
-          result <- fiber.join
-          _ <- result match {
-            case Left(error) =>
-              ApplicativeError[F, Throwable].raiseError(error)
-            case Right(_) =>
-              Applicative[F].unit
-          }
-        } yield ()
-      }
-    }
-  }
 }

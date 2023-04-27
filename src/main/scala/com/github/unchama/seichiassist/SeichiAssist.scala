@@ -546,15 +546,13 @@ class SeichiAssist extends JavaPlugin() {
     import PluginExecutionContexts.timer
 
     new BungeeSemaphoreResponderSystem(
-      PlayerDataFinalizer.concurrently[IO, Player](
-        Seq(
-          savePlayerData,
-          assaultSkillRoutinesRepositoryControls.finalizer.coerceContextTo[IO],
-          activeSkillAvailabilityRepositoryControls.finalizer.coerceContextTo[IO]
-        ).appendedAll(wiredSubsystems.flatMap(_.managedFinalizers))
-          .appendedAll(wiredSubsystems.flatMap(_.managedRepositoryControls.map(_.finalizer)))
-          .toList
-      ),
+      Seq(
+        savePlayerData,
+        assaultSkillRoutinesRepositoryControls.finalizer.coerceContextTo[IO],
+        activeSkillAvailabilityRepositoryControls.finalizer.coerceContextTo[IO]
+      ).appendedAll(wiredSubsystems.flatMap(_.managedFinalizers))
+        .appendedAll(wiredSubsystems.flatMap(_.managedRepositoryControls.map(_.finalizer)))
+        .toList,
       PluginExecutionContexts.asyncShift
     )
   }
