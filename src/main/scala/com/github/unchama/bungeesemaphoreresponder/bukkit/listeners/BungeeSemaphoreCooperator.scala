@@ -22,7 +22,6 @@ class BungeeSemaphoreCooperator[F[_]: ConcurrentEffect: Timer](
   effectEnvironment: EffectEnvironment
 ) extends Listener {
 
-  import cats.effect.implicits._
   import cats.implicits._
 
   @EventHandler(priority = EventPriority.LOWEST)
