@@ -33,4 +33,13 @@ object ConcurrentExtra {
 
       a <- fiber.join
     } yield a
+
+  import cats.effect._
+
+  def runConcurrentlyCancellable[F[_]: ConcurrentEffect, A](programs: List[F[A]]): F[List[A]] =
+    for {
+      fibers <- programs.traverse(Concurrent[F].start(_))
+      _ <- Concurrent[F].start(fibers.map(_.cancel).sequence)
+      result <- fibers.traverse(_.join.attempt).map(_.collect { case Right(result) => result })
+    } yield result
 }
