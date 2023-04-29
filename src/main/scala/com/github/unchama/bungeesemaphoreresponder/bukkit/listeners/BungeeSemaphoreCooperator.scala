@@ -5,6 +5,7 @@ import cats.effect.{Async, ConcurrentEffect, Timer}
 import com.github.unchama.bungeesemaphoreresponder.Configuration
 import com.github.unchama.bungeesemaphoreresponder.domain.actions.BungeeSemaphoreSynchronization
 import com.github.unchama.bungeesemaphoreresponder.domain.{PlayerDataFinalizer, PlayerName}
+import com.github.unchama.generic.effect.ConcurrentExtra.runConcurrentlyCancellable
 import com.github.unchama.generic.effect.MonadThrowExtra.retryUntilSucceeds
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import org.bukkit.entity.Player
@@ -36,12 +37,12 @@ class BungeeSemaphoreCooperator[F[_]: ConcurrentEffect: Timer](
     case object TimeoutReached
         extends Exception(s"Timeout ${configuration.saveTimeoutDuration} reached!")
 
+    val quitProcess = runConcurrentlyCancellable(
+      finalizers.map(finalizer => retryUntilSucceeds(finalizer.onQuitOf(player))(10))
+    )
+
     val program = for {
-      fibers <- finalizers.traverse { finalizer =>
-        retryUntilSucceeds(finalizer.onQuitOf(player))(10).start
-      }
-      joinedFibers = fibers.map(_.join).reduceLeft(_ >> _)
-      result <- ConcurrentEffect[F].race(timeout, joinedFibers)
+      result <- ConcurrentEffect[F].race(timeout, quitProcess)
       _ <- result match {
         case Left(_) =>
           synchronization.notifySaveFailureOf(name) >> ApplicativeError[F, Throwable]
