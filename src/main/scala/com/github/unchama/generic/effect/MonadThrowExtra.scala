@@ -8,6 +8,7 @@ object MonadThrowExtra {
   import cats.implicits._
 
   def retryUntilSucceeds[F[_]: MonadThrow, A](fa: F[A])(limit: Int): F[A] = {
+    require(limit >= 1)
     def go(currentIterationCount: Int, lastException: Option[Throwable]): F[A] = {
       if (currentIterationCount <= limit) {
         fa.attempt.flatMap {
