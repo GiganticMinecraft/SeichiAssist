@@ -9,25 +9,27 @@ object MonadThrowExtra {
 
   def retryUntilSucceeds[F[_]: MonadThrow, A](fa: F[A])(limit: Int): F[A] = {
     require(limit >= 1)
-    def go(currentIterationCount: Int, lastException: Option[Throwable]): F[A] = {
+    def go(currentIterationCount: Int, occurredExceptions: List[Throwable]): F[A] = {
       if (currentIterationCount <= limit) {
         fa.attempt.flatMap {
-          case Right(a) => a.pure[F]
-          case Left(error) =>
-            go(currentIterationCount + 1, Some(error)).map { a =>
-              error.printStackTrace()
+          case Right(a) =>
+            a.pure[F].map { a =>
+              occurredExceptions.foreach(_.printStackTrace())
               a
             }
+          case Left(error) =>
+            go(currentIterationCount + 1, occurredExceptions :+ error)
         }
       } else {
-        // このelse節に入っている時点で1度は失敗しているので、`lastException`が`None`であることはありえない。
-        case object LimitReached extends Exception(s"Limit $limit reached!", lastException.get)
+        // このelse節に入っている時点で1度は失敗しているので、`occurredExceptions`が`empty`であることはありえない。
+        case object LimitReached
+            extends Exception(s"Limit $limit reached!", occurredExceptions.last)
 
         MonadError[F, Throwable].raiseError(LimitReached)
       }
     }
 
-    go(0, None)
+    go(0, Nil)
   }
 
 }
