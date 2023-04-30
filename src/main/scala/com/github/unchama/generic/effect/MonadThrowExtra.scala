@@ -1,22 +1,19 @@
 package com.github.unchama.generic.effect
 
 import cats.MonadError
-import cats.effect.MonadThrow
+import cats.effect.{MonadThrow, Sync}
 
 object MonadThrowExtra {
 
   import cats.implicits._
 
-  def retryUntilSucceeds[F[_]: MonadThrow, A](fa: F[A])(limit: Int): F[A] = {
+  def retryUntilSucceeds[F[_]: Sync, A](fa: F[A])(limit: Int): F[A] = {
     require(limit >= 1)
     def go(currentIterationCount: Int, occurredExceptions: List[Throwable]): F[A] = {
       if (currentIterationCount <= limit) {
         fa.attempt.flatMap {
           case Right(a) =>
-            a.pure[F].map { a =>
-              occurredExceptions.foreach(_.printStackTrace())
-              a
-            }
+            Sync[F].delay(occurredExceptions.foreach(_.printStackTrace())).as(a)
           case Left(error) =>
             go(currentIterationCount + 1, occurredExceptions :+ error)
         }
