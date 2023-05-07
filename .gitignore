@@ -2,6 +2,9 @@
 .idea/
 *.iml
 
+# VSCode
+.vscode
+
 # SBT
 /project/target
 /project/project
@@ -16,3 +19,9 @@ localDependencies/spigot-1.12.2.jar
 docker/spigot/serverfiles/eula.txt
 
 .env
+
+# Metal
+.bloop
+.metals
+project/.bloop/
+project/metals.sbt
