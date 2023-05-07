@@ -41,16 +41,19 @@ class BungeeSemaphoreCooperator[F[_]: ConcurrentEffect: Timer](
     )
 
     val program = for {
-      result <- ConcurrentEffect[F].race(timeout, quitProcess)
-      _ <- result match {
+      raceResult <- ConcurrentEffect[F].race(timeout, quitProcess)
+      _ <- raceResult match {
         case Left(_) =>
           synchronization.notifySaveFailureOf(name) >> ApplicativeError[F, Throwable]
             .raiseError[Unit](TimeoutReached)
-        case Right(List(Left(e))) =>
-          synchronization.notifySaveFailureOf(name) >> ApplicativeError[F, Throwable]
-            .raiseError[Unit](e)
-        case Right(_) =>
-          synchronization.confirmSaveCompletionOf(name)
+        case Right(result) =>
+          result.traverse {
+            case Left(e) =>
+              synchronization.notifySaveFailureOf(name) >> ApplicativeError[F, Throwable]
+                .raiseError[Unit](e)
+            case Right(_) =>
+              synchronization.confirmSaveCompletionOf(name)
+          }
       }
     } yield ()
 
