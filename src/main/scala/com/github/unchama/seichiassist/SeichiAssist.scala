@@ -137,7 +137,7 @@ class SeichiAssist extends JavaPlugin() {
   implicit val loggerF: io.chrisdavenport.log4cats.Logger[IO] =
     Slf4jLogger.getLoggerFromSlf4j(logger)
 
-  Sentry.init(options -> {
+  Sentry.init(options => {
     options.setDsn("https://7f241763b17c49db982ea29ad64b0264@sentry.onp.admin.seichi.click/2");
     // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
     // We recommend adjusting this value in production.
