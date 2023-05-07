@@ -92,6 +92,8 @@ import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global._
 import com.github.unchama.util.{ActionStatus, ClassUtils}
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import io.sentry.Sentry
+import io.sentry.SentryLevel;
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.entity.{Entity, Player, Projectile}
@@ -593,6 +595,20 @@ class SeichiAssist extends JavaPlugin() {
 
     // コンフィグ系の設定は全てConfig.javaに移動
     SeichiAssist.seichiAssistConfig = Config.loadFrom(this)
+
+    Sentry.init(options => {
+      options.setDsn("https://7f241763b17c49db982ea29ad64b0264@sentry.onp.admin.seichi.click/2");
+      // パフォーマンスモニタリングに使うトレースサンプルの送信割合
+      // tracesSampleRateを1.0にすると全てのイベントが送られるため、送りすぎないように調整する必要がある
+      options.setTracesSampleRate(0.25);
+      // When first trying Sentry it's good to see what the SDK is doing:
+      options.setDebug(true);
+
+      // どのサーバーからイベントが送られているのかを判別する識別子
+      options.setEnvironment(SeichiAssist.seichiAssistConfig.getServerId);
+    });
+
+    Sentry.configureScope(scope => scope.setLevel(SentryLevel.WARNING));
 
     if (SeichiAssist.seichiAssistConfig.getDebugMode == 1) {
       // debugmode=1の時は最初からデバッグモードで鯖を起動
