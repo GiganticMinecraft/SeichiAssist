@@ -1,7 +1,8 @@
 package com.github.unchama.bungeesemaphoreresponder.bukkit.listeners
 
-import cats.{Applicative, ApplicativeError}
-import cats.effect.{Async, ConcurrentEffect, Timer}
+import cats.ApplicativeError
+import cats.data.Validated
+import cats.effect.{Async, ConcurrentEffect, Sync, Timer}
 import com.github.unchama.bungeesemaphoreresponder.Configuration
 import com.github.unchama.bungeesemaphoreresponder.domain.actions.BungeeSemaphoreSynchronization
 import com.github.unchama.bungeesemaphoreresponder.domain.{PlayerDataFinalizer, PlayerName}
@@ -22,8 +23,6 @@ class BungeeSemaphoreCooperator[F[_]: ConcurrentEffect: Timer](
   effectEnvironment: EffectEnvironment
 ) extends Listener {
 
-  import cats.implicits._
-
   @EventHandler(priority = EventPriority.LOWEST)
   def onQuit(event: PlayerQuitEvent): Unit = {
     val player = event.getPlayer
@@ -40,6 +39,8 @@ class BungeeSemaphoreCooperator[F[_]: ConcurrentEffect: Timer](
       finalizers.map(finalizer => retryUntilSucceeds(finalizer.onQuitOf(player))(10))
     )
 
+    import cats.implicits._
+
     val program = for {
       raceResult <- ConcurrentEffect[F].race(timeout, quitProcess)
       _ <- raceResult match {
@@ -47,16 +48,15 @@ class BungeeSemaphoreCooperator[F[_]: ConcurrentEffect: Timer](
           synchronization.notifySaveFailureOf(name) >> ApplicativeError[F, Throwable]
             .raiseError[Unit](TimeoutReached)
         case Right(results) =>
-          results.partition(_.isRight) match {
-            case (_, Nil) =>
+          results.traverse(e => Validated.fromEither(e).leftMap(List.apply(_))) match {
+            case Validated.Valid(_) =>
               synchronization.confirmSaveCompletionOf(name)
-            case (_, lefts) =>
-              lefts.traverse {
-                case Left(throwable) =>
-                  synchronization.notifySaveFailureOf(name) >> ApplicativeError[F, Throwable]
-                    .raiseError[Unit](throwable)
-                case Right(_) => Applicative[F].unit
-              }
+            case Validated.Invalid(errors) =>
+              synchronization.notifySaveFailureOf(name) >> errors.traverse(error =>
+                Sync[F].delay {
+                  error.printStackTrace()
+                }
+              )
           }
       }
     } yield ()
