@@ -1,6 +1,6 @@
 package com.github.unchama.bungeesemaphoreresponder.bukkit.listeners
 
-import cats.ApplicativeError
+import cats.{Applicative, ApplicativeError}
 import cats.effect.{Async, ConcurrentEffect, Timer}
 import com.github.unchama.bungeesemaphoreresponder.Configuration
 import com.github.unchama.bungeesemaphoreresponder.domain.actions.BungeeSemaphoreSynchronization
@@ -46,13 +46,17 @@ class BungeeSemaphoreCooperator[F[_]: ConcurrentEffect: Timer](
         case Left(_) =>
           synchronization.notifySaveFailureOf(name) >> ApplicativeError[F, Throwable]
             .raiseError[Unit](TimeoutReached)
-        case Right(result) =>
-          result.traverse {
-            case Left(e) =>
-              synchronization.notifySaveFailureOf(name) >> ApplicativeError[F, Throwable]
-                .raiseError[Unit](e)
-            case Right(_) =>
+        case Right(results) =>
+          results.partition(_.isRight) match {
+            case (_, Nil) =>
               synchronization.confirmSaveCompletionOf(name)
+            case (_, lefts) =>
+              lefts.traverse {
+                case Left(throwable) =>
+                  synchronization.notifySaveFailureOf(name) >> ApplicativeError[F, Throwable]
+                    .raiseError[Unit](throwable)
+                case Right(_) => Applicative[F].unit
+              }
           }
       }
     } yield ()
