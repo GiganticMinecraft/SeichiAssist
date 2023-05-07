@@ -598,11 +598,13 @@ class SeichiAssist extends JavaPlugin() {
 
     Sentry.init(options => {
       options.setDsn("https://7f241763b17c49db982ea29ad64b0264@sentry.onp.admin.seichi.click/2");
-      // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
-      // We recommend adjusting this value in production.
-      options.setTracesSampleRate(1.0);
+      // パフォーマンスモニタリングに使うトレースサンプルの送信割合
+      // tracesSampleRateを1.0にすると全てのイベントが送られるため、送りすぎないように調整する必要がある
+      options.setTracesSampleRate(0.25);
       // When first trying Sentry it's good to see what the SDK is doing:
       options.setDebug(true);
+
+      // どのサーバーからイベントが送られているのかを判別する識別子
       options.setEnvironment(SeichiAssist.seichiAssistConfig.getServerId);
     });
 
