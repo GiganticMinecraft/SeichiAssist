@@ -1,7 +1,7 @@
 package com.github.unchama.generic.effect
 
 import cats.MonadError
-import cats.effect.{MonadThrow, Sync}
+import cats.effect.Sync
 
 object MonadThrowExtra {
 
