@@ -546,15 +546,13 @@ class SeichiAssist extends JavaPlugin() {
     import PluginExecutionContexts.timer
 
     new BungeeSemaphoreResponderSystem(
-      PlayerDataFinalizer.concurrently[IO, Player](
-        Seq(
-          savePlayerData,
-          assaultSkillRoutinesRepositoryControls.finalizer.coerceContextTo[IO],
-          activeSkillAvailabilityRepositoryControls.finalizer.coerceContextTo[IO]
-        ).appendedAll(wiredSubsystems.flatMap(_.managedFinalizers))
-          .appendedAll(wiredSubsystems.flatMap(_.managedRepositoryControls.map(_.finalizer)))
-          .toList
-      ),
+      Seq(
+        savePlayerData,
+        assaultSkillRoutinesRepositoryControls.finalizer.coerceContextTo[IO],
+        activeSkillAvailabilityRepositoryControls.finalizer.coerceContextTo[IO]
+      ).appendedAll(wiredSubsystems.flatMap(_.managedFinalizers))
+        .appendedAll(wiredSubsystems.flatMap(_.managedRepositoryControls.map(_.finalizer)))
+        .toList,
       PluginExecutionContexts.asyncShift
     )
   }
@@ -869,7 +867,9 @@ class SeichiAssist extends JavaPlugin() {
       .getOnlinePlayers
       .asScala
       .toList
-      .traverse(bungeeSemaphoreResponderSystem.finalizer.onQuitOf)
+      .flatTraverse { player =>
+        bungeeSemaphoreResponderSystem.finalizers.traverse(_.onQuitOf(player))
+      }
       .unsafeRunSync()
 
     if (SeichiAssist.databaseGateway.disconnect() == ActionStatus.Fail) {
