@@ -116,6 +116,9 @@ val dependenciesToEmbed = Seq(
 
   // ajd4jp
   "com.github.KisaragiEffective" % "ajd4jp-mirror" % "8.0.2.2021",
+
+  // Sentry
+  "io.sentry" % "sentry" % "6.18.1",
 )
 
 // endregion

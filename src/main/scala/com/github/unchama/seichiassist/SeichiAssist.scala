@@ -92,6 +92,7 @@ import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global._
 import com.github.unchama.util.{ActionStatus, ClassUtils}
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import io.sentry.Sentry
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.entity.{Entity, Player, Projectile}
@@ -135,6 +136,15 @@ class SeichiAssist extends JavaPlugin() {
 
   implicit val loggerF: io.chrisdavenport.log4cats.Logger[IO] =
     Slf4jLogger.getLoggerFromSlf4j(logger)
+
+  Sentry.init(options -> {
+    options.setDsn("https://7f241763b17c49db982ea29ad64b0264@sentry.onp.admin.seichi.click/2");
+    // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
+    // We recommend adjusting this value in production.
+    options.setTracesSampleRate(1.0);
+    // When first trying Sentry it's good to see what the SDK is doing:
+    options.setDebug(true);
+  });
 
   // endregion
 
