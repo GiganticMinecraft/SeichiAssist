@@ -5,7 +5,12 @@ import scalikejdbc._
 object ScalikeJDBCConfiguration {
 
   private val connectionPoolSettings: ConnectionPoolSettings =
-    ConnectionPoolSettings(initialSize = 5, maxSize = 20, connectionTimeoutMillis = 100000L)
+    ConnectionPoolSettings(
+      initialSize = 5,
+      maxSize = 20,
+      connectionTimeoutMillis = 100000L,
+      driverName = "org.mariadb.jdbc.Driver"
+    )
 
   private val loggingSettings: LoggingSQLAndTimeSettings = LoggingSQLAndTimeSettings(
     enabled = true,
@@ -17,6 +22,7 @@ object ScalikeJDBCConfiguration {
   )
 
   def initializeConnectionPool(url: String, user: String, password: String): Unit = {
+    Class.forName("org.mariadb.jdbc.Driver")
     ConnectionPool.singleton(url, user, password, connectionPoolSettings)
   }
 
