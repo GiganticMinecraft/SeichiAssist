@@ -9,7 +9,8 @@ object ScalikeJDBCConfiguration {
       initialSize = 5,
       maxSize = 20,
       connectionTimeoutMillis = 100000L,
-      driverName = "com.github.unchama.seichiassist.relocateddependencies.org.mariadb.jdbc.Driver"
+      driverName =
+        "com.github.unchama.seichiassist.relocateddependencies.org.mariadb.jdbc.Driver"
     )
 
   private val loggingSettings: LoggingSQLAndTimeSettings = LoggingSQLAndTimeSettings(
