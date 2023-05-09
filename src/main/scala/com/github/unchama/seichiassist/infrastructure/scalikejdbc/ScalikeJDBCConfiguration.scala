@@ -22,7 +22,6 @@ object ScalikeJDBCConfiguration {
   )
 
   def initializeConnectionPool(url: String, user: String, password: String): Unit = {
-    Class.forName("org.mariadb.jdbc.Driver")
     ConnectionPool.singleton(url, user, password, connectionPoolSettings)
   }
 
