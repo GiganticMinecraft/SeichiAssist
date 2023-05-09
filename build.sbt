@@ -52,7 +52,7 @@ resolvers ++= Seq(
   "maven.elmakers.com" at "https://maven.elmakers.com/repository/", // spigot-api 1.12.2がhub.spigotmc.orgからダウンロードできなくなったため
   "repo.phoenix616.dev" at "https://repo.phoenix616.dev", // authlibのための
   // ajd4jpのミラーのため
-  "jitpack.io" at "https://jitpack.io",
+  "jitpack.io" at "https://jitpack.io"
 )
 
 val providedDependencies = Seq(
@@ -81,6 +81,7 @@ val dependenciesToEmbed = Seq(
   "org.scala-lang.modules" %% "scala-collection-contrib" % "0.2.1",
 
   // DB
+  "org.mariadb.jdbc" % "mariadb-java-client" % "3.1.4",
   "org.flywaydb" % "flyway-core" % "5.2.4",
   "org.scalikejdbc" %% "scalikejdbc" % "3.5.0",
 
@@ -118,7 +119,7 @@ val dependenciesToEmbed = Seq(
   "com.github.KisaragiEffective" % "ajd4jp-mirror" % "8.0.2.2021",
 
   // Sentry
-  "io.sentry" % "sentry" % "6.18.1",
+  "io.sentry" % "sentry" % "6.18.1"
 )
 
 // endregion
@@ -139,6 +140,8 @@ assembly / assemblyExcludedJars := {
 // cf. https://github.com/sbt/sbt-assembly/issues/141
 assembly / assemblyMergeStrategy := {
   case PathList(ps @ _*) if ps.last endsWith "LICENSE" => MergeStrategy.rename
+  case PathList("org", "apache", "commons", "logging", xs @ _*) =>
+    MergeStrategy.last
   case otherFile =>
     val oldStrategy = (assembly / assemblyMergeStrategy).value
     oldStrategy(otherFile)
@@ -201,7 +204,10 @@ lazy val root = (project in file(".")).settings(
     "-Ymacro-annotations",
     "-Ywarn-unused"
   ),
-  javacOptions ++= Seq("-encoding", "utf8")
+  javacOptions ++= Seq("-encoding", "utf8"),
+  assembly / assemblyShadeRules ++= Seq(
+    ShadeRule.rename("org.mariadb.jdbc.**" -> "com.github.unchama.seichiassist.relocateddependencies.org.mariadb.jdbc.@1").inAll
+  )
 )
 
 // endregion
