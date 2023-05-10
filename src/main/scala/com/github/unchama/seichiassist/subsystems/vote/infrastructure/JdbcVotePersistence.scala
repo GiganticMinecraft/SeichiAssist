@@ -9,7 +9,7 @@ import java.util.UUID
 class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
 
   // NOTE: 連続投票日数許容幅を変更する場合はここを変更してください。
-  private val consecutiveVoteStreakDaysThreshold = 1
+  private val consecutiveVoteStreakDaysThreshold = 28
 
   override def createPlayerData(uuid: UUID): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
