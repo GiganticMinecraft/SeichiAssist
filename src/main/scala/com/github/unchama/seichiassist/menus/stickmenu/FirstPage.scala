@@ -11,7 +11,6 @@ import com.github.unchama.menuinventory.slot.button.action.{
   LeftClickButtonEffect
 }
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
-import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.descrptions.PlayerStatsLoreGenerator
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
@@ -19,7 +18,12 @@ import com.github.unchama.seichiassist.menus.home.HomeMenu
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
 import com.github.unchama.seichiassist.menus.ranking.RankingRootMenu
 import com.github.unchama.seichiassist.menus.skill.{ActiveSkillMenu, PassiveSkillMenu}
-import com.github.unchama.seichiassist.menus.{CommonButtons, RegionMenu, ServerSwitchMenu}
+import com.github.unchama.seichiassist.menus.{
+  CommonButtons,
+  RegionMenu,
+  ServerSwitchMenu,
+  VoteMenu
+}
 import com.github.unchama.seichiassist.subsystems.anywhereender.AnywhereEnderChestAPI
 import com.github.unchama.seichiassist.subsystems.anywhereender.domain.AccessDenialReason
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
@@ -40,6 +44,7 @@ import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.ranking.api.RankingProvider
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.ManagedWorld._
+import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners, util}
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -86,8 +91,10 @@ object FirstPage extends Menu {
     val ioCanOpenHomeMenu: IO CanOpen HomeMenu,
     val ioCanOpenPassiveSkillMenu: IO CanOpen PassiveSkillMenu.type,
     val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type,
+    val ioCanOpenVoteMenu: IO CanOpen VoteMenu.type,
     val enderChestAccessApi: AnywhereEnderChestAPI[IO],
-    val gachaTicketAPI: GachaTicketAPI[IO]
+    val gachaTicketAPI: GachaTicketAPI[IO],
+    val voteAPI: VoteAPI[IO, Player]
   )
 
   override val frame: MenuFrame =
@@ -170,8 +177,13 @@ object FirstPage extends Menu {
           environment.breakCountAPI.seichiAmountDataRepository(player).read.toIO
         ranking <- environment.rankingApi.ranking.read
         visibility <- visibilityRef.get.toIO
-        lore <- new PlayerStatsLoreGenerator(openerData, ranking, seichiAmountData, visibility)
-          .computeLore()
+        lore <- new PlayerStatsLoreGenerator(
+          openerData,
+          ranking,
+          seichiAmountData,
+          visibility,
+          environment.voteAPI
+        ).computeLore()
       } yield Button(
         new SkullItemStackBuilder(getUniqueId)
           .title(s"$YELLOW$BOLD$UNDERLINE${getName}の統計データ")
@@ -737,7 +749,7 @@ object FirstPage extends Menu {
       )
     }
 
-    val votePointMenuButton: Button = {
+    def votePointMenuButton(implicit ioCanOpenVoteMenu: IO CanOpen VoteMenu.type): Button = {
       val iconItemStack =
         new IconItemStackBuilder(Material.DIAMOND)
           .enchanted()
@@ -749,8 +761,7 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           CommonSoundEffects.menuTransitionFenceSound,
-          // TODO メニューに置き換える
-          ComputedEffect(p => openInventoryEffect(MenuInventoryData.getVotingMenuData(p)))
+          ioCanOpenVoteMenu.open(VoteMenu)
         )
       )
     }

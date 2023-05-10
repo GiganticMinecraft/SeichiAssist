@@ -112,7 +112,9 @@ object AchievementConditions {
   }
 
   def voteCount_>=(n: Int): AchievementCondition[String] = {
-    val predicate = playerDataPredicate(d => IO { d.p_vote_forT >= n })
+    val predicate = playerDataPredicate(d =>
+      IO { SeichiAssist.instance.voteSystem.api.count(d.uuid).unsafeRunSync().value >= n }
+    )
 
     AchievementCondition(predicate, "JMS投票数が " + _ + " を超える", n.toString)
   }

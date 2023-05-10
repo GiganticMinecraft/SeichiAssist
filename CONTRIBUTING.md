@@ -69,7 +69,10 @@ $ docker compose up --build -d
 最初に、[GiganticMinecraftのページ][gm-gh-repo]を開いて、画面右上にある「fork」と書かれた枝分かれしているアイコンがあるボタンを押します。
 
 すると「Create a new fork」と書かれた画面に移動します。
-![img.png](img.png)
+
+<!-- GitHub の issue とかに貼れば写真が GitHub の CDN 等に置かれるのでそのリンクを使う -->
+![img.png](https://user-images.githubusercontent.com/127779256/226674317-3ad07000-a272-4f2e-905a-15e07b394bae.png)
+
 いくつか入力欄がありますが、何も触らずにCreate forkを押します。
 
 また画面が切り替わります。画面左上に書かれた文字が「GiganticMinecraft/SeichiAssist」ではなく、「(あなたのID)/SeichiAssist」になっていることを確認できたら次へ進みます。
@@ -163,10 +166,23 @@ DockerマシンのIPアドレス(Linux等なら`localhost`)を`DOCKER_IP`とし�
 `docker`により各サービスが起動したら、マルチプレイヤーのメニューで`DOCKER_IP`へと接続することができます。
 また、`DOCKER_IP:8080`へとWebブラウザでアクセスすることで、phpMyAdminを介してデータベースを操作することができます。
 
-`/op`などのコマンドを実行するためにSpigotのコンソールにアクセスする必要がある場合、
-`spigota`または`spigotb`へのコンテナ名とともに `docker attach [CONTAINER_NAME]` を実行してください。
-コンテナ名は `docker ps` を実行すると `seichiassist_spigotb_1` のような形式で表示されます。
+##### コンソールにアクセスする
+
+自分のアカウントに管理者権限(OP)を与える時など、Spigotのコンソールにアクセスする場合は、
+`spigota` または `spigotb` のコンテナにアタッチする必要があります。
+
+アタッチするには `docker attach [CONTAINER_NAME]` を実行します。
+コンテナを指定する際に使用するIDはコマンドプロンプトで `docker ps` を実行すると `seichiassist_spigotb_1` のような形式で表示されます。
+
 コンソールからは <kbd>Ctrl</kbd>キーと<kbd>C</kbd>キーを同時押しすることで出ることができます。サーバーは停止されません。
+
+##### 整地ワールドの作成
+
+初めてデバッグ環境のSpigotに接続した際にスポーンするワールドは整地ワールドではないため、そのままブロックを破壊しても整地レベルは上昇しません。
+
+整地ワールドを作成する場合、OP権限を付与したプレイヤーかアタッチしたコンソールからコマンドで `mvcreate world_SW normal` を実行します。
+
+整地ワールドへ行くには、コマンドで `mvtp world_SW` を実行します。
 
 ### 反映する
 さあ、いよいよ反映の時間がやってきました。

@@ -182,13 +182,10 @@ object PlayerDataLoading {
         playerData.unclaimedApologyItems = rs.getInt("numofsorryforbug")
         playerData.regionCount = rs.getInt("rgnum")
         playerData.playTick = rs.getLong("playtick")
-        playerData.p_givenvote = rs.getInt("p_givenvote")
-        playerData.effectPoint = rs.getInt("effectpoint")
 
         playerData.totalexp = rs.getInt("totalexp")
 
         // 実績、二つ名の情報
-        playerData.p_vote_forT = rs.getInt("p_vote")
         playerData.giveachvNo = rs.getInt("giveachvNo")
         playerData.achievePoint = AchievementPoint(
           rs.getInt("achvPointMAX"),
@@ -254,8 +251,6 @@ object PlayerDataLoading {
 
         playerData.lastcheckdate = sdf.format(cal.getTime)
 
-        playerData.ChainVote = rs.getInt("chainvote")
-
         // 実績解除フラグのBitSet型への復元処理
         // 初回nullエラー回避のための分岐
         try {
@@ -272,15 +267,6 @@ object PlayerDataLoading {
             playerData.TitleFlags = new mutable.BitSet(10000)
             playerData.TitleFlags.addOne(1)
         }
-
-        // マナ妖精
-        playerData.usingVotingFairy = rs.getBoolean("canVotingFairyUse")
-        playerData.VotingFairyRecoveryValue = rs.getInt("VotingFairyRecoveryValue")
-        playerData.hasVotingFairyMana = rs.getInt("hasVotingFairyMana")
-        playerData.toggleGiveApple = rs.getInt("toggleGiveApple")
-        playerData.toggleVotingFairy = rs.getInt("toggleVotingFairy")
-        playerData.setVotingFairyTime(rs.getString("newVotingFairyTime"))
-        playerData.p_apple = rs.getLong("p_apple")
 
         playerData.giganticBerserk = GiganticBerserk(
           rs.getInt("GBlevel"),

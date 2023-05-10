@@ -123,7 +123,6 @@ object PlayerDataSaveTask {
             .performMultipleIDBlockBreakWhenOutsideSeichiWorld
 
           + ",pvpflag = " + playerdata.settings.pvpflag
-          + ",effectpoint = " + playerdata.effectPoint
           + ",totalexp = " + playerdata.totalexp
           + ",everysound = " + playerdata
             .settings
@@ -149,15 +148,6 @@ object PlayerDataSaveTask {
           + ",ChainJoin = " + playerdata.loginStatus.consecutiveLoginDays
           + ",TotalJoin = " + playerdata.loginStatus.totalLoginDay
           + ",LimitedLoginCount = " + playerdata.LimitedLoginCount
-
-          // 投票
-          + ",canVotingFairyUse = " + playerdata.usingVotingFairy
-          + ",newVotingFairyTime = '" + playerdata.getVotingFairyStartTimeAsString + "'"
-          + ",VotingFairyRecoveryValue = " + playerdata.VotingFairyRecoveryValue
-          + ",hasVotingFairyMana = " + playerdata.hasVotingFairyMana
-          + ",toggleGiveApple = " + playerdata.toggleGiveApple
-          + ",toggleVotingFairy = " + playerdata.toggleVotingFairy
-          + ",p_apple = " + playerdata.p_apple
 
           + ",GBstage = " + playerdata.giganticBerserk.stage
           + ",GBexp = " + playerdata.giganticBerserk.exp

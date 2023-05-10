@@ -16,6 +16,7 @@ import com.github.unchama.seichiassist.menus.minestack.{
   MineStackMainMenu,
   MineStackSelectItemColorMenu
 }
+import com.github.unchama.seichiassist.menus.nicknames.NickNameMenu
 import com.github.unchama.seichiassist.menus.ranking.{RankingMenu, RankingRootMenu}
 import com.github.unchama.seichiassist.menus.skill.{
   ActiveSkillEffectMenu,
@@ -47,6 +48,9 @@ import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.ranking.api.AssortedRankingApi
 import com.github.unchama.seichiassist.subsystems.ranking.domain.values.{LoginTime, VoteCount}
 import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
+import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.FairySpeechAPI
 import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -58,6 +62,8 @@ trait TopLevelRouter[F[_]] {
   implicit val canOpenAchievementMenu: F CanOpen AchievementMenu.type
 
   implicit val ioCanOpenCategorizedMineStackMenu: F CanOpen CategorizedMineStackMenu
+
+  implicit val ioCanOpenNickNameMenu: F CanOpen NickNameMenu.type
 
 }
 
@@ -80,12 +86,15 @@ object TopLevelRouter {
     homeReadApi: HomeReadAPI[IO],
     enderChestAccessApi: AnywhereEnderChestAPI[IO],
     sharedInventoryAPI: SharedInventoryAPI[IO, Player],
+    voteAPI: VoteAPI[IO, Player],
+    fairyAPI: FairyAPI[IO, SyncIO, Player],
     donateAPI: DonatePremiumPointAPI[IO],
     gachaTicketAPI: GachaTicketAPI[IO],
     gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
     mineStackAPI: MineStackAPI[IO, Player, ItemStack],
     gachaDrawAPI: GachaDrawAPI[IO, Player],
-    consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player]
+    consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player],
+    fairySpeechAPI: FairySpeechAPI[IO, Player]
   ): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     import assortedRankingApi._
 
@@ -104,6 +113,8 @@ object TopLevelRouter {
       new PremiumPointTransactionHistoryMenu.Environment
     implicit lazy val serverSwitchMenuEnv: ServerSwitchMenu.Environment =
       new ServerSwitchMenu.Environment
+    implicit lazy val nickNameMenuEnv: NickNameMenu.Environment =
+      new NickNameMenu.Environment
     implicit lazy val achievementMenuEnv: AchievementMenu.Environment =
       new AchievementMenu.Environment
     implicit lazy val homeMenuEnv: HomeMenu.Environment = new HomeMenu.Environment
@@ -131,7 +142,13 @@ object TopLevelRouter {
     implicit lazy val rankingRootMenuEnv: RankingRootMenu.Environment =
       new RankingRootMenu.Environment
 
+    implicit lazy val voteMenuEnv: VoteMenu.Environment = new VoteMenu.Environment
+
     implicit lazy val stickMenuEnv: FirstPage.Environment = new FirstPage.Environment
+
+    implicit lazy val ioCanOpenVoteMenu: IO CanOpen VoteMenu.type = _.open
+
+    implicit lazy val ioCanOpenNickNameMenu: IO CanOpen NickNameMenu.type = _.open
 
     implicit lazy val ioCanOpenSelectItemColorMenu: IO CanOpen MineStackSelectItemColorMenu =
       _.open

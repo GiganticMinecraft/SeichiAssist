@@ -2,23 +2,22 @@ package com.github.unchama.seichiassist.data.player
 
 import cats.effect.IO
 import cats.effect.concurrent.Ref
-import com.github.unchama.generic.ClosedRange
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiStarLevel
-import com.github.unchama.seichiassist.task.VotingFairyTask
+import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
+import com.github.unchama.seichiassist.subsystems.vote.domain.EffectPoint
+import com.github.unchama.seichiassist.util.RelativeDirection
 import com.github.unchama.seichiassist.util.exp.{ExperienceManager, IExperienceManager}
-import com.github.unchama.seichiassist.util.{RelativeDirection, TimeUtils}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-import java.text.SimpleDateFormat
-import java.util.{GregorianCalendar, NoSuchElementException, UUID}
+import java.util.{NoSuchElementException, UUID}
 import scala.collection.mutable
 
 /**
@@ -44,7 +43,6 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
   // プレイヤー名
   val lowercaseName: String = name.toLowerCase()
 
-  private val dummyDate = new GregorianCalendar(2100, 1, 1, 0, 0, 0)
   // チェスト破壊トグル
   var chestflag = true
 
@@ -81,27 +79,21 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
   var playTick = 0L
   // 合計経験値
   var totalexp = 0L
-  // 特典受け取り済み投票数
-  var p_givenvote = 0
   // 連続・通算ログイン用
   // ロード時に初期化される
   var lastcheckdate: String = _
   var loginStatus: LoginStatus = LoginStatus(null)
   // 期間限定ログイン用
   var LimitedLoginCount = 0
-  var ChainVote = 0
 
   // region スキル関連のデータ
   val skillState: Ref[IO, PlayerSkillState] = Ref.unsafe(PlayerSkillState.initial)
   var skillEffectState: PlayerSkillEffectState = PlayerSkillEffectState.initial
-  var effectPoint: Int = 0
   // endregion
 
   // 二つ名解禁フラグ保存用
   var TitleFlags: mutable.BitSet = new mutable.BitSet(10001)
 
-  // 二つ名関連用にp_vote(投票数)を引っ張る。(予期せぬエラー回避のため名前を複雑化)
-  var p_vote_forT = 0
   // 二つ名配布予約NOの保存
   var giveachvNo = 0
   // 実績ポイント用
@@ -110,15 +102,6 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
   // n周年記念
   var anniversary = false
   var templateMap: mutable.Map[Int, GridTemplate] = mutable.HashMap()
-  // 投票妖精関連
-  var usingVotingFairy = false
-  var voteFairyPeriod = new ClosedRange(dummyDate, dummyDate)
-  var hasVotingFairyMana = 0
-  var VotingFairyRecoveryValue = 0
-  var toggleGiveApple = 1
-  var toggleVotingFairy = 1
-  var p_apple: Long = 0
-  var toggleVFSound = true
   var giganticBerserk: GiganticBerserk = GiganticBerserk()
   // ハーフブロック破壊抑制用
 
@@ -164,7 +147,6 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
     synchronizeDisplayNameToLevelState()
 
     loadTotalExp()
-    isVotingFairy()
   }
 
   // レベルを更新
@@ -247,27 +229,6 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
     expmanager.setExp(totalexp)
   }
 
-  private def isVotingFairy(): Unit = {
-    // 効果は継続しているか
-    if (
-      this.usingVotingFairy && !TimeUtils.isVotingFairyPeriod(
-        this.votingFairyStartTime,
-        this.votingFairyEndTime
-      )
-    ) {
-      this.usingVotingFairy = false
-      player.sendMessage(s"$LIGHT_PURPLE${BOLD}妖精は何処かへ行ってしまったようだ...")
-    } else if (this.usingVotingFairy) {
-      VotingFairyTask.speak(player, "おかえり！" + player.getName, true)
-    }
-  }
-
-  def votingFairyEndTime: GregorianCalendar = voteFairyPeriod.endInclusive
-
-  def votingFairyEndTime_=(value: GregorianCalendar): Unit = {
-    voteFairyPeriod = new ClosedRange(voteFairyPeriod.start, value)
-  }
-
   def updateNickname(
     id1: Int = settings.nickname.id1,
     id2: Int = settings.nickname.id2,
@@ -320,27 +281,9 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
     achievePoint = achievePoint.copy(used = achievePoint.used + amount)
   }
 
-  def convertEffectPointToAchievePoint(): Unit = {
+  def convertEffectPointToAchievePoint(implicit voteAPI: VoteAPI[IO, Player]): Unit = {
     achievePoint = achievePoint.copy(conversionCount = achievePoint.conversionCount + 1)
-    effectPoint -= 10
-  }
-
-  def calcPlayerApple(): Int = {
-    // ランク用関数
-    var i = 0
-    val t = p_apple
-
-    if (SeichiAssist.ranklist_p_apple.isEmpty) return 1
-
-    var rankdata = SeichiAssist.ranklist_p_apple(i)
-
-    // ランクが上がらなくなるまで処理
-    while (rankdata.p_apple > t) {
-      i += 1
-      rankdata = SeichiAssist.ranklist_p_apple(i)
-    }
-
-    i + 1
+    voteAPI.decreaseEffectPoint(uuid, EffectPoint(10)).unsafeRunAsyncAndForget()
   }
 
   // パッシブスキルの獲得量表示
@@ -422,8 +365,6 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
     }
   }
 
-  import com.github.unchama.seichiassist.AntiTypesafe
-
   def addUnitAmount(direction: RelativeDirection, amount: Int): Unit = {
     direction match {
       case RelativeDirection.AHEAD =>
@@ -442,59 +383,6 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
       case 1   => 10
       case 10  => 100
       case 100 => 1
-    }
-  }
-
-  @AntiTypesafe
-  def getVotingFairyStartTimeAsString: String = {
-    val cal = this.votingFairyStartTime
-
-    if (votingFairyStartTime == dummyDate) {
-      // 設定されてない場合
-      ",,,,,"
-    } else {
-      // 設定されてる場合
-      val date = cal.getTime
-      val format = new SimpleDateFormat("yyyy,MM,dd,HH,mm,")
-      format.format(date)
-    }
-  }
-
-  def votingFairyStartTime: GregorianCalendar = voteFairyPeriod.start
-
-  def votingFairyStartTime_=(value: GregorianCalendar): Unit = {
-    voteFairyPeriod = new ClosedRange(value, voteFairyPeriod.endInclusive)
-  }
-
-  def setVotingFairyTime(@AntiTypesafe str: String): Unit = {
-    val s = str.split(",")
-    if (s.size < 5) return
-    if (!s.slice(0, 5).contains("")) {
-      val year = s(0).toInt
-      val month = s(1).toInt - 1
-      val dayOfMonth = s(2).toInt
-      val starts = new GregorianCalendar(
-        year,
-        month,
-        dayOfMonth,
-        Integer.parseInt(s(3)),
-        Integer.parseInt(s(4))
-      )
-
-      var min = Integer.parseInt(s(4)) + 1
-      var hour = Integer.parseInt(s(3))
-
-      min = if (this.toggleVotingFairy % 2 != 0) min + 30 else min
-      hour = this.toggleVotingFairy match {
-        case 2 | 3 => hour + 1
-        case 4     => hour + 2
-        case _     => hour
-      }
-
-      val ends = new GregorianCalendar(year, month, dayOfMonth, hour, min)
-
-      this.votingFairyStartTime = starts
-      this.votingFairyEndTime = ends
     }
   }
 

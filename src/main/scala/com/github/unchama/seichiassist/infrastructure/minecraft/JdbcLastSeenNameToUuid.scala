@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.lastquit.infrastructure
+package com.github.unchama.seichiassist.infrastructure.minecraft
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.domain.actions.LastSeenNameToUuid

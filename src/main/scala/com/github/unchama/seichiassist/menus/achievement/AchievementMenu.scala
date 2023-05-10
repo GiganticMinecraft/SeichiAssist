@@ -9,12 +9,13 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementCategory
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementCategory._
-import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.player.NicknameStyle
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
+import com.github.unchama.seichiassist.menus.nicknames.NickNameMenu
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
-import com.github.unchama.targetedeffect.player.{FocusedSoundEffect, PlayerEffects}
+import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
+import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -28,7 +29,9 @@ object AchievementMenu extends Menu {
   class Environment(
     implicit val ioCanOpenStickMenu: IO CanOpen FirstPage.type,
     val ioCanOpenCategoryMenu: IO CanOpen AchievementCategoryMenu,
-    val ioOnMainThread: OnMinecraftServerThread[IO]
+    val ioOnMainThread: OnMinecraftServerThread[IO],
+    val voteAPI: VoteAPI[IO, Player],
+    val ioCanOpenNickNameMenu: IO CanOpen NickNameMenu.type
   )
 
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$DARK_PURPLE${BOLD}実績・二つ名システム")
@@ -108,8 +111,10 @@ object AchievementMenu extends Menu {
         .lore(s"${RED}設定画面を表示します。")
         .build(),
       action.LeftClickButtonEffect(
-        CommonSoundEffects.menuTransitionFenceSound,
-        PlayerEffects.openInventoryEffect(MenuInventoryData.computeRefreshedCombineMenu(player))
+        SequentialEffect(
+          CommonSoundEffects.menuTransitionFenceSound,
+          ioCanOpenNickNameMenu.open(NickNameMenu)
+        )
       )
     )
 

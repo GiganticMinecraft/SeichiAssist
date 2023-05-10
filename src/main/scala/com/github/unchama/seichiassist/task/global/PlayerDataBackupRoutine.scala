@@ -45,19 +45,11 @@ object PlayerDataBackupRoutine {
         } yield ()
       }
 
-      val updateRankingData = IO {
-        // ランキングリストを最新情報に更新する
-        if (!SeichiAssist.databaseGateway.playerDataManipulator.successRankingUpdate()) {
-          SeichiAssist.instance.getLogger.info("ランキングデータの作成に失敗しました")
-        }
-      }
-
       for {
         saveRequired <- IO {
           SeichiAssist.playermap.nonEmpty
         }
         _ <- if (saveRequired) save else IO.unit
-        _ <- updateRankingData
       } yield true
     }
 

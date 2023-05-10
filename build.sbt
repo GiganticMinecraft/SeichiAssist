@@ -8,7 +8,7 @@ import java.io._
 ThisBuild / scalaVersion := "2.13.4"
 // ThisBuild / version はGitHub Actionsによって取得/自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
-ThisBuild / version := "76"
+ThisBuild / version := "77"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
@@ -50,7 +50,9 @@ resolvers ++= Seq(
   "oss.sonatype.org" at "https://oss.sonatype.org/content/repositories/snapshots",
   "nexus.okkero.com" at "https://nexus.okkero.com/repository/maven-releases/",
   "maven.elmakers.com" at "https://maven.elmakers.com/repository/", // spigot-api 1.12.2がhub.spigotmc.orgからダウンロードできなくなったため
-  "repo.phoenix616.dev" at "https://repo.phoenix616.dev" // authlibのための
+  "repo.phoenix616.dev" at "https://repo.phoenix616.dev", // authlibのための
+  // ajd4jpのミラーのため
+  "jitpack.io" at "https://jitpack.io"
 )
 
 val providedDependencies = Seq(
@@ -79,6 +81,7 @@ val dependenciesToEmbed = Seq(
   "org.scala-lang.modules" %% "scala-collection-contrib" % "0.2.1",
 
   // DB
+  "org.mariadb.jdbc" % "mariadb-java-client" % "3.1.4",
   "org.flywaydb" % "flyway-core" % "5.2.4",
   "org.scalikejdbc" %% "scalikejdbc" % "3.5.0",
 
@@ -111,6 +114,12 @@ val dependenciesToEmbed = Seq(
   "io.circe" %% "circe-core" % "0.14.1",
   "io.circe" %% "circe-generic" % "0.14.1",
   "io.circe" %% "circe-parser" % "0.14.1",
+
+  // ajd4jp
+  "com.github.KisaragiEffective" % "ajd4jp-mirror" % "8.0.2.2021",
+
+  // Sentry
+  "io.sentry" % "sentry" % "6.18.1"
 )
 
 // endregion
@@ -125,6 +134,17 @@ assembly / assemblyExcludedJars := {
 
     directoryContainsFile(baseDirectory.value / "localDependencies", a.data)
   }
+}
+
+// protocol配下とルートのLICENSEが衝突してCIが落ちる
+// cf. https://github.com/sbt/sbt-assembly/issues/141
+assembly / assemblyMergeStrategy := {
+  case PathList(ps @ _*) if ps.last endsWith "LICENSE" => MergeStrategy.rename
+  case PathList("org", "apache", "commons", "logging", xs @ _*) =>
+    MergeStrategy.last
+  case otherFile =>
+    val oldStrategy = (assembly / assemblyMergeStrategy).value
+    oldStrategy(otherFile)
 }
 
 // endregion
@@ -149,8 +169,6 @@ Compile / filteredResourceGenerator :=
   )
 
 Compile / resourceGenerators += (Compile / filteredResourceGenerator)
-
-Compile / unmanagedResources += baseDirectory.value / "LICENSE"
 
 // トークン置換を行ったファイルをunmanagedResourcesのコピーから除外する
 unmanagedResources / excludeFilter :=
@@ -186,7 +204,10 @@ lazy val root = (project in file(".")).settings(
     "-Ymacro-annotations",
     "-Ywarn-unused"
   ),
-  javacOptions ++= Seq("-encoding", "utf8")
+  javacOptions ++= Seq("-encoding", "utf8"),
+  assembly / assemblyShadeRules ++= Seq(
+    ShadeRule.rename("org.mariadb.jdbc.**" -> "com.github.unchama.seichiassist.relocateddependencies.org.mariadb.jdbc.@1").inAll
+  )
 )
 
 // endregion

@@ -57,7 +57,7 @@ object System {
     val system: F[System[F]] = for {
       persistedGachaPrizes <- _gachaPersistence.list
       expBottle = GachaPrize(
-        new ItemStack(Material.EXP_BOTTLE, 1),
+        new ItemStack(Material.EXP_BOTTLE, 20),
         GachaProbability(0.1),
         signOwner = false,
         GachaPrizeId(2),

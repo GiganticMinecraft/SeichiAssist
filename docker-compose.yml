@@ -77,12 +77,11 @@ services:
       - "25565:25577"
     volumes:
       - ./docker/bungeecord/serverfiles:/config
+      - ./docker/bungeecord/serverfiles/redisbungee/config.yml:/plugins/RedisBungee/config.yml
     networks:
       - seichi
     environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - SERVER_ID=bungeecord_1
+      - PLUGINS=https://github.com/ProxioDev/RedisBungee/releases/download/0.10.1/RedisBungee-Bungee-0.10.1-SNAPSHOT.jar
     depends_on:
       - spigota
       - spigotb

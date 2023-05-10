@@ -4,11 +4,8 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.achievement.Nicknames;
 import com.github.unchama.seichiassist.data.player.AchievementPoint;
 import com.github.unchama.seichiassist.data.player.PlayerData;
-import com.github.unchama.seichiassist.data.player.PlayerNickname;
-import com.github.unchama.seichiassist.task.VotingFairyTask;
 import com.github.unchama.seichiassist.util.AsyncInventorySetter;
 import com.github.unchama.seichiassist.util.ItemMetaFactory;
-import com.github.unchama.seichiassist.util.TypeConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -24,7 +21,10 @@ import scala.Option;
 import scala.collection.mutable.HashMap;
 import scala.collection.mutable.Map;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public final class MenuInventoryData {
@@ -44,31 +44,6 @@ public final class MenuInventoryData {
     private static final Map<UUID, Integer> shopIndex = new HashMap<>(60, 0.75);
     private static final Map<UUID, Integer> taihiIndex = new HashMap<>(60, 0.75);
 
-    private static final List<List<String>> loreTable = Arrays.asList(
-            Collections.emptyList(),
-            Arrays.asList(
-                    ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ガンガンたべるぞ",
-                    ChatColor.RESET + "" + ChatColor.GRAY + "とにかく妖精さんにりんごを開放します。",
-                    ChatColor.RESET + "" + ChatColor.GRAY + "めっちゃ喜ばれます。"
-            ),
-            Arrays.asList(
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "バッチリたべよう",
-                    ChatColor.RESET + "" + ChatColor.GRAY + "食べ過ぎないように注意しつつ",
-                    ChatColor.RESET + "" + ChatColor.GRAY + "妖精さんにりんごを開放します。",
-                    ChatColor.RESET + "" + ChatColor.GRAY + "喜ばれます。"
-            ),
-            Arrays.asList(
-                    ChatColor.GREEN + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "リンゴだいじに",
-                    ChatColor.RESET + "" + ChatColor.GRAY + "少しだけ妖精さんにりんごを開放します。",
-                    ChatColor.RESET + "" + ChatColor.GRAY + "伝えると大抵落ち込みます。"
-            ),
-            Arrays.asList(
-                    ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "リンゴつかうな",
-                    ChatColor.RESET + "" + ChatColor.GRAY + "絶対にりんごを開放しません。",
-                    ChatColor.RESET + "" + ChatColor.GRAY + ""
-            )
-    );
-
     /**
      * (short) 3はダサいし、マジックコンスタントみたいだよね。
      */
@@ -80,146 +55,12 @@ public final class MenuInventoryData {
      */
     private static final Function0<Boolean> FALSE = () -> false;
 
-    private static final Consumer<ItemMeta> DIG100 = meta -> meta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-
 
     private static final ItemStack toMoveNicknameMenu = build(
             Material.BARRIER,
             ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "二つ名組合せメインメニューへ",
             ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
     );
-
-    //投票特典受け取りボタン
-    private static List<String> getVoteButtonLore(final PlayerData playerdata) {
-        return Arrays.asList(
-                ChatColor.RESET + "" + ChatColor.GRAY + "投票特典を受け取るには",
-                ChatColor.RESET + "" + ChatColor.GRAY + "投票ページで投票した後",
-                ChatColor.RESET + "" + ChatColor.GRAY + "このボタンをクリックします",
-                ChatColor.RESET + "" + ChatColor.AQUA + "特典受取済投票回数：" + playerdata.p_givenvote(),
-                ChatColor.RESET + "" + ChatColor.AQUA + "特典未受取投票回数：" + (playerdata.p_vote_forT() - playerdata.p_givenvote()),
-                ChatColor.RESET + "" + ChatColor.AQUA + "所有投票pt：" + playerdata.effectPoint()
-        );
-    }
-
-    /**
-     * 二つ名組み合わせ
-     * @param p プレイヤー
-     * @return メニュー
-     */
-    public static Inventory computeRefreshedCombineMenu(final Player p) {
-        final UUID uuid = p.getUniqueId();
-        final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
-        //念のためエラー分岐
-        if (isError(p, playerdata, "二つ名組み合わせ")) return null;
-        final Inventory inventory = getEmptyInventory(4, MenuType.COMBINE.invName);
-
-        //各ボタンの設定
-        finishedHeadPageBuild.put(uuid, false);
-        finishedMiddlePageBuild.put(uuid, false);
-        finishedTailPageBuild.put(uuid, false);
-        finishedShopPageBuild.put(uuid, false);
-        headPartIndex.put(uuid, 0);
-        middlePartIndex.put(uuid, 0);
-        tailPartIndex.put(uuid, 0);
-        shopIndex.put(uuid, 0);
-        taihiIndex.put(uuid, 0);
-
-        //実績ポイントの最新情報反映ボタン
-        {
-            // dynamic button
-            final List<String> lore = Arrays.asList(
-                    ChatColor.RESET + "" + ChatColor.GREEN + "クリックで情報を最新化",
-                    ChatColor.RESET + "" + ChatColor.RED + "累計獲得量：" + playerdata.achievePoint().cumulativeTotal(),
-                    ChatColor.RESET + "" + ChatColor.RED + "累計消費量：" + playerdata.achievePoint().used(),
-                    ChatColor.RESET + "" + ChatColor.AQUA + "使用可能量：" + playerdata.achievePoint().left()
-            );
-
-            final ItemStack itemstack = build(
-                    Material.EMERALD_ORE,
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績ポイント 情報",
-                    lore
-            );
-
-            AsyncInventorySetter.setItemAsync(inventory, 0,  itemstack);
-        }
-        //パーツショップ
-        {
-            // const button
-            final ItemStack itemstack = build(
-                    Material.ITEM_FRAME,
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績ポイントショップ",
-                    ChatColor.RESET + "" + ChatColor.GREEN + "クリックで開きます"
-            );
-            AsyncInventorySetter.setItemAsync(inventory, 9,  itemstack);
-        }
-        //エフェクトポイントからの変換ボタン
-        {
-            // dynamic button
-            final List<String> lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "JMS投票で手に入るポイントを",
-                    ChatColor.RESET + "" + ChatColor.RED + "実績ポイントに変換できます。",
-                    ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "投票pt 10pt → 実績pt 3pt",
-                    ChatColor.RESET + "" + ChatColor.AQUA + "クリックで変換を一回行います。",
-                    ChatColor.RESET + "" + ChatColor.GREEN + "所有投票pt :" + playerdata.effectPoint(),
-                    ChatColor.RESET + "" + ChatColor.GREEN + "所有実績pt :" + playerdata.achievePoint().left()
-            );
-
-            final ItemStack itemstack = build(
-                    Material.EMERALD,
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ポイント変換ボタン",
-                    lore
-            );
-            AsyncInventorySetter.setItemAsync(inventory, 1,  itemstack);
-        }
-
-        {
-            final PlayerNickname nickname = playerdata.settings().nickname();
-            final String playerTitle = Nicknames.getTitleFor(nickname.id1(), nickname.id2(), nickname.id3());
-            final ItemStack itemStack = build(
-                    Material.BOOK,
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "現在の二つ名の確認",
-                    ChatColor.RESET + "" + ChatColor.RED + "「" + playerTitle + "」"
-            );
-            AsyncInventorySetter.setItemAsync(inventory, 4,  itemStack);
-        }
-
-        {
-            // const button
-            final ItemStack toHeadSelection = build(
-                    Material.WATER_BUCKET,
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "前パーツ選択画面",
-                    ChatColor.RESET + "" + ChatColor.RED + "クリックで移動します"
-            );
-
-            // const button
-            final ItemStack toMiddleSelection = build(
-                    Material.MILK_BUCKET,
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "中パーツ選択画面",
-                    ChatColor.RESET + "" + ChatColor.RED + "クリックで移動します"
-            );
-
-            // const button
-            final ItemStack toTailSelection = build(
-                    Material.LAVA_BUCKET,
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "後パーツ選択画面",
-                    ChatColor.RESET + "" + ChatColor.RED + "クリックで移動します"
-            );
-            AsyncInventorySetter.setItemAsync(inventory, 11, toHeadSelection);
-            AsyncInventorySetter.setItemAsync(inventory, 13, toMiddleSelection);
-            AsyncInventorySetter.setItemAsync(inventory, 15, toTailSelection);
-        }
-
-        // 1ページ目を開く
-        {
-            // const Button
-            final ItemStack itemstack = buildPlayerSkull(
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績・二つ名メニューへ",
-                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動",
-                    "MHF_ArrowLeft"
-            );
-            AsyncInventorySetter.setItemAsync(inventory, 27, itemstack.clone());
-        }
-        return inventory;
-    }
 
     public enum MenuType {
         HEAD("" + ChatColor.DARK_PURPLE + ChatColor.BOLD + "二つ名組合せ「前」"),
@@ -592,224 +433,6 @@ public final class MenuInventoryData {
             AsyncInventorySetter.setItemAsync(inventory, 27, toMoveNicknameMenu);
         }
         return inventory;
-    }
-
-    /**
-     * 投票妖精メニュー
-     * @param p プレイヤー
-     * @return メニュー
-     */
-    public static Inventory getVotingMenuData(final Player p) {
-        //UUID取得
-        final UUID uuid = p.getUniqueId();
-        //プレイヤーデータ
-        final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
-        //念のためエラー分岐
-        if (isError(p, playerdata, "投票妖精")) return null;
-        final Inventory inventory = getEmptyInventory(4, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "投票ptメニュー");
-
-        //投票pt受け取り
-        {
-            // dynamic button
-            final ItemStack itemstack = build(
-                    Material.DIAMOND,
-                    ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "クリックで投票特典を受け取れます",
-                    getVoteButtonLore(playerdata),
-                    DIG100
-            );
-            AsyncInventorySetter.setItemAsync(inventory, 0,  itemstack);
-        }
-
-        // ver0.3.2 投票ページ表示
-        // const button
-        {
-            final List<String> lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + "投票すると様々な特典が！",
-                    ChatColor.RESET + "" + ChatColor.GREEN + "1日1回投票出来ます",
-                    ChatColor.RESET + "" + ChatColor.DARK_GRAY + "クリックするとチャット欄に",
-                    ChatColor.RESET + "" + ChatColor.DARK_GRAY + "URLが表示されますので",
-                    ChatColor.RESET + "" + ChatColor.DARK_GRAY + "Tキーを押してから",
-                    ChatColor.RESET + "" + ChatColor.DARK_GRAY + "そのURLをクリックしてください"
-            );
-
-            final ItemStack itemstack = build(
-                    Material.BOOK_AND_QUILL,
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "投票ページにアクセス",
-                    lore
-            );
-            AsyncInventorySetter.setItemAsync(inventory, 9,  itemstack);
-        }
-
-        //棒メニューに戻る
-        {
-            // const button
-            final List<String> lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
-            final ItemStack itemstack = buildPlayerSkull(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームへ", lore, "MHF_ArrowLeft");
-            AsyncInventorySetter.setItemAsync(inventory, 27, itemstack.clone());
-        }
-
-        //妖精召喚時間設定トグルボタン
-        {
-            // const button
-            final List<String> list = Arrays.asList(
-                    ChatColor.RESET + "" + ChatColor.GREEN + "" + ChatColor.BOLD + "" + VotingFairyTask.dispToggleVFTime(playerdata.toggleVotingFairy()),
-                    "",
-                    ChatColor.RESET + "" + ChatColor.GRAY + "コスト",
-                    ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "" + playerdata.toggleVotingFairy() * 2 + "投票pt",
-                    "",
-                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで切替"
-            );
-
-            final ItemStack itemStack = build(
-                    Material.WATCH,
-                    ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マナ妖精 時間設定",
-                    list
-            );
-
-            AsyncInventorySetter.setItemAsync(inventory, 2,  itemStack);
-        }
-
-        //妖精契約設定トグル
-        {
-            final ItemStack itemStack = new ItemStack(Material.PAPER);
-            itemStack.setItemMeta(getVotingFairyContractMeta(playerdata));
-            AsyncInventorySetter.setItemAsync(inventory, 11,  itemStack);
-        }
-        //妖精音トグル
-        {
-            final ItemStack itemStack = new ItemStack(Material.JUKEBOX);
-            itemStack.setItemMeta(getVotingFairySoundsToggleMeta(playerdata.toggleVFSound()));
-            AsyncInventorySetter.setItemAsync(inventory, 20,  itemStack);
-        }
-
-        //妖精召喚
-        {
-            final List<String> lore = Arrays.asList(
-                    ChatColor.RESET + "" + ChatColor.GRAY + "" + playerdata.toggleVotingFairy() * 2 + "投票ptを消費して",
-                    ChatColor.RESET + "" + ChatColor.GRAY + "マナ妖精を呼びます",
-                    ChatColor.RESET + "" + ChatColor.GRAY + "時間 : " + VotingFairyTask.dispToggleVFTime(playerdata.toggleVotingFairy()),
-                    ChatColor.RESET + "" + ChatColor.DARK_RED + "Lv.10以上で解放"
-            );
-
-            // dynamic button
-            final ItemStack itemStack = build(
-                    Material.GHAST_TEAR,
-                    ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マナ妖精 召喚",
-                    lore,
-                    DIG100
-            );
-
-            AsyncInventorySetter.setItemAsync(inventory, 4,  itemStack);
-        }
-
-
-        if (playerdata.usingVotingFairy()) {
-            //妖精 時間確認
-            {
-                // const button
-                final List<String> lore = Arrays.asList(
-                        ChatColor.RESET + "" + ChatColor.GRAY + "妖精さんはいそがしい。",
-                        ChatColor.GRAY + "帰っちゃう時間を教えてくれる"
-                );
-
-                final ItemStack itemStack = build(
-                        Material.COMPASS,
-                        ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マナ妖精に時間を聞く",
-                        lore,
-                        DIG100
-                );
-
-                AsyncInventorySetter.setItemAsync(inventory, 13,  itemStack);
-            }
-
-            {
-                // dynamic button
-                final int yourRank = playerdata.calcPlayerApple();
-                final List<String> lore = new ArrayList<>(6 + 2 * 4 + 5);
-
-                // 6
-                lore.addAll(Arrays.asList(
-                        ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "※ﾆﾝｹﾞﾝに見られないように気を付けること！",
-                        ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "  毎日大妖精からデータを更新すること！",
-                        "",
-                        ChatColor.RESET + "" + ChatColor.GOLD + "" + ChatColor.BOLD + "昨日までにがちゃりんごを",
-                        ChatColor.RESET + "" + ChatColor.GOLD + "" + ChatColor.BOLD + "たくさんくれたﾆﾝｹﾞﾝたち",
-                        ChatColor.RESET + "" + ChatColor.DARK_GRAY + "召喚されたらラッキーだよ！"
-                ));
-                for (int rank = 0; rank <= 3; rank++) {
-                    if (rank >= SeichiAssist.ranklist_p_apple().size()) {
-                        break;
-                    }
-                    final RankData rankdata = SeichiAssist.ranklist_p_apple().apply(rank);
-                    if (rankdata.p_apple == 0) {
-                        break;
-                    }
-                    // 2 x 4 = 8
-                    lore.add(ChatColor.GRAY + "たくさんくれたﾆﾝｹﾞﾝ第" + (rank + 1) + "位！");
-                    lore.add(ChatColor.GRAY + "なまえ：" + rankdata.name + " りんご：" + rankdata.p_apple + "個");
-                }
-
-                // 5
-                lore.add(ChatColor.AQUA + "ぜーんぶで" + SeichiAssist.allplayergiveapplelong() + "個もらえた！");
-                lore.add("");
-                lore.add(ChatColor.GREEN + "↓呼び出したﾆﾝｹﾞﾝの情報↓");
-                lore.add(ChatColor.GREEN + "今までに" + playerdata.p_apple() + "個もらった");
-                lore.add(ChatColor.GREEN + "ﾆﾝｹﾞﾝの中では" + yourRank + "番目にたくさんくれる！");
-
-                final ItemStack itemStack = build(
-                        Material.GOLDEN_APPLE,
-                        ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "㊙ がちゃりんご情報 ㊙",
-                        lore,
-                        DIG100
-                );
-                AsyncInventorySetter.setItemAsync(inventory, 6,  itemStack);
-            }
-        }
-
-        return inventory;
-    }
-
-    /**
-     * 投票妖精音切り替え
-     * @param playSound trueなら鳴らす
-     * @return ラベルがついたアイテム
-     */
-    private static ItemMeta getVotingFairySoundsToggleMeta(final boolean playSound) {
-        final ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.JUKEBOX);
-        final List<String> lore;
-        itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マナ妖精の音トグル");
-        if (playSound) {
-            lore = Arrays.asList(
-                    ChatColor.RESET + "" + ChatColor.GREEN + "現在音が鳴る設定になっています。",
-                    ChatColor.RESET + "" + ChatColor.DARK_GRAY + "※この機能はデフォルトでONです。",
-                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで切替"
-            );
-        } else {
-            lore = Arrays.asList(
-                    ChatColor.RESET + "" + ChatColor.RED + "現在音が鳴らない設定になっています。",
-                    ChatColor.RESET + "" + ChatColor.DARK_GRAY + "※この機能はデフォルトでONです。",
-                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで切替"
-            );
-            itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-        }
-        itemmeta.setLore(lore);
-
-        return itemmeta;
-    }
-
-    /**
-     * 投票妖精戦略
-     * @param playerdata プレイヤーの設定
-     * @return ラベルが付いたアイテム
-     */
-    private static ItemMeta getVotingFairyContractMeta(final PlayerData playerdata) {
-        final ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
-        itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "妖精とのお約束");
-        // n % 4 + 1 -> 1..4
-        final int strategy = playerdata.toggleGiveApple();
-        final List<String> lore = loreTable.get(strategy);
-
-        itemmeta.setLore(lore);
-        return itemmeta;
     }
 
     /**
