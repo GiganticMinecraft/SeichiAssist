@@ -601,8 +601,6 @@ class SeichiAssist extends JavaPlugin() {
       // パフォーマンスモニタリングに使うトレースサンプルの送信割合
       // tracesSampleRateを1.0にすると全てのイベントが送られるため、送りすぎないように調整する必要がある
       options.setTracesSampleRate(0.25)
-      // When first trying Sentry it's good to see what the SDK is doing:
-      options.setDebug(true)
 
       // どのサーバーからイベントが送られているのかを判別する識別子
       options.setEnvironment(SeichiAssist.seichiAssistConfig.getServerId)
