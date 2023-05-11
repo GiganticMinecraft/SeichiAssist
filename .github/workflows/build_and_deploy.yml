@@ -98,12 +98,8 @@ jobs:
             touch -t "$timestamp" $proto
           done
 
-      - name: Check format with Scalafmt on push
-        if: ${{ (github.event_name == 'push')}}
+      - name: Check format with Scalafmt
         run: sbt scalafmtCheckAll
-      - name: Run format with Scalafmt on PR
-        if: ${{ (github.event_name == 'pull_request')}}
-        run: sbt scalafmtAll
       - name: Run reviewdog for Scalafmt
         uses: ./.github/actions/run-reviewdog
         if: ${{ (github.event_name == 'pull_request') && failure() }}
