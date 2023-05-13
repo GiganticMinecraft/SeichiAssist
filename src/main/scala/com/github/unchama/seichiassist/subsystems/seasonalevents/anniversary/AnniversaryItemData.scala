@@ -36,13 +36,13 @@ object AnniversaryItemData {
       .map(lore => s"$RESET$GRAY$lore")
       .asJava
 
-    val itemMeta = Bukkit.getItemFactory.getItemMeta(SAPLING).tap { meta =>
+    val itemMeta = Bukkit.getItemFactory.getItemMeta(OAK_SAPLING).tap { meta =>
       import meta._
       setDisplayName(s"$GOLD${BOLD}「気になる木」の苗")
       setLore(loreList)
     }
 
-    val itemStack = new ItemStack(SAPLING, 1)
+    val itemStack = new ItemStack(OAK_SAPLING, 1)
     itemStack.setItemMeta(itemMeta)
 
     new NBTItem(itemStack)
@@ -64,25 +64,29 @@ object AnniversaryItemData {
     COAL_BLOCK,
     DIAMOND_BLOCK,
     DRAGON_EGG,
-    FENCE,
+    OAK_FENCE,
+    JUNGLE_FENCE,
+    ACACIA_FENCE,
+    BIRCH_FENCE,
+    DARK_OAK_FENCE,
     FLOWER_POT,
     GLOWSTONE,
     GOLD_BLOCK,
     GRASS,
     ICE,
     IRON_BLOCK,
-    MELON_BLOCK,
+    MELON,
     NETHER_BRICK,
     QUARTZ_BLOCK,
     SAND,
     SPONGE,
-    WORKBENCH
+    CRAFTING_TABLE
   )
 
   val strangeSaplingSiinaRate = 0.0008
 
   def isStrangeSapling(item: ItemStack): Boolean =
-    item != null && item.getType == SAPLING && {
+    item != null && item.getType == OAK_SAPLING && {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 1
     }
 
@@ -142,7 +146,7 @@ object AnniversaryItemData {
       enchDescription ::: lore
     }.map(lore => s"$RESET$lore").asJava
 
-    val itemMeta = Bukkit.getItemFactory.getItemMeta(DIAMOND_SPADE).tap { meta =>
+    val itemMeta = Bukkit.getItemFactory.getItemMeta(DIAMOND_SHOVEL).tap { meta =>
       import meta._
       setDisplayName(s"$GOLD${BOLD}SCARLET")
       setLore(loreList)
@@ -150,7 +154,7 @@ object AnniversaryItemData {
       enchantments.foreach { case (ench, lvl) => addEnchant(ench, lvl, true) }
     }
 
-    val itemStack = new ItemStack(DIAMOND_SPADE, 1)
+    val itemStack = new ItemStack(DIAMOND_SHOVEL, 1)
     itemStack.setItemMeta(itemMeta)
 
     new NBTItem(itemStack)
@@ -162,7 +166,7 @@ object AnniversaryItemData {
   }
 
   def isAnniversaryShovel(item: ItemStack): Boolean =
-    item != null && item.getType == DIAMOND_SPADE && {
+    item != null && item.getType == DIAMOND_SHOVEL && {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 3
     }
 

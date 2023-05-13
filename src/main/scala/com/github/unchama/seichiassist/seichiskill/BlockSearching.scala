@@ -40,9 +40,9 @@ object BlockSearching {
 
         if (BreakUtil.canBreakWithSkill(player, targetBlock, lockedBlocks))
           targetBlock.getType match {
-            case Material.STATIONARY_LAVA | Material.LAVA =>
+            case Material.LAVA =>
               lavaBlocks.add(targetBlock)
-            case Material.STATIONARY_WATER | Material.WATER =>
+            case Material.WATER =>
               waterBlocks.add(targetBlock)
             case _ =>
               MaterialSets
@@ -63,10 +63,7 @@ object BlockSearching {
     targetBlock =>
       val blockMaterials = Set(referenceBlock.getType, targetBlock.getType)
 
-      val identifications = List(
-        Set(Material.DIRT, Material.GRASS),
-        Set(Material.REDSTONE_ORE, Material.GLOWING_REDSTONE_ORE)
-      )
+      val identifications = List(Set(Material.DIRT, Material.GRASS), Set(Material.REDSTONE_ORE))
 
       // マテリアルが同一視により等しくなるかどうか
       blockMaterials.size == 1 || identifications.exists(blockMaterials.subsetOf)

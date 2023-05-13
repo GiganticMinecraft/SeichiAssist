@@ -126,7 +126,7 @@ object BukkitMebiusItemStackCodec {
       case MebiusForcedMaterial.Leather => Material.LEATHER_HELMET // 革のヘルメット
       case MebiusForcedMaterial.Iron    => Material.IRON_HELMET // 鉄のヘルメット
       case MebiusForcedMaterial.Chain   => Material.CHAINMAIL_HELMET // チェーンのヘルメット
-      case MebiusForcedMaterial.Gold    => Material.GOLD_HELMET // 金のヘルメット
+      case MebiusForcedMaterial.Gold    => Material.GOLDEN_HELMET // 金のヘルメット
     }
 
     import scala.util.chaining._
