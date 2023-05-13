@@ -46,7 +46,7 @@ object ItemInformation {
   }
 
   def getSkullDataFromBlock(block: Block): Option[ItemStack] = {
-    if (block.getType != Material.SKULL) return None
+    if (block.getType != Material.PLAYER_HEAD) return None
 
     val skull = block.getState.asInstanceOf[Skull]
     val itemStack = new ItemStack(Material.PLAYER_HEAD)
