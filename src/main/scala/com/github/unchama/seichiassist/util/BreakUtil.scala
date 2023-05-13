@@ -283,7 +283,7 @@ object BreakUtil {
           Some(BlockBreakResult.ItemDrop(new ItemStack(dropMaterial, bonus)))
         case Material.CLAY =>
           Some(BlockBreakResult.ItemDrop(new ItemStack(Material.CLAY_BALL, 4)))
-        case Material.WOOD_STEP | Material.STEP | Material.STONE_SLAB2
+        case material if material.name().toUpperCase().endsWith("_SLAB") =>
             if (blockDataLeast4Bits & 8) != 0 =>
           // 上付きハーフブロックをそのままドロップするとmissing textureとして描画されるため、下付きの扱いとする
           Some(
