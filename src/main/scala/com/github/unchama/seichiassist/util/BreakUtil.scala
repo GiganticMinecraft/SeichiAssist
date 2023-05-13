@@ -101,7 +101,7 @@ object BreakUtil {
       }
 
       val isBlockProtectedSlab =
-        checkTarget.getType == Material.STEP &&
+        checkTarget.getType == Material.STONE_SLAB &&
           checkTarget.getY == halfBlockLayerYCoordinate &&
           checkTarget.getData == 0.toByte
 
@@ -198,9 +198,9 @@ object BreakUtil {
     val (blockLocation, blockMaterial, blockData) = blockInformation
 
     blockMaterial match {
-      case Material.GRASS_PATH | Material.SOIL =>
+      case Material.GRASS_PATH | Material.FARMLAND =>
         return Some(BlockBreakResult.ItemDrop(new ItemStack(Material.DIRT)))
-      case Material.MOB_SPAWNER | Material.ENDER_PORTAL_FRAME | Material.ENDER_PORTAL =>
+      case Material.SPAWNER | Material.END_PORTAL_FRAME | Material.END_PORTAL =>
         return None
       case _ =>
     }
@@ -209,7 +209,6 @@ object BreakUtil {
     val bonus = Math.max(1, rand * (fortuneLevel + 2)).toInt
 
     val blockDataLeast4Bits = (blockData & 0x0f).toByte
-    val b_tree = (blockData & 0x03).toByte
 
     val silkTouch = tool.getEnchantmentLevel(Enchantment.SILK_TOUCH)
 
@@ -217,16 +216,7 @@ object BreakUtil {
       // シルクタッチの処理
       Some {
         BlockBreakResult.ItemDrop {
-          blockMaterial match {
-            case Material.GLOWING_REDSTONE_ORE =>
-              new ItemStack(Material.REDSTONE_ORE)
-            case Material.LOG | Material.LOG_2 | Material.LEAVES | Material.LEAVES_2 =>
-              new ItemStack(blockMaterial, 1, b_tree.toShort)
-            case Material.MONSTER_EGGS =>
-              new ItemStack(Material.STONE)
-            case _ =>
-              new ItemStack(blockMaterial, 1, blockDataLeast4Bits.toShort)
-          }
+          new ItemStack(blockMaterial, 1)
         }
       }
     } else if (fortuneLevel > 0 && MaterialSets.fortuneMaterials.contains(blockMaterial)) {
@@ -253,6 +243,13 @@ object BreakUtil {
               // 幸運エンチャントなしで掘った時のアイテムが得られる個数(4~9)に、幸運ボーナスを掛ける
               val withBonus = (rand * 6 + 4).toInt * bonus
               dye.toItemStack(withBonus)
+            case Material.EMERALD_ORE =>
+              new ItemStack(Material.EMERALD, bonus)
+            case Material.REDSTONE_ORE =>
+              val withBonus = bonus * (rand + 4).toInt
+              new ItemStack(Material.REDSTONE, withBonus)
+            case Material.NETHER_QUARTZ_ORE =>
+              new ItemStack(Material.QUARTZ, bonus)
             // グロウストーンは幸運エンチャントがついていると高確率でより多くのダストをドロップする
             // しかし、最大でも4個までしかドロップしない
             case Material.GLOWSTONE =>
@@ -260,7 +257,7 @@ object BreakUtil {
               val amount = if (withBonus > 4) 4 else withBonus
               new ItemStack(Material.GLOWSTONE_DUST, amount)
             // 同様に、メロンブロックは幸運エンチャントがついている場合、９個までしかドロップしない
-            case Material.MELON_BLOCK =>
+            case Material.MELON =>
               val withBonus = (rand * (fortuneLevel + 5) + 3).toInt
               val amount = if (withBonus > 9) 9 else withBonus
               new ItemStack(Material.MELON, amount)
@@ -287,11 +284,11 @@ object BreakUtil {
           Some(BlockBreakResult.ItemDrop(dye.toItemStack((rand * 6 + 4).toInt)))
         case Material.EMERALD_ORE =>
           Some(BlockBreakResult.ItemDrop(new ItemStack(Material.EMERALD)))
-        case Material.REDSTONE_ORE | Material.GLOWING_REDSTONE_ORE =>
+        case Material.REDSTONE_ORE =>
           Some(
             BlockBreakResult.ItemDrop(new ItemStack(Material.REDSTONE, ((rand * 2) + 4).toInt))
           )
-        case Material.QUARTZ_ORE =>
+        case Material.NETHER_QUARTZ_ORE =>
           Some(BlockBreakResult.ItemDrop(new ItemStack(Material.QUARTZ)))
         // グロウストーンは、2から4個のグロウストーンダストをドロップする
         case Material.GLOWSTONE =>
@@ -300,7 +297,7 @@ object BreakUtil {
               .ItemDrop(new ItemStack(Material.GLOWSTONE_DUST, (rand * 3 + 2).toInt))
           )
         // スイカブロックは、3から7個のスイカをドロップする
-        case Material.MELON_BLOCK =>
+        case Material.MELON =>
           Some(BlockBreakResult.ItemDrop(new ItemStack(Material.MELON, (rand * 5 + 3).toInt)))
         // シーランタンは、2から3個のプリズマリンクリスタルをドロップする
         case Material.SEA_LANTERN =>
@@ -332,14 +329,8 @@ object BreakUtil {
           val dropMaterial = if (p > rand) Material.FLINT else Material.GRAVEL
 
           Some(BlockBreakResult.ItemDrop(new ItemStack(dropMaterial, bonus)))
-        case Material.LEAVES | Material.LEAVES_2 =>
-          None
         case Material.CLAY =>
           Some(BlockBreakResult.ItemDrop(new ItemStack(Material.CLAY_BALL, 4)))
-        case Material.MONSTER_EGGS =>
-          Some(BlockBreakResult.SpawnSilverFish(blockLocation))
-        case Material.LOG | Material.LOG_2 =>
-          Some(BlockBreakResult.ItemDrop(new ItemStack(blockMaterial, 1, b_tree.toShort)))
         case Material.WOOD_STEP | Material.STEP | Material.STONE_SLAB2
             if (blockDataLeast4Bits & 8) != 0 =>
           // 上付きハーフブロックをそのままドロップするとmissing textureとして描画されるため、下付きの扱いとする
@@ -385,8 +376,8 @@ object BreakUtil {
       .filter(MaterialSets.materialsToCountBlockBreak.contains)
       .map {
         // 氷塊とマグマブロックの整地量を2倍
-        case Material.PACKED_ICE | Material.MAGMA => 2L
-        case _                                    => 1L
+        case Material.PACKED_ICE | Material.MAGMA_BLOCK => 2L
+        case _                                          => 1L
       }
       .sum
 

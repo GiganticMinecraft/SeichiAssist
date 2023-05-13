@@ -98,7 +98,7 @@ class MebiusInteractionResponder(
               MessageEffect(
                 s"${BukkitMebiusItemStackCodec.displayNameOfMaterializedItem(property)}${RESET}が旅立ちました。"
               ),
-              FocusedSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 0.1f)
+              FocusedSoundEffect(Sound.ENTITY_ENDER_DRAGON_DEATH, 1.0f, 0.1f)
             ).run(player)
           }
         )

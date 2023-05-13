@@ -86,51 +86,25 @@ class RegionInventoryListener extends Listener {
       val playerData = playermap(uuid)
 
       // チャンク延長
-      if (
-        itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent
-          .getDurability
-          .toInt == 14
-      ) {
+      if (itemstackcurrent.getType == Material.RED_STAINED_GLASS_PANE) {
         gridChangeFunction(player, RelativeDirection.AHEAD, event)
-      } else if (
-        itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent
-          .getDurability
-          .toInt == 10
-      ) {
+      } else if (itemstackcurrent.getType == Material.PURPLE_STAINED_GLASS_PANE) {
         gridChangeFunction(player, RelativeDirection.LEFT, event)
-      } else if (
-        itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent
-          .getDurability
-          .toInt == 5
-      ) {
+      } else if (itemstackcurrent.getType == Material.LIME_STAINED_GLASS_PANE) {
         gridChangeFunction(player, RelativeDirection.RIGHT, event)
-      } else if (
-        itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent
-          .getDurability
-          .toInt == 13
-      ) {
+      } else if (itemstackcurrent.getType == Material.GREEN_STAINED_GLASS_PANE) {
         gridChangeFunction(player, RelativeDirection.BEHIND, event)
-      } else if (
-        itemstackcurrent.getType == Material.WOOL && itemstackcurrent.getDurability.toInt == 11
-      ) {
+      } else if (itemstackcurrent.getType == Material.BLUE_WOOL) {
         player.chat("//expand vert")
         createRegion(player)
         playerData.regionCount = playerData.regionCount + 1
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
         player.closeInventory()
-      } else if (
-        itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent
-          .getDurability
-          .toInt == 4
-      ) {
+      } else if (itemstackcurrent.getType == Material.YELLOW_STAINED_GLASS_PANE) {
         gridResetFunction(player)
         player.playSound(player.getLocation, Sound.BLOCK_ANVIL_DESTROY, 0.5f, 1.0f)
         player.openInventory(RegionMenuData.getGridWorldGuardMenu(player))
-      } else if (
-        itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent
-          .getDurability
-          .toInt == 0
-      ) {
+      } else if (itemstackcurrent.getType == Material.WHITE_STAINED_GLASS_PANE) {
         playerData.toggleUnitPerGrid()
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
         player.openInventory(RegionMenuData.getGridWorldGuardMenu(player))
