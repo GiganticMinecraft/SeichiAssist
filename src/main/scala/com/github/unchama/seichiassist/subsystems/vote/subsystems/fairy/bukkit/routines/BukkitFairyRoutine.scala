@@ -37,7 +37,7 @@ class BukkitFairyRoutine(fairySpeech: FairySpeech[IO, Player])(
     val counter = Ref.unsafe(0)
 
     def countUp: IO[Unit] = counter.update { count =>
-      if (count < 3) count + 1
+      if (count < 360) count + 30
       else 0
     }
 
