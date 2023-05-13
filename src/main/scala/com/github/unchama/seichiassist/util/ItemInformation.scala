@@ -16,7 +16,7 @@ object ItemInformation {
   def isGachaTicket(itemStack: ItemStack): Boolean = {
     val containsRightClickMessage: String => Boolean = _.contains(s"${GREEN}右クリックで使えます")
 
-    if (itemStack.getType != Material.SKULL_ITEM) return false
+    if (itemStack.getType != Material.PLAYER_HEAD) return false
 
     val skullMeta = itemStack.getItemMeta.asInstanceOf[SkullMeta]
 
@@ -41,7 +41,7 @@ object ItemInformation {
   }
 
   def isMineHeadItem(itemstack: ItemStack): Boolean = {
-    itemstack.getType == Material.CARROT_STICK &&
+    itemstack.getType == Material.CARROT_ON_A_STICK &&
     loreIndexOf(itemstack.getItemMeta.getLore.asScala.toList, "頭を狩り取る形をしている...") >= 0
   }
 
@@ -49,7 +49,7 @@ object ItemInformation {
     if (block.getType != Material.SKULL) return None
 
     val skull = block.getState.asInstanceOf[Skull]
-    val itemStack = new ItemStack(Material.SKULL_ITEM)
+    val itemStack = new ItemStack(Material.PLAYER_HEAD)
 
     // SkullTypeがプレイヤー以外の場合，SkullTypeだけ設定して終わり
     if (skull.getSkullType != SkullType.PLAYER) {

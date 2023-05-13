@@ -144,13 +144,13 @@ class PlayerJoinListener extends Listener {
         // 耐久Ⅲ
         .tap(_.addEnchantment(Enchantment.DURABILITY, 3))
       inv.addItem(pickaxe)
-      inv.addItem(new ItemStack(Material.DIAMOND_SPADE))
+      inv.addItem(new ItemStack(Material.DIAMOND_SHOVEL))
 
       inv.addItem(
-        new ItemStack(Material.LOG, 64, 0.toShort),
-        new ItemStack(Material.LOG, 64, 0.toShort),
-        new ItemStack(Material.LOG, 64, 2.toShort),
-        new ItemStack(Material.LOG_2, 64, 1.toShort)
+        new ItemStack(Material.OAK_LOG, 64),
+        new ItemStack(Material.OAK_LOG, 64),
+        new ItemStack(Material.BIRCH_LOG, 64),
+        new ItemStack(Material.DARK_OAK_LOG, 64)
       )
 
       inv.addItem(new ItemStack(Material.BAKED_POTATO, 64))
@@ -215,7 +215,7 @@ class PlayerJoinListener extends Listener {
     // 整地専用サーバーの場合は上級者向けのサーバーである旨を通知
     if (SeichiAssist.seichiAssistConfig.getServerNum == 5)
       player.sendTitle(
-        s"${WHITE}ここは$BLUE${UNDERLINE}上級者向けのサーバー${WHITE}",
+        s"${WHITE}ここは$BLUE${UNDERLINE}上級者向けのサーバー$WHITE",
         s"${WHITE}始めたては他がおすすめ",
         10,
         70,

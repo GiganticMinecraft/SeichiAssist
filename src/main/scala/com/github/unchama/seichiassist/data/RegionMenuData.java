@@ -51,7 +51,7 @@ public class RegionMenuData {
         lore0.add(ChatColor.AQUA + "" + playerData.unitPerClick() + ChatColor.GREEN + "ユニット(" +
                 ChatColor.AQUA + playerData.unitPerClick() * 15 + ChatColor.GREEN + "ブロック)/1クリック");
         lore0.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "クリックで変更");
-        ItemStack menuicon0 = MenuIcon.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 0,
+        ItemStack menuicon0 = MenuIcon.getMenuIcon(Material.WHITE_STAINED_GLASS_PANE, 1, 0,
                 ChatColor.GREEN + "拡張単位の変更", CollectionConverters.ListHasAsScala(lore0).asScala().toList(), true);
         gridInv.setItem(0, menuicon0);
 
@@ -62,7 +62,7 @@ public class RegionMenuData {
         } else if (!playerData.canGridReduce(RelativeDirection.ahead())) {
             lore1.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
         }
-        ItemStack menuicon1 = MenuIcon.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 14,
+        ItemStack menuicon1 = MenuIcon.getMenuIcon(Material.RED_STAINED_GLASS_PANE, 1, 14,
                 ChatColor.DARK_GREEN + "前に" + playerData.unitPerClick() + "ユニット増やす/減らす", CollectionConverters.ListHasAsScala(lore1).asScala().toList(), true);
         gridInv.setItem(1, menuicon1);
 
@@ -80,7 +80,7 @@ public class RegionMenuData {
         } else if (!playerData.canGridReduce(RelativeDirection.left())) {
             lore3.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
         }
-        ItemStack menuicon3 = MenuIcon.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 10,
+        ItemStack menuicon3 = MenuIcon.getMenuIcon(Material.PURPLE_STAINED_GLASS_PANE, 1, 10,
                 ChatColor.DARK_GREEN + "左に" + playerData.unitPerClick() + "ユニット増やす/減らす", CollectionConverters.ListHasAsScala(lore3).asScala().toList(), true);
         gridInv.setItem(3, menuicon3);
 
@@ -97,7 +97,7 @@ public class RegionMenuData {
                 + "(" + ChatColor.AQUA + nfNum.format((Integer) unitMap.apply(RelativeDirection.left()) * 15) + ChatColor.GRAY + "ブロック)");
         lore4.add(ChatColor.GRAY + "保護ユニット数：" + ChatColor.AQUA + playerData.gridChunkAmount());
         lore4.add(ChatColor.GRAY + "保護ユニット上限値：" + ChatColor.RED + config.getGridLimitPerWorld(player.getWorld().getName()));
-        ItemStack menuicon4 = MenuIcon.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 11, ChatColor.DARK_GREEN + "設定",
+        ItemStack menuicon4 = MenuIcon.getMenuIcon(Material.BLUE_STAINED_GLASS_PANE, 1, 11, ChatColor.DARK_GREEN + "設定",
                 CollectionConverters.ListHasAsScala(lore4).asScala().toList(), true);
         gridInv.setItem(4, menuicon4);
 
@@ -108,14 +108,14 @@ public class RegionMenuData {
         } else if (!playerData.canGridReduce(RelativeDirection.right())) {
             lore5.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
         }
-        ItemStack menuicon5 = MenuIcon.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 5,
+        ItemStack menuicon5 = MenuIcon.getMenuIcon(Material.LIME_STAINED_GLASS_PANE, 1, 5,
                 ChatColor.DARK_GREEN + "右に" + playerData.unitPerClick() + "ユニット増やす/減らす", CollectionConverters.ListHasAsScala(lore5).asScala().toList(), true);
         gridInv.setItem(5, menuicon5);
 
         //6マス目
         List<String> lore6 = new ArrayList<>();
         lore6.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "取扱注意！！");
-        ItemStack menuicon6 = MenuIcon.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 4, ChatColor.RED + "全設定リセット",
+        ItemStack menuicon6 = MenuIcon.getMenuIcon(Material.YELLOW_STAINED_GLASS_PANE, 1, 4, ChatColor.RED + "全設定リセット",
                 CollectionConverters.ListHasAsScala(lore6).asScala().toList(), true);
         gridInv.setItem(6, menuicon6);
 
@@ -126,7 +126,7 @@ public class RegionMenuData {
         } else if (!playerData.canGridReduce(RelativeDirection.behind())) {
             lore7.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
         }
-        ItemStack menuicon7 = MenuIcon.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 13,
+        ItemStack menuicon7 = MenuIcon.getMenuIcon(Material.GREEN_STAINED_GLASS_PANEE, 1, 13,
                 ChatColor.DARK_GREEN + "後ろに" + playerData.unitPerClick() + "ユニット増やす/減らす", CollectionConverters.ListHasAsScala(lore7).asScala().toList(), true);
         gridInv.setItem(7, menuicon7);
 
@@ -134,7 +134,7 @@ public class RegionMenuData {
         if (!config.isGridProtectionEnabled(player.getWorld())) {
             List<String> lore8 = new ArrayList<>();
             lore8.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "このワールドでは保護を作成できません");
-            ItemStack menuicon8 = MenuIcon.getMenuIcon(Material.WOOL, 1, 14, ChatColor.RED + "保護作成",
+            ItemStack menuicon8 = MenuIcon.getMenuIcon(Material.RED_WOOL, 1, 14, ChatColor.RED + "保護作成",
                     CollectionConverters.ListHasAsScala(lore8).asScala().toList(), true);
             gridInv.setItem(8, menuicon8);
         } else if (!playerData.canCreateRegion()) {
@@ -142,14 +142,14 @@ public class RegionMenuData {
             lore8.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "以下の原因により保護を作成できません");
             lore8.add(ChatColor.RED + "・保護の範囲が他の保護と重複している");
             lore8.add(ChatColor.RED + "・保護の作成上限に達している");
-            ItemStack menuicon8 = MenuIcon.getMenuIcon(Material.WOOL, 1, 14, ChatColor.RED + "保護作成",
+            ItemStack menuicon8 = MenuIcon.getMenuIcon(Material.RED_WOOL, 1, 14, ChatColor.RED + "保護作成",
                     CollectionConverters.ListHasAsScala(lore8).asScala().toList(), true);
             gridInv.setItem(8, menuicon8);
         } else {
             List<String> lore8 = new ArrayList<>();
             lore8.add(ChatColor.DARK_GREEN + "保護作成可能です");
             lore8.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "クリックで作成");
-            ItemStack menuicon8 = MenuIcon.getMenuIcon(Material.WOOL, 1, 11, ChatColor.GREEN + "保護作成",
+            ItemStack menuicon8 = MenuIcon.getMenuIcon(LIGHT_BLUE_WOOL, 1, 11, ChatColor.GREEN + "保護作成",
                     CollectionConverters.ListHasAsScala(lore8).asScala().toList(), true);
             gridInv.setItem(8, menuicon8);
         }

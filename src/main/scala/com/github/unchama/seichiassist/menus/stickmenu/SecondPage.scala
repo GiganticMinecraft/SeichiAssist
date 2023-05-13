@@ -514,7 +514,7 @@ object SecondPage extends Menu {
     }
 
     val appleConversionButton: Button = {
-      val iconItemStack = new IconItemStackBuilder(Material.GOLDEN_APPLE, durability = 1)
+      val iconItemStack = new IconItemStackBuilder(Material.GOLDEN_APPLE)
         .title(s"$YELLOW$UNDERLINE${BOLD}GT景品→椎名林檎変換システム")
         .lore(
           List(
