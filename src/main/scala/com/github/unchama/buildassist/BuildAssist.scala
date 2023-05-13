@@ -443,7 +443,6 @@ object BuildAssist {
       Material.DARK_OAK_LOG,
       Material.JUNGLE_LOG,
       Material.OAK_LOG,
-      ,
       Material.GLASS // ガラス
       ,
       Material.LAPIS_ORE // ラピス鉱石
