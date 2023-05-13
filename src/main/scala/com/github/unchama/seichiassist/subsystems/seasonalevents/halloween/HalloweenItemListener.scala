@@ -62,17 +62,18 @@ object HalloweenItemListener extends Listener {
     val player = event.getPlayer
     // まず、Playerが自分でクリックしたブロックについて判定する
     if (!canBeReplacedWithSoil(player, clickedBlock)) return
-    clickedBlock.setType(Material.SOIL)
+    clickedBlock.setType(Material.FARMLAND)
 
     // 次にクリックされたブロックから半径4ブロック以内のブロックについて判定する
     for (relX <- -4 to 4; relZ <- -4 to 4) {
       val block = clickedBlock.getRelative(relX, 0, relZ)
-      if (block != null && canBeReplacedWithSoil(player, block)) block.setType(Material.SOIL)
+      if (block != null && canBeReplacedWithSoil(player, block))
+        block.setType(Material.FARMLAND)
     }
   }
 
   private def canBeReplacedWithSoil(player: Player, block: Block) = {
-    (block.getType == Material.DIRT || block.getType == Material.GRASS) && isRegionMember(
+    (block.getType == Material.FARMLAND || block.getType == Material.GRASS) && isRegionMember(
       player,
       block.getLocation
     )

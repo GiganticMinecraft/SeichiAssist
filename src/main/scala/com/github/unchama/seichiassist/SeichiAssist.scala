@@ -587,8 +587,8 @@ class SeichiAssist extends JavaPlugin() {
     // BungeeCordとのI/O
     Bukkit
       .getMessenger
-      .registerIncomingPluginChannel(this, "SeichiAssistBungee", new BungeeReceiver(this))
-    Bukkit.getMessenger.registerOutgoingPluginChannel(this, "SeichiAssistBungee")
+      .registerIncomingPluginChannel(this, "BungeeCord", new BungeeReceiver(this))
+    Bukkit.getMessenger.registerOutgoingPluginChannel(this, "BungeeCord")
 
     // コンフィグ系の設定は全てConfig.javaに移動
     SeichiAssist.seichiAssistConfig = Config.loadFrom(this)

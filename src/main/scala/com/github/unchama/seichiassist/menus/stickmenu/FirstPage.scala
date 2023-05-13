@@ -370,7 +370,7 @@ object FirstPage extends Menu {
             s"$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
           )
 
-          new IconItemStackBuilder(Material.ENDER_PORTAL_FRAME)
+          new IconItemStackBuilder(Material.END_PORTAL_FRAME)
             .title(s"$YELLOW$UNDERLINE${BOLD}4次元ポケットを開く")
             .lore(loreHeading ++ loreAnnotation)
             .build()
@@ -408,7 +408,7 @@ object FirstPage extends Menu {
               FocusedSoundEffect(Sound.BLOCK_GRASS_PLACE, 1.0f, 0.1f)
             case Left(_) =>
               // 開くのに失敗した場合の音
-              FocusedSoundEffect(Sound.BLOCK_ENDERCHEST_OPEN, 1.0f, 1.0f)
+              FocusedSoundEffect(Sound.BLOCK_ENDER_CHEST_OPEN, 1.0f, 1.0f)
           }
         )
       )
@@ -657,7 +657,7 @@ object FirstPage extends Menu {
 
     def homePointMenuButton(implicit ioCanOpenHomeMenu: IO CanOpen HomeMenu): Button = {
       val iconItemStack =
-        new IconItemStackBuilder(Material.BED)
+        new IconItemStackBuilder(Material.WHITE_BED)
           .title(s"$YELLOW$UNDERLINE${BOLD}ホームメニューを開く")
           .lore(List(s"$RESET${GRAY}ホームポイントに関するメニュー", s"$RESET$DARK_RED${UNDERLINE}クリックで開く"))
           .build()
@@ -673,7 +673,7 @@ object FirstPage extends Menu {
 
     val fastCraftButton: Button = {
       val iconItemStack =
-        new IconItemStackBuilder(Material.WORKBENCH)
+        new IconItemStackBuilder(Material.CRAFTING_TABLE)
           .title(s"$YELLOW$UNDERLINE${BOLD}FastCraft機能")
           .lore(
             List(

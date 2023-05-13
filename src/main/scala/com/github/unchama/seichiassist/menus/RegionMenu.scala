@@ -100,7 +100,7 @@ object RegionMenu extends Menu {
         }
 
         import scala.util.chaining._
-        new IconItemStackBuilder(Material.GOLD_AXE)
+        new IconItemStackBuilder(Material.GOLDEN_AXE)
           .tap { b => if (canMakeRegion) b.enchanted() }
           .title(s"$YELLOW$UNDERLINE${BOLD}保護の作成")
           .lore(lore.toList)
@@ -145,7 +145,7 @@ object RegionMenu extends Menu {
         s"$GREEN④メニューの${YELLOW}金の斧${GREEN}をクリック"
       )
 
-      val iconItemStack = new IconItemStackBuilder(Material.WOOD_AXE)
+      val iconItemStack = new IconItemStackBuilder(Material.WOODEN_AXE)
         .title(s"$YELLOW$UNDERLINE${BOLD}保護設定用の木の斧を召喚")
         .lore(
           wandUsage ++ List(

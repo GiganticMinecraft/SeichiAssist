@@ -67,7 +67,7 @@ class PlayerInventoryListener(
       ExchangeableMaterial(Material.DIAMOND_ORE, 0) -> 4,
       ExchangeableMaterial(Material.REDSTONE_ORE, 0) -> 32,
       ExchangeableMaterial(Material.EMERALD_ORE, 0) -> 4,
-      ExchangeableMaterial(Material.QUARTZ_ORE, 0) -> 16,
+      ExchangeableMaterial(Material.NETHER_QUARTZ_ORE, 0) -> 16,
       ExchangeableMaterial(Material.COAL, 0) -> 432,
       ExchangeableMaterial(Material.REDSTONE, 0) -> 288,
       ExchangeableMaterial(Material.INK_SACK, 4) -> 64,
@@ -191,7 +191,7 @@ class PlayerInventoryListener(
       if (itemstackcurrent.getType == Material.NETHER_STAR) {
         playerdata.giganticBerserk = GiganticBerserk(0, 0, playerdata.giganticBerserk.stage + 1)
         player.playSound(player.getLocation, Sound.BLOCK_END_GATEWAY_SPAWN, 1f, 0.5f)
-        player.playSound(player.getLocation, Sound.ENTITY_ENDERDRAGON_AMBIENT, 1f, 0.8f)
+        player.playSound(player.getLocation, Sound.ENTITY_ENDER_DRAGON_AMBIENT, 1f, 0.8f)
         player.openInventory(MenuInventoryData.getGiganticBerserkAfterEvolutionMenu(player))
       }
     } else if (topinventory.getTitle == LIGHT_PURPLE.toString + "" + BOLD + "スキルを進化させました") {
