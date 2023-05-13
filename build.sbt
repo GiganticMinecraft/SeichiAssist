@@ -99,7 +99,7 @@ val dependenciesToEmbed = Seq(
   "io.chrisdavenport" %% "cats-effect-time" % "0.1.2",
 
   // logging
-  "org.slf4j" % "slf4j-api" % "1.7.28",
+  "org.slf4j" % "slf4j-api" % "1.7.36",
   "org.slf4j" % "slf4j-jdk14" % "1.7.28",
   "com.typesafe.scala-logging" % "scala-logging-slf4j_2.10" % "2.1.2",
 
