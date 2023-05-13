@@ -149,7 +149,7 @@ object VoteMenu extends Menu {
     }
 
     val showVoteURLButton: Button = Button(
-      new IconItemStackBuilder(Material.BOOK_AND_QUILL)
+      new IconItemStackBuilder(Material.WRITABLE_BOOK)
         .title(s"$YELLOW$UNDERLINE${BOLD}投票ページにアクセス")
         .lore(
           List(
@@ -181,7 +181,7 @@ object VoteMenu extends Menu {
         fairySummonCost <- fairyAPI.fairySummonCost(player)
       } yield {
         Button(
-          new IconItemStackBuilder(Material.WATCH)
+          new IconItemStackBuilder(Material.CLOCK)
             .title(s"$AQUA$UNDERLINE${BOLD}マナ妖精 時間設定")
             .lore(
               List(
