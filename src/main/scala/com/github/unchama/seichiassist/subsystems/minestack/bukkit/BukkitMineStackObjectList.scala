@@ -56,7 +56,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
   )
 
   // モンスター+動物ドロップ
-  private val minestacklistdrop: List[MineStackObjectGroup] = leftElems(
+  private val minestacklistdrop: List[MineStackObjectGroup[ItemStack]] = leftElems(
     MineStackObjectByMaterial(MOB_DROP, "ender_pearl", "エンダーパール", Material.ENDER_PEARL, 0),
     MineStackObjectByMaterial(MOB_DROP, "ender_eye", "エンダーアイ", Material.ENDER_EYE, 0),
     MineStackObjectByMaterial(MOB_DROP, "slime_ball", "スライムボール", Material.SLIME_BALL, 0),
