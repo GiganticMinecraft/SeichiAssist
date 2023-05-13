@@ -19,10 +19,10 @@ object SpawnRegionProjectileInterceptor extends Listener {
     BOW,
     EGG,
     ENDER_PEARL,
-    EXP_BOTTLE,
-    EYE_OF_ENDER,
+    EXPERIENCE_BOTTLE,
+    ENDER_EYE,
     LINGERING_POTION,
-    SNOW_BALL,
+    SNOWBALL,
     SPLASH_POTION
   )
 

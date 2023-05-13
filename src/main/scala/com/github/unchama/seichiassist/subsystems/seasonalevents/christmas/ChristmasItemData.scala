@@ -197,7 +197,7 @@ object ChristmasItemData {
       s"$RED${UNDERLINE}スポーン地点にいる村人に欲しい物を詰めてもらおう！"
     ).map(str => s"$RESET$str").asJava
 
-    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.INK_SACK).tap { meta =>
+    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.INK_SAC).tap { meta =>
       import meta._
       setDisplayName(s"${AQUA}靴下(${EVENT_YEAR}年)")
       setLore(loreList)
@@ -206,7 +206,7 @@ object ChristmasItemData {
     }
 
     // 赤の染料
-    val itemStack = new ItemStack(Material.INK_SACK, 1).tap { itemStack =>
+    val itemStack = new ItemStack(Material.INK_SAC, 1).tap { itemStack =>
       import itemStack._
       setDurability(1.toShort)
       setItemMeta(itemMeta)

@@ -186,7 +186,7 @@ class ChristmasItemListener[F[_], G[_]: SyncEffect](instance: JavaPlugin)(
         addItem(player, christmasSock)
         player.sendMessage(s"$AQUA「靴下」を見つけたよ！")
       }
-      player.playSound(player.getLocation, Sound.BLOCK_NOTE_HARP, 3.0f, 1.0f)
+      player.playSound(player.getLocation, Sound.BLOCK_NOTE_BLOCK_HARP, 3.0f, 1.0f)
     }
   }
 
