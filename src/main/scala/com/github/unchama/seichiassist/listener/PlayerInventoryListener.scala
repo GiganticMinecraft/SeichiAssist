@@ -70,7 +70,7 @@ class PlayerInventoryListener(
       ExchangeableMaterial(Material.NETHER_QUARTZ_ORE, 0) -> 16,
       ExchangeableMaterial(Material.COAL, 0) -> 432,
       ExchangeableMaterial(Material.REDSTONE, 0) -> 288,
-      ExchangeableMaterial(Material.INK_SACK, 4) -> 64,
+      ExchangeableMaterial(Material.INK_SAC, 4) -> 64,
       ExchangeableMaterial(Material.DIAMOND, 0) -> 8
     )
 
