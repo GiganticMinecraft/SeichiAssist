@@ -178,7 +178,7 @@ object AssaultRoutine {
         )
       } else {
         if (shouldRemoveOrCondenseWater) foundWaters.foreach(_.setType(Material.PACKED_ICE))
-        if (shouldRemoveOrCondenseLava) foundLavas.foreach(_.setType(Material.MAGMA))
+        if (shouldRemoveOrCondenseLava) foundLavas.foreach(_.setType(Material.MAGMA_BLOCK))
       }
 
       Some(newState)

@@ -87,7 +87,7 @@ class BukkitDrawGacha[F[_]: Sync: OnMinecraftServerThread](
                   )
                   sendMessageToEveryone(message)(forTextComponent[IO])
                   SendSoundEffect.sendEverySoundWithoutIgnore(
-                    Sound.ENTITY_ENDERDRAGON_DEATH,
+                    Sound.ENTITY_ENDER_DRAGON_DEATH,
                     0.5f,
                     2f
                   )
