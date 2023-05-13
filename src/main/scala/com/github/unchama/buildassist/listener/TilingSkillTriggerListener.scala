@@ -102,7 +102,6 @@ class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[
 
     val fillTargetMaterials = Set(Material.AIR, Material.LAVA, Material.WATER)
 
-
     val b1 = new Breaks
 
     b1.breakable {
