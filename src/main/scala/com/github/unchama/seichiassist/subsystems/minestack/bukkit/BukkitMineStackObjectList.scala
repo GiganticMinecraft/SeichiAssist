@@ -364,7 +364,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectWithColorVariants(
       MineStackObjectByMaterial(BUILDING, "concrete", "白色のコンクリート", Material.WHITE_CONCRETE, 0),
       List(
-        MineStackObjectByMaterial(BUILDING, "concrete15", "黒色のコンクリート", Material.CONCRETE, 15)
+        MineStackObjectByMaterial(BUILDING, "concrete15", "黒色のコンクリート", Material.BLACK_CONCRETE, 15)
         MineStackObjectByMaterial(BUILDING, "concrete1", "橙色のコンクリート", Material.ORANGE_CONCRETE, 1),
         MineStackObjectByMaterial(BUILDING, "concrete2", "赤紫色のコンクリート", Material.MAGENTA_CONCRETE, 2),
         MineStackObjectByMaterial(BUILDING, "concrete3", "空色のコンクリート", Material.LIGHT_BLUE_CONCRETE, 3),
