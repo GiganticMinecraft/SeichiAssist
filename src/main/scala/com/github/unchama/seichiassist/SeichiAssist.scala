@@ -596,7 +596,9 @@ class SeichiAssist extends JavaPlugin() {
     // コンフィグ系の設定は全てConfig.javaに移動
     SeichiAssist.seichiAssistConfig = Config.loadFrom(this)
 
-    if (!SeichiAssist.seichiAssistConfig.getServerId.startsWith("local-")) {
+    val serverId = SeichiAssist.seichiAssistConfig.getServerId
+
+    if (!serverId.startsWith("local-")) {
       Sentry.init { options =>
         options.setDsn("https://7f241763b17c49db982ea29ad64b0264@sentry.onp.admin.seichi.click/2")
         // パフォーマンスモニタリングに使うトレースサンプルの送信割合
@@ -604,7 +606,7 @@ class SeichiAssist extends JavaPlugin() {
         options.setTracesSampleRate(0.25)
 
         // どのサーバーからイベントが送られているのかを判別する識別子
-        options.setEnvironment(SeichiAssist.seichiAssistConfig.getServerId)
+        options.setEnvironment(serverId)
       }
 
       Sentry.configureScope(_.setLevel(SentryLevel.WARNING))
