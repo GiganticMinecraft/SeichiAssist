@@ -79,29 +79,31 @@ class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[
     val replaceableMaterials = Set(
       Material.AIR,
       Material.SNOW,
-      Material.LONG_GRASS,
+      Material.TALL_GRASS,
       Material.DEAD_BUSH,
-      Material.YELLOW_FLOWER,
-      Material.RED_ROSE,
+      Material.DANDELION,
+      Material.POPPY,
+      Material.BLUE_ORCHID,
+      Material.ALLIUM,
+      Material.AZURE_BLUET,
+      Material.RED_TULIP,
+      Material.ORANGE_TULIP,
+      Material.WHITE_TULIP,
+      Material.PINK_TULIP,
+      Material.OXEYE_DAISY,
+      Material.SUNFLOWER,
+      Material.LILAC,
+      Material.LARGE_FERN,
+      Material.ROSE_BUSH,
+      Material.PEONY,
       Material.RED_MUSHROOM,
       Material.BROWN_MUSHROOM
     )
 
-    val fillTargetMaterials = Set(
-      Material.AIR,
-      Material.LAVA,
-      Material.STATIONARY_LAVA,
-      Material.WATER,
-      Material.STATIONARY_WATER
-    )
+    val fillTargetMaterials = Set(Material.AIR, Material.LAVA, Material.WATER)
+
 
     val b1 = new Breaks
-    val rawDataModifier: Byte => Byte = offHandItem.getType match {
-      case Material.LEAVES | Material.LEAVES_2 =>
-        val noDecayBit: Byte = 8
-        x => (x | noDecayBit).asInstanceOf[Byte]
-      case _ => identity
-    }
 
     b1.breakable {
       val targetXValues = centerX - areaInt to centerX + areaInt
@@ -137,7 +139,6 @@ class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[
               }
 
               targetSurfaceBlock.setType(offHandItem.getType)
-              targetSurfaceBlock.setData(rawDataModifier(offHandItemSelector))
 
               placementCount += 1
             }

@@ -117,7 +117,7 @@ class NewYearListener[F[_]: ConcurrentEffect: NonServerThreadContextShift, G[_]:
         addItem(player, newYearBag)
         player.sendMessage(s"$AQUA「お年玉袋」を見つけたよ！")
       }
-      player.playSound(player.getLocation, Sound.BLOCK_NOTE_HARP, 3.0f, 1.0f)
+      player.playSound(player.getLocation, Sound.BLOCK_NOTE_BLOCK_HARP, 3.0f, 1.0f)
     }
   }
 }

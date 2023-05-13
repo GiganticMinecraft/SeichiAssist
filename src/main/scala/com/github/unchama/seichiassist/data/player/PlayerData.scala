@@ -250,7 +250,7 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
   // 総プレイ時間を更新する
   def updatePlayTick(): Unit = {
     // WARN: 1分毎にupdatePlayTickが呼び出されるというコンテクストに依存している.
-    val nowTotalPlayTick = player.getStatistic(Statistic.PLAY_ONE_TICK).toLong
+    val nowTotalPlayTick = player.getStatistic(Statistic.PLAY_ONE_MINUTE).toLong
     val diff = nowTotalPlayTick - totalPlayTick.getOrElse(nowTotalPlayTick)
 
     totalPlayTick = Some(nowTotalPlayTick)

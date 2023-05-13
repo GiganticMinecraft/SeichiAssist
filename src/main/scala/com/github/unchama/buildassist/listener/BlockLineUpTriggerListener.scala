@@ -8,6 +8,8 @@ import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.Bui
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.util.external.ExternalPlugins
+import org.bukkit.block.Block
+import org.bukkit.block.data.`type`.Slab
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
@@ -15,6 +17,7 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{Material, Sound}
 
+import scala.util.chaining.scalaUtilChainingOps
 import scala.util.control.Breaks
 
 class BlockLineUpTriggerListener[
@@ -132,29 +135,19 @@ class BlockLineUpTriggerListener[
       Seq(Some(available), manaCap, Some(64L)).flatten.min
     }.toInt
 
-    def slabToDoubleSlab(material: Material) = material match {
-      case Material.STONE_SLAB2 => Material.DOUBLE_STONE_SLAB2
-      case Material.PURPUR_SLAB => Material.PURPUR_DOUBLE_SLAB
-      case Material.WOOD_STEP   => Material.WOOD_DOUBLE_STEP
-      case Material.STEP        => Material.DOUBLE_STEP
-      case _                    => mainHandItemType
-    }
+    def slabToDoubleSlab(material: Material): Material =
+      if (material.createBlockData().isInstanceOf[Slab]) {
+        material.asInstanceOf[Slab].tap(slab => slab.setType(Slab.Type.DOUBLE)).getMaterial
+      } else material
 
     val playerHoldsSlabBlock = BuildAssist.material_slab2.contains(mainHandItemType)
-    val doesHoldLeaves =
-      (mainHandItemType eq Material.LEAVES) || (mainHandItemType eq Material.LEAVES_2)
+    (mainHandItemType eq Material.OAK_LEAVES) || (mainHandItemType eq Material.DARK_OAK_LEAVES) || (
+      mainHandItemType eq Material.BIRCH_LEAVES
+    ) || (mainHandItemType eq Material.ACACIA_LEAVES) || (
+      mainHandItemType eq Material.JUNGLE_LEAVES
+    ) || (mainHandItemType eq Material.SPRUCE_LEAVES)
     val slabLineUpStepMode = buildAssistData.line_up_step_flg
     val shouldPlaceDoubleSlabs = playerHoldsSlabBlock && slabLineUpStepMode == 2
-
-    val upsideBit = 8
-    val noDecayBit = 8
-    val placingBlockData: Byte =
-      if (playerHoldsSlabBlock && slabLineUpStepMode == 0)
-        (mainHandItemData | upsideBit).toByte
-      else if (doesHoldLeaves)
-        (mainHandItemData | noDecayBit).toByte
-      else
-        mainHandItemData
 
     val (placingBlockType, itemConsumptionPerPlacement, placementIteration) =
       if (shouldPlaceDoubleSlabs)
@@ -192,7 +185,6 @@ class BlockLineUpTriggerListener[
         }
 
         block.setType(placingBlockType)
-        block.setData(placingBlockData)
 
         placedBlockCount += itemConsumptionPerPlacement
       }
