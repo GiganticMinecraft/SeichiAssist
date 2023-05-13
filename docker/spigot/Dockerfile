@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.4
-FROM ghcr.io/giganticminecraft/chunk-search-rs:sha-598517c as chunk-search-provider
+FROM ghcr.io/giganticminecraft/chunk-search-rs:sha-f1943b1 as chunk-search-provider
 FROM ghcr.io/giganticminecraft/seichiassist-runner:ba2aa54
 
 FROM itzg/minecraft-server:java8-multiarch
