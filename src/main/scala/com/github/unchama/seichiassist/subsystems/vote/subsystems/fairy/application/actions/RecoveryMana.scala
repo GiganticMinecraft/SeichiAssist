@@ -5,7 +5,7 @@ trait RecoveryMana[F[_]] {
   /**
    * @return 妖精がマナを回復する作用
    */
-  def recovery: F[Unit]
+  def recovery(counter: Int): F[Unit]
 
 }
 

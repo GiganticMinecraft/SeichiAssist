@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.routines
 
+import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, IO, SyncIO, Timer}
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
@@ -30,15 +31,26 @@ class BukkitFairyRoutine(fairySpeech: FairySpeech[IO, Player])(
     val repeatInterval: IO[FiniteDuration] = IO {
       import scala.concurrent.duration._
 
-      1.minute
+      30.seconds
     }
 
     implicit val timer: Timer[IO] = IO.timer(context)
 
+    val counter = Ref.unsafe(0)
+
+    def countUp: IO[Unit] = counter.update { count =>
+        if (count < 3) count + 1
+        else 0
+      }
+
     RepeatingRoutine.permanentRoutine(
       repeatInterval,
       minecraftServerThread.runAction {
-        new BukkitRecoveryMana[IO, SyncIO](player, fairySpeech).recovery.runAsync(_ => IO.unit)
+        (for {
+          count <- counter.get
+          _ <- new BukkitRecoveryMana[IO, SyncIO](player, fairySpeech).recovery(count)
+          _ <- countUp
+        } yield ()).runAsync(_ => IO.unit)
       }
     )
   }

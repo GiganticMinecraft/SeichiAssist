@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.RecoveryMana
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyPersistence
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{AppleAmount, FairyManaRecoveryState}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{AppleAmount, FairyAppleConsumeStrategy, FairyManaRecoveryState}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.FairySpeech
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffectF
@@ -33,16 +33,24 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
 
   import cats.implicits._
 
-  override def recovery: F[Unit] =
+  override def recovery(counter: Int): F[Unit] =
     for {
       isFairyUsing <- fairyPersistence.isFairyUsing(uuid)
       fairyEndTimeOpt <- fairyPersistence.fairyEndTime(uuid)
+      consumeStrategy <- fairyPersistence.appleConsumeStrategy(uuid)
+      isRecoverTiming = consumeStrategy match {
+        case FairyAppleConsumeStrategy.Permissible => true
+        case FairyAppleConsumeStrategy.Consume if counter == 1 => true
+        case FairyAppleConsumeStrategy.LessConsume if counter == 2 => true
+        case FairyAppleConsumeStrategy.NoConsume if counter == 3 => true
+        case _ => false
+      }
       nonRecoveredManaAmount <- ContextCoercion {
         manaApi.readManaAmount(player)
       }
       _ <- {
         fairySpeech.speechRandomly(player, FairyManaRecoveryState.Full)
-      }.whenA(isFairyUsing && nonRecoveredManaAmount.isFull)
+      }.whenA(isFairyUsing && isRecoverTiming && nonRecoveredManaAmount.isFull)
 
       gachaRingoObject <- mineStackAPI.mineStackObjectList.findByName("gachaimo")
 
@@ -59,7 +67,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
       _ <- MessageEffectF(s"$RESET$YELLOW${BOLD}MineStackにがちゃりんごがないようです。。。")
         .apply(player)
         .whenA(
-          isFairyUsing && !nonRecoveredManaAmount.isFull && pureAppleConsumeAmount > mineStackedGachaRingoAmount
+          isFairyUsing && isRecoverTiming && !nonRecoveredManaAmount.isFull && pureAppleConsumeAmount > mineStackedGachaRingoAmount
         )
 
       // NOTE: 3%の確率で最大の回復量まで回復する
@@ -101,7 +109,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
               )
             else MessageEffectF(s"$RESET$YELLOW${BOLD}あなたは妖精にりんごを渡しませんでした。")
           ).apply(player)
-      }.whenA(isFairyUsing && !nonRecoveredManaAmount.isFull)
+      }.whenA(isFairyUsing && isRecoverTiming && !nonRecoveredManaAmount.isFull)
       finishUse <- JavaTime[F]
         .getLocalDateTime(ZoneId.systemDefault())
         .map(now => isFairyUsing && fairyEndTimeOpt.exists(_.endTime.isBefore(now)))
