@@ -84,7 +84,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
         else 0
       }
 
-      recoveryManaAmount <- Sync[F].delay(appleConsumeAmount * 0.7 + bonusRecoveryAmount)
+      recoveryManaAmount <- Sync[F].delay(defaultRecoveryMana.recoveryMana * 0.7 + bonusRecoveryAmount)
 
       _ <- {
         fairyPersistence.increaseConsumedAppleAmountByFairy(
