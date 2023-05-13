@@ -32,7 +32,7 @@ services:
       - JMX_BINDING=0.0.0.0
       - JMX_HOST=localhost
       - SERVER_NUM=1
-      - SERVER_ID=s1
+      - SERVER_ID=local-s1
       - DB_HOST=db
       - DB_PASSWORD=unchamaisgod
       - REDIS_HOST=redis
@@ -62,7 +62,7 @@ services:
       - JMX_BINDING=0.0.0.0
       - JMX_HOST=localhost
       - SERVER_NUM=2
-      - SERVER_ID=s2
+      - SERVER_ID=local-s2
       - DB_HOST=db
       - DB_PASSWORD=unchamaisgod
       - REDIS_HOST=redis
