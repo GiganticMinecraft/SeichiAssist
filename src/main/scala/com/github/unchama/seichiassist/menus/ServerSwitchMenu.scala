@@ -53,7 +53,7 @@ object ServerSwitchMenu extends Menu {
         )
 
     case object EDEN
-        extends Server(s"$YELLOW${BOLD}エデン", "s2", ChestSlotRef(0, 1), Material.DIAMOND_SHOVEL))
+        extends Server(s"$YELLOW${BOLD}エデン", "s2", ChestSlotRef(0, 1), Material.DIAMOND_SHOVEL)
 
     case object VALHALLA
         extends Server(s"$YELLOW${BOLD}ヴァルハラ", "s3", ChestSlotRef(0, 2), Material.DIAMOND_AXE)
