@@ -8,7 +8,6 @@ import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.Bui
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.util.external.ExternalPlugins
-import org.bukkit.block.Block
 import org.bukkit.block.data.`type`.Slab
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
@@ -64,7 +63,7 @@ class BlockLineUpTriggerListener[
 
     val pl = player.getLocation
     val mainHandItemType = mainHandItem.getType
-    val mainHandItemData = mainHandItem.getData.getData
+    mainHandItem.getData.getData
 
     // 仰角は下向きがプラスで上向きがマイナス
     val pitch = pl.getPitch
