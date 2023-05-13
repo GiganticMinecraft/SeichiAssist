@@ -7,7 +7,11 @@ import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.RecoveryMana
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyPersistence
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{AppleAmount, FairyAppleConsumeStrategy, FairyManaRecoveryState}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
+  AppleAmount,
+  FairyAppleConsumeStrategy,
+  FairyManaRecoveryState
+}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.FairySpeech
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffectF
@@ -39,11 +43,11 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
       fairyEndTimeOpt <- fairyPersistence.fairyEndTime(uuid)
       consumeStrategy <- fairyPersistence.appleConsumeStrategy(uuid)
       isRecoverTiming = consumeStrategy match {
-        case FairyAppleConsumeStrategy.Permissible => true
-        case FairyAppleConsumeStrategy.Consume if counter == 1 => true
+        case FairyAppleConsumeStrategy.Permissible                 => true
+        case FairyAppleConsumeStrategy.Consume if counter == 1     => true
         case FairyAppleConsumeStrategy.LessConsume if counter == 2 => true
-        case FairyAppleConsumeStrategy.NoConsume if counter == 3 => true
-        case _ => false
+        case FairyAppleConsumeStrategy.NoConsume if counter == 3   => true
+        case _                                                     => false
       }
       nonRecoveredManaAmount <- ContextCoercion {
         manaApi.readManaAmount(player)
@@ -62,7 +66,9 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
       // MineStackに入っているガチャりんごの数を考慮していないりんごの消費量
       pureAppleConsumeAmount <- Sync[F].delay(defaultRecoveryMana.recoveryMana / 300)
       // MineStackに入っているガチャりんごの数を考慮したりんごの消費量
-      appleConsumeAmount <- Sync[F].delay(Math.min(pureAppleConsumeAmount, mineStackedGachaRingoAmount).toInt)
+      appleConsumeAmount <- Sync[F].delay(
+        Math.min(pureAppleConsumeAmount, mineStackedGachaRingoAmount).toInt
+      )
 
       _ <- MessageEffectF(s"$RESET$YELLOW${BOLD}MineStackにがちゃりんごがないようです。。。")
         .apply(player)
@@ -96,17 +102,11 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
           ) >>
           mineStackAPI
             .mineStackRepository
-            .subtractStackedAmountOf(
-              player,
-              gachaRingoObject.get,
-              appleConsumeAmount
-            ) >>
+            .subtractStackedAmountOf(player, gachaRingoObject.get, appleConsumeAmount) >>
           SequentialEffect(
             MessageEffectF(s"$RESET$YELLOW${BOLD}マナ妖精が${recoveryManaAmount}マナを回復してくれました"),
             if (appleConsumeAmount != 0)
-              MessageEffectF(
-                s"$RESET$YELLOW${BOLD}あっ！${appleConsumeAmount}個のがちゃりんごが食べられてる！"
-              )
+              MessageEffectF(s"$RESET$YELLOW${BOLD}あっ！${appleConsumeAmount}個のがちゃりんごが食べられてる！")
             else MessageEffectF(s"$RESET$YELLOW${BOLD}あなたは妖精にりんごを渡しませんでした。")
           ).apply(player)
       }.whenA(isFairyUsing && isRecoverTiming && !nonRecoveredManaAmount.isFull)

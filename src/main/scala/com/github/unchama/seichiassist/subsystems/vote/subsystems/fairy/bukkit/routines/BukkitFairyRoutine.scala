@@ -4,10 +4,8 @@ import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, IO, SyncIO, Timer}
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
-import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.FairyRoutine
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions.BukkitRecoveryMana
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyPersistence
@@ -39,9 +37,9 @@ class BukkitFairyRoutine(fairySpeech: FairySpeech[IO, Player])(
     val counter = Ref.unsafe(0)
 
     def countUp: IO[Unit] = counter.update { count =>
-        if (count < 3) count + 1
-        else 0
-      }
+      if (count < 3) count + 1
+      else 0
+    }
 
     RepeatingRoutine.permanentRoutine(
       repeatInterval,
