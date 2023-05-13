@@ -450,7 +450,6 @@ public final class MenuInventoryData {
         final Inventory inventory = getEmptyInventory(6, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "スキルを進化させますか?");
         {
             // 色
-            final byte[] table = {12, 15, 4, 0, 3};
             final Material[] table = {
                 Material.ORANGE_STAINED_GLASS_PANE,
                 Material.BLACK_STAINED_GLASS_PANE,
