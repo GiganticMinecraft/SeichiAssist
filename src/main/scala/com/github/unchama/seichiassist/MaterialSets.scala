@@ -349,7 +349,7 @@ object MaterialSets {
     Material.WOODEN_SHOVEL,
     Material.STONE_PICKAXE,
     Material.STONE_AXE,
-    Material.STONE_SPADE,
+    Material.STONE_SHOVEL,
     Material.IRON_PICKAXE,
     Material.IRON_AXE,
     Material.IRON_SHOVEL,
