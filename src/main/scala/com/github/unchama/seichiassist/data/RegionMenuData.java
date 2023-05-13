@@ -126,7 +126,7 @@ public class RegionMenuData {
         } else if (!playerData.canGridReduce(RelativeDirection.behind())) {
             lore7.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
         }
-        ItemStack menuicon7 = MenuIcon.getMenuIcon(Material.GREEN_STAINED_GLASS_PANEE, 1, 13,
+        ItemStack menuicon7 = MenuIcon.getMenuIcon(Material.GREEN_STAINED_GLASS_PANE, 1, 13,
                 ChatColor.DARK_GREEN + "後ろに" + playerData.unitPerClick() + "ユニット増やす/減らす", CollectionConverters.ListHasAsScala(lore7).asScala().toList(), true);
         gridInv.setItem(7, menuicon7);
 
@@ -149,7 +149,7 @@ public class RegionMenuData {
             List<String> lore8 = new ArrayList<>();
             lore8.add(ChatColor.DARK_GREEN + "保護作成可能です");
             lore8.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "クリックで作成");
-            ItemStack menuicon8 = MenuIcon.getMenuIcon(LIGHT_BLUE_WOOL, 1, 11, ChatColor.GREEN + "保護作成",
+            ItemStack menuicon8 = MenuIcon.getMenuIcon(Material.LIGHT_BLUE_WOOL, 1, 11, ChatColor.GREEN + "保護作成",
                     CollectionConverters.ListHasAsScala(lore8).asScala().toList(), true);
             gridInv.setItem(8, menuicon8);
         }
