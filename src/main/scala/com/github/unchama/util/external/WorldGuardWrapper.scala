@@ -39,11 +39,23 @@ object WorldGuardWrapper {
   }
 
   def getRegions(world: World): List[ProtectedRegion] = {
-    worldGuard.getPlatform.getRegionContainer.get(BukkitAdapter.adapt(world)).getRegions.values().asScala.toList
+    worldGuard
+      .getPlatform
+      .getRegionContainer
+      .get(BukkitAdapter.adapt(world))
+      .getRegions
+      .values()
+      .asScala
+      .toList
   }
 
   def isNotOverlapping(world: World, region: ProtectedCuboidRegion): Boolean = {
-    val regions = worldGuard.getPlatform.getRegionContainer.get(BukkitAdapter.adapt(world)).getRegions.values()
+    val regions = worldGuard
+      .getPlatform
+      .getRegionContainer
+      .get(BukkitAdapter.adapt(world))
+      .getRegions
+      .values()
     region.getIntersectingRegions(regions).size() <= 0
   }
 
@@ -58,22 +70,33 @@ object WorldGuardWrapper {
     worldGuard.getPlatform.getRegionContainer.getLoaded.asScala.find(_.getName == name)
 
   def removeByProtectedRegionRegion(world: World, region: ProtectedRegion): Unit = {
-    worldGuard.getPlatform.getRegionContainer.get(BukkitAdapter.adapt(world)).removeRegion(region.getId)
+    worldGuard
+      .getPlatform
+      .getRegionContainer
+      .get(BukkitAdapter.adapt(world))
+      .removeRegion(region.getId)
   }
 
   def getMaxRegion(player: Player, world: World): Int = {
-    worldGuard.getPlatform.getGlobalStateManager.get(BukkitAdapter.adapt(world)).getMaxRegionCount(wrapPlayer(player))
+    worldGuard
+      .getPlatform
+      .getGlobalStateManager
+      .get(BukkitAdapter.adapt(world))
+      .getMaxRegionCount(wrapPlayer(player))
   }
 
   def getWorldMaxRegion(world: World): Int = {
-    worldGuard.getPlatform.getGlobalStateManager.get(BukkitAdapter.adapt(world)).maxRegionCountPerPlayer
+    worldGuard
+      .getPlatform
+      .getGlobalStateManager
+      .get(BukkitAdapter.adapt(world))
+      .maxRegionCountPerPlayer
   }
 
   /**
    * WorldGuardのインスタンス
    */
   private val plugin = ExternalPlugins.getWorldGuard
-
 
   /**
    * [[RegionManager]]を返す
