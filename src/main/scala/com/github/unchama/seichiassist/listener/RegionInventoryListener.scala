@@ -66,7 +66,7 @@ class RegionInventoryListener extends Listener {
     }
 
     // インベントリ名が以下の時処理
-    if (topinventory.getTitle == LIGHT_PURPLE.toString + "グリッド式保護設定メニュー") {
+    if (view.getTitle == LIGHT_PURPLE.toString + "グリッド式保護設定メニュー") {
       event.setCancelled(true)
 
       // プレイヤーインベントリのクリックの場合終了
@@ -161,7 +161,7 @@ class RegionInventoryListener extends Listener {
     // インベントリが存在しない時終了
 
     // インベントリ名が以下の時処理
-    if (topinventory.getTitle == LIGHT_PURPLE.toString + "グリッド式保護・設定保存") {
+    if (view.getTitle == LIGHT_PURPLE.toString + "グリッド式保護・設定保存") {
       event.setCancelled(true)
 
       // プレイヤーインベントリのクリックの場合終了
