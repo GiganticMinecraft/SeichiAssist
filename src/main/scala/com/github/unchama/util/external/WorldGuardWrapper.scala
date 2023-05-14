@@ -29,6 +29,10 @@ object WorldGuardWrapper {
     container.getApplicableRegions(BukkitAdapter.adapt(loc).toVector.toBlockPoint).getRegions.asScala.toList
   }
 
+  def getRegions(world: World): List[ProtectedRegion] = {
+    worldGuard.getPlatform.getRegionContainer.get(BukkitAdapter.adapt(world)).getRegions.values().asScala.toList
+  }
+
   def canBuild(p: Player, loc: Location): Boolean = {
     getRegion(loc).exists { region =>
       val player = wrapPlayer(p)
