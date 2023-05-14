@@ -489,7 +489,7 @@ object SecondPage extends Menu {
     }
 
     val JMSNavigationButton: Button = {
-      val iconItemStack = new IconItemStackBuilder(Material.SIGN)
+      val iconItemStack = new IconItemStackBuilder(Material.OAK_SIGN)
         .title(s"$YELLOW$UNDERLINE${BOLD}JapanMinecraftServerリンク")
         .lore(
           List(
