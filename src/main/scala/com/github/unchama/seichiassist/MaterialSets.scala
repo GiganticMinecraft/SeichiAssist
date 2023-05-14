@@ -129,7 +129,7 @@ object MaterialSets {
     Material.WITHER_SKELETON_SPAWN_EGG,
     Material.WOLF_SPAWN_EGG,
     Material.ZOMBIE_HORSE_SPAWN_EGG,
-    Material.ZOMBIE_PIGMAN_SPAWN_EGG,
+    Material.ZOMBIFIED_PIGLIN_SPAWN_EGG,
     Material.ZOMBIE_SPAWN_EGG,
     Material.ZOMBIE_VILLAGER_SPAWN_EGG,
     Material.COBWEB,

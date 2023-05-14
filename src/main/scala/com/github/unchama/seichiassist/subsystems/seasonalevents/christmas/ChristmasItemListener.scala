@@ -117,7 +117,7 @@ class ChristmasItemListener[F[_], G[_]: SyncEffect](instance: JavaPlugin)(
       GUARDIAN,
       HUSK,
       MAGMA_CUBE,
-      PIG_ZOMBIE,
+      ZOMBIFIED_PIGLIN,
       SHULKER,
       SILVERFISH,
       SKELETON,
