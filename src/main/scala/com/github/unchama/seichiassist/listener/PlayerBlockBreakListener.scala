@@ -19,7 +19,7 @@ import com.github.unchama.seichiassist.util.BreakUtil.BlockBreakResult
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.effect.BukkitResources
-import com.github.unchama.util.external.ExternalPlugins
+import com.github.unchama.util.external.{ExternalPlugins, WorldGuardWrapper}
 import org.bukkit.ChatColor.RED
 import org.bukkit._
 import org.bukkit.block.Block
@@ -354,7 +354,7 @@ class PlayerBlockBreakListener(
     val b = event.getBlock
     val world = p.getWorld
     // そもそも自分の保護じゃなきゃ処理かけない
-    if (!ExternalPlugins.getWorldGuard.canBuild(p, b.getLocation)) return
+    if (!WorldGuardWrapper.canBuild(p, b.getLocation)) return
     if (b.isInstanceOf[Slab]) {
       b.setType(Material.STONE_SLAB)
       val location = b.getLocation

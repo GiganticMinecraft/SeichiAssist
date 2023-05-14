@@ -1,12 +1,14 @@
 package com.github.unchama.util.external
 
-import com.sk89q.worldguard.LocalPlayer
+import com.sk89q.worldedit.bukkit.BukkitAdapter
+import com.sk89q.worldguard.{LocalPlayer, WorldGuard}
 import com.sk89q.worldguard.protection.managers.RegionManager
 import com.sk89q.worldguard.protection.regions.ProtectedRegion
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Player
 
+import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
 /**
@@ -15,6 +17,20 @@ import scala.jdk.CollectionConverters._
  * @author karayuu
  */
 object WorldGuardWrapper {
+
+  private val worldGuard = WorldGuard.getInstance()
+
+  def getRegion(loc: Location): List[ProtectedRegion] = {
+    val container = worldGuard.getPlatform.getRegionContainer.get(BukkitAdapter.adapt(loc.getWorld))
+    container.getApplicableRegions(BukkitAdapter.adapt(loc).toVector.toBlockPoint).getRegions.asScala.toList
+  }
+
+  def canBuild(p: Player, loc: Location): Boolean = {
+    getRegion(loc).exists { region =>
+      val player = wrapPlayer(p)
+      region.isOwner(player) || region.isMember(player)
+    }
+  }
 
   /**
    * WorldGuardのインスタンス
