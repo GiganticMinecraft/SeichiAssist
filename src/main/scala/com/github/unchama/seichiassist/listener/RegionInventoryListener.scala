@@ -8,10 +8,8 @@ import com.github.unchama.util.external.{ExternalPlugins, WorldGuardWrapper}
 import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.bukkit.{BukkitAdapter, WorldEditPlugin}
-import com.sk89q.worldguard.WorldGuard
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin
-import com.sk89q.worldguard.bukkit.commands.AsyncCommandHelper
-import com.sk89q.worldguard.bukkit.commands.task.RegionAdder
+import com.sk89q.worldguard.commands.task.RegionAdder
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion
 import com.sk89q.worldguard.protection.util.DomainInputResolver
 import org.bukkit.ChatColor._
@@ -115,25 +113,28 @@ class RegionInventoryListener extends Listener {
 
   private def createRegion(player: Player): Unit = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
-    val selection = We.getSelection(player)
+    val world = player.getWorld
+    val selection = WorldEdit.getInstance().getSessionManager.get(BukkitAdapter.adapt(player)).getSelection(BukkitAdapter.adapt(world))
 
     val region = new ProtectedCuboidRegion(
       player.getName + "_" + playerData.regionCount,
-      selection.getNativeMinimumPoint.toBlockVector,
-      selection.getNativeMaximumPoint.toBlockVector
+      selection.getMinimumPoint,
+      selection.getMaximumPoint
     )
-    val manager = Wg.getRegionManager(player.getWorld)
+    val manager = WorldGuardWrapper.getRegionManager(world)
 
-    val task = new RegionAdder(Wg, manager, region)
+    val task = new RegionAdder(manager, region)
     task.setLocatorPolicy(DomainInputResolver.UserLocatorPolicy.UUID_ONLY)
     task.setOwnersInput(Array(player.getName))
-    val future = Wg.getExecutorService.submit(task)
 
-    AsyncCommandHelper
-      .wrap(future, Wg, player)
-      .formatUsing(player.getName + "_" + playerData.regionCount)
-      .registerWithSupervisor("保護申請中")
-      .thenRespondWith("保護申請完了。保護名: '%s'", "保護作成失敗")
+    try {
+      player.sendMessage("保護申請中")
+      task.call()
+      player.sendMessage(s"保護申請完了。保護名: ${player.getName + "_" + playerData.regionCount}")
+
+    } catch {
+      case _: Throwable => player.sendMessage("保護作成失敗")
+    }
   }
 
   @EventHandler
