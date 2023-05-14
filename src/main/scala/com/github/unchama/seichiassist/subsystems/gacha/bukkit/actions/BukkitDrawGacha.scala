@@ -12,6 +12,7 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaRarity.
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.GachaPrize
 import com.github.unchama.seichiassist.util.SendMessageEffect.sendMessageToEveryone
 import com.github.unchama.seichiassist.util._
+import net.md_5.bungee.api.chat.hover.content.Text
 import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
@@ -68,13 +69,11 @@ class BukkitDrawGacha[F[_]: Sync: OnMinecraftServerThread](
                     setHoverEvent {
                       new HoverEvent(
                         HoverEvent.Action.SHOW_TEXT,
-                        Array(
-                          new TextComponent(
-                            s" ${prizeItem.getItemMeta.getDisplayName}\n" +
-                              ListFormatters.getDescFormat(localizedEnchantmentList.toList) +
-                              ListFormatters
-                                .getDescFormat(prizeItem.getItemMeta.getLore.asScala.toList)
-                          )
+                        new Text(
+                          s" ${prizeItem.getItemMeta.getDisplayName}\n" +
+                            ListFormatters.getDescFormat(localizedEnchantmentList.toList) +
+                            ListFormatters
+                              .getDescFormat(prizeItem.getItemMeta.getLore.asScala.toList)
                         )
                       )
                     }
