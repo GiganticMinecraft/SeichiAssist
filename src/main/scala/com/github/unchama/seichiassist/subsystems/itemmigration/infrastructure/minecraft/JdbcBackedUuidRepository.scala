@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.
 import cats.Applicative
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
-import org.slf4j.Logger
 
 import java.util.UUID
 
