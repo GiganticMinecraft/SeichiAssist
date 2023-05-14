@@ -5,7 +5,7 @@
 - [AdoptOpenJDK 1.8](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot)
 - [sbt 1.6](https://www.scala-sbt.org/1.x/docs/Setup.html)
 - [Scala 2.13](https://www.scala-lang.org/download/)
-- Spigot 1.13.2
+- Spigot 1.16.5
 - Docker
 - GitHubのアカウント
 - Git

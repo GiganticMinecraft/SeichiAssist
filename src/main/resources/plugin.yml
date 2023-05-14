@@ -2,7 +2,7 @@ name: @name@
 main: com.github.unchama.seichiassist.SeichiAssist
 version: @version@
 
-api-version: 1.13
+api-version: 1.16
 
 softdepend: [WorldGuard, CoreProtect]
 
