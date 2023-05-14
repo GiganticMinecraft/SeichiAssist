@@ -7,8 +7,7 @@ import com.github.unchama.seichiassist.subsystems.buildcount.application.actions
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
-import com.github.unchama.util.external.{ExternalPlugins, WorldGuardWrapper}
-import com.sk89q.worldguard.WorldGuard
+import com.github.unchama.util.external.WorldGuardWrapper
 import org.bukkit.block.data.`type`.Slab
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
@@ -166,7 +165,7 @@ class BlockLineUpTriggerListener[
         val block = playerWorld.getBlockAt(px, py, pz)
 
         // 他人の保護がかかっている場合は設置終わり
-        if (!WorldGuardWrapper.canBuild(player, block.getLocation)) b.break
+        if (!WorldGuardWrapper.canBuild(player, block.getLocation)) b.break()
 
         if (block.getType != Material.AIR) {
           // 空気以外にぶつかり、ブロック破壊をしないならば終わる
@@ -175,7 +174,7 @@ class BlockLineUpTriggerListener[
               .material_destruction
               .contains(block.getType) || buildAssistData.line_up_des_flg == 0
           ) {
-            b.break
+            b.break()
           }
 
           block.getDrops.asScala.foreach {
