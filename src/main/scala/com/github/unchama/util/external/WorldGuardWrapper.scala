@@ -21,7 +21,8 @@ object WorldGuardWrapper {
   /**
    * [[LocalPlayer]]を返す
    */
-  private def wrapPlayer(player: Player): LocalPlayer = worldGuard.checkPlayer(BukkitAdapter.adapt(player))
+  private def wrapPlayer(player: Player): LocalPlayer =
+    worldGuard.checkPlayer(BukkitAdapter.adapt(player))
 
   def getRegionManager(world: World): RegionManager =
     worldGuard.getPlatform.getRegionContainer.get(BukkitAdapter.adapt(world))
@@ -83,6 +84,13 @@ object WorldGuardWrapper {
       .getMaxRegionCount(wrapPlayer(player))
   }
 
+  def getNumberOfRegions(player: Player, world: World): Int =
+    worldGuard
+      .getPlatform
+      .getRegionContainer
+      .get(BukkitAdapter.adapt(world))
+      .getRegionCountOfPlayer(wrapPlayer(player))
+
   def getWorldMaxRegion(world: World): Int = {
     worldGuard
       .getPlatform
@@ -93,6 +101,9 @@ object WorldGuardWrapper {
 
   def isRegionMember(player: Player, location: Location): Boolean =
     getRegion(location).exists(_.isMember(wrapPlayer(player)))
+
+  def canProtectionWorld(world: World): Boolean =
+    worldGuard.getPlatform.getGlobalStateManager.get(BukkitAdapter.adapt(world)).useRegions
 //
 //  /**
 //   * WorldGuardのインスタンス

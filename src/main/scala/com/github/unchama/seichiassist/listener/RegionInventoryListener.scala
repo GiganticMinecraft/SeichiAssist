@@ -163,7 +163,7 @@ class RegionInventoryListener extends Listener {
     if (he.getType != EntityType.PLAYER) {
       return
     }
-    val topinventory = view.getTopInventory.ifNull {
+    view.getTopInventory.ifNull {
       return
     }
     // インベントリが存在しない時終了

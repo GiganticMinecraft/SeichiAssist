@@ -53,7 +53,7 @@ object RegionOwnerTransferCommand {
     val owners = region.getOwners
     val regionWorld = donner.getWorld
 
-    val recipientLimit = WorldGuardWrapper.getMaxRegionCount(recipient, regionWorld)
+    val recipientLimit = WorldGuardWrapper.getMaxRegion(recipient, regionWorld)
     val recipientHas = WorldGuardWrapper.getNumberOfRegions(recipient, regionWorld)
 
     if (recipientLimit <= recipientHas) {
