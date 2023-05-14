@@ -219,7 +219,6 @@ class SeichiAssist extends JavaPlugin() {
 
   private lazy val itemMigrationSystem: subsystems.itemmigration.System[IO] = {
     import PluginExecutionContexts.asyncShift
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
     subsystems.itemmigration.System.wired[IO, SyncIO].unsafeRunSync()
   }
