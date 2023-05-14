@@ -44,9 +44,7 @@ object JdbcBackedUuidRepository {
     }
   }
 
-  def initializeInstanceIn[F[_]: Sync, G[_]: Applicative](
-    implicit logger: Logger
-  ): F[UuidRepository[G]] = {
+  def initializeInstanceIn[F[_]: Sync, G[_]: Applicative]: F[UuidRepository[G]]= {
     import cats.implicits._
 
     for {
