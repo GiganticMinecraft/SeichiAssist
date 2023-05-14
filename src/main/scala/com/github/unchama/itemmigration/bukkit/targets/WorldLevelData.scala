@@ -109,7 +109,7 @@ object WorldLevelData {
   }
 
   private def queueChunkSaverFlush[F[_]](implicit F: Concurrent[F], logger: Logger) = {
-    import com.github.unchama.util.nms.v1_16_5.world.WorldChunkSaving
+    import com.github.unchama.util.nms.v1_18_2.world.WorldChunkSaving
 
     F.delay {
       logger.info("チャンクの保存キューの処理を要求します…")
@@ -123,7 +123,7 @@ object WorldLevelData {
   }
 
   private def flushEntityRemovalQueue[F[_]: Sync](worldRef: Ref[F, World]): F[Unit] = {
-    import com.github.unchama.util.nms.v1_16_5.world.WorldChunkSaving
+    import com.github.unchama.util.nms.v1_18_2.world.WorldChunkSaving
 
     worldRef.get >>= WorldChunkSaving.flushEntityRemovalQueue[F]
   }

@@ -1,4 +1,4 @@
-package com.github.unchama.util.nms.v1_16_5.world
+package com.github.unchama.util.nms.v1_18_2.world
 
 import cats.effect.{Concurrent, Sync}
 
@@ -7,8 +7,8 @@ object WorldChunkSaving {
   import scala.jdk.CollectionConverters._
 
   private object Reflection {
-    private val nmsPackage_1_16_R1 = "net.minecraft.server.v1_16_R1"
-    private val craftBukkitPackage_1_16_R1 = "org.bukkit.craftbukkit.v1_16_R1"
+    private val nmsPackage_1_16_R1 = "net.minecraft.server.v1_18_R1"
+    private val craftBukkitPackage_1_16_R1 = "org.bukkit.craftbukkit.v1_18_R1"
 
     object FileIOThread {
       private[Reflection] lazy val clazz: Class[_] =
