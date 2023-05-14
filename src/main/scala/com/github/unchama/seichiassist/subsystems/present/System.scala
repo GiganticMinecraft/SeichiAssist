@@ -12,8 +12,7 @@ import org.bukkit.command.TabExecutor
 
 object System {
   def wired[ConcurrentContext[_]: ConcurrentEffect: NonServerThreadContextShift](
-    implicit environment: EffectEnvironment,
-    uuidToLastSeenName: UuidToLastSeenName[ConcurrentContext],
+    implicit uuidToLastSeenName: UuidToLastSeenName[ConcurrentContext],
     ioOnMainThread: OnMinecraftServerThread[IO]
   ): Subsystem[ConcurrentContext] = {
     implicit val repo: JdbcBackedPresentPersistence[ConcurrentContext] =
