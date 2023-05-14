@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.subsystems.present
 
 import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
-import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.domain.actions.UuidToLastSeenName
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
