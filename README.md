@@ -15,7 +15,7 @@
 - [Multiverse-Core-2.5.0](https://dev.bukkit.org/projects/multiverse-core/files/2428161/download)
 - [Multiverse-Portals-2.5.0](https://dev.bukkit.org/projects/multiverse-portals/files/2428333/download)
 - [ParticleAPI_v2.1.1](https://dl.inventivetalent.org/download/?file=plugin/ParticleAPI_v2.1.1)
-- [WorldBorder1.8.7](https://dev.bukkit.org/projects/worldborder/files/2415838/download)
+- [WorldBorder1.9.10 (beta)](https://www.spigotmc.org/resources/worldborder.60905/download?version=275003)
 - [worldedit-bukkit-7.0.0](https://dev.bukkit.org/projects/worldedit/files/2597538/download)
 - [worldguard-bukkit-7.0.0](https://dev.bukkit.org/projects/worldguard/files/2610618/download)
 
