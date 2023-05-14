@@ -2,10 +2,10 @@
 FROM ghcr.io/giganticminecraft/chunk-search-rs:sha-f1943b1 as chunk-search-provider
 FROM ghcr.io/giganticminecraft/seichiassist-runner:ba2aa54
 
-FROM itzg/minecraft-server:java8-multiarch
+FROM itzg/minecraft-server:java11-jdk
 
 # JDKとnkfをインストール
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y nkf \
     nkf \
     openjdk-8-jdk \
 && apt-get clean \
@@ -20,9 +20,9 @@ chmod a+x /usr/local/bin/yq
 COPY --link --from=chunk-search-provider /build/chunk-search-rs /usr/bin/chunk-search-rs
 
 # プラグインとスクリプトをローカルからコピーする
-COPY --link ./localDependencies/ /data/plugins/
 COPY --link ./target/build/ /SeichiAssist/
 COPY --link ./docker/spigot/ /data/
+ADD ./localDependencies/ /data/plugins/
 
 RUN chmod a+x /data/update-seichiassist.sh
 RUN nkf -Lu --overwrite /data/update-seichiassist.sh
