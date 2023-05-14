@@ -195,7 +195,7 @@ object BreakUtil {
   )(blockInformation: (Location, Material, Byte)): Option[BlockBreakResult] = {
     val fortuneLevel = tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS)
 
-    val (blockLocation, blockMaterial, blockData) = blockInformation
+    val (_, blockMaterial, blockData) = blockInformation
 
     blockMaterial match {
       case Material.GRASS_PATH | Material.FARMLAND =>
