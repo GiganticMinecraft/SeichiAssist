@@ -2,6 +2,8 @@ package com.github.unchama.buildassist
 
 import cats.effect.SyncIO
 import com.github.unchama.buildassist.util.AsyncInventorySetter
+import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
+import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository
 import com.github.unchama.seichiassist.util.ItemMetaFactory
 import org.bukkit.ChatColor._
@@ -33,14 +35,10 @@ object MenuInventoryData {
 
     // ホームを開く
     itemstack.setDurability(3.toShort)
-    skullmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}ホームへ")
-    skullmeta.setLore(lore.asJava)
-
-    /**
-     * 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
-     */
-    skullmeta.setOwner("MHF_ArrowLeft")
-    itemstack.setItemMeta(skullmeta)
+    new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft)
+      .title(s"$YELLOW$UNDERLINE${BOLD}ホームへ")
+      .lore(lore)
+      .transformItemMetaOnBuild(skullmeta)
     AsyncInventorySetter.setItemAsync(inventory, 27, itemstack)
 
     // 直列設置設定
