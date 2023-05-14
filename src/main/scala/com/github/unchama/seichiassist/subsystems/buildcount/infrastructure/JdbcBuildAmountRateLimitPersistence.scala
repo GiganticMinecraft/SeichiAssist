@@ -10,8 +10,7 @@ import scalikejdbc._
 import java.util.UUID
 
 class JdbcBuildAmountRateLimitPersistence[SyncContext[_]](
-  implicit SyncContext: Sync[SyncContext],
-  config: Configuration
+  implicit SyncContext: Sync[SyncContext]
 ) extends BuildAmountRateLimitPersistence[SyncContext] {
 
   override def read(key: UUID): SyncContext[Option[BuildAmountRateLimiterSnapshot]] =
