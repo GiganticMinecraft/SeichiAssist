@@ -55,7 +55,7 @@ class BukkitDrawGacha[F[_]: Sync: OnMinecraftServerThread](
                 val localizedEnchantmentList =
                   prizeItem.getItemMeta.getEnchants.asScala.toSeq.map {
                     case (enchantment, level) =>
-                      s"$GRAY${EnchantNameToJapanese.getEnchantName(enchantment.getName, level)}"
+                      s"$GRAY${EnchantNameToJapanese.getEnchantName(enchantment.getKey.toString, level)}"
                   }
 
                 import scala.util.chaining._
