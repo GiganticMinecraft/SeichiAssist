@@ -13,7 +13,6 @@ import com.github.unchama.seichiassist.util.InventoryOperations.{
   isPlayerInventoryFull,
   removeItemfromPlayerInventory
 }
-import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.entity.EntityType._
 import org.bukkit.entity.{EntityType, LivingEntity, Player}

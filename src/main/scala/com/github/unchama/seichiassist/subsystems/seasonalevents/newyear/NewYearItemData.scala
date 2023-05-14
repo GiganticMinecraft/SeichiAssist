@@ -1,12 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.newyear
 
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerTextureValue}
-import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear.{
-  END_DATE,
-  EVENT_YEAR,
-  NEW_YEAR_EVE
-}
-import de.tr7zw.itemnbtapi.NBTItem
+import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear.{END_DATE, EVENT_YEAR, NEW_YEAR_EVE}
+import de.tr7zw.nbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.{ItemFlag, ItemStack}

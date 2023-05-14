@@ -4,6 +4,7 @@ import com.github.unchama.seichiassist.subsystems.mebius.domain.property._
 import com.github.unchama.seichiassist.subsystems.mebius.domain.resources.MebiusTalks
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemData
 import de.tr7zw.itemnbtapi.NBTItem
+import de.tr7zw.nbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Material
 import org.bukkit.entity.Player
