@@ -13,7 +13,7 @@
 
 # Local files
 deployLocal.sh
-localDependencies/spigot-1.16.5.jar
+localDependencies/spigot-1.18.2.jar
 plugins/*
 
 # Docker

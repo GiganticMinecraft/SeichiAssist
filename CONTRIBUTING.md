@@ -5,7 +5,7 @@
 - [AdoptOpenJDK 11](https://adoptium.net/temurin/releases/?version=11)
 - [sbt 1.6](https://www.scala-sbt.org/1.x/docs/Setup.html)
 - [Scala 2.13](https://www.scala-lang.org/download/)
-- Spigot 1.16.5
+- Spigot 1.18.2
 - Docker
 - GitHubのアカウント
 - Git

@@ -21,7 +21,7 @@ services:
       - "25566:25565"
       - "7091:7091"
     environment:
-      - VERSION=1.16.5
+      - VERSION=1.18.2
       - EULA=TRUE
       - TYPE=SPIGOT
       - ONLINE_MODE=FALSE
@@ -51,7 +51,7 @@ services:
       - "25567:25565"
       - "7092:7091"
     environment:
-      - VERSION=1.16.5
+      - VERSION=1.18.2
       - EULA=TRUE
       - TYPE=SPIGOT
       - ONLINE_MODE=FALSE
