@@ -82,7 +82,7 @@ object HalloweenItemData {
       val year = Calendar.getInstance().get(Calendar.YEAR)
       val enchDescription = enchantments.map {
         case (ench, lvl) =>
-          s"$RESET$GRAY${EnchantNameToJapanese.getEnchantName(ench.getName, lvl)}"
+          s"$RESET$GRAY${EnchantNameToJapanese.getEnchantName(ench.getKey.toString, lvl)}"
       }.toList
       val lore = List(
         "",

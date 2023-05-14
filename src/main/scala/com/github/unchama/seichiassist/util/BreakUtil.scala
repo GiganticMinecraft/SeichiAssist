@@ -8,7 +8,11 @@ import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, Brea
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange._
-import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{AssaultArmor, DualBreak, TrialBreak}
+import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{
+  AssaultArmor,
+  DualBreak,
+  TrialBreak
+}
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.{Active, Disabled}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.CardinalDirection
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
@@ -172,7 +176,7 @@ object BreakUtil {
   )(blockInformation: (Location, Material, Byte)): Option[BlockBreakResult] = {
     val fortuneLevel = tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS)
 
-    val (blockLocation, blockMaterial, blockData) = blockInformation
+    val (_, blockMaterial, blockData) = blockInformation
 
     blockMaterial match {
       case Material.GRASS_PATH | Material.FARMLAND =>

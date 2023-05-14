@@ -2,7 +2,11 @@ package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GridTemplate, RegionMenuData}
-import com.github.unchama.seichiassist.util.{AbsoluteDirection, PlayerInformation, RelativeDirection}
+import com.github.unchama.seichiassist.util.{
+  AbsoluteDirection,
+  PlayerInformation,
+  RelativeDirection
+}
 import com.github.unchama.seichiassist.{Config, SeichiAssist}
 import com.github.unchama.util.external.{ExternalPlugins, WorldGuardWrapper}
 import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
@@ -66,7 +70,7 @@ class RegionInventoryListener extends Listener {
     }
 
     // インベントリ名が以下の時処理
-    if (topinventory.getTitle == LIGHT_PURPLE.toString + "グリッド式保護設定メニュー") {
+    if (view.getTitle == LIGHT_PURPLE.toString + "グリッド式保護設定メニュー") {
       event.setCancelled(true)
 
       // プレイヤーインベントリのクリックの場合終了
@@ -114,7 +118,11 @@ class RegionInventoryListener extends Listener {
   private def createRegion(player: Player): Unit = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     val world = player.getWorld
-    val selection = WorldEdit.getInstance().getSessionManager.get(BukkitAdapter.adapt(player)).getSelection(BukkitAdapter.adapt(world))
+    val selection = WorldEdit
+      .getInstance()
+      .getSessionManager
+      .get(BukkitAdapter.adapt(player))
+      .getSelection(BukkitAdapter.adapt(world))
 
     val region = new ProtectedCuboidRegion(
       player.getName + "_" + playerData.regionCount,
@@ -161,7 +169,7 @@ class RegionInventoryListener extends Listener {
     // インベントリが存在しない時終了
 
     // インベントリ名が以下の時処理
-    if (topinventory.getTitle == LIGHT_PURPLE.toString + "グリッド式保護・設定保存") {
+    if (view.getTitle == LIGHT_PURPLE.toString + "グリッド式保護・設定保存") {
       event.setCancelled(true)
 
       // プレイヤーインベントリのクリックの場合終了
@@ -395,7 +403,11 @@ object RegionInventoryListener {
   private def canCreateRegion(player: Player): Unit = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     val world = player.getWorld
-    val selection = WorldEdit.getInstance().getSessionManager.get(BukkitAdapter.adapt(player)).getSelection(BukkitAdapter.adapt(world))
+    val selection = WorldEdit
+      .getInstance()
+      .getSessionManager
+      .get(BukkitAdapter.adapt(player))
+      .getSelection(BukkitAdapter.adapt(world))
 
     if (selection == null) {
       playerData.canCreateRegion = false
