@@ -207,8 +207,7 @@ lazy val root = (project in file(".")).settings(
     "-Ypatmat-exhaust-depth",
     "320",
     "-Ymacro-annotations",
-    "-Ywarn-unused",
-    "-Ylog-classpath"
+    "-Ywarn-unused"
   ),
   javacOptions ++= Seq("-encoding", "utf8"),
   assembly / assemblyShadeRules ++= Seq(
