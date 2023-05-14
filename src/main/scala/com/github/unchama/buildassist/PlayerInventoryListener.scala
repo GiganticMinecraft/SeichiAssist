@@ -58,7 +58,7 @@ class PlayerInventoryListener(
     // プレイヤーデータが無い場合は処理終了
 
     // インベントリ名が以下の時処理
-    if (topinventory.getTitle == s"${DARK_PURPLE.toString}$BOLD「直列設置」設定") {
+    if (view.getTitle == s"${DARK_PURPLE.toString}$BOLD「直列設置」設定") {
       event.setCancelled(true)
 
       // プレイヤーインベントリのクリックの場合終了
