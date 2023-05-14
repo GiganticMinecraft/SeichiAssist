@@ -2,17 +2,13 @@ package com.github.unchama.seichiassist.commands
 
 import cats.effect.IO
 import com.github.unchama.contextualexecutor.builder.Parsers._
-import com.github.unchama.contextualexecutor.builder.{
-  ContextualExecutorBuilder,
-  ParserResponse,
-  ResponseEffectOrResult
-}
+import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, ParserResponse, ResponseEffectOrResult}
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
-import com.github.unchama.util.external.ExternalPlugins
+import com.github.unchama.util.external.{ExternalPlugins, WorldGuardWrapper}
 import com.sk89q.worldguard.protection.regions.ProtectedRegion
 import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, ConsoleCommandSender, TabExecutor}
@@ -86,13 +82,7 @@ object RmpCommand {
         case None | Some(false) => MessageEffect(s"第1整地以外の保護をかけて整地する整地ワールドでのみ使用出来ます")
         case Some(true) =>
           getOldRegionsIn(world, days).map { removalTargets =>
-            removalTargets.foreach { target =>
-              ExternalPlugins
-                .getWorldGuard
-                .getRegionContainer
-                .get(world)
-                .removeRegion(target.getId)
-            }
+            removalTargets.foreach(WorldGuardWrapper.removeByProtectedRegionRegion(world, _))
 
             // メッセージ生成
             if (removalTargets.isEmpty) {
