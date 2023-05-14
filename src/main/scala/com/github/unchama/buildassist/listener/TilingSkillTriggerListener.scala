@@ -6,6 +6,7 @@ import com.github.unchama.buildassist.{BuildAssist, Util}
 import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.IncrementBuildExpWhenBuiltWithSkill
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
+import com.github.unchama.util.external.WorldGuardWrapper
 import org.bukkit.ChatColor.RED
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
@@ -122,7 +123,7 @@ class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[
                 val blockToBeReplaced = fillLocation.getBlock
 
                 if (fillTargetMaterials.contains(blockToBeReplaced.getType)) {
-                  if (Util.getWorldGuard.canBuild(player, fillLocation)) {
+                  if (WorldGuardWrapper.canBuild(player, fillLocation)) {
                     blockToBeReplaced.setType(Material.DIRT)
                   } else {
                     // 他人の保護がかかっている場合は通知を行う
@@ -179,7 +180,7 @@ class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[
 
             if (replaceableMaterials.contains(targetSurfaceBlock.getType)) {
               // 他人の保護がかかっている場合は処理を終了
-              if (!Util.getWorldGuard.canBuild(player, targetSurfaceLocation)) {
+              if (!WorldGuardWrapper.canBuild(player, targetSurfaceLocation)) {
                 player.sendMessage(s"${RED}付近に誰かの保護がかかっているようです")
                 b1.break()
               }

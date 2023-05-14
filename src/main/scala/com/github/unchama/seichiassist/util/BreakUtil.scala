@@ -8,17 +8,13 @@ import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, Brea
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange._
-import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{
-  AssaultArmor,
-  DualBreak,
-  TrialBreak
-}
+import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{AssaultArmor, DualBreak, TrialBreak}
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.{Active, Disabled}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.CardinalDirection
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
 import com.github.unchama.targetedeffect.player.ActionBarMessageEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
-import com.github.unchama.util.external.ExternalPlugins
+import com.github.unchama.util.external.{ExternalPlugins, WorldGuardWrapper}
 import org.bukkit.ChatColor._
 import org.bukkit.World.Environment
 import org.bukkit._
@@ -65,7 +61,7 @@ object BreakUtil {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
 
     // 壊されるブロックがワールドガード範囲だった場合処理を終了
-    if (!ExternalPlugins.getWorldGuard.canBuild(player, checkTarget.getLocation)) {
+    if (!WorldGuardWrapper.canBuild(player, checkTarget.getLocation)) {
       if (playerData.settings.shouldDisplayWorldGuardLogs) {
         player.sendMessage(s"${RED}ワールドガードで保護されています。")
       }
