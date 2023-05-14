@@ -110,15 +110,12 @@ object RmpCommand {
       return Left(MessageEffect(s"${RED}データベースアクセスに失敗しました。"))
     }
 
-    val regions = ExternalPlugins.getWorldGuard.getRegionContainer.get(world).getRegions.asScala
+    val regions = WorldGuardWrapper.getRegions(world)
 
     val oldRegions = regions
-      .values
       .filter { region =>
-        region.getId != "__global__" && region.getId != "spawn" &&
-        region.getOwners.getUniqueIds.asScala.forall(leavers.contains(_))
+        region.getId != "spawn" && region.getOwners.getUniqueIds.asScala.forall(leavers.contains(_))
       }
-      .toList
 
     Right(oldRegions)
   }
