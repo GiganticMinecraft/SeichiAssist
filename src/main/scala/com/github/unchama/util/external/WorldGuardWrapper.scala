@@ -29,8 +29,13 @@ object WorldGuardWrapper {
     worldGuard.getPlatform.getRegionContainer.get(BukkitAdapter.adapt(world))
 
   def getRegion(loc: Location): List[ProtectedRegion] = {
-    val container = worldGuard.getPlatform.getRegionContainer.get(BukkitAdapter.adapt(loc.getWorld))
-    container.getApplicableRegions(BukkitAdapter.adapt(loc).toVector.toBlockPoint).getRegions.asScala.toList
+    val container =
+      worldGuard.getPlatform.getRegionContainer.get(BukkitAdapter.adapt(loc.getWorld))
+    container
+      .getApplicableRegions(BukkitAdapter.adapt(loc).toVector.toBlockPoint)
+      .getRegions
+      .asScala
+      .toList
   }
 
   def getRegions(world: World): List[ProtectedRegion] = {
