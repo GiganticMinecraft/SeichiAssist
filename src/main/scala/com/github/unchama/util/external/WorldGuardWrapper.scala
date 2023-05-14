@@ -25,6 +25,9 @@ object WorldGuardWrapper {
    */
   private def wrapPlayer(player: Player): LocalPlayer = plugin.wrapPlayer(player)
 
+  def getRegionManager(world: World): RegionManager =
+    worldGuard.getPlatform.getRegionContainer.get(BukkitAdapter.adapt(world))
+
   def getRegion(loc: Location): List[ProtectedRegion] = {
     val container = worldGuard.getPlatform.getRegionContainer.get(BukkitAdapter.adapt(loc.getWorld))
     container.getApplicableRegions(BukkitAdapter.adapt(loc).toVector.toBlockPoint).getRegions.asScala.toList
