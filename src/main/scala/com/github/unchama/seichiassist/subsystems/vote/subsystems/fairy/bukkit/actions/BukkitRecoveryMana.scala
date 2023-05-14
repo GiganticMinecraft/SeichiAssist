@@ -37,16 +37,16 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
 
   import cats.implicits._
 
-  override def recovery(counter: Int): F[Unit] =
+  override def recovery(seconds: Int): F[Unit] =
     for {
       isFairyUsing <- fairyPersistence.isFairyUsing(uuid)
       fairyEndTimeOpt <- fairyPersistence.fairyEndTime(uuid)
       consumeStrategy <- fairyPersistence.appleConsumeStrategy(uuid)
       isRecoverTiming = consumeStrategy match {
         case FairyAppleConsumeStrategy.Permissible                                      => true
-        case FairyAppleConsumeStrategy.Consume if counter % 60 == 0 && counter != 0     => true
-        case FairyAppleConsumeStrategy.LessConsume if counter % 90 == 0 && counter != 0 => true
-        case FairyAppleConsumeStrategy.NoConsume if counter % 120 == 0 && counter != 0  => true
+        case FairyAppleConsumeStrategy.Consume if seconds % 60 == 0 && seconds != 0     => true
+        case FairyAppleConsumeStrategy.LessConsume if seconds % 90 == 0 && seconds != 0 => true
+        case FairyAppleConsumeStrategy.NoConsume if seconds % 120 == 0 && seconds != 0  => true
         case _                                                                          => false
       }
       nonRecoveredManaAmount <- ContextCoercion {

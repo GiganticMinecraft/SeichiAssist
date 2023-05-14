@@ -34,10 +34,10 @@ class BukkitFairyRoutine(fairySpeech: FairySpeech[IO, Player])(
 
     implicit val timer: Timer[IO] = IO.timer(context)
 
-    val counter = Ref.unsafe(0)
+    val seconds = Ref.unsafe(0)
 
-    def countUp: IO[Unit] = counter.update { count =>
-      if (count < 360) count + 30
+    def countUp: IO[Unit] = seconds.update { second =>
+      if (second < 360) second + 30
       else 0
     }
 
@@ -45,8 +45,8 @@ class BukkitFairyRoutine(fairySpeech: FairySpeech[IO, Player])(
       repeatInterval,
       minecraftServerThread.runAction {
         (for {
-          count <- counter.get
-          _ <- new BukkitRecoveryMana[IO, SyncIO](player, fairySpeech).recovery(count)
+          seconds <- seconds.get
+          _ <- new BukkitRecoveryMana[IO, SyncIO](player, fairySpeech).recovery(seconds)
           _ <- countUp
         } yield ()).runAsync(_ => IO.unit)
       }
