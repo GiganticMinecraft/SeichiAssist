@@ -9,7 +9,6 @@ import org.bukkit.inventory.ItemStack
 
 object BukkitGachaSkullData {
 
-  import scala.jdk.CollectionConverters._
   import scala.util.chaining._
 
   /**

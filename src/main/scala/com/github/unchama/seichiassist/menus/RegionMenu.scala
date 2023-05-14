@@ -13,7 +13,8 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.RegionMenuData
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
-import com.github.unchama.util.external.ExternalPlugins
+import com.sk89q.worldedit.WorldEdit
+import com.sk89q.worldedit.bukkit.BukkitAdapter
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryType
@@ -61,7 +62,11 @@ object RegionMenu extends Menu {
 
     val computeButtonToClaimRegion: IO[Button] = IO {
       val openerData = SeichiAssist.playermap(player.getUniqueId)
-      val selection = ExternalPlugins.getWorldEdit.getSelection(player)
+      val selection = WorldEdit
+        .getInstance()
+        .getSessionManager
+        .get(BukkitAdapter.adapt(player))
+        .getSelection(BukkitAdapter.adapt(player.getWorld))
 
       val playerHasPermission = player.hasPermission("worldguard.region.claim")
       val isSelectionNull = selection == null
