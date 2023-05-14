@@ -489,17 +489,18 @@ object SecondPage extends Menu {
     }
 
     val JMSNavigationButton: Button = {
-      val iconItemStack = new IconItemStackBuilder(Material.OAK_SIGN) // 1.16からSIGNが素材ごとに別れたので、オークに決めうちしておく
-        .title(s"$YELLOW$UNDERLINE${BOLD}JapanMinecraftServerリンク")
-        .lore(
-          List(
-            s"$RESET${DARK_GRAY}クリックするとチャット欄に",
-            s"$RESET${DARK_GRAY}URLが表示されますので",
-            s"$RESET${DARK_GRAY}Tキーを押してから",
-            s"$RESET${DARK_GRAY}そのURLをクリックしてください"
+      val iconItemStack =
+        new IconItemStackBuilder(Material.OAK_SIGN) // 1.16からSIGNが素材ごとに別れたので、オークに決めうちしておく
+          .title(s"$YELLOW$UNDERLINE${BOLD}JapanMinecraftServerリンク")
+          .lore(
+            List(
+              s"$RESET${DARK_GRAY}クリックするとチャット欄に",
+              s"$RESET${DARK_GRAY}URLが表示されますので",
+              s"$RESET${DARK_GRAY}Tキーを押してから",
+              s"$RESET${DARK_GRAY}そのURLをクリックしてください"
+            )
           )
-        )
-        .build()
+          .build()
 
       Button(
         iconItemStack,
