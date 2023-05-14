@@ -107,6 +107,8 @@ commands:
     usage: /<command>
     permission: seichiassist.stickmenu
     permission-message: *denied
+    aliases:
+      - sm
   fd:
     description: 四次元ポケットを開く
     usage: /<command>
