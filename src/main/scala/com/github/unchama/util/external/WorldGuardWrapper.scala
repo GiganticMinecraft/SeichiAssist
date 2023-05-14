@@ -19,6 +19,11 @@ object WorldGuardWrapper {
 
   private val worldGuard = WorldGuard.getInstance()
 
+  /**
+   * [[LocalPlayer]]を返す
+   */
+  private def wrapPlayer(player: Player): LocalPlayer = plugin.wrapPlayer(player)
+
   def getRegion(loc: Location): List[ProtectedRegion] = {
     val container = worldGuard.getPlatform.getRegionContainer.get(BukkitAdapter.adapt(loc.getWorld))
     container.getApplicableRegions(BukkitAdapter.adapt(loc).toVector.toBlockPoint).getRegions.asScala.toList
@@ -34,15 +39,15 @@ object WorldGuardWrapper {
   def findByRegionName(name: String): Option[RegionManager] =
     worldGuard.getPlatform.getRegionContainer.getLoaded.asScala.find(_.getName == name)
 
+  def removeByProtectedRegionRegion(world: World, region: ProtectedRegion): Unit = {
+    worldGuard.getPlatform.getRegionContainer.get(BukkitAdapter.adapt(world)).removeRegion(region.getId)
+  }
+
   /**
    * WorldGuardのインスタンス
    */
   private val plugin = ExternalPlugins.getWorldGuard
 
-  /**
-   * [[LocalPlayer]]を返す
-   */
-  private def wrapPlayer(player: Player): LocalPlayer = plugin.wrapPlayer(player)
 
   /**
    * [[RegionManager]]を返す
