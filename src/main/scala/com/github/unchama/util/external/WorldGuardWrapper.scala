@@ -31,6 +31,9 @@ object WorldGuardWrapper {
     }
   }
 
+  def findByRegionName(name: String): Option[RegionManager] =
+    worldGuard.getPlatform.getRegionContainer.getLoaded.asScala.find(_.getName == name)
+
   /**
    * WorldGuardのインスタンス
    */

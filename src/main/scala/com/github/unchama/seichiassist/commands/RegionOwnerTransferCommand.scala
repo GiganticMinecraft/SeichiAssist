@@ -34,12 +34,12 @@ object RegionOwnerTransferCommand {
       val sender = context.sender
 
       val region =
-        WorldGuardPlugin.inst().getRegionManager(sender.getWorld).getRegion(regionName)
-      if (region == null) {
-        IO(MessageEffect(s"${regionName}という名前の保護は存在しません。"))
-      }
+        WorldGuardWrapper.findByRegionName(regionName)
 
-      attemptRegionTransfer(sender, newOwner, region)
+      region match {
+        case Some(region) => attemptRegionTransfer(sender, newOwner, region.getRegion(regionName))
+        case None => IO(MessageEffect(s"${regionName}という名前の保護は存在しません。"))
+      }
     }
     .build()
     .asNonBlockingTabExecutor()
