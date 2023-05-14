@@ -11,8 +11,7 @@ import org.slf4j.Logger
 import scalikejdbc.DB
 
 case class DatabaseMigrationController[F[_]: SyncEffect](migrations: ItemMigrations)(
-  implicit effectEnvironment: EffectEnvironment,
-  logger: Logger
+  implicit logger: Logger
 ) {
 
   lazy val runDatabaseMigration: F[Unit] = Sync[F].delay {
