@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.factories
 
+import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
+import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.util.ItemMetaFactory
 import org.bukkit.ChatColor._
 import org.bukkit.Material
@@ -18,16 +20,12 @@ object BukkitGachaSkullData {
       import skull._
       setDurability(3)
       setItemMeta {
-        ItemMetaFactory.SKULL.getValue.tap { meta =>
-          import meta._
-          setDisplayName(s"$YELLOW${BOLD}ガチャ券")
-          setLore {
-            List(s"$RESET${GREEN}右クリックで使えます").asJava
-          }
-
-          // 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
-          setOwner("unchama")
-        }
+        val meta = ItemMetaFactory.SKULL.getValue
+        new SkullItemStackBuilder(SkullOwners.unchama)
+          .title(s"$YELLOW${BOLD}ガチャ券")
+          .lore(List(s"$RESET${GREEN}右クリックで使えます"))
+          .transformItemMetaOnBuild(meta)
+        meta
       }
     }
 
@@ -39,16 +37,12 @@ object BukkitGachaSkullData {
       import itemStack._
       setDurability(3)
       setItemMeta {
-        ItemMetaFactory.SKULL.getValue.tap { meta =>
-          import meta._
-          setDisplayName(s"$YELLOW${BOLD}ガチャ券")
-          setLore {
-            List(s"$RESET${GREEN}右クリックで使えます", s"$RESET${LIGHT_PURPLE}投票ありがとナス♡").asJava
-          }
-
-          // 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
-          setOwner("unchama")
-        }
+        val meta = ItemMetaFactory.SKULL.getValue
+        new SkullItemStackBuilder(SkullOwners.unchama)
+          .title(s"$YELLOW${BOLD}ガチャ券")
+          .lore(List(s"$RESET${GREEN}右クリックで使えます", s"$RESET${LIGHT_PURPLE}投票ありがとナス♡"))
+          .transformItemMetaOnBuild(meta)
+        meta
       }
     }
 
@@ -60,16 +54,12 @@ object BukkitGachaSkullData {
       import itemStack._
       setDurability(3)
       setItemMeta {
-        ItemMetaFactory.SKULL.getValue.tap { meta =>
-          import meta._
-          setDisplayName(s"$YELLOW${BOLD}ガチャ券")
-          setLore {
-            List(s"$RESET${GREEN}右クリックで使えます", s"$RESET${GRAY}ガチャ景品と交換しました。").asJava
-          }
-
-          // 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
-          setOwner("unchama")
-        }
+        val meta = ItemMetaFactory.SKULL.getValue
+        new SkullItemStackBuilder(SkullOwners.unchama)
+          .title(s"$YELLOW${BOLD}ガチャ券")
+          .lore(List(s"$RESET${GREEN}右クリックで使えます", s"$RESET${GRAY}ガチャ景品と交換しました。"))
+          .transformItemMetaOnBuild(meta)
+        meta
       }
     }
   }
