@@ -2,15 +2,13 @@ package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GridTemplate, RegionMenuData}
-import com.github.unchama.seichiassist.util.{
-  AbsoluteDirection,
-  PlayerInformation,
-  RelativeDirection
-}
+import com.github.unchama.seichiassist.util.{AbsoluteDirection, PlayerInformation, RelativeDirection}
 import com.github.unchama.seichiassist.{Config, SeichiAssist}
-import com.github.unchama.util.external.ExternalPlugins
+import com.github.unchama.util.external.{ExternalPlugins, WorldGuardWrapper}
 import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
-import com.sk89q.worldedit.bukkit.WorldEditPlugin
+import com.sk89q.worldedit.WorldEdit
+import com.sk89q.worldedit.bukkit.{BukkitAdapter, WorldEditPlugin}
+import com.sk89q.worldguard.WorldGuard
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin
 import com.sk89q.worldguard.bukkit.commands.AsyncCommandHelper
 import com.sk89q.worldguard.bukkit.commands.task.RegionAdder
@@ -395,9 +393,8 @@ object RegionInventoryListener {
 
   private def canCreateRegion(player: Player): Unit = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
-    val selection = We.getSelection(player)
-    val manager = Wg.getRegionManager(player.getWorld)
-    val wcfg = Wg.getGlobalStateManager.get(player.getWorld)
+    val world = player.getWorld
+    val selection = WorldEdit.getInstance().getSessionManager.get(BukkitAdapter.adapt(player)).getSelection(BukkitAdapter.adapt(world))
 
     if (selection == null) {
       playerData.canCreateRegion = false
@@ -405,21 +402,18 @@ object RegionInventoryListener {
 
     val region = new ProtectedCuboidRegion(
       player.getName + "_" + playerData.regionCount,
-      selection.getNativeMinimumPoint.toBlockVector,
-      selection.getNativeMaximumPoint.toBlockVector
+      selection.getMinimumPoint,
+      selection.getMaximumPoint
     )
-    val regions = manager.getApplicableRegions(region)
 
-    if (regions.size() != 0) {
+    if (WorldGuardWrapper.isNotOverlapping(world, region)) {
       playerData.canCreateRegion = false
       return
     }
 
-    val maxRegionCount = wcfg.getMaxRegionCount(player)
+    val maxRegionCount = WorldGuardWrapper.getWorldMaxRegion(world)
     if (
-      maxRegionCount >= 0 && manager.getRegionCountOfPlayer(
-        Wg.wrapPlayer(player)
-      ) >= maxRegionCount
+      maxRegionCount >= 0 && WorldGuardWrapper.getMaxRegion(player, world) >= maxRegionCount
     ) {
       playerData.canCreateRegion = false
       return
