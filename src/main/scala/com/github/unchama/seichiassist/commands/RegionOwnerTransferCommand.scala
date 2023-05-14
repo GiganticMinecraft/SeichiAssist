@@ -37,7 +37,8 @@ object RegionOwnerTransferCommand {
         WorldGuardWrapper.findByRegionName(regionName)
 
       region match {
-        case Some(region) => attemptRegionTransfer(sender, newOwner, region.getRegion(regionName))
+        case Some(region) =>
+          attemptRegionTransfer(sender, newOwner, region.getRegion(regionName))
         case None => IO(MessageEffect(s"${regionName}という名前の保護は存在しません。"))
       }
     }
