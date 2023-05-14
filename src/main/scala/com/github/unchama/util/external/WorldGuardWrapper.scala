@@ -1,9 +1,10 @@
 package com.github.unchama.util.external
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter
+import com.sk89q.worldedit.regions.Region
 import com.sk89q.worldguard.{LocalPlayer, WorldGuard}
 import com.sk89q.worldguard.protection.managers.RegionManager
-import com.sk89q.worldguard.protection.regions.ProtectedRegion
+import com.sk89q.worldguard.protection.regions.{ProtectedCuboidRegion, ProtectedRegion}
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Player
@@ -33,6 +34,11 @@ object WorldGuardWrapper {
     worldGuard.getPlatform.getRegionContainer.get(BukkitAdapter.adapt(world)).getRegions.values().asScala.toList
   }
 
+  def isNotOverlapping(world: World, region: ProtectedCuboidRegion): Boolean = {
+    val regions = worldGuard.getPlatform.getRegionContainer.get(BukkitAdapter.adapt(world)).getRegions.values()
+    region.getIntersectingRegions(regions).size() <= 0
+  }
+
   def canBuild(p: Player, loc: Location): Boolean = {
     getRegion(loc).exists { region =>
       val player = wrapPlayer(p)
@@ -45,6 +51,14 @@ object WorldGuardWrapper {
 
   def removeByProtectedRegionRegion(world: World, region: ProtectedRegion): Unit = {
     worldGuard.getPlatform.getRegionContainer.get(BukkitAdapter.adapt(world)).removeRegion(region.getId)
+  }
+
+  def getMaxRegion(player: Player, world: World): Int = {
+    worldGuard.getPlatform.getGlobalStateManager.get(BukkitAdapter.adapt(world)).getMaxRegionCount(wrapPlayer(player))
+  }
+
+  def getWorldMaxRegion(world: World): Int = {
+    worldGuard.getPlatform.getGlobalStateManager.get(BukkitAdapter.adapt(world)).maxRegionCountPerPlayer
   }
 
   /**
