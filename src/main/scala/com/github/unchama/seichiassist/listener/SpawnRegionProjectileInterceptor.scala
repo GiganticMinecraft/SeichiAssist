@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.listener
 
-import com.github.unchama.util.external.WorldGuardWrapper.getRegions
+import com.github.unchama.util.external.WorldGuardWrapper.getRegion
 import org.bukkit.Material._
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
@@ -34,7 +34,7 @@ object SpawnRegionProjectileInterceptor extends Listener {
     val isRightClickEvent =
       action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK
     val isInSpawnRegion =
-      getRegions(player.getLocation).map(_.getId).exists(spawnRegionNames.contains)
+      getRegion(player.getLocation).map(_.getId).exists(spawnRegionNames.contains)
 
     // Projectileを持った状態で右クリックし、playerがいる保護がspawn保護の中であった場合はイベントをキャンセルする
     if (hasProjectile && isRightClickEvent && isInSpawnRegion) {

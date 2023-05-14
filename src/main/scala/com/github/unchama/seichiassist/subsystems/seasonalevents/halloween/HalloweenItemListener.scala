@@ -1,9 +1,15 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.halloween
 
-import com.github.unchama.seichiassist.subsystems.seasonalevents.halloween.Halloween.{END_DATE, blogArticleUrl, isInEvent}
-import com.github.unchama.seichiassist.subsystems.seasonalevents.halloween.HalloweenItemData.{isHalloweenHoe, isHalloweenPotion}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.halloween.Halloween.{
+  END_DATE,
+  blogArticleUrl,
+  isInEvent
+}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.halloween.HalloweenItemData.{
+  isHalloweenHoe,
+  isHalloweenPotion
+}
 import com.github.unchama.util.external.WorldGuardWrapper
-import com.github.unchama.util.external.WorldGuardWrapper.isRegionMember
 import org.bukkit.ChatColor.{DARK_GREEN, LIGHT_PURPLE, UNDERLINE}
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -67,9 +73,7 @@ object HalloweenItemListener extends Listener {
   }
 
   private def canBeReplacedWithSoil(player: Player, block: Block) = {
-    (block.getType == Material.FARMLAND || block.getType == Material.GRASS) && WorldGuardWrapper.isRegionMember(
-      player,
-      block.getLocation
-    )
+    (block.getType == Material.FARMLAND || block.getType == Material.GRASS) && WorldGuardWrapper
+      .isRegionMember(player, block.getLocation)
   }
 }
