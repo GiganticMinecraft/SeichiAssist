@@ -66,7 +66,7 @@ val providedDependencies = Seq(
   "com.mojang" % "authlib" % "1.5.25",
 
   // no runtime
-  "org.typelevel" %% "simulacrum" % "1.0.0"
+  "org.typelevel" %% "simulacrum" % "1.0.1"
 ).map(_ % "provided")
 
 val testDependencies = Seq(
