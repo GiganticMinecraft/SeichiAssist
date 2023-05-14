@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerTextureValue}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary.ANNIVERSARY_COUNT
 import com.github.unchama.seichiassist.util.EnchantNameToJapanese
-import de.tr7zw.itemnbtapi.NBTItem
+import de.tr7zw.nbtapi.NBTItem
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.Material._
