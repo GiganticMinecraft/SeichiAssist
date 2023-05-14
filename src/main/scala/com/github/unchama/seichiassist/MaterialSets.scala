@@ -239,7 +239,7 @@ object MaterialSets {
     Material.RED_SANDSTONE_SLAB,
     Material.SPONGE,
     Material.FARMLAND,
-    Material.GRASS_PATH,
+    Material.DIRT_PATH,
     Material.SPAWNER,
     Material.CRAFTING_TABLE,
     Material.FURNACE,
@@ -321,7 +321,7 @@ object MaterialSets {
 
   // これらのマテリアルを持つブロックは破壊を整地量に計上しない
   val exclude: Set[Material] = Set(
-    Material.GRASS_PATH,
+    Material.DIRT_PATH,
     Material.FARMLAND,
     Material.SPAWNER,
     Material.CAULDRON,

@@ -58,7 +58,7 @@ val providedDependencies = Seq(
   "org.jetbrains" % "annotations" % "17.0.0",
   "org.apache.commons" % "commons-lang3" % "3.9",
   "commons-codec" % "commons-codec" % "1.12",
-  "org.spigotmc" % "spigot-api" % "1.16.5-R0.1-SNAPSHOT",
+  "org.spigotmc" % "spigot-api" % "1.18.2-R0.1-SNAPSHOT",
   // https://maven.enginehub.org/repo/com/sk89q/worldedit/worldedit-bukkit/
   "com.sk89q.worldguard" % "worldguard-bukkit" % "7.0.5",
   "net.coreprotect" % "coreprotect" % "2.15.0",

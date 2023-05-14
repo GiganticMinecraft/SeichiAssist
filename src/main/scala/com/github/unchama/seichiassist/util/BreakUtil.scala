@@ -179,7 +179,7 @@ object BreakUtil {
     val (_, blockMaterial, blockData) = blockInformation
 
     blockMaterial match {
-      case Material.GRASS_PATH | Material.FARMLAND =>
+      case Material.DIRT_PATH | Material.FARMLAND =>
         return Some(BlockBreakResult.ItemDrop(new ItemStack(Material.DIRT)))
       case Material.SPAWNER | Material.END_PORTAL_FRAME | Material.END_PORTAL =>
         return None

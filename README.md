@@ -7,7 +7,7 @@
 - [AdoptOpenJDK 1.8](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot)
 - [Scala 2.13](https://www.scala-lang.org/download/)
 - [sbt 1.6](https://www.scala-sbt.org/1.x/docs/Setup.html)
-- Spigot 1.16.5
+- Spigot 1.18.2
 
 ## 前提プラグイン
 - [CoreProtect-2.15.0](https://www.spigotmc.org/resources/coreprotect.8631/download?version=231781)

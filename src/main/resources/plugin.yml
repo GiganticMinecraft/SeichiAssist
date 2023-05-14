@@ -2,7 +2,7 @@ name: @name@
 main: com.github.unchama.seichiassist.SeichiAssist
 version: @version@
 
-api-version: 1.16
+api-version: 1.18
 
 softdepend: [WorldGuard, CoreProtect, NBTAPI, Multiverse-Core, RegenWorld]
 
