@@ -72,7 +72,7 @@ services:
       - redis
     stdin_open: true
   bungeecord:
-    image: itzg/bungeecord:java8
+    image: itzg/bungeecord:java11
     ports:
       - "25565:25577"
     volumes:
