@@ -207,7 +207,10 @@ class PlayerBlockBreakListener(
         import cats.implicits._
         import com.github.unchama.concurrent.syntax._
         import com.github.unchama.generic.ContextCoercion._
-        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, cachedThreadPool}
+        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
+          asyncShift,
+          cachedThreadPool
+        }
 
         val effectPrograms = for {
           ((blocks, lavas, waters), chunkIndex) <-
