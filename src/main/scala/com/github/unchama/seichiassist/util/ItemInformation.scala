@@ -20,7 +20,7 @@ object ItemInformation {
 
     val skullMeta = itemStack.getItemMeta.asInstanceOf[SkullMeta]
 
-    if (!(skullMeta.hasOwner && skullMeta.getOwner == "unchama")) return false
+    if (!(skullMeta.hasOwner && skullMeta.getOwningPlayer.getName == "unchama")) return false
 
     skullMeta.hasLore && skullMeta.getLore.asScala.exists(containsRightClickMessage)
   }
