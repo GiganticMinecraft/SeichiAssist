@@ -49,7 +49,7 @@ class PlayerInventoryListener(
     // インベントリサイズが36でない時終了
     if (inventory.row != 4) return
 
-    if (inventory.getTitle != s"$LIGHT_PURPLE${BOLD}交換したい鉱石を入れてください") return
+    if (event.getView.getTitle != s"$LIGHT_PURPLE${BOLD}交換したい鉱石を入れてください") return
 
     /*
      * step1 for文でinventory内の対象商品の個数を計算
@@ -186,7 +186,7 @@ class PlayerInventoryListener(
     val uuid = player.getUniqueId
     val playerdata = playerMap(uuid)
 
-    if (topinventory.getTitle == DARK_PURPLE.toString + "" + BOLD + "スキルを進化させますか?") {
+    if (view.getTitle == DARK_PURPLE.toString + "" + BOLD + "スキルを進化させますか?") {
       event.setCancelled(true)
       if (itemstackcurrent.getType == Material.NETHER_STAR) {
         playerdata.giganticBerserk = GiganticBerserk(0, 0, playerdata.giganticBerserk.stage + 1)
@@ -194,7 +194,7 @@ class PlayerInventoryListener(
         player.playSound(player.getLocation, Sound.ENTITY_ENDER_DRAGON_AMBIENT, 1f, 0.8f)
         player.openInventory(MenuInventoryData.getGiganticBerserkAfterEvolutionMenu(player))
       }
-    } else if (topinventory.getTitle == LIGHT_PURPLE.toString + "" + BOLD + "スキルを進化させました") {
+    } else if (view.getTitle == LIGHT_PURPLE.toString + "" + BOLD + "スキルを進化させました") {
       event.setCancelled(true)
     }
 
