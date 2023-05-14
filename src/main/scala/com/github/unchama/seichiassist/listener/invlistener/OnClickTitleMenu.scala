@@ -69,7 +69,7 @@ object OnClickTitleMenu {
 
     val mat = current.getType
     val isSkull = mat == Material.PLAYER_HEAD
-    topInventory.getTitle match {
+    view.getTitle match {
       case MenuType.HEAD.invName =>
         event.setCancelled(true)
         mat match {
