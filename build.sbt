@@ -58,17 +58,11 @@ val providedDependencies = Seq(
   "org.jetbrains" % "annotations" % "24.0.1",
   "org.apache.commons" % "commons-lang3" % "3.12.0",
   "commons-codec" % "commons-codec" % "1.15",
-  "org.spigotmc" % "spigot-api" % "1.13.2-R0.1-SNAPSHOT",
+  "org.spigotmc" % "spigot-api" % "1.16.5-R0.1-SNAPSHOT",
   // https://maven.enginehub.org/repo/com/sk89q/worldedit/worldedit-bukkit/
-<<<<<<< HEAD
   "com.sk89q.worldguard" % "worldguard-bukkit" % "7.0.0",
   "net.coreprotect" % "coreprotect" % "2.15.0",
   "com.mojang" % "authlib" % "1.6.25",
-=======
-  "com.sk89q.worldguard" % "worldguard-bukkit" % "7.0.0",
-  "net.coreprotect" % "coreprotect" % "2.15.0",
-  "com.mojang" % "authlib" % "1.5.25",
->>>>>>> 32e0e0a7f (Update plugins)
 
   // no runtime
   "org.typelevel" %% "simulacrum" % "1.0.1"

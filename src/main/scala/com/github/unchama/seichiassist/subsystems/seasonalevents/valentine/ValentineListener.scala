@@ -56,7 +56,7 @@ class ValentineListener[F[_]: ConcurrentEffect: NonServerThreadContextShift](
     val damager = event.getDamager
     if (damager == null || damager.getType != EntityType.CREEPER) return
 
-    val excludedMonsters = Set(EntityType.WITCH, EntityType.PIG_ZOMBIE)
+    val excludedMonsters = Set(EntityType.WITCH, EntityType.ZOMBIFIED_PIGLIN)
     event.getEntity match {
       case damaged: Monster if !excludedMonsters.contains(damaged.getType) =>
         val entityMaxHealth = damaged.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue
