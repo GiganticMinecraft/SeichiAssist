@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.subsystems.seasonalevents.christmas
 
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas.EVENT_YEAR
 import de.tr7zw.itemnbtapi.NBTItem
+import de.tr7zw.nbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Color.fromRGB
 import org.bukkit.enchantments.Enchantment
