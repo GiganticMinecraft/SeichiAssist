@@ -156,11 +156,10 @@ class RegionInventoryListener extends Listener {
       return
     }
 
-    val itemstackcurrent = event.getCurrentItem
     val view = event.getView
-    val he = view.getPlayer
+    val opener = view.getPlayer
     // インベントリを開けたのがプレイヤーではない時終了
-    if (he.getType != EntityType.PLAYER) {
+    if (opener.getType != EntityType.PLAYER) {
       return
     }
 
@@ -176,12 +175,12 @@ class RegionInventoryListener extends Listener {
       /*
        * クリックしたボタンに応じた各処理内容の記述ここから
        */
-      val player = view.getPlayer.asInstanceOf[Player]
+      val player = opener.asInstanceOf[Player]
       val uuid = player.getUniqueId
       val playerData = playermap(uuid)
 
       // 戻るボタン
-      if (itemstackcurrent.getType == Material.BARRIER) {
+      if (event.getCurrentItem.getType == Material.BARRIER) {
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.openInventory(RegionMenuData.getGridWorldGuardMenu(player))
       } else {
