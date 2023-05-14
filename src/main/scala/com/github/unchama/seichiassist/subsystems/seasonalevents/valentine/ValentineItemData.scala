@@ -1,11 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.valentine
 
-import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine.{
-  END_DATE_TIME,
-  EVENT_DURATION,
-  EVENT_YEAR
-}
-import de.tr7zw.itemnbtapi.NBTItem
+import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine.{END_DATE_TIME, EVENT_DURATION, EVENT_YEAR}
+import de.tr7zw.nbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta

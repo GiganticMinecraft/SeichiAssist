@@ -6,7 +6,7 @@ import com.github.unchama.itemmigration.domain.{ItemMigration, ItemMigrationVers
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import com.github.unchama.seichiassist.subsystems.itemmigration.migrations.V1_0_0_MigrateMebiusToNewCodec.OldBukkitMebiusItemStackCodec.OldMebiusRawProperty
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec.NBTTagConstants
-import de.tr7zw.itemnbtapi.NBTItem
+import de.tr7zw.nbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack

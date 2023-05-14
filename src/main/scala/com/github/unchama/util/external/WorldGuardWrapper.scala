@@ -8,7 +8,6 @@ import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Player
 
-import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
 /**
