@@ -33,8 +33,7 @@ object System {
   import cats.implicits._
 
   def wired[F[_]: ConcurrentEffect: ContextShift, G[_]: SyncEffect: ContextCoercion[*[_], F]](
-    implicit effectEnvironment: EffectEnvironment,
-    logger: Logger
+    implicit logger: Logger
   ): G[System[F]] = for {
     migrations <- Sync[G].delay {
       implicit val syncIOUuidRepository: UuidRepository[SyncIO] =
