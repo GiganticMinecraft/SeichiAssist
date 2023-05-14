@@ -24,7 +24,6 @@ object V1_0_0_MigrateMebiusToNewCodec {
   // noinspection DuplicatedCode
   object OldBukkitMebiusItemStackCodec {
 
-    import de.tr7zw.itemnbtapi.NBTItem
     import org.bukkit.inventory.ItemStack
 
     private val mebiusLoreHead =

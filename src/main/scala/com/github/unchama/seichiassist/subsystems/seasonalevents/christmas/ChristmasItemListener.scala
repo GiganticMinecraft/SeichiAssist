@@ -7,12 +7,8 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
 import com.github.unchama.seichiassist.subsystems.seasonalevents.Util
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemData._
-import com.github.unchama.seichiassist.util.InventoryOperations.{
-  addItem,
-  dropItem,
-  isPlayerInventoryFull,
-  removeItemfromPlayerInventory
-}
+import com.github.unchama.seichiassist.util.InventoryOperations.{addItem, dropItem, isPlayerInventoryFull, removeItemfromPlayerInventory}
+import de.tr7zw.nbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.entity.EntityType._
 import org.bukkit.entity.{EntityType, LivingEntity, Player}
