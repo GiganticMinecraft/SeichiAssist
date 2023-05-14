@@ -310,7 +310,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(BUILDING, "flower_pot", "植木鉢", Material.FLOWER_POT, 0),
     MineStackObjectByMaterial(BUILDING, "hay_block", "干し草の俵", Material.HAY_BLOCK, 0),
     MineStackObjectByMaterial(BUILDING, "ladder", "はしご", Material.LADDER, 0),
-    MineStackObjectByMaterial(BUILDING, "sign", "看板", Material.SIGN, 0),
+    MineStackObjectByMaterial(BUILDING, "sign", "看板", Material.OAK_SIGN, 0), // 1.16からSIGNが素材ごとに別れたので、オークに決めうちしておく
     MineStackObjectByMaterial(BUILDING, "item_frame", "額縁", Material.ITEM_FRAME, 0),
     MineStackObjectByMaterial(BUILDING, "painting", "絵画", Material.PAINTING, 0),
     MineStackObjectByMaterial(BUILDING, "beacon", "ビーコン", Material.BEACON, 0),
@@ -505,16 +505,16 @@ class BukkitMineStackObjectList[F[_]: Sync](
       )
     ),
     MineStackObjectWithColorVariants(
-      MineStackObjectByMaterial(BUILDING, "dye_1", "赤色の染料", Material.ROSE_RED, 1),
+      MineStackObjectByMaterial(BUILDING, "dye_1", "赤色の染料", Material.RED_DYE, 1),
       List(
-        MineStackObjectByMaterial(BUILDING, "dye_2", "緑色の染料", Material.CACTUS_GREEN, 2),
+        MineStackObjectByMaterial(BUILDING, "dye_2", "緑色の染料", Material.GREEN_DYE, 2),
         MineStackObjectByMaterial(BUILDING, "dye_5", "紫色の染料", Material.PURPLE_DYE, 5),
         MineStackObjectByMaterial(BUILDING, "dye_6", "青緑色の染料", Material.CYAN_DYE, 6),
         MineStackObjectByMaterial(BUILDING, "dye_7", "薄灰色の染料", Material.LIGHT_GRAY_DYE, 7),
         MineStackObjectByMaterial(BUILDING, "dye_8", "灰色の染料", Material.GRAY_DYE, 8),
         MineStackObjectByMaterial(BUILDING, "dye_9", "桃色の染料", Material.PINK_DYE, 9),
         MineStackObjectByMaterial(BUILDING, "dye_10", "黄緑色の染料", Material.LIME_DYE, 10),
-        MineStackObjectByMaterial(BUILDING, "dye_11", "黄色の染料", Material.DANDELION_YELLOW, 11),
+        MineStackObjectByMaterial(BUILDING, "dye_11", "黄色の染料", Material.YELLOW_DYE, 11),
         MineStackObjectByMaterial(BUILDING, "dye_12", "空色の染料", Material.LIGHT_BLUE_DYE, 12),
         MineStackObjectByMaterial(BUILDING, "dye_13", "赤紫色の染料", Material.MAGENTA_DYE, 13),
         MineStackObjectByMaterial(BUILDING, "dye_14", "橙色の染料", Material.ORANGE_DYE, 14),
