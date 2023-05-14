@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.infrastructure
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.buildcount.application.Configuration
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.BuildAmountRateLimiterSnapshot
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountRateLimitPersistence
