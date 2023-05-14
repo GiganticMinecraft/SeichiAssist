@@ -163,10 +163,6 @@ class RegionInventoryListener extends Listener {
     if (he.getType != EntityType.PLAYER) {
       return
     }
-    val topinventory = view.getTopInventory.ifNull {
-      return
-    }
-    // インベントリが存在しない時終了
 
     // インベントリ名が以下の時処理
     if (view.getTitle == LIGHT_PURPLE.toString + "グリッド式保護・設定保存") {
