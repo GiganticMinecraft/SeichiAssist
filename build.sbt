@@ -60,7 +60,7 @@ val providedDependencies = Seq(
   "commons-codec" % "commons-codec" % "1.15",
   "org.spigotmc" % "spigot-api" % "1.16.5-R0.1-SNAPSHOT",
   // https://maven.enginehub.org/repo/com/sk89q/worldedit/worldedit-bukkit/
-  "com.sk89q.worldguard" % "worldguard-bukkit" % "7.0.0",
+  "com.sk89q.worldguard" % "worldguard-bukkit" % "7.0.5",
   "net.coreprotect" % "coreprotect" % "2.15.0",
   "com.mojang" % "authlib" % "1.6.25",
 
