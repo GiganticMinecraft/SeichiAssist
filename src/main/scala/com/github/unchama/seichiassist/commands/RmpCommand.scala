@@ -2,17 +2,13 @@ package com.github.unchama.seichiassist.commands
 
 import cats.effect.IO
 import com.github.unchama.contextualexecutor.builder.Parsers._
-import com.github.unchama.contextualexecutor.builder.{
-  ContextualExecutorBuilder,
-  ParserResponse,
-  ResponseEffectOrResult
-}
+import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, ParserResponse, ResponseEffectOrResult}
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
-import com.github.unchama.util.external.{ExternalPlugins, WorldGuardWrapper}
+import com.github.unchama.util.external.WorldGuardWrapper
 import com.sk89q.worldguard.protection.regions.ProtectedRegion
 import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, ConsoleCommandSender, TabExecutor}

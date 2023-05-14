@@ -2,7 +2,7 @@ package com.github.unchama.buildassist.listener
 
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, SyncEffect, SyncIO}
-import com.github.unchama.buildassist.{BuildAssist, Util}
+import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.IncrementBuildExpWhenBuiltWithSkill
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI

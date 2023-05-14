@@ -19,7 +19,7 @@ import com.github.unchama.seichiassist.util.BreakUtil.BlockBreakResult
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.effect.BukkitResources
-import com.github.unchama.util.external.{ExternalPlugins, WorldGuardWrapper}
+import com.github.unchama.util.external.WorldGuardWrapper
 import org.bukkit.ChatColor.RED
 import org.bukkit._
 import org.bukkit.block.Block
@@ -207,10 +207,7 @@ class PlayerBlockBreakListener(
         import cats.implicits._
         import com.github.unchama.concurrent.syntax._
         import com.github.unchama.generic.ContextCoercion._
-        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
-          asyncShift,
-          cachedThreadPool
-        }
+        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, cachedThreadPool}
 
         val effectPrograms = for {
           ((blocks, lavas, waters), chunkIndex) <-
