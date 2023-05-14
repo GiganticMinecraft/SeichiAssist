@@ -25,21 +25,6 @@ object ItemInformation {
     skullMeta.hasLore && skullMeta.getLore.asScala.exists(containsRightClickMessage)
   }
 
-  def itemStackContainsOwnerName(itemstack: ItemStack, name: String): Boolean = {
-    val meta = itemstack.getItemMeta
-
-    val lore: List[String] =
-      if (meta.hasLore)
-        meta.getLore.asScala.toList
-      else
-        Nil
-
-    lore.exists(line =>
-      line.contains("所有者：") && line.drop(line.indexOf("所有者：") + 4).toLowerCase == name
-        .toLowerCase()
-    )
-  }
-
   def isMineHeadItem(itemstack: ItemStack): Boolean = {
     itemstack.getType == Material.CARROT_ON_A_STICK &&
     loreIndexOf(itemstack.getItemMeta.getLore.asScala.toList, "頭を狩り取る形をしている...") >= 0
@@ -66,20 +51,6 @@ object ItemInformation {
     // プレイヤーの頭の場合，ドロップアイテムからItemStackを取得．データ値をPLAYERにして返す
     Some(block.getDrops.asScala.head.tap(_.setDurability(SkullType.PLAYER.ordinal.toShort)))
   }
-
-  /**
-   * 指定された`String`が指定された[[ItemStack]]のloreに含まれているかどうか
-   *
-   * @param itemStack
-   *   確認する`ItemStack`
-   * @param sentence
-   *   探す文字列
-   * @return
-   *   含まれていれば`true`、含まれていなければ`false`。ただし、`ItemStack`に`ItemMeta`と`Lore`のいずれかがなければfalse
-   */
-  def isContainedInLore(itemStack: ItemStack, sentence: String): Boolean =
-    if (!itemStack.hasItemMeta || !itemStack.getItemMeta.hasLore) false
-    else loreIndexOf(itemStack.getItemMeta.getLore.asScala.toList, sentence) >= 0
 
   /**
    * loreを捜査して、要素の中に`find`が含まれているかを調べる。
