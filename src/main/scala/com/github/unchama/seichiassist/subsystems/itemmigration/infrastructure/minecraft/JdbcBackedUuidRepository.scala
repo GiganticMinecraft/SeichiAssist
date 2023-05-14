@@ -54,6 +54,6 @@ object JdbcBackedUuidRepository {
     }
   }
 
-  def initializeInstance[F[_]: Sync](implicit logger: Logger): F[UuidRepository[F]] =
+  def initializeInstance[F[_]: Sync](): F[UuidRepository[F]] =
     initializeInstanceIn[F, F]
 }
