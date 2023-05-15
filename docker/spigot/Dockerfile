@@ -6,8 +6,6 @@ FROM itzg/minecraft-server:java11-jdk
 
 # JDKとnkfをインストール
 RUN apt-get update && apt-get install -y nkf \
-    nkf \
-    openjdk-8-jdk \
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/*
 
