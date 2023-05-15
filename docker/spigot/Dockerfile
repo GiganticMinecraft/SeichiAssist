@@ -4,7 +4,7 @@ FROM ghcr.io/giganticminecraft/seichiassist-runner:ba2aa54
 
 FROM itzg/minecraft-server:java11-jdk
 
-# JDKとnkfをインストール
+# nkfをインストール
 RUN apt-get update && apt-get install -y nkf \
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/*
