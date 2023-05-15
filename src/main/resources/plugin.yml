@@ -4,7 +4,7 @@ version: @version@
 
 api-version: 1.16
 
-softdepend: [WorldGuard, CoreProtect, NBTAPI, Multiverse-Core]
+softdepend: [WorldGuard, CoreProtect, NBTAPI, Multiverse-Core, RegenWorld]
 
 loadbefore:
   # ワールドマイグレーション時にこれらプラグインのタスクがworldへの参照を持ちデータのGCが行われなくなる
