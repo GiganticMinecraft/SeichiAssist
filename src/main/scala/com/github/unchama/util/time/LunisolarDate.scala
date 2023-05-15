@@ -1,20 +1,23 @@
 package com.github.unchama.util.time
 
-import java.time.{LocalDateTime, ZoneId}
+import java.time.Instant
 import ajd4jp.{AJD, LunisolarYear}
+import cats.Functor
+import cats.effect.Clock
+import cats.implicits._
 
 object LunisolarDate {
 
   /**
    * 現在日時から旧暦の日付を返します。
    */
-  def now(): LunisolarDate = of(LocalDateTime.now())
+  def now[F[_]: Clock: Functor]: F[LunisolarDate] = Clock[F].instantNow.map(of)
 
   /**
-   * 指定したLocalDateTimeから旧暦の日付を返します。タイムゾーンは実行マシン依存です。
+   * 指定したInstantから旧暦の日付を返します。
    */
-  def of(t: LocalDateTime): LunisolarDate = {
-    val ajd = new AJD(t.toInstant(ZoneId.systemDefault.getRules.getOffset(t)))
+  def of(instant: Instant): LunisolarDate = {
+    val ajd = new AJD(instant)
     val lunisolarDate = LunisolarYear.getLunisolarYear(ajd).getLSCD(ajd)
     LunisolarDate(
       lunisolarDate.getYear,
@@ -23,7 +26,6 @@ object LunisolarDate {
       lunisolarDate.getDay
     )
   }
-
 }
 
 /**

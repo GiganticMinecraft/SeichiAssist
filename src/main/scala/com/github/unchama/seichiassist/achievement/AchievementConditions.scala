@@ -1,18 +1,20 @@
 package com.github.unchama.seichiassist.achievement
 
-import cats.effect.IO
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.clock
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
 import com.github.unchama.util.time.LunisolarDate
+import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 
 import java.time.temporal.TemporalAdjusters
-import java.time.{DayOfWeek, LocalDate, LocalTime, Month}
+import java.time.{DayOfWeek, LocalDate, LocalDateTime, Month, ZoneId}
 import scala.concurrent.duration.FiniteDuration
 
 object AchievementConditions {
@@ -137,16 +139,23 @@ object AchievementConditions {
     dayOfMonthLunisolar: Int,
     dateSpecification: String
   ): AchievementCondition[String] = {
-    val predicate: PlayerPredicate = _ =>
-      IO {
-        val lunisolarDate = LunisolarDate.now()
+    val predicate: PlayerPredicate = _ => {
+      val program: SyncIO[Boolean] = for {
+        lunisolarDate <- LunisolarDate.now
+      } yield {
         lunisolarDate.month == monthLunisolar &&
         lunisolarDate.isLeapMonth == isLeapMonth &&
         lunisolarDate.dayOfMonth == dayOfMonthLunisolar
       }
 
+      program.toIO
+    }
+
     AchievementCondition(predicate, _ + "にプレイ", dateSpecification)
   }
+
+  private def localDatetimeWithSystemTimezone[F[_]: JavaTime]: F[LocalDateTime] =
+    JavaTime[F].getLocalDateTime(ZoneId.systemDefault())
 
   def playedOn(
     month: Month,
@@ -154,10 +163,9 @@ object AchievementConditions {
     dateSpecification: String
   ): AchievementCondition[String] = {
     val predicate: PlayerPredicate = _ =>
-      IO {
-        LocalDate.now().getMonth == month &&
-        LocalDate.now().getDayOfMonth == dayOfMonth
-      }
+      localDatetimeWithSystemTimezone
+        .map(now => now.getMonth == month && now.getDayOfMonth == dayOfMonth)
+        .toIO
 
     AchievementCondition(predicate, _ + "にプレイ", dateSpecification)
   }
@@ -168,39 +176,37 @@ object AchievementConditions {
     dayOfWeek: DayOfWeek,
     dateSpecification: String
   ): AchievementCondition[String] = {
-    val predicate: PlayerPredicate = _ =>
-      IO {
-        val now = LocalDate.now()
-
+    val predicate: PlayerPredicate = _ => {
+      localDatetimeWithSystemTimezone.map { now =>
         // 現在の月の第[[weekOfMonth]][[dayOfWeek]]曜日
         val dayOfWeekOnWeekOfTheMonth =
           now.`with`(TemporalAdjusters.dayOfWeekInMonth(weekOfMonth, dayOfWeek))
 
         now.getMonth == month && now == dayOfWeekOnWeekOfTheMonth
-      }
+      }.toIO
+    }
 
     AchievementCondition(predicate, _ + "にプレイ", dateSpecification)
   }
 
   def playedOn(holiday: NamedHoliday): AchievementCondition[String] = {
-    val predicate: PlayerPredicate = _ =>
-      IO {
-        val now = LocalDate.now()
+    val predicate: PlayerPredicate = _ => {
+      localDatetimeWithSystemTimezone.map { now =>
         val target = holiday.dateOn(now.getYear)
 
         now.getMonth == target.getMonth && now.getDayOfMonth == target.getDayOfMonth
-      }
+      }.toIO
+    }
 
     AchievementCondition(predicate, _ + "にプレイ", holiday.name)
   }
 
   object SecretAchievementConditions {
     val conditionFor8001: HiddenAchievementCondition[Unit] = {
-      val shouldDisplay: PlayerPredicate = { _ =>
-        IO {
-          LocalTime.now().getSecond == 0 && LocalTime.now().getMinute == 0
-        }
-      }
+      val shouldDisplay: PlayerPredicate = _ =>
+        localDatetimeWithSystemTimezone
+          .map(now => now.getSecond == 0 && now.getMinute == 0)
+          .toIO
 
       val shouldUnlock: PlayerPredicate = { player =>
         IO {

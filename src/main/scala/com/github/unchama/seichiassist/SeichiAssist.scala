@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import cats.Parallel.Aux
 import cats.effect
 import cats.effect.concurrent.Ref
-import cats.effect.{Clock, ConcurrentEffect, Fiber, IO, SyncIO, Timer}
+import cats.effect.{ConcurrentEffect, Fiber, IO, SyncIO, Timer}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.buildassist.menu.BuildAssistMenuRouter
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
@@ -246,12 +246,10 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val buildCountSystem: subsystems.buildcount.System[IO, SyncIO] = {
-    import PluginExecutionContexts.asyncShift
+    import PluginExecutionContexts.{asyncShift, clock}
 
     implicit val configuration: subsystems.buildcount.application.Configuration =
       seichiAssistConfig.buildCountConfiguration
-
-    implicit val syncIoClock: Clock[SyncIO] = Clock.create
 
     implicit val globalNotification: DiscordNotificationAPI[IO] =
       discordNotificationSystem.globalNotification
@@ -348,10 +346,9 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val mebiusSystem: Subsystem[IO] = {
-    import PluginExecutionContexts.{onMainThread, sleepAndRoutineContext, timer}
+    import PluginExecutionContexts.{onMainThread, sleepAndRoutineContext, timer, clock}
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
-    implicit val syncClock: Clock[SyncIO] = Clock.create[SyncIO]
     implicit val syncSeasonalEventsSystemAPI: SeasonalEventsAPI[SyncIO] =
       seasonalEventsSystem.api[SyncIO]
 
