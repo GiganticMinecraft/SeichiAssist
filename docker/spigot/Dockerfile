@@ -2,7 +2,7 @@
 FROM ghcr.io/giganticminecraft/chunk-search-rs:sha-f1943b1 as chunk-search-provider
 FROM ghcr.io/giganticminecraft/seichiassist-runner:ba2aa54
 
-FROM itzg/minecraft-server:java11-jdk
+FROM itzg/minecraft-server:java17-jdk
 
 # nkfをインストール
 RUN apt-get update && apt-get install -y nkf \
