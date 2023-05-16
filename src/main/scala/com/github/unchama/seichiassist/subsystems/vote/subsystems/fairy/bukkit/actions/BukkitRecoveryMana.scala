@@ -22,6 +22,7 @@ import org.bukkit.inventory.ItemStack
 
 import java.time.ZoneId
 import java.util.UUID
+import scala.concurrent.duration.{DurationInt, FiniteDuration}
 import scala.util.Random
 
 class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion[*[_], F]](
@@ -37,17 +38,19 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
 
   import cats.implicits._
 
-  override def recovery(seconds: Int): F[Unit] =
+  override def recovery(consumptionPeriod: FiniteDuration): F[Unit] =
     for {
       isFairyUsing <- fairyPersistence.isFairyUsing(uuid)
       fairyEndTimeOpt <- fairyPersistence.fairyEndTime(uuid)
       consumeStrategy <- fairyPersistence.appleConsumeStrategy(uuid)
       isRecoverTiming = consumeStrategy match {
-        case FairyAppleConsumeStrategy.Permissible                                      => true
-        case FairyAppleConsumeStrategy.Consume if seconds % 60 == 0 && seconds != 0     => true
-        case FairyAppleConsumeStrategy.LessConsume if seconds % 90 == 0 && seconds != 0 => true
-        case FairyAppleConsumeStrategy.NoConsume if seconds % 120 == 0 && seconds != 0  => true
-        case _                                                                          => false
+        case FairyAppleConsumeStrategy.Permissible                               => true
+        case FairyAppleConsumeStrategy.Consume if consumptionPeriod == 1.minutes => true
+        case FairyAppleConsumeStrategy.LessConsume
+            if consumptionPeriod == 1.minutes + 30.seconds =>
+          true
+        case FairyAppleConsumeStrategy.NoConsume if consumptionPeriod == 2.minutes => true
+        case _                                                                     => false
       }
       nonRecoveredManaAmount <- ContextCoercion {
         manaApi.readManaAmount(player)

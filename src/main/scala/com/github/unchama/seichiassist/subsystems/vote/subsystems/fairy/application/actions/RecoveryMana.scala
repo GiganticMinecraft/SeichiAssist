@@ -1,11 +1,13 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions
 
+import scala.concurrent.duration.FiniteDuration
+
 trait RecoveryMana[F[_]] {
 
   /**
    * @return 妖精がマナを回復する作用
    */
-  def recovery(seconds: Int): F[Unit]
+  def recovery(consumptionPeriod: FiniteDuration): F[Unit]
 
 }
 
