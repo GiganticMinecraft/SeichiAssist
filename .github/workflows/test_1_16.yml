@@ -17,6 +17,7 @@ jobs:
   build_test_and_upload:
     env:
       BUILD_ENVIRONMENT_IS_CI_OR_LOCAL: "CI"
+      JVM_OPTS: "-XX:+UnlockExperimentalVMOptions -XX:-UseJVMCICompiler"
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout repository
