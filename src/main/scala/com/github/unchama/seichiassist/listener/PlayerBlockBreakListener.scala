@@ -86,7 +86,11 @@ class PlayerBlockBreakListener(
       )
 
     // 耐久値がマイナスかつ耐久無限ツールでない時処理を終了
-    if (tool.getItemMeta.asInstanceOf[Damageable].getDamage > tool.getType.getMaxDurability && !tool.getItemMeta.isUnbreakable)
+    if (
+      tool.getItemMeta.asInstanceOf[Damageable].getDamage > tool
+        .getType
+        .getMaxDurability && !tool.getItemMeta.isUnbreakable
+    )
       return
 
     // もしサバイバルでなければ、またはフライ中なら終了
@@ -274,7 +278,7 @@ class PlayerBlockBreakListener(
 
         // ツールの耐久値を減らす
         val adjustManaAndDurability = IO {
-          if (!tool.getItemMeta.isUnbreakable){
+          if (!tool.getItemMeta.isUnbreakable) {
             val meta = tool.getItemMeta
             meta.asInstanceOf[Damageable].setDamage(toolDamageToSet)
             tool.setItemMeta(meta)
@@ -353,7 +357,7 @@ class PlayerBlockBreakListener(
     }
     if (b.getType ne Material.STONE_SLAB) return
     if (b.getY > 5) return
-    if (b.getData != 0) return
+    if (b.asInstanceOf[Slab].getType != Slab.Type.BOTTOM) return
     if (!world.isSeichi) return
     event.setCancelled(true)
     p.sendMessage(s"${RED}Y5以下に敷かれたハーフブロックは破壊不可能です。")
