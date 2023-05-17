@@ -1,0 +1,39 @@
+name: Build and deploy
+
+on:
+  push:
+    branches:
+      - update_1_16
+    paths:
+      - src/**
+      - build.sbt
+      - .scalafix.conf
+      - .scalafmt.conf
+      - project/*
+      - .github/workflows/**.yml
+      - .github/actions/**/**.yml
+
+jobs:
+  build_test_and_upload:
+    env:
+      BUILD_ENVIRONMENT_IS_CI_OR_LOCAL: "CI"
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+          cache: 'sbt'
+
+      - name: Check format with Scalafmt
+        run: sbt scalafmtCheckAll
+
+      - name: Check lint with Scalafix on push
+        run: sbt "scalafix --check"
+
+      - name: Test and build artifact
+        run: sbt assembly
