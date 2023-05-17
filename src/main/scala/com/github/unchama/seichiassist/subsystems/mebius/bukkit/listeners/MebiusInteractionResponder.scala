@@ -6,10 +6,7 @@ import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.subsystems.mebius.domain.resources.MebiusMessages
-import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{
-  MebiusSpeech,
-  MebiusSpeechStrength
-}
+import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{MebiusSpeech, MebiusSpeechStrength}
 import com.github.unchama.seichiassist.subsystems.mebius.service.MebiusSpeechService
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -21,6 +18,7 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.entity.{EntityDamageByEntityEvent, EntityDeathEvent}
 import org.bukkit.event.player.PlayerItemBreakEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
+import org.bukkit.inventory.meta.Damageable
 
 class MebiusInteractionResponder(
   implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]],
@@ -40,7 +38,7 @@ class MebiusInteractionResponder(
 
         val speechService = serviceRepository(player)
 
-        val messageProgram = if (helmet.getDurability >= helmet.getType.getMaxDurability - 10) {
+        val messageProgram = if (helmet.getItemMeta.asInstanceOf[Damageable].getDamage >= helmet.getType.getMaxDurability - 10) {
           MebiusMessages.onDamageBreaking.pickOne[SyncIO].flatMap { message =>
             // 耐久閾値を超えていたら破損警告
             speechService.tryMakingSpeech(
