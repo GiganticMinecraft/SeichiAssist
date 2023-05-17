@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.{Bukkit, Material}
 
-import java.time.LocalDateTime
+import java.time.{LocalDateTime, ZoneOffset}
 import java.util.UUID
 import scala.jdk.CollectionConverters._
 import scala.util.chaining._
@@ -43,9 +43,12 @@ object ValentineItemData {
    */
   def isUsableCookie(item: ItemStack): Boolean = {
     val now = LocalDateTime.now()
-    val exp = Option(
-      new NBTItem(item).getObject(NBTTagConstants.expiryDateTimeTag, classOf[LocalDateTime])
-    ).getOrElse(return false)
+    val exp = LocalDateTime.ofEpochSecond(
+      Option(new NBTItem(item).getLong(NBTTagConstants.expiryDateTimeTag))
+        .getOrElse(return false),
+      0,
+      ZoneOffset.of("JST")
+    )
     now.isBefore(exp) || now.isEqual(exp)
   }
 
@@ -74,7 +77,10 @@ object ValentineItemData {
       .tap { item =>
         import item._
         setByte(NBTTagConstants.typeIdTag, droppedCookieTypeId.toByte)
-        setObject(NBTTagConstants.expiryDateTimeTag, EVENT_DURATION.to)
+        setLong(
+          NBTTagConstants.expiryDateTimeTag,
+          EVENT_DURATION.to.toEpochSecond(ZoneOffset.of("JST"))
+        )
       }
       .pipe(_.getItem)
   }
@@ -113,8 +119,11 @@ object ValentineItemData {
       .tap { item =>
         import item._
         setByte(NBTTagConstants.typeIdTag, giftedCookieTypeId.toByte)
-        setObject(NBTTagConstants.expiryDateTimeTag, EVENT_DURATION.to)
-        setObject(NBTTagConstants.producerUuidTag, playerUuid)
+        setLong(
+          NBTTagConstants.expiryDateTimeTag,
+          EVENT_DURATION.to.toEpochSecond(ZoneOffset.of("JST"))
+        )
+        setUUID(NBTTagConstants.producerUuidTag, playerUuid)
         setString(NBTTagConstants.producerNameTag, playerName)
       }
       .pipe(_.getItem)
@@ -128,7 +137,7 @@ object ValentineItemData {
    * @return UUIDが設定されていれば[[Some]]、なければ[[None]]
    */
   def ownerOf(item: ItemStack): Option[UUID] =
-    Option(new NBTItem(item).getObject(NBTTagConstants.producerUuidTag, classOf[UUID]))
+    Option(new NBTItem(item).getOrNull[UUID](NBTTagConstants.producerUuidTag, classOf[UUID]))
 
   def deathMessages(playerName: String, cookieProducerName: String): Seq[String] = Seq(
     s"${playerName}は${cookieProducerName}のチョコチップクッキーを食べた！猟奇的な味だった。",
