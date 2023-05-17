@@ -56,7 +56,7 @@ class SeizonsikiListener[F[_], G[_]: SyncEffect](implicit manaApi: ManaWriteApi[
 
     val player = event.getPlayer
     val today = LocalDate.now()
-    val exp = new NBTItem(item).getObject(NBTTagConstants.expiryDateTag, classOf[LocalDate])
+    val exp = LocalDate.ofEpochDay(new NBTItem(item).getLong(NBTTagConstants.expiryDateTag))
     if (today.isBefore(exp)) {
       // マナを10%回復する
       manaApi.manaAmount(player).restoreFraction(0.1).runSync[SyncIO].unsafeRunSync()
