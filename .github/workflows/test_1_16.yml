@@ -30,10 +30,10 @@ jobs:
           cache: 'sbt'
 
       - name: Check format with Scalafmt
-        run: sbt scalafmtCheckAll
+        run: ./sbt scalafmtCheckAll
 
       - name: Check lint with Scalafix on push
-        run: sbt "scalafix --check"
+        run: ./sbt "scalafix --check"
 
       - name: Test and build artifact
-        run: sbt assembly
+        run: ./sbt assembly
