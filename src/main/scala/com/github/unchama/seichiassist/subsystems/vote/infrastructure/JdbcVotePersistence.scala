@@ -100,7 +100,7 @@ class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
     }
   }
 
-  override def increaseVoteBenefits(uuid: UUID, benefit: VoteBenefit): F[Unit] = Sync[F].delay {
+  override def claim(uuid: UUID, benefit: VoteCountForReceive): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
       sql"UPDATE vote SET given_effect_point = given_effect_point + ${benefit.value} WHERE uuid = ${uuid.toString}"
         .execute()
@@ -108,14 +108,14 @@ class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
     }
   }
 
-  override def receivedVoteBenefits(uuid: UUID): F[VoteBenefit] = Sync[F].delay {
+  override def receivedVoteBenefits(uuid: UUID): F[VoteCountForReceive] = Sync[F].delay {
     DB.readOnly { implicit session =>
       val benefits = sql"SELECT given_effect_point FROM vote WHERE uuid = ${uuid.toString}"
         .map(_.int("given_effect_point"))
         .single()
         .apply()
         .get
-      VoteBenefit(benefits)
+      VoteCountForReceive(benefits)
     }
   }
 }

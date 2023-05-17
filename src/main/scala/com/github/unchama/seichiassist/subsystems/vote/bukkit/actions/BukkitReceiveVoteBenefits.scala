@@ -9,7 +9,7 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.factories.Bu
 import com.github.unchama.seichiassist.subsystems.vote.application.actions.ReceiveVoteBenefits
 import com.github.unchama.seichiassist.subsystems.vote.domain.{
   EffectPoint,
-  VoteBenefit,
+  VoteCountForReceive,
   VotePersistence
 }
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
@@ -29,23 +29,24 @@ class BukkitReceiveVoteBenefits[F[_]: OnMinecraftServerThread: Sync, G[
     for {
       totalVote <- votePersistence.currentVoteCount(uuid)
       receivedVote <- votePersistence.receivedVoteBenefits(uuid)
-      pendingCount = VoteBenefit(totalVote.value - receivedVote.value)
-      // 受け取ってない分を受け取ったことにする
-      _ <- votePersistence.increaseVoteBenefits(uuid, pendingCount)
+      pendingCount = VoteCountForReceive(totalVote.value - receivedVote.value)
+      // cap at 64 (#1816)
+      toBeClaimed = pendingCount.min(VoteCountForReceive(64))
+      _ <- votePersistence.claim(uuid, toBeClaimed)
       playerLevel <- ContextCoercion(breakCountAPI.seichiAmountDataRepository(player).read.map {
         _.levelCorrespondingToExp.level
       })
-      gachaTicketAmount = Seq.fill(10 * pendingCount.value)(BukkitGachaSkullData.gachaForVoting)
-      additionalVoteBenefit = Seq.fill(pendingCount.value)(
+      gachaTicketAmount = Seq.fill(10 * toBeClaimed.value)(BukkitGachaSkullData.gachaForVoting)
+      additionalVoteBenefit = Seq.fill(toBeClaimed.value)(
         if (playerLevel < 50) ItemData.getSuperPickaxe(1)
         else ItemData.getVotingGift(1)
       )
       grantItems = gachaTicketAmount ++ additionalVoteBenefit
       _ <- {
         ContextCoercion(votePersistence.increaseEffectPoints(uuid, EffectPoint(10)))
-          .replicateA(pendingCount.value) >>
+          .replicateA(toBeClaimed.value) >>
           grantItemStacksEffect[F](grantItems: _*).apply(player)
-      }.whenA(pendingCount.value != 0)
+      }.whenA(toBeClaimed.value != 0)
     } yield ()
   }
 
