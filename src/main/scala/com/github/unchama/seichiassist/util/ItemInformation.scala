@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.util
 
 import org.bukkit.ChatColor.GREEN
-import org.bukkit.block.{Block, Skull}
-import org.bukkit.{Material, SkullType}
+import org.bukkit.block.Block
+import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 
@@ -11,7 +11,6 @@ import java.util.stream.IntStream
 object ItemInformation {
 
   import scala.jdk.CollectionConverters._
-  import scala.util.chaining._
 
   def isGachaTicket(itemStack: ItemStack): Boolean = {
     val containsRightClickMessage: String => Boolean = _.contains(s"${GREEN}右クリックで使えます")

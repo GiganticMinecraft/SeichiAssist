@@ -15,7 +15,6 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.util.BreakUtil
-import com.github.unchama.seichiassist.util.BreakUtil.BlockBreakResult
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.effect.BukkitResources
@@ -31,6 +30,7 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import org.bukkit.inventory.ItemStack
 
 import scala.collection.mutable.ArrayBuffer
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.util.control.Breaks
 
 class PlayerBlockBreakListener(
@@ -303,42 +303,28 @@ class PlayerBlockBreakListener(
       SeichiAssist.instance.breakCountSystem.api.incrementSeichiExp.of(player, amount).toIO
     )
 
-    val tool: BreakTool = MaterialSets
-      .refineItemStack(player.getInventory.getItemInMainHand, MaterialSets.breakToolMaterials)
-      .getOrElse(
-        return
-      )
-
-    /**
-     * 手彫りで破壊したアイテムを直接MineStackに入れる
-     * 一つのBlockBreakEventから複数の種類のアイテムが出てくることはない。
-     * チェスト等のインベントリスロットのあるブロック`b`を破壊したときは、
-     * 破壊された`b`のみが`BlockBreakEvent`のドロップ対象となるため、
-     * 中身のドロップがキャンセルされることはない。
-     */
-    val drops = BreakUtil
-      .dropItemOnTool(tool)((block.getLocation(), block.getType, block.getData))
-      .getOrElse(
-        return
-      )
-
-    drops match {
-      case BlockBreakResult.ItemDrop(itemStack) =>
-        val program = for {
-          currentAutoMineStackState <- mineStackAPI.autoMineStack(player)
-          isSucceedTryIntoMineStack <- whenAOrElse(currentAutoMineStackState)(
+    val program = for {
+      currentAutoMineStackState <- mineStackAPI.autoMineStack(player)
+      isSucceedTryIntoMineStack <- whenAOrElse(currentAutoMineStackState)(
+        event
+          .getBlock
+          .getDrops(player.getInventory.getItemInMainHand)
+          .asScala
+          .toList
+          .traverse { itemStack =>
             mineStackAPI
               .mineStackRepository
-              .tryIntoMineStack(player, itemStack, itemStack.getAmount),
-            false
-          )
-        } yield {
-          if (isSucceedTryIntoMineStack) event.setDropItems(false)
-          else ()
-        }
-        program.unsafeRunSync()
-      case _ => ()
+              .tryIntoMineStack(player, itemStack, itemStack.getAmount)
+          }
+          .map(_.forall(_ == true)),
+        false
+      )
+    } yield {
+      if (isSucceedTryIntoMineStack) event.setDropItems(false)
+      else ()
     }
+    program.unsafeRunSync()
+
   }
 
   /**
