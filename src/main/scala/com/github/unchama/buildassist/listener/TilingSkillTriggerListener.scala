@@ -49,10 +49,7 @@ class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[
     ) return
 
     val clickedBlock = event.getClickedBlock
-    val offHandItemSelector = offHandItem.getData.getData
-    if (
-      !(offHandItem.getType == clickedBlock.getType && offHandItemSelector == clickedBlock.getData)
-    ) {
+    if (!(offHandItem.getType == clickedBlock.getType)) {
       player.sendMessage(s"$RED「オフハンドと同じブロック」をクリックしてください。(基準になります)")
       return
     }

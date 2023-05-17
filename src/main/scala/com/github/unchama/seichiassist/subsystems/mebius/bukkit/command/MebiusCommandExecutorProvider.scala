@@ -63,8 +63,7 @@ class MebiusCommandExecutorProvider(
                 SequentialEffect(
                   UnfocusedEffect {
                     player.getInventory.setHelmet {
-                      BukkitMebiusItemStackCodec
-                        .materialize(newProperty, damageValue = helmet.getDurability)
+                      BukkitMebiusItemStackCodec.materialize(newProperty)
                     }
                   },
                   additionalEffectsOnModification(newProperty)
@@ -121,7 +120,7 @@ class MebiusCommandExecutorProvider(
             if (property.level.isMaximum) {
               val newProperty = property.toggleForcedMaterial
               val newItem =
-                BukkitMebiusItemStackCodec.materialize(newProperty, mainHand.getDurability)
+                BukkitMebiusItemStackCodec.materialize(newProperty)
 
               val newMaterialName = newProperty.forcedMaterial match {
                 case MebiusForcedMaterial.None    => "ダイヤモンド"
