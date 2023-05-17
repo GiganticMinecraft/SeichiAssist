@@ -40,7 +40,7 @@ trait VoteReadAPI[F[_], Player] {
   /**
    * @return 投票特典を受け取った回数を返す作用
    */
-  def receivedVoteBenefits(uuid: UUID): F[VoteCountForReceive]
+  def receivedVoteBenefits(uuid: UUID): F[ReceivedVoteCount]
 
 }
 

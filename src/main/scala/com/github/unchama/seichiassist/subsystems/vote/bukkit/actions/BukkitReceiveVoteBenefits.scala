@@ -9,7 +9,7 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.factories.Bu
 import com.github.unchama.seichiassist.subsystems.vote.application.actions.ReceiveVoteBenefits
 import com.github.unchama.seichiassist.subsystems.vote.domain.{
   EffectPoint,
-  VoteCountForReceive,
+  ReceivedVoteCount,
   VotePersistence
 }
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
@@ -28,10 +28,10 @@ class BukkitReceiveVoteBenefits[F[_]: OnMinecraftServerThread: Sync, G[
     val uuid = player.getUniqueId
     for {
       totalVote <- votePersistence.currentVoteCount(uuid)
-      receivedVote <- votePersistence.receivedVoteBenefits(uuid)
-      pendingCount = VoteCountForReceive(totalVote.value - receivedVote.value)
+      receivedVote <- votePersistence.receivedCount(uuid)
+      pendingCount = ReceivedVoteCount(totalVote.value - receivedVote.value)
       // cap at 64 (#1816)
-      toBeClaimed = pendingCount.min(VoteCountForReceive(64))
+      toBeClaimed = pendingCount.min(ReceivedVoteCount(64))
       _ <- votePersistence.claim(uuid, toBeClaimed)
       playerLevel <- ContextCoercion(breakCountAPI.seichiAmountDataRepository(player).read.map {
         _.levelCorrespondingToExp.level
