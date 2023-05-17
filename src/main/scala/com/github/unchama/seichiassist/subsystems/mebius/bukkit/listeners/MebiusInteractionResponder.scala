@@ -6,7 +6,10 @@ import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.subsystems.mebius.domain.resources.MebiusMessages
-import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{MebiusSpeech, MebiusSpeechStrength}
+import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{
+  MebiusSpeech,
+  MebiusSpeechStrength
+}
 import com.github.unchama.seichiassist.subsystems.mebius.service.MebiusSpeechService
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -38,32 +41,37 @@ class MebiusInteractionResponder(
 
         val speechService = serviceRepository(player)
 
-        val messageProgram = if (helmet.getItemMeta.asInstanceOf[Damageable].getDamage >= helmet.getType.getMaxDurability - 10) {
-          MebiusMessages.onDamageBreaking.pickOne[SyncIO].flatMap { message =>
-            // 耐久閾値を超えていたら破損警告
-            speechService.tryMakingSpeech(
-              mebiusProperty,
-              MebiusSpeech(
-                message.interpolate(mebiusProperty.ownerNickname),
-                MebiusSpeechStrength.Medium
-              )
-            )
-          }
-        } else
-          event.getDamager match {
-            case monster: Monster =>
-              // モンスターからダメージを受けた場合の対モンスターメッセージ
-              MebiusMessages.onDamageWarnEnemy.pickOne[SyncIO].flatMap { message =>
-                speechService.tryMakingSpeech(
-                  mebiusProperty,
-                  MebiusSpeech(
-                    message.interpolate(mebiusProperty.ownerNickname, monster.getName),
-                    MebiusSpeechStrength.Medium
-                  )
+        val messageProgram =
+          if (
+            helmet.getItemMeta.asInstanceOf[Damageable].getDamage >= helmet
+              .getType
+              .getMaxDurability - 10
+          ) {
+            MebiusMessages.onDamageBreaking.pickOne[SyncIO].flatMap { message =>
+              // 耐久閾値を超えていたら破損警告
+              speechService.tryMakingSpeech(
+                mebiusProperty,
+                MebiusSpeech(
+                  message.interpolate(mebiusProperty.ownerNickname),
+                  MebiusSpeechStrength.Medium
                 )
-              }
-            case _ => SyncIO.unit
-          }
+              )
+            }
+          } else
+            event.getDamager match {
+              case monster: Monster =>
+                // モンスターからダメージを受けた場合の対モンスターメッセージ
+                MebiusMessages.onDamageWarnEnemy.pickOne[SyncIO].flatMap { message =>
+                  speechService.tryMakingSpeech(
+                    mebiusProperty,
+                    MebiusSpeech(
+                      message.interpolate(mebiusProperty.ownerNickname, monster.getName),
+                      MebiusSpeechStrength.Medium
+                    )
+                  )
+                }
+              case _ => SyncIO.unit
+            }
 
         messageProgram.unsafeRunSync()
       case _ =>
