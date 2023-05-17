@@ -49,7 +49,6 @@ resolvers ++= Seq(
   "hub.spigotmc.org" at "https://hub.spigotmc.org/nexus/content/repositories/snapshots",
   "oss.sonatype.org" at "https://oss.sonatype.org/content/repositories/snapshots",
   "nexus.okkero.com" at "https://nexus.okkero.com/repository/maven-releases/",
-  "repo.phoenix616.dev" at "https://repo.phoenix616.dev", // authlibのための
   // ajd4jpのミラーのため
   "jitpack.io" at "https://jitpack.io"
 )
@@ -62,7 +61,7 @@ val providedDependencies = Seq(
   // https://maven.enginehub.org/repo/com/sk89q/worldedit/worldedit-bukkit/
   "com.sk89q.worldguard" % "worldguard-bukkit" % "7.0.5",
   "net.coreprotect" % "coreprotect" % "2.15.0",
-  "com.mojang" % "authlib" % "1.5.25",
+  "com.mojang" % "authlib" % "3.11.50",
 
   // no runtime
   "org.typelevel" %% "simulacrum" % "1.0.1"
