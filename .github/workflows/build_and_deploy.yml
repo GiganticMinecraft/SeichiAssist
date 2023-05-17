@@ -30,52 +30,18 @@ jobs:
   build_test_and_upload:
     env:
       BUILD_ENVIRONMENT_IS_CI_OR_LOCAL: "CI"
+      JVM_OPTS: "-XX:+UnlockExperimentalVMOptions -XX:-UseJVMCICompiler"
     runs-on: ubuntu-20.04
-    container: ghcr.io/giganticminecraft/seichiassist-builder:1a64049
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           submodules: 'recursive'
-
-      - name: Prepare build dependencies cache
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-build-dependencies
-          cache-version: v-5
+      - uses: actions/setup-java@v3
         with:
-          # sbt等は$HOMEではなくユーザーディレクトリを見ているようで、
-          # GH Actionsでの ~ は /github/home/ に展開されるにもかかわらず
-          # 実際のキャッシュは /root/ 以下に配備される。
-          #
-          # /root/.ivy/cache, /root/.sbt - sbt関連のキャッシュ
-          # /root/.m2 - ビルドログを観察した感じprotoc等はここを利用する
-          # /root/.cache - cousierがscalasbt等をキャッシュするのに使っている
-          path: |
-            /root/.ivy2/cache
-            /root/.sbt
-            /root/.m2
-            /root/.cache
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-${{ github.ref }}-${{ hashFiles('**/build.sbt') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-${{ github.ref }}-
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-
-
-      - name: Prepare build cache
-        if: github.ref != 'refs/heads/master'
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-build
-          cache-version: v-5
-        with:
-          path: |
-            target
-            project/target
-            project/project/target
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-${{ github.ref }}-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-${{ github.ref }}-
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-
+          distribution: 'temurin'
+          java-version: '11'
+          cache: 'sbt'
 
       # CIでのcheckoutはファイルのタイムスタンプをチェックアウト時刻に設定するため、
       # そのままビルドするとlocalDependenciesにあるjarに変更が行われたと見なされ
