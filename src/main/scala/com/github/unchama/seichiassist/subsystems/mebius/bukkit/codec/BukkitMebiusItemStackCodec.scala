@@ -119,7 +119,7 @@ object BukkitMebiusItemStackCodec {
    *
    * を満足する。
    */
-  def materialize(property: MebiusProperty, damageValue: Short): ItemStack = {
+  def materialize(property: MebiusProperty): ItemStack = {
     val material = property.forcedMaterial match {
       case MebiusForcedMaterial.None =>
         BukkitMebiusAppearanceMaterialCodec.appearanceMaterialAt(property.level)
@@ -131,7 +131,7 @@ object BukkitMebiusItemStackCodec {
 
     import scala.util.chaining._
 
-    val item = new ItemStack(material, 1, damageValue)
+    val item = new ItemStack(material, 1)
 
     item.setItemMeta {
       item.getItemMeta.tap { meta =>

@@ -139,7 +139,8 @@ object AnniversaryItemData {
 
     val loreList = {
       val enchDescription = enchantments.map {
-        case (ench, lvl) => s"$GRAY${EnchantNameToJapanese.getEnchantName(ench.getName, lvl)}"
+        case (ench, lvl) =>
+          s"$GRAY${EnchantNameToJapanese.getEnchantName(ench.getKey.getKey, lvl)}"
       }.toList
       val lore = List("", "特殊なエンチャントが付与されています").map(lore => s"$YELLOW$lore")
 
