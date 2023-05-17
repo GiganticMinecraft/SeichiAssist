@@ -49,7 +49,7 @@ resolvers ++= Seq(
   "hub.spigotmc.org" at "https://hub.spigotmc.org/nexus/content/repositories/snapshots",
   "oss.sonatype.org" at "https://oss.sonatype.org/content/repositories/snapshots",
   "nexus.okkero.com" at "https://nexus.okkero.com/repository/maven-releases/",
-  // ajd4jpのミラーのため
+  "repo.phoenix616.dev" at "https://repo.phoenix616.dev",
   "jitpack.io" at "https://jitpack.io"
 )
 
