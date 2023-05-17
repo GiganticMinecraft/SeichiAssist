@@ -33,23 +33,8 @@ object ItemInformation {
   def getSkullDataFromBlock(block: Block): Option[ItemStack] = {
     if (block.getType != Material.PLAYER_HEAD) return None
 
-    val skull = block.getState.asInstanceOf[Skull]
-    val itemStack = new ItemStack(Material.PLAYER_HEAD)
-
-    // SkullTypeがプレイヤー以外の場合，SkullTypeだけ設定して終わり
-    if (skull.getSkullType != SkullType.PLAYER) {
-      val durability = skull.getSkullType match {
-        case SkullType.CREEPER  => SkullType.CREEPER.ordinal.toShort
-        case SkullType.DRAGON   => SkullType.DRAGON.ordinal.toShort
-        case SkullType.SKELETON => SkullType.SKELETON.ordinal.toShort
-        case SkullType.WITHER   => SkullType.WITHER.ordinal.toShort
-        case SkullType.ZOMBIE   => SkullType.ZOMBIE.ordinal.toShort
-        case _                  => itemStack.getDurability
-      }
-      return Some(itemStack.tap(_.setDurability(durability)))
-    }
     // プレイヤーの頭の場合，ドロップアイテムからItemStackを取得．データ値をPLAYERにして返す
-    Some(block.getDrops.asScala.head.tap(_.setDurability(SkullType.PLAYER.ordinal.toShort)))
+    Some(block.getDrops.asScala.head)
   }
 
   /**
