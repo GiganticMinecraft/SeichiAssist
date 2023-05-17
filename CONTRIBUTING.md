@@ -2,7 +2,7 @@
 
 ## 開発を始めるために必要なもの
 - [Intellij IDEA](https://www.jetbrains.com/idea/) などの統合開発環境
-- [AdoptOpenJDK 1.8](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot)
+- [AdoptOpenJDK 11](https://adoptium.net/temurin/releases/?version=11)
 - [sbt 1.6](https://www.scala-sbt.org/1.x/docs/Setup.html)
 - [Scala 2.13](https://www.scala-lang.org/download/)
 - Spigot 1.16.5
@@ -12,8 +12,8 @@
 
 ### 準備
 #### Java Development Kit
-最初に、Java Development Kit (JDK) 8をインストールする必要があります。
-[AdoptOpenJDK 1.8](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot) のインストールを推奨します。
+最初に、Java Development Kit (JDK) 11をインストールする必要があります。
+[AdoptOpenJDK 11](https://adoptium.net/temurin/releases/?version=11) のインストールを推奨します。
 
 #### 統合開発環境
 次に、[Intellij IDEA](https://www.jetbrains.com/idea/)などの統合開発環境を導入します。
@@ -159,7 +159,7 @@ Linux環境では、`./prepare-docker.sh`、Windowsでは`prepare-docker.bat`を
 
 サーバーやDB等を停止する場合、 `docker compose down` を実行してください。
 
-なお、SeichiAssistがJDK 8以外でコンパイルされた場合は、実行時にエラーとなります。必ずJDKのバージョンを揃えるようにしてください。
+なお、SeichiAssistがJava 11未満でコンパイルされた場合は、実行時にエラーとなります。必ずJDKのバージョンを揃えるようにしてください。
 
 ##### データベースの初期化
 
