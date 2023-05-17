@@ -186,8 +186,7 @@ class PlayerJoinListener extends Listener {
         BukkitMebiusItemStackCodec.materialize(
           // **getDisplayNameは二つ名も含むのでMCIDにはgetNameが適切**
           MebiusProperty
-            .initialProperty(NormalMebius, player.getName, player.getUniqueId.toString),
-          damageValue = 0.toShort
+            .initialProperty(NormalMebius, player.getName, player.getUniqueId.toString)
         )
       )
 

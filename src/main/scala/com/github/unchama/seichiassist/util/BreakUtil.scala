@@ -23,13 +23,12 @@ import org.bukkit.ChatColor._
 import org.bukkit.World.Environment
 import org.bukkit._
 import org.bukkit.block.Block
-import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.{Entity, EntityType, Player}
 import org.bukkit.inventory.ItemStack
-import org.bukkit.material.Dye
 
 import java.util.Random
 import java.util.stream.IntStream
+import scala.jdk.CollectionConverters._
 
 object BreakUtil {
 
@@ -166,143 +165,6 @@ object BreakUtil {
   }
 
   /**
-   * ブロックをツールで破壊した時のドロップを計算する
-   *
-   * Bukkit/Spigotが提供するBlock.getDropsは信頼できる値を返さない。 本来はNMSのメソッドを呼ぶのが確実らしいが、一時的な実装として使用している。 参考:
-   * https://www.spigotmc.org/threads/getdrops-on-crops-not-functioning-as-expected.167751/#post-1779788
-   */
-  def dropItemOnTool(
-    tool: BreakTool
-  )(blockInformation: (Location, Material, Byte)): Option[BlockBreakResult] = {
-    val fortuneLevel = tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS)
-
-    val (_, blockMaterial, blockData) = blockInformation
-
-    blockMaterial match {
-      case Material.GRASS_PATH | Material.FARMLAND =>
-        return Some(BlockBreakResult.ItemDrop(new ItemStack(Material.DIRT)))
-      case Material.SPAWNER | Material.END_PORTAL_FRAME | Material.END_PORTAL =>
-        return None
-      case _ =>
-    }
-
-    val rand = Math.random()
-    val bonus = Math.max(1, rand * (fortuneLevel + 2) - 1).toInt
-
-    val blockDataLeast4Bits = (blockData & 0x0f).toByte
-
-    val silkTouch = tool.getEnchantmentLevel(Enchantment.SILK_TOUCH)
-
-    if (silkTouch > 0) {
-      // シルクタッチの処理
-      Some {
-        BlockBreakResult.ItemDrop {
-          new ItemStack(blockMaterial, 1)
-        }
-      }
-    } else if (fortuneLevel > 0 && MaterialSets.fortuneMaterials.contains(blockMaterial)) {
-      // 幸運の処理
-      Some {
-        BlockBreakResult.ItemDrop {
-          blockMaterial match {
-            case Material.COAL_ORE =>
-              new ItemStack(Material.COAL, bonus)
-            case Material.DIAMOND_ORE =>
-              new ItemStack(Material.DIAMOND, bonus)
-            case Material.LAPIS_ORE =>
-              val dye = new Dye()
-              dye.setColor(DyeColor.BLUE)
-
-              val withBonus = bonus * (rand * 4 + 4).toInt
-              dye.toItemStack(withBonus)
-            case Material.EMERALD_ORE =>
-              new ItemStack(Material.EMERALD, bonus)
-            case Material.REDSTONE_ORE =>
-              val withBonus = bonus * (rand + 4).toInt
-              new ItemStack(Material.REDSTONE, withBonus)
-            case Material.NETHER_QUARTZ_ORE =>
-              new ItemStack(Material.QUARTZ, bonus)
-            // グロウストーンは幸運エンチャントがついていると高確率でより多くのダストをドロップする
-            // しかし、最大でも4個までしかドロップしない
-            case Material.GLOWSTONE =>
-              val withBonus = bonus * (rand * 3 + 2).toInt
-              val amount = if (withBonus > 4) 4 else withBonus
-              new ItemStack(Material.GLOWSTONE_DUST, amount)
-            case _ =>
-              // unreachable
-              new ItemStack(blockMaterial, bonus)
-          }
-        }
-      }
-    } else {
-      // シルク幸運なしの処理
-      blockMaterial match {
-        case Material.COAL_ORE =>
-          Some(BlockBreakResult.ItemDrop(new ItemStack(Material.COAL)))
-        case Material.DIAMOND_ORE =>
-          Some(BlockBreakResult.ItemDrop(new ItemStack(Material.DIAMOND)))
-        case Material.LAPIS_ORE =>
-          val dye = new Dye()
-          dye.setColor(DyeColor.BLUE)
-          Some(BlockBreakResult.ItemDrop(dye.toItemStack((rand * 4 + 4).toInt)))
-        case Material.EMERALD_ORE =>
-          Some(BlockBreakResult.ItemDrop(new ItemStack(Material.EMERALD)))
-        case Material.REDSTONE_ORE =>
-          Some(BlockBreakResult.ItemDrop(new ItemStack(Material.REDSTONE, (rand + 4).toInt)))
-        case Material.NETHER_QUARTZ_ORE =>
-          Some(BlockBreakResult.ItemDrop(new ItemStack(Material.QUARTZ)))
-        // グロウストーンは、2から4個のグロウストーンダストをドロップする
-        case Material.GLOWSTONE =>
-          Some(
-            BlockBreakResult
-              .ItemDrop(new ItemStack(Material.GLOWSTONE_DUST, (rand * 3 + 2).toInt))
-          )
-        case Material.STONE =>
-          Some {
-            BlockBreakResult.ItemDrop {
-              if (blockData.toInt == 0x00) {
-                // 焼き石の処理
-                new ItemStack(Material.COBBLESTONE)
-              } else {
-                // 他の石の処理
-                new ItemStack(blockMaterial, 1, blockDataLeast4Bits.toShort)
-              }
-            }
-          }
-        case Material.GRASS =>
-          Some(BlockBreakResult.ItemDrop(new ItemStack(Material.DIRT)))
-        case Material.GRAVEL =>
-          val p = fortuneLevel match {
-            case 1 => 0.14
-            case 2 => 0.25
-            case 3 => 1.00
-            case _ => 0.1
-          }
-          val dropMaterial = if (p > rand) Material.FLINT else Material.GRAVEL
-
-          Some(BlockBreakResult.ItemDrop(new ItemStack(dropMaterial, bonus)))
-        case Material.CLAY =>
-          Some(BlockBreakResult.ItemDrop(new ItemStack(Material.CLAY_BALL, 4)))
-        case material
-            if material
-              .name()
-              .toUpperCase()
-              .endsWith("_SLAB") && (blockDataLeast4Bits & 8) != 0 =>
-          // 上付きハーフブロックをそのままドロップするとmissing textureとして描画されるため、下付きの扱いとする
-          Some(
-            BlockBreakResult
-              .ItemDrop(new ItemStack(blockMaterial, 1, (blockDataLeast4Bits & 7).toShort))
-          )
-        case _ =>
-          Some(
-            BlockBreakResult
-              .ItemDrop(new ItemStack(blockMaterial, 1, blockDataLeast4Bits.toShort))
-          )
-      }
-    }
-  }
-
-  /**
    * TODO: これはビジネスロジックである。breakcountシステムによって管理されるべき。
    * @param world
    *   対象ワールド
@@ -354,7 +216,7 @@ object BreakUtil {
       targetBlocksInformation <- PluginExecutionContexts
         .onMainThread
         .runAction(SyncIO {
-          val seq: Seq[(Location, Material, Byte)] = targetBlocks
+          val seq: Seq[(Location, Material)] = targetBlocks
             .toSeq
             .filter { block =>
               block.getType match {
@@ -365,7 +227,7 @@ object BreakUtil {
                 case _ => true
               }
             }
-            .map(block => (block.getLocation.clone(), block.getType, block.getData))
+            .map(block => (block.getLocation.clone(), block.getType))
 
           // ブロックをすべて[[toMaterial]]に変える
           targetBlocks.foreach(_.setType(toMaterial))
@@ -374,14 +236,17 @@ object BreakUtil {
         })
 
       breakResults = {
-        val plainBreakResult = targetBlocksInformation.flatMap(dropItemOnTool(miningTool))
+        val plainBreakResult = targetBlocksInformation.map {
+          case (location, _) =>
+            (location, location.getBlock.getDrops(miningTool).asScala)
+        }
         val drops = plainBreakResult.mapFilter {
-          case BlockBreakResult.ItemDrop(itemStack) => Some(itemStack)
-          case BlockBreakResult.SpawnSilverFish(_)  => None
+          case (_, drops) if drops.nonEmpty => Some(drops.head)
+          case _                            => None
         }
         val silverFishLocations = plainBreakResult.mapFilter {
-          case BlockBreakResult.ItemDrop(_)               => None
-          case BlockBreakResult.SpawnSilverFish(location) => Some(location)
+          case (location, drops) if drops.isEmpty => Some(location)
+          case _                                  => None
         }
 
         // 纏めなければ、FAWEの干渉を受け勝手に消される危険性などがある
@@ -414,14 +279,14 @@ object BreakUtil {
         // 壊した時の音を再生する
         if (shouldPlayBreakSound) {
           targetBlocksInformation.foreach {
-            case (location, material, _) =>
+            case (location, material) =>
               dropLocation.getWorld.playEffect(location, Effect.STEP_SOUND, material)
           }
         }
       }
 
       // プレイヤーの統計を増やす
-      totalCount = totalBreakCount(targetBlocksInformation.map { case (_, m, _) => m })
+      totalCount = totalBreakCount(targetBlocksInformation.map { case (_, m) => m })
       blockCountWeight <- blockCountWeight[IO](player.getWorld)
       expIncrease = SeichiExpAmount.ofNonNegative(totalCount * blockCountWeight)
 

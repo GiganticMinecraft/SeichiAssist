@@ -91,7 +91,7 @@ class NewYearListener[F[_]: ConcurrentEffect: NonServerThreadContextShift, G[_]:
     val player = event.getPlayer
     val today = LocalDate.now()
     val expiryDate =
-      new NBTItem(item).getObject(NBTTagConstants.expiryDateTag, classOf[LocalDate])
+      LocalDate.ofEpochDay(new NBTItem(item).getLong(NBTTagConstants.expiryDateTag))
     if (today.isBefore(expiryDate) || today.isEqual(expiryDate)) {
       // マナを10%回復する
       manaApi.manaAmount(player).restoreFraction(0.1).runSync[SyncIO].unsafeRunSync()

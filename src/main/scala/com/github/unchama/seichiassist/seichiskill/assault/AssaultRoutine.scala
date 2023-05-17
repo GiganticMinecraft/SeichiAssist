@@ -18,6 +18,7 @@ import com.github.unchama.seichiassist.{DefaultEffectEnvironment, MaterialSets, 
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
+import org.bukkit.inventory.meta.Damageable
 import org.bukkit.{GameMode, Location, Material, Sound}
 
 object AssaultRoutine {
@@ -141,7 +142,7 @@ object AssaultRoutine {
 
       // 減る耐久値の計算
       val durability =
-        (toolToBeUsed.getDurability +
+        (toolToBeUsed.getItemMeta.asInstanceOf[Damageable].getDamage +
           BreakUtil.calcDurability(
             toolToBeUsed.getEnchantmentLevel(Enchantment.DURABILITY),
             breakTargets
@@ -161,7 +162,11 @@ object AssaultRoutine {
       }
 
       // 耐久値を減らす
-      if (!toolToBeUsed.getItemMeta.isUnbreakable) toolToBeUsed.setDurability(durability)
+      if (!toolToBeUsed.getItemMeta.isUnbreakable) {
+        val meta = toolToBeUsed.getItemMeta
+        meta.asInstanceOf[Damageable].setDamage(durability)
+        toolToBeUsed.setItemMeta(meta)
+      }
 
       // ブロックを書き換える
       if (shouldBreakAllBlocks) {

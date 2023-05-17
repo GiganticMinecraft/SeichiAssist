@@ -36,7 +36,7 @@ object SeizonsikiItemData {
       .tap { item =>
         import item._
         setByte(NBTTagConstants.typeIdTag, 1.toByte)
-        setObject(NBTTagConstants.expiryDateTag, END_DATE)
+        setLong(NBTTagConstants.expiryDateTag, END_DATE.toEpochDay)
       }
       .pipe(_.getItem)
   }

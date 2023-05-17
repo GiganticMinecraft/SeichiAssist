@@ -15,7 +15,6 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.util.BreakUtil
-import com.github.unchama.seichiassist.util.BreakUtil.BlockBreakResult
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.effect.BukkitResources
@@ -29,8 +28,10 @@ import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.Damageable
 
 import scala.collection.mutable.ArrayBuffer
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.util.control.Breaks
 
 class PlayerBlockBreakListener(
@@ -85,7 +86,11 @@ class PlayerBlockBreakListener(
       )
 
     // 耐久値がマイナスかつ耐久無限ツールでない時処理を終了
-    if (tool.getDurability > tool.getType.getMaxDurability && !tool.getItemMeta.isUnbreakable)
+    if (
+      tool.getItemMeta.asInstanceOf[Damageable].getDamage > tool
+        .getType
+        .getMaxDurability && !tool.getItemMeta.isUnbreakable
+    )
       return
 
     // もしサバイバルでなければ、またはフライ中なら終了
@@ -141,7 +146,7 @@ class PlayerBlockBreakListener(
       // 壊される水ブロックの全てのリストデータ
       val multiWaterList = new ArrayBuffer[Set[Block]]
       // 全ての耐久消費量
-      var toolDamageToSet = tool.getDurability.toInt
+      var toolDamageToSet = tool.getItemMeta.asInstanceOf[Damageable].getDamage
 
       // 消費が予約されたマナ
       val reservedMana = new ArrayBuffer[ManaAmount]
@@ -273,12 +278,16 @@ class PlayerBlockBreakListener(
 
         // ツールの耐久値を減らす
         val adjustManaAndDurability = IO {
-          if (!tool.getItemMeta.isUnbreakable) tool.setDurability(toolDamageToSet.toShort)
+          if (!tool.getItemMeta.isUnbreakable) {
+            val meta = tool.getItemMeta
+            meta.asInstanceOf[Damageable].setDamage(toolDamageToSet)
+            tool.setItemMeta(meta)
+          }
         }
 
         effectEnvironment.unsafeRunEffectAsync(
           "複数破壊エフェクトを実行する",
-          effectPrograms.toList.sequence[IO, Fiber[IO, Unit]]
+          effectPrograms.sequence[IO, Fiber[IO, Unit]]
         )
         effectEnvironment.unsafeRunEffectAsync(
           "複数破壊エフェクトの後処理を実行する",
@@ -303,42 +312,28 @@ class PlayerBlockBreakListener(
       SeichiAssist.instance.breakCountSystem.api.incrementSeichiExp.of(player, amount).toIO
     )
 
-    val tool: BreakTool = MaterialSets
-      .refineItemStack(player.getInventory.getItemInMainHand, MaterialSets.breakToolMaterials)
-      .getOrElse(
-        return
-      )
-
-    /**
-     * 手彫りで破壊したアイテムを直接MineStackに入れる
-     * 一つのBlockBreakEventから複数の種類のアイテムが出てくることはない。
-     * チェスト等のインベントリスロットのあるブロック`b`を破壊したときは、
-     * 破壊された`b`のみが`BlockBreakEvent`のドロップ対象となるため、
-     * 中身のドロップがキャンセルされることはない。
-     */
-    val drops = BreakUtil
-      .dropItemOnTool(tool)((block.getLocation(), block.getType, block.getData))
-      .getOrElse(
-        return
-      )
-
-    drops match {
-      case BlockBreakResult.ItemDrop(itemStack) =>
-        val program = for {
-          currentAutoMineStackState <- mineStackAPI.autoMineStack(player)
-          isSucceedTryIntoMineStack <- whenAOrElse(currentAutoMineStackState)(
+    val program = for {
+      currentAutoMineStackState <- mineStackAPI.autoMineStack(player)
+      isSucceedTryIntoMineStack <- whenAOrElse(currentAutoMineStackState)(
+        event
+          .getBlock
+          .getDrops(player.getInventory.getItemInMainHand)
+          .asScala
+          .toList
+          .traverse { itemStack =>
             mineStackAPI
               .mineStackRepository
-              .tryIntoMineStack(player, itemStack, itemStack.getAmount),
-            false
-          )
-        } yield {
-          if (isSucceedTryIntoMineStack) event.setDropItems(false)
-          else ()
-        }
-        program.unsafeRunSync()
-      case _ => ()
+              .tryIntoMineStack(player, itemStack, itemStack.getAmount)
+          }
+          .map(_.forall(_ == true)),
+        false
+      )
+    } yield {
+      if (isSucceedTryIntoMineStack) event.setDropItems(false)
+      else ()
     }
+    program.unsafeRunSync()
+
   }
 
   /**
@@ -362,7 +357,7 @@ class PlayerBlockBreakListener(
     }
     if (b.getType ne Material.STONE_SLAB) return
     if (b.getY > 5) return
-    if (b.getData != 0) return
+    if (b.asInstanceOf[Slab].getType != Slab.Type.BOTTOM) return
     if (!world.isSeichi) return
     event.setCancelled(true)
     p.sendMessage(s"${RED}Y5以下に敷かれたハーフブロックは破壊不可能です。")
