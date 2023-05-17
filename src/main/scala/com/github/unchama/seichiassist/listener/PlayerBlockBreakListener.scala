@@ -28,6 +28,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.Damageable
 
 import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters.CollectionHasAsScala
@@ -85,7 +86,7 @@ class PlayerBlockBreakListener(
       )
 
     // 耐久値がマイナスかつ耐久無限ツールでない時処理を終了
-    if (tool.getDurability > tool.getType.getMaxDurability && !tool.getItemMeta.isUnbreakable)
+    if (tool.getItemMeta.asInstanceOf[Damageable].getDamage > tool.getType.getMaxDurability && !tool.getItemMeta.isUnbreakable)
       return
 
     // もしサバイバルでなければ、またはフライ中なら終了
@@ -141,7 +142,7 @@ class PlayerBlockBreakListener(
       // 壊される水ブロックの全てのリストデータ
       val multiWaterList = new ArrayBuffer[Set[Block]]
       // 全ての耐久消費量
-      var toolDamageToSet = tool.getDurability.toInt
+      var toolDamageToSet = tool.getItemMeta.asInstanceOf[Damageable].getDamage
 
       // 消費が予約されたマナ
       val reservedMana = new ArrayBuffer[ManaAmount]
@@ -273,12 +274,16 @@ class PlayerBlockBreakListener(
 
         // ツールの耐久値を減らす
         val adjustManaAndDurability = IO {
-          if (!tool.getItemMeta.isUnbreakable) tool.setDurability(toolDamageToSet.toShort)
+          if (!tool.getItemMeta.isUnbreakable){
+            val meta = tool.getItemMeta
+            meta.asInstanceOf[Damageable].setDamage(toolDamageToSet)
+            tool.setItemMeta(meta)
+          }
         }
 
         effectEnvironment.unsafeRunEffectAsync(
           "複数破壊エフェクトを実行する",
-          effectPrograms.toList.sequence[IO, Fiber[IO, Unit]]
+          effectPrograms.sequence[IO, Fiber[IO, Unit]]
         )
         effectEnvironment.unsafeRunEffectAsync(
           "複数破壊エフェクトの後処理を実行する",
