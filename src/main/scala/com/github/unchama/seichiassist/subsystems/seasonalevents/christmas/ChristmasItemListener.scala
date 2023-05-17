@@ -57,7 +57,7 @@ class ChristmasItemListener[F[_], G[_]: SyncEffect](instance: JavaPlugin)(
 
     val rand = new Random().nextDouble()
     val potionEffectType = if (rand > 0.5) PotionEffectType.LUCK else PotionEffectType.UNLUCK
-    player.addPotionEffect(new PotionEffect(potionEffectType, 20 * 30, 0), true)
+    player.addPotionEffect(new PotionEffect(potionEffectType, 20 * 30, 0))
 
     removeItemfromPlayerInventory(player.getInventory, item, 1)
 
@@ -74,7 +74,7 @@ class ChristmasItemListener[F[_], G[_]: SyncEffect](instance: JavaPlugin)(
 
     val rand = new Random().nextDouble()
     val potionEffectType = if (rand > 0.5) PotionEffectType.SPEED else PotionEffectType.SLOW
-    event.getPlayer.addPotionEffect(new PotionEffect(potionEffectType, 20 * 30, 0), true)
+    event.getPlayer.addPotionEffect(new PotionEffect(potionEffectType, 20 * 30, 0))
   }
 
   @EventHandler

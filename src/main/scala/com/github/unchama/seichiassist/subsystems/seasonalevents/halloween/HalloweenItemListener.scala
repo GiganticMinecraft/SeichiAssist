@@ -40,7 +40,7 @@ object HalloweenItemListener extends Listener {
       // 10分
       event
         .getPlayer
-        .addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 20 * 60 * 10, 0), true)
+        .addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 20 * 60 * 10, 0))
     }
   }
 
