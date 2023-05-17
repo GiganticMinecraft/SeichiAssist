@@ -9,7 +9,6 @@ import simulacrum.typeclass
  * この型クラスのインスタンスは、任意の `x: T` と `y: T` について
  *   - `x < y` ならば `x < x.successor <= y` を満たす。
  */
-import scala.language.implicitConversions
 @typeclass trait HasSuccessor[T] extends AnyRef {
 
   import cats.implicits._
