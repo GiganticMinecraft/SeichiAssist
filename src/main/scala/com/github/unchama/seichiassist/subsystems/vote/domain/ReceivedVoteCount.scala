@@ -6,5 +6,5 @@ case class ReceivedVoteCount(value: Int) {
 }
 
 object ReceivedVoteCount {
-  implicit val order: Order[ReceivedVoteCount] = Order.by(vc => vc.value)
+  implicit val order: Order[ReceivedVoteCount] = Order.by(_.value)
 }
