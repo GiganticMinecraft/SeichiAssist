@@ -1,4 +1,4 @@
-name: Build and deploy
+name: 1.16 build check
 
 on:
   push:
@@ -14,7 +14,7 @@ on:
       - .github/actions/**/**.yml
 
 jobs:
-  build_test_and_upload:
+  build_check:
     env:
       BUILD_ENVIRONMENT_IS_CI_OR_LOCAL: "CI"
       JVM_OPTS: "-XX:+UnlockExperimentalVMOptions -XX:-UseJVMCICompiler"
