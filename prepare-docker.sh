@@ -4,6 +4,7 @@ build_image() {
   set -e
 
   rm -r target/build || true
+  ./sbt clean
 
   ## ソースコードからSeichiAssist.jarをビルド
   ./sbt assembly
@@ -35,7 +36,7 @@ docker compose up --abort-on-container-exit
 ## 以下、リファレンス ##
 
 ## バックグラウンドでdockerコンテナを起動
-## (カレントディレクトリにdocker-compose.ymlが存在する必要がある)
+## (カレントディレクトリにcompose.ymlが存在する必要がある)
 # docker compose up -d
 
 ## バックグラウンドで起動したdockerコンテナを停止
