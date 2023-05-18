@@ -57,7 +57,7 @@ object OnClickTitleMenu {
     if (topInventory.row != 4) {
       return
     }
-    val current = event.getCurrentItem
+    val current = event.getCurrentItem.ifNull(return)
 
     val player = he.asInstanceOf[Player]
     val pd = SeichiAssist.playermap(player.getUniqueId)
