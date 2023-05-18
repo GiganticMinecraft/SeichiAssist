@@ -27,7 +27,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version-file: '.java-versions'
+          java-version-file: '.java-version'
           cache: 'sbt'
 
       - name: Check format with Scalafmt
