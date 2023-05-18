@@ -47,7 +47,7 @@ object ValentineItemData {
       Option(new NBTItem(item).getLong(NBTTagConstants.expiryDateTimeTag))
         .getOrElse(return false),
       0,
-      ZoneOffset.of("JST")
+      ZoneOffset.of("+9")
     )
     now.isBefore(exp) || now.isEqual(exp)
   }
@@ -79,7 +79,7 @@ object ValentineItemData {
         setByte(NBTTagConstants.typeIdTag, droppedCookieTypeId.toByte)
         setLong(
           NBTTagConstants.expiryDateTimeTag,
-          EVENT_DURATION.to.toEpochSecond(ZoneOffset.of("JST"))
+          EVENT_DURATION.to.toEpochSecond(ZoneOffset.of("+9"))
         )
       }
       .pipe(_.getItem)
@@ -121,7 +121,7 @@ object ValentineItemData {
         setByte(NBTTagConstants.typeIdTag, giftedCookieTypeId.toByte)
         setLong(
           NBTTagConstants.expiryDateTimeTag,
-          EVENT_DURATION.to.toEpochSecond(ZoneOffset.of("JST"))
+          EVENT_DURATION.to.toEpochSecond(ZoneOffset.of("+9"))
         )
         setUUID(NBTTagConstants.producerUuidTag, playerUuid)
         setString(NBTTagConstants.producerNameTag, playerName)
