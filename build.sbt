@@ -96,7 +96,7 @@ val dependenciesToEmbed = Seq(
   // algebra
   "io.chrisdavenport" %% "log4cats-core" % "1.1.1",
   "io.chrisdavenport" %% "log4cats-slf4j" % "1.1.1",
-  "io.chrisdavenport" %% "cats-effect-time" % "0.1.2",
+  "io.chrisdavenport" %% "cats-effect-time" % "0.2.1",
 
   // logging
   "org.slf4j" % "slf4j-api" % "1.7.28",
