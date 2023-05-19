@@ -100,7 +100,7 @@ val dependenciesToEmbed = Seq(
 
   // logging
   "org.slf4j" % "slf4j-api" % "1.7.36",
-  "org.slf4j" % "slf4j-jdk14" % "1.7.28",
+  "org.slf4j" % "slf4j-jdk14" % "1.7.36",
   "com.typesafe.scala-logging" % "scala-logging-slf4j_2.10" % "2.1.2",
 
   // type-safety utils
