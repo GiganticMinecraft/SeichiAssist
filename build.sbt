@@ -62,7 +62,7 @@ val providedDependencies = Seq(
   "org.spigotmc" % "spigot-api" % "1.12.2-R0.1-SNAPSHOT",
   // https://maven.enginehub.org/repo/com/sk89q/worldedit/worldedit-bukkit/
   "com.sk89q.worldguard" % "worldguard-legacy" % "6.2",
-  "net.coreprotect" % "coreprotect" % "2.14.2",
+  "net.coreprotect" % "coreprotect" % "2.18.2",
   "com.mojang" % "authlib" % "1.6.25",
 
   // no runtime
