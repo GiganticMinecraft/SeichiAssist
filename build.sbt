@@ -63,7 +63,7 @@ val providedDependencies = Seq(
   // https://maven.enginehub.org/repo/com/sk89q/worldedit/worldedit-bukkit/
   "com.sk89q.worldguard" % "worldguard-legacy" % "6.2",
   "net.coreprotect" % "coreprotect" % "2.14.2",
-  "com.mojang" % "authlib" % "1.5.25",
+  "com.mojang" % "authlib" % "1.6.25",
 
   // no runtime
   "org.typelevel" %% "simulacrum" % "1.0.1"
