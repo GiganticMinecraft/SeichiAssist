@@ -111,9 +111,9 @@ val dependenciesToEmbed = Seq(
   "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
 
   // JSON
-  "io.circe" %% "circe-core" % "0.14.1",
-  "io.circe" %% "circe-generic" % "0.14.1",
-  "io.circe" %% "circe-parser" % "0.14.1",
+  "io.circe" %% "circe-core" % "0.14.5",
+  "io.circe" %% "circe-generic" % "0.14.5",
+  "io.circe" %% "circe-parser" % "0.14.5",
 
   // ajd4jp
   "com.github.KisaragiEffective" % "ajd4jp-mirror" % "8.0.2.2021",
