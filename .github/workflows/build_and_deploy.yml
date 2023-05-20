@@ -175,7 +175,7 @@ jobs:
           git push origin $TAG_NAME
           echo "value=$TAG_NAME" >> $GITHUB_OUTPUT
       - name: Download artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: SeichiAssist-build
         id: download
@@ -197,7 +197,7 @@ jobs:
       - output-sha
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: SeichiAssist-build
         id: download
@@ -262,7 +262,7 @@ jobs:
       - build_test_and_upload
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: SeichiAssist-build
         id: download
