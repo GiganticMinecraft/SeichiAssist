@@ -44,7 +44,7 @@ object System {
         override def effectPoints(player: Player): F[EffectPoint] =
           _votePersistence.effectPoints(player.getUniqueId)
 
-        override def receivedVoteBenefits(uuid: UUID): F[ReceivedVoteCount] =
+        override def receivedCount(uuid: UUID): F[ReceivedVoteCount] =
           _votePersistence.receivedCount(uuid)
 
         override def receiveVoteBenefits: Kleisli[F, Player, Unit] = Kleisli { player =>

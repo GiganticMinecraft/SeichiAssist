@@ -115,7 +115,7 @@ object VoteMenu extends Menu {
     val receiveVoteBenefitsButton: IO[Button] = RecomputedButton {
       val uuid = player.getUniqueId
       for {
-        benefits <- voteAPI.receivedVoteBenefits(uuid)
+        benefits <- voteAPI.receivedCount(uuid)
         voteCounter <- voteAPI.count(uuid)
         effectPoint <- voteAPI.effectPoints(player)
         notReceivedBenefits = voteCounter.value - benefits.value

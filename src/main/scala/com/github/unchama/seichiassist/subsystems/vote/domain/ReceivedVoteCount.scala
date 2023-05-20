@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.vote.domain
 import cats.Order
 
 case class ReceivedVoteCount(value: Int) {
-  require(value >= 0, "VoteCountForReceiveは非負である必要があります。")
+  require(value >= 0, "ReceivedVoteCountは非負である必要があります。")
 }
 
 object ReceivedVoteCount {
