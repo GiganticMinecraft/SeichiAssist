@@ -51,7 +51,9 @@ GitHubにアカウントを[登録](https://github.com/join)します。
 
 #### 上級者向け：ローカルにJavaとかsbtを入れたくない場合
 
-(注: 自分が何をしているかわかっていないのであれば、この部分を飛ばしてください)
+> **Warning**
+>
+> 自分が何をしているのかわかっていないのであれば、この手順を飛ばしてください。
 
 * VSCode + WSLで開発している
 * ビルドして立ち上げたいだけ
@@ -76,10 +78,8 @@ $ docker compose up --build -d
 > 
 > この手順は [GiganticMinecraft][gm-gh-organization] のメンバーである場合は行う必要はありません。
 > よくわからない場合は、この注意書きを無視して先へ進んでください。
-
-> **Warning**
-> 
-> この手順を行うのは、一回だけです。二回目以降は、この手順を行う必要はありません。
+>
+> また、この手順を行うのは、一回だけです。二回目以降は、この手順を行う必要はありません。
 
 変更を加える前に、SeichiAssistを自分の手元に「コピー」する必要があります。
 最初に、[GiganticMinecraftのページ][gm-gh-repo]を開いて、画面右上にある「fork」と書かれた枝分かれしているアイコンがあるボタンを押します。
@@ -165,7 +165,9 @@ Linux環境では、`./prepare-docker.sh`、Windowsでは`prepare-docker.bat`を
 
 ##### データベースの初期化
 
-(注: この手順は初めてDockerを立ち上げた場合のみ必要です)
+> **Warning**
+>
+> この手順は初めてDockerを立ち上げた場合のみに必要です。
 
 初回起動後、データベースが作成されますが、ガチャ景品のデータがありません。そのため、次のSQLのダンプをインポートします。
 - [`gachadata.sql`](https://redmine.seichi.click/attachments/download/995/gachadata.sql)
