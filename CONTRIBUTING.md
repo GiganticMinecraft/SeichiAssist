@@ -18,6 +18,14 @@
 #### 統合開発環境
 次に、[Intellij IDEA](https://www.jetbrains.com/idea/)などの統合開発環境を導入します。
 
+有料版 **Ultimate Edition** と機能が制限された無料版 **Community Edition** が2つありますが、SeichiAssist を開発する上では無料版で十分です。
+
+ダウンロードは [こちら](https://www.jetbrains.com/idea/download/) から
+
+> **Note**
+> 
+> 学生の場合は、[学生ライセンス](https://www.jetbrains.com/community/education/#students)を申請することで Ultimate Edition を無料で利用できます。
+
 ##### Intellij
 * インストールする時、Gitプラグインを有効にします。
 * Scala用の[プラグイン](https://plugins.jetbrains.com/plugin/1347-scala)を導入してください。
@@ -32,12 +40,14 @@ Scalaはsbtによって自動的にダウンロード及びインストールさ
 #### Docker
 SpigotサーバーのDockerコンテナを立ち上げるために、Dockerのインストールが必要です。
 
+詳しくは [こちら](https://docs.docker.com/get-started/overview/) をご確認ください。
+
 #### Spigot
 SpigotサーバーはDockerコンテナによって提供されます。
 
 #### GitHubのアカウント
 GitHubにアカウントを[登録](https://github.com/join)します。
-詳細な手順は有志の方の[記事](https://qiita.com/mfunaki/items/e01762475967d4e05a1f)をご覧ください。
+詳細な手順は有志の方の[記事](https://qiita.com/ayatokura/items/9eabb7ae20752e6dc79d)をご覧ください。
 
 #### 上級者向け：ローカルにJavaとかsbtを入れたくない場合
 
@@ -61,9 +71,15 @@ $ docker compose up --build -d
 最後に、Gitのインストールも必要です。公式の[ガイド](https://git-scm.com/book/ja/v2/%E4%BD%BF%E3%81%84%E5%A7%8B%E3%82%81%E3%82%8B-Git%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB)をご覧ください。
 
 ### SeichiAssistを自分のGitHubアカウントにコピーする
-(注意: この手順は、[gm-gh-repo]にpushできる人であれば飛ばすことができます。よくわからない場合は、この注意書きを無視して進んでください。)
 
-注意：この手順は、最初に一回だけやる必要があります。二回以上行う必要はありません。
+> **Warning**
+> 
+> この手順は [GiganticMinecraft][gm-gh-organization] のメンバーである場合は行う必要はありません。
+> よくわからない場合は、この注意書きを無視して先へ進んでください。
+
+> **Warning**
+> 
+> この手順を行うのは、 一回だけです。二回目以降は、この手順を行う必要はありません。
 
 変更を加える前に、SeichiAssistを自分の手元に「コピー」する必要があります。
 最初に、[GiganticMinecraftのページ][gm-gh-repo]を開いて、画面右上にある「fork」と書かれた枝分かれしているアイコンがあるボタンを押します。
@@ -85,11 +101,17 @@ SeichiAssistは、Gitというバージョンを管理するシステムを使�
 
 
 #### protocol以下のファイルを入手
-(注意: この手順は統合開発環境を使わない場合の手順です。)
 
-(注意: この手順は最初に一度だけ行う必要があります。)
+> **Warning**
+> 
+> この手順はコマンドラインから直接クローンした場合の手順になります。
 
-protocol以下のファイルは`git clone`では入手することができません。以下のどちらかのコマンドを実行してください:
+> **Warning**
+>
+> この手順を行うのは、 一回だけです。二回目以降は、この手順を行う必要はありません。
+
+protocol以下のファイルは`git clone`では入手できません。以下のどちらかのコマンドを実行してください:
+
 * `git clone --recursive`
 * `git submodule update --init --recursive`
 
@@ -139,7 +161,7 @@ Linux環境では、`./prepare-docker.sh`、Windowsでは`prepare-docker.bat`を
 
 サーバーやDB等を停止する場合、 `docker compose down` を実行してください。
 
-なお、SeichiAssistがJava 8以外でコンパイルされた場合は、実行時にエラーとなります。必ずJDKのバージョンを揃えるようにしてください。
+なお、SeichiAssistがJDK 8以外でコンパイルされた場合は、実行時にエラーとなります。必ずJDKのバージョンを揃えるようにしてください。
 
 ##### データベースの初期化
 
@@ -219,8 +241,13 @@ SeichiAssistでPull Requestが受け入れられる (マージされる) には�
 2. <kbd>T</kbd>キーでチャットを開く
 3. `/server deb112`と入力して`Enter`を押す
 
-#### 本番サーバーへの反映
-(注: この部分はGiganticMinecraftのメンバーへ向けた内容です)
+#### 自動リリースの範囲
+自動リリースはSeichiAssistのプログラムの部分のみ行われます。より正確に言うのであれば、jar以外の自動リリースは未対応です(`config.yml`など)。運営チームへ更新を依頼する必要があります。
+この問題点があるため、各サーバーや環境で共通で構わないパラメータは`config.yml`を読まず、コードへの直接実装を推奨します。
+
+----
+
+#### 運営メンバー向け: 本番サーバーへの反映
 
 本番サーバーへの反映は通常GitHub ActionsでPull Requestを作成し、それをマージすることで行います。
 1. [GitHub Actionsのタブ](https://github.com/GiganticMinecraft/SeichiAssist/actions/workflows/create_new_release.yml)へ移動します。
@@ -232,8 +259,5 @@ SeichiAssistでPull Requestが受け入れられる (マージされる) には�
 緊急を要する場合は、`hotfix-*`ブランチを作成し、そのブランチから`master`ブランチへ向けてPull Requestを作成してください。
 `develop`ブランチへの直プッシュは、CIによるチェックが事後となってしまうため避けてください。
 
-#### 自動リリースの範囲
-自動リリースはSeichiAssistのプログラムの部分のみ行われます。より正確に言うのであれば、jar以外の自動リリースは未対応です(`config.yml`など)。運営チームへ更新を依頼する必要があります。
-この問題点があるため、各サーバーや環境で共通で構わないパラメータは`config.yml`を読まず、コードへの直接実装を推奨します。
-
+[gm-gh-organization]: https://github.com/GiganticMinecraft
 [gm-gh-repo]: https://github.com/GiganticMinecraft/SeichiAssist
