@@ -49,11 +49,11 @@ trait VotePersistence[F[_]] {
   /**
    * @return 投票特典を受け取った回数を増加させる作用
    */
-  def increaseVoteBenefits(uuid: UUID, amount: VoteBenefit): F[Unit]
+  def claim(uuid: UUID, amount: ReceivedVoteCount): F[Unit]
 
   /**
    * @return 投票特典を受け取った回数を返す作用
    */
-  def receivedVoteBenefits(uuid: UUID): F[VoteBenefit]
+  def receivedCount(uuid: UUID): F[ReceivedVoteCount]
 
 }
