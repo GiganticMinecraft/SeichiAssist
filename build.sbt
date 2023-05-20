@@ -57,7 +57,7 @@ resolvers ++= Seq(
 
 val providedDependencies = Seq(
   "org.jetbrains" % "annotations" % "17.0.0",
-  "org.apache.commons" % "commons-lang3" % "3.12.0",
+  "org.apache.commons" % "commons-lang3" % "3.9",
   "commons-codec" % "commons-codec" % "1.15",
   "org.spigotmc" % "spigot-api" % "1.12.2-R0.1-SNAPSHOT",
   // https://maven.enginehub.org/repo/com/sk89q/worldedit/worldedit-bukkit/
