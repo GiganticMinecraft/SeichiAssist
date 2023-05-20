@@ -12,7 +12,6 @@ import simulacrum.typeclass
  *
  * を満たす。
  */
-import scala.language.implicitConversions
 @typeclass trait PositiveInt[T] {
 
   /**
