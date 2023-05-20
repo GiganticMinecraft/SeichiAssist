@@ -87,7 +87,7 @@ services:
       - spigotb
     stdin_open: true
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin:4.8.5
+    image: phpmyadmin/phpmyadmin:4.9.7
     environment:
       - TZ=Asia/Tokyo
       - PMA_ARBITRARY=1
