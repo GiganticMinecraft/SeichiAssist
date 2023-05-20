@@ -9,7 +9,7 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.factories.Bu
 import com.github.unchama.seichiassist.subsystems.vote.application.actions.ReceiveVoteBenefits
 import com.github.unchama.seichiassist.subsystems.vote.domain.{
   EffectPoint,
-  VoteBenefit,
+  ReceivedVoteCount,
   VotePersistence
 }
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
@@ -28,24 +28,25 @@ class BukkitReceiveVoteBenefits[F[_]: OnMinecraftServerThread: Sync, G[
     val uuid = player.getUniqueId
     for {
       totalVote <- votePersistence.currentVoteCount(uuid)
-      receivedVote <- votePersistence.receivedVoteBenefits(uuid)
-      pendingCount = VoteBenefit(totalVote.value - receivedVote.value)
-      // 受け取ってない分を受け取ったことにする
-      _ <- votePersistence.increaseVoteBenefits(uuid, pendingCount)
+      receivedVote <- votePersistence.receivedCount(uuid)
+      pendingCount = ReceivedVoteCount(totalVote.value - receivedVote.value)
+      // cap at 64 (#1816)
+      toBeClaimed = pendingCount.min(ReceivedVoteCount(64))
+      _ <- votePersistence.claim(uuid, toBeClaimed)
       playerLevel <- ContextCoercion(breakCountAPI.seichiAmountDataRepository(player).read.map {
         _.levelCorrespondingToExp.level
       })
-      gachaTicketAmount = Seq.fill(10 * pendingCount.value)(BukkitGachaSkullData.gachaForVoting)
-      additionalVoteBenefit = Seq.fill(pendingCount.value)(
+      gachaTicketAmount = Seq.fill(10 * toBeClaimed.value)(BukkitGachaSkullData.gachaForVoting)
+      additionalVoteBenefit = Seq.fill(toBeClaimed.value)(
         if (playerLevel < 50) ItemData.getSuperPickaxe(1)
         else ItemData.getVotingGift(1)
       )
       grantItems = gachaTicketAmount ++ additionalVoteBenefit
       _ <- {
         ContextCoercion(votePersistence.increaseEffectPoints(uuid, EffectPoint(10)))
-          .replicateA(pendingCount.value) >>
+          .replicateA(toBeClaimed.value) >>
           grantItemStacksEffect[F](grantItems: _*).apply(player)
-      }.whenA(pendingCount.value != 0)
+      }.whenA(toBeClaimed.value != 0)
     } yield ()
   }
 
