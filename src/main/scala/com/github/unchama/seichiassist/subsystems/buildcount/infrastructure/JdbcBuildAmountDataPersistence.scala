@@ -2,13 +2,16 @@ package com.github.unchama.seichiassist.subsystems.buildcount.infrastructure
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
-import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.{BuildAmountData, BuildAmountDataPersistence}
+import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.{
+  BuildAmountData,
+  BuildAmountDataPersistence
+}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID
 
 class JdbcBuildAmountDataPersistence[F[_]](implicit F: Sync[F])
-  extends BuildAmountDataPersistence[F] {
+    extends BuildAmountDataPersistence[F] {
 
   override def read(key: UUID): F[Option[BuildAmountData]] =
     F.delay {
@@ -20,7 +23,8 @@ class JdbcBuildAmountDataPersistence[F[_]](implicit F: Sync[F])
 
             BuildAmountData(exp)
           }
-          .first().apply()
+          .first()
+          .apply()
       }
     }
 
@@ -29,7 +33,8 @@ class JdbcBuildAmountDataPersistence[F[_]](implicit F: Sync[F])
       DB.localTx { implicit session =>
         sql"update playerdata set build_count = ${value.expAmount.amount} where uuid = ${key.toString}"
           .stripMargin
-          .update().apply()
+          .update()
+          .apply()
       }
     }
 

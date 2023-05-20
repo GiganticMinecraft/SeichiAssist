@@ -2,7 +2,12 @@ package com.github.unchama.seichiassist.subsystems.mebius.bukkit.listeners
 
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import org.bukkit.ChatColor._
-import org.bukkit.event.inventory.{InventoryAction, InventoryClickEvent, InventoryDragEvent, InventoryInteractEvent}
+import org.bukkit.event.inventory.{
+  InventoryAction,
+  InventoryClickEvent,
+  InventoryDragEvent,
+  InventoryInteractEvent
+}
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.AnvilInventory
 
@@ -16,10 +21,16 @@ class MebiusRenamePreventionListener extends Listener {
     val clickedInventory = event.getClickedInventory
     if (clickedInventory.isInstanceOf[AnvilInventory]) {
       // mebiusを選択中、左枠に置いた場合はcancel
-      if (BukkitMebiusItemStackCodec.isMebius(event.getCursor) && event.getView.convertSlot(0) == 0 && event.getRawSlot == 0) {
+      if (
+        BukkitMebiusItemStackCodec.isMebius(event.getCursor) && event
+          .getView
+          .convertSlot(0) == 0 && event.getRawSlot == 0
+      ) {
         cancelEventAndNotifyTheAlternative(event)
       }
-    } else if (event.getClick.isShiftClick && BukkitMebiusItemStackCodec.isMebius(event.getCurrentItem)) {
+    } else if (
+      event.getClick.isShiftClick && BukkitMebiusItemStackCodec.isMebius(event.getCurrentItem)
+    ) {
       // mebiusをShiftクリックした場合
       // 金床の左枠が空いている場合はcancel
       if (event.getView.getTopInventory.getItem(0) == null) {
@@ -30,7 +41,9 @@ class MebiusRenamePreventionListener extends Listener {
 
   private def cancelEventAndNotifyTheAlternative(event: InventoryInteractEvent): Unit = {
     event.setCancelled(true)
-    event.getWhoClicked.sendMessage(s"${RED}MEBIUSへの命名は$RESET/mebius naming <name>${RED}で行ってください。")
+    event
+      .getWhoClicked
+      .sendMessage(s"${RED}MEBIUSへの命名は$RESET/mebius naming <name>${RED}で行ってください。")
   }
 
   // 金床配置時（ドラッグ）
@@ -53,7 +66,9 @@ class MebiusRenamePreventionListener extends Listener {
 
     val action = event.getAction
     // event.getActionが数字キーによるアイテムの移動ならば処理を続行
-    if (action == null || (action != InventoryAction.HOTBAR_SWAP && action != InventoryAction.HOTBAR_MOVE_AND_READD)) return
+    if (
+      action == null || (action != InventoryAction.HOTBAR_SWAP && action != InventoryAction.HOTBAR_MOVE_AND_READD)
+    ) return
 
     // 金床の一番左のスロットにアイテムを移動させた場合以外return
     if (event.getView.convertSlot(0) != 0 || event.getRawSlot != 0) return

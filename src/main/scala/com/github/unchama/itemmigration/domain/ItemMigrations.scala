@@ -12,7 +12,8 @@ case class ItemMigrations(migrations: IndexedSeq[ItemMigration]) {
   }
 
   /**
-   * @return マイグレーションをバージョン番号でソートした新しい `ItemMigrations`
+   * @return
+   *   マイグレーションをバージョン番号でソートした新しい `ItemMigrations`
    */
   def sorted: ItemMigrations = {
     import Ordering.Implicits._
@@ -21,8 +22,8 @@ case class ItemMigrations(migrations: IndexedSeq[ItemMigration]) {
   }
 
   /**
-   * このオブジェクトが持つマイグレーションのうち、
-   * `appliedVersions` にバージョンが含まれていないマイグレーションのみを含む新しい `ItemMigrations` を返す。
+   * このオブジェクトが持つマイグレーションのうち、 `appliedVersions` にバージョンが含まれていないマイグレーションのみを含む新しい `ItemMigrations`
+   * を返す。
    */
   def yetToBeApplied(appliedVersions: Set[ItemMigrationVersionNumber]): ItemMigrations =
     ItemMigrations {
@@ -30,7 +31,8 @@ case class ItemMigrations(migrations: IndexedSeq[ItemMigration]) {
     }
 
   /**
-   * @return マイグレーション列のアイテムスタック変換関数を順番に全て合成した関数。
+   * @return
+   *   マイグレーション列のアイテムスタック変換関数を順番に全て合成した関数。
    */
   def toSingleConversion: ItemStackConversion = {
     if (migrations.isEmpty) {

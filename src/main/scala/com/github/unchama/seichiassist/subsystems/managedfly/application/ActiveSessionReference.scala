@@ -8,24 +8,31 @@ import com.github.unchama.seichiassist.subsystems.managedfly.domain.{NotFlying, 
 /**
  * プレーヤーの飛行セッションの参照
  */
-class ActiveSessionReference[
-  AsyncContext[_] : ConcurrentEffect,
-  SyncContext[_] : Sync : ContextCoercion[*[_], AsyncContext]
-](private val sessionMutexRef: Mutex[AsyncContext, SyncContext, Option[ActiveSession[AsyncContext, SyncContext]]]) {
+class ActiveSessionReference[AsyncContext[_]: ConcurrentEffect, SyncContext[
+  _
+]: Sync: ContextCoercion[*[_], AsyncContext]](
+  private val sessionMutexRef: Mutex[AsyncContext, SyncContext, Option[
+    ActiveSession[AsyncContext, SyncContext]
+  ]]
+) {
 
   import cats.implicits._
 
-  private def finishSessionIfPresent(sessionOption: Option[ActiveSession[AsyncContext, SyncContext]]): AsyncContext[Boolean] = {
+  private def finishSessionIfPresent(
+    sessionOption: Option[ActiveSession[AsyncContext, SyncContext]]
+  ): AsyncContext[Boolean] = {
     sessionOption match {
       case Some(session) => session.finish
-      case None => Concurrent[AsyncContext].pure(false)
+      case None          => Concurrent[AsyncContext].pure(false)
     }
   }
 
   def stopAnyRunningSession: AsyncContext[Boolean] =
     sessionMutexRef.lockAndModify(finishSessionIfPresent(_).map(finished => (None, finished)))
 
-  def replaceSession(createSession: AsyncContext[ActiveSession[AsyncContext, SyncContext]]): AsyncContext[Unit] =
+  def replaceSession(
+    createSession: AsyncContext[ActiveSession[AsyncContext, SyncContext]]
+  ): AsyncContext[Unit] =
     sessionMutexRef.lockAndModify { sessionOption =>
       for {
         session <- finishSessionIfPresent(sessionOption) >> createSession
@@ -37,7 +44,7 @@ class ActiveSessionReference[
       sessionOption <- sessionMutexRef.readLatest
       status <- sessionOption match {
         case Some(session) => session.latestFlyStatus
-        case None => Sync[SyncContext].pure(NotFlying)
+        case None          => Sync[SyncContext].pure(NotFlying)
       }
     } yield status
 }
@@ -46,12 +53,12 @@ object ActiveSessionReference {
 
   import cats.implicits._
 
-  def createNew[
-    AsyncContext[_] : ConcurrentEffect,
-    SyncContext[_] : Sync : ContextCoercion[*[_], AsyncContext]
-  ]: SyncContext[ActiveSessionReference[AsyncContext, SyncContext]] = {
+  def createNew[AsyncContext[_]: ConcurrentEffect, SyncContext[_]: Sync: ContextCoercion[*[
+    _
+  ], AsyncContext]]: SyncContext[ActiveSessionReference[AsyncContext, SyncContext]] = {
     for {
-      mutex <- Mutex.of[AsyncContext, SyncContext, Option[ActiveSession[AsyncContext, SyncContext]]](None)
+      mutex <- Mutex
+        .of[AsyncContext, SyncContext, Option[ActiveSession[AsyncContext, SyncContext]]](None)
     } yield new ActiveSessionReference(mutex)
   }
 

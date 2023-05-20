@@ -1,15 +1,18 @@
 package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.infrastructure
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.stats.{FastDiggingEffectStatsSettings, FastDiggingEffectStatsSettingsPersistence}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.stats.{
+  FastDiggingEffectStatsSettings,
+  FastDiggingEffectStatsSettingsPersistence
+}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID
 
-class JdbcFastDiggingEffectStatsSettingsPersistence[F[_] : Sync]
-  extends FastDiggingEffectStatsSettingsPersistence[F] {
+class JdbcFastDiggingEffectStatsSettingsPersistence[F[_]: Sync]
+    extends FastDiggingEffectStatsSettingsPersistence[F] {
 
-  //region コーデック
+  // region コーデック
 
   private def booleanToSettings(b: Boolean): FastDiggingEffectStatsSettings =
     if (b)
@@ -19,11 +22,11 @@ class JdbcFastDiggingEffectStatsSettingsPersistence[F[_] : Sync]
 
   private def settingsToBoolean(s: FastDiggingEffectStatsSettings): Boolean =
     s match {
-      case FastDiggingEffectStatsSettings.AlwaysReceiveDetails => true
+      case FastDiggingEffectStatsSettings.AlwaysReceiveDetails          => true
       case FastDiggingEffectStatsSettings.ReceiveTotalAmplifierOnUpdate => false
     }
 
-  //endregion
+  // endregion
 
   override def read(key: UUID): F[Option[FastDiggingEffectStatsSettings]] = Sync[F].delay {
     DB.localTx { implicit session =>
@@ -34,11 +37,14 @@ class JdbcFastDiggingEffectStatsSettingsPersistence[F[_] : Sync]
     }
   }
 
-  override def write(key: UUID, value: FastDiggingEffectStatsSettings): F[Unit] = Sync[F].delay {
-    DB.localTx { implicit session =>
-      val encoded = settingsToBoolean(value)
+  override def write(key: UUID, value: FastDiggingEffectStatsSettings): F[Unit] =
+    Sync[F].delay {
+      DB.localTx { implicit session =>
+        val encoded = settingsToBoolean(value)
 
-      sql"update playerdata set messageflag = $encoded where uuid = ${key.toString}".update().apply()
+        sql"update playerdata set messageflag = $encoded where uuid = ${key.toString}"
+          .update()
+          .apply()
+      }
     }
-  }
 }

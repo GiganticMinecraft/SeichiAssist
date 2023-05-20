@@ -10,14 +10,16 @@ import org.bukkit.event.inventory.InventoryClickEvent
  * [ButtonEffect]に渡すScoped Lambdaの中で実行可能であるべきメソッドを提供するスコープオブジェクトのクラス.
  */
 case class ButtonEffectScope(event: InventoryClickEvent) {
-  def overwriteCurrentViewBy(newLayout: MenuSlotLayout)
-                            (implicit ctx: LayoutPreparationContext,
-                             onMainThread: OnMinecraftServerThread[IO]): IO[Unit] =
+  def overwriteCurrentViewBy(newLayout: MenuSlotLayout)(
+    implicit ctx: LayoutPreparationContext,
+    onMainThread: OnMinecraftServerThread[IO]
+  ): IO[Unit] =
     event.getInventory.getHolder.asInstanceOf[MenuSession].overwriteViewWith(newLayout)
 
-  def overwriteCurrentSlotBy(newSlot: Slot)
-                            (implicit ctx: LayoutPreparationContext,
-                             onMainThread: OnMinecraftServerThread[IO]): IO[Unit] = {
+  def overwriteCurrentSlotBy(newSlot: Slot)(
+    implicit ctx: LayoutPreparationContext,
+    onMainThread: OnMinecraftServerThread[IO]
+  ): IO[Unit] = {
     val session = event.getInventory.getHolder.asInstanceOf[MenuSession]
 
     for {

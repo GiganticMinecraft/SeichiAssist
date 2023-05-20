@@ -1,5 +1,3 @@
 package com.github.unchama.seichiassist.data
 
-package object syntax
-  extends AxisAlignedCuboidSyntax
-    with XYZTupleSyntax
+package object syntax extends AxisAlignedCuboidSyntax with XYZTupleSyntax

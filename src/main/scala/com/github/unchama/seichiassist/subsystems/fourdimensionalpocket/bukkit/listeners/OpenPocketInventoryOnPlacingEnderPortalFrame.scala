@@ -10,9 +10,10 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.EquipmentSlot
 
-class OpenPocketInventoryOnPlacingEnderPortalFrame[
-  F[_] : Effect
-](api: FourDimensionalPocketApi[F, Player], effectEnvironment: EffectEnvironment) extends Listener {
+class OpenPocketInventoryOnPlacingEnderPortalFrame[F[_]: Effect](
+  api: FourDimensionalPocketApi[F, Player],
+  effectEnvironment: EffectEnvironment
+) extends Listener {
 
   @EventHandler
   def onInteractEvent(event: PlayerInteractEvent): Unit = {
@@ -25,16 +26,15 @@ class OpenPocketInventoryOnPlacingEnderPortalFrame[
       return
     }
 
-    if (hand == EquipmentSlot.OFF_HAND || !(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) {
+    if (
+      hand == EquipmentSlot.OFF_HAND || !(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)
+    ) {
       return
     }
 
-    //設置をキャンセル
+    // 設置をキャンセル
     event.setCancelled(true)
 
-    effectEnvironment.unsafeRunEffectAsync(
-      "ポケットインベントリを開く",
-      api.openPocketInventory(player)
-    )
+    effectEnvironment.unsafeRunEffectAsync("ポケットインベントリを開く", api.openPocketInventory(player))
   }
 }

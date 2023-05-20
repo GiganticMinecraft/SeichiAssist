@@ -5,25 +5,44 @@ on:
     branches:
       - develop
       - master
+    paths:
+      - src/**
+      - build.sbt
+      - .scalafix.conf
+      - .scalafmt.conf
+      - project/*
+      - .github/workflows/**.yml
+      - .github/actions/**/**.yml
+
   pull_request:
     branches:
       - develop
+    paths:
+      - src/**/
+      - build.sbt
+      - .scalafix.conf
+      - .scalafmt.conf
+      - project/*
+      - .github/workflows/**.yml
+      - .github/actions/**/**.yml
 
 jobs:
   build_test_and_upload:
+    env:
+      BUILD_ENVIRONMENT_IS_CI_OR_LOCAL: "CI"
     runs-on: ubuntu-20.04
     container: ghcr.io/giganticminecraft/seichiassist-builder:1a64049
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: 'recursive'
 
       - name: Prepare build dependencies cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-build-dependencies
-          cache-version: v-3
+          cache-version: v-4
         with:
           # sbt等は$HOMEではなくユーザーディレクトリを見ているようで、
           # GH Actionsでの ~ は /github/home/ に展開されるにもかかわらず
@@ -44,10 +63,10 @@ jobs:
 
       - name: Prepare build cache
         if: github.ref != 'refs/heads/master'
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-build
-          cache-version: v-3
+          cache-version: v-4
         with:
           path: |
             target
@@ -79,11 +98,33 @@ jobs:
             touch -t "$timestamp" $proto
           done
 
+      - name: Check format with Scalafmt
+        run: sbt scalafmtCheckAll
+      - name: Run reviewdog for Scalafmt
+        uses: ./.github/actions/run-reviewdog
+        if: ${{ (github.event_name == 'pull_request') && failure() }}
+        with:
+          reviewdog-name: scalafmt
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check lint with Scalafix on push
+        if: ${{ (github.event_name == 'push')}}
+        run: sbt "scalafix --check"
+      - name: Run lint with Scalafix on PR
+        if: ${{ (github.event_name == 'pull_request')}}
+        run: sbt scalafixAll
+      - name: Run reviewdog for Scalafix
+        uses: ./.github/actions/run-reviewdog
+        if: ${{ (github.event_name == 'pull_request') && failure() }}
+        with:
+          reviewdog-name: scalafix
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Test and build artifact
         run: sbt assembly
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: SeichiAssist-build
           path: target/build/SeichiAssist.jar
@@ -101,10 +142,59 @@ jobs:
           username: GitHub Actions
           avatar_url: ${{ secrets.DISCORD_AVATAR_URL }}
 
+  output-sha:
+    name: 最終コミットのSHA値を取得する
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.output-sha.outputs.sha }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Outputs the value
+        id: output-sha
+        run: |
+          VALUE=$(git log --format='%h' -n 1)
+          echo "sha=$VALUE" >> $GITHUB_OUTPUT
+        shell: bash
+
+  create_prerelease:
+    name: GitHub ReleasesにPreReleaseを作成する
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    needs:
+      - build_test_and_upload
+      - output-sha
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Create and push a tag
+        id: tag-name
+        run: |
+          TAG_NAME=sha-${{ needs.output-sha.outputs.sha }}
+          git tag $TAG_NAME
+          git push origin $TAG_NAME
+          echo "value=$TAG_NAME" >> $GITHUB_OUTPUT
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: SeichiAssist-build
+        id: download
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: ./SeichiAssist.jar
+          tag_name: ${{ steps.tag-name.outputs.value }}
+          draft: false
+          prerelease: true
+
   push_artifact_to_debug_server_definition:
     runs-on: ubuntu-20.04
     if: github.ref == 'refs/heads/develop'
-    needs: build_test_and_upload
+    needs:
+      - build_test_and_upload
+      - output-sha
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
@@ -128,7 +218,7 @@ jobs:
           API_TOKEN_GITHUB=${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_TOKEN }}
           user_name=${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_USER }}
           destination_folder=debug-servers/services/spigot/files/base/plugins
-          short_sha=$(echo "$GITHUB_SHA" | cut -c1-6)
+          short_sha=${{ needs.output-sha.outputs.sha }}
           commit_url=https://github.com/GiganticMinecraft/SeichiAssist/commit/$GITHUB_SHA
 
           git clone --depth 1 \
@@ -165,20 +255,11 @@ jobs:
           noprefix: true
           avatar_url: ${{ secrets.DISCORD_AVATAR_URL }}
 
-      - name: Notify to plugin-dev notification channel on discord
-        uses: sarisia/actions-status-discord@v1
-        if: always()
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          title: "デバッグサーバーへデプロイ"
-          description: "deb_s1等にプラグインを配置する"
-          username: GitHub Actions
-          avatar_url: ${{ secrets.DISCORD_AVATAR_URL }}
-
   deploy_artifact_to_production:
     runs-on: ubuntu-20.04
     if: github.ref == 'refs/heads/master'
-    needs: build_test_and_upload
+    needs:
+      - build_test_and_upload
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
@@ -210,4 +291,3 @@ jobs:
           description: "s1、s2等の本番環境にプラグインを配置する"
           username: GitHub Actions
           avatar_url: ${{ secrets.DISCORD_AVATAR_URL }}
-

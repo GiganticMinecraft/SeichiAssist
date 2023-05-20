@@ -3,7 +3,8 @@ package com.github.unchama.util.instances
 import java.util.GregorianCalendar
 
 trait GregorianCalendarInstances {
-  implicit val instanceForGregorianCalendarOrdering: Ordering[GregorianCalendar] = new GregorianCalendarOrdering
+  implicit val instanceForGregorianCalendarOrdering: Ordering[GregorianCalendar] =
+    new GregorianCalendarOrdering
 }
 
 class GregorianCalendarOrdering extends Ordering[GregorianCalendar] {

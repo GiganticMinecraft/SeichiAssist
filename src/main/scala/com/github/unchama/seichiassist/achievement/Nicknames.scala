@@ -15,7 +15,7 @@ object Nicknames {
     1010 -> HeadTail(s"百傑", s"百傑"),
     1011 -> HeadTail(s"超人", s"挑む"),
     1012 -> HeadTail(s"継続", s"力なり"),
-    //建築量実績
+    // 建築量実績
     2001 -> HeadTail(s"建築", s"極地"),
     2002 -> HeadTail(s"全て", s"創造者"),
     2003 -> HeadTail(s"常識", s"覆す"),
@@ -53,7 +53,7 @@ object Nicknames {
     3018 -> HeadTail(s"蹂躙者", s"蹂躙者"),
     3019 -> HeadTail(s"真破壊神", s"真破壊神"),
     // ログイン時間実績
-    4001 -> HeadTail(s"社蓄", s"極み"),
+    4001 -> HeadTail(s"社畜", s"極み"),
     4002 -> HeadTail(s"休日", s"爆撃機"),
     4003 -> HeadTail(s"企業", s"戦士"),
     4004 -> HeadTail(s"目覚め", s"夜"),
@@ -106,11 +106,11 @@ object Nicknames {
     5118 -> HeadTail(s"昇給", s"まだですか"),
     5119 -> HeadTail(s"歴史", s"生き証人"),
     5120 -> FullSet(s"石の上", s"にも", s"三年"),
-    5121 -> HeadTail(s"いつも",s"ログイン"),
-    5122 -> HeadTail(s"長老",s"風格"),
-    5123 -> FullSet(s"めぐ",s"り",s"巡る"),
-    5124 -> FullSet(s"仙人",s"すら",s"凌ぐ"),
-    5125 -> HeadTail(s"四つ葉",s"クローバー"),//の
+    5121 -> HeadTail(s"いつも", s"ログイン"),
+    5122 -> HeadTail(s"長老", s"風格"),
+    5123 -> FullSet(s"めぐ", s"り", s"巡る"),
+    5124 -> FullSet(s"仙人", s"すら", s"凌ぐ"),
+    5125 -> HeadTail(s"四つ葉", s"クローバー"), // の
     // 投票数実績
     6001 -> HeadTail(s"狂信者", s"狂信者"),
     6002 -> HeadTail(s"全身", s"全霊"),
@@ -284,38 +284,46 @@ object Nicknames {
 
   val getNicknameFor: AchievementId => Option[NicknamesToBeUnlocked] = Nicknames.map.get
 
-  def getHeadPartFor(achievementId: AchievementId): Option[PartialNickname] = getNicknameFor(achievementId).flatMap(_.head())
+  def getHeadPartFor(achievementId: AchievementId): Option[PartialNickname] =
+    getNicknameFor(achievementId).flatMap(_.head())
 
-  def getMiddlePartFor(achievementId: AchievementId): Option[PartialNickname] = getNicknameFor(achievementId).flatMap(_.middle())
+  def getMiddlePartFor(achievementId: AchievementId): Option[PartialNickname] =
+    getNicknameFor(achievementId).flatMap(_.middle())
 
-  def getTailPartFor(achievementId: AchievementId): Option[PartialNickname] = getNicknameFor(achievementId).flatMap(_.tail())
+  def getTailPartFor(achievementId: AchievementId): Option[PartialNickname] =
+    getNicknameFor(achievementId).flatMap(_.tail())
 
   /**
-   * @deprecated use [[getCombinedNicknameFor]] where possible
+   * @deprecated
+   *   use [[getCombinedNicknameFor]] where possible
    */
-  @deprecated def getTitleFor(headAchievementId: AchievementId, middleAchievementId: AchievementId, tailAchievementId: AchievementId): String = {
+  @deprecated def getTitleFor(
+    headAchievementId: AchievementId,
+    middleAchievementId: AchievementId,
+    tailAchievementId: AchievementId
+  ): String = {
     getHeadPartFor(headAchievementId).getOrElse("") +
       getMiddlePartFor(middleAchievementId).getOrElse("") +
       getTailPartFor(tailAchievementId).getOrElse("")
   }
 
-  def getCombinedNicknameFor(head: AchievementId, middle: AchievementId, tail: AchievementId): Option[Nickname] = {
-    val definedParts = List(
-      getHeadPartFor(head),
-      getMiddlePartFor(middle),
-      getTailPartFor(tail)
-    ).flatten
+  def getCombinedNicknameFor(
+    head: AchievementId,
+    middle: AchievementId,
+    tail: AchievementId
+  ): Option[Nickname] = {
+    val definedParts =
+      List(getHeadPartFor(head), getMiddlePartFor(middle), getTailPartFor(tail)).flatten
 
     definedParts match {
-      case nonEmptyParts@ ::(_, _) => Some(nonEmptyParts.mkString(""))
-      case Nil => None
+      case nonEmptyParts @ ::(_, _) => Some(nonEmptyParts.mkString(""))
+      case Nil                      => None
     }
   }
 }
 
 /**
- * この構造で持たれる二つ名は、対応する実績を解除、または対応する二つ名を購入していれば、
- * 二つ名組み合わせ設定で使用できるようになる。
+ * この構造で持たれる二つ名は、対応する実績を解除、または対応する二つ名を購入していれば、 二つ名組み合わせ設定で使用できるようになる。
  */
 sealed trait NicknamesToBeUnlocked {
   def head(): Option[String]
@@ -325,7 +333,8 @@ sealed trait NicknamesToBeUnlocked {
   def tail(): Option[String]
 }
 
-case class HeadTail(private val _head: String, private val _tail: String) extends NicknamesToBeUnlocked {
+case class HeadTail(private val _head: String, private val _tail: String)
+    extends NicknamesToBeUnlocked {
   val head: Option[String] = Some(_head)
   val middle: Option[String] = None
   val tail: Option[String] = Some(_tail)
@@ -343,13 +352,18 @@ case class HeadOnly(private val _head: String) extends NicknamesToBeUnlocked {
   val tail: Option[String] = None
 }
 
-case class FullSet(private val _head: String, private val _middle: String, private val _tail: String) extends NicknamesToBeUnlocked {
+case class FullSet(
+  private val _head: String,
+  private val _middle: String,
+  private val _tail: String
+) extends NicknamesToBeUnlocked {
   val head: Option[String] = Some(_head)
   val middle: Option[String] = Some(_middle)
   val tail: Option[String] = Some(_tail)
 }
 
-case class HeadMiddle(private val _head: String, private val _middle: String) extends NicknamesToBeUnlocked {
+case class HeadMiddle(private val _head: String, private val _middle: String)
+    extends NicknamesToBeUnlocked {
   val head: Option[String] = Some(_head)
   val middle: Option[String] = Some(_middle)
   val tail: Option[String] = None

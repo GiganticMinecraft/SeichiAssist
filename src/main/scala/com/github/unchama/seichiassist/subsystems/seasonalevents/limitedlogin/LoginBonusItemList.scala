@@ -1,6 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin
 
-import com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin.LoginBonusDay.{Everyday, TotalDay}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin.LoginBonusDay.{
+  Everyday,
+  TotalDay
+}
 
 object LoginBonusItemList {
   private val map = Map(
@@ -12,6 +15,6 @@ object LoginBonusItemList {
 
   def bonusAt(day: LoginBonusDay): Option[Set[LoginBonus]] = day match {
     case TotalDay(count) => map.get(TotalDay(count))
-    case Everyday => Some(dailyItem)
+    case Everyday        => Some(dailyItem)
   }
 }

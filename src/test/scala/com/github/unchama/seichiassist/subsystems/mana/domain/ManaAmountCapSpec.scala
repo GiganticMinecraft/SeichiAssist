@@ -1,14 +1,14 @@
 package com.github.unchama.seichiassist.subsystems.mana.domain
 
-import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{SeichiLevel, SeichiLevelTable}
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{
+  SeichiLevel,
+  SeichiLevelTable
+}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
-class ManaAmountCapSpec
-  extends AnyWordSpec
-    with ScalaCheckPropertyChecks
-    with Matchers {
+class ManaAmountCapSpec extends AnyWordSpec with ScalaCheckPropertyChecks with Matchers {
 
   import cats.implicits._
 
@@ -21,8 +21,9 @@ class ManaAmountCapSpec
 
   "ManaAmountCap" should {
     "agree on certain checkpoints" in {
-      checkpoints.foreach { case (level, amount) =>
-        assertResult(amount)(ManaAmountCap.at(level))
+      checkpoints.foreach {
+        case (level, amount) =>
+          assertResult(amount)(ManaAmountCap.at(level))
       }
     }
     "be increasing" in {

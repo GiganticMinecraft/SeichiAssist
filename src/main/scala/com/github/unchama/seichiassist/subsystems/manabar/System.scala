@@ -13,10 +13,9 @@ object System {
 
   import cats.implicits._
 
-  def wired[
-    F[_] : ConcurrentEffect : ErrorLogger,
-    G[_] : SyncEffect
-  ](implicit manaApi: ManaReadApi[F, G, Player]): G[Subsystem[F]] = {
+  def wired[F[_]: ConcurrentEffect: ErrorLogger, G[_]: SyncEffect](
+    implicit manaApi: ManaReadApi[F, G, Player]
+  ): G[Subsystem[F]] = {
     import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 
     val definition =
@@ -24,9 +23,8 @@ object System {
 
     BukkitRepositoryControls.createHandles(definition).map { control =>
       new Subsystem[F] {
-        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = List(
-          control.coerceFinalizationContextTo[F]
-        )
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] =
+          List(control.coerceFinalizationContextTo[F])
       }
     }
   }

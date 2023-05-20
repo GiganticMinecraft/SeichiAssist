@@ -11,8 +11,10 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.EquipmentSlot
 
-class BuildMainMenuOpener(implicit effectEnvironment: EffectEnvironment,
-                          ioCanOpenBuildMainMenu: IO CanOpen BuildMainMenu.type) extends Listener {
+class BuildMainMenuOpener(
+  implicit effectEnvironment: EffectEnvironment,
+  ioCanOpenBuildMainMenu: IO CanOpen BuildMainMenu.type
+) extends Listener {
 
   import com.github.unchama.targetedeffect._
 
@@ -22,7 +24,7 @@ class BuildMainMenuOpener(implicit effectEnvironment: EffectEnvironment,
 
     event.getAction match {
       case Action.LEFT_CLICK_AIR | Action.LEFT_CLICK_BLOCK =>
-      case _ => return
+      case _                                               => return
     }
 
     {

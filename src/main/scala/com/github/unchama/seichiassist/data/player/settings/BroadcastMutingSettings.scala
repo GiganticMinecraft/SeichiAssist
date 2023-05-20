@@ -5,25 +5,33 @@ package com.github.unchama.seichiassist.data.player.settings
  */
 object BroadcastMutingSettings {
 
-  def fromBooleanSettings(shouldMuteMessage: Boolean, shouldMuteSounds: Boolean): BroadcastMutingSettings = {
+  def fromBooleanSettings(
+    shouldMuteMessage: Boolean,
+    shouldMuteSounds: Boolean
+  ): BroadcastMutingSettings = {
     (shouldMuteMessage, shouldMuteSounds) match {
       case (true, true) => MuteMessageAndSound
-      case (_, true) => ReceiveMessageOnly
-      case _ => ReceiveMessageAndSound
+      case (_, true)    => ReceiveMessageOnly
+      case _            => ReceiveMessageAndSound
     }
   }
 
-  case object ReceiveMessageAndSound extends BroadcastMutingSettings(ReceiveMessageOnly, false, false)
+  case object ReceiveMessageAndSound
+      extends BroadcastMutingSettings(ReceiveMessageOnly, false, false)
 
-  case object ReceiveMessageOnly extends BroadcastMutingSettings(MuteMessageAndSound, false, true)
+  case object ReceiveMessageOnly
+      extends BroadcastMutingSettings(MuteMessageAndSound, false, true)
 
-  case object MuteMessageAndSound extends BroadcastMutingSettings(ReceiveMessageAndSound, true, true)
+  case object MuteMessageAndSound
+      extends BroadcastMutingSettings(ReceiveMessageAndSound, true, true)
 
 }
 
-sealed abstract class BroadcastMutingSettings(nextThunk: => BroadcastMutingSettings,
-                                              val shouldMuteMessages: Boolean,
-                                              val shouldMuteSounds: Boolean) {
+sealed abstract class BroadcastMutingSettings(
+  nextThunk: => BroadcastMutingSettings,
+  val shouldMuteMessages: Boolean,
+  val shouldMuteSounds: Boolean
+) {
   // case objectの循環参照のため
   lazy val next: BroadcastMutingSettings = nextThunk
 }

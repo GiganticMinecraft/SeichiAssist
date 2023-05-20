@@ -15,7 +15,7 @@ import org.bukkit.inventory.{Inventory, InventoryHolder, ItemStack}
 /**
  * 共有された[sessionInventory]を作用付きの「メニュー」として扱うインベントリを保持するためのセッション.
  */
-class MenuSession private(private val frame: MenuFrame) extends InventoryHolder {
+class MenuSession private (private val frame: MenuFrame) extends InventoryHolder {
 
   val currentLayout: Ref[IO, MenuSlotLayout] = Ref.unsafe(MenuSlotLayout())
 
@@ -24,12 +24,15 @@ class MenuSession private(private val frame: MenuFrame) extends InventoryHolder 
   /**
    * このセッションが持つ共有インベントリを開く[TargetedEffect]を返します.
    */
-  def openInventory(implicit onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] =
+  def openInventory(
+    implicit onMainThread: OnMinecraftServerThread[IO]
+  ): TargetedEffect[Player] =
     PlayerEffects.openInventoryEffect(sessionInventory)
 
-  def overwriteViewWith(newLayout: MenuSlotLayout)
-                       (implicit ctx: LayoutPreparationContext,
-                        onMainThread: OnMinecraftServerThread[IO]): IO[Unit] = {
+  def overwriteViewWith(newLayout: MenuSlotLayout)(
+    implicit ctx: LayoutPreparationContext,
+    onMainThread: OnMinecraftServerThread[IO]
+  ): IO[Unit] = {
     type LayoutDiff = Map[Int, Option[Slot]]
 
     // 差分があるインデックスを列挙する
@@ -39,10 +42,9 @@ class MenuSession private(private val frame: MenuFrame) extends InventoryHolder 
 
         import cats.implicits._
 
-        domain
-          .map(key => key -> newMap.get(key))
-          .toMap
-          .filter { case (key, newValue) => oldMap.get(key) neqv newValue }
+        domain.map(key => key -> newMap.get(key)).toMap.filter {
+          case (key, newValue) => oldMap.get(key) neqv newValue
+        }
       }
 
       implicit val slotEq: Eq[Slot] = (x: Slot, y: Slot) => x eq y
@@ -76,7 +78,7 @@ class MenuSession private(private val frame: MenuFrame) extends InventoryHolder 
 
           sessionInventory.getViewers.asScala.toList.foreach {
             case player: Player => player.updateInventory()
-            case _ =>
+            case _              =>
           }
         }
       }
@@ -89,6 +91,7 @@ class MenuSession private(private val frame: MenuFrame) extends InventoryHolder 
 
 object MenuSession {
 
-  def createNewSessionWith[F[_] : Sync](frame: MenuFrame): F[MenuSession] = Sync[F].delay(new MenuSession(frame))
+  def createNewSessionWith[F[_]: Sync](frame: MenuFrame): F[MenuSession] =
+    Sync[F].delay(new MenuSession(frame))
 
 }

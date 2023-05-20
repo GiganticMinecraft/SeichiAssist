@@ -3,80 +3,99 @@ package com.github.unchama.seichiassist.listener
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist._
-import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.seichiskill.{BlockSearching, BreakArea}
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.task.GiganticBerserkTask
-import com.github.unchama.seichiassist.util.{BreakUtil, Util}
+import com.github.unchama.seichiassist.util.{BreakUtil, EnemyEntity}
+import org.bukkit.ChatColor.RED
 import org.bukkit._
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.{Player, Projectile}
 import org.bukkit.event.entity._
 import org.bukkit.event.{EventHandler, Listener}
 
-class EntityListener(implicit effectEnvironment: EffectEnvironment,
-                     ioOnMainThread: OnMinecraftServerThread[IO],
-                     manaApi: ManaApi[IO, SyncIO, Player],
-                     globalNotification: DiscordNotificationAPI[IO]) extends Listener {
+class EntityListener(
+  implicit effectEnvironment: EffectEnvironment,
+  ioOnMainThread: OnMinecraftServerThread[IO],
+  manaApi: ManaApi[IO, SyncIO, Player],
+  globalNotification: DiscordNotificationAPI[IO]
+) extends Listener {
   private val playermap = SeichiAssist.playermap
 
-  @EventHandler def onPlayerActiveSkillEvent(event: ProjectileHitEvent): Unit = { //矢を取得する
+  @EventHandler def onPlayerActiveSkillEvent(event: ProjectileHitEvent): Unit = { // 矢を取得する
     val projectile = event.getEntity
 
-    if (!SeichiAssist.instance.arrowSkillProjectileScope.isTracked(projectile).unsafeRunSync()) return
+    if (!SeichiAssist.instance.arrowSkillProjectileScope.isTracked(projectile).unsafeRunSync())
+      return
 
     SeichiAssist.instance.arrowSkillProjectileScope.getReleaseAction(projectile).unsafeRunSync()
 
     val player = projectile.getShooter match {
       case p: Player => p
-      case _ => return
+      case _         => return
     }
 
-    //もしサバイバルでなければ処理を終了
-    //もしフライ中なら終了
-    if ((player.getGameMode ne GameMode.SURVIVAL) || player.isFlying) return
+    // もしサバイバルでなければ処理を終了
+    if (player.getGameMode != GameMode.SURVIVAL) return
 
-    //壊されるブロックを取得
+    // 壊されるブロックを取得
     val block =
-      MaterialSets.refineBlock(
-        player.getWorld.getBlockAt(projectile.getLocation.add(projectile.getVelocity.normalize)),
-        MaterialSets.materials
-      ).getOrElse(return)
+      MaterialSets
+        .refineBlock(
+          player
+            .getWorld
+            .getBlockAt(projectile.getLocation.add(projectile.getVelocity.normalize)),
+          MaterialSets.materials
+        )
+        .getOrElse(
+          return
+        )
 
-    //整地ワールドでは重力値によるキャンセル判定を行う(スキル判定より先に判定させること)
+    // 整地ワールドでは重力値によるキャンセル判定を行う(スキル判定より先に判定させること)
     if (BreakUtil.getGravity(player, block, isAssault = false) > 3) {
-      player.playSound(player.getLocation, Sound.BLOCK_ANVIL_FALL, 0.0F, -1.0F)
-      player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。")
+      player.playSound(player.getLocation, Sound.BLOCK_ANVIL_FALL, 0.0f, -1.0f)
+      player.sendMessage(s"${RED}整地ワールドでは必ず上から掘ってください。")
       return
     }
 
-    //スキル発動条件がそろってなければ終了
+    // スキル発動条件がそろってなければ終了
     if (!player.getWorld.isSeichiSkillAllowed) return
 
-    //破壊不可能な場合は処理を終了
+    // 破壊不可能な場合は処理を終了
     if (!BreakUtil.canBreakWithSkill(player, block)) return
 
-    //実際に使用するツール
-    val tool = MaterialSets.refineItemStack(
-      player.getInventory.getItemInMainHand,
-      MaterialSets.breakToolMaterials
-    ).getOrElse(return)
+    // 実際に使用するツール
+    val tool = MaterialSets
+      .refineItemStack(player.getInventory.getItemInMainHand, MaterialSets.breakToolMaterials)
+      .getOrElse(
+        return
+      )
 
-    //耐久値がマイナスかつ耐久無限ツールでない時処理を終了
-    if (tool.getDurability > tool.getType.getMaxDurability && !tool.getItemMeta.isUnbreakable) return
+    // 耐久値がマイナスかつ耐久無限ツールでない時処理を終了
+    if (tool.getDurability > tool.getType.getMaxDurability && !tool.getItemMeta.isUnbreakable)
+      return
 
     runArrowSkillOfHitBlock(player, block, tool)
   }
 
-  private def runArrowSkillOfHitBlock(player: Player, hitBlock: BlockBreakableBySkill, tool: BreakTool): Unit = {
+  private def runArrowSkillOfHitBlock(
+    player: Player,
+    hitBlock: BlockBreakableBySkill,
+    tool: BreakTool
+  ): Unit = {
     val playerData = playermap(player.getUniqueId)
 
     val skillState = playerData.skillState.get.unsafeRunSync()
-    val selectedSkill = skillState.activeSkill.getOrElse(return)
+    val selectedSkill = skillState
+      .activeSkill
+      .getOrElse(
+        return
+      )
     val activeSkillArea = BreakArea(selectedSkill, skillState.usageMode)
 
     val breakArea = activeSkillArea.makeBreakArea(player).unsafeRunSync().head
@@ -87,49 +106,42 @@ class EntityListener(implicit effectEnvironment: EffectEnvironment,
       breakLength.x * breakLength.y * breakLength.z
     }
 
-    val level =
-      SeichiAssist.instance
-        .breakCountSystem.api
-        .seichiAmountDataRepository(player).read
-        .unsafeRunSync()
-        .levelCorrespondingToExp.level
-
-    val isMultiTypeBreakingSkillEnabled = {
-      import ManagedWorld._
-
-      level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel &&
-        (player.getWorld.isSeichiSkillAllowed && playerData.settings.multipleidbreakflag)
-    }
+    val isMultiTypeBreakingSkillEnabled =
+      BreakUtil.performsMultipleIDBlockBreakWhenUsingSkills(player).unsafeRunSync()
 
     import com.github.unchama.seichiassist.data.syntax._
-    val BlockSearching.Result(breakBlocks, _, lavaBlocks) =
+    val BlockSearching.Result(breakBlocks, waterBlocks, lavaBlocks) =
       BlockSearching
         .searchForBlocksBreakableWithSkill(player, breakArea.gridPoints(), hitBlock)
         .unsafeRunSync()
         .filterSolids(targetBlock =>
-          isMultiTypeBreakingSkillEnabled || BlockSearching.multiTypeBreakingFilterPredicate(hitBlock)(targetBlock)
+          isMultiTypeBreakingSkillEnabled || BlockSearching
+            .multiTypeBreakingFilterPredicate(hitBlock)(targetBlock)
         )
 
-    //重力値計算
+    // 重力値計算
     val gravity = BreakUtil.getGravity(player, hitBlock, isAssault = false)
 
-    //減る経験値計算
-    //実際に破壊するブロック数 * 全てのブロックを破壊したときの消費経験値 ÷ すべての破壊するブロック数 * 重力
-    val manaConsumption = breakBlocks.size.toDouble * (gravity + 1) * selectedSkill.manaCost / breakAreaVolume
+    // 減る経験値計算
+    // 実際に破壊するブロック数 * 全てのブロックを破壊したときの消費経験値 ÷ すべての破壊するブロック数 * 重力
+    val manaConsumption =
+      breakBlocks.size.toDouble * (gravity + 1) * selectedSkill.manaCost / breakAreaVolume
 
-    //セットする耐久値の計算
-    //１マス溶岩を破壊するのにはブロック１０個分の耐久が必要
+    // セットする耐久値の計算
+    // １マス溶岩、水を破壊するのにはブロック１０個分の耐久が必要
     val nextDurability = {
       val durabilityEnchantment = tool.getEnchantmentLevel(Enchantment.DURABILITY)
 
       tool.getDurability +
-        BreakUtil.calcDurability(durabilityEnchantment, breakBlocks.size) +
-        BreakUtil.calcDurability(durabilityEnchantment, 10 * lavaBlocks.size)
+        BreakUtil.calcDurability(
+          durabilityEnchantment,
+          breakBlocks.size + 10 * (lavaBlocks.size + waterBlocks.size)
+        )
     }.toShort
 
-    //重力値の判定
+    // 重力値の判定
     if (gravity > 15) {
-      player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。")
+      player.sendMessage(s"${RED}スキルを使用するには上から掘ってください。")
       return
     }
 
@@ -139,23 +151,34 @@ class EntityListener(implicit effectEnvironment: EffectEnvironment,
     }
 
     // マナを減らす
-    if (manaApi.manaAmount(player).tryAcquire(ManaAmount(manaConsumption)).unsafeRunSync().isEmpty)
+    if (
+      manaApi.manaAmount(player).tryAcquire(ManaAmount(manaConsumption)).unsafeRunSync().isEmpty
+    )
       return
 
-    //耐久値を減らす
+    // 耐久値を減らす
     if (!tool.getItemMeta.isUnbreakable) tool.setDurability(nextDurability)
 
-    //以降破壊する処理
-    //溶岩を破壊する処理
-    lavaBlocks.foreach(_.setType(Material.AIR))
+    // 以降破壊する処理
+    // 溶岩と水を破壊する
+    (lavaBlocks ++ waterBlocks).foreach(_.setType(Material.AIR))
 
-    //元ブロックの真ん中の位置
+    // 元ブロックの真ん中の位置
     val centerOfBlock = hitBlock.getLocation.add(0.5, 0.5, 0.5)
 
     effectEnvironment.unsafeRunEffectAsync(
       "破壊エフェクトを再生する",
-      playerData.skillEffectState.selection
-        .runBreakEffect(player, selectedSkill, tool, breakBlocks.toSet, breakArea, centerOfBlock)
+      playerData
+        .skillEffectState
+        .selection
+        .runBreakEffect(
+          player,
+          selectedSkill,
+          tool,
+          breakBlocks.toSet,
+          breakArea,
+          centerOfBlock
+        )
     )
   }
 
@@ -190,15 +213,15 @@ class EntityListener(implicit effectEnvironment: EffectEnvironment,
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
     implicit val ioCE: ConcurrentEffect[IO] = IO.ioConcurrentEffect
     /*GiganticBerserk用*/
-    //死んだMOBがGiganticBerserkの対象MOBでなければ終了
+    // 死んだMOBがGiganticBerserkの対象MOBでなければ終了
     val entity = event.getEntity
-    if (!Util.isEnemy(entity.getType)) return
+    if (!EnemyEntity.isEnemy(entity.getType)) return
     val player = entity.getKiller
-    //MOBを倒したプレイヤーがいなければ終了
+    // MOBを倒したプレイヤーがいなければ終了
     if (player == null) return
-    //プレイヤーが整地ワールドに居ない場合終了
+    // プレイヤーが整地ワールドに居ない場合終了
     if (!player.getWorld.isSeichi) return
     val GBTR = new GiganticBerserkTask
-    GBTR.PlayerKillEnemy(player, entity)
+    GBTR.PlayerKillEnemy(player)
   }
 }

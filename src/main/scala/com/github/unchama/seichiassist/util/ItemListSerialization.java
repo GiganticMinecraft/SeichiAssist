@@ -17,6 +17,7 @@ public final class ItemListSerialization {
 
     }
 
+
     public static @Nullable String serializeToBase64(List<ItemStack> items) {
         if (items.isEmpty()) {
             return "";

@@ -6,10 +6,8 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
 
-import scala.jdk.CollectionConverters._
-
 object SpawnRegionProjectileInterceptor extends Listener {
-  val spawnRegions = Set(
+  private val spawnRegionNames = Set(
     // 基本の保護名
     "spawn",
     // メインワールドにおいて、スポーン地点を保護している保護名
@@ -17,20 +15,29 @@ object SpawnRegionProjectileInterceptor extends Listener {
     // 公共施設サーバーのスポーン地点名
     "world-spawn"
   )
-  val projectiles = Set(
-    BOW, EGG, LINGERING_POTION, SPLASH_POTION, ENDER_PEARL, EYE_OF_ENDER, SNOW_BALL, EXP_BOTTLE
+  private val projectiles = Set(
+    BOW,
+    EGG,
+    ENDER_PEARL,
+    EXP_BOTTLE,
+    EYE_OF_ENDER,
+    LINGERING_POTION,
+    SNOW_BALL,
+    SPLASH_POTION
   )
 
   @EventHandler
   def beforeProjectileLaunch(event: PlayerInteractEvent): Unit = {
     val player = event.getPlayer
     val action = event.getAction
+    val hasProjectile = event.hasItem && projectiles.contains(event.getItem.getType)
+    val isRightClickEvent =
+      action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK
+    val isInSpawnRegion =
+      getRegions(player.getLocation).map(_.getId).exists(spawnRegionNames.contains)
 
     // Projectileを持った状態で右クリックし、playerがいる保護がspawn保護の中であった場合はイベントをキャンセルする
-    if (event.hasItem
-      && projectiles.contains(event.getItem.getType)
-      && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)
-      && getRegions(player.getLocation).asScala.map(_.getId).exists(spawnRegions.contains)) {
+    if (hasProjectile && isRightClickEvent && isInSpawnRegion) {
       event.setCancelled(true)
     }
   }

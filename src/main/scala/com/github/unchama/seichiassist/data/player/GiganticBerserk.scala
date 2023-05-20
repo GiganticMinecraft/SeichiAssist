@@ -3,7 +3,13 @@ package com.github.unchama.seichiassist.data.player
 import com.github.unchama.seichiassist.LevelThresholds
 import org.bukkit.Material
 
-case class GiganticBerserk(level: Int = 0, exp: Int = 0, stage: Int = 0, canEvolve: Boolean = false, cd: Int = 0) {
+case class GiganticBerserk(
+  level: Int = 0,
+  exp: Int = 0,
+  stage: Int = 0,
+  canEvolve: Boolean = false,
+  cd: Int = 0
+) {
 
   def reachedLimit(): Boolean = stage == 5 && level == 9
 
@@ -31,7 +37,8 @@ case class GiganticBerserk(level: Int = 0, exp: Int = 0, stage: Int = 0, canEvol
 
   /**
    * 現在の `level` と `stage` において、次の `level` までに倒す必要がある敵の数(= `exp`)を返します.
-   * @return 次の `level` までに倒す必要がある敵の数(= `exp`)
+   * @return
+   *   次の `level` までに倒す必要がある敵の数(= `exp`)
    */
   def requiredExpToNextLevel(): Int = {
     val current = stage * 10 + level

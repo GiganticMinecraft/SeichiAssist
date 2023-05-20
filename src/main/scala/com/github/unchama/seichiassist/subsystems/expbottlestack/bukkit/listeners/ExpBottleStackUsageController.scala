@@ -13,11 +13,10 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 
-class ExpBottleStackUsageController[
-  F[_] : Effect,
-  G[_] : SyncEffect
-](implicit managedBottleScope: ResourceScope[F, G, ThrownExpBottle], effectEnvironment: EffectEnvironment)
-  extends Listener {
+class ExpBottleStackUsageController[F[_]: Effect, G[_]: SyncEffect](
+  implicit managedBottleScope: ResourceScope[F, G, ThrownExpBottle],
+  effectEnvironment: EffectEnvironment
+) extends Listener {
 
   import cats.effect.implicits._
 
@@ -28,8 +27,11 @@ class ExpBottleStackUsageController[
     if (managedBottleScope.isTracked(bottle).runSync[SyncIO].unsafeRunSync()) {
       event.setExperience(0)
       managedBottleScope
-        .getReleaseAction(bottle).runSync[SyncIO].unsafeRunSync()
-        .toIO.unsafeRunSync()
+        .getReleaseAction(bottle)
+        .runSync[SyncIO]
+        .unsafeRunSync()
+        .toIO
+        .unsafeRunSync()
     }
   }
 
@@ -41,17 +43,22 @@ class ExpBottleStackUsageController[
     val action = event.getAction
 
     // 経験値瓶を持った状態でShift右クリックをした場合
-    if (player.isSneaking
+    if (
+      player.isSneaking
       && playerInventory.getItemInMainHand != null
       && playerInventory.getItemInMainHand.getType == Material.EXP_BOTTLE
-      && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) {
+      && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)
+    ) {
 
       val bottleCount = BottleCount(playerInventory.getItemInMainHand.getAmount)
-      val bottleResource = Resources.bottleResourceSpawningAt[F](player.getLocation, bottleCount)
+      val bottleResource =
+        Resources.bottleResourceSpawningAt[F](player.getLocation, bottleCount)
 
       effectEnvironment.unsafeRunEffectAsync(
         "経験値瓶の消費を待つ",
-        managedBottleScope.useTracked[ThrownExpBottle, Nothing](bottleResource) { _ => Effect[F].never }
+        managedBottleScope.useTracked[ThrownExpBottle, Nothing](bottleResource) { _ =>
+          Effect[F].never
+        }
       )
 
       playerInventory.setItemInMainHand(new ItemStack(Material.AIR))

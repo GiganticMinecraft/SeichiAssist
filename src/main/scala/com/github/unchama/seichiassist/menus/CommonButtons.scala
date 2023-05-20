@@ -17,21 +17,19 @@ object CommonButtons {
 
   import com.github.unchama.targetedeffect._
 
-  def transferButton[M <: Menu](partialBuilder: AbstractItemStackBuilder[Nothing],
-                                transferDescription: String,
-                                target: M,
-                                actionDescription: String = "クリックで移動")
-                               (implicit canOpenM: CanOpen[IO, M]): Button =
+  def transferButton[M <: Menu](
+    partialBuilder: AbstractItemStackBuilder[Nothing],
+    transferDescription: String,
+    target: M,
+    actionDescription: String = "クリックで移動"
+  )(implicit canOpenM: CanOpen[IO, M]): Button =
     Button(
       partialBuilder
         .title(navigation(transferDescription))
         .lore(List(clickResultDescription(actionDescription)))
         .build(),
       action.LeftClickButtonEffect(
-        SequentialEffect(
-          CommonSoundEffects.menuTransitionFenceSound,
-          canOpenM.open(target)
-        )
+        SequentialEffect(CommonSoundEffects.menuTransitionFenceSound, canOpenM.open(target))
       )
     )
 

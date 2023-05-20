@@ -9,7 +9,7 @@ object SyncClassifyBukkitPlayerWorld {
 
   import ManagedWorld._
 
-  def apply[F[_] : Sync]: ClassifyPlayerWorld[F, Player] =
+  def apply[F[_]: Sync]: ClassifyPlayerWorld[F, Player] =
     (player: Player) => Sync[F].delay(player.getWorld.isSeichi)
 
 }

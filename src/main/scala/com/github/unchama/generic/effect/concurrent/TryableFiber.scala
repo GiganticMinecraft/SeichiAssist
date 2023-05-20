@@ -5,12 +5,13 @@ import cats.effect.{CancelToken, Concurrent, Fiber}
 import cats.{FlatMap, Monad}
 
 /**
- * We can think of a [[cats.effect.concurrent.Deferred]] as a "mutable" Promise to which
- * read and write operations are synchronized. Then [[cats.effect.concurrent.TryableDeferred]] is a
- * [[cats.effect.concurrent.Deferred]] which can immediately tell whether it has been completed or not.
+ * We can think of a [[cats.effect.concurrent.Deferred]] as a "mutable" Promise to which read
+ * and write operations are synchronized. Then [[cats.effect.concurrent.TryableDeferred]] is a
+ * [[cats.effect.concurrent.Deferred]] which can immediately tell whether it has been completed
+ * or not.
  *
- * Analogously then, [[Fiber]] is a read-only promise and we should be able to describe
- * a [[Fiber]] which can tell its completion status. [[TryableFiber]] serves this purpose.
+ * Analogously then, [[Fiber]] is a read-only promise and we should be able to describe a
+ * [[Fiber]] which can tell its completion status. [[TryableFiber]] serves this purpose.
  */
 trait TryableFiber[F[_], A] extends Fiber[F, A] {
   implicit val fFMap: FlatMap[F]
@@ -27,8 +28,8 @@ trait TryableFiber[F[_], A] extends Fiber[F, A] {
   def isIncomplete: F[Boolean] = isComplete map (!_)
 
   /**
-   * A computation that cancels the fiber if it is not complete,
-   * returning whether the cancellation happened or not.
+   * A computation that cancels the fiber if it is not complete, returning whether the
+   * cancellation happened or not.
    */
   def cancelIfIncomplete: F[Boolean] = {
     // cancellation does not alter completion status;
@@ -39,10 +40,12 @@ trait TryableFiber[F[_], A] extends Fiber[F, A] {
 }
 
 object TryableFiber {
+
   /**
    * Start concurrent execution of the source suspended in `F`.
    *
-   * @return a [[TryableFiber]] which can be used to cancel, join or tryJoin the result
+   * @return
+   *   a [[TryableFiber]] which can be used to cancel, join or tryJoin the result
    */
   def start[F[_], A](fa: F[A])(implicit fConc: Concurrent[F]): F[TryableFiber[F, A]] = {
     import cats.implicits._

@@ -5,7 +5,7 @@ sealed trait ValentineCookieEffects extends enumeratum.EnumEntry
 object ValentineCookieEffects extends enumeratum.Enum[ValentineCookieEffects] {
   override val values: IndexedSeq[ValentineCookieEffects] = findValues
 
-  //region プラス効果
+  // region プラス効果
 
   case object Jump extends ValentineCookieEffects
 
@@ -25,11 +25,11 @@ object ValentineCookieEffects extends enumeratum.Enum[ValentineCookieEffects] {
 
   case object DamageResistance extends ValentineCookieEffects
 
-  //endregion
+  // endregion
 
-  //region マイナス効果
+  // region マイナス効果
 
   case object Unluck extends ValentineCookieEffects
 
-  //endregion
+  // endregion
 }

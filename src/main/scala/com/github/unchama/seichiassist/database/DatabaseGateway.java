@@ -1,9 +1,6 @@
 package com.github.unchama.seichiassist.database;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.database.manipulators.DonateDataManipulator;
-import com.github.unchama.seichiassist.database.manipulators.GachaDataManipulator;
-import com.github.unchama.seichiassist.database.manipulators.MineStackGachaDataManipulator;
 import com.github.unchama.seichiassist.database.manipulators.PlayerDataManipulator;
 import com.github.unchama.util.ActionStatus;
 import com.github.unchama.util.failable.FailableAction;
@@ -26,9 +23,6 @@ public class DatabaseGateway {
     final String databaseName;
     // TODO これらはこのクラスに入るべきではなさそう(プラグインクラスに入れるべき)
     public final PlayerDataManipulator playerDataManipulator;
-    public final GachaDataManipulator gachaDataManipulator;
-    public final MineStackGachaDataManipulator mineStackGachaDataManipulator;
-    public final DonateDataManipulator donateDataManipulator;
     private @NotNull
     final String databaseUrl;
     private @NotNull
@@ -47,9 +41,6 @@ public class DatabaseGateway {
         this.password = password;
 
         this.playerDataManipulator = new PlayerDataManipulator(this);
-        this.gachaDataManipulator = new GachaDataManipulator(this);
-        this.mineStackGachaDataManipulator = new MineStackGachaDataManipulator(this);
-        this.donateDataManipulator = new DonateDataManipulator(this);
     }
 
     public static DatabaseGateway createInitializedInstance(@NotNull String databaseUrl,

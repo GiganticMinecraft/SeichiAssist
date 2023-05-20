@@ -5,4 +5,5 @@ import com.github.unchama.seichiassist.subsystems.managedfly.domain.RemainingFly
 
 import java.util.UUID
 
-trait FlyDurationPersistenceRepository[F[_]] extends RefDict[F, UUID, Option[RemainingFlyDuration]]
+trait FlyDurationPersistenceRepository[F[_]]
+    extends RefDict[F, UUID, Option[RemainingFlyDuration]]

@@ -6,8 +6,14 @@ import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
-import com.github.unchama.seichiassist.subsystems.mebius.domain.resources.{MebiusMessages, MebiusTalks}
-import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{MebiusSpeech, MebiusSpeechStrength}
+import com.github.unchama.seichiassist.subsystems.mebius.domain.resources.{
+  MebiusMessages,
+  MebiusTalks
+}
+import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{
+  MebiusSpeech,
+  MebiusSpeechStrength
+}
 import com.github.unchama.seichiassist.subsystems.mebius.service.MebiusSpeechService
 import com.github.unchama.util.collection.RandomizedCollection
 import org.bukkit.entity.Player
@@ -22,9 +28,9 @@ object PeriodicMebiusSpeechRoutine {
     1.minute
   }
 
-  def unblockAndSpeakTipsOrMessageRandomly(player: Player)
-                                          (implicit
-                                           serviceRepository: KeyedDataRepository[Player, MebiusSpeechService[SyncIO]]): SyncIO[Unit] = {
+  def unblockAndSpeakTipsOrMessageRandomly(player: Player)(
+    implicit serviceRepository: KeyedDataRepository[Player, MebiusSpeechService[SyncIO]]
+  ): SyncIO[Unit] = {
     val service = serviceRepository(player)
 
     for {
@@ -36,24 +42,23 @@ object PeriodicMebiusSpeechRoutine {
         .decodePropertyOfOwnedMebius(player)(helmet)
         .map { property =>
           val messageCandidates = new RandomizedCollection[String](
-            NonEmptyList(
-              MebiusTalks.at(property.level).mebiusMessage,
-              MebiusMessages.tips
-            )
+            NonEmptyList(MebiusTalks.at(property.level).mebiusMessage, MebiusMessages.tips)
           )
 
           messageCandidates.pickOne[SyncIO].flatMap { message =>
-            service.tryMakingSpeech(property, MebiusSpeech(message, MebiusSpeechStrength.Medium))
+            service
+              .tryMakingSpeech(property, MebiusSpeech(message, MebiusSpeechStrength.Medium))
           }
         }
         .getOrElse(SyncIO.unit)
     } yield ()
   }
 
-  def start(player: Player)(implicit
-                            serviceRepository: KeyedDataRepository[Player, MebiusSpeechService[SyncIO]],
-                            context: RepeatingTaskContext,
-                            onMainThread: OnMinecraftServerThread[IO]): IO[Nothing] = {
+  def start(player: Player)(
+    implicit serviceRepository: KeyedDataRepository[Player, MebiusSpeechService[SyncIO]],
+    context: RepeatingTaskContext,
+    onMainThread: OnMinecraftServerThread[IO]
+  ): IO[Nothing] = {
 
     implicit val timer: Timer[IO] = IO.timer(context)
 

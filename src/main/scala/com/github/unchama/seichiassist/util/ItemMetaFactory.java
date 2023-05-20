@@ -10,8 +10,4 @@ import org.bukkit.inventory.meta.SkullMeta;
 public final class ItemMetaFactory {
     private static final ItemFactory FACTORY = Bukkit.getItemFactory();
     public static final ValueHolder<SkullMeta> SKULL = new ValueHolder<>((SkullMeta) FACTORY.getItemMeta(Material.SKULL_ITEM), SkullMeta::clone);
-    public static final ValueHolder<ItemMeta> GOLDEN_APPLE = new ValueHolder<>(FACTORY.getItemMeta(Material.GOLDEN_APPLE), ItemMeta::clone);
-    private ItemMetaFactory() {
-
-    }
 }

@@ -76,9 +76,13 @@ commands:
     description: Event command.
     permission: seichiassist.event
     permission-message: *denied
-  subhome:
-    description: Subhome operation command.
-    permission: seichiassist.subhome
+  home:
+    description: Home operation command.
+    permission: seichiassist.home
+    permission-message: *denied
+  sethome:
+    description: Set HomePoint command.
+    permission: seichiassist.home
     permission-message: *denied
   gtfever:
     description: GiganticFever start command.
@@ -103,6 +107,8 @@ commands:
     usage: /<command>
     permission: seichiassist.stickmenu
     permission-message: *denied
+    aliases:
+      - sm
   fd:
     description: 四次元ポケットを開く
     usage: /<command>
@@ -117,6 +123,18 @@ commands:
     usage: /<command>
     permission-message: *denied
     permission: seichiassist.hat
+  ec:
+    description: エンダーチェストを開く
+    usage: /<command>
+    permission: seichiassist.ec
+    permission-message: *denied
+  minestack:
+    description: Toggle whether minestack collects applicable item automatically
+    usage: /minestack <on | off | open | store-all>
+    aliases:
+      - ms
+    permission-message: *denied
+    permission: seichiassist.minestack
 permissions:
   seichiassist.*:
     default: false
@@ -134,7 +152,7 @@ permissions:
       - seichiassist.achievenemt
       - seichiassist.halfguard
       - seichiassist.event
-      - seichiassist.subhome
+      - seichiassist.home
       - seichiassist.gtfever
       - seichiassist.minehead
       - seichiassist.x-transfer
@@ -149,20 +167,22 @@ permissions:
     default: true
   seichiassist.mebius:
     default: true
+  seichiassist.minestack:
+    default: true
   seichiassist.present.grant:
-    default: false
+    default: op
     description: "'/present grant' の使用許可を与える。"
   seichiassist.present.revoke:
-    default: false
+    default: op
     description: "'/present revoke' の使用許可を与える。"
   seichiassist.present.define:
-    default: false
+    default: op
     description: "'/present define' の使用許可を与える。"
   seichiassist.present.delete:
-    default: false
+    default: op
     description: "'/present delete' の使用許可を与える。"
   seichiassist.present.*:
-    default: false
+    default: op
     children:
       - seichiassist.present.grant
       - seichiassist.present.revoke

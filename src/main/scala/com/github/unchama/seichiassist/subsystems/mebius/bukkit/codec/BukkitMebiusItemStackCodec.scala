@@ -13,14 +13,10 @@ object BukkitMebiusItemStackCodec {
 
   import scala.jdk.CollectionConverters._
 
-  //noinspection DuplicatedCode
+  // noinspection DuplicatedCode
   object LoreConstants {
-    val mebiusLoreHead = List(
-      s"$RESET",
-      s"$RESET${AQUA}初心者をサポートする不思議なヘルメット。",
-      s"$RESET${AQUA}整地により成長する。",
-      ""
-    )
+    val mebiusLoreHead =
+      List(s"$RESET", s"$RESET${AQUA}初心者をサポートする不思議なヘルメット。", s"$RESET${AQUA}整地により成長する。", "")
 
     val unbreakableLoreRow = s"$RESET${AQUA}耐久無限"
 
@@ -46,7 +42,7 @@ object BukkitMebiusItemStackCodec {
 
   def encodeTypeId(mebiusType: MebiusType): Int =
     mebiusType match {
-      case NormalMebius => 1
+      case NormalMebius    => 1
       case ChristmasMebius => 2
     }
 
@@ -58,15 +54,22 @@ object BukkitMebiusItemStackCodec {
     }
 
   def encodeForcedMaterial(forcedMaterial: MebiusForcedMaterial): Byte = forcedMaterial match {
-    case MebiusForcedMaterial.None => 0
+    case MebiusForcedMaterial.None    => 0
     case MebiusForcedMaterial.Leather => 1
+    case MebiusForcedMaterial.Iron    => 2
+    case MebiusForcedMaterial.Chain   => 3
+    case MebiusForcedMaterial.Gold    => 4
   }
 
-  def decodeForcedMaterial(forcedMaterialByte: Byte): MebiusForcedMaterial = forcedMaterialByte match {
-    case 0 => MebiusForcedMaterial.None
-    case 1 => MebiusForcedMaterial.Leather
-    case _ => MebiusForcedMaterial.None
-  }
+  def decodeForcedMaterial(forcedMaterialByte: Byte): MebiusForcedMaterial =
+    forcedMaterialByte match {
+      case 0 => MebiusForcedMaterial.None
+      case 1 => MebiusForcedMaterial.Leather
+      case 2 => MebiusForcedMaterial.Iron
+      case 3 => MebiusForcedMaterial.Chain
+      case 4 => MebiusForcedMaterial.Gold
+      case _ => MebiusForcedMaterial.None
+    }
 
   def isMebius(itemStack: ItemStack): Boolean =
     itemStack != null && itemStack.getType != Material.AIR && {
@@ -95,16 +98,18 @@ object BukkitMebiusItemStackCodec {
     val ownerNickname = Some(nbtItem.getString(ownerNicknameTag)).filter(_.nonEmpty)
     val mebiusName = nbtItem.getString(nameTag)
 
-    Some(MebiusProperty(
-      mebiusType,
-      ownerName,
-      ownerUuid,
-      enchantments,
-      mebiusForcedMaterial,
-      mebiusLevel,
-      ownerNickname,
-      mebiusName
-    ))
+    Some(
+      MebiusProperty(
+        mebiusType,
+        ownerName,
+        ownerUuid,
+        enchantments,
+        mebiusForcedMaterial,
+        mebiusLevel,
+        ownerNickname,
+        mebiusName
+      )
+    )
   }
 
   /**
@@ -116,8 +121,12 @@ object BukkitMebiusItemStackCodec {
    */
   def materialize(property: MebiusProperty, damageValue: Short): ItemStack = {
     val material = property.forcedMaterial match {
-      case MebiusForcedMaterial.None => BukkitMebiusAppearanceMaterialCodec.appearanceMaterialAt(property.level)
-      case MebiusForcedMaterial.Leather => Material.LEATHER_HELMET
+      case MebiusForcedMaterial.None =>
+        BukkitMebiusAppearanceMaterialCodec.appearanceMaterialAt(property.level)
+      case MebiusForcedMaterial.Leather => Material.LEATHER_HELMET // 革のヘルメット
+      case MebiusForcedMaterial.Iron    => Material.IRON_HELMET // 鉄のヘルメット
+      case MebiusForcedMaterial.Chain   => Material.CHAINMAIL_HELMET // チェーンのヘルメット
+      case MebiusForcedMaterial.Gold    => Material.GOLD_HELMET // 金のヘルメット
     }
 
     import scala.util.chaining._
@@ -137,20 +146,22 @@ object BukkitMebiusItemStackCodec {
           import LoreConstants._
 
           mebiusLoreHead
-            .concat(List(
-              s"$levelLoreRowPrefix${property.level.value}",
-              s"$levelUpMebiusMessageLoreRowPrefix「${talk.mebiusMessage}」",
-              s"$levelUpPlayerMessageLoreRowPrefix${talk.playerMessage}",
-              s"",
-              s"$ownerLoreRowPrefix${property.ownerPlayerId}"
-            ))
+            .concat(
+              List(
+                s"$levelLoreRowPrefix${property.level.value}",
+                s"$levelUpMebiusMessageLoreRowPrefix「${talk.mebiusMessage}」",
+                s"$levelUpPlayerMessageLoreRowPrefix${talk.playerMessage}",
+                s"",
+                s"$ownerLoreRowPrefix${property.ownerPlayerId}"
+              )
+            )
             .concat {
               if (property.level.isMaximum) List(unbreakableLoreRow) else Nil
             }
             .concat {
               property.mebiusType match {
                 case ChristmasMebius => ChristmasItemData.christmasMebiusLore
-                case _ => Nil
+                case _               => Nil
               }
             }
             .asJava
@@ -158,8 +169,9 @@ object BukkitMebiusItemStackCodec {
       }
     }
 
-    property.enchantmentLevels.mapping.foreach { case (enchantment, level) =>
-      BukkitMebiusEnchantmentCodec.applyEnchantment(enchantment, level)(item)
+    property.enchantmentLevels.mapping.foreach {
+      case (enchantment, level) =>
+        BukkitMebiusEnchantmentCodec.applyEnchantment(enchantment, level)(item)
     }
 
     {
@@ -184,14 +196,16 @@ object BukkitMebiusItemStackCodec {
 
     property.mebiusType match {
       case ChristmasMebius => s"$christmasMebiusNameStyle${property.mebiusName} Christmas Ver."
-      case _ => s"$mebiusNameStyle${property.mebiusName}"
+      case _               => s"$mebiusNameStyle${property.mebiusName}"
     }
   }
 
   def ownershipMatches(player: Player)(property: MebiusProperty): Boolean =
     property.ownerUuid == player.getUniqueId.toString
 
-  def decodePropertyOfOwnedMebius(player: Player)(itemStack: ItemStack): Option[MebiusProperty] =
+  def decodePropertyOfOwnedMebius(player: Player)(
+    itemStack: ItemStack
+  ): Option[MebiusProperty] =
     decodeMebiusProperty(itemStack).filter(ownershipMatches(player))
 
 }

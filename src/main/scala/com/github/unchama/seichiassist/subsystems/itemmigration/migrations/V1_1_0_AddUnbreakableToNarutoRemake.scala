@@ -21,7 +21,8 @@ object V1_1_0_AddUnbreakableToNarutoRemake {
   private val narutoRemake2Lore = s"${GRAY}2020ハロウィン討伐イベント特別賞"
 
   def isNarutoRemake(itemStack: ItemStack): Boolean = {
-    if (itemStack == null || !itemStack.hasItemMeta || !itemStack.getItemMeta.hasLore) return false
+    if (itemStack == null || !itemStack.hasItemMeta || !itemStack.getItemMeta.hasLore)
+      return false
     val lore = itemStack.getItemMeta.getLore.asScala
     lore.contains(narutoRemake1Lore) || lore.contains(narutoRemake2Lore)
   }

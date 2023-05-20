@@ -7,7 +7,7 @@ import scala.util.Random
 
 class RandomizedCollection[Element](collection: NonEmptyList[Element]) {
 
-  def pickOne[F[_] : Sync]: F[Element] = Sync[F].delay {
+  def pickOne[F[_]: Sync]: F[Element] = Sync[F].delay {
     collection.toList(Random.nextInt(collection.size))
   }
 

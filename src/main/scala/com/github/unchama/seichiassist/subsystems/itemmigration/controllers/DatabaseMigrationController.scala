@@ -10,20 +10,24 @@ import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.t
 import org.slf4j.Logger
 import scalikejdbc.DB
 
-case class DatabaseMigrationController[F[_] : SyncEffect](migrations: ItemMigrations)
-                                                         (implicit effectEnvironment: EffectEnvironment, logger: Logger) {
+case class DatabaseMigrationController[F[_]: SyncEffect](migrations: ItemMigrations)(
+  implicit effectEnvironment: EffectEnvironment,
+  logger: Logger
+) {
 
   lazy val runDatabaseMigration: F[Unit] = Sync[F].delay {
     DB.autoCommit { implicit session =>
       import cats.effect.implicits._
 
       // DB内アイテムのマイグレーション
-      ItemMigrationService.inContextOf[F](
-        new PersistedItemsMigrationVersionRepository(),
-        new PersistedItemsMigrationSlf4jLogger(logger)
-      )
+      ItemMigrationService
+        .inContextOf[F](
+          new PersistedItemsMigrationVersionRepository(),
+          new PersistedItemsMigrationSlf4jLogger(logger)
+        )
         .runMigration(migrations)(new SeichiAssistPersistedItems())
-        .runSync[SyncIO].unsafeRunSync()
+        .runSync[SyncIO]
+        .unsafeRunSync()
     }
   }
 

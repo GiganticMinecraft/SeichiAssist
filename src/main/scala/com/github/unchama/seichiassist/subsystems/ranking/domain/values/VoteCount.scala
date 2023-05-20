@@ -10,5 +10,6 @@ case class VoteCount(value: Int) extends AnyVal
 
 object VoteCount {
   implicit val order: Order[VoteCount] = Order.by(_.value)
-  implicit val monoid: Monoid[VoteCount] = Monoid.instance(VoteCount(0), (a, b) => VoteCount(a.value + b.value))
+  implicit val monoid: Monoid[VoteCount] =
+    Monoid.instance(VoteCount(0), (a, b) => VoteCount(a.value + b.value))
 }

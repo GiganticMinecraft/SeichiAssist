@@ -14,4 +14,6 @@ object HasUuid {
 
   def apply[T](implicit ev: HasUuid[T]): HasUuid[T] = ev
 
+  implicit val trivial: HasUuid[UUID] = x => x
+
 }

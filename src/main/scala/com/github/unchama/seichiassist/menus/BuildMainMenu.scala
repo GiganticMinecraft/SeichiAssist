@@ -6,26 +6,41 @@ import com.github.unchama.buildassist.{BuildAssist, MenuInventoryData}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory.router.CanOpen
-import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect}
+import com.github.unchama.menuinventory.slot.button.action.{
+  ClickEventFilter,
+  FilteredButtonEffect
+}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.BuildMainMenu.EMPHASIZE
-import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.{BuildAssistExpTable, BuildLevel}
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
-import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, RemainingFlyDuration}
+import com.github.unchama.seichiassist.subsystems.managedfly.domain.{
+  Flying,
+  NotFlying,
+  RemainingFlyDuration
+}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
-import com.github.unchama.targetedeffect.player.PlayerEffects.{closeInventoryEffect, openInventoryEffect}
+import com.github.unchama.targetedeffect.player.PlayerEffects.{
+  closeInventoryEffect,
+  openInventoryEffect
+}
 import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
-import com.github.unchama.targetedeffect.{ComputedEffect, DeferredEffect, SequentialEffect, UnfocusedEffect}
+import com.github.unchama.targetedeffect.{
+  ComputedEffect,
+  DeferredEffect,
+  SequentialEffect,
+  UnfocusedEffect
+}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.{Material, Sound}
 
-private case class ButtonComputations(player: Player)
-                                     (implicit ioOnMainThread: OnMinecraftServerThread[IO]) {
+private case class ButtonComputations(player: Player)(
+  implicit ioOnMainThread: OnMinecraftServerThread[IO]
+) {
 
   import BuildMainMenu._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
@@ -39,13 +54,13 @@ private case class ButtonComputations(player: Player)
       val lore = {
         val alwaysDisplayedInfo = List(
           s"$RESET${AQUA}建築Lv: $rawLevel",
-          s"$RESET${AQUA}総建築量: ${data.expAmount.toPlainString}",
+          s"$RESET${AQUA}総建築量: ${data.expAmount.toPlainString}"
         )
 
         // 最大レベルに到達した後は”次のレベル”が存在しないため、表示しない
-        val nextLevelInfo: Option[String] = data.levelProgress.map(blp =>
-          s"$RESET${AQUA}次のレベルまで: ${blp.expAmountToNextLevel.toPlainString}"
-        )
+        val nextLevelInfo: Option[String] = data
+          .levelProgress
+          .map(blp => s"$RESET${AQUA}次のレベルまで: ${blp.expAmountToNextLevel.toPlainString}")
 
         alwaysDisplayedInfo ++ nextLevelInfo
       }
@@ -60,7 +75,9 @@ private case class ButtonComputations(player: Player)
     }
   }
 
-  def computeButtonToShowStateOfFlying(implicit flyApi: ManagedFlyApi[SyncIO, Player]): IO[Button] = {
+  def computeButtonToShowStateOfFlying(
+    implicit flyApi: ManagedFlyApi[SyncIO, Player]
+  ): IO[Button] = {
     for {
       flyStatus <- flyApi.playerFlyDurations(player).read.toIO
     } yield {
@@ -76,9 +93,7 @@ private case class ButtonComputations(player: Player)
             }
           )
         case NotFlying =>
-          List(
-            s"$RESET${AQUA}Fly 効果: OFF"
-          )
+          List(s"$RESET${AQUA}Fly 効果: OFF")
       }
 
       val iconItemStack = new IconItemStackBuilder(Material.COOKED_CHICKEN)
@@ -91,53 +106,65 @@ private case class ButtonComputations(player: Player)
   }
 
   def computeButtonToToggleRangedPlaceSkill(): IO[Button] = RecomputedButton(
-    BuildAssist.instance.buildAmountDataRepository(player).read.toIO.flatMap(amountData =>
-      IO {
-        val openerData = BuildAssist.instance.temporaryData(getUniqueId)
-        val openerLevel = amountData.levelCorrespondingToExp.level
+    BuildAssist
+      .instance
+      .buildAmountDataRepository(player)
+      .read
+      .toIO
+      .flatMap(amountData =>
+        IO {
+          val openerData = BuildAssist.instance.temporaryData(getUniqueId)
+          val openerLevel = amountData.levelCorrespondingToExp.level
 
-        val iconItemStack = new IconItemStackBuilder(Material.STONE)
-          .title(s"$GREEN$EMPHASIZE「範囲設置スキル」現在：${if (openerData.ZoneSetSkillFlag) "ON" else "OFF"}")
-          .lore(
-            s"$RESET$YELLOW「スニーク+左クリック」をすると、",
-            s"$RESET${YELLOW}オフハンドに持っているブロックと同じ物を",
-            s"$RESET${YELLOW}インベントリ内から消費し設置します。",
-            s"$RESET$LIGHT_PURPLE＜クリックでON/OFF切り替え＞"
-          )
-          .build()
+          val iconItemStack = new IconItemStackBuilder(Material.STONE)
+            .title(
+              s"$GREEN$EMPHASIZE「範囲設置スキル」現在：${if (openerData.ZoneSetSkillFlag) "ON" else "OFF"}"
+            )
+            .lore(
+              s"$RESET$YELLOW「スニーク+左クリック」をすると、",
+              s"$RESET${YELLOW}オフハンドに持っているブロックと同じ物を",
+              s"$RESET${YELLOW}インベントリ内から消費し設置します。",
+              s"$RESET$LIGHT_PURPLE＜クリックでON/OFF切り替え＞"
+            )
+            .build()
 
-        Button(
-          iconItemStack,
-          FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
-            SequentialEffect(
-              FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-              DeferredEffect {
-                IO {
-                  if (openerLevel < BuildAssist.config.getZoneSetSkillLevel) {
-                    MessageEffect(s"${RED}建築Lvが足りません")
-                  } else {
-                    if (openerData.ZoneSetSkillFlag) SequentialEffect(
-                      UnfocusedEffect {
-                        openerData.ZoneSetSkillFlag = false
-                      },
-                      MessageEffect(s"${RED}範囲設置スキルOFF")
-                    ) else SequentialEffect(
-                      UnfocusedEffect {
-                        openerData.ZoneSetSkillFlag = true
-                      },
-                      MessageEffect(s"${RED}範囲設置スキルON")
-                    )
+          Button(
+            iconItemStack,
+            FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
+              SequentialEffect(
+                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+                DeferredEffect {
+                  IO {
+                    if (openerLevel < BuildAssist.config.getZoneSetSkillLevel) {
+                      MessageEffect(s"${RED}建築Lvが足りません")
+                    } else {
+                      if (openerData.ZoneSetSkillFlag)
+                        SequentialEffect(
+                          UnfocusedEffect {
+                            openerData.ZoneSetSkillFlag = false
+                          },
+                          MessageEffect(s"${RED}範囲設置スキルOFF")
+                        )
+                      else
+                        SequentialEffect(
+                          UnfocusedEffect {
+                            openerData.ZoneSetSkillFlag = true
+                          },
+                          MessageEffect(s"${RED}範囲設置スキルON")
+                        )
+                    }
                   }
                 }
-              }
-            )
-          }
-        )
-      }
-    )
+              )
+            }
+          )
+        }
+      )
   )
 
-  def computeButtonToOpenRangedPlaceSkillMenu(implicit canOpenBlockPlacementSkillMenu: CanOpen[IO, BlockPlacementSkillMenu.type]): IO[Button] =
+  def computeButtonToOpenRangedPlaceSkillMenu(
+    implicit canOpenBlockPlacementSkillMenu: CanOpen[IO, BlockPlacementSkillMenu.type]
+  ): IO[Button] =
     BuildAssist.instance.buildAmountDataRepository(player).read.toIO.flatMap { amountData =>
       IO {
         val openerData = BuildAssist.instance.temporaryData(getUniqueId)
@@ -151,13 +178,18 @@ private case class ButtonComputations(player: Player)
           )
           .build()
 
-        Button(iconItemStack,
+        Button(
+          iconItemStack,
           action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
             SequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
               DeferredEffect {
                 IO {
-                  if (amountData.levelCorrespondingToExp.level < BuildAssist.config.getblocklineuplevel) {
+                  if (
+                    amountData
+                      .levelCorrespondingToExp
+                      .level < BuildAssist.config.getblocklineuplevel
+                  ) {
                     MessageEffect(s"${RED}建築Lvが足りません")
                   } else {
                     canOpenBlockPlacementSkillMenu.open(BlockPlacementSkillMenu)
@@ -184,11 +216,16 @@ private case class ButtonComputations(player: Player)
           )
           .build()
 
-        Button(iconItemStack,
+        Button(
+          iconItemStack,
           action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
             DeferredEffect {
               IO {
-                if (amountData.levelCorrespondingToExp.level < BuildAssist.config.getblocklineuplevel) {
+                if (
+                  amountData
+                    .levelCorrespondingToExp
+                    .level < BuildAssist.config.getblocklineuplevel
+                ) {
                   MessageEffect(s"${RED}建築Lvが足りません")
                 } else {
                   SequentialEffect(
@@ -199,7 +236,9 @@ private case class ButtonComputations(player: Player)
                     },
                     DeferredEffect {
                       IO {
-                        MessageEffect(s"${GREEN}直列設置: ${BuildAssist.line_up_str(openerData.line_up_flg)}")
+                        MessageEffect(
+                          s"${GREEN}直列設置: ${BuildAssist.line_up_str(openerData.line_up_flg)}"
+                        )
                       }
                     }
                   )
@@ -226,7 +265,8 @@ private case class ButtonComputations(player: Player)
       )
       .build()
 
-    Button(iconItemStack,
+    Button(
+      iconItemStack,
       FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
         SequentialEffect(
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
@@ -236,14 +276,16 @@ private case class ButtonComputations(player: Player)
     )
   }
 
-  def computeButtonToOpenMenuToCraftItemsWhereMineStack(implicit
-                                                        canOpenMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu]): IO[Button] = IO {
+  def computeButtonToOpenMenuToCraftItemsWhereMineStack(
+    implicit canOpenMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu]
+  ): IO[Button] = IO {
     val iconItemStackBuilder = new IconItemStackBuilder(Material.WORKBENCH)
       .title(s"$YELLOW${EMPHASIZE}MineStackブロック一括クラフト画面へ")
       .lore(s"$RESET$DARK_RED${UNDERLINE}クリックで移動")
       .build()
 
-    Button(iconItemStackBuilder,
+    Button(
+      iconItemStackBuilder,
       action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
         SequentialEffect(
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
@@ -331,10 +373,7 @@ private object ConstantButtons {
   val buttonToTerminateFlight: Button = {
     val iconItemStack = new IconItemStackBuilder(Material.CHAINMAIL_BOOTS)
       .title(s"$YELLOW${EMPHASIZE}Fly機能、OFF")
-      .lore(
-        s"$RESET${RED}クリックすると、残り時間にかかわらず",
-        s"$RESET${RED}Flyを終了します。"
-      )
+      .lore(s"$RESET${RED}クリックすると、残り時間にかかわらず", s"$RESET${RED}Flyを終了します。")
       .flagged(ItemFlag.HIDE_ATTRIBUTES)
       .build()
 
@@ -355,17 +394,20 @@ object BuildMainMenu extends Menu {
 
   import menuinventory.syntax._
 
-  class Environment(implicit
-                    val flyApi: ManagedFlyApi[SyncIO, Player],
-                    val ioOnMainThread: OnMinecraftServerThread[IO],
-                    val canOpenBlockPlacementSkillMenu: CanOpen[IO, BlockPlacementSkillMenu.type],
-                    val canOpenMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu])
+  class Environment(
+    implicit val flyApi: ManagedFlyApi[SyncIO, Player],
+    val ioOnMainThread: OnMinecraftServerThread[IO],
+    val canOpenBlockPlacementSkillMenu: CanOpen[IO, BlockPlacementSkillMenu.type],
+    val canOpenMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu]
+  )
 
   val EMPHASIZE = s"$UNDERLINE$BOLD"
 
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"${LIGHT_PURPLE}木の棒メニューB")
 
-  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
+  override def computeMenuLayout(
+    player: Player
+  )(implicit environment: Environment): IO[MenuSlotLayout] = {
     import ConstantButtons._
     import environment._
 
@@ -379,7 +421,6 @@ object BuildMainMenu extends Menu {
     )
 
     import cats.implicits._
-    import environment._
 
     val dynamicPartComputation: IO[List[(Int, Button)]] =
       List(
@@ -390,9 +431,7 @@ object BuildMainMenu extends Menu {
         27 -> computeButtonToLineUpBlocks(),
         28 -> computeButtonToOpenLineUpBlocksMenu(),
         35 -> computeButtonToOpenMenuToCraftItemsWhereMineStack
-      )
-        .map(_.sequence)
-        .sequence
+      ).traverse(_.sequence)
 
     for {
       dynamicPart <- dynamicPartComputation

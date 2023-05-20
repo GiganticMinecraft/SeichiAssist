@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.halloween
 
-import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.EnchantNameToJapanese
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Color.fromRGB
@@ -17,13 +17,10 @@ import scala.util.chaining._
 
 object HalloweenItemData {
 
-  //region HalloweenPotion
+  // region HalloweenPotion
 
   val halloweenPotion: ItemStack = {
-    val itemFlags = Set(
-      ItemFlag.HIDE_ENCHANTS,
-      ItemFlag.HIDE_POTION_EFFECTS
-    )
+    val itemFlags = Set(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_POTION_EFFECTS)
     val potionEffects = Set(
       new PotionEffect(PotionEffectType.REGENERATION, 20 * 10, 3),
       new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 20, 2),
@@ -42,33 +39,31 @@ object HalloweenItemData {
       ).map(str => s"$RESET$GRAY$str")
     }.asJava
 
-    val potionMeta = Bukkit.getItemFactory.getItemMeta(Material.POTION).asInstanceOf[PotionMeta].tap { meta =>
-      import meta._
-      setDisplayName(s"$AQUA${ITALIC}うんちゃまの汗")
-      setColor(fromRGB(1, 93, 178))
-      addEnchant(Enchantment.MENDING, 1, true)
-      setLore(loreList)
-      itemFlags.foreach(flg => addItemFlags(flg))
-      potionEffects.foreach(effect => addCustomEffect(effect, true))
-    }
+    val potionMeta =
+      Bukkit.getItemFactory.getItemMeta(Material.POTION).asInstanceOf[PotionMeta].tap { meta =>
+        import meta._
+        setDisplayName(s"$AQUA${ITALIC}うんちゃまの汗")
+        setColor(fromRGB(1, 93, 178))
+        addEnchant(Enchantment.MENDING, 1, true)
+        setLore(loreList)
+        itemFlags.foreach(flg => addItemFlags(flg))
+        potionEffects.foreach(effect => addCustomEffect(effect, true))
+      }
 
     val potion = new ItemStack(Material.POTION, 1)
     potion.setItemMeta(potionMeta)
 
-    new NBTItem(potion)
-      .tap(_.setByte(NBTTagConstants.typeIdTag, 1.toByte))
-      .pipe(_.getItem)
+    new NBTItem(potion).tap(_.setByte(NBTTagConstants.typeIdTag, 1.toByte)).pipe(_.getItem)
   }
 
   def isHalloweenPotion(itemStack: ItemStack): Boolean =
     itemStack != null && itemStack.getType == Material.POTION && {
-      new NBTItem(itemStack)
-        .getByte(NBTTagConstants.typeIdTag) == 1
+      new NBTItem(itemStack).getByte(NBTTagConstants.typeIdTag) == 1
     }
 
-  //endregion
+  // endregion
 
-  //region HalloweenHoe
+  // region HalloweenHoe
 
   val halloweenHoe: ItemStack = {
     val displayName = Seq(
@@ -80,18 +75,15 @@ object HalloweenItemData {
       "O" -> DARK_AQUA,
       "T" -> LIGHT_PURPLE,
       "L" -> RED
-    ).map { case (c, color) => s"$color$BOLD$ITALIC$c" }
-      .mkString
-    val enchantments = Set(
-      (Enchantment.DURABILITY, 7),
-      (Enchantment.DIG_SPEED, 7),
-      (Enchantment.MENDING, 1)
-    )
+    ).map { case (c, color) => s"$color$BOLD$ITALIC$c" }.mkString
+    val enchantments =
+      Set((Enchantment.DURABILITY, 7), (Enchantment.DIG_SPEED, 7), (Enchantment.MENDING, 1))
     val loreList = {
       val year = Calendar.getInstance().get(Calendar.YEAR)
-      val enchDescription = enchantments
-        .map { case (ench, lvl) => s"$RESET$GRAY${Util.getEnchantName(ench.getName, lvl)}" }
-        .toList
+      val enchDescription = enchantments.map {
+        case (ench, lvl) =>
+          s"$RESET$GRAY${EnchantNameToJapanese.getEnchantName(ench.getName, lvl)}"
+      }.toList
       val lore = List(
         "",
         s"$GRAY${year}ハロウィンイベント限定品",
@@ -115,18 +107,15 @@ object HalloweenItemData {
     val hoe = new ItemStack(Material.DIAMOND_HOE, 1)
     hoe.setItemMeta(itemMeta)
 
-    new NBTItem(hoe)
-      .tap(_.setByte(NBTTagConstants.typeIdTag, 2.toByte))
-      .pipe(_.getItem)
+    new NBTItem(hoe).tap(_.setByte(NBTTagConstants.typeIdTag, 2.toByte)).pipe(_.getItem)
   }
 
   def isHalloweenHoe(itemStack: ItemStack): Boolean =
     itemStack != null && itemStack.getType == Material.DIAMOND_HOE && {
-      new NBTItem(itemStack)
-        .getByte(NBTTagConstants.typeIdTag) == 2
+      new NBTItem(itemStack).getByte(NBTTagConstants.typeIdTag) == 2
     }
 
-  //endregion
+  // endregion
 
   private object NBTTagConstants {
     val typeIdTag = "halloweenItemTypeId"

@@ -15,8 +15,8 @@ object AchievementOperation {
   }
 
   def fromString(string: String): Option[AchievementOperation] = string match {
-    case "give" => Some(GIVE)
+    case "give"    => Some(GIVE)
     case "deprive" => Some(DEPRIVE)
-    case _ => None
+    case _         => None
   }
 }

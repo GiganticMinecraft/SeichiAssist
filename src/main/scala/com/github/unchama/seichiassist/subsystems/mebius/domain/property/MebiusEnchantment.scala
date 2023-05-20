@@ -5,9 +5,11 @@ import enumeratum._
 /**
  * Mebiusに付与できるエンチャントのクラス
  */
-sealed abstract class MebiusEnchantment(val unlockLevel: MebiusLevel,
-                                        val maxLevel: Int,
-                                        val displayName: String) extends EnumEntry {
+sealed abstract class MebiusEnchantment(
+  val unlockLevel: MebiusLevel,
+  val maxLevel: Int,
+  val displayName: String
+) extends EnumEntry {
   import cats.implicits._
 
   require {

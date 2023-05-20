@@ -25,16 +25,14 @@ object AchievementCommand {
     AchievementOperation.fromString,
     MessageEffect("操作はgive/depriveで与えてください。")
   )
+
   /**
    * TODO
    * [旧実装](https://github.com/GiganticMinecraft/SeichiAssist/blob/310ee1f438cf7ca5b202392fd77826b2ed245a58/src/main/java/com/github/unchama/seichiassist/commands/legacy/UnlockAchievementCommand.java#L50-L53)
    * には実績の存在確認のロジックが入っていたが、これは必要であったか？
    */
   private val achievementNumberParser =
-    Parsers.closedRangeInt(
-      1000, 9999,
-      MessageEffect(s"${RED}操作の対象として指定できるのはNo1000～9999の実績です。")
-    )
+    Parsers.closedRangeInt(1000, 9999, MessageEffect(s"${RED}操作の対象として指定できるのはNo1000～9999の実績です。"))
   private val scopeParser = Parsers.fromOptionParser(
     ScopeSpecification.fromString,
     MessageEffect(s"${RED}スコープ指定子はuser [ユーザー名], server, worldのみ入力できます。")
@@ -45,10 +43,10 @@ object AchievementCommand {
   object ScopeSpecification {
 
     def fromString(string: String): Option[ScopeSpecification] = string match {
-      case "user" => Some(USER)
+      case "user"   => Some(USER)
       case "server" => Some(SERVER)
-      case "world" => Some(WORLD)
-      case _ => None
+      case "world"  => Some(WORLD)
+      case _        => None
     }
 
     case object USER extends ScopeSpecification
@@ -69,9 +67,10 @@ object AchievementCommand {
     )
   )
 
-  def executor[
-    F[_] : ConcurrentEffect
-  ](implicit service: AchievementBookingService[F]): TabExecutor = ContextualExecutorBuilder.beginConfiguration()
+  def executor[F[_]: ConcurrentEffect](
+    implicit service: AchievementBookingService[F]
+  ): TabExecutor = ContextualExecutorBuilder
+    .beginConfiguration()
     .argumentsParsers(
       List(operationParser, achievementNumberParser, scopeParser),
       onMissingArguments = descriptionPrintExecutor
@@ -83,19 +82,24 @@ object AchievementCommand {
       val achievementNumber = context.args.parsed(1).asInstanceOf[Int]
 
       def execution(): IO[TargetedEffect[CommandSender]] = {
-        val targetPlayerNames: List[String] = context.args.parsed(2).asInstanceOf[ScopeSpecification] match {
-          case ScopeSpecification.USER =>
-            val targetPlayerName =
-              context.args.yetToBeParsed.headOption
-                .getOrElse(return IO.pure(MessageEffect(s"${RED}プレーヤー名が未入力です。")))
-            List(targetPlayerName)
-          case ScopeSpecification.SERVER => Bukkit.getServer.getOnlinePlayers.asScala.map(_.getName).toList
-          case ScopeSpecification.WORLD =>
-            sender match {
-              case player: Player => player.getWorld.getPlayers.asScala.map(_.getName).toList
-              case _ => return IO.pure(MessageEffect("コンソール実行の場合は「world」処理は実行できません。"))
-            }
-        }
+        val targetPlayerNames: List[String] =
+          context.args.parsed(2).asInstanceOf[ScopeSpecification] match {
+            case ScopeSpecification.USER =>
+              val targetPlayerName =
+                context
+                  .args
+                  .yetToBeParsed
+                  .headOption
+                  .getOrElse(return IO.pure(MessageEffect(s"${RED}プレーヤー名が未入力です。")))
+              List(targetPlayerName)
+            case ScopeSpecification.SERVER =>
+              Bukkit.getServer.getOnlinePlayers.asScala.map(_.getName).toList
+            case ScopeSpecification.WORLD =>
+              sender match {
+                case player: Player => player.getWorld.getPlayers.asScala.map(_.getName).toList
+                case _ => return IO.pure(MessageEffect("コンソール実行の場合は「world」処理は実行できません。"))
+              }
+          }
 
         import cats.effect.implicits._
         import cats.implicits._
@@ -106,23 +110,27 @@ object AchievementCommand {
               case Some(player) =>
                 val playerData = SeichiAssist.playermap(player.getUniqueId)
                 operation match {
-                  case AchievementOperation.GIVE => playerData.tryForcefullyUnlockAchievement(achievementNumber)
-                  case AchievementOperation.DEPRIVE => playerData.forcefullyDepriveAchievement(achievementNumber)
+                  case AchievementOperation.GIVE =>
+                    playerData.tryForcefullyUnlockAchievement(achievementNumber)
+                  case AchievementOperation.DEPRIVE =>
+                    playerData.forcefullyDepriveAchievement(achievementNumber)
                 }
 
               case None =>
                 SequentialEffect(
                   Kleisli.liftF(
-                    service.writeAchivementId(playerName, achievementNumber, operation).start.toIO.as(())
+                    service
+                      .writeAchivementId(playerName, achievementNumber, operation)
+                      .start
+                      .toIO
+                      .as(())
                   ),
                   MessageEffect(
                     List(
-                      s"$playerName の No.$achievementNumber の実績を${
-                        operation match {
-                          case AchievementOperation.GIVE => "付与"
+                      s"$playerName の No.$achievementNumber の実績を${operation match {
+                          case AchievementOperation.GIVE    => "付与"
                           case AchievementOperation.DEPRIVE => "剥奪"
-                        }
-                      }します。",
+                        }}します。",
                       s"$playerName は現在サーバーにログインしていません。\n予約システムに書き込みました。"
                     )
                   )

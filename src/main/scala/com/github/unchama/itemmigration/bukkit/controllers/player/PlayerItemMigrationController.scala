@@ -9,19 +9,22 @@ import com.github.unchama.itemmigration.service.ItemMigrationService
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.inventory.InventoryOpenEvent
-import org.bukkit.event.player.{PlayerDropItemEvent, PlayerEvent, PlayerItemConsumeEvent, PlayerJoinEvent}
+import org.bukkit.event.player.{
+  PlayerDropItemEvent,
+  PlayerEvent,
+  PlayerItemConsumeEvent,
+  PlayerJoinEvent
+}
 import org.bukkit.event.{Cancellable, EventHandler, EventPriority, Listener}
 
 /**
- * プレーヤーのアイテムマイグレーション処理中に、
- * 該当プレーヤーの行動を制御するためのリスナオブジェクトのクラス
+ * プレーヤーのアイテムマイグレーション処理中に、 該当プレーヤーの行動を制御するためのリスナオブジェクトのクラス
  */
-class PlayerItemMigrationController[
-  F[_] : ConcurrentEffect,
-  G[_] : SyncEffect
-](migrationState: KeyedDataRepository[Player, PlayerMigrationState[G]],
-  migrations: ItemMigrations, service: ItemMigrationService[F, PlayerInventoriesData[F]])
-  extends Listener {
+class PlayerItemMigrationController[F[_]: ConcurrentEffect, G[_]: SyncEffect](
+  migrationState: KeyedDataRepository[Player, PlayerMigrationState[G]],
+  migrations: ItemMigrations,
+  service: ItemMigrationService[F, PlayerInventoriesData[F]]
+) extends Listener {
 
   import cats.effect.implicits._
 
@@ -38,7 +41,7 @@ class PlayerItemMigrationController[
   def onInventoryOpen(e: InventoryOpenEvent): Unit = {
     e.getPlayer match {
       case player: Player => cancelIfLockActive(player, e)
-      case _ =>
+      case _              =>
     }
   }
 

@@ -1,24 +1,32 @@
 package com.github.unchama.seichiassist.subsystems.bookedachivement.infrastructure
 
-import java.util.UUID
-
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.bookedachivement.domain.{AchievementOperation, BookedAchievementPersistenceRepository}
+import com.github.unchama.seichiassist.subsystems.bookedachivement.domain.{
+  AchievementOperation,
+  BookedAchievementPersistenceRepository
+}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
+import java.util.UUID
+
 class JdbcBookedAchievementPersistenceRepository[F[_]](implicit SyncContext: Sync[F])
-  extends BookedAchievementPersistenceRepository[F, UUID] {
+    extends BookedAchievementPersistenceRepository[F, UUID] {
 
   /**
    * 指定した `achievementId` の実績付与・剥奪をプレイヤーの UUID である `key` とともに記録します.
    */
-  override def bookAchievement(key: UUID, achievementId: Int, operation: AchievementOperation): F[Unit] = {
+  override def bookAchievement(
+    key: UUID,
+    achievementId: Int,
+    operation: AchievementOperation
+  ): F[Unit] = {
     SyncContext.delay {
       DB.localTx { implicit session =>
         sql"""|insert into booked_achievement_status_change (player_uuid, achievement_id, operation)
               | values (${key.toString}, $achievementId, ${operation.toString})"""
           .stripMargin
-          .update().apply()
+          .update()
+          .apply()
       }
     }
   }
@@ -26,17 +34,22 @@ class JdbcBookedAchievementPersistenceRepository[F[_]](implicit SyncContext: Syn
   /**
    * `key` を UUID に持つプレイヤーに適用されていない予約済み実績の番号を返します.
    */
-  override def loadBookedAchievementsYetToBeAppliedOf(key: UUID): F[List[(AchievementOperation, Int)]] = {
+  override def loadBookedAchievementsYetToBeAppliedOf(
+    key: UUID
+  ): F[List[(AchievementOperation, Int)]] = {
     SyncContext.delay {
       DB.localTx { implicit session =>
         sql"""|select achievement_id, operation from booked_achievement_status_change
               | where player_uuid = ${key.toString} and completed_at is null"""
           .stripMargin
           .map { rs =>
-            (AchievementOperation.fromString(rs.string("operation")).get,
-              rs.int("achievement_id"))
+            (
+              AchievementOperation.fromString(rs.string("operation")).get,
+              rs.int("achievement_id")
+            )
           }
-          .toList().apply()
+          .toList()
+          .apply()
       }
     }
   }
@@ -50,7 +63,8 @@ class JdbcBookedAchievementPersistenceRepository[F[_]](implicit SyncContext: Syn
         sql"""|update booked_achievement_status_change set completed_at = cast(now() as datetime)
               | where player_uuid = ${key.toString} and completed_at is null"""
           .stripMargin
-          .update().apply()
+          .update()
+          .apply()
       }
     }
   }
@@ -63,8 +77,10 @@ class JdbcBookedAchievementPersistenceRepository[F[_]](implicit SyncContext: Syn
       DB.localTx { implicit session =>
         UUID.fromString(
           sql"select (uuid) from playerdata where name = $playerName"
-            .map { rs => rs.string("uuid")}
-            .toList().apply().head
+            .map { rs => rs.string("uuid") }
+            .toList()
+            .apply()
+            .head
         )
       }
     }

@@ -3,7 +3,7 @@ package com.github.unchama.util
 import cats.effect.Sync
 import org.slf4j.Logger
 
-class MillisecondTimer private() {
+class MillisecondTimer private () {
   private var startTime: Long = 0
 
   def resetTimer(): Unit = {
@@ -11,7 +11,8 @@ class MillisecondTimer private() {
   }
 
   /**
-   * @deprecated use [[sendLapTimeMessageWithLogger]]
+   * @deprecated
+   *   use [[sendLapTimeMessageWithLogger]]
    */
   @Deprecated() def sendLapTimeMessage(message: String): Unit = {
     val recordedNanoSecondDuration = System.nanoTime() - startTime
@@ -39,7 +40,7 @@ object MillisecondTimer {
 
   import cats.implicits._
 
-  def timeF[F[_] : Sync, R](program: F[R])(message: String)(implicit logger: Logger): F[R] =
+  def timeF[F[_]: Sync, R](program: F[R])(message: String)(implicit logger: Logger): F[R] =
     for {
       timer <- Sync[F].delay {
         getInitializedTimerInstance

@@ -25,15 +25,22 @@ case class SeichiAmountData(expAmount: SeichiExpAmount) {
   lazy val levelProgress: SeichiLevelProgress = {
     import com.github.unchama.generic.algebra.typeclasses.OrderedMonus._
 
-    val (nextThreshold, previousThreshold) = if (starLevelCorrespondingToExp != SeichiStarLevel.zero) {
-      val nextLevel = starLevelCorrespondingToExp.increment
+    val (nextThreshold, previousThreshold) =
+      if (starLevelCorrespondingToExp != SeichiStarLevel.zero) {
+        val nextLevel = starLevelCorrespondingToExp.increment
 
-      (SeichiStarLevelTable.expAt(nextLevel), SeichiStarLevelTable.expAt(starLevelCorrespondingToExp))
-    } else {
-      val nextLevel = levelCorrespondingToExp.increment
+        (
+          SeichiStarLevelTable.expAt(nextLevel),
+          SeichiStarLevelTable.expAt(starLevelCorrespondingToExp)
+        )
+      } else {
+        val nextLevel = levelCorrespondingToExp.increment
 
-      (SeichiLevelTable.table.expAt(nextLevel), SeichiLevelTable.table.expAt(levelCorrespondingToExp))
-    }
+        (
+          SeichiLevelTable.table.expAt(nextLevel),
+          SeichiLevelTable.table.expAt(levelCorrespondingToExp)
+        )
+      }
 
     val required = nextThreshold |-| previousThreshold
     val achieved = expAmount |-| previousThreshold
@@ -41,7 +48,9 @@ case class SeichiAmountData(expAmount: SeichiExpAmount) {
     SeichiLevelProgress.fromRequiredAndAchievedPair(required, achieved)
   }
 
-  def addExpAmount(another: SeichiExpAmount): SeichiAmountData = SeichiAmountData(expAmount.add(another))
+  def addExpAmount(another: SeichiExpAmount): SeichiAmountData = SeichiAmountData(
+    expAmount.add(another)
+  )
 
 }
 
@@ -52,5 +61,6 @@ object SeichiAmountData {
 
   implicit val order: Order[SeichiAmountData] = Order.by(_.expAmount)
 
-  implicit val monoid: Monoid[SeichiAmountData] = Monoid.instance(initial, (a, b) => a.addExpAmount(b.expAmount))
+  implicit val monoid: Monoid[SeichiAmountData] =
+    Monoid.instance(initial, (a, b) => a.addExpAmount(b.expAmount))
 }

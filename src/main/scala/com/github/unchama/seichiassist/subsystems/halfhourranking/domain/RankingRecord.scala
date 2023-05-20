@@ -9,7 +9,9 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.Seichi
  */
 case class RankingRecord[Player](batch: BatchedSeichiExpMap[Player]) {
 
-  def getSortedNonzeroRecords(implicit playerHasUuid: HasUuid[Player]): List[(Player, SeichiExpAmount)] =
+  def getSortedNonzeroRecords(
+    implicit playerHasUuid: HasUuid[Player]
+  ): List[(Player, SeichiExpAmount)] =
     batch
       .toUuidCollatedList
       .filter(_._2 != SeichiExpAmount.zero)

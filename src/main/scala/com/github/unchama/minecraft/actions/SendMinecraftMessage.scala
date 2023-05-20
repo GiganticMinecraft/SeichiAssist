@@ -14,16 +14,19 @@ trait SendMinecraftMessage[F[_], Target] {
     strings.traverse(string(player, _)).as(())
 
   def mapK[G[_]](fk: F ~> G): SendMinecraftMessage[G, Target] =
-    (player: Target, s: String) =>
-      fk(SendMinecraftMessage.this.string(player, s))
+    (player: Target, s: String) => fk(SendMinecraftMessage.this.string(player, s))
 }
 
 object SendMinecraftMessage {
 
-  def apply[F[_], Player](implicit ev: SendMinecraftMessage[F, Player]): SendMinecraftMessage[F, Player] = implicitly
+  def apply[F[_], Player](
+    implicit ev: SendMinecraftMessage[F, Player]
+  ): SendMinecraftMessage[F, Player] = implicitly
 
-  implicit def coercion[F[_], G[_]](implicit ev: SendMinecraftMessage[F, Player],
-                                    fg: ContextCoercion[F, G]): SendMinecraftMessage[G, Player] =
+  implicit def coercion[F[_], G[_]](
+    implicit ev: SendMinecraftMessage[F, Player],
+    fg: ContextCoercion[F, G]
+  ): SendMinecraftMessage[G, Player] =
     ev.mapK(fg)
 
 }

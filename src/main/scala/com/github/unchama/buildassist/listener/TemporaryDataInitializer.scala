@@ -7,7 +7,9 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import java.util.UUID
 import scala.collection.mutable
 
-class TemporaryDataInitializer(dataMap: mutable.Map[UUID, TemporaryMutableBuildAssistPlayerData]) extends Listener {
+class TemporaryDataInitializer(
+  dataMap: mutable.Map[UUID, TemporaryMutableBuildAssistPlayerData]
+) extends Listener {
 
   @EventHandler(priority = EventPriority.LOWEST)
   def onPreLogin(event: AsyncPlayerPreLoginEvent): Unit = {

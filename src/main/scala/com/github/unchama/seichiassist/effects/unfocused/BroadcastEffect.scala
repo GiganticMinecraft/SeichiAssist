@@ -20,7 +20,7 @@ object BroadcastEffect {
             players.asScala.toList
           }
         }
-        _ <- players.map(effect.run).sequence
+        _ <- players.traverse(effect.run)
       } yield ()
     }
 }

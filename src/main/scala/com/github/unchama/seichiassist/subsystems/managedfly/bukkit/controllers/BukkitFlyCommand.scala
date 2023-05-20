@@ -6,8 +6,15 @@ import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates
-import com.github.unchama.seichiassist.subsystems.managedfly.application.{ActiveSessionFactory, ActiveSessionReference}
-import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, RemainingFlyDuration}
+import com.github.unchama.seichiassist.subsystems.managedfly.application.{
+  ActiveSessionFactory,
+  ActiveSessionReference
+}
+import com.github.unchama.seichiassist.subsystems.managedfly.domain.{
+  Flying,
+  NotFlying,
+  RemainingFlyDuration
+}
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
@@ -26,52 +33,58 @@ object BukkitFlyCommand {
     s"${GREEN}時間指定は「1」以上の整数を入力してください。"
 
   private val printUsageExecutor =
-    BuilderTemplates.playerCommandBuilder
+    BuilderTemplates
+      .playerCommandBuilder
       .execution(_ => IO.pure(MessageEffect(commandHelpMessage)))
       .build()
 
-  private val durationParser = Parsers
-    .closedRangeInt(1, Int.MaxValue, MessageEffect(durationParseFailedMessage))
-    .andThen { parseResult =>
-      parseResult.map {
-        case r: Int => RemainingFlyDuration.PositiveMinutes.fromPositive(r)
-      }
+  private val durationParser =
+    Parsers.closedRangeInt(1, Int.MaxValue, MessageEffect(durationParseFailedMessage)).andThen {
+      parseResult =>
+        parseResult.map { case r: Int => RemainingFlyDuration.PositiveMinutes.fromPositive(r) }
     }
 
   import cats.effect.implicits._
   import cats.implicits._
 
-  def startEndlessCommand[
-    F[_] : ConcurrentEffect : Timer,
-    G[_] : SyncEffect
-  ](implicit sessionReferenceRepository: KeyedDataRepository[Player, ActiveSessionReference[F, G]],
-    factory: ActiveSessionFactory[F, Player]): ContextualExecutor =
-    BuilderTemplates.playerCommandBuilder
+  def startEndlessCommand[F[_]: ConcurrentEffect: Timer, G[_]: SyncEffect](
+    implicit
+    sessionReferenceRepository: KeyedDataRepository[Player, ActiveSessionReference[F, G]],
+    factory: ActiveSessionFactory[F, Player]
+  ): ContextualExecutor =
+    BuilderTemplates
+      .playerCommandBuilder
       .execution { context =>
         for {
           _ <-
             sessionReferenceRepository(context.sender)
-              .replaceSession(factory.start[G](RemainingFlyDuration.Infinity).run(context.sender))
+              .replaceSession(
+                factory.start[G](RemainingFlyDuration.Infinity).run(context.sender)
+              )
               .toIO
         } yield TargetedEffect.emptyEffect
       }
       .build()
 
-  def addCommand[
-    F[_] : ConcurrentEffect : Timer,
-    G[_] : SyncEffect
-  ](implicit sessionReferenceRepository: KeyedDataRepository[Player, ActiveSessionReference[F, G]],
-    factory: ActiveSessionFactory[F, Player]): ContextualExecutor =
-    BuilderTemplates.playerCommandBuilder
+  def addCommand[F[_]: ConcurrentEffect: Timer, G[_]: SyncEffect](
+    implicit
+    sessionReferenceRepository: KeyedDataRepository[Player, ActiveSessionReference[F, G]],
+    factory: ActiveSessionFactory[F, Player]
+  ): ContextualExecutor =
+    BuilderTemplates
+      .playerCommandBuilder
       .argumentsParsers(List(durationParser))
       .execution { context =>
         val List(duration: RemainingFlyDuration) = context.args.parsed
 
         for {
-          currentStatus <- sessionReferenceRepository(context.sender).getLatestFlyStatus.runSync[SyncIO].toIO
+          currentStatus <- sessionReferenceRepository(context.sender)
+            .getLatestFlyStatus
+            .runSync[SyncIO]
+            .toIO
           newTotalDuration = currentStatus match {
             case Flying(remainingDuration) => remainingDuration.combine(duration)
-            case NotFlying => duration
+            case NotFlying                 => duration
           }
           _ <-
             sessionReferenceRepository(context.sender)
@@ -81,16 +94,16 @@ object BukkitFlyCommand {
       }
       .build()
 
-  def finishCommand[
-    F[_] : ConcurrentEffect, G[_]
-  ](implicit sessionReferenceRepository: KeyedDataRepository[Player, ActiveSessionReference[F, G]]): ContextualExecutor =
-    BuilderTemplates.playerCommandBuilder
+  def finishCommand[F[_]: ConcurrentEffect, G[_]](
+    implicit
+    sessionReferenceRepository: KeyedDataRepository[Player, ActiveSessionReference[F, G]]
+  ): ContextualExecutor =
+    BuilderTemplates
+      .playerCommandBuilder
       .execution { context =>
         for {
           sessionStopped <-
-            sessionReferenceRepository(context.sender)
-              .stopAnyRunningSession
-              .toIO
+            sessionReferenceRepository(context.sender).stopAnyRunningSession.toIO
         } yield {
           if (sessionStopped) {
             MessageEffect(s"${GREEN}fly効果を停止しました。")
@@ -101,11 +114,11 @@ object BukkitFlyCommand {
       }
       .build()
 
-  def executor[
-    F[_] : ConcurrentEffect : Timer,
-    G[_] : SyncEffect
-  ](implicit sessionReferenceRepository: KeyedDataRepository[Player, ActiveSessionReference[F, G]],
-    factory: ActiveSessionFactory[F, Player]): TabExecutor =
+  def executor[F[_]: ConcurrentEffect: Timer, G[_]: SyncEffect](
+    implicit
+    sessionReferenceRepository: KeyedDataRepository[Player, ActiveSessionReference[F, G]],
+    factory: ActiveSessionFactory[F, Player]
+  ): TabExecutor =
     BranchedExecutor(
       Map(
         "endless" -> startEndlessCommand[F, G],
@@ -113,6 +126,7 @@ object BukkitFlyCommand {
         "finish" -> finishCommand[F, G],
         "end" -> finishCommand[F, G]
       ),
-      whenArgInsufficient = Some(printUsageExecutor), whenBranchNotFound = Some(printUsageExecutor)
+      whenArgInsufficient = Some(printUsageExecutor),
+      whenBranchNotFound = Some(printUsageExecutor)
     ).asNonBlockingTabExecutor()
 }

@@ -24,8 +24,7 @@ trait ManaManipulation[F[_]] {
   def restoreCompletely: F[Unit] = restoreFraction(1)
 
   /**
-   * マナが足りない場合はマナを消費をせずに `None` を返し、
-   * 足りていた場合は消費して `Some(amount)` を返すような作用。
+   * マナが足りない場合はマナを消費をせずに `None` を返し、 足りていた場合は消費して `Some(amount)` を返すような作用。
    */
   def tryAcquire(amount: ManaAmount): F[Option[ManaAmount]]
 
@@ -35,8 +34,9 @@ object ManaManipulation {
 
   import cats.implicits._
 
-  def fromLevelCappedAmountRef[F[_] : FlatMap](multiplierRef: Ref[F, ManaMultiplier])
-                                              (ref: Ref[F, LevelCappedManaAmount]): ManaManipulation[F] =
+  def fromLevelCappedAmountRef[F[_]: FlatMap](
+    multiplierRef: Ref[F, ManaMultiplier]
+  )(ref: Ref[F, LevelCappedManaAmount]): ManaManipulation[F] =
     new ManaManipulation[F] {
       override def restoreAbsolute(amount: ManaAmount): F[Unit] =
         ref.update(_.add(amount))
@@ -49,7 +49,7 @@ object ManaManipulation {
           ref.modify { original =>
             original.tryUse(amount)(multiplier) match {
               case Some(reduced) => (reduced, Some(amount))
-              case None => (original, None)
+              case None          => (original, None)
             }
           }
         }

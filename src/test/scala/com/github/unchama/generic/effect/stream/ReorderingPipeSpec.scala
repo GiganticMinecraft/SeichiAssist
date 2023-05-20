@@ -14,7 +14,7 @@ import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import scala.util.Random
 
 class ReorderingPipeSpec
-  extends AnyWordSpec
+    extends AnyWordSpec
     with ScalaCheckPropertyChecks
     with Matchers
     with ConcurrentEffectTest
@@ -22,8 +22,11 @@ class ReorderingPipeSpec
 
   import scala.concurrent.duration._
 
-  implicit override val patienceConfig: PatienceConfig = PatienceConfig(timeout = 5.seconds, interval = 10.millis)
-  implicit val monixScheduler: TestScheduler = TestScheduler(ExecutionModel.AlwaysAsyncExecution)
+  implicit override val patienceConfig: PatienceConfig =
+    PatienceConfig(timeout = 5.seconds, interval = 10.millis)
+  implicit val monixScheduler: TestScheduler = TestScheduler(
+    ExecutionModel.AlwaysAsyncExecution
+  )
 
   "ReorderingPipe" should {
     type TestInputType = Long
@@ -54,9 +57,13 @@ class ReorderingPipeSpec
           }
 
           val program =
-            fs2.Stream
+            fs2
+              .Stream
               .evals(createRandomizedInput)
-              .through(ReorderingPipe.withInitialToken[SyncIO, TestInputType](timeStamped.head.currentStamp))
+              .through(
+                ReorderingPipe
+                  .withInitialToken[SyncIO, TestInputType](timeStamped.head.currentStamp)
+              )
               .compile
               .toList
 

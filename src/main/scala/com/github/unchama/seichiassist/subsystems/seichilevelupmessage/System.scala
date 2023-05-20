@@ -9,17 +9,14 @@ import io.chrisdavenport.log4cats.ErrorLogger
 
 object System {
 
-  def backgroundProcess[
-    F[_] : Async : SendMinecraftMessage[*[_], Player] : ErrorLogger,
-    G[_],
-    Player
-  ](implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player]): F[Nothing] = {
+  def backgroundProcess[F[_]: Async: SendMinecraftMessage[*[_], Player]: ErrorLogger, G[
+    _
+  ], Player](implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player]): F[Nothing] = {
     StreamExtra.compileToRestartingStream("[SeichiLevelUpMessage]") {
-      breakCountReadAPI
-        .seichiLevelUpdates
-        .evalMap { case (player, diff) =>
+      breakCountReadAPI.seichiLevelUpdates.evalMap {
+        case (player, diff) =>
           SendMinecraftMessage[F, Player].list(player, MessageTable.messagesOnDiff(diff))
-        }
+      }
     }
   }
 }

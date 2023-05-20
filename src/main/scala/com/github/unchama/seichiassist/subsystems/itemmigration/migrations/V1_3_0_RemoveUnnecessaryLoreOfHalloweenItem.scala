@@ -17,7 +17,8 @@ object V1_3_0_RemoveUnnecessaryLoreOfHalloweenItem {
   private val halloweenSpecialPrizeLore = s"${GRAY}2020ハロウィン討伐イベント特別賞"
 
   def isHalloweenPrize(itemStack: ItemStack): Boolean = {
-    if (itemStack == null || !itemStack.hasItemMeta || !itemStack.getItemMeta.hasLore) return false
+    if (itemStack == null || !itemStack.hasItemMeta || !itemStack.getItemMeta.hasLore)
+      return false
     val lore = itemStack.getItemMeta.getLore.asScala
     lore.contains(halloweenClearPrizeLore) || lore.contains(halloweenSpecialPrizeLore)
   }
@@ -30,7 +31,7 @@ object V1_3_0_RemoveUnnecessaryLoreOfHalloweenItem {
     import scala.util.chaining._
 
     val clone = itemStack.clone()
-    val meta = clone.getItemMeta.tap {meta =>
+    val meta = clone.getItemMeta.tap { meta =>
       import meta._
       setLore {
         if (isUnbreakable) getLore.asScala.filter(_ != s"$RESET${DARK_RED}耐久無限").asJava

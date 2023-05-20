@@ -1,6 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.managedfly.application
 
-import com.github.unchama.seichiassist.subsystems.managedfly.domain.{IdleStatus, PlayerFlyStatus, RemainingFlyDuration}
+import com.github.unchama.seichiassist.subsystems.managedfly.domain.{
+  IdleStatus,
+  PlayerFlyStatus,
+  RemainingFlyDuration
+}
 
 /**
  * プレーヤーの飛行状態に`F`の文脈で干渉する手段を与える型クラスインスタンスのtrait。
@@ -8,15 +12,14 @@ import com.github.unchama.seichiassist.subsystems.managedfly.domain.{IdleStatus,
  * `F` は `Kleisli[G, Player, *]` の形をしていることを想定している。
  */
 trait PlayerFlyStatusManipulation[F[_]] extends AnyRef {
+
   /**
-   * 飛行に必要な経験値をプレーヤーが持っていることを保証するアクション。
-   * このアクションは [[PlayerExpNotEnough]] を `raiseError` してよい。
+   * 飛行に必要な経験値をプレーヤーが持っていることを保証するアクション。 このアクションは [[PlayerExpNotEnough]] を `raiseError` してよい。
    */
   val ensurePlayerExp: F[Unit]
 
   /**
-   * 飛行に必要な経験値をプレーヤーに消費させるアクション。
-   * このアクションは [[PlayerExpNotEnough]] を `raiseError` してよい。
+   * 飛行に必要な経験値をプレーヤーに消費させるアクション。 このアクションは [[PlayerExpNotEnough]] を `raiseError` してよい。
    */
   val consumePlayerExp: F[Unit]
 

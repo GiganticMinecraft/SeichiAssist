@@ -23,11 +23,10 @@ class InterceptionScope[K, R](implicit val cs: ContextShift[IO]) {
   private val map: mutable.Map[K, Deferred[IO, InterceptionResult[R]]] = mutable.HashMap()
 
   def cancelAnyInterception(key: K, reason: CancellationReason): IO[Unit] =
-    IO { map.remove(key) }
-      .flatMap {
-        case Some(deferred) => deferred.complete(Right(reason))
-        case None => IO.pure(())
-      }
+    IO { map.remove(key) }.flatMap {
+      case Some(deferred) => deferred.complete(Right(reason))
+      case None           => IO.pure(())
+    }
 
   def interceptFrom(key: K): IO[InterceptionResult[R]] = for {
     deferred <- Deferred[IO, InterceptionResult[R]]
@@ -38,9 +37,10 @@ class InterceptionScope[K, R](implicit val cs: ContextShift[IO]) {
 
   def suggestInterception(key: K, response: R): IO[InterceptorResponse] =
     IO { map.remove(key) }.flatMap {
-      case Some(deferred) => for {
-        _ <- deferred.complete(Left(response))
-      } yield Intercepted
+      case Some(deferred) =>
+        for {
+          _ <- deferred.complete(Left(response))
+        } yield Intercepted
       case None => IO.pure(Ignored)
     }
 }

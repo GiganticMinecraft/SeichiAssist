@@ -15,20 +15,24 @@ services:
     build:
       context: .
       dockerfile: ./docker/spigot/Dockerfile
-    image: spigot
     networks:
       - seichi
     volumes:
-      - spigot_a:/spigot/
+      - spigot_a:/data
     ports:
       - "25566:25565"
       - "7091:7091"
     environment:
+      - VERSION=1.12.2
+      - EULA=TRUE
+      - TYPE=SPIGOT
+      - ONLINE_MODE=FALSE
+      - ENABLE_JMX=true
       - JMX_PORT=7091
       - JMX_BINDING=0.0.0.0
       - JMX_HOST=localhost
       - SERVER_NUM=1
-      - SERVER_ID=s1
+      - SERVER_ID=local-s1
       - DB_HOST=db
       - DB_PASSWORD=unchamaisgod
       - REDIS_HOST=redis
@@ -41,20 +45,24 @@ services:
     build:
       context: .
       dockerfile: ./docker/spigot/Dockerfile
-    image: spigot
     networks:
       - seichi
     volumes:
-      - spigot_b:/spigot/
+      - spigot_b:/data
     ports:
       - "25567:25565"
       - "7092:7091"
     environment:
+      - VERSION=1.12.2
+      - EULA=TRUE
+      - TYPE=SPIGOT
+      - ONLINE_MODE=FALSE
+      - ENABLE_JMX=true
       - JMX_PORT=7091
       - JMX_BINDING=0.0.0.0
       - JMX_HOST=localhost
       - SERVER_NUM=2
-      - SERVER_ID=s2
+      - SERVER_ID=local-s2
       - DB_HOST=db
       - DB_PASSWORD=unchamaisgod
       - REDIS_HOST=redis
@@ -63,39 +71,21 @@ services:
       - db
       - redis
     stdin_open: true
-  bungeecord_1:
-    build:
-      context: .
-      dockerfile: ./docker/bungeecord/Dockerfile
+  bungeecord:
+    image: itzg/bungeecord:java8
     ports:
       - "25565:25577"
+    volumes:
+      - ./docker/bungeecord/serverfiles:/config
+      - ./docker/bungeecord/serverfiles/redisbungee/config.yml:/plugins/RedisBungee/config.yml
     networks:
       - seichi
     environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - SERVER_ID=bungeecord_1
+      - PLUGINS=https://github.com/ProxioDev/RedisBungee/releases/download/0.10.1/RedisBungee-Bungee-0.10.1-SNAPSHOT.jar
     depends_on:
       - spigota
       - spigotb
     stdin_open: true
-  bungeecord_2:
-    build:
-      context: .
-      dockerfile: ./docker/bungeecord/Dockerfile
-    ports:
-      - "25564:25577"
-    networks:
-      - seichi
-    environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - SERVER_ID=bungeecord_2
-    depends_on:
-      - spigota
-      - spigotb
-    stdin_open: true
-
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:4.8.5
     environment:

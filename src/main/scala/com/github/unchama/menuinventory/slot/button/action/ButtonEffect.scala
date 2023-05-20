@@ -20,4 +20,3 @@ object ButtonEffect {
   def apply(effect: ButtonEffectScope => TargetedEffect[Player]): ButtonEffect =
     (event: InventoryClickEvent) => effect(ButtonEffectScope(event))
 }
-

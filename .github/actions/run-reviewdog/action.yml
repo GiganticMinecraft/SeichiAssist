@@ -1,0 +1,43 @@
+# See: https://xuwei-k.hatenablog.com/entry/2023/01/28/102226
+name: run-reviewdog
+description: Install and run reviewdog
+inputs:
+  reviewdog-name:
+    description: The reviewdog's name.
+    required: true
+    default: reviewdog
+  github-token:
+    description: The GitHub Actions's token
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Install reviewdog if it is not installed
+      run: |
+        if !(type "reviewdog" > /dev/null 2>&1); then
+          REVIEWDOG_VERSION="0.14.1"
+          FILE_NAME="reviewdog_${REVIEWDOG_VERSION}_Linux_x86_64.tar.gz"
+          curl -LSs https://github.com/reviewdog/reviewdog/releases/download/v${REVIEWDOG_VERSION}/${FILE_NAME} > "${FILE_NAME}"
+          tar -zxf "${FILE_NAME}"
+          rm -rf "${FILE_NAME}"
+          chmod +x ./reviewdog
+          mv reviewdog /usr/local/bin
+        fi
+        reviewdog -version
+      shell: bash
+    - name: Run reviewdog
+      run: |
+        TMPFILE="$(mktemp)"
+        git diff > "${TMPFILE}"
+        reviewdog \
+          -name="${REVIEWDOG_NAME}" \
+          -f=diff \
+          -f.diff.strip=1 \
+          -reporter="github-pr-review" \
+          -filter-mode="diff_context" \
+          -fail-on-error="false" \
+          -level="warning" <"${TMPFILE}"
+      env:
+        REVIEWDOG_NAME: ${{ inputs.reviewdog-name }}
+        REVIEWDOG_GITHUB_API_TOKEN: ${{ inputs.github-token }}
+      shell: bash

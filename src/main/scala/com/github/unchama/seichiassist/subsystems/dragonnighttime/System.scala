@@ -9,14 +9,11 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.FastDiggingE
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 
 object System {
-  def backgroundProcess[
-    F[_] : Concurrent : Timer,
-    G[_] : ContextCoercion[*[_], F],
-    Player
-  ](implicit
-    ctx: RepeatingTaskContext,
+  def backgroundProcess[F[_]: Concurrent: Timer, G[_]: ContextCoercion[*[_], F], Player](
+    implicit ctx: RepeatingTaskContext,
     fastDiggingEffectApi: FastDiggingEffectWriteApi[F, Player],
-    manaApi: ManaApi[F, G, Player]): F[Nothing] = {
+    manaApi: ManaApi[F, G, Player]
+  ): F[Nothing] = {
 
     implicit val _notifiable: Notifiable[F] = SyncNotifiable[F]
 

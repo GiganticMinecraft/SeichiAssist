@@ -9,7 +9,7 @@ import scala.concurrent.duration.FiniteDuration
 /**
  * 一定時間をおいて利用可能になるようなセマフォ。
  */
-final class RecoveringSemaphore[F[_] : Timer : Concurrent] private(semaphore: Semaphore[F]) {
+final class RecoveringSemaphore[F[_]: Timer: Concurrent] private (semaphore: Semaphore[F]) {
 
   import cats.effect.implicits._
   import cats.implicits._
@@ -23,9 +23,11 @@ final class RecoveringSemaphore[F[_] : Timer : Concurrent] private(semaphore: Se
 
     semaphore.tryAcquire.flatMap { acquired =>
       if (acquired)
-        Bracket[F, Throwable].guarantee(action) {
-          releaseProgram.start.as(())
-        }.as(())
+        Bracket[F, Throwable]
+          .guarantee(action) {
+            releaseProgram.start.as(())
+          }
+          .as(())
       else
         Monad[F].unit
     }
@@ -36,7 +38,7 @@ object RecoveringSemaphore {
 
   import cats.implicits._
 
-  def newIn[G[_] : Sync, F[_] : Concurrent : Timer]: G[RecoveringSemaphore[F]] =
+  def newIn[G[_]: Sync, F[_]: Concurrent: Timer]: G[RecoveringSemaphore[F]] =
     Semaphore.in[G, F](1).map(new RecoveringSemaphore(_))
 
 }

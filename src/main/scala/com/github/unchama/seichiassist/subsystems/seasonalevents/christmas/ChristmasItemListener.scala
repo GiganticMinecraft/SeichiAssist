@@ -7,7 +7,12 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
 import com.github.unchama.seichiassist.subsystems.seasonalevents.Util
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemData._
-import com.github.unchama.seichiassist.util.Util.{addItem, dropItem, isPlayerInventoryFull, removeItemfromPlayerInventory}
+import com.github.unchama.seichiassist.util.InventoryOperations.{
+  addItem,
+  dropItem,
+  isPlayerInventoryFull,
+  removeItemfromPlayerInventory
+}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.entity.EntityType._
@@ -23,11 +28,9 @@ import org.bukkit.{Bukkit, Sound}
 
 import java.util.Random
 
-class ChristmasItemListener[
-  F[_],
-  G[_] : SyncEffect
-](instance: JavaPlugin)
- (implicit manaApi: ManaWriteApi[G, Player]) extends Listener {
+class ChristmasItemListener[F[_], G[_]: SyncEffect](instance: JavaPlugin)(
+  implicit manaApi: ManaWriteApi[G, Player]
+) extends Listener {
   @EventHandler
   def onPlayerJoin(event: PlayerJoinEvent): Unit = {
     if (isInEventNow) {
@@ -35,9 +38,7 @@ class ChristmasItemListener[
         s"$LIGHT_PURPLE${END_DATE}までの期間限定で、クリスマスイベントを開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",
         s"$DARK_GREEN$UNDERLINE$blogArticleUrl"
-      ).foreach(
-        event.getPlayer.sendMessage(_)
-      )
+      ).foreach(event.getPlayer.sendMessage(_))
     }
   }
 
@@ -47,7 +48,8 @@ class ChristmasItemListener[
     if (!isChristmasCake(item)) return
 
     if (event.getHand == EquipmentSlot.OFF_HAND) return
-    if (event.getAction != Action.RIGHT_CLICK_AIR && event.getAction != Action.LEFT_CLICK_BLOCK) return
+    if (event.getAction != Action.RIGHT_CLICK_AIR && event.getAction != Action.LEFT_CLICK_BLOCK)
+      return
 
     event.setCancelled(true)
 
@@ -85,21 +87,49 @@ class ChristmasItemListener[
 
     // 1分おきに計5回マナを一定量回復する
     for (i <- 1 to 5) {
-      Bukkit.getServer.getScheduler.runTaskLater(instance, new Runnable {
-        override def run(): Unit = {
-          // マナを15%回復する
-          manaApi.manaAmount(player).restoreFraction(0.15).runSync[SyncIO].unsafeRunSync()
-          player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
-        }
-      }, (20 * 60 * i).toLong)
+      Bukkit
+        .getServer
+        .getScheduler
+        .runTaskLater(
+          instance,
+          new Runnable {
+            override def run(): Unit = {
+              // マナを15%回復する
+              manaApi.manaAmount(player).restoreFraction(0.15).runSync[SyncIO].unsafeRunSync()
+              player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0f, 1.2f)
+            }
+          },
+          (20 * 60 * i).toLong
+        )
     }
   }
 
   @EventHandler
   def onEntityTarget(event: EntityTargetLivingEntityEvent): Unit = {
     val enemies = Set(
-      BLAZE, CREEPER, ELDER_GUARDIAN, ENDERMAN, ENDERMITE, EVOKER, GHAST, GUARDIAN, HUSK, MAGMA_CUBE, PIG_ZOMBIE,
-      SHULKER, SILVERFISH, SKELETON, SLIME, SPIDER, STRAY, VEX, VINDICATOR, WITCH, WITHER_SKELETON, ZOMBIE, ZOMBIE_VILLAGER
+      BLAZE,
+      CREEPER,
+      ELDER_GUARDIAN,
+      ENDERMAN,
+      ENDERMITE,
+      EVOKER,
+      GHAST,
+      GUARDIAN,
+      HUSK,
+      MAGMA_CUBE,
+      PIG_ZOMBIE,
+      SHULKER,
+      SILVERFISH,
+      SKELETON,
+      SLIME,
+      SPIDER,
+      STRAY,
+      VEX,
+      VINDICATOR,
+      WITCH,
+      WITHER_SKELETON,
+      ZOMBIE,
+      ZOMBIE_VILLAGER
     )
 
     val entity = event.getEntity
@@ -118,14 +148,20 @@ class ChristmasItemListener[
         val playerLocation = player.getLocation
 
         val distance = entityLocation.distance(playerLocation)
-        val enchantLevel = new NBTItem(chestPlate).getByte(NBTTagConstants.camouflageEnchLevelTag).toInt
+        val enchantLevel =
+          new NBTItem(chestPlate).getByte(NBTTagConstants.camouflageEnchLevelTag).toInt
         // ここの数字に敵からの索敵距離を下げる
         try {
           val standard = calculateStandardDistance(enchantLevel, entity.getType)
           if (distance > standard) event.setCancelled(true)
         } catch {
           case err: IllegalArgumentException =>
-            Bukkit.getServer.getLogger.info(s"${player.getName}によって、「迷彩」エンチャントのついたアイテムが使用されましたが、設定されているエンチャントレベルが不正なものでした。")
+            Bukkit
+              .getServer
+              .getLogger
+              .info(
+                s"${player.getName}によって、「迷彩」エンチャントのついたアイテムが使用されましたが、設定されているエンチャントレベルが不正なものでした。"
+              )
             err.printStackTrace()
         }
       case _ =>
@@ -159,7 +195,8 @@ class ChristmasItemListener[
     if (!isInEventNow) return
 
     event.getEntity match {
-      case entity: LivingEntity if entity.getType == EntityType.STRAY && entity.getKiller != null =>
+      case entity: LivingEntity
+          if entity.getType == EntityType.STRAY && entity.getKiller != null =>
         Util.randomlyDropItemAt(entity, christmasSock, itemDropRateFromStray)
       case _ =>
     }

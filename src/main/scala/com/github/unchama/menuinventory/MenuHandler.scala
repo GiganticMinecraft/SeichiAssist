@@ -11,24 +11,26 @@ import org.bukkit.event.{EventHandler, Listener}
 /**
  * [MenuInventoryView] に由来するインベントリ上のクリックイベントをビューに定義されたアクションに流すようなリスナーオブジェクト.
  *
- * @author karayuu
+ * @author
+ *   karayuu
  */
-class MenuHandler(implicit val cs: NonServerThreadContextShift[IO], env: EffectEnvironment) extends Listener {
+class MenuHandler(implicit val cs: NonServerThreadContextShift[IO], env: EffectEnvironment)
+    extends Listener {
   @EventHandler(ignoreCancelled = true)
   def onInventoryClick(event: InventoryClickEvent): Unit = {
     val whoClicked = event.getWhoClicked match {
       case player: Player => player
-      case _ => return
+      case _              => return
     }
 
-    //メニュー外のクリック排除
+    // メニュー外のクリック排除
     val clickedInventory = event.getClickedInventory.ifNull {
       return
     }
 
     val holder = event.getWhoClicked.getOpenInventory.getTopInventory.getHolder match {
       case session: MenuSession => session
-      case _ => return
+      case _                    => return
     }
 
     // 上インベントリ以外のクリックを排除

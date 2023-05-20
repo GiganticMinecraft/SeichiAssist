@@ -9,8 +9,10 @@ import com.github.unchama.seichiassist.subsystems.ranking.domain.values.{LoginTi
 /**
  * 定期的に更新されるランキングデータを提供するオブジェクトのtrait。
  *
- * @tparam F ランキングを取得する作用の文脈
- * @tparam R ランキングのレコードが保持するデータ型
+ * @tparam F
+ *   ランキングを取得する作用の文脈
+ * @tparam R
+ *   ランキングのレコードが保持するデータ型
  */
 case class RankingProvider[F[_], R](ranking: ReadOnlyRef[F, Ranking[R]])
 

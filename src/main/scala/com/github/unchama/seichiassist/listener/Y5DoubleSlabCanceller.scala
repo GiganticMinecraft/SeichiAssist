@@ -2,10 +2,11 @@ package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist.ManagedWorld._
 import org.bukkit.Material
-import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.{EventHandler, Listener}
 
 object Y5DoubleSlabCanceller extends Listener {
+
   /**
    * 以下の条件をすべて満たすときにブロックの設置をキャンセルし、その旨を示すメッセージを送出する
    *   - プレイヤーが対象座標にブロックを設置できる
@@ -13,8 +14,10 @@ object Y5DoubleSlabCanceller extends Listener {
    *   - 対象座標の改変後ブロックが焼き石の二段重ねハーフブロックである
    *   - 対象座標が整地ワールドを指している
    *   - 対象ブロックのY座標が5である
-   * @see https://github.com/GiganticMinecraft/SeichiAssist/issues/775
-   * @param event 対象イベント
+   * @see
+   *   https://github.com/GiganticMinecraft/SeichiAssist/issues/775
+   * @param event
+   *   対象イベント
    */
   @EventHandler
   def onPlaceDoubleSlabAtY5(event: BlockPlaceEvent): Unit = {

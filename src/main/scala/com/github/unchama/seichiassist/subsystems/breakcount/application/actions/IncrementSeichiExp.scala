@@ -20,20 +20,19 @@ object IncrementSeichiExp {
 
   import cats.implicits._
 
-  def apply[F[_], Player](implicit ev: IncrementSeichiExp[F, Player]): IncrementSeichiExp[F, Player] = ev
+  def apply[F[_], Player](
+    implicit ev: IncrementSeichiExp[F, Player]
+  ): IncrementSeichiExp[F, Player] = ev
 
   /**
-   * 与えられたデータレポジトリと更新を流すトピックを用いてプレーヤーの整地量を増加させるような
-   * 代数を作成する。
+   * 与えられたデータレポジトリと更新を流すトピックを用いてプレーヤーの整地量を増加させるような 代数を作成する。
    */
-  def using[
-    F[_]
-    : Sync
-    : ClassifyPlayerWorld[*[_], Player],
-    G[_] : Effect : ContextCoercion[F, *[_]],
-    Player
-  ](dataRepository: KeyedDataRepository[Player, Ref[F, SeichiAmountData]],
-    dataTopic: Fs3Topic[G, Option[(Player, SeichiAmountData)]]): IncrementSeichiExp[F, Player] =
+  def using[F[_]: Sync: ClassifyPlayerWorld[*[_], Player], G[_]: Effect: ContextCoercion[F, *[
+    _
+  ]], Player](
+    dataRepository: KeyedDataRepository[Player, Ref[F, SeichiAmountData]],
+    dataTopic: Fs3Topic[G, Option[(Player, SeichiAmountData)]]
+  ): IncrementSeichiExp[F, Player] =
     (player, by) => {
       val F: Monad[F] = implicitly
 

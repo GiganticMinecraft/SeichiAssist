@@ -2,10 +2,12 @@ package com.github.unchama.seichiassist.subsystems.buildcount.application.action
 
 import cats.Monad
 import cats.effect.concurrent.Ref
+import cats.effect.{Effect, Sync}
 import com.github.unchama.datarepository.KeyedDataRepository
+import com.github.unchama.fs2.workaround.fs3.Fs3Topic
+import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.generic.ratelimiting.RateLimiter
-import com.github.unchama.generic.{Diff, RefExtra}
-import com.github.unchama.minecraft.actions.SendMinecraftMessage
 import com.github.unchama.seichiassist.subsystems.buildcount.application.BuildExpMultiplier
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
@@ -25,24 +27,27 @@ object IncrementBuildExpWhenBuiltByHand {
 
   import cats.implicits._
 
-  def apply[
-    F[_], Player
-  ](implicit ev: IncrementBuildExpWhenBuiltByHand[F, Player]): IncrementBuildExpWhenBuiltByHand[F, Player] = ev
+  def apply[F[_], Player](
+    implicit ev: IncrementBuildExpWhenBuiltByHand[F, Player]
+  ): IncrementBuildExpWhenBuiltByHand[F, Player] = ev
 
-  def using[
-    F[_]
-    : Monad
-    : ClassifyPlayerWorld[*[_], Player]
-    : SendMinecraftMessage[*[_], Player],
-    Player
-  ](rateLimiterRepository: KeyedDataRepository[Player, RateLimiter[F, BuildExpAmount]],
-    dataRepository: KeyedDataRepository[Player, Ref[F, BuildAmountData]])
-   (implicit multiplier: BuildExpMultiplier): IncrementBuildExpWhenBuiltByHand[F, Player] =
+  def using[F[_]: ClassifyPlayerWorld[*[_], Player], G[_]: Effect: ContextCoercion[
+    F,
+    *[_]
+  ], Player](
+    rateLimiterRepository: KeyedDataRepository[Player, RateLimiter[F, BuildExpAmount]],
+    dataRepository: KeyedDataRepository[Player, Ref[F, BuildAmountData]],
+    dataTopic: Fs3Topic[G, (Player, BuildAmountData)]
+  )(
+    implicit multiplier: BuildExpMultiplier,
+    sync: Sync[F]
+  ): IncrementBuildExpWhenBuiltByHand[F, Player] =
     (player: Player, by: BuildExpAmount) => {
-      val F: Monad[F] = Monad[F]
+      val F: Monad[F] = implicitly
 
       for {
-        amountToRequestIncrement <-
+        amountToIncrement <-
+          // ワールドの判定はここで行われるべき。[[IncrementBuildExpWhenBuiltBySkill]]はこの値を参照する。
           F.ifM(ClassifyPlayerWorld[F, Player].isInBuildWorld(player))(
             F.ifF(ClassifyPlayerWorld[F, Player].isInSeichiWorld(player))(
               by.mapAmount(_ * multiplier.whenInSeichiWorld),
@@ -50,12 +55,15 @@ object IncrementBuildExpWhenBuiltByHand {
             ),
             F.pure(BuildExpAmount(0))
           )
-        amountToIncrement <-
-          rateLimiterRepository(player).requestPermission(amountToRequestIncrement)
-        dataPair <- RefExtra.getAndUpdateAndGet(dataRepository(player))(_.modifyExpAmount(_.add(amountToIncrement)))
-        _ <- Diff
-          .ofPairBy(dataPair)(_.levelCorrespondingToExp)
-          .traverse(LevelUpNotifier[F, Player].notifyTo(player))
+
+        // レートリミッターで制限しないと当然無制限になるので注意！！！
+        cappedIncreasedAmount <-
+          rateLimiterRepository(player).requestPermission(amountToIncrement)
+        incrementedData <-
+          dataRepository(player).updateAndGet(_.addExpAmount(cappedIncreasedAmount))
+        _ <- EffectExtra.runAsyncAndForget[G, F, Unit] {
+          dataTopic.publish1((player, incrementedData)).void
+        }
       } yield ()
     }
 }

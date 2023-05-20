@@ -4,10 +4,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
-class SeichiLevelSpec
-  extends AnyWordSpec
-    with ScalaCheckPropertyChecks
-    with Matchers {
+class SeichiLevelSpec extends AnyWordSpec with ScalaCheckPropertyChecks with Matchers {
 
   "SeichiLevel" should {
     "cap at 87115000" in {

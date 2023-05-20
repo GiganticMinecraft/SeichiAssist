@@ -1,74 +1,87 @@
 package com.github.unchama.seichiassist.subsystems.mebius.domain.resources
 
 import cats.data.NonEmptyList
-import com.github.unchama.seichiassist.subsystems.mebius.domain.message.{MebiusCombatMessage, MebiusPlayerMessage}
+import com.github.unchama.seichiassist.subsystems.mebius.domain.message.{
+  MebiusCombatMessage,
+  MebiusPlayerMessage
+}
 import com.github.unchama.util.collection.RandomizedCollection
 
 object MebiusMessages {
 
   val onBlockBreak: RandomizedCollection[MebiusPlayerMessage] = new RandomizedCollection(
-    NonEmptyList.of(
-      "ポコポコポコポコ…整地の音って、落ち着くねえ。",
-      "頑張れー！頑張れー！そこをまっすぐ！左にも石があるよー！…うるさい？",
-      "一生懸命掘ってると、いつの間にか無心になっちゃうよねえ…！",
-      "なんだか眠たくなってきちゃったー、[str1]は平気ー？",
-      "今日はどこまで掘るのかなー？",
-      "[str1]と一緒に整地するの、楽しいねえ！",
-      "ブロックが1つも浮いていないと、ちょうど空が見えて綺麗だよね！",
-      "ねえ、いま僕の兄弟の声がしなかった？気のせいかなあ",
-      "ポコポコ…ザクザク…音が気持ちいいよね！",
-      "整地♪整地♪ せ・い・ちー♪",
-      "あとちょっと掘ろうよ！",
-      "僕もスキルでバーっと掘ってみたいなー"
-    ).map(MebiusPlayerMessage)
+    NonEmptyList
+      .of(
+        "ポコポコポコポコ…整地の音って、落ち着くねえ。",
+        "頑張れー！頑張れー！そこをまっすぐ！左にも石があるよー！…うるさい？",
+        "一生懸命掘ってると、いつの間にか無心になっちゃうよねえ…！",
+        "なんだか眠たくなってきちゃったー、[str1]は平気ー？",
+        "今日はどこまで掘るのかなー？",
+        "[str1]と一緒に整地するの、楽しいねえ！",
+        "ブロックが1つも浮いていないと、ちょうど空が見えて綺麗だよね！",
+        "ねえ、いま僕の兄弟の声がしなかった？気のせいかなあ",
+        "ポコポコ…ザクザク…音が気持ちいいよね！",
+        "整地♪整地♪ せ・い・ちー♪",
+        "あとちょっと掘ろうよ！",
+        "僕もスキルでバーっと掘ってみたいなー"
+      )
+      .map(MebiusPlayerMessage)
   )
 
   val onMebiusBreak: RandomizedCollection[MebiusPlayerMessage] = new RandomizedCollection(
-    NonEmptyList.of(
-      "ここまでかぁっ…[str1]と一緒に旅したこと、すごく楽しかったなぁ…",
-      "この先[str1]のこと、守ってあげられなくなっちゃった…ごめんね…",
-      "僕、少しは[str1]の役に立てたかなぁ…もしそうだったら、嬉しいなぁ",
-      "[str1]のおかげで最期まで防具としていられたんだぁ…使ってくれて、ありがとう。",
-      "最期まで[str1]の頭にいれたことって、すごく幸せなことだよ",
-      "もし生まれ変わっても、また[str1]と…",
-      "ごめんね…[str1]とずっと一緒でいたかったけど、僕がついていけなかったよ…"
-    ).map(MebiusPlayerMessage)
+    NonEmptyList
+      .of(
+        "ここまでかぁっ…[str1]と一緒に旅したこと、すごく楽しかったなぁ…",
+        "この先[str1]のこと、守ってあげられなくなっちゃった…ごめんね…",
+        "僕、少しは[str1]の役に立てたかなぁ…もしそうだったら、嬉しいなぁ",
+        "[str1]のおかげで最期まで防具としていられたんだぁ…使ってくれて、ありがとう。",
+        "最期まで[str1]の頭にいれたことって、すごく幸せなことだよ",
+        "もし生まれ変わっても、また[str1]と…",
+        "ごめんね…[str1]とずっと一緒でいたかったけど、僕がついていけなかったよ…"
+      )
+      .map(MebiusPlayerMessage)
   )
 
   val onDamageBreaking: RandomizedCollection[MebiusPlayerMessage] = new RandomizedCollection(
-    NonEmptyList.of(
-      "いたた…もうすぐ壊れちゃいそうだ…",
-      "もうダメかも…こんなところで、悔しいなぁ",
-      "お願い、修繕して欲しいよ…",
-      "ごめんね…これ以上は[str1]のこと、守ってあげられそうにないよ…",
-      "もっと[str1]と、旅したかったなぁ",
-      "まだ平気…壊れるまでは、[str1]のことを守るんだ…",
-      "僕のこと、大事にしてね？"
-    ).map(MebiusPlayerMessage)
+    NonEmptyList
+      .of(
+        "いたた…もうすぐ壊れちゃいそうだ…",
+        "もうダメかも…こんなところで、悔しいなぁ",
+        "お願い、修繕して欲しいよ…",
+        "ごめんね…これ以上は[str1]のこと、守ってあげられそうにないよ…",
+        "もっと[str1]と、旅したかったなぁ",
+        "まだ平気…壊れるまでは、[str1]のことを守るんだ…",
+        "僕のこと、大事にしてね？"
+      )
+      .map(MebiusPlayerMessage)
   )
 
   val onDamageWarnEnemy: RandomizedCollection[MebiusCombatMessage] = new RandomizedCollection(
-    NonEmptyList.of(
-      "[str2]からの攻撃だ！気を付けて！",
-      "お前なんか余裕なんだからなー！さあ[str1]、やっちゃえ！",
-      "びっくりしたなー！人が休んでるときにー！",
-      "もーなんで今攻撃してくるのさあああ！",
-      "いったーいっ、今僕の小指踏んだなー！？",
-      "いてっ！やめろよー！僕を怒らせたら怖いぞー！",
-      "うわぁっ！飲み物がこぼれちゃったじゃないかー！"
-    ).map(MebiusCombatMessage)
+    NonEmptyList
+      .of(
+        "[str2]からの攻撃だ！気を付けて！",
+        "お前なんか余裕なんだからなー！さあ[str1]、やっちゃえ！",
+        "びっくりしたなー！人が休んでるときにー！",
+        "もーなんで今攻撃してくるのさあああ！",
+        "いったーいっ、今僕の小指踏んだなー！？",
+        "いてっ！やめろよー！僕を怒らせたら怖いぞー！",
+        "うわぁっ！飲み物がこぼれちゃったじゃないかー！"
+      )
+      .map(MebiusCombatMessage)
   )
 
   val onMonsterKill: RandomizedCollection[MebiusCombatMessage] = new RandomizedCollection(
-    NonEmptyList.of(
-      "さすが[str1]！[str2]なんて敵じゃないね！",
-      "僕にかかれば[str2]なんてこんなもんだよー！",
-      "モンスターってなんで人間を襲うんだろう…？",
-      "ねえ[str1]、今の僕のおかげだよね！ね？",
-      "たまにはやられてみたいもんだねー、ふふん！",
-      "[str2]なんて僕の力を出すまでもなかったね！",
-      "やるね！僕も負けてらんないぞー！"
-    ).map(MebiusCombatMessage)
+    NonEmptyList
+      .of(
+        "さすが[str1]！[str2]なんて敵じゃないね！",
+        "僕にかかれば[str2]なんてこんなもんだよー！",
+        "モンスターってなんで人間を襲うんだろう…？",
+        "ねえ[str1]、今の僕のおかげだよね！ね？",
+        "たまにはやられてみたいもんだねー、ふふん！",
+        "[str2]なんて僕の力を出すまでもなかったね！",
+        "やるね！僕も負けてらんないぞー！"
+      )
+      .map(MebiusCombatMessage)
   )
 
   val tips: List[String] = List(

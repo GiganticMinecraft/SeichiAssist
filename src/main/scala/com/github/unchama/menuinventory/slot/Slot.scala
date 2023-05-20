@@ -11,9 +11,11 @@ import org.bukkit.inventory.ItemStack
  *
  * [effectOn]の作用はクリックにより発生した[InventoryClickEvent]をキャンセル状態にすることができます.
  *
- * @author karayuu
+ * @author
+ *   karayuu
  */
 trait Slot {
+
   /**
    * この [Slot] にセットされている [ItemStack].
    */
@@ -24,8 +26,12 @@ trait Slot {
    *
    * このメソッド自体の呼び出しに副作用はありません.
    *
-   * @param event [InventoryClickEvent]
-   * @return クリックした[Player]へ及ぼすべき作用
+   * @param event
+   *   [InventoryClickEvent]
+   * @return
+   *   クリックした[Player]へ及ぼすべき作用
    */
-  def effectOn(event: InventoryClickEvent)(implicit cs: ContextShift[IO]): TargetedEffect[Player]
+  def effectOn(event: InventoryClickEvent)(
+    implicit cs: ContextShift[IO]
+  ): TargetedEffect[Player]
 }

@@ -1,12 +1,15 @@
 package com.github.unchama.seichiassist.subsystems.gachapoint.infrastructure
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.{GachaPoint, GachaPointPersistence}
+import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.{
+  GachaPoint,
+  GachaPointPersistence
+}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID
 
-class JdbcGachaPointPersistence[F[_] : Sync] extends GachaPointPersistence[F] {
+class JdbcGachaPointPersistence[F[_]: Sync] extends GachaPointPersistence[F] {
   private def encode(gachaPoint: GachaPoint): BigInt =
     gachaPoint.exp.amount.toBigInt
 
@@ -25,7 +28,8 @@ class JdbcGachaPointPersistence[F[_] : Sync] extends GachaPointPersistence[F] {
   override def write(key: UUID, value: GachaPoint): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
       sql"update playerdata set gachapoint = ${encode(value)} where uuid = ${key.toString}"
-        .update().apply()
+        .update()
+        .apply()
     }
   }
 }

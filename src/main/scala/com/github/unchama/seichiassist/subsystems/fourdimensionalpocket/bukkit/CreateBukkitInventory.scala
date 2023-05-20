@@ -7,9 +7,7 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor.{BOLD, DARK_PURPLE}
 import org.bukkit.inventory.Inventory
 
-class CreateBukkitInventory[
-  F[_] : Sync
-] extends CreateInventory[F, Inventory] {
+class CreateBukkitInventory[F[_]: Sync] extends CreateInventory[F, Inventory] {
   override def create(size: PocketSize): F[Inventory] =
     Sync[F].delay {
       Bukkit

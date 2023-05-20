@@ -18,6 +18,8 @@ trait GetConnectedPlayers[F[_], Player] {
 
 object GetConnectedPlayers {
 
-  def apply[F[_], Player](implicit ev: GetConnectedPlayers[F, Player]): GetConnectedPlayers[F, Player] = ev
+  def apply[F[_], Player](
+    implicit ev: GetConnectedPlayers[F, Player]
+  ): GetConnectedPlayers[F, Player] = ev
 
 }

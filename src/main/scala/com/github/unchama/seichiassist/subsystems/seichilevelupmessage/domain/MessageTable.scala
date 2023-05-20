@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.seichilevelupmessage.domain
 import com.github.unchama.generic.Diff
 import com.github.unchama.generic.algebra.typeclasses.HasSuccessor
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
-import org.bukkit.ChatColor
+import org.bukkit.ChatColor.AQUA
 
 object MessageTable {
   private val messages = Map(
@@ -17,7 +17,7 @@ object MessageTable {
     9 -> "整地鯖をもっと良くするために、是非JPMCSに投票をお願いします。\n1日1回投票出来ます。投票すると様々な特典を受け取れます！\nURLはこちら→https://minecraft.jp/servers/54d3529e4ddda180780041a7/vote",
     10 -> "初めてのアクティブスキル[デュアルブレイク]を習得できます！習得するには木の棒メニューのスキルブックをクリック！\nShiftと右クリックを同時にするとスキルをON・OFFできます。\nレベル12に到達するとMineStack機能が使えるようになります。\nブロック破壊スキルでは溶岩も消去することができますが溶岩1個につきブロック10個分の耐久値を消費します。",
     11 -> "そろそろ家建てません…？自分の家はメインワールドで建てることができます。\n他人の保護の無い所に保護を設定してから建てましょう。\n保護方法は公式wikiに詳しい説明があります。木の棒メニューからどうぞ。\n自分のチェストは設定した保護内に置けば自動でロックされます。",
-    12 -> "MineStack機能を解除しました！木の棒メニューから呼び出せます。\n対象ブロックを無限にスタック出来、いつでも取り出せます。\nレベル16に到達すると四次元ポケットが使えるようになります。",
+    12 -> "MineStack機能を解除しました！木の棒メニューから呼び出せます。\n対象ブロックを無限にスタック出来、いつでも取り出せます。",
     13 -> "建築の時など、採掘速度のブースト効果が邪魔な時は\n木の棒メニューから効果のONとOFFを変更できます。",
     15 -> "家を建てたら木の棒メニューからホームポイントを設定しておきましょう。\nどこからでもクリック1つで自宅へ瞬間移動できますよ！",
     18 -> "整地の際に獲得できるマナ量が増えました。\nマナ量は10レベルごとに増加し、スキルがより長く使えるようになります！",
@@ -39,9 +39,7 @@ object MessageTable {
   )
 
   def messageOnReaching(seichiLevel: SeichiLevel): Option[String] =
-    messages
-      .get(seichiLevel.level)
-      .map(ChatColor.AQUA + _)
+    messages.get(seichiLevel.level).map(level => s"$AQUA$level")
 
   def messagesOnDiff(levelDiff: Diff[SeichiLevel]): List[String] =
     HasSuccessor[SeichiLevel]

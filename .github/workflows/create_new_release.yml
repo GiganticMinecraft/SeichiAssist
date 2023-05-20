@@ -61,7 +61,7 @@ jobs:
           TOKEN=${{ secrets.VERSION_BUMP_WORKFLOW_PUSH_TOKEN }}
 
           git add -A
-          git commit -m "[bump] ${{ steps.bump.outputs.old_version }} -> ${{ steps.bump.outputs.new_version }}"
+          git commit -m "chore(bump): ${{ steps.bump.outputs.old_version }} -> ${{ steps.bump.outputs.new_version }}"
 
           # masterへのマージはブランチが最新であることが要求されるため、ここでマージしておく
           git fetch origin master
@@ -76,21 +76,28 @@ jobs:
     needs: bump_version
     steps:
       - uses: actions/checkout@master
+        with:
+          # これがないとchunk_searchで引っかかってリリースのjarアップロードに失敗する
+          submodules: 'recursive'
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+
+      - name: build artifacts
+        run: sbt assembly
+
       - name: Create release
         id: create_release
-        uses: actions/create-release@v1.0.0
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          files: target/build/SeichiAssist.jar
           tag_name: "v${{ needs.bump_version.outputs.new_version }}"
-          release_name: "バージョン ${{ needs.bump_version.outputs.new_version }} リリース"
           draft: false
-          # これらはすべて本番に入る直前のバージョンなので、すべてprereleaseとする
-          # 以下の事情に留意されたい：
-          #  - タグ付けされてから本番に入るまでのコードの変更は想定しない
-          #  - 開発ブランチ上ではバージョン更新が行われ、履歴に残る
-          #  - バージョン更新+タグ付けした後に本番に必ずしも適用されるとは限らない
-          prerelease: true
+          prerelease: false
 
   create_pull-request_to_master:
     runs-on: ubuntu-20.04

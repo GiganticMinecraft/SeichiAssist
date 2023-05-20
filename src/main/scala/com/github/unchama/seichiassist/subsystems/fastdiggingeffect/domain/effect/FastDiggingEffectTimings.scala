@@ -8,9 +8,11 @@ import scala.concurrent.duration.{DurationInt, FiniteDuration}
 /**
  * 採掘速度上昇効果の付与時刻と効果時間をセットで持つデータ型。
  */
-case class FastDiggingEffectTimings(givenAt: LocalDateTime,
-                                    totalDuration: FiniteDuration,
-                                    effect: FastDiggingEffect) {
+case class FastDiggingEffectTimings(
+  givenAt: LocalDateTime,
+  totalDuration: FiniteDuration,
+  effect: FastDiggingEffect
+) {
 
   def isActiveAt(time: LocalDateTime): Boolean = {
     val pastTime = LocalDateTimeUtil.difference(time, givenAt)

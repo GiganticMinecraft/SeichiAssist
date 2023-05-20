@@ -9,11 +9,10 @@ import java.util.UUID
 /**
  * データレポジトリの初期化処理を記述するオブジェクト。
  *
- * マインクラフトのサーバーの仕様として、プレーヤーがサーバーに実際に参加する前に
- * プレーヤーのUUID/名前ペアを受け取れることになっている。
+ * マインクラフトのサーバーの仕様として、プレーヤーがサーバーに実際に参加する前に プレーヤーのUUID/名前ペアを受け取れることになっている。
  *
  * このオブジェクトが記述するのは、そのような状況下において
- *  - ログイン処理後にUUID/名前を受け取り次第 [[R]] を生成する
+ *   - ログイン処理後にUUID/名前を受け取り次第 [[R]] を生成する
  *
  * ようなデータリポジトリの処理である。
  */
@@ -28,7 +27,9 @@ trait SinglePhasedRepositoryInitialization[F[_], R] {
 
   import cats.implicits._
 
-  def extendPreparation[S](f: (UUID, String) => R => F[S])(implicit F: Monad[F]): SinglePhasedRepositoryInitialization[F, S] =
+  def extendPreparation[S](f: (UUID, String) => R => F[S])(
+    implicit F: Monad[F]
+  ): SinglePhasedRepositoryInitialization[F, S] =
     (uuid, name) => prepareData(uuid, name) >>= (_.traverse(f(uuid, name)))
 
 }
@@ -37,24 +38,24 @@ object SinglePhasedRepositoryInitialization {
 
   import cats.implicits._
 
-  implicit def functorInstance[F[_] : Functor]: Functor[SinglePhasedRepositoryInitialization[F, *]] =
+  implicit def functorInstance[F[_]: Functor]
+    : Functor[SinglePhasedRepositoryInitialization[F, *]] =
     new Functor[SinglePhasedRepositoryInitialization[F, *]] {
-      override def map[A, B](fa: SinglePhasedRepositoryInitialization[F, A])
-                            (f: A => B): SinglePhasedRepositoryInitialization[F, B] =
+      override def map[A, B](fa: SinglePhasedRepositoryInitialization[F, A])(
+        f: A => B
+      ): SinglePhasedRepositoryInitialization[F, B] =
         (uuid, name) => fa.prepareData(uuid, name).map(_.map(f))
     }
 
-  import cats.implicits._
-
-  def withSupplier[F[_] : Functor, R](fr: F[R]): SinglePhasedRepositoryInitialization[F, R] =
+  def withSupplier[F[_]: Functor, R](fr: F[R]): SinglePhasedRepositoryInitialization[F, R] =
     (_, _) => Functor[F].map(fr)(PrefetchResult.Success.apply)
 
-  def constant[F[_] : Applicative, R](v: R): SinglePhasedRepositoryInitialization[F, R] =
+  def constant[F[_]: Applicative, R](v: R): SinglePhasedRepositoryInitialization[F, R] =
     withSupplier(Applicative[F].pure(v))
 
-  def forRefCell[
-    F[_] : Sync, R
-  ](initialization: SinglePhasedRepositoryInitialization[F, R]): SinglePhasedRepositoryInitialization[F, Ref[F, R]] =
+  def forRefCell[F[_]: Sync, R](
+    initialization: SinglePhasedRepositoryInitialization[F, R]
+  ): SinglePhasedRepositoryInitialization[F, Ref[F, R]] =
     (uuid, name) => initialization.prepareData(uuid, name) >>= (_.traverse(Ref[F].of(_)))
 
 }

@@ -8,24 +8,21 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import org.bukkit.entity.Player
 
 object ReloadingButton {
+
   /**
    * クリックされるたびに[buttonComputation]に基づいてスロット自体が更新される[Button]を作成する.
    */
-  def apply[M <: Menu](menu: M)(button: Button)
-                      (implicit
-                       environment: menu.Environment,
-                       ctx: LayoutPreparationContext,
-                       onMainThread: OnMinecraftServerThread[IO]): Button = {
-    button.withAnotherEffect(
-      ButtonEffect(scope => {
-        val clicker = scope.event.getWhoClicked.asInstanceOf[Player]
-        Kleisli.liftF(
-          for {
-            newLayout <- menu.computeMenuLayout(clicker)
-            _ <- scope.overwriteCurrentViewBy(newLayout)
-          } yield ()
-        )
-      })
-    )
+  def apply[M <: Menu](menu: M)(button: Button)(
+    implicit environment: menu.Environment,
+    ctx: LayoutPreparationContext,
+    onMainThread: OnMinecraftServerThread[IO]
+  ): Button = {
+    button.withAnotherEffect(ButtonEffect(scope => {
+      val clicker = scope.event.getWhoClicked.asInstanceOf[Player]
+      Kleisli.liftF(for {
+        newLayout <- menu.computeMenuLayout(clicker)
+        _ <- scope.overwriteCurrentViewBy(newLayout)
+      } yield ())
+    }))
   }
 }

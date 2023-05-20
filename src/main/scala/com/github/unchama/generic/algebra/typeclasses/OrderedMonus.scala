@@ -6,15 +6,13 @@ import cats.kernel.{CommutativeMonoid, Order}
  * 切り捨て減算(truncated subtraction)を提供する、全順序構造を備える可換モノイド。
  *
  * 以下の法則を満たす。
- *  - `x lteqv y` <=> `x + z = y` となる `z` が存在する。
- *  - `x lteqv (y + z)` => `|-|(x, z) lteqv y`
+ *   - `x lteqv y` <=> `x + z = y` となる `z` が存在する。
+ *   - `x lteqv (y + z)` => `|-|(x, z) lteqv y`
  */
 trait OrderedMonus[A] extends Order[A] with CommutativeMonoid[A] {
 
   /**
-   * 切り捨て減算。
-   * `x: A, y: A` について、 `z: A` = `|-|(x, y)` は
-   * `x <= y + z` となるような最小の `z` として定義される。
+   * 切り捨て減算。 `x: A, y: A` について、 `z: A` = `|-|(x, y)` は `x <= y + z` となるような最小の `z` として定義される。
    */
   def |-|(x: A, y: A): A
 

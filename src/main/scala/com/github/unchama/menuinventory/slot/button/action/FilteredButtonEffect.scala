@@ -8,13 +8,16 @@ import org.bukkit.event.inventory.InventoryClickEvent
 /**
  * "フィルタ"付きの[ButtonEffect]
  *
- * @param clickEventFilter InventoryClickEventを受け取り動作を行わせるかを決定する [ClickEventFilter]
- * @param effect           InventoryClickEventを受け取り何かしらの作用を発生させる関数
+ * @param clickEventFilter
+ *   InventoryClickEventを受け取り動作を行わせるかを決定する [ClickEventFilter]
+ * @param effect
+ *   InventoryClickEventを受け取り何かしらの作用を発生させる関数
  *
- *                         [effect]は[clickEventFilter] がtrueを返した際に発火されます.
+ * [effect]は[clickEventFilter] がtrueを返した際に発火されます.
  */
-case class FilteredButtonEffect(private val clickEventFilter: ClickEventFilter)
-                               (private val effect: ButtonEffectScope => TargetedEffect[Player]) extends ButtonEffect {
+case class FilteredButtonEffect(private val clickEventFilter: ClickEventFilter)(
+  private val effect: ButtonEffectScope => TargetedEffect[Player]
+) extends ButtonEffect {
 
   /**
    * [ButtonEffectScope]に依存しない[TargetedEffect]を実行する[FilteredButtonEffect]を構築する.
@@ -43,6 +46,11 @@ object LeftClickButtonEffect {
   /**
    * [ButtonEffectScope]に依存しない[TargetedEffect]を実行する[LeftClickButtonEffect]を構築する.
    */
-  def apply(effect: TargetedEffect[Player], effects: TargetedEffect[Player]*): FilteredButtonEffect =
-    FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)((_: ButtonEffectScope) => effect.followedBy(SequentialEffect(effects: _*)))
+  def apply(
+    effect: TargetedEffect[Player],
+    effects: TargetedEffect[Player]*
+  ): FilteredButtonEffect =
+    FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)((_: ButtonEffectScope) =>
+      effect.followedBy(SequentialEffect(effects: _*))
+    )
 }

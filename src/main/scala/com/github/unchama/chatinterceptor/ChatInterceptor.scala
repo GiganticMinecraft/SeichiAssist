@@ -9,22 +9,22 @@ class ChatInterceptor(val scopes: List[ChatInterceptionScope]) extends Listener 
     import cats.implicits._
 
     scopes
-      .map(_.cancelAnyInterception(event.getPlayer.getUniqueId, CancellationReason.PlayerQuit))
-      .sequence
+      .traverse(
+        _.cancelAnyInterception(event.getPlayer.getUniqueId, CancellationReason.PlayerQuit)
+      )
       .unsafeRunSync()
   }
 
-  @EventHandler(priority=EventPriority.LOWEST)
+  @EventHandler(priority = EventPriority.LOWEST)
   def onPlayerChat(event: AsyncPlayerChatEvent): Unit = {
     import cats.implicits._
 
     scopes
-      .map(_.suggestInterception(event.getPlayer.getUniqueId, event.getMessage))
-      .sequence
+      .traverse(_.suggestInterception(event.getPlayer.getUniqueId, event.getMessage))
       .unsafeRunSync()
       .find(_ == InterceptorResponse.Intercepted) match {
       case Some(_) => event.setCancelled(true)
-      case None =>
+      case None    =>
     }
   }
 }

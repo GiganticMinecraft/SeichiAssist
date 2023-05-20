@@ -3,7 +3,10 @@ package com.github.unchama.seichiassist.subsystems.fastdiggingeffect
 import cats.data.Kleisli
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect.{FastDiggingEffect, FastDiggingEffectList}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect.{
+  FastDiggingEffect,
+  FastDiggingEffectList
+}
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.settings.FastDiggingEffectSuppressionState
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.stats.FastDiggingEffectStatsSettings
 
@@ -38,20 +41,18 @@ trait FastDiggingEffectReadApi[F[_], Player] {
 }
 
 trait FastDiggingEffectApi[F[_], Player]
-  extends FastDiggingEffectReadApi[F, Player]
+    extends FastDiggingEffectReadApi[F, Player]
     with FastDiggingEffectWriteApi[F, Player]
 
 trait FastDiggingSettingsWriteApi[F[_], Player] {
 
   /**
-   * 採掘速度上昇抑制の設定をトグルする作用。
-   * 作用は結果値として変更後の設定を返す。
+   * 採掘速度上昇抑制の設定をトグルする作用。 作用は結果値として変更後の設定を返す。
    */
   val toggleEffectSuppression: Kleisli[F, Player, FastDiggingEffectSuppressionState]
 
   /**
-   * 採掘速度上昇効果の統計を受け取るかどうかの設定をトグルする作用。
-   * 作用は結果値として変更後の設定を返す。
+   * 採掘速度上昇効果の統計を受け取るかどうかの設定をトグルする作用。 作用は結果値として変更後の設定を返す。
    */
   val toggleStatsSettings: Kleisli[F, Player, FastDiggingEffectStatsSettings]
 
@@ -62,15 +63,21 @@ trait FastDiggingSettingsReadApi[F[_], Player] {
   /**
    * 採掘速度上昇抑制の設定をプレーヤーごとに保持するデータレポジトリ。
    */
-  val currentSuppressionSettings: KeyedDataRepository[Player, ReadOnlyRef[F, FastDiggingEffectSuppressionState]]
+  val currentSuppressionSettings: KeyedDataRepository[
+    Player,
+    ReadOnlyRef[F, FastDiggingEffectSuppressionState]
+  ]
 
   /**
    * 採掘速度上昇効果の統計を受け取るかどうかの設定をプレーヤーごとに保持するデータレポジトリ。
    */
-  val currentStatsSettings: KeyedDataRepository[Player, ReadOnlyRef[F, FastDiggingEffectStatsSettings]]
+  val currentStatsSettings: KeyedDataRepository[
+    Player,
+    ReadOnlyRef[F, FastDiggingEffectStatsSettings]
+  ]
 
 }
 
 trait FastDiggingSettingsApi[F[_], Player]
-  extends FastDiggingSettingsReadApi[F, Player]
+    extends FastDiggingSettingsReadApi[F, Player]
     with FastDiggingSettingsWriteApi[F, Player]

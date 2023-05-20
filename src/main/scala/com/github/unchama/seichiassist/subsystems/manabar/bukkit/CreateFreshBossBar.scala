@@ -10,7 +10,7 @@ object CreateFreshBossBar {
 
   import cats.implicits._
 
-  def in[G[_] : Sync, F[_] : Sync]: G[MinecraftBossBar[F] {type Player = BukkitPlayer}] =
+  def in[G[_]: Sync, F[_]: Sync]: G[MinecraftBossBar[F] { type Player = BukkitPlayer }] =
     BukkitBossBar.in[G, F]("", BarColor.BLUE, BarStyle.SOLID).widen
 
 }

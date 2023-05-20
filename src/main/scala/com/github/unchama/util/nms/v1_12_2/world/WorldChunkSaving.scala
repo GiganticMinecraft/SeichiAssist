@@ -2,7 +2,6 @@ package com.github.unchama.util.nms.v1_12_2.world
 
 import cats.effect.{Concurrent, Sync}
 
-
 object WorldChunkSaving {
 
   import scala.jdk.CollectionConverters._
@@ -12,7 +11,8 @@ object WorldChunkSaving {
     private val craftBukkitPackage_1_12_R1 = "org.bukkit.craftbukkit.v1_12_R1"
 
     object FileIOThread {
-      private[Reflection] lazy val clazz: Class[_] = Class.forName(s"$nmsPackage_1_12_R1.FileIOThread")
+      private[Reflection] lazy val clazz: Class[_] =
+        Class.forName(s"$nmsPackage_1_12_R1.FileIOThread")
 
       // public static FileIOThread method()
       lazy val getInstance: () => AnyRef = {
@@ -31,7 +31,8 @@ object WorldChunkSaving {
     }
 
     object Entity {
-      private[Reflection] lazy val clazz: Class[_] = Class.forName(s"$nmsPackage_1_12_R1.Entity")
+      private[Reflection] lazy val clazz: Class[_] =
+        Class.forName(s"$nmsPackage_1_12_R1.Entity")
 
       // public int field
       lazy val chunkX: AnyRef => Int = {
@@ -96,16 +97,19 @@ object WorldChunkSaving {
       // public Chunk method(int, int)
       lazy val getChunkAtCoordinate: AnyRef => (Int, Int) => AnyRef = {
         val method = clazz.getDeclaredMethod("getChunkAt", Integer.TYPE, Integer.TYPE)
-        receiver => {
-          case (x, z) => method.invoke(receiver, x, z)
-        }
+        receiver => { case (x, z) => method.invoke(receiver, x, z) }
       }
 
       // public boolean method(int, int)
       // originally
       // protected boolean method(int, int, boolean)
       lazy val isChunkLoaded: AnyRef => (Int, Int) => Boolean = {
-        val method = clazz.getDeclaredMethod("isChunkLoaded", Integer.TYPE, Integer.TYPE, java.lang.Boolean.TYPE)
+        val method = clazz.getDeclaredMethod(
+          "isChunkLoaded",
+          Integer.TYPE,
+          Integer.TYPE,
+          java.lang.Boolean.TYPE
+        )
 
         method.setAccessible(true)
 
@@ -116,7 +120,8 @@ object WorldChunkSaving {
     }
 
     object CraftWorld {
-      private[Reflection] lazy val clazz: Class[_] = Class.forName(s"$craftBukkitPackage_1_12_R1.CraftWorld")
+      private[Reflection] lazy val clazz: Class[_] =
+        Class.forName(s"$craftBukkitPackage_1_12_R1.CraftWorld")
 
       // public final nms.WorldServer (<: nms.World)
       // originally
@@ -135,38 +140,43 @@ object WorldChunkSaving {
   import Reflection._
 
   /**
-   * In a running minecraft server, there is an internal queue which is used in controlling and limiting chunk saves.
+   * In a running minecraft server, there is an internal queue which is used in controlling and
+   * limiting chunk saves.
    *
-   * This action, when running, relaxes the save-queue throttle.
-   * The returned action completes when there are no more chunks to be saved.
+   * This action, when running, relaxes the save-queue throttle. The returned action completes
+   * when there are no more chunks to be saved.
    */
   def relaxFileIOThreadThrottle[F[_]](implicit F: Concurrent[F]): F[Unit] = Sync[F].delay {
     FileIOThread.relaxThrottle(FileIOThread.instance)()
   }
 
   /**
-   * Every world has its internal queue to remove entities or tile-entities.
-   * They are normally only cleared when ticking the world, but this method forces to cleanup these queues.
+   * Every world has its internal queue to remove entities or tile-entities. They are normally
+   * only cleared when ticking the world, but this method forces to cleanup these queues.
    */
-  def flushEntityRemovalQueue[F[_]](world: org.bukkit.World)(implicit F: Sync[F]): F[Unit] = F.delay {
-    val nmsWorldServer = CraftWorld.nmsWorld(world)
-    val removalQueueAlias = World.entityRemovalQueue(nmsWorldServer)
+  def flushEntityRemovalQueue[F[_]](world: org.bukkit.World)(implicit F: Sync[F]): F[Unit] =
+    F.delay {
+      val nmsWorldServer = CraftWorld.nmsWorld(world)
+      val removalQueueAlias = World.entityRemovalQueue(nmsWorldServer)
 
-    World.entityList(nmsWorldServer).removeAll(removalQueueAlias)
+      World.entityList(nmsWorldServer).removeAll(removalQueueAlias)
 
-    removalQueueAlias.asScala.foreach { entity =>
-      val entityChunkX = Entity.chunkX(entity)
-      val entityChunkZ = Entity.chunkZ(entity)
+      removalQueueAlias.asScala.foreach { entity =>
+        val entityChunkX = Entity.chunkX(entity)
+        val entityChunkZ = Entity.chunkZ(entity)
 
-      if (Entity.loadedToAChunk(entity) && World.isChunkLoaded(nmsWorldServer)(entityChunkX, entityChunkZ)) {
-        val chunk = World.getChunkAtCoordinate(nmsWorldServer)(entityChunkX, entityChunkZ)
+        if (
+          Entity.loadedToAChunk(entity) && World
+            .isChunkLoaded(nmsWorldServer)(entityChunkX, entityChunkZ)
+        ) {
+          val chunk = World.getChunkAtCoordinate(nmsWorldServer)(entityChunkX, entityChunkZ)
 
-        Chunk.untrackEntity(chunk)(entity)
+          Chunk.untrackEntity(chunk)(entity)
+        }
+
+        World.untrackEntity(nmsWorldServer)(entity)
       }
 
-      World.untrackEntity(nmsWorldServer)(entity)
+      removalQueueAlias.clear()
     }
-
-    removalQueueAlias.clear()
-  }
 }

@@ -2,7 +2,7 @@ package com.github.unchama.util.logging.log4cats
 
 import io.chrisdavenport.log4cats.Logger
 
-class TransformingLogger[F[_] : Logger](f: String => String) extends Logger[F] {
+class TransformingLogger[F[_]: Logger](f: String => String) extends Logger[F] {
   override def error(t: Throwable)(message: => String): F[Unit] = Logger[F].error(t)(f(message))
 
   override def warn(t: Throwable)(message: => String): F[Unit] = Logger[F].warn(t)(f(message))
@@ -26,6 +26,7 @@ class TransformingLogger[F[_] : Logger](f: String => String) extends Logger[F] {
 
 object TransformingLogger {
 
-  def apply[F[_] : Logger](f: String => String): TransformingLogger[F] = new TransformingLogger[F](f)
+  def apply[F[_]: Logger](f: String => String): TransformingLogger[F] =
+    new TransformingLogger[F](f)
 
 }

@@ -5,9 +5,8 @@ import com.github.unchama.minecraft.actions.{GetConnectedPlayers, OnMinecraftSer
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
-class GetConnectedBukkitPlayers[
-  F[_] : Sync : OnMinecraftServerThread
-] extends GetConnectedPlayers[F, Player] {
+class GetConnectedBukkitPlayers[F[_]: Sync: OnMinecraftServerThread]
+    extends GetConnectedPlayers[F, Player] {
 
   import scala.jdk.CollectionConverters._
 

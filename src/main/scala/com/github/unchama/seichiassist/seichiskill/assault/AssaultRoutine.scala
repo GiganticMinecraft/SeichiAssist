@@ -5,10 +5,15 @@ import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.MaterialSets.BreakTool
-import com.github.unchama.seichiassist.seichiskill.{AssaultSkill, AssaultSkillRange, BlockSearching, BreakArea}
+import com.github.unchama.seichiassist.seichiskill.{
+  AssaultSkill,
+  AssaultSkillRange,
+  BlockSearching,
+  BreakArea
+}
 import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
-import com.github.unchama.seichiassist.util.{BreakUtil, Util}
+import com.github.unchama.seichiassist.util.BreakUtil
 import com.github.unchama.seichiassist.{DefaultEffectEnvironment, MaterialSets, SeichiAssist}
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment
@@ -24,9 +29,11 @@ object AssaultRoutine {
     projections.exists(p => (p(l1) - p(l2)).abs >= 10)
   }
 
-  def tryStart(player: Player, skill: AssaultSkill)
-              (implicit ioOnMainThread: OnMinecraftServerThread[IO], ctx: RepeatingTaskContext,
-               manaApi: ManaWriteApi[SyncIO, Player]): IO[Unit] = {
+  def tryStart(player: Player, skill: AssaultSkill)(
+    implicit ioOnMainThread: OnMinecraftServerThread[IO],
+    ctx: RepeatingTaskContext,
+    manaApi: ManaWriteApi[SyncIO, Player]
+  ): IO[Unit] = {
     for {
       offHandTool <- IO {
         player.getInventory.getItemInOffHand
@@ -34,17 +41,19 @@ object AssaultRoutine {
       refinedTool = MaterialSets.refineItemStack(offHandTool, MaterialSets.breakToolMaterials)
       _ <- refinedTool match {
         case Some(tool) => AssaultRoutine(player, tool, skill)
-        case None => IO {
-          player.sendMessage(s"${GREEN}使うツールをオフハンドにセット(fキー)してください")
-        }
+        case None =>
+          IO {
+            player.sendMessage(s"${GREEN}使うツールをオフハンドにセット(fキー)してください")
+          }
       }
     } yield ()
   }
 
-
-  def apply(player: Player, toolToBeUsed: BreakTool, skill: AssaultSkill)
-           (implicit ioOnMainThread: OnMinecraftServerThread[IO], ctx: RepeatingTaskContext,
-            manaApi: ManaWriteApi[SyncIO, Player]): IO[Unit] = {
+  def apply(player: Player, toolToBeUsed: BreakTool, skill: AssaultSkill)(
+    implicit ioOnMainThread: OnMinecraftServerThread[IO],
+    ctx: RepeatingTaskContext,
+    manaApi: ManaWriteApi[SyncIO, Player]
+  ): IO[Unit] = {
     val idleCountLimit = 20
 
     val playerData = SeichiAssist.playermap(player.getUniqueId)
@@ -78,12 +87,12 @@ object AssaultRoutine {
         }
       }
 
-      //プレイヤーの足のy座標
+      // プレイヤーの足のy座標
       val playerLocY = player.getLocation.getBlockY - 1
 
       val block = player.getLocation.getBlock
 
-      //最初に登録したツールと今のツールが違う場合
+      // 最初に登録したツールと今のツールが違う場合
       if (toolToBeUsed != player.getInventory.getItemInOffHand) return None
 
       val skillArea = BreakArea(assaultSkill, skillState.usageMode)
@@ -94,16 +103,16 @@ object AssaultRoutine {
 
       val (shouldBreakAllBlocks, shouldRemoveOrCondenseWater, shouldRemoveOrCondenseLava) =
         assaultSkill.range match {
-          case AssaultSkillRange.Armor(_) => (true, true, true)
-          case AssaultSkillRange.Water(_) => (false, true, false)
-          case AssaultSkillRange.Lava(_) => (false, false, true)
+          case AssaultSkillRange.Armor(_)  => (true, true, true)
+          case AssaultSkillRange.Water(_)  => (false, true, false)
+          case AssaultSkillRange.Lava(_)   => (false, false, true)
           case AssaultSkillRange.Liquid(_) => (false, true, true)
         }
 
-      //重力値計算
+      // 重力値計算
       val gravity = BreakUtil.getGravity(player, block, isAssault = true)
 
-      //重力値の判定
+      // 重力値の判定
       if (gravity > 15) {
         player.sendMessage(s"${RED}スキルを使用するには上から掘ってください。")
         return None
@@ -111,7 +120,8 @@ object AssaultRoutine {
 
       import com.github.unchama.seichiassist.data.syntax._
       val BlockSearching.Result(foundBlocks, foundWaters, foundLavas) =
-        BlockSearching.searchForBlocksBreakableWithSkill(player, breakArea.gridPoints(), block)
+        BlockSearching
+          .searchForBlocksBreakableWithSkill(player, breakArea.gridPoints(), block)
           .unsafeRunSync()
           .filterAll(targetBlock =>
             player.isSneaking || !shouldBreakAllBlocks ||
@@ -126,20 +136,28 @@ object AssaultRoutine {
 
       // 減るマナ計算
       // 実際に破壊するブロック数 * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
-      val manaUsage = breakTargets.toDouble * (gravity + 1) * assaultSkill.manaCost / areaTotalBlockCount
+      val manaUsage =
+        breakTargets.toDouble * (gravity + 1) * assaultSkill.manaCost / areaTotalBlockCount
 
-      //減る耐久値の計算
+      // 減る耐久値の計算
       val durability =
         (toolToBeUsed.getDurability +
-          BreakUtil.calcDurability(toolToBeUsed.getEnchantmentLevel(Enchantment.DURABILITY), breakTargets)).toShort
+          BreakUtil.calcDurability(
+            toolToBeUsed.getEnchantmentLevel(Enchantment.DURABILITY),
+            breakTargets
+          )).toShort
 
       // 実際に耐久値を減らせるか判定
-      if (toolToBeUsed.getType.getMaxDurability <= durability && !toolToBeUsed.getItemMeta.isUnbreakable) return None
+      if (
+        toolToBeUsed.getType.getMaxDurability <= durability && !toolToBeUsed
+          .getItemMeta
+          .isUnbreakable
+      ) return None
 
       // マナを消費する
       manaApi.manaAmount(player).tryAcquire(ManaAmount(manaUsage)).unsafeRunSync() match {
         case Some(_) =>
-        case None => return None
+        case None    => return None
       }
 
       // 耐久値を減らす
@@ -150,7 +168,13 @@ object AssaultRoutine {
         (foundWaters ++ foundLavas).foreach(_.setType(Material.AIR))
         DefaultEffectEnvironment.unsafeRunEffectAsync(
           "ブロックを大量破壊する",
-          BreakUtil.massBreakBlock(player, foundBlocks, player.getLocation, toolToBeUsed, shouldPlayBreakSound = false)
+          BreakUtil.massBreakBlock(
+            player,
+            foundBlocks,
+            player.getLocation,
+            toolToBeUsed,
+            shouldPlayBreakSound = false
+          )
         )
       } else {
         if (shouldRemoveOrCondenseWater) foundWaters.foreach(_.setType(Material.PACKED_ICE))
@@ -171,21 +195,23 @@ object AssaultRoutine {
       currentLoc <- IO {
         player.getLocation
       }
-      _ <- RepeatingRoutine.recMTask(IterationState(currentLoc, 0))(s =>
-        ioOnMainThread.runAction(SyncIO(routineAction(s)))
-      )(IO.pure(500.millis)).guaranteeCase {
-        case ExitCase.Error(_) | ExitCase.Completed =>
-          IO {
-            // 継続条件が満たされなかった場合の表示
-            player.sendMessage(s"${YELLOW}アサルトスキルがOFFになりました")
-            player.playSound(currentLoc, Sound.BLOCK_LEVER_CLICK, 1f, 0.7f)
-          }
-        case ExitCase.Canceled =>
-          IO {
-            // 明示的にプレーヤーが切り替えた場合
-            player.sendMessage(s"${GREEN}アサルトスキル：${skill.name} OFF")
-          }
-      }
+      _ <- RepeatingRoutine
+        .recMTask(IterationState(currentLoc, 0))(s =>
+          ioOnMainThread.runAction(SyncIO(routineAction(s)))
+        )(IO.pure(500.millis))
+        .guaranteeCase {
+          case ExitCase.Error(_) | ExitCase.Completed =>
+            IO {
+              // 継続条件が満たされなかった場合の表示
+              player.sendMessage(s"${YELLOW}アサルトスキルがOFFになりました")
+              player.playSound(currentLoc, Sound.BLOCK_LEVER_CLICK, 1f, 0.7f)
+            }
+          case ExitCase.Canceled =>
+            IO {
+              // 明示的にプレーヤーが切り替えた場合
+              player.sendMessage(s"${GREEN}アサルトスキル：${skill.name} OFF")
+            }
+        }
     } yield ()
   }
 }

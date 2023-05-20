@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.subsystems.discordnotification.infrastru
 import cats.effect.{ContextShift, Sync}
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import io.chrisdavenport.log4cats.Logger
-import org.bukkit.Bukkit
 
 import java.io.IOException
 import java.net.{HttpURLConnection, MalformedURLException, URL}
@@ -11,20 +10,32 @@ import java.nio.charset.StandardCharsets
 import scala.util.Using
 import scala.util.chaining.scalaUtilChainingOps
 
-class WebhookDiscordNotificationSender[F[_]: Sync: ContextShift] private(webhookURL: String) extends DiscordNotificationAPI[F] {
-  assert(
-    webhookURL.nonEmpty,
-    "GlobalNotificationSenderのURLに空文字列が指定されました。コンフィグを確認してください。"
-  )
+class WebhookDiscordNotificationSender[F[_]: Sync: ContextShift] private (webhookURL: String)
+    extends DiscordNotificationAPI[F] {
+  assert(webhookURL.nonEmpty, "GlobalNotificationSenderのURLに空文字列が指定されました。コンフィグを確認してください。")
 
   import cats.implicits._
 
   private val parsedURL = new URL(webhookURL)
-  override def send(message: String): F[Unit] =
+  override def sendPlainText(message: String): F[Unit] =
     for {
       _ <- ContextShift[F].shift
       responseCode <- Sync[F].delay {
-        val json = s"""{"content":"$message"}"""
+        import io.circe.generic.auto._
+        import io.circe.syntax._
+        val markdownSafeMessage = message
+          .replaceAllLiterally("\\", "\\\\")
+          .replaceAllLiterally("_", "\\_")
+          .replaceAllLiterally("*", "\\*")
+          .replaceAllLiterally("`", "\\`")
+          .replaceAllLiterally("|", "\\|")
+          .replaceAllLiterally("@", "\\@")
+          .replaceAllLiterally("~", "\\~")
+          .replaceAllLiterally(":", "\\:")
+
+        val json =
+          WebhookDiscordNotificationSender.PlainMessage(markdownSafeMessage).asJson.noSpaces
+
         parsedURL.openConnection().asInstanceOf[HttpURLConnection].pipe { con =>
           con.addRequestProperty("Content-Type", "application/json; charset=utf-8")
           // User-AgentがDiscordBotでない場合403が返却されるため
@@ -44,26 +55,38 @@ class WebhookDiscordNotificationSender[F[_]: Sync: ContextShift] private(webhook
       }
       _ <- responseCode match {
         case HttpURLConnection.HTTP_OK | HttpURLConnection.HTTP_NO_CONTENT => Sync[F].unit
-        case code @ _ => Sync[F].raiseError {
-          new IOException(s"GlobalNotificationSender: Bad Response Code: $code with $webhookURL")
-        }
+        case code @ _ =>
+          Sync[F].raiseError {
+            new IOException(
+              s"GlobalNotificationSender: Bad Response Code: $code with $webhookURL"
+            )
+          }
       }
     } yield ()
 }
 
 object WebhookDiscordNotificationSender {
+
   /**
    * [[WebhookDiscordNotificationSender]] を作成することを試みる。
-   * @param webhookURL Discordに送信されるwebhookのURL
-   * @tparam F 文脈
-   * @return 初期化に成功した場合はSome、初期化中に特定の例外が送出された場合はNone。マスクされない例外が送出されたときは、再送出する。
+   * @param webhookURL
+   *   Discordに送信されるwebhookのURL
+   * @tparam F
+   *   文脈
+   * @return
+   *   初期化に成功した場合はSome、初期化中に特定の例外が送出された場合はNone。マスクされない例外が送出されたときは、再送出する。
    */
-  def tryCreate[F[_]: Sync: ContextShift: Logger](webhookURL: String): Option[WebhookDiscordNotificationSender[F]] = {
+  def tryCreate[F[_]: Sync: ContextShift: Logger](
+    webhookURL: String
+  ): Option[WebhookDiscordNotificationSender[F]] = {
     try {
       Some(new WebhookDiscordNotificationSender[F](webhookURL))
     } catch {
       case _: MalformedURLException => None
-      case _: AssertionError => None
+      case _: AssertionError        => None
     }
   }
+
+  // This class is for circe's serialization.
+  private case class PlainMessage(content: String)
 }

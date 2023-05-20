@@ -1,18 +1,26 @@
 package com.github.unchama.seichiassist.util
 
+import cats.Monad
 import cats.effect.{IO, SyncIO}
+import com.github.unchama.generic.ApplicativeExtra.whenAOrElse
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange._
-import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{AssaultArmor, DualBreak, TrialBreak}
+import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{
+  AssaultArmor,
+  DualBreak,
+  TrialBreak
+}
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.{Active, Disabled}
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.CardinalDirection
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
 import com.github.unchama.targetedeffect.player.ActionBarMessageEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.ExternalPlugins
 import org.bukkit.ChatColor._
+import org.bukkit.World.Environment
 import org.bukkit._
 import org.bukkit.block.Block
 import org.bukkit.enchantments.Enchantment
@@ -23,31 +31,40 @@ import org.bukkit.material.Dye
 import java.util.Random
 import java.util.stream.IntStream
 
-
 object BreakUtil {
 
   import ManagedWorld._
 
   def unsafeGetLockedBlocks(): Set[Block] =
-    SeichiAssist.instance
-      .lockedBlockChunkScope.trackedHandlers.unsafeRunSync()
-      .flatten.map(x => x: Block)
+    SeichiAssist
+      .instance
+      .lockedBlockChunkScope
+      .trackedHandlers
+      .unsafeRunSync()
+      .flatten
+      .map(x => x: Block)
 
   /**
    * 他のプラグインの影響があってもブロックを破壊できるのかを判定する。
    *
    * `lockedBlocks`は[[unsafeGetLockedBlocks()]]の結果が利用されるべきだが、
-   * 複数ブロックのキャッシュのためにこれを事前にキャッシュして渡したほうが速い。
-   * （引数を省略した場合呼び出しごとに再計算される）
+   * 複数ブロックのキャッシュのためにこれを事前にキャッシュして渡したほうが速い。 （引数を省略した場合呼び出しごとに再計算される）
    *
-   * @param player 破壊者
-   * @param checkTarget 破壊対象のブロック
-   * @param lockedBlocks グローバルにロックされているブロックの集合
+   * @param player
+   *   破壊者
+   * @param checkTarget
+   *   破壊対象のブロック
+   * @param lockedBlocks
+   *   グローバルにロックされているブロックの集合
    */
-  def canBreak(player: Player, checkTarget: Block, lockedBlocks: Set[Block] = unsafeGetLockedBlocks()): Boolean = {
+  def canBreak(
+    player: Player,
+    checkTarget: Block,
+    lockedBlocks: Set[Block] = unsafeGetLockedBlocks()
+  ): Boolean = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
 
-    //壊されるブロックがワールドガード範囲だった場合処理を終了
+    // 壊されるブロックがワールドガード範囲だった場合処理を終了
     if (!ExternalPlugins.getWorldGuard.canBuild(player, checkTarget.getLocation)) {
       if (playerData.settings.shouldDisplayWorldGuardLogs) {
         player.sendMessage(s"${RED}ワールドガードで保護されています。")
@@ -60,7 +77,7 @@ object BreakUtil {
       if (wrapper == null) {
         Bukkit.getLogger.warning("CoreProtectにアクセスできませんでした。")
       } else {
-        //もし失敗したらプレイヤーに報告し処理を終了
+        // もし失敗したらプレイヤーに報告し処理を終了
         if (!wrapper.queueBlockRemoval(player, checkTarget)) {
           player.sendMessage(s"${RED}coreprotectに保存できませんでした。管理者に報告してください。")
           return false
@@ -72,7 +89,11 @@ object BreakUtil {
       val halfBlockLayerYCoordinate = {
         val managedWorld = ManagedWorld.fromBukkitWorld(checkTarget.getWorld)
         // 整地専用サーバー（s5）のWORLD_SW_3（Earth整地）は、外部ワールドのため岩盤高度がY0
-        if (SeichiAssist.seichiAssistConfig.getServerNum == 5 && managedWorld.contains(ManagedWorld.WORLD_SW_3)) 1
+        if (
+          SeichiAssist.seichiAssistConfig.getServerNum == 5 && managedWorld.contains(
+            ManagedWorld.WORLD_SW_3
+          )
+        ) 1
         // エンド整地ワールドには岩盤がないが、Y0にハーフを設置するひとがいるため
         else if (managedWorld.contains(ManagedWorld.WORLD_SW_END)) 0
         // それ以外なら通常通りY5
@@ -84,31 +105,29 @@ object BreakUtil {
           checkTarget.getY == halfBlockLayerYCoordinate &&
           checkTarget.getData == 0.toByte
 
-      if (isBlockProtectedSlab && !playerData.canBreakHalfBlock) return false
+      if (isBlockProtectedSlab) return false
     }
 
     !lockedBlocks.contains(checkTarget)
   }
 
-  def canBreakWithSkill(player: Player,
-                        checkTarget: Block,
-                        lockedBlocks: Set[Block] = unsafeGetLockedBlocks()): Boolean = {
+  def canBreakWithSkill(
+    player: Player,
+    checkTarget: Block,
+    lockedBlocks: Set[Block] = unsafeGetLockedBlocks()
+  ): Boolean = {
     !isProtectedChest(player, checkTarget) &&
-      canBreak(player, checkTarget, lockedBlocks)
+    canBreak(player, checkTarget, lockedBlocks)
   }
 
   def isProtectedChest(player: Player, checkTarget: Block): Boolean = {
     checkTarget.getType match {
       case Material.CHEST | Material.TRAPPED_CHEST =>
         if (!SeichiAssist.playermap(player.getUniqueId).chestflag) {
-          ActionBarMessageEffect(s"${RED}スキルでのチェスト破壊は無効化されています")
-            .run(player)
-            .unsafeRunSync()
+          ActionBarMessageEffect(s"${RED}スキルでのチェスト破壊は無効化されています").run(player).unsafeRunSync()
           true
         } else if (!player.getWorld.isSeichi) {
-          ActionBarMessageEffect(s"${RED}スキルでのチェスト破壊は整地ワールドでのみ有効です")
-            .run(player)
-            .unsafeRunSync()
+          ActionBarMessageEffect(s"${RED}スキルでのチェスト破壊は整地ワールドでのみ有効です").run(player).unsafeRunSync()
           true
         } else {
           false
@@ -123,21 +142,22 @@ object BreakUtil {
     world.shouldMuteCoreProtect
   }
 
-  //ブロックを破壊する処理、ドロップも含む、統計増加も含む
-  def breakBlock(player: Player,
-                 targetBlock: BlockBreakableBySkill,
-                 dropLocation: Location,
-                 tool: BreakTool,
-                 shouldPlayBreakSound: Boolean)
-                (implicit effectEnvironment: EffectEnvironment): Unit =
+  // ブロックを破壊する処理、ドロップも含む、統計増加も含む
+  def breakBlock(
+    player: Player,
+    targetBlock: BlockBreakableBySkill,
+    dropLocation: Location,
+    tool: BreakTool,
+    shouldPlayBreakSound: Boolean
+  )(implicit effectEnvironment: EffectEnvironment): Unit =
     effectEnvironment.unsafeRunEffectAsync(
       "単一ブロックを破壊する",
       massBreakBlock(player, Set(targetBlock), dropLocation, tool, shouldPlayBreakSound)
     )
 
-  private sealed trait BlockBreakResult
+  sealed trait BlockBreakResult
 
-  private object BlockBreakResult {
+  object BlockBreakResult {
 
     case class ItemDrop(itemStack: ItemStack) extends BlockBreakResult
 
@@ -148,33 +168,34 @@ object BreakUtil {
   /**
    * ブロックをツールで破壊した時のドロップを計算する
    *
-   * Bukkit/Spigotが提供するBlock.getDropsは信頼できる値を返さない。
-   * 本来はNMSのメソッドを呼ぶのが確実らしいが、一時的な実装として使用している。
-   * 参考: https://www.spigotmc.org/threads/getdrops-on-crops-not-functioning-as-expected.167751/#post-1779788
+   * Bukkit/Spigotが提供するBlock.getDropsは信頼できる値を返さない。 本来はNMSのメソッドを呼ぶのが確実らしいが、一時的な実装として使用している。 参考:
+   * https://www.spigotmc.org/threads/getdrops-on-crops-not-functioning-as-expected.167751/#post-1779788
    */
-  private def dropItemOnTool(tool: BreakTool)(blockInformation: (Location, Material, Byte)): Option[BlockBreakResult] = {
+  def dropItemOnTool(
+    tool: BreakTool
+  )(blockInformation: (Location, Material, Byte)): Option[BlockBreakResult] = {
     val fortuneLevel = tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS)
 
     val (blockLocation, blockMaterial, blockData) = blockInformation
 
     blockMaterial match {
-      case Material.GRASS_PATH | Material.SOIL => return Some(
-        BlockBreakResult.ItemDrop(new ItemStack(Material.DIRT))
-      )
-      case Material.MOB_SPAWNER | Material.ENDER_PORTAL_FRAME | Material.ENDER_PORTAL => return None
+      case Material.GRASS_PATH | Material.SOIL =>
+        return Some(BlockBreakResult.ItemDrop(new ItemStack(Material.DIRT)))
+      case Material.MOB_SPAWNER | Material.ENDER_PORTAL_FRAME | Material.ENDER_PORTAL =>
+        return None
       case _ =>
     }
 
     val rand = Math.random()
     val bonus = Math.max(1, rand * (fortuneLevel + 2) - 1).toInt
 
-    val blockDataLeast4Bits = (blockData & 0x0F).toByte
+    val blockDataLeast4Bits = (blockData & 0x0f).toByte
     val b_tree = (blockData & 0x03).toByte
 
     val silkTouch = tool.getEnchantmentLevel(Enchantment.SILK_TOUCH)
 
     if (silkTouch > 0) {
-      //シルクタッチの処理
+      // シルクタッチの処理
       Some {
         BlockBreakResult.ItemDrop {
           blockMaterial match {
@@ -190,7 +211,7 @@ object BreakUtil {
         }
       }
     } else if (fortuneLevel > 0 && MaterialSets.fortuneMaterials.contains(blockMaterial)) {
-      //幸運の処理
+      // 幸運の処理
       Some {
         BlockBreakResult.ItemDrop {
           blockMaterial match {
@@ -211,6 +232,12 @@ object BreakUtil {
               new ItemStack(Material.REDSTONE, withBonus)
             case Material.QUARTZ_ORE =>
               new ItemStack(Material.QUARTZ, bonus)
+            // グロウストーンは幸運エンチャントがついていると高確率でより多くのダストをドロップする
+            // しかし、最大でも4個までしかドロップしない
+            case Material.GLOWSTONE =>
+              val withBonus = bonus * (rand * 3 + 2).toInt
+              val amount = if (withBonus > 4) 4 else withBonus
+              new ItemStack(Material.GLOWSTONE_DUST, amount)
             case _ =>
               // unreachable
               new ItemStack(blockMaterial, bonus)
@@ -218,7 +245,7 @@ object BreakUtil {
         }
       }
     } else {
-      //シルク幸運なしの処理
+      // シルク幸運なしの処理
       blockMaterial match {
         case Material.COAL_ORE =>
           Some(BlockBreakResult.ItemDrop(new ItemStack(Material.COAL)))
@@ -234,14 +261,20 @@ object BreakUtil {
           Some(BlockBreakResult.ItemDrop(new ItemStack(Material.REDSTONE, (rand + 4).toInt)))
         case Material.QUARTZ_ORE =>
           Some(BlockBreakResult.ItemDrop(new ItemStack(Material.QUARTZ)))
+        // グロウストーンは、2から4個のグロウストーンダストをドロップする
+        case Material.GLOWSTONE =>
+          Some(
+            BlockBreakResult
+              .ItemDrop(new ItemStack(Material.GLOWSTONE_DUST, (rand * 3 + 2).toInt))
+          )
         case Material.STONE =>
           Some {
             BlockBreakResult.ItemDrop {
               if (blockData.toInt == 0x00) {
-                //焼き石の処理
+                // 焼き石の処理
                 new ItemStack(Material.COBBLESTONE)
               } else {
-                //他の石の処理
+                // 他の石の処理
                 new ItemStack(blockMaterial, 1, blockDataLeast4Bits.toShort)
               }
             }
@@ -266,35 +299,49 @@ object BreakUtil {
           Some(BlockBreakResult.SpawnSilverFish(blockLocation))
         case Material.LOG | Material.LOG_2 =>
           Some(BlockBreakResult.ItemDrop(new ItemStack(blockMaterial, 1, b_tree.toShort)))
+        case Material.WOOD_STEP | Material.STEP | Material.STONE_SLAB2
+            if (blockDataLeast4Bits & 8) != 0 =>
+          // 上付きハーフブロックをそのままドロップするとmissing textureとして描画されるため、下付きの扱いとする
+          Some(
+            BlockBreakResult
+              .ItemDrop(new ItemStack(blockMaterial, 1, (blockDataLeast4Bits & 7).toShort))
+          )
         case _ =>
-          Some(BlockBreakResult.ItemDrop(new ItemStack(blockMaterial, 1, blockDataLeast4Bits.toShort)))
+          Some(
+            BlockBreakResult
+              .ItemDrop(new ItemStack(blockMaterial, 1, blockDataLeast4Bits.toShort))
+          )
       }
     }
   }
 
   /**
-   * world 内での整地量倍率を計算する。
    * TODO: これはビジネスロジックである。breakcountシステムによって管理されるべき。
+   * @param world
+   *   対象ワールド
+   * @return
+   *   ワールドに対応する整地量の倍率を計算する作用
    */
-  def blockCountWeight(world: World): Double = {
-    val managedWorld = ManagedWorld.fromBukkitWorld(world)
-    val seichiWorldFactor = if (managedWorld.exists(_.isSeichi)) 1.0 else 0.0
-    val sw01Penalty = if (managedWorld.contains(ManagedWorld.WORLD_SW)) 0.8 else 1.0
+  def blockCountWeight[F[_]: Monad](world: World): F[Double] =
+    Monad[F].pure {
+      val managedWorld = ManagedWorld.fromBukkitWorld(world)
+      val seichiWorldFactor = if (managedWorld.exists(_.isSeichi)) 1.0 else 0.0
+      val sw01Penalty =
+        if (managedWorld.contains(ManagedWorld.WORLD_SW)) 0.8 else 1.0
 
-    seichiWorldFactor * sw01Penalty
-  }
+      seichiWorldFactor * sw01Penalty
+    }
 
   /**
-   * マテリアルごとに倍率を掛けた整地量を計算する。
-   * TODO: これはビジネスロジックである。breakcountシステムによって管理されるべき。
+   * マテリアルごとに倍率を掛けた整地量を計算する。 TODO: これはビジネスロジックである。breakcountシステムによって管理されるべき。
    */
   def totalBreakCount(materials: Seq[Material]): Long =
     materials
       .filter(MaterialSets.materialsToCountBlockBreak.contains)
       .map {
-        //氷塊とマグマブロックの整地量を2倍
+        // 氷塊とマグマブロックの整地量を2倍
         case Material.PACKED_ICE | Material.MAGMA => 2L
-        case _ => 1L
+        case _                                    => 1L
       }
       .sum
 
@@ -305,44 +352,48 @@ object BreakUtil {
    *
    * @return
    */
-  def massBreakBlock(player: Player,
-                     targetBlocks: Iterable[BlockBreakableBySkill],
-                     dropLocation: Location,
-                     miningTool: BreakTool,
-                     shouldPlayBreakSound: Boolean,
-                     toMaterial: Material = Material.AIR): IO[Unit] = {
+  def massBreakBlock(
+    player: Player,
+    targetBlocks: Iterable[BlockBreakableBySkill],
+    dropLocation: Location,
+    miningTool: BreakTool,
+    shouldPlayBreakSound: Boolean,
+    toMaterial: Material = Material.AIR
+  ): IO[Unit] = {
+    import cats.implicits._
 
     for {
       // 非同期実行ではワールドに触れないので必要な情報をすべて抜く
-      targetBlocksInformation <- PluginExecutionContexts.onMainThread.runAction(SyncIO {
-        val seq: Seq[(Location, Material, Byte)] = targetBlocks.toSeq
-          .filter { block =>
-            block.getType match {
-              case Material.AIR =>
-                Bukkit.getLogger
-                  .warning(s"AIRの破壊が${block.getLocation.toString}にて試行されました。")
-                false
-              case _ => true
+      targetBlocksInformation <- PluginExecutionContexts
+        .onMainThread
+        .runAction(SyncIO {
+          val seq: Seq[(Location, Material, Byte)] = targetBlocks
+            .toSeq
+            .filter { block =>
+              block.getType match {
+                case Material.AIR =>
+                  if (SeichiAssist.DEBUG)
+                    Bukkit.getLogger.warning(s"AIRの破壊が${block.getLocation.toString}にて試行されました。")
+                  false
+                case _ => true
+              }
             }
-          }
-          .map(block => (block.getLocation.clone(), block.getType, block.getData))
+            .map(block => (block.getLocation.clone(), block.getType, block.getData))
 
-        // ブロックをすべて[[toMaterial]]に変える
-        targetBlocks.foreach(_.setType(toMaterial))
+          // ブロックをすべて[[toMaterial]]に変える
+          targetBlocks.foreach(_.setType(toMaterial))
 
-        seq
-      })
+          seq
+        })
 
       breakResults = {
-        import cats.implicits._
-
         val plainBreakResult = targetBlocksInformation.flatMap(dropItemOnTool(miningTool))
         val drops = plainBreakResult.mapFilter {
           case BlockBreakResult.ItemDrop(itemStack) => Some(itemStack)
-          case BlockBreakResult.SpawnSilverFish(_) => None
+          case BlockBreakResult.SpawnSilverFish(_)  => None
         }
         val silverFishLocations = plainBreakResult.mapFilter {
-          case BlockBreakResult.ItemDrop(_) => None
+          case BlockBreakResult.ItemDrop(_)               => None
           case BlockBreakResult.SpawnSilverFish(location) => Some(location)
         }
 
@@ -351,169 +402,110 @@ object BreakUtil {
         (ItemStackUtil.amalgamate(drops), silverFishLocations)
       }
 
-      itemsToBeDropped <- IO {
+      currentAutoMineStackState <- SeichiAssist
+        .instance
+        .mineStackSystem
+        .api
+        .autoMineStack(player)
+
+      itemsToBeDropped <-
         // アイテムのマインスタック自動格納を試みる
         // 格納できなかったらドロップするアイテムとしてリストに入れる
-        breakResults._1.flatMap { itemStack =>
-          if (!tryAddItemIntoMineStack(player, itemStack))
-            Some(itemStack)
-          else
-            None
+        breakResults._1.toList.traverse { itemStack =>
+          whenAOrElse(currentAutoMineStackState)(
+            SeichiAssist
+              .instance
+              .mineStackSystem
+              .api
+              .mineStackRepository
+              .tryIntoMineStack(player, itemStack, itemStack.getAmount),
+            false
+          ).map(Option.unless(_)(itemStack))
         }
-      }
 
       _ <- IO {
         // 壊した時の音を再生する
         if (shouldPlayBreakSound) {
-          targetBlocksInformation.foreach { case (location, material, _) =>
-            dropLocation.getWorld.playEffect(location, Effect.STEP_SOUND, material)
+          targetBlocksInformation.foreach {
+            case (location, material, _) =>
+              dropLocation.getWorld.playEffect(location, Effect.STEP_SOUND, material)
           }
         }
       }
 
-      //プレイヤーの統計を増やす
+      // プレイヤーの統計を増やす
       totalCount = totalBreakCount(targetBlocksInformation.map { case (_, m, _) => m })
-      blockCountWeight <- IO(blockCountWeight(player.getWorld))
+      blockCountWeight <- blockCountWeight[IO](player.getWorld)
       expIncrease = SeichiExpAmount.ofNonNegative(totalCount * blockCountWeight)
 
-      _ <- SeichiAssist.instance.breakCountSystem.api.incrementSeichiExp.of(player, expIncrease).toIO
+      _ <- SeichiAssist
+        .instance
+        .breakCountSystem
+        .api
+        .incrementSeichiExp
+        .of(player, expIncrease)
+        .toIO
 
-      _ <- PluginExecutionContexts.onMainThread.runAction(SyncIO {
-        // アイテムドロップは非同期スレッドで行ってはならない
-        itemsToBeDropped.foreach(dropLocation.getWorld.dropItemNaturally(dropLocation, _))
-        breakResults._2.foreach { location =>
-          location.getWorld.spawnEntity(location, EntityType.SILVERFISH)
-        }
-      })
+      _ <- PluginExecutionContexts
+        .onMainThread
+        .runAction(SyncIO {
+          // アイテムドロップは非同期スレッドで行ってはならない
+          itemsToBeDropped
+            .flatten
+            .foreach(dropLocation.getWorld.dropItemNaturally(dropLocation, _))
+          breakResults._2.foreach { location =>
+            location.getWorld.spawnEntity(location, EntityType.SILVERFISH)
+          }
+        })
     } yield ()
   }
 
-  def tryAddItemIntoMineStack(player: Player, itemstack: ItemStack): Boolean = {
-    //もしサバイバルでなければ処理を終了
-    if (player.getGameMode != GameMode.SURVIVAL) return false
-
-    if (SeichiAssist.DEBUG) {
-      player.sendMessage(s"${RED}minestackAdd:$itemstack")
-      player.sendMessage(s"${RED}mineDurability:${itemstack.getDurability}")
-    }
-
-    val config = SeichiAssist.seichiAssistConfig
-
-    val playerData = SeichiAssist.playermap(player.getUniqueId)
-
-    //minestackflagがfalseの時は処理を終了
-    if (!playerData.settings.autoMineStack) return false
-
-    /**
-     * 必要であれば引数を対応するアイテム向けの[[Material]]へ変換する
-     * @param material 変換対象
-     * @return 変換されたかもしれないMaterial
-     */
-    def intoItem(material: Material): Material = {
-      material match {
-        case Material.ACACIA_DOOR => Material.ACACIA_DOOR_ITEM
-        case Material.BIRCH_DOOR => Material.BIRCH_DOOR_ITEM
-        case Material.BED_BLOCK => Material.BED
-        case Material.BREWING_STAND => Material.BREWING_STAND_ITEM
-        case Material.CAULDRON => Material.CAULDRON_ITEM
-        case Material.DARK_OAK_DOOR => Material.DARK_OAK_DOOR_ITEM
-        case Material.FLOWER_POT => Material.FLOWER_POT_ITEM
-        case Material.JUNGLE_DOOR => Material.JUNGLE_DOOR_ITEM
-        case Material.SPRUCE_DOOR => Material.SPRUCE_DOOR_ITEM
-        case Material.SKULL => Material.SKULL_ITEM
-        case Material.WOODEN_DOOR => Material.WOOD_DOOR
-        case others => others
-      }
-    }
-    val amount = itemstack.getAmount
-    val material = intoItem(itemstack.getType)
-
-    //線路・キノコなどの、拾った時と壊した時とでサブIDが違う場合の処理
-    //拾った時のサブIDに合わせる
-    if (itemstack.getType == Material.RAILS
-      || itemstack.getType == Material.HUGE_MUSHROOM_1
-      || itemstack.getType == Material.HUGE_MUSHROOM_2
-      || itemstack.getType == Material.PURPUR_STAIRS
-      || itemstack.getType == Material.BONE_BLOCK) {
-
-      itemstack.setDurability(0.toShort)
-    }
-
-    MineStackObjectList.minestacklist.foreach { mineStackObj =>
-      def addToMineStackAfterLevelCheck(): Boolean = {
-        val level =
-          SeichiAssist.instance
-            .breakCountSystem.api
-            .seichiAmountDataRepository(player)
-            .read.unsafeRunSync()
-            .levelCorrespondingToExp
-
-        if (level.level < config.getMineStacklevel(mineStackObj.level)) {
-          false
-        } else {
-          playerData.minestack.addStackedAmountOf(mineStackObj, amount.toLong)
-          true
-        }
-      }
-
-      //IDとサブIDが一致している
-      if (material == mineStackObj.material && itemstack.getDurability.toInt == mineStackObj.durability) {
-        //名前と説明文が無いアイテム
-        if (!mineStackObj.hasNameLore && !itemstack.getItemMeta.hasLore && !itemstack.getItemMeta.hasDisplayName) {
-          return addToMineStackAfterLevelCheck()
-        } else if (mineStackObj.hasNameLore && itemstack.getItemMeta.hasDisplayName && itemstack.getItemMeta.hasLore) {
-          //ガチャ以外のアイテム(がちゃりんご)
-          if (mineStackObj.gachaType == -1) {
-            if (!itemstack.isSimilar(StaticGachaPrizeFactory.getGachaRingo)) return false
-
-            return addToMineStackAfterLevelCheck()
-          } else {
-            //ガチャ品
-            val g = SeichiAssist.msgachadatalist(mineStackObj.gachaType)
-
-            //名前が記入されているはずのアイテムで名前がなければ
-            if (g.probability < 0.1 && !Util.itemStackContainsOwnerName(itemstack, player.getName)) return false
-
-            if (g.itemStackEquals(itemstack)) {
-              return addToMineStackAfterLevelCheck()
-            }
-          }
-        }
-      }
-    }
-
-    false
-  }
-
   def calcManaDrop(player: Player): Double = {
-    val isSkillAvailable = SeichiAssist.instance.activeSkillAvailability(player).get.unsafeRunSync()
+    val isSkillAvailable =
+      SeichiAssist.instance.activeSkillAvailability(player).get.unsafeRunSync()
 
-    //０～１のランダムな値を取得
+    // ０～１のランダムな値を取得
     val rand = Math.random()
 
-    //10%の確率で経験値付与
+    // 10%の確率で経験値付与
     if (isSkillAvailable && rand < 0.1)
       SeichiAssist.playermap(player.getUniqueId).getPassiveExp
     else
       0.0
   }
 
-  //num回だけ耐久を減らす処理
+  // num回だけ耐久を減らす処理
   def calcDurability(enchantmentLevel: Int, num: Int): Short = {
     val rand = new Random()
     val probability = 1.0 / (enchantmentLevel + 1.0)
 
-    IntStream.range(0, num)
-      .filter { _ => probability > rand.nextDouble() }
-      .count().toShort
+    IntStream.range(0, num).filter { _ => probability > rand.nextDouble() }.count().toShort
   }
 
   /**
-   * @param player    破壊プレイヤー
-   * @param block     手動破壊対象またはアサルト/遠距離の指定座標
-   * @param isAssault true:	アサルトアーマーによる破壊
-   *                  false:	アクティブスキルまたは手動による破壊
-   * @return 重力値（破壊範囲の上に積まれているブロック数）
+   * 重力値計算対象のブロックかどうかを判定します。
+   * 対象ブロック：以下のいずれかを満たす
+   *  - Material.isSolid == true になるブロック（ただし岩盤を除く）
+   *  - 液体ブロック（水,溶岩）
+   * ref: [バージョン1.12.x時の最新記事アーカイブ](https://minecraft.fandom.com/wiki/Solid_block?oldid=1132868)
+   */
+  private def isAffectedByGravity(material: Material): Boolean = {
+    material match {
+      case Material.BEDROCK                                          => false
+      case m if MaterialSets.fluidMaterials.contains(m) || m.isSolid => true
+      case _                                                         => false
+    }
+  }
+
+  /**
+   * @param player
+   *   破壊プレイヤー
+   * @param block
+   *   手動破壊対象またはアサルト/遠距離の指定座標
+   * @param isAssault
+   *   true: アサルトアーマーによる破壊 false: アクティブスキルまたは手動による破壊
+   * @return
+   *   重力値（破壊範囲の上に積まれているブロック数）
    */
   def getGravity(player: Player, block: Block, isAssault: Boolean): Int = {
     // 1. 重力値を適用すべきか判定
@@ -522,12 +514,16 @@ object BreakUtil {
       return 0
 
     // 2. 破壊要因判定
-    /** 該当プレイヤーのPlayerData  */
+    /**
+     * 該当プレイヤーのPlayerData
+     */
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     val skillState = playerData.skillState.get.unsafeRunSync()
 
-    /** 重力値の計算を始めるY座標  */
-    val startY: Int =
+    /**
+     * 重力値の計算を始めるY座標
+     */
+    val blockRelativeHeight: Int =
       if (!isAssault) {
         val usageMode = skillState.usageMode
         if (usageMode != Disabled) {
@@ -536,15 +532,17 @@ object BreakUtil {
               skill.range match {
                 case MultiArea(effectChunkSize, _) =>
                   val playerDirection = BreakUtil.getCardinalDirection(player)
-                  if (playerDirection == "D") {
+                  if (playerDirection == CardinalDirection.Down) {
                     // 下向きによる発動
                     // block＝破壊範囲の最上層ブロックにつき、startは0
                     0
-                  } else if (playerDirection == "U") {
+                  } else if (playerDirection == CardinalDirection.Up) {
                     // 上向きによる発動
                     // block＝破壊範囲の最下層ブロックにつき、startは破壊範囲の高さ
                     effectChunkSize.y
-                  } else if (Set(DualBreak, TrialBreak).contains(skill) && usageMode == Active) {
+                  } else if (
+                    Set(DualBreak, TrialBreak).contains(skill) && usageMode == Active
+                  ) {
                     // 横向きによる発動のうち、デュアルorトリアルの上破壊
                     // 破壊ブロックの1マス上が破壊されるので、startは2段目から
                     1
@@ -577,29 +575,43 @@ object BreakUtil {
       }
 
     // 3. 重力値計算
-    /** OPENHEIGHTマス以上のtransparentmateriallistブロックの連続により、地上判定とする。  */
-    val OPENHEIGHT = 3
-    /** OPENHEIGHTに達したかの計測カウンタ  */
-    var openCount = 0
-    /** 重力値  */
-    var gravity = 0
-    /** 最大ループ数  */
-    val YMAX = 255
+    /**
+     * isAffectedByGravityを満たさないMaterialを持つブロックが
+     * この回数以上連続したとき、重力値のカウントをストップする。
+     */
+    val surfaceThreshold = 3
 
-    for (checkPointer <- 1 until YMAX) {
-      /** 確認対象ブロック  */
-      val target = block.getRelative(0, startY + checkPointer, 0)
-      // 対象ブロックが地上判定ブロックの場合
-      if (MaterialSets.transparentMaterials.contains(target.getType)) {
+    var surfaceCandidateCount = 0
+
+    /**
+     * 重力値
+     */
+    var gravity = 0
+
+    /**
+     * 最大ループ数
+     */
+    val maxY = if (player.getWorld.getEnvironment == Environment.NETHER) 121 else 255
+    val maxOffsetY = maxY - blockRelativeHeight
+
+    // NOTE: `1 until 0`など、`x > y`が満たされる`x until y`はイテレーションが行われない
+    for (offsetY <- 1 to maxOffsetY) {
+
+      /**
+       * 確認対象ブロック
+       */
+      val target = block.getRelative(0, blockRelativeHeight + offsetY, 0)
+      // 対象ブロックが重力値に影響を与えるブロックではない場合
+      if (!isAffectedByGravity(target.getType)) {
         // カウンタを加算
-        openCount += 1
-        if (openCount >= OPENHEIGHT) {
+        surfaceCandidateCount += 1
+        if (surfaceCandidateCount >= surfaceThreshold) {
           return gravity
         }
       } else {
         // カウンタをクリア
-        openCount = 0
-        // 重力値を加算(水をは2倍にする)
+        surfaceCandidateCount = 0
+        // 重力値を加算(水は2倍にする)
         gravity += (if (target.getType == Material.WATER) 2 else 1)
       }
     }
@@ -607,7 +619,14 @@ object BreakUtil {
     gravity
   }
 
-  def getCardinalDirection(entity: Entity): String = {
+  /**
+   * エンティティが向いている方向を計算して取得する
+   * @param entity
+   *   対象とするエンティティ
+   * @return
+   *   エンティティが向いている方向が座標軸方向に近似できた場合はnon-nullな[[CardinalDirection]]、そうでない場合は`null`
+   */
+  def getCardinalDirection(entity: Entity): CardinalDirection = {
     var rotation = ((entity.getLocation.getYaw + 180) % 360).toDouble
     val loc = entity.getLocation
     val pitch = loc.getPitch
@@ -616,19 +635,19 @@ object BreakUtil {
     }
 
     if (pitch <= -30) {
-      "U"
+      CardinalDirection.Up
     } else if (pitch >= 25) {
-      "D"
+      CardinalDirection.Down
     } else if (0 <= rotation && rotation < 45.0) {
-      "N"
+      CardinalDirection.North
     } else if (45.0 <= rotation && rotation < 135.0) {
-      "E"
+      CardinalDirection.East
     } else if (135.0 <= rotation && rotation < 225.0) {
-      "S"
+      CardinalDirection.South
     } else if (225.0 <= rotation && rotation < 315.0) {
-      "W"
+      CardinalDirection.West
     } else if (315.0 <= rotation && rotation < 360.0) {
-      "N"
+      CardinalDirection.North
     } else {
       null
     }
@@ -643,7 +662,7 @@ object BreakUtil {
 
     val failure = !wrapper.queueBlockRemoval(player, removedBlock)
 
-    //もし失敗したらプレイヤーに報告し処理を終了
+    // もし失敗したらプレイヤーに報告し処理を終了
     if (failure) {
       player.sendMessage(RED.toString + "error:coreprotectに保存できませんでした。管理者に報告してください。")
       return false
@@ -651,4 +670,36 @@ object BreakUtil {
     true
   }
 
+  /**
+   * プレーヤーがスキルを使うときに複数種類ブロック同時破壊を行うかどうかを返す関数。
+   *
+   *   - プレーヤーの整地レベルが `SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreakLevel` 以上である、かつ、
+   *   - 以下二条件のうちどちらかが満たされている
+   *     - プレーヤーが「整地ワールド」に居る、または
+   *     - `PlayerData.settings.performMultipleIDBlockBreakWhenOutsideSeichiWorld`（以下「フラグ」）が
+   *       `true` になっている
+   *
+   * 「整地スキルを使えるワールド」と「整地ワールド」の概念が一致していない事から、 単純にフラグを返すだけではないので注意。 例えば、メインワールドでは、整地レベルが十分かつフラグが
+   * `true` のときのみ複数種類ブロック破壊をする。
+   */
+  def performsMultipleIDBlockBreakWhenUsingSkills(player: Player): SyncIO[Boolean] = for {
+    seichiAmountData <-
+      SeichiAssist.instance.breakCountSystem.api.seichiAmountDataRepository(player).read
+    currentWorld <- SyncIO(player.getWorld)
+    flag <- SyncIO(
+      SeichiAssist
+        .playermap(player.getUniqueId)
+        .settings
+        .performMultipleIDBlockBreakWhenOutsideSeichiWorld
+    )
+  } yield {
+    import ManagedWorld._
+
+    val isLevelAboveThreshold =
+      seichiAmountData.levelCorrespondingToExp.level >= SeichiAssist
+        .seichiAssistConfig
+        .getMultipleIDBlockBreakLevel
+
+    isLevelAboveThreshold && (currentWorld.isSeichi || flag)
+  }
 }

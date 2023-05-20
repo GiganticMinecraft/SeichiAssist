@@ -1,0 +1,33 @@
+name: SQLマイグレーションファイルのバージョンに重複がないかを確認する
+on:
+  push:
+    branches:
+      - develop
+      - master
+    paths:
+      - src/main/resources/db/migration/**
+      - .github/workflows/check-sql-version-duplicated-files.yml
+  pull_request:
+    branches:
+      - develop
+    paths:
+      - src/main/resources/db/migration/**
+      - .github/workflows/check-sql-version-duplicated-files.yml
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: '0'
+      - name: Fetch and merge develop
+        run: git fetch origin develop && git merge --no-ff origin/develop
+      - name: Check SQL migration files
+        run: |
+          ls src/main/resources/db/migration | grep -o -E "^V([0-9]+\.)?([0-9]+\.)?([0-9]+)" | awk 'a[$0]++ {print $0 > "result.txt"}'
+          if [ -s result.txt ]; then
+            echo "Some migration files have duplicated ver:"
+            cat result.txt
+            exit 1
+          fi

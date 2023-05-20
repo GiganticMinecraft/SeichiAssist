@@ -17,12 +17,15 @@ object ActiveSkillRange {
       MultiArea(XYZTuple(width, height, depth), count)
   }
 
-  def singleArea(width: Int, height: Int, depth: Int): MultiArea = MultiArea(width, height, depth)(1)
+  def singleArea(width: Int, height: Int, depth: Int): MultiArea =
+    MultiArea(width, height, depth)(1)
 
   case class RemoteArea(effectChunkSize: XYZTuple) extends ActiveSkillRange
 
   object RemoteArea {
-    def apply(width: Int, height: Int, depth: Int): RemoteArea = RemoteArea(XYZTuple(width, height, depth))
+    def apply(width: Int, height: Int, depth: Int): RemoteArea = RemoteArea(
+      XYZTuple(width, height, depth)
+    )
   }
 }
 
@@ -40,22 +43,22 @@ object AssaultSkillRange {
   case class Water(effectChunkSize: XYZTuple) extends AssaultSkillRange {
     override val blockMaterialConversion: Material => Material = {
       case Material.WATER => Material.ICE
-      case x => x
+      case x              => x
     }
   }
 
   case class Lava(effectChunkSize: XYZTuple) extends AssaultSkillRange {
     override val blockMaterialConversion: Material => Material = {
       case Material.LAVA => Material.MAGMA
-      case x => x
+      case x             => x
     }
   }
 
   case class Liquid(effectChunkSize: XYZTuple) extends AssaultSkillRange {
     override val blockMaterialConversion: Material => Material = {
       case Material.WATER => Material.ICE
-      case Material.LAVA => Material.MAGMA
-      case x => x
+      case Material.LAVA  => Material.MAGMA
+      case x              => x
     }
   }
 

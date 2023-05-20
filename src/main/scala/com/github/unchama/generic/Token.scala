@@ -21,7 +21,9 @@ package com.github.unchama.generic
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/** Represents a unique identifier (using object equality). */
+/**
+ * Represents a unique identifier (using object equality).
+ */
 private[generic] final class Token extends Serializable {
   override def toString: String = s"Token(${hashCode.toHexString})"
 }

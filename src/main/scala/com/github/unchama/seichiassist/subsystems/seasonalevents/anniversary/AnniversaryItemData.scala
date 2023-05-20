@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary
 
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerTextureValue}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary.ANNIVERSARY_COUNT
-import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.EnchantNameToJapanese
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
@@ -17,28 +17,23 @@ import scala.util.chaining._
 
 object AnniversaryItemData {
 
-  //region まいんちゃんの記念頭
+  // region まいんちゃんの記念頭
 
-  private val mineChan = SkullOwnerTextureValue("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDhmNTQ0OGI0ZDg4ZTQwYjE0YzgyOGM2ZjFiNTliMzg1NDVkZGE5MzNlNzNkZmYzZjY5NWU2ZmI0Mjc4MSJ9fX0=")
+  private val mineChan = SkullOwnerTextureValue(
+    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDhmNTQ0OGI0ZDg4ZTQwYjE0YzgyOGM2ZjFiNTliMzg1NDVkZGE5MzNlNzNkZmYzZjY5NWU2ZmI0Mjc4MSJ9fX0="
+  )
   val mineHead: ItemStack = new SkullItemStackBuilder(mineChan)
     .title("まいんちゃん")
-    .lore(
-      "",
-      s"${YELLOW}ギガンティック☆整地鯖${ANNIVERSARY_COUNT}周年記念だよ！"
-    )
+    .lore("", s"${YELLOW}ギガンティック☆整地鯖${ANNIVERSARY_COUNT}周年記念だよ！")
     .build()
 
-  //endregion
+  // endregion
 
-  //region 「気になる木」の苗
+  // region 「気になる木」の苗
 
   val strangeSapling: ItemStack = {
-    val loreList = List(
-      "",
-      "植えるとすぐ成長する。",
-      "先端のブロックがランダムで変化する。",
-      "極稀にあの「林檎」も...？"
-    ).map(lore => s"$RESET$GRAY$lore")
+    val loreList = List("", "植えるとすぐ成長する。", "先端のブロックがランダムで変化する。", "極稀にあの「林檎」も...？")
+      .map(lore => s"$RESET$GRAY$lore")
       .asJava
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(SAPLING).tap { meta =>
@@ -50,17 +45,38 @@ object AnniversaryItemData {
     val itemStack = new ItemStack(SAPLING, 1)
     itemStack.setItemMeta(itemMeta)
 
-    new NBTItem(itemStack).tap { item =>
-      import item._
-      setByte(NBTTagConstants.typeIdTag, 1.toByte)
-    }
+    new NBTItem(itemStack)
+      .tap { item =>
+        import item._
+        setByte(NBTTagConstants.typeIdTag, 1.toByte)
+      }
       .pipe(_.getItem)
   }
 
   val strangeSaplingBlockSet = Set(
-    ANVIL, BEACON, BONE_BLOCK, BOOKSHELF, BRICK, CAKE, CAULDRON, COAL_BLOCK, DIAMOND_BLOCK,
-    DRAGON_EGG, FENCE, FLOWER_POT, GLOWSTONE, GOLD_BLOCK, GRASS, ICE, IRON_BLOCK, MELON_BLOCK,
-    NETHER_BRICK, QUARTZ_BLOCK, SAND, SPONGE, WORKBENCH
+    ANVIL,
+    BEACON,
+    BONE_BLOCK,
+    BOOKSHELF,
+    BRICK,
+    CAKE,
+    CAULDRON,
+    COAL_BLOCK,
+    DIAMOND_BLOCK,
+    DRAGON_EGG,
+    FENCE,
+    FLOWER_POT,
+    GLOWSTONE,
+    GOLD_BLOCK,
+    GRASS,
+    ICE,
+    IRON_BLOCK,
+    MELON_BLOCK,
+    NETHER_BRICK,
+    QUARTZ_BLOCK,
+    SAND,
+    SPONGE,
+    WORKBENCH
   )
 
   val strangeSaplingSiinaRate = 0.0008
@@ -70,16 +86,13 @@ object AnniversaryItemData {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 1
     }
 
-  //endregion
+  // endregion
 
-  //region 修繕の書
+  // region 修繕の書
 
   val mendingBook: ItemStack = {
-    val loreList = List(
-      "",
-      "手に持って右クリックすると",
-      "オフハンドにあるアイテムの耐久値を全回復する"
-    ).map(lore => s"$RESET$GRAY$lore")
+    val loreList = List("", "手に持って右クリックすると", "オフハンドにあるアイテムの耐久値を全回復する")
+      .map(lore => s"$RESET$GRAY$lore")
       .asJava
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(WRITTEN_BOOK).tap { meta =>
@@ -91,17 +104,19 @@ object AnniversaryItemData {
     val itemStack = new ItemStack(WRITTEN_BOOK, 1)
     itemStack.setItemMeta(itemMeta)
 
-    new NBTItem(itemStack).tap { item =>
-      import item._
-      setByte(NBTTagConstants.typeIdTag, 2.toByte)
-    }
+    new NBTItem(itemStack)
+      .tap { item =>
+        import item._
+        setByte(NBTTagConstants.typeIdTag, 2.toByte)
+      }
       .pipe(_.getItem)
   }
 
   def isMendingBook(item: ItemStack): Boolean = {
     def isOriginal(meta: ItemMeta) =
       meta match {
-        case bookMeta: BookMeta => bookMeta.hasGeneration && bookMeta.getGeneration == Generation.ORIGINAL
+        case bookMeta: BookMeta =>
+          bookMeta.hasGeneration && bookMeta.getGeneration == Generation.ORIGINAL
         case _ => false
       }
 
@@ -110,29 +125,22 @@ object AnniversaryItemData {
     } && item.hasItemMeta && isOriginal(item.getItemMeta)
   }
 
-  //endregion
+  // endregion
 
-  //region 記念限定シャベル
+  // region 記念限定シャベル
 
   val anniversaryShovel: ItemStack = {
-    val enchantments = Set(
-      (Enchantment.DIG_SPEED, 3),
-      (Enchantment.DURABILITY, 4),
-      (Enchantment.MENDING, 1)
-    )
+    val enchantments =
+      Set((Enchantment.DIG_SPEED, 3), (Enchantment.DURABILITY, 4), (Enchantment.MENDING, 1))
 
     val loreList = {
-      val enchDescription = enchantments
-        .map { case (ench, lvl) => s"$GRAY${Util.getEnchantName(ench.getName, lvl)}" }
-        .toList
-      val lore = List(
-        "",
-        "特殊なエンチャントが付与されています",
-      ).map(lore => s"$YELLOW$lore")
+      val enchDescription = enchantments.map {
+        case (ench, lvl) => s"$GRAY${EnchantNameToJapanese.getEnchantName(ench.getName, lvl)}"
+      }.toList
+      val lore = List("", "特殊なエンチャントが付与されています").map(lore => s"$YELLOW$lore")
 
       enchDescription ::: lore
-    }.map(lore => s"$RESET$lore")
-      .asJava
+    }.map(lore => s"$RESET$lore").asJava
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(DIAMOND_SPADE).tap { meta =>
       import meta._
@@ -145,10 +153,11 @@ object AnniversaryItemData {
     val itemStack = new ItemStack(DIAMOND_SPADE, 1)
     itemStack.setItemMeta(itemMeta)
 
-    new NBTItem(itemStack).tap { item =>
-      import item._
-      setByte(NBTTagConstants.typeIdTag, 3.toByte)
-    }
+    new NBTItem(itemStack)
+      .tap { item =>
+        import item._
+        setByte(NBTTagConstants.typeIdTag, 3.toByte)
+      }
       .pipe(_.getItem)
   }
 
@@ -157,7 +166,7 @@ object AnniversaryItemData {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 3
     }
 
-  //endregion
+  // endregion
 
   // SeichiAssistで呼ばれてるだけ
   def anniversaryPlayerHead(head: SkullMeta): SkullMeta = {
@@ -165,8 +174,7 @@ object AnniversaryItemData {
       "",
       s"$GREEN${ITALIC}大切なあなたへ感謝を。",
       s"$YELLOW$UNDERLINE$ITALIC${ANNIVERSARY_COUNT}th Anniversary"
-    ).map(str => s"$RESET$str")
-      .asJava
+    ).map(str => s"$RESET$str").asJava
     head.setLore(lore)
     head
   }

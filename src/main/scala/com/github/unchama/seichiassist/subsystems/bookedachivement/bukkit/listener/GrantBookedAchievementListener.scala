@@ -10,8 +10,8 @@ import org.bukkit.Bukkit
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.{EventHandler, Listener}
 
-class GrantBookedAchievementListener[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit
-  effectEnvironment: EffectEnvironment,
+class GrantBookedAchievementListener[F[_]: ConcurrentEffect: NonServerThreadContextShift](
+  implicit effectEnvironment: EffectEnvironment,
   service: AchievementBookingService[F]
 ) extends Listener {
 
@@ -24,19 +24,19 @@ class GrantBookedAchievementListener[F[_] : ConcurrentEffect : NonServerThreadCo
     val playerData = SeichiAssist.playermap(uuid)
 
     val effectRunner = Bukkit.getConsoleSender
+
     /**
-     * `.shift`を行ってから書き込みを行うわずかな時間にプレイヤーが退出し終了処理が行われる可能性があるが、
-     * パフォーマンスを取り、妥協してこの実装としている。
+     * `.shift`を行ってから書き込みを行うわずかな時間にプレイヤーが退出し終了処理が行われる可能性があるが、 パフォーマンスを取り、妥協してこの実装としている。
      */
     val program = for {
       _ <- NonServerThreadContextShift[F].shift
       ids <- service.loadBookedAchievementsIds(player.getUniqueId)
-      _ <- LiftIO[F].liftIO(ids.map {
+      _ <- LiftIO[F].liftIO(ids.traverse {
         case (AchievementOperation.GIVE, id) =>
           playerData.tryForcefullyUnlockAchievement(id).run(effectRunner)
         case (AchievementOperation.DEPRIVE, id) =>
           playerData.forcefullyDepriveAchievement(id).run(effectRunner)
-      }.sequence)
+      })
     } yield ()
 
     effectEnvironment.unsafeRunEffectAsync("未受け取りの予約実績を読み込み、付与する", program)

@@ -14,6 +14,8 @@ trait GrantFastDiggingEffect[F[_], Player] {
 
 object GrantFastDiggingEffect {
 
-  def apply[F[_], Player](implicit ev: GrantFastDiggingEffect[F, Player]): GrantFastDiggingEffect[F, Player] = ev
+  def apply[F[_], Player](
+    implicit ev: GrantFastDiggingEffect[F, Player]
+  ): GrantFastDiggingEffect[F, Player] = ev
 
 }

@@ -32,42 +32,39 @@ class EffectCommand[F[_]](api: FastDiggingSettingsWriteApi[IO, Player]) {
 
   private val toggleExecutor = playerCommandBuilder
     .withEffectAsExecution {
-      api
-        .toggleEffectSuppression
-        .flatMap { newState =>
-          MessageEffect {
-            newState match {
-              case FastDiggingEffectSuppressionState.EnabledWithoutLimit =>
-                s"${GREEN}採掘速度上昇効果:ON(無制限)"
-              case limit: FastDiggingEffectSuppressionState.EnabledWithLimit =>
-                s"${GREEN}採掘速度上昇効果:ON(${limit.limit}制限)"
-              case FastDiggingEffectSuppressionState.Disabled =>
-                s"${RED}採掘速度上昇効果:OFF"
-            }
+      api.toggleEffectSuppression.flatMap { newState =>
+        MessageEffect {
+          newState match {
+            case FastDiggingEffectSuppressionState.EnabledWithoutLimit =>
+              s"${GREEN}採掘速度上昇効果:ON(無制限)"
+            case limit: FastDiggingEffectSuppressionState.EnabledWithLimit =>
+              s"${GREEN}採掘速度上昇効果:ON(${limit.limit}制限)"
+            case FastDiggingEffectSuppressionState.Disabled =>
+              s"${RED}採掘速度上昇効果:OFF"
           }
-        } >> MessageEffect("再度 /ef コマンドを実行することでトグルします。")
+        }
+      } >> MessageEffect("再度 /ef コマンドを実行することでトグルします。")
     }
     .build()
 
   private val messageFlagToggleExecutor = playerCommandBuilder
     .withEffectAsExecution {
-      api
-        .toggleStatsSettings
-        .flatMap { newSettings =>
-          MessageEffect {
-            newSettings match {
-              case FastDiggingEffectStatsSettings.AlwaysReceiveDetails =>
-                s"${GREEN}内訳表示:ON(OFFに戻したい時は再度コマンドを実行します。)"
-              case FastDiggingEffectStatsSettings.ReceiveTotalAmplifierOnUpdate =>
-                s"${GREEN}内訳表示:OFF"
-            }
+      api.toggleStatsSettings.flatMap { newSettings =>
+        MessageEffect {
+          newSettings match {
+            case FastDiggingEffectStatsSettings.AlwaysReceiveDetails =>
+              s"${GREEN}内訳表示:ON(OFFに戻したい時は再度コマンドを実行します。)"
+            case FastDiggingEffectStatsSettings.ReceiveTotalAmplifierOnUpdate =>
+              s"${GREEN}内訳表示:OFF"
           }
         }
+      }
     }
     .build()
 
   val executor: TabExecutor = BranchedExecutor(
     Map("smart" -> messageFlagToggleExecutor),
-    whenArgInsufficient = Some(toggleExecutor), whenBranchNotFound = Some(printUsageExecutor)
+    whenArgInsufficient = Some(toggleExecutor),
+    whenBranchNotFound = Some(printUsageExecutor)
   ).asNonBlockingTabExecutor()
 }

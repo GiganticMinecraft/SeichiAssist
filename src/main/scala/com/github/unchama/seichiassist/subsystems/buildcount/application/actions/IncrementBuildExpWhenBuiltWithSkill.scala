@@ -13,14 +13,12 @@ trait IncrementBuildExpWhenBuiltWithSkill[F[_], Player] {
 
 object IncrementBuildExpWhenBuiltWithSkill {
 
-  def apply[
-    F[_] : IncrementBuildExpWhenBuiltWithSkill[*[_], Player],
-    Player
-  ]: IncrementBuildExpWhenBuiltWithSkill[F, Player] = implicitly
+  def apply[F[_]: IncrementBuildExpWhenBuiltWithSkill[*[_], Player], Player]
+    : IncrementBuildExpWhenBuiltWithSkill[F, Player] = implicitly
 
-  def withConfig[
-    F[_] : IncrementBuildExpWhenBuiltByHand[*[_], Player], Player
-  ](config: BuildExpMultiplier): IncrementBuildExpWhenBuiltWithSkill[F, Player] =
+  def withConfig[F[_]: IncrementBuildExpWhenBuiltByHand[*[_], Player], Player](
+    config: BuildExpMultiplier
+  ): IncrementBuildExpWhenBuiltWithSkill[F, Player] =
     (player: Player, by: BuildExpAmount) =>
       IncrementBuildExpWhenBuiltByHand[F, Player]
         .of(player, by.mapAmount(_ * config.withBuildSkills))

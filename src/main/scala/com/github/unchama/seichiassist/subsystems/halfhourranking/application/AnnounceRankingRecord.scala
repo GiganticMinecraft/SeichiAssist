@@ -14,34 +14,26 @@ object AnnounceRankingRecord {
 
   import cats.implicits._
 
-  def apply[
-    F[_]
-    : Monad
-    : SendMinecraftMessage[*[_], Player]
-    : BroadcastMinecraftMessage,
-    G[_]
-    : ContextCoercion[*[_], F]
-    : Functor,
-    Player: HasUuid
-  ](breakCountReadApi: BreakCountReadAPI[F, G, Player])
-   (resolveName: Player => F[String]): RankingRecord[Player] => F[Unit] = { rankingRecord =>
+  def apply[F[_]: Monad: SendMinecraftMessage[*[_], Player]: BroadcastMinecraftMessage, G[
+    _
+  ]: ContextCoercion[*[_], F]: Functor, Player: HasUuid](
+    breakCountReadApi: BreakCountReadAPI[F, G, Player]
+  )(resolveName: Player => F[String]): RankingRecord[Player] => F[Unit] = { rankingRecord =>
     val rankingPositionColor = List(LIGHT_PURPLE, YELLOW, AQUA)
     val sortedNonzeroRecords = rankingRecord.getSortedNonzeroRecords
 
-    val totalBreakCount = sortedNonzeroRecords.map(_._2).foldLeft(SeichiExpAmount.zero)(_.add(_))
+    val totalBreakCount =
+      sortedNonzeroRecords.map(_._2).foldLeft(SeichiExpAmount.zero)(_.add(_))
 
     val individualAnnouncements =
-      sortedNonzeroRecords.map { case (player, seichiExpAmount) =>
-        SendMinecraftMessage[F, Player].string(
-          player,
-          s"あなたの整地量は $AQUA${seichiExpAmount.formatted}$WHITE でした"
-        )
+      sortedNonzeroRecords.map {
+        case (player, seichiExpAmount) =>
+          SendMinecraftMessage[F, Player]
+            .string(player, s"あなたの整地量は $AQUA${seichiExpAmount.formatted}$WHITE でした")
       }
 
-    val rankingAnnouncement = sortedNonzeroRecords
-      .zip(rankingPositionColor)
-      .zipWithIndex
-      .map { case (((player, seichiExpAmount), decorationColorCode), index) =>
+    val rankingAnnouncement = sortedNonzeroRecords.zip(rankingPositionColor).zipWithIndex.map {
+      case (((player, seichiExpAmount), decorationColorCode), index) =>
         val position = index + 1
         val increaseAmountText = s"$AQUA${seichiExpAmount.formatted}$WHITE"
 
@@ -49,7 +41,8 @@ object AnnounceRankingRecord {
           name <- resolveName(player)
           seichiExpAmountData <-
             ContextCoercion {
-              breakCountReadApi.seichiAmountDataRepository
+              breakCountReadApi
+                .seichiAmountDataRepository
                 .lift(player)
                 .map[G[Option[SeichiAmountData]]](_.read.map(Some(_)))
                 .getOrElse {
@@ -70,24 +63,18 @@ object AnnounceRankingRecord {
             case None =>
               s"$decorationColorCode$name$WHITE"
           }
-          _ <- BroadcastMinecraftMessage[F].string(
-            s"整地量第${position}位は${playerNameText}で、整地量は${increaseAmountText}でした"
-          )
+          _ <- BroadcastMinecraftMessage[F]
+            .string(s"整地量第${position}位は${playerNameText}で、整地量は${increaseAmountText}でした")
         } yield ()
-      }
+    }
 
     val actions = List(
-      BroadcastMinecraftMessage[F].string(
-        "--------------30分間整地ランキング--------------"
-      )
+      BroadcastMinecraftMessage[F].string("--------------30分間整地ランキング--------------")
     ) ++ individualAnnouncements ++ List(
-      BroadcastMinecraftMessage[F].string(
-        s"全体の整地量は $AQUA${totalBreakCount.formatted}$WHITE でした"
-      )
+      BroadcastMinecraftMessage[F]
+        .string(s"全体の整地量は $AQUA${totalBreakCount.formatted}$WHITE でした")
     ) ++ rankingAnnouncement ++ List(
-      BroadcastMinecraftMessage[F].string(
-        "--------------------------------------------------"
-      )
+      BroadcastMinecraftMessage[F].string("--------------------------------------------------")
     )
 
     actions.sequence.as(())

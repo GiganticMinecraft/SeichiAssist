@@ -13,7 +13,7 @@ import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import scala.concurrent.ExecutionContext
 
 class AsymmetricSignallingRefSpec
-  extends AnyWordSpec
+    extends AnyWordSpec
     with ScalaCheckPropertyChecks
     with Matchers
     with ConcurrentEffectTest
@@ -21,8 +21,11 @@ class AsymmetricSignallingRefSpec
 
   import scala.concurrent.duration._
 
-  implicit override val patienceConfig: PatienceConfig = PatienceConfig(timeout = 5.seconds, interval = 10.millis)
-  implicit val monixScheduler: TestScheduler = TestScheduler(ExecutionModel.AlwaysAsyncExecution)
+  implicit override val patienceConfig: PatienceConfig =
+    PatienceConfig(timeout = 5.seconds, interval = 10.millis)
+  implicit val monixScheduler: TestScheduler = TestScheduler(
+    ExecutionModel.AlwaysAsyncExecution
+  )
   implicit val monixTimer: Timer[Task] = Task.timer(monixScheduler)
 
   implicit val contextShift: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
@@ -39,15 +42,13 @@ class AsymmetricSignallingRefSpec
         val task = for {
           ref <- AsymmetricSignallingRef.in[Task, Task, Task, Value](initialValue)
           updateResult <-
-            ref
-              .valuesAwait
-              .use { stream =>
-                for {
-                  resultFiber <- stream.take(updates.length).compile.toList.start
-                  _ <- updates.traverse(ref.set)
-                  result <- resultFiber.join
-                } yield result
-              }
+            ref.valuesAwait.use { stream =>
+              for {
+                resultFiber <- stream.take(updates.length).compile.toList.start
+                _ <- updates.traverse(ref.set)
+                result <- resultFiber.join
+              } yield result
+            }
         } yield updateResult
 
         assertResult(updates)(awaitForProgram(task, 1.second))

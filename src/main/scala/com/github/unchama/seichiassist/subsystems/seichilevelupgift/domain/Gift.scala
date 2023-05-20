@@ -6,9 +6,9 @@ object Gift {
 
   sealed trait Item extends Gift
 
-  object Item {
+  case object GachaPointWorthSingleTicket extends Gift
 
-    case object GachaTicket extends Item
+  object Item {
 
     case object SuperPickaxe extends Item
 

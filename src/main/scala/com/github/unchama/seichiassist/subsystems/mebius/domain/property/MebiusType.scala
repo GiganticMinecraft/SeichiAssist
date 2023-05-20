@@ -10,4 +10,3 @@ sealed trait MebiusType
 case object NormalMebius extends MebiusType
 
 case object ChristmasMebius extends MebiusType
-

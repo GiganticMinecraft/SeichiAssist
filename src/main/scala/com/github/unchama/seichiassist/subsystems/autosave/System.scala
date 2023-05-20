@@ -2,16 +2,21 @@ package com.github.unchama.seichiassist.subsystems.autosave
 
 import cats.effect.{Sync, Timer}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.subsystems.autosave.application.{CanNotifySaves, CanSaveWorlds, SystemConfiguration, WorldSaveRoutine}
-import com.github.unchama.seichiassist.subsystems.autosave.bukkit.instances.{SyncCanNotifyBukkitSaves, SyncCanSaveBukkitWorlds}
+import com.github.unchama.seichiassist.subsystems.autosave.application.{
+  CanNotifySaves,
+  CanSaveWorlds,
+  SystemConfiguration,
+  WorldSaveRoutine
+}
+import com.github.unchama.seichiassist.subsystems.autosave.bukkit.instances.{
+  SyncCanNotifyBukkitSaves,
+  SyncCanSaveBukkitWorlds
+}
 
 object System {
-  def backgroundProcess[
-    F[_] : Sync : Timer : OnMinecraftServerThread,
-    G[_]
-  ](configuration: SystemConfiguration): F[Nothing] = {
-    import PluginExecutionContexts._
+  def backgroundProcess[F[_]: Sync: Timer: OnMinecraftServerThread, G[_]](
+    configuration: SystemConfiguration
+  ): F[Nothing] = {
 
     implicit val _configuration: SystemConfiguration = configuration
 

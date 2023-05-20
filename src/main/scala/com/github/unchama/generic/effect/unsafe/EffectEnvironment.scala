@@ -11,12 +11,11 @@ trait EffectEnvironment {
   /**
    * `program` を `context` の文脈にてunsafeに実行する。
    *
-   * このメソッドは一般に副作用をもたらすためunsafeである。
-   * 理想的には、これはプログラムの最も外側にて「一度だけ」呼び出されるべきである。
+   * このメソッドは一般に副作用をもたらすためunsafeである。 理想的には、これはプログラムの最も外側にて「一度だけ」呼び出されるべきである。
    *
    * このメソッドの実装は `context` を用いて実行に関するロギングを行ってよい。
    */
-  def unsafeRunEffectAsync[U, F[_] : Effect](context: String, program: F[U]): Unit
+  def unsafeRunEffectAsync[U, F[_]: Effect](context: String, program: F[U]): Unit
 
   /**
    * `receiver`を`effect`に適用して得られる`IO`を例外を補足して実行する。
@@ -24,11 +23,16 @@ trait EffectEnvironment {
    *
    * このメソッドは、呼び出し箇所での実行を`effect`から得られる`IO`が別コンテキストに移るまでブロックする。
    *
-   * @param context effectが何をすることを期待しているかの記述
-   * @tparam T レシーバの型
-   * @deprecated use [[EffectEnvironment]]
+   * @param context
+   *   effectが何をすることを期待しているかの記述
+   * @tparam T
+   *   レシーバの型
+   * @deprecated
+   *   use [[EffectEnvironment]]
    */
-  def unsafeRunAsyncTargetedEffect[T](receiver: T)(effect: TargetedEffect[T], context: String): Unit =
+  def unsafeRunAsyncTargetedEffect[T](
+    receiver: T
+  )(effect: TargetedEffect[T], context: String): Unit =
     unsafeRunEffectAsync(context, effect(receiver))
 
 }

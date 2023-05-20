@@ -26,14 +26,14 @@ class MapExtraSpec extends AnyWordSpec {
 
     "return filled Map when given Map is empty" in {
       assert(
-        MapExtra.fillOnBaseSet(
-          Map(),
-          Set("A", "B", "C", "D"),
-          42
-        ) == Map("A" -> 42, "B" -> 42, "C" -> 42, "D" -> 42)
+        MapExtra.fillOnBaseSet(Map(), Set("A", "B", "C", "D"), 42) == Map(
+          "A" -> 42,
+          "B" -> 42,
+          "C" -> 42,
+          "D" -> 42
+        )
       )
     }
-
 
   }
 }

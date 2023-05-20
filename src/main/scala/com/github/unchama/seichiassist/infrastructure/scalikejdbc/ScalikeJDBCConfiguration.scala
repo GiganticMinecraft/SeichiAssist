@@ -1,16 +1,19 @@
 package com.github.unchama.seichiassist.infrastructure.scalikejdbc
 
-import scalikejdbc.{ConnectionPool, ConnectionPoolSettings, GlobalSettings, LoggingSQLAndTimeSettings}
+import scalikejdbc._
 
 object ScalikeJDBCConfiguration {
 
-  val connectionPoolSettings: ConnectionPoolSettings = ConnectionPoolSettings(
-    initialSize = 5,
-    maxSize = 20,
-    connectionTimeoutMillis = 100000L
-  )
+  private val connectionPoolSettings: ConnectionPoolSettings =
+    ConnectionPoolSettings(
+      initialSize = 5,
+      maxSize = 20,
+      connectionTimeoutMillis = 100000L,
+      driverName =
+        "com.github.unchama.seichiassist.relocateddependencies.org.mariadb.jdbc.Driver"
+    )
 
-  val loggingSettings: LoggingSQLAndTimeSettings = LoggingSQLAndTimeSettings(
+  private val loggingSettings: LoggingSQLAndTimeSettings = LoggingSQLAndTimeSettings(
     enabled = true,
     singleLineMode = true,
     printUnprocessedStackTrace = false,

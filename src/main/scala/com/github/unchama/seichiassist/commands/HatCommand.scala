@@ -7,7 +7,8 @@ import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import org.bukkit.command.TabExecutor
 
 object HatCommand {
-  val executor: TabExecutor = BuilderTemplates.playerCommandBuilder
+  val executor: TabExecutor = BuilderTemplates
+    .playerCommandBuilder
     .argumentsParsers(List())
     .execution { context =>
       val player = context.sender

@@ -20,7 +20,9 @@ object KeyedDataRepository {
 
   implicit def functor[K]: Functor[KeyedDataRepository[K, *]] =
     new Functor[KeyedDataRepository[K, *]] {
-      override def map[A, B](fa: KeyedDataRepository[K, A])(f: A => B): KeyedDataRepository[K, B] = {
+      override def map[A, B](
+        fa: KeyedDataRepository[K, A]
+      )(f: A => B): KeyedDataRepository[K, B] = {
         new KeyedDataRepository[K, B] {
           override def isDefinedAt(x: K): Boolean = fa.isDefinedAt(x)
 

@@ -10,26 +10,24 @@ import org.bukkit.entity.Player
 class PlayerSettings {
 
   import com.github.unchama.targetedeffect._
-  var autoMineStack = true
-  //キルログ表示トグル
+  // キルログ表示トグル
   var shouldDisplayDeathMessages = false
-  //ワールドガード保護ログ表示トグル
+  // ワールドガード保護ログ表示トグル
   var shouldDisplayWorldGuardLogs = true
 
-  //region accessors and modifiers
-  var broadcastMutingSettings: BroadcastMutingSettings = BroadcastMutingSettings.MuteMessageAndSound
-  //複数種類破壊トグル
-  var multipleidbreakflag = false
-  //PvPトグル
+  // region accessors and modifiers
+  var broadcastMutingSettings: BroadcastMutingSettings =
+    BroadcastMutingSettings.MuteMessageAndSound
+
+  // 複数種類破壊トグル
+  var performMultipleIDBlockBreakWhenOutsideSeichiWorld: Boolean = false
+
+  // PvPトグル
   var pvpflag = false
   var nickname: PlayerNickname = PlayerNickname(NicknameStyle.Level)
-  //ハーフブロック破壊抑制用
+  // ハーフブロック破壊抑制用
   private var allowBreakingHalfBlocks = false
 
-  val toggleAutoMineStack: TargetedEffect[Any] =
-    UnfocusedEffect {
-      this.autoMineStack = !this.autoMineStack
-    }
   val toggleWorldGuardLogEffect: TargetedEffect[Any] =
     UnfocusedEffect {
       this.shouldDisplayWorldGuardLogs = !this.shouldDisplayWorldGuardLogs
@@ -41,14 +39,12 @@ class PlayerSettings {
   val getBroadcastMutingSettings: IO[BroadcastMutingSettings] = IO {
     broadcastMutingSettings
   }
-  val toggleBroadcastMutingSettings: TargetedEffect[Any] = Kleisli.liftF(
-    for {
-      currentSettings <- getBroadcastMutingSettings
-      nextSettings = currentSettings.next
-    } yield {
-      broadcastMutingSettings = nextSettings
-    }
-  )
+  val toggleBroadcastMutingSettings: TargetedEffect[Any] = Kleisli.liftF(for {
+    currentSettings <- getBroadcastMutingSettings
+    nextSettings = currentSettings.next
+  } yield {
+    broadcastMutingSettings = nextSettings
+  })
   val toggleHalfBreakFlag: TargetedEffect[Player] = DeferredEffect(IO {
     allowBreakingHalfBlocks = !allowBreakingHalfBlocks
 
@@ -62,6 +58,7 @@ class PlayerSettings {
    * 複数ブロック同時破壊のON/OFFを切り替える[UnforcedEffect]
    */
   val toggleMultipleIdBreakFlag: TargetedEffect[Player] = UnfocusedEffect {
-    multipleidbreakflag = !multipleidbreakflag
+    performMultipleIDBlockBreakWhenOutsideSeichiWorld =
+      !performMultipleIDBlockBreakWhenOutsideSeichiWorld
   }
 }

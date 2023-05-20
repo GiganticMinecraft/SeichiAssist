@@ -20,33 +20,37 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 object RankingRootMenu extends Menu {
-  class Environment(implicit
-                    val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
-                    val ioCanOpenSeichiRankingMenu: IO CanOpen RankingMenu[SeichiAmountData],
-                    val ioCanOpenBuildRankingMenu: IO CanOpen RankingMenu[BuildAmountData],
-                    val ioCanOpenLoginTimeRankingMenu: IO CanOpen RankingMenu[LoginTime],
-                    val ioCanOpenVoteCountRankingMenu: IO CanOpen RankingMenu[VoteCount]
-                   )
+  class Environment(
+    implicit val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
+    val ioCanOpenSeichiRankingMenu: IO CanOpen RankingMenu[SeichiAmountData],
+    val ioCanOpenBuildRankingMenu: IO CanOpen RankingMenu[BuildAmountData],
+    val ioCanOpenLoginTimeRankingMenu: IO CanOpen RankingMenu[LoginTime],
+    val ioCanOpenVoteCountRankingMenu: IO CanOpen RankingMenu[VoteCount]
+  )
 
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$DARK_PURPLE${BOLD}ランキング")
 
-  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
+  override def computeMenuLayout(
+    player: Player
+  )(implicit environment: Environment): IO[MenuSlotLayout] = {
     import environment._
 
     def iconOf(rankingName: String): ItemStack =
       new IconItemStackBuilder(Material.COOKIE)
         .title(s"$YELLOW$UNDERLINE$BOLD${rankingName}を見る")
-        .lore(List(
-          s"$RESET$RED(${rankingName}150位以内のプレイヤーのみ表記されます)",
-          s"$RESET$DARK_RED${UNDERLINE}クリックで開く"
-        ))
+        .lore(
+          List(
+            s"$RESET$RED(${rankingName}150位以内のプレイヤーのみ表記されます)",
+            s"$RESET$DARK_RED${UNDERLINE}クリックで開く"
+          )
+        )
         .build()
 
     val seichiGodRankingButton: Button = Button(
       iconOf("整地神ランキング"),
       LeftClickButtonEffect(
         CommonSoundEffects.menuTransitionFenceSound,
-        ioCanOpenSeichiRankingMenu.open(RankingMenu(RankingMenuTemplates.seichi)),
+        ioCanOpenSeichiRankingMenu.open(RankingMenu(RankingMenuTemplates.seichi))
       )
     )
 

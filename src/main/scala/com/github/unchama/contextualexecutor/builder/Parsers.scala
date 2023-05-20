@@ -11,15 +11,20 @@ object Parsers {
     succeedWith(_)
   }
 
-  def nonNegativeInteger(failureMessage: TargetedEffect[CommandSender] = emptyEffect): SingleArgumentParser =
+  def nonNegativeInteger(
+    failureMessage: TargetedEffect[CommandSender] = emptyEffect
+  ): SingleArgumentParser =
     closedRangeInt(0, Int.MaxValue, failureMessage)
 
   /**
-   * @return [smallEnd]より大きいか等しく[largeEnd]より小さいか等しい整数のパーサ
+   * @return
+   *   [smallEnd]より大きいか等しく[largeEnd]より小さいか等しい整数のパーサ
    */
   def closedRangeInt(
-                      smallEnd: Int, largeEnd: Int,
-                      failureMessage: TargetedEffect[CommandSender] = emptyEffect): SingleArgumentParser = { arg =>
+    smallEnd: Int,
+    largeEnd: Int,
+    failureMessage: TargetedEffect[CommandSender] = emptyEffect
+  ): SingleArgumentParser = { arg =>
     integer(failureMessage)(arg).flatMap { parsed =>
       if ((smallEnd to largeEnd).contains(parsed.asInstanceOf[Int]))
         succeedWith(parsed)
@@ -28,22 +33,28 @@ object Parsers {
     }
   }
 
-  def integer(failureEffect: TargetedEffect[CommandSender] = emptyEffect): SingleArgumentParser = { arg =>
+  def integer(
+    failureEffect: TargetedEffect[CommandSender] = emptyEffect
+  ): SingleArgumentParser = { arg =>
     arg.toIntOption match {
       case Some(value) => succeedWith(value)
-      case None => failWith(failureEffect)
+      case None        => failWith(failureEffect)
     }
   }
 
-  def double(failureEffect: TargetedEffect[CommandSender] = emptyEffect): SingleArgumentParser = { arg =>
+  def double(
+    failureEffect: TargetedEffect[CommandSender] = emptyEffect
+  ): SingleArgumentParser = { arg =>
     arg.toDoubleOption match {
       case Some(value) => succeedWith(value)
-      case None => failWith(failureEffect)
+      case None        => failWith(failureEffect)
     }
   }
 
-  def fromOptionParser[T](fromString: String => Option[T],
-                          failureMessage: TargetedEffect[CommandSender] = emptyEffect): SingleArgumentParser = {
+  def fromOptionParser[T](
+    fromString: String => Option[T],
+    failureMessage: TargetedEffect[CommandSender] = emptyEffect
+  ): SingleArgumentParser = {
     fromString.andThen(_.toRight(failureMessage))
   }
 }

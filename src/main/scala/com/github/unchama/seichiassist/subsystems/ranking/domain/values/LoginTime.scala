@@ -10,7 +10,8 @@ case class LoginTime(inTick: Long) {
 }
 
 object LoginTime {
-  implicit val isMonoid: Monoid[LoginTime] = Monoid.instance(LoginTime(0), (a, b) => LoginTime(a.inTick + b.inTick))
+  implicit val isMonoid: Monoid[LoginTime] =
+    Monoid.instance(LoginTime(0), (a, b) => LoginTime(a.inTick + b.inTick))
 
   implicit val isOrdered: Order[LoginTime] = Order.by(_.inTick)
 }

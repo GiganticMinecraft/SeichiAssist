@@ -19,7 +19,7 @@ object RemainingFlyDuration {
     override val tickOneMinute: Option[RemainingFlyDuration] = Some(this)
   }
 
-  case class PositiveMinutes private(value: Int) extends RemainingFlyDuration {
+  case class PositiveMinutes private (value: Int) extends RemainingFlyDuration {
     override lazy val tickOneMinute: Option[RemainingFlyDuration] = {
       import PositiveMinutes.fromPositive
 

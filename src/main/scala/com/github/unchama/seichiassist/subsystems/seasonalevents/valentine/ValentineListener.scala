@@ -9,15 +9,16 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.domain.LastQuit
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineCookieEffectsHandler._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineItemData._
-import com.github.unchama.seichiassist.util.Util.{grantItemStacksEffect, sendMessageToEveryoneIgnoringPreference}
-import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
+import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
+import com.github.unchama.seichiassist.util.SendMessageEffect.sendMessageToEveryoneIgnoringPreference
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
-import org.bukkit.entity.{EntityType, Monster, Player}
+import org.bukkit.entity.{Creeper, EntityType, Monster, Player}
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
 import org.bukkit.event.entity.{EntityDamageByEntityEvent, EntityExplodeEvent}
 import org.bukkit.event.player.{PlayerItemConsumeEvent, PlayerJoinEvent}
@@ -28,20 +29,21 @@ import org.bukkit.potion.{PotionEffect, PotionEffectType}
 import java.util.{Random, UUID}
 import scala.util.chaining._
 
-class ValentineListener[
-  F[_] : ConcurrentEffect : NonServerThreadContextShift
-](implicit
-  effectEnvironment: EffectEnvironment,
+class ValentineListener[F[_]: ConcurrentEffect: NonServerThreadContextShift](
+  implicit effectEnvironment: EffectEnvironment,
   repository: LastQuitPersistenceRepository[F, UUID],
-  ioOnMainThread: OnMinecraftServerThread[IO]) extends Listener {
+  ioOnMainThread: OnMinecraftServerThread[IO]
+) extends Listener {
 
+  // クリーパーが爆発した場合、確率でアイテムをドロップ
   @EventHandler
   def onEntityExplode(event: EntityExplodeEvent): Unit = {
-    val entity = event.getEntity
-    if (!isInEvent || entity == null) return
+    if (!isInEvent) return
 
-    if (entity.isInstanceOf[Monster] && entity.isDead) {
-      randomlyDropItemAt(entity, droppedCookie, itemDropRate)
+    event.getEntity match {
+      case creeper: Creeper =>
+        randomlyDropItemAt(creeper, droppedCookie, itemDropRate)
+      case _ =>
     }
   }
 
@@ -49,19 +51,20 @@ class ValentineListener[
   @EventHandler
   def onEntityDeath(event: EntityDamageByEntityEvent): Unit = {
     if (!isInEvent) return
+    if (event.getCause != DamageCause.ENTITY_EXPLOSION) return
 
     val damager = event.getDamager
-    if (damager == null) return
+    if (damager == null || damager.getType != EntityType.CREEPER) return
 
-    if (event.getCause != DamageCause.ENTITY_EXPLOSION || damager.getType != EntityType.CREEPER) return
-
+    val excludedMonsters = Set(EntityType.WITCH, EntityType.PIG_ZOMBIE)
     event.getEntity match {
-      case monster: Monster =>
-        val entityMaxHealth = monster.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue
-        // monsterが死んだならば
+      case damaged: Monster if !excludedMonsters.contains(damaged.getType) =>
+        val entityMaxHealth = damaged.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue
+        // 巻き込まれたMonsterが死んだならば
         if (entityMaxHealth <= event.getDamage) {
-          randomlyDropItemAt(monster, droppedCookie, itemDropRate)
+          randomlyDropItemAt(damaged, droppedCookie, itemDropRate)
         }
+      case _ =>
     }
   }
 
@@ -69,12 +72,10 @@ class ValentineListener[
   def onPlayerJoinEvent(event: PlayerJoinEvent): Unit = {
     if (isInEvent) {
       Seq(
-        s"$LIGHT_PURPLE${END_DATE}までの期間限定で、イベント『＜ブラックバレンタイン＞リア充 vs 整地民！』を開催しています。",
+        s"$LIGHT_PURPLE${END_DATE_TIME}までの期間限定で、イベント『バレンタインイベント$EVENT_YEAR』を開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",
         s"$DARK_GREEN$UNDERLINE$blogArticleUrl"
-      ).foreach(
-        event.getPlayer.sendMessage(_)
-      )
+      ).foreach(event.getPlayer.sendMessage(_))
     }
   }
 
@@ -83,26 +84,26 @@ class ValentineListener[
     if (!isInEvent) return
 
     val player = event.getPlayer
+    val playerUuid = player.getUniqueId
 
     import cats.implicits._
     val program = for {
       _ <- NonServerThreadContextShift[F].shift
-      lastQuit <- repository.loadPlayerLastQuit(player.getUniqueId)
-      _ <- LiftIO[F].liftIO(IO{
-        val hasNotJoinedInEventYet = lastQuit match {
-          case Some(dateTime) => dateTime.isBefore(START_DATE.atStartOfDay())
-          case None => true
-        }
+      lastQuit <- repository.loadPlayerLastQuit(playerUuid)
+      _ <- LiftIO[F].liftIO {
+        val hasNotJoinedBeforeYet = lastQuit.forall(EVENT_DURATION.isEntirelyAfter)
 
         val effects =
-          if (hasNotJoinedInEventYet) List(
-            grantItemStacksEffect(cookieOf(player)),
-            MessageEffect(s"${AQUA}チョコチップクッキーを付与しました。"),
-            FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f))
-          else List(emptyEffect)
+          if (hasNotJoinedBeforeYet)
+            SequentialEffect(
+              grantItemStacksEffect(giftedCookieOf(player.getName, playerUuid)),
+              MessageEffect(s"${AQUA}チョコチップクッキーを付与しました。"),
+              FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
+            )
+          else TargetedEffect.emptyEffect
 
-        effects.traverse(_.run(player))
-      })
+        effects.run(player)
+      }
     } yield ()
 
     effectEnvironment.unsafeRunEffectAsync("チョコチップクッキーを付与するかどうかを判定する", program)
@@ -122,7 +123,7 @@ class ValentineListener[
       import player._
       sendMessage(getMessage(effect))
       addPotionEffect(getEffect(effect)._2)
-      playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
+      playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0f, 1.2f)
     }
   }
 
@@ -134,9 +135,12 @@ class ValentineListener[
       // 死ぬ
       player.setHealth(0)
 
-      val messages = deathMessages(player.getName, new NBTItem(item).getString(NBTTagConstants.producerNameTag))
+      val messages = deathMessages(
+        player.getName,
+        new NBTItem(item).getString(NBTTagConstants.producerNameTag)
+      )
       sendMessageToEveryoneIgnoringPreference(messages(new Random().nextInt(messages.size)))
     }
-    player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
+    player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0f, 1.2f)
   }
 }
