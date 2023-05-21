@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import cats.Parallel.Aux
 import cats.effect
 import cats.effect.concurrent.Ref
-import cats.effect.{Clock, ConcurrentEffect, Fiber, IO, SyncIO, Timer}
+import cats.effect.{ConcurrentEffect, Fiber, IO, SyncIO, Timer}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.buildassist.menu.BuildAssistMenuRouter
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
@@ -87,10 +87,13 @@ import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventor
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.GtToSiinaAPI
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.FairySpeechAPI
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global._
 import com.github.unchama.util.{ActionStatus, ClassUtils}
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import io.sentry.Sentry
+import io.sentry.SentryLevel
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.entity.{Entity, Player, Projectile}
@@ -243,12 +246,10 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val buildCountSystem: subsystems.buildcount.System[IO, SyncIO] = {
-    import PluginExecutionContexts.asyncShift
+    import PluginExecutionContexts.{asyncShift, clock}
 
     implicit val configuration: subsystems.buildcount.application.Configuration =
       seichiAssistConfig.buildCountConfiguration
-
-    implicit val syncIoClock: Clock[SyncIO] = Clock.create
 
     implicit val globalNotification: DiscordNotificationAPI[IO] =
       discordNotificationSystem.globalNotification
@@ -345,10 +346,9 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val mebiusSystem: Subsystem[IO] = {
-    import PluginExecutionContexts.{onMainThread, sleepAndRoutineContext, timer}
+    import PluginExecutionContexts.{onMainThread, sleepAndRoutineContext, timer, clock}
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
-    implicit val syncClock: Clock[SyncIO] = Clock.create[SyncIO]
     implicit val syncSeasonalEventsSystemAPI: SeasonalEventsAPI[SyncIO] =
       seasonalEventsSystem.api[SyncIO]
 
@@ -465,8 +465,16 @@ class SeichiAssist extends JavaPlugin() {
     implicit val breakCountAPI: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
     implicit val voteAPI: VoteAPI[IO, Player] = voteSystem.api
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
+    implicit val fairySpeechAPI: FairySpeechAPI[IO, Player] = fairySpeechSystem.api
 
     subsystems.vote.subsystems.fairy.System.wired.unsafeRunSync()
+  }
+
+  private lazy val fairySpeechSystem
+    : subsystems.vote.subsystems.fairyspeech.System[IO, Player] = {
+    import PluginExecutionContexts.timer
+
+    subsystems.vote.subsystems.fairyspeech.System.wired[IO]
   }
 
   /* TODO: mineStackSystemは本来privateであるべきだが、mineStackにアイテムを格納するAPIが現状の
@@ -495,6 +503,7 @@ class SeichiAssist extends JavaPlugin() {
     presentSystem,
     anywhereEnderSystem,
     voteSystem,
+    fairySpeechSystem,
     fairySystem,
     gachaPrizeSystem,
     idleTimeSystem,
@@ -536,15 +545,13 @@ class SeichiAssist extends JavaPlugin() {
     import PluginExecutionContexts.timer
 
     new BungeeSemaphoreResponderSystem(
-      PlayerDataFinalizer.concurrently[IO, Player](
-        Seq(
-          savePlayerData,
-          assaultSkillRoutinesRepositoryControls.finalizer.coerceContextTo[IO],
-          activeSkillAvailabilityRepositoryControls.finalizer.coerceContextTo[IO]
-        ).appendedAll(wiredSubsystems.flatMap(_.managedFinalizers))
-          .appendedAll(wiredSubsystems.flatMap(_.managedRepositoryControls.map(_.finalizer)))
-          .toList
-      ),
+      Seq(
+        savePlayerData,
+        assaultSkillRoutinesRepositoryControls.finalizer.coerceContextTo[IO],
+        activeSkillAvailabilityRepositoryControls.finalizer.coerceContextTo[IO]
+      ).appendedAll(wiredSubsystems.flatMap(_.managedFinalizers))
+        .appendedAll(wiredSubsystems.flatMap(_.managedRepositoryControls.map(_.finalizer)))
+        .toList,
       PluginExecutionContexts.asyncShift
     )
   }
@@ -585,6 +592,24 @@ class SeichiAssist extends JavaPlugin() {
 
     // コンフィグ系の設定は全てConfig.javaに移動
     SeichiAssist.seichiAssistConfig = Config.loadFrom(this)
+
+    val serverId = SeichiAssist.seichiAssistConfig.getServerId
+
+    if (!serverId.startsWith("local-")) {
+      Sentry.init { options =>
+        options.setDsn(
+          "https://7f241763b17c49db982ea29ad64b0264@sentry.onp.admin.seichi.click/2"
+        )
+        // パフォーマンスモニタリングに使うトレースサンプルの送信割合
+        // tracesSampleRateを1.0にすると全てのイベントが送られるため、送りすぎないように調整する必要がある
+        options.setTracesSampleRate(0.25)
+
+        // どのサーバーからイベントが送られているのかを判別する識別子
+        options.setEnvironment(serverId)
+      }
+
+      Sentry.configureScope(_.setLevel(SentryLevel.WARNING))
+    }
 
     if (SeichiAssist.seichiAssistConfig.getDebugMode == 1) {
       // debugmode=1の時は最初からデバッグモードで鯖を起動
@@ -660,6 +685,7 @@ class SeichiAssist extends JavaPlugin() {
       sharedInventorySystem.api
     implicit val voteAPI: VoteAPI[IO, Player] = voteSystem.api
     implicit val fairyAPI: FairyAPI[IO, SyncIO, Player] = fairySystem.api
+    implicit val fairySpeechAPI: FairySpeechAPI[IO, Player] = fairySpeechSystem.api
     implicit val donateAPI: DonatePremiumPointAPI[IO] = donateSystem.api
     implicit val gachaTicketAPI: GachaTicketAPI[IO] =
       gachaTicketSystem.api
@@ -780,7 +806,6 @@ class SeichiAssist extends JavaPlugin() {
     val startTask = {
       val dataRecalculationRoutine = {
         import PluginExecutionContexts._
-        implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
         PlayerDataRecalculationRoutine()
       }
 
@@ -858,7 +883,9 @@ class SeichiAssist extends JavaPlugin() {
       .getOnlinePlayers
       .asScala
       .toList
-      .traverse(bungeeSemaphoreResponderSystem.finalizer.onQuitOf)
+      .flatTraverse { player =>
+        bungeeSemaphoreResponderSystem.finalizers.traverse(_.onQuitOf(player))
+      }
       .unsafeRunSync()
 
     if (SeichiAssist.databaseGateway.disconnect() == ActionStatus.Fail) {

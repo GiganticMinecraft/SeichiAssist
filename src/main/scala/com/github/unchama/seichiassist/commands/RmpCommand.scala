@@ -79,27 +79,33 @@ object RmpCommand {
     val isSeichiWorldWithWGRegionsOption =
       ManagedWorld.fromBukkitWorld(world).map(_.isSeichiWorldWithWGRegions)
 
-    isSeichiWorldWithWGRegionsOption match {
-      case None | Some(false) => MessageEffect(s"第1整地以外の保護をかけて整地する整地ワールドでのみ使用出来ます")
-      case Some(true) =>
-        getOldRegionsIn(world, days).map { removalTargets =>
-          removalTargets.foreach { target =>
-            ExternalPlugins
-              .getWorldGuard
-              .getRegionContainer
-              .get(world)
-              .removeRegion(target.getId)
-          }
+    if (Bukkit.getServer.hasWhitelist) {
+      MessageEffect("ホワイトリストが有効なため、rmpコマンドは利用できません。")
+    } else {
+      isSeichiWorldWithWGRegionsOption match {
+        case None | Some(false) => MessageEffect(s"第1整地以外の保護をかけて整地する整地ワールドでのみ使用出来ます")
+        case Some(true) =>
+          getOldRegionsIn(world, days).map { removalTargets =>
+            removalTargets.foreach { target =>
+              ExternalPlugins
+                .getWorldGuard
+                .getRegionContainer
+                .get(world)
+                .removeRegion(target.getId)
+            }
 
-          // メッセージ生成
-          if (removalTargets.isEmpty) {
-            MessageEffect(s"${GREEN}該当Regionは存在しません")
-          } else {
-            targetedeffect.SequentialEffect(removalTargets.map { target =>
-              MessageEffect(s"$YELLOW[rmp] Deleted Region => ${world.getName}.${target.getId}")
-            })
-          }
-        }.merge
+            // メッセージ生成
+            if (removalTargets.isEmpty) {
+              MessageEffect(s"${GREEN}該当Regionは存在しません")
+            } else {
+              targetedeffect.SequentialEffect(removalTargets.map { target =>
+                MessageEffect(
+                  s"$YELLOW[rmp] Deleted Region => ${world.getName}.${target.getId}"
+                )
+              })
+            }
+          }.merge
+      }
     }
   }
 

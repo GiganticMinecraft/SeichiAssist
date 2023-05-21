@@ -30,6 +30,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.p
   FairyLore,
   FairySummonCost
 }
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.FairySpeechAPI
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -44,7 +45,8 @@ object VoteMenu extends Menu {
   class Environment(
     implicit val voteAPI: VoteAPI[IO, Player],
     val fairyAPI: FairyAPI[IO, SyncIO, Player],
-    val ioCanOpenFirstPage: IO CanOpen FirstPage.type
+    val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
+    val fairySpeechAPI: FairySpeechAPI[IO, Player]
   )
 
   /**
@@ -99,7 +101,8 @@ object VoteMenu extends Menu {
 
   private case class ConstantButtons(player: Player)(
     implicit voteAPI: VoteAPI[IO, Player],
-    fairyAPI: FairyAPI[IO, SyncIO, Player]
+    fairyAPI: FairyAPI[IO, SyncIO, Player],
+    fairySpeechAPI: FairySpeechAPI[IO, Player]
   ) {
 
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
@@ -112,7 +115,7 @@ object VoteMenu extends Menu {
     val receiveVoteBenefitsButton: IO[Button] = RecomputedButton {
       val uuid = player.getUniqueId
       for {
-        benefits <- voteAPI.receivedVoteBenefits(uuid)
+        benefits <- voteAPI.receivedCount(uuid)
         voteCounter <- voteAPI.count(uuid)
         effectPoint <- voteAPI.effectPoints(player)
         notReceivedBenefits = voteCounter.value - benefits.value
@@ -272,7 +275,7 @@ object VoteMenu extends Menu {
       val playSoundOffLore = s"$RESET${RED}現在音が鳴らない設定になっています。" +: description
 
       RecomputedButton(for {
-        fairySpeechSound <- fairyAPI.doPlaySoundOnSpeak(player.getUniqueId)
+        fairySpeechSound <- fairySpeechAPI.playSoundOnSpeech(player.getUniqueId)
       } yield {
         Button(
           new IconItemStackBuilder(Material.JUKEBOX)
@@ -285,7 +288,7 @@ object VoteMenu extends Menu {
           LeftClickButtonEffect {
             SequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-              DeferredEffect(IO(fairyAPI.toggleSoundOnSpeak))
+              DeferredEffect(IO(fairySpeechAPI.togglePlaySoundOnSpeech))
             )
           }
         )

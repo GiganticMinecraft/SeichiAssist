@@ -9,7 +9,7 @@ import java.io._
 ThisBuild / scalaVersion := "2.13.11-bin-c1a11b1-SNAPSHOT"
 // ThisBuild / version はGitHub Actionsによって取得/自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
-ThisBuild / version := "76"
+ThisBuild / version := "79"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
@@ -57,6 +57,8 @@ resolvers ++= Seq(
   "nexus.okkero.com" at "https://nexus.okkero.com/repository/maven-releases/",
   "maven.elmakers.com" at "https://maven.elmakers.com/repository/", // spigot-api 1.12.2がhub.spigotmc.orgからダウンロードできなくなったため
   "repo.phoenix616.dev" at "https://repo.phoenix616.dev", // authlibのための
+  // ajd4jpのミラーのため
+  "jitpack.io" at "https://jitpack.io",
   "scala-snapshots" at "https://scala-ci.typesafe.com/artifactory/scala-pr-validation-snapshots/",
 )
 
@@ -65,29 +67,30 @@ resolvers ++= Seq(
 val providedDependencies = Seq(
   "org.jetbrains" % "annotations" % "17.0.0",
   "org.apache.commons" % "commons-lang3" % "3.9",
-  "commons-codec" % "commons-codec" % "1.12",
+  "commons-codec" % "commons-codec" % "1.15",
   "org.spigotmc" % "spigot-api" % "1.12.2-R0.1-SNAPSHOT",
   // https://maven.enginehub.org/repo/com/sk89q/worldedit/worldedit-bukkit/
   "com.sk89q.worldguard" % "worldguard-legacy" % "6.2",
   "net.coreprotect" % "coreprotect" % "2.14.2",
-  "com.mojang" % "authlib" % "1.5.25",
+  "com.mojang" % "authlib" % "1.6.25",
 
   // no runtime
-  "org.typelevel" %% "simulacrum" % "1.0.0" cross CrossVersion.binary
+  "org.typelevel" %% "simulacrum" % "1.0.1" cross CrossVersion.binary
 ).map(_ % "provided")
 
 val testDependencies = Seq(
   "org.scalamock" %% "scalamock" % "4.4.0" cross CrossVersion.binary,
-  "org.scalatest" %% "scalatest" % "3.2.2" cross CrossVersion.binary,
+  "org.scalatest" %% "scalatest" % "3.2.16" cross CrossVersion.binary,
   "org.scalatestplus" %% "scalacheck-1-14" % "3.2.2.0" cross CrossVersion.binary,
   // テスト用のTestSchedulerを使うため
-  "io.monix" %% "monix" % "3.2.2" cross CrossVersion.binary,
+  "io.monix" %% "monix" % "3.4.1" cross CrossVersion.binary,
 ).map(_ % "test")
 
 val dependenciesToEmbed = Seq(
-  "org.scala-lang.modules" %% "scala-collection-contrib" % "0.2.1" cross CrossVersion.binary,
+  "org.scala-lang.modules" %% "scala-collection-contrib" % "0.3.0" cross CrossVersion.binary,
 
   // DB
+  "org.mariadb.jdbc" % "mariadb-java-client" % "3.1.4",
   "org.flywaydb" % "flyway-core" % "5.2.4",
   "org.scalikejdbc" %% "scalikejdbc" % "3.5.0" cross CrossVersion.binary,
 
@@ -95,9 +98,9 @@ val dependenciesToEmbed = Seq(
   "com.github.etaty" %% "rediscala" % "1.9.0" cross CrossVersion.binary,
 
   // effect system
-  "org.typelevel" %% "cats-core" % "2.1.0" cross CrossVersion.binary,
-  "org.typelevel" %% "cats-effect" % "2.1.0" cross CrossVersion.binary,
-  "co.fs2" %% "fs2-core" % "2.5.0" cross CrossVersion.binary,
+  "org.typelevel" %% "cats-core" % "2.9.0" cross CrossVersion.binary,
+  "org.typelevel" %% "cats-effect" % "2.5.5" cross CrossVersion.binary,
+  "co.fs2" %% "fs2-core" % "2.5.11" cross CrossVersion.binary,
 
   // algebra
   "io.chrisdavenport" %% "log4cats-core" % "1.1.1" cross CrossVersion.binary,
@@ -105,21 +108,27 @@ val dependenciesToEmbed = Seq(
   "io.chrisdavenport" %% "cats-effect-time" % "0.1.2" cross CrossVersion.binary,
 
   // logging
-  "org.slf4j" % "slf4j-api" % "1.7.28",
-  "org.slf4j" % "slf4j-jdk14" % "1.7.28",
+  "org.slf4j" % "slf4j-api" % "1.7.36",
+  "org.slf4j" % "slf4j-jdk14" % "1.7.36",
   "com.typesafe.scala-logging" % "scala-logging-slf4j_2.10" % "2.1.2",
 
   // type-safety utils
-  "eu.timepit" %% "refined" % "0.9.10" cross CrossVersion.binary,
-  "com.beachape" %% "enumeratum" % "1.5.13" cross CrossVersion.binary,
+  "eu.timepit" %% "refined" % "0.10.3" cross CrossVersion.binary,
+  "com.beachape" %% "enumeratum" % "1.7.2" cross CrossVersion.binary,
 
   // protobuf
   "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion cross CrossVersion.binary,
 
   // JSON
-  "io.circe" %% "circe-core" % "0.14.1" cross CrossVersion.binary,
-  "io.circe" %% "circe-generic" % "0.14.1" cross CrossVersion.binary,
-  "io.circe" %% "circe-parser" % "0.14.1" cross CrossVersion.binary,
+  "io.circe" %% "circe-core" % "0.14.5" cross CrossVersion.binary,
+  "io.circe" %% "circe-generic" % "0.14.5" cross CrossVersion.binary,
+  "io.circe" %% "circe-parser" % "0.14.5" cross CrossVersion.binary,
+
+  // ajd4jp
+  "com.github.KisaragiEffective" % "ajd4jp-mirror" % "8.0.2.2021",
+
+  // Sentry
+  "io.sentry" % "sentry" % "6.19.1"
 )
 
 // endregion
@@ -140,6 +149,8 @@ assembly / assemblyExcludedJars := {
 // cf. https://github.com/sbt/sbt-assembly/issues/141
 assembly / assemblyMergeStrategy := {
   case PathList(ps @ _*) if ps.last endsWith "LICENSE" => MergeStrategy.rename
+  case PathList("org", "apache", "commons", "logging", xs @ _*) =>
+    MergeStrategy.last
   case otherFile =>
     val oldStrategy = (assembly / assemblyMergeStrategy).value
     oldStrategy(otherFile)
@@ -202,7 +213,10 @@ lazy val root = (project in file(".")).settings(
     "-Ymacro-annotations",
     "-Ywarn-unused"
   ),
-  javacOptions ++= Seq("-encoding", "utf8")
+  javacOptions ++= Seq("-encoding", "utf8"),
+  assembly / assemblyShadeRules ++= Seq(
+    ShadeRule.rename("org.mariadb.jdbc.**" -> "com.github.unchama.seichiassist.relocateddependencies.org.mariadb.jdbc.@1").inAll
+  )
 )
 
 // endregion

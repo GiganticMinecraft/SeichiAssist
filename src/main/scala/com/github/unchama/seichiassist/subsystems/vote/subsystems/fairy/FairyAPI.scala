@@ -75,16 +75,6 @@ object FairyReadAPI {
 trait FairySpeechAPI[F[_], Player] {
 
   /**
-   * @return 妖精が喋るときに音を再生するかをトグルする作用
-   */
-  def toggleSoundOnSpeak: Kleisli[F, Player, Unit]
-
-  /**
-   * @return 妖精が喋ったときに音を再生するか取得する作用
-   */
-  def doPlaySoundOnSpeak(uuid: UUID): F[Boolean]
-
-  /**
    * @return 妖精がいつ帰るのかを送信する作用
    */
   def sendDisappearTimeToChat: Kleisli[F, Player, Unit]

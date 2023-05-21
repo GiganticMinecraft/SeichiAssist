@@ -15,21 +15,25 @@ case object FairyAppleConsumeStrategy extends Enum[FairyAppleConsumeStrategy] {
 
   /**
    * ガンガン食べるぞ
+   * 30秒ごとにマナを回復します。
    */
   case object Permissible extends FairyAppleConsumeStrategy(1)
 
   /**
    * バッチリたべよう
+   * 1分ごとにマナを回復します。
    */
   case object Consume extends FairyAppleConsumeStrategy(2)
 
   /**
    * リンゴだいじに
+   * 1分30秒ごとにマナを回復します。
    */
   case object LessConsume extends FairyAppleConsumeStrategy(3)
 
   /**
    * リンゴつかうな
+   * 2分ごとにマナを回復します。
    */
   case object NoConsume extends FairyAppleConsumeStrategy(4)
 

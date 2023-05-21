@@ -42,7 +42,7 @@ jobs:
         uses: actions/cache@v3
         env:
           cache-name: cache-build-dependencies
-          cache-version: v-4
+          cache-version: v-5
         with:
           # sbt等は$HOMEではなくユーザーディレクトリを見ているようで、
           # GH Actionsでの ~ は /github/home/ に展開されるにもかかわらず
@@ -66,7 +66,7 @@ jobs:
         uses: actions/cache@v3
         env:
           cache-name: cache-build
-          cache-version: v-4
+          cache-version: v-5
         with:
           path: |
             target
@@ -98,12 +98,8 @@ jobs:
             touch -t "$timestamp" $proto
           done
 
-      - name: Check format with Scalafmt on push
-        if: ${{ (github.event_name == 'push')}}
+      - name: Check format with Scalafmt
         run: sbt scalafmtCheckAll
-      - name: Run format with Scalafmt on PR
-        if: ${{ (github.event_name == 'pull_request')}}
-        run: sbt scalafmtAll
       - name: Run reviewdog for Scalafmt
         uses: ./.github/actions/run-reviewdog
         if: ${{ (github.event_name == 'pull_request') && failure() }}

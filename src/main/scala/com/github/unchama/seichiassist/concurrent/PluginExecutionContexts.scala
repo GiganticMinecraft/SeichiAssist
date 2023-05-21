@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.concurrent
 
-import cats.effect.{ContextShift, IO, Timer}
+import cats.effect.{Clock, ContextShift, IO, SyncIO, Timer}
 import com.github.unchama.concurrent._
 import com.github.unchama.generic
 import com.github.unchama.generic.tag.tag
@@ -22,6 +22,8 @@ object PluginExecutionContexts {
     ExecutionContext.fromExecutor(Executors.newCachedThreadPool())
 
   implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
+
+  implicit val clock: Clock[SyncIO] = Clock.create
 
   implicit val asyncShift: NonServerThreadContextShift[IO] = {
     tag.apply[NonServerThreadContextShiftTag][ContextShift[IO]](

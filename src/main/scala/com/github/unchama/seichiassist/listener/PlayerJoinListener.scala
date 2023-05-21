@@ -29,6 +29,7 @@ import org.bukkit.{Material, Sound}
 
 import java.util.UUID
 import scala.collection.mutable
+import scala.jdk.CollectionConverters._
 
 class PlayerJoinListener extends Listener {
   private val playerMap: mutable.HashMap[UUID, PlayerData] = SeichiAssist.playermap
@@ -104,25 +105,36 @@ class PlayerJoinListener extends Listener {
       )
       SendSoundEffect.sendEverySound(Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
 
-      // ルール熟読をタイトルとチャットで迫る
-      // サブタイトルと分ける理由はGUIサイズによって見切れる可能性があるため
+      // 同時に【はじめての方へ】ページに誘導したほうがただWebサイトに誘導するよりまだ可能性がありそう
+      // https://github.com/GiganticMinecraft/SeichiAssist/issues/1939
       player.sendTitle(
-        s"${YELLOW}ルールは確認されましたか？",
-        s"${LIGHT_PURPLE}公式サイトで確認してください",
+        s"${YELLOW}ようこそ! ギガンティック☆整地鯖へ!",
+        s"${LIGHT_PURPLE}まず初めに公式サイト【はじめての方へ】ページを確認してください",
         10,
         20 * 10, // タイトルの表示時間は10秒
         10
       )
-      player.sendMessage(s"${YELLOW}ルール→ $YELLOW${UNDERLINE}https://www.seichi.network/rule")
+      player.sendMessage(
+        s"$YELLOW【はじめての方へ】ページ→ $YELLOW${UNDERLINE}https://www.seichi.network/helloworld"
+      )
 
       import scala.util.chaining._
 
       // 初見プレイヤーに木の棒、エリトラ、ピッケルを配布
       val inv = player.getInventory
+      // 初見プレイヤー向けの Lore (説明文) を設定
+      // /stick で入手できる木の棒は、簡略化された説明文にしておく。
+      val stickLore = List(
+        "この棒を持って右クリックもしくは左クリックするとメニューが開きます。",
+        "メニューからはいろんな機能が使えます。試してみよう。",
+        "この棒をなくしても /stick コマンドを実行すると再入手できます。",
+        "ヒント: もしサーバー内で迷子になったら /spawn コマンドを実行することでいつでも戻れます。"
+      )
       val stick = new ItemStack(Material.STICK, 1).tap { itemStack =>
         import itemStack._
         val meta = getItemMeta
-        meta.setDisplayName("棒メニューが開ける棒")
+        meta.setDisplayName("木の棒メニュー")
+        meta.setLore(stickLore.asJava)
         setItemMeta(meta)
       }
       inv.addItem(stick)
