@@ -14,11 +14,20 @@ import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTempla
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.BukkitGrantGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.PlayerName
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{GachaTicketAmount, GrantResultOfGachaTicketFromAdminTeam}
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{
+  GachaTicketAmount,
+  GrantResultOfGachaTicketFromAdminTeam
+}
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain._
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{GachaEvent, GachaEventName}
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{GachaPrize, GachaPrizeId}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
+  GachaEvent,
+  GachaEventName
+}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
+  GachaPrize,
+  GachaPrizeId
+}
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
@@ -172,12 +181,12 @@ class GachaCommand[
             gachaPrize <- gachaPrizeAPI.fetch(
               GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
             )
-            existGachaPrize = gachaPrize.nonEmpty
+            existsGachaPrize = gachaPrize.nonEmpty
             _ <- new BukkitGrantGachaPrize[F]()
               .insertIntoPlayerInventoryOrDrop(gachaPrize.get, ownerName)(context.sender)
-              .whenA(existGachaPrize)
+              .whenA(existsGachaPrize)
           } yield {
-            if (existGachaPrize)
+            if (existsGachaPrize)
               MessageEffect("ガチャアイテムを付与しました。")
             else
               MessageEffect("指定されたIDのガチャ景品は存在しません。")
@@ -260,10 +269,10 @@ class GachaCommand[
       .execution { context =>
         val gachaId = GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
         val eff = for {
-          existGachaPrize <- gachaPrizeAPI.existsGachaPrize(gachaId)
+          existsGachaPrize <- gachaPrizeAPI.existsGachaPrize(gachaId)
           _ <- gachaPrizeAPI.removeByGachaPrizeId(gachaId)
         } yield {
-          if (existGachaPrize)
+          if (existsGachaPrize)
             MessageEffect(List("ガチャアイテムを削除しました", "ガチャアイテム削除を永続化するためには/gacha saveを実行してください。"))
           else
             MessageEffect("指定されたIDのガチャ景品は存在しません。")
@@ -288,7 +297,7 @@ class GachaCommand[
           val amount = context.args.parsed(1).asInstanceOf[Int]
           val eff = for {
             existingGachaPrize <- gachaPrizeAPI.fetch(targetId)
-            existGachaPrize = existingGachaPrize.nonEmpty
+            existsGachaPrize = existingGachaPrize.nonEmpty
             _ <- gachaPrizeAPI.removeByGachaPrizeId(targetId)
             itemStack = existingGachaPrize.get.itemStack
             _ <- gachaPrizeAPI.addGachaPrize(_ =>
@@ -299,7 +308,7 @@ class GachaCommand[
                 })
             )
           } yield {
-            if (existGachaPrize)
+            if (existsGachaPrize)
               MessageEffect(
                 s"${targetId.id}|${itemStack.getType.toString}/${itemStack.getItemMeta.getDisplayName}${RESET}のアイテム数を${amount}個に変更しました。"
               )
@@ -325,14 +334,14 @@ class GachaCommand[
         val newProb = args(1).asInstanceOf[Double]
         val eff = for {
           existingGachaPrize <- gachaPrizeAPI.fetch(targetId)
-          existGachaPrize = existingGachaPrize.nonEmpty
+          existsGachaPrize = existingGachaPrize.nonEmpty
           _ <- gachaPrizeAPI.removeByGachaPrizeId(targetId)
           _ <- gachaPrizeAPI.addGachaPrize(_ =>
             existingGachaPrize.get.copy(probability = GachaProbability(newProb))
           )
           itemStack = existingGachaPrize.get.itemStack
         } yield {
-          if (existGachaPrize)
+          if (existsGachaPrize)
             MessageEffect(s"${targetId.id}|${itemStack.getType.toString}/${itemStack
                 .getItemMeta
                 .getDisplayName}${RESET}の確率を$newProb(${newProb * 100}%)に変更しました。")
