@@ -14,20 +14,11 @@ import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTempla
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.BukkitGrantGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.PlayerName
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{
-  GachaTicketAmount,
-  GrantResultOfGachaTicketFromAdminTeam
-}
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{GachaTicketAmount, GrantResultOfGachaTicketFromAdminTeam}
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain._
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
-  GachaEvent,
-  GachaEventName
-}
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
-  GachaPrize,
-  GachaPrizeId
-}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{GachaEvent, GachaEventName}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{GachaPrize, GachaPrizeId}
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
@@ -171,17 +162,20 @@ class GachaCommand[
 
     val giveItem: ContextualExecutor =
       playerCommandBuilder
+        .argumentsParsers(
+          List(
+            Parsers
+              .closedRangeInt(0, Int.MaxValue, MessageEffect("IDは0以上の整数を指定してください。"))
+              .andThen(_.flatMap { id =>
+                val intId = id.asInstanceOf[Int]
+                if (gachaPrizeAPI.existsGachaPrize(GachaPrizeId(intId)).toIO.unsafeRunSync())
+                  succeedWith(intId)
+                else
+                  failWith("指定されたIDのアイテムは存在しません！")
+              })
+          )
+        )
         .execution { context =>
-          Parsers
-            .closedRangeInt(0, Int.MaxValue, MessageEffect("IDは0以上の整数を指定してください。"))
-            .andThen(_.flatMap { id =>
-              val intId = id.asInstanceOf[Int]
-              if (gachaPrizeAPI.existsGachaPrize(GachaPrizeId(intId)).toIO.unsafeRunSync())
-                succeedWith(intId)
-              else
-                failWith("指定されたIDのアイテムは存在しません！")
-            })
-
           val ownerName = context.args.yetToBeParsed.headOption
 
           val eff = for {
@@ -263,18 +257,21 @@ class GachaCommand[
 
     val remove: ContextualExecutor = ContextualExecutorBuilder
       .beginConfiguration()
+      .argumentsParsers(
+        List(
+          Parsers
+            .closedRangeInt(1, Int.MaxValue, MessageEffect("IDは正の値を指定してください。"))
+            .andThen(_.flatMap { id =>
+              val intId = id.asInstanceOf[Int]
+              if (gachaPrizeAPI.existsGachaPrize(GachaPrizeId(intId)).toIO.unsafeRunSync()) {
+                succeedWith(intId)
+              } else {
+                failWith("指定されたIDのアイテムは存在しません！")
+              }
+            })
+        )
+      )
       .execution { context =>
-        Parsers
-          .closedRangeInt(1, Int.MaxValue, MessageEffect("IDは正の値を指定してください。"))
-          .andThen(_.flatMap { id =>
-            val intId = id.asInstanceOf[Int]
-            if (gachaPrizeAPI.existsGachaPrize(GachaPrizeId(intId)).toIO.unsafeRunSync()) {
-              succeedWith(intId)
-            } else {
-              failWith("指定されたIDのアイテムは存在しません！")
-            }
-          })
-
         val eff = for {
           _ <- gachaPrizeAPI.removeByGachaPrizeId(
             GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
@@ -292,20 +289,21 @@ class GachaCommand[
       ContextualExecutorBuilder
         .beginConfiguration()
         .argumentsParsers(
-          List(Parsers.closedRangeInt(1, 64, MessageEffect("数は1～64で指定してください。")))
+          List(
+            Parsers.closedRangeInt(1, 64, MessageEffect("数は1～64で指定してください。")),
+            Parsers
+              .closedRangeInt(1, Int.MaxValue, MessageEffect("IDは正の値を指定してください。"))
+              .andThen(_.flatMap { id =>
+                val intId = id.asInstanceOf[Int]
+                if (gachaPrizeAPI.existsGachaPrize(GachaPrizeId(intId)).toIO.unsafeRunSync()) {
+                  succeedWith(intId)
+                } else {
+                  failWith("指定されたIDのアイテムは存在しません！")
+                }
+              })
+          )
         )
         .execution { context =>
-          Parsers
-            .closedRangeInt(1, Int.MaxValue, MessageEffect("IDは正の値を指定してください。"))
-            .andThen(_.flatMap { id =>
-              val intId = id.asInstanceOf[Int]
-              if (gachaPrizeAPI.existsGachaPrize(GachaPrizeId(intId)).toIO.unsafeRunSync()) {
-                succeedWith(intId)
-              } else {
-                failWith("指定されたIDのアイテムは存在しません！")
-              }
-            })
-
           val targetId = GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
           val amount = context.args.parsed(1).asInstanceOf[Int]
           val eff = for {
@@ -329,19 +327,22 @@ class GachaCommand[
 
     val setProbability: ContextualExecutor = ContextualExecutorBuilder
       .beginConfiguration()
-      .argumentsParsers(List(probabilityParser))
+      .argumentsParsers(
+        List(
+          probabilityParser,
+          Parsers
+            .closedRangeInt(1, Int.MaxValue, MessageEffect("IDは正の値を指定してください。"))
+            .andThen(_.flatMap { id =>
+              val intId = id.asInstanceOf[Int]
+              if (gachaPrizeAPI.existsGachaPrize(GachaPrizeId(intId)).toIO.unsafeRunSync()) {
+                succeedWith(intId)
+              } else {
+                failWith("指定されたIDのアイテムは存在しません！")
+              }
+            })
+        )
+      )
       .execution { context =>
-        Parsers
-          .closedRangeInt(1, Int.MaxValue, MessageEffect("IDは正の値を指定してください。"))
-          .andThen(_.flatMap { id =>
-            val intId = id.asInstanceOf[Int]
-            if (gachaPrizeAPI.existsGachaPrize(GachaPrizeId(intId)).toIO.unsafeRunSync()) {
-              succeedWith(intId)
-            } else {
-              failWith("指定されたIDのアイテムは存在しません！")
-            }
-          })
-
         val args = context.args.parsed
         val targetId = GachaPrizeId(args.head.asInstanceOf[Int])
         val newProb = args(1).asInstanceOf[Double]
