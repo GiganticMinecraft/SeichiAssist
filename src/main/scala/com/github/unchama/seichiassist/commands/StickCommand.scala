@@ -8,16 +8,23 @@ import org.bukkit.command.TabExecutor
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{Material, Sound}
 
+import scala.jdk.CollectionConverters._
 import scala.util.chaining.scalaUtilChainingOps
 
 object StickCommand {
   val executor: TabExecutor = playerCommandBuilder
     .execution { context =>
       val sender = context.sender
+      // 初見プレイヤー用とは別に簡潔な説明
+      val stickLore = List(
+        "棒を持って右クリックもしくは左クリックでメニューを開きます。",
+        "各メニューの詳細は公式サイトで確認できます。"
+      )
       val stickItemStack = new ItemStack(Material.STICK, 1).tap { itemStack =>
         import itemStack._
         val meta = getItemMeta
         meta.setDisplayName("棒メニューが開ける棒")
+        meta.setLore(stickLore.asJava)
         setItemMeta(meta)
       }
 
