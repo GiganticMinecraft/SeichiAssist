@@ -65,16 +65,16 @@ object MineStackCommand {
         .argumentsParsers(
           List(
             Parsers
-              .closedRangeInt(0, Int.MaxValue, MessageEffect("カテゴリは正の値を指定してください。"))
-              .andThen(_.flatMap { categoryValue =>
-                val categoryKey = categoryValue.asInstanceOf[Int]
-                MineStackObjectCategory.fromSerializedValue(categoryKey - 1) match {
-                  case Some(category)           => succeedWith(category)
-                  case None if categoryKey == 0 => succeedWith(emptyEffect)
-                  case None                     => failWith("指定されたカテゴリは存在しません。")
+              .closedRangeInt(0, Int.MaxValue, MessageEffect("カテゴリは0以上の値を入力してください"))
+              .andThen(_.flatMap { _categoryValue =>
+                val categoryValue = _categoryValue.asInstanceOf[Int]
+                MineStackObjectCategory.fromSerializedValue(categoryValue - 1) match {
+                  case Some(category)             => succeedWith(category)
+                  case None if categoryValue == 0 => succeedWith(emptyEffect)
+                  case None                       => failWith("指定されたカテゴリは存在しません。")
                 }
               }),
-            Parsers.closedRangeInt(0, Int.MaxValue, MessageEffect("ページ数は正の値を指定してください。"))
+            Parsers.closedRangeInt(0, Int.MaxValue, MessageEffect("ページ数は0以上の値を指定してください。"))
           )
         )
         .execution { context =>
