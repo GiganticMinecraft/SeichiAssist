@@ -47,16 +47,16 @@ case class ContextualExecutorBuilder[CS <: CommandSender](
    *   [parsers]と[onMissingArguments]が組み合わされた関数が入った新しい[ContextualExecutorBuilder].
    */
   def argumentsParsers(
-    parsers: List[SingleArgumentParser],
+    parsers: List[SingleArgumentParser[Any]],
     onMissingArguments: ContextualExecutor = PrintUsageExecutor
   ): ContextualExecutorBuilder[CS] = {
     val combinedParser: CommandArgumentsParser[CS] = {
       case (refinedSender, context: RawCommandContext) =>
         @scala.annotation.tailrec
-        def parse(
-          remainingParsers: List[SingleArgumentParser],
+        def parse[R](
+          remainingParsers: List[SingleArgumentParser[R]],
           remainingArgs: List[String],
-          reverseAccumulator: List[Any] = List()
+          reverseAccumulator: List[R] = List()
         ): Either[IO[Unit], PartiallyParsedArgs] = {
           val (parserHead, parserTail) = remainingParsers match {
             case ::(head, next) => (head, next)

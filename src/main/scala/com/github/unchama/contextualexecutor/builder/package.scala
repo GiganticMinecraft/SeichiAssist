@@ -10,7 +10,7 @@ package object builder {
 
   type ResponseEffectOrResult[-CS, +T] = Result[TargetedEffect[CS], T]
 
-  type SingleArgumentParser = String => ResponseEffectOrResult[CommandSender, Any]
+  type SingleArgumentParser[Output] = String => ResponseEffectOrResult[CommandSender, Output]
 
   type SenderTypeValidation[+CS] = CommandSender => IO[Option[CS]]
 

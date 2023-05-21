@@ -1,32 +1,37 @@
 package com.github.unchama.contextualexecutor.builder
 
+import com.github.unchama.generic.CoerceTo
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
+import eu.timepit.refined.api.Refined
+import eu.timepit.refined.auto._
+import eu.timepit.refined.numeric.NonNegative
 import org.bukkit.command.CommandSender
 
 object Parsers {
   import ParserResponse._
 
-  val identity: SingleArgumentParser = {
+  val identity: SingleArgumentParser[String] = {
     succeedWith(_)
   }
 
   def nonNegativeInteger(
     failureMessage: TargetedEffect[CommandSender] = emptyEffect
-  ): SingleArgumentParser =
+  ): SingleArgumentParser[Int Refined NonNegative] =
     closedRangeInt(0, Int.MaxValue, failureMessage)
 
   /**
    * @return
    *   [smallEnd]より大きいか等しく[largeEnd]より小さいか等しい整数のパーサ
    */
-  def closedRangeInt(
-    smallEnd: Int,
-    largeEnd: Int,
+  def closedRangeInt[I](
+    smallEnd: I,
+    largeEnd: I,
     failureMessage: TargetedEffect[CommandSender] = emptyEffect
-  ): SingleArgumentParser = { arg =>
-    integer(failureMessage)(arg).flatMap { parsed =>
-      if ((smallEnd to largeEnd).contains(parsed.asInstanceOf[Int]))
+  )(implicit coerceI: CoerceTo[I, Int]): SingleArgumentParser[I] = { arg =>
+    integer(failureMessage)(arg).flatMap { p =>
+      val parsed = p.asInstanceOf[I]
+      if ((coerceI.coerceTo(smallEnd) to coerceI.coerceTo(largeEnd)).contains(parsed))
         succeedWith(parsed)
       else
         failWith(failureMessage)
@@ -35,7 +40,7 @@ object Parsers {
 
   def integer(
     failureEffect: TargetedEffect[CommandSender] = emptyEffect
-  ): SingleArgumentParser = { arg =>
+  ): SingleArgumentParser[Int] = { arg =>
     arg.toIntOption match {
       case Some(value) => succeedWith(value)
       case None        => failWith(failureEffect)
@@ -44,7 +49,7 @@ object Parsers {
 
   def double(
     failureEffect: TargetedEffect[CommandSender] = emptyEffect
-  ): SingleArgumentParser = { arg =>
+  ): SingleArgumentParser[Double] = { arg =>
     arg.toDoubleOption match {
       case Some(value) => succeedWith(value)
       case None        => failWith(failureEffect)
@@ -54,7 +59,7 @@ object Parsers {
   def fromOptionParser[T](
     fromString: String => Option[T],
     failureMessage: TargetedEffect[CommandSender] = emptyEffect
-  ): SingleArgumentParser = {
+  ): SingleArgumentParser[T] = {
     fromString.andThen(_.toRight(failureMessage))
   }
 }
