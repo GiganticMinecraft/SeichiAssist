@@ -29,6 +29,7 @@ import org.bukkit.{Material, Sound}
 
 import java.util.UUID
 import scala.collection.mutable
+import scala.jdk.CollectionConverters._
 
 class PlayerJoinListener extends Listener {
   private val playerMap: mutable.HashMap[UUID, PlayerData] = SeichiAssist.playermap
@@ -121,10 +122,19 @@ class PlayerJoinListener extends Listener {
 
       // 初見プレイヤーに木の棒、エリトラ、ピッケルを配布
       val inv = player.getInventory
+      // 初見プレイヤー向けの Lore (説明文) を設定
+      // /stick で入手できる木の棒は、簡略化された説明文にしておく。
+      val stickLore = List(
+        "この棒を持って右クリックもしくは左クリックするとメニューが開きます。",
+        "メニューからはいろんな機能が使えます。試してみよう。",
+        "この棒をなくしても /stick コマンドを実行すると再入手できます。",
+        "ヒント: もしサーバー内で迷子になったら /spawn コマンドを実行することでいつでも戻れます。"
+      )
       val stick = new ItemStack(Material.STICK, 1).tap { itemStack =>
         import itemStack._
         val meta = getItemMeta
-        meta.setDisplayName("棒メニューが開ける棒")
+        meta.setDisplayName("木の棒メニュー")
+        meta.setLore(stickLore.asJava)
         setItemMeta(meta)
       }
       inv.addItem(stick)
