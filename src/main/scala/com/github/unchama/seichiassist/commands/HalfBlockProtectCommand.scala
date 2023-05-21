@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTempla
 import org.bukkit.command.TabExecutor
 
 object HalfBlockProtectCommand {
-  val executor: TabExecutor = playerCommandBuilder
+  val executor: TabExecutor = playerCommandBuilder[Nothing]
     .execution { context =>
       val playerData = SeichiAssist.playermap(context.sender.getUniqueId)
       IO(playerData.settings.toggleHalfBreakFlag)

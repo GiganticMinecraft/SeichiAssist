@@ -12,7 +12,7 @@ import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 
 class EffectCommand[F[_]](api: FastDiggingSettingsWriteApi[IO, Player]) {
-  private val printUsageExecutor = playerCommandBuilder
+  private val printUsageExecutor = playerCommandBuilder[Nothing]
     .execution { _ =>
       val message = List(
         s"$YELLOW$BOLD[コマンドリファレンス]",
@@ -30,7 +30,7 @@ class EffectCommand[F[_]](api: FastDiggingSettingsWriteApi[IO, Player]) {
 
   import cats.implicits._
 
-  private val toggleExecutor = playerCommandBuilder
+  private val toggleExecutor = playerCommandBuilder[Nothing]
     .withEffectAsExecution {
       api.toggleEffectSuppression.flatMap { newState =>
         MessageEffect {

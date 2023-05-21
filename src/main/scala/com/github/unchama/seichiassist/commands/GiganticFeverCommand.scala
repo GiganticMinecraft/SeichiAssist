@@ -17,7 +17,7 @@ object GiganticFeverCommand {
   private val worldsToToggleDifficulty = ManagedWorld.seichiWorlds.map(_.alphabetName).toList
 
   val executor: TabExecutor = ContextualExecutorBuilder
-    .beginConfiguration()
+    .beginConfiguration[Nothing]()
     .execution { _ =>
       val config = SeichiAssist.seichiAssistConfig
 

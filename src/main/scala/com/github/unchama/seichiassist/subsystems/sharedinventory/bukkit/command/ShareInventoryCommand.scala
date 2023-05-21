@@ -24,7 +24,7 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
 
   import cats.implicits._
 
-  val executor: TabExecutor = playerCommandBuilder
+  val executor: TabExecutor = playerCommandBuilder[Nothing]
     .execution { context =>
       val sender = context.sender
       for {

@@ -21,5 +21,5 @@ class MineHeadCommand(implicit ioOnMainThread: OnMinecraftServerThread[IO]) {
     )
 
   val executor: TabExecutor =
-    playerCommandBuilder.execution { _ => IO.pure(effect) }.build().asNonBlockingTabExecutor()
+    playerCommandBuilder[Nothing].execution { _ => IO.pure(effect) }.build().asNonBlockingTabExecutor()
 }

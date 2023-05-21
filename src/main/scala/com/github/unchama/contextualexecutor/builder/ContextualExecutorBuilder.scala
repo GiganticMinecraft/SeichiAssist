@@ -31,10 +31,10 @@ import scala.reflect.ClassTag
  * @param contextualExecution
  *   [ParsedArgCommandContext]に基づいてコマンドの副作用を計算する関数
  */
-case class ContextualExecutorBuilder[CS <: CommandSender](
+case class ContextualExecutorBuilder[CS <: CommandSender, Args](
   senderTypeValidation: SenderTypeValidation[CS],
-  argumentsParser: CommandArgumentsParser[CS],
-  contextualExecution: ScopedContextualExecution[CS]
+  argumentsParser: CommandArgumentsParser[CS, Args],
+  contextualExecution: ScopedContextualExecution[CS, Args]
 ) {
 
   /**
@@ -47,17 +47,20 @@ case class ContextualExecutorBuilder[CS <: CommandSender](
    *   [parsers]と[onMissingArguments]が組み合わされた関数が入った新しい[ContextualExecutorBuilder].
    */
   def argumentsParsers(
-    parsers: List[SingleArgumentParser[Any]],
+    // TODO(scala3): Scala 3ではタプルに対するまともな操作ができるようになるので、Scala 3に移行したらArgsがLUBに消去された結果
+    //  型安全性が損なわれることを防ぐためにT <: Tupleを受け取るようにするべき。そうすることで.apply(Int)などの結果が硬安全になり、
+    //  asInstanceOfによるキャストがかなり削減できる。
+    parsers: List[SingleArgumentParser[Args]],
     onMissingArguments: ContextualExecutor = PrintUsageExecutor
-  ): ContextualExecutorBuilder[CS] = {
-    val combinedParser: CommandArgumentsParser[CS] = {
+  ): ContextualExecutorBuilder[CS, Args] = {
+    val combinedParser: CommandArgumentsParser[CS, Args] = {
       case (refinedSender, context: RawCommandContext) =>
         @scala.annotation.tailrec
-        def parse[R](
-          remainingParsers: List[SingleArgumentParser[R]],
+        def parse(
+          remainingParsers: List[SingleArgumentParser[Args]],
           remainingArgs: List[String],
-          reverseAccumulator: List[R] = List()
-        ): Either[IO[Unit], PartiallyParsedArgs] = {
+          reverseAccumulator: List[Args] = List()
+        ): Either[IO[Unit], PartiallyParsedArgs[Args]] = {
           val (parserHead, parserTail) = remainingParsers match {
             case ::(head, next) => (head, next)
             case Nil =>
@@ -89,7 +92,7 @@ case class ContextualExecutorBuilder[CS <: CommandSender](
    *
    * [ContextualExecutor]の制約にあるとおり, [execution]は任意スレッドからの呼び出しに対応しなければならない.
    */
-  def execution(execution: ScopedContextualExecution[CS]): ContextualExecutorBuilder[CS] =
+  def execution(execution: ScopedContextualExecution[CS, Args]): ContextualExecutorBuilder[CS, Args] =
     this.copy(contextualExecution = execution)
 
   /**
@@ -99,8 +102,8 @@ case class ContextualExecutorBuilder[CS <: CommandSender](
    * [ContextualExecutor]の制約にあるとおり, [execution]は任意スレッドでの実行に対応しなければならない.
    */
   def executionF[F[_]: Effect, U](
-    execution: ExecutionF[F, CS, U]
-  ): ContextualExecutorBuilder[CS] =
+    execution: ExecutionF[F, CS, U, Args]
+  ): ContextualExecutorBuilder[CS, Args] =
     this.copy(contextualExecution = context => {
       Effect[F].toIO(execution(context)).as(TargetedEffect.emptyEffect)
     })
@@ -112,8 +115,8 @@ case class ContextualExecutorBuilder[CS <: CommandSender](
    * [ContextualExecutor]の制約にあるとおり, [execution]は任意スレッドでの実行に対応しなければならない.
    */
   def executionCSEffect[F[_]: Effect, U](
-    execution: ExecutionCSEffect[F, CS, U]
-  ): ContextualExecutorBuilder[CS] =
+    execution: ExecutionCSEffect[F, CS, U, Args]
+  ): ContextualExecutorBuilder[CS, Args] =
     executionF[F, U](context => execution(context).run(context.sender))
 
   /**
@@ -122,7 +125,7 @@ case class ContextualExecutorBuilder[CS <: CommandSender](
    *
    * [[ContextualExecutor]]の制約にあるとおり, effect`は任意スレッドからの呼び出しに対応しなければならない.
    */
-  def withEffectAsExecution[T](effect: Kleisli[IO, CS, T]): ContextualExecutorBuilder[CS] =
+  def withEffectAsExecution[T](effect: Kleisli[IO, CS, T]): ContextualExecutorBuilder[CS, Args] =
     execution(_ => IO.pure(effect.map(_ => ())))
 
   /**
@@ -132,7 +135,7 @@ case class ContextualExecutorBuilder[CS <: CommandSender](
    */
   def refineSenderWithError[CS1 <: CS: ClassTag](
     message: String
-  ): ContextualExecutorBuilder[CS1] =
+  ): ContextualExecutorBuilder[CS1, Args] =
     refineSender(MessageEffect(message))
 
   /**
@@ -142,7 +145,7 @@ case class ContextualExecutorBuilder[CS <: CommandSender](
    */
   def refineSenderWithError[CS1 <: CS: ClassTag](
     messages: List[String]
-  ): ContextualExecutorBuilder[CS1] =
+  ): ContextualExecutorBuilder[CS1, Args] =
     refineSender(MessageEffect(messages))
 
   /**
@@ -152,7 +155,7 @@ case class ContextualExecutorBuilder[CS <: CommandSender](
    */
   def refineSender[CS1 <: CS: ClassTag](
     effectOnFail: TargetedEffect[CommandSender]
-  ): ContextualExecutorBuilder[CS1] = {
+  ): ContextualExecutorBuilder[CS1, Args] = {
     val newSenderTypeValidation: SenderTypeValidation[CS1] = { sender =>
       val verificationProgram = for {
         refined1 <- OptionT(senderTypeValidation(sender))
@@ -164,6 +167,9 @@ case class ContextualExecutorBuilder[CS <: CommandSender](
 
       verificationProgram.value
     }
+
+    val argumentsParser: CommandArgumentsParser[CS1, Args] = this.argumentsParser
+    val contextualExecution: ScopedContextualExecution[CS1, Args] = this.contextualExecution
 
     ContextualExecutorBuilder(newSenderTypeValidation, argumentsParser, contextualExecution)
   }
@@ -193,16 +199,16 @@ case class ContextualExecutorBuilder[CS <: CommandSender](
 }
 
 object ContextualExecutorBuilder {
-  private val defaultArgumentParser: CommandArgumentsParser[CommandSender] = {
+  private def defaultArgumentParser[A]: CommandArgumentsParser[CommandSender, A] = {
     case (_, context) => IO.pure(Some(PartiallyParsedArgs(List(), context.args)))
   }
-  private val defaultExecution: ScopedContextualExecution[CommandSender] = { _ =>
+  private def defaultExecution[A]: ScopedContextualExecution[CommandSender, A] = { _ =>
     IO(emptyEffect)
   }
   private val defaultSenderValidation: SenderTypeValidation[CommandSender] = {
     sender: CommandSender => IO.pure(Some(sender))
   }
 
-  def beginConfiguration(): ContextualExecutorBuilder[CommandSender] =
+  def beginConfiguration[A](): ContextualExecutorBuilder[CommandSender, A] =
     ContextualExecutorBuilder(defaultSenderValidation, defaultArgumentParser, defaultExecution)
 }

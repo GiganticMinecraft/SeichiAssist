@@ -34,7 +34,7 @@ object BukkitFlyCommand {
 
   private val printUsageExecutor =
     BuilderTemplates
-      .playerCommandBuilder
+      .playerCommandBuilder[Nothing]
       .execution(_ => IO.pure(MessageEffect(commandHelpMessage)))
       .build()
 
@@ -53,7 +53,7 @@ object BukkitFlyCommand {
     factory: ActiveSessionFactory[F, Player]
   ): ContextualExecutor =
     BuilderTemplates
-      .playerCommandBuilder
+      .playerCommandBuilder[Nothing]
       .execution { context =>
         for {
           _ <-
@@ -99,7 +99,7 @@ object BukkitFlyCommand {
     sessionReferenceRepository: KeyedDataRepository[Player, ActiveSessionReference[F, G]]
   ): ContextualExecutor =
     BuilderTemplates
-      .playerCommandBuilder
+      .playerCommandBuilder[Nothing]
       .execution { context =>
         for {
           sessionStopped <-

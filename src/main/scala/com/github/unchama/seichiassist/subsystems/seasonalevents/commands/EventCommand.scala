@@ -43,7 +43,7 @@ class EventCommand(implicit ioOnMainThread: OnMinecraftServerThread[IO]) {
   val valentineGrantEffect: TargetedEffect[Player] =
     InventoryOperations.grantItemStacksEffect(droppedCookie)
 
-  val executor: TabExecutor = playerCommandBuilder
+  val executor: TabExecutor = playerCommandBuilder[Nothing]
     .execution { context =>
       val effect = context.args.yetToBeParsed match {
         case "anniversary" :: _ => anniversaryGrantEffect

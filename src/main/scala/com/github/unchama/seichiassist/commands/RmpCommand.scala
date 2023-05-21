@@ -33,7 +33,7 @@ object RmpCommand {
     )
   })
   private val argsAndSenderConfiguredBuilder = ContextualExecutorBuilder
-    .beginConfiguration()
+    .beginConfiguration[Any]()
     .refineSenderWithError[ConsoleCommandSender](s"${GREEN}このコマンドはコンソールから実行してください")
     .argumentsParsers(
       List(

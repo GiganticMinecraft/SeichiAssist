@@ -240,7 +240,7 @@ class GachaCommand[
 
     val list: ContextualExecutor =
       ContextualExecutorBuilder
-        .beginConfiguration()
+        .beginConfiguration[Nothing]()
         .execution { context =>
           val eventName = context.args.yetToBeParsed.headOption.map(GachaEventName)
           val eff = for {
@@ -348,7 +348,7 @@ class GachaCommand[
 
     val clear: ContextualExecutor =
       ContextualExecutorBuilder
-        .beginConfiguration()
+        .beginConfiguration[Nothing]()
         .execution { _ =>
           val eff = for {
             _ <- gachaPrizeAPI.clear
@@ -366,7 +366,7 @@ class GachaCommand[
 
     val save: ContextualExecutor =
       ContextualExecutorBuilder
-        .beginConfiguration()
+        .beginConfiguration[Nothing]()
         .execution { _ =>
           val eff = for {
             gachaPrizes <- gachaPrizeAPI.listOfNow
@@ -378,7 +378,7 @@ class GachaCommand[
         .build()
 
     val reload: ContextualExecutor = ContextualExecutorBuilder
-      .beginConfiguration()
+      .beginConfiguration[Nothing]()
       .execution { _ =>
         val eff = for {
           _ <- gachaPrizeAPI.load
@@ -390,7 +390,7 @@ class GachaCommand[
 
     val createEvent: ContextualExecutor =
       ContextualExecutorBuilder
-        .beginConfiguration()
+        .beginConfiguration[String]()
         .argumentsParsers {
           List(Parsers.identity, Parsers.identity, Parsers.identity)
         }
@@ -446,7 +446,7 @@ class GachaCommand[
 
     val eventList: ContextualExecutor =
       ContextualExecutorBuilder
-        .beginConfiguration()
+        .beginConfiguration[Nothing]()
         .execution { _ =>
           val eff = for {
             events <- gachaPrizeAPI.createdGachaEvents

@@ -6,7 +6,7 @@ import org.bukkit.entity.Player
 
 object BuilderTemplates {
 
-  val playerCommandBuilder: ContextualExecutorBuilder[Player] =
+  def playerCommandBuilder[A]: ContextualExecutorBuilder[Player, A] =
     ContextualExecutorBuilder
       .beginConfiguration()
       .refineSenderWithError[Player](s"${GREEN}このコマンドはゲーム内から実行してください。")

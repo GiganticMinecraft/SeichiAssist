@@ -9,7 +9,7 @@ import org.bukkit.command.TabExecutor
 
 object MapCommand {
   val executor: TabExecutor = BuilderTemplates
-    .playerCommandBuilder
+    .playerCommandBuilder[Nothing]
     .execution { context =>
       IO {
         val location = context.sender.getLocation

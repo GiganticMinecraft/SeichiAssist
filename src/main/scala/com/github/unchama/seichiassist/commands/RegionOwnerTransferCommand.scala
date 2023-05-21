@@ -15,7 +15,7 @@ import org.bukkit.entity.Player
 object RegionOwnerTransferCommand {
   import com.github.unchama.contextualexecutor.builder.ParserResponse._
 
-  val executor: TabExecutor = playerCommandBuilder
+  val executor: TabExecutor = playerCommandBuilder[AnyRef]
     .argumentsParsers(
       List(
         Parsers.identity,

@@ -24,7 +24,7 @@ class VoteCommand[F[_]: ConcurrentEffect](implicit votePersistence: VotePersiste
 
   private val recordExecutor = {
     ContextualExecutorBuilder
-      .beginConfiguration()
+      .beginConfiguration[Nothing]()
       .executionCSEffect { context =>
         val playerName = context.args.yetToBeParsed.head
         val distributionProcess = for {

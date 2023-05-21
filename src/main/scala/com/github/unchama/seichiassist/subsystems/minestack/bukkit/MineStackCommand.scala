@@ -36,7 +36,7 @@ object MineStackCommand {
     def setAutoCollectionExecutor(
       isItemCollectedAutomatically: Boolean
     )(implicit mineStackAPI: MineStackAPI[IO, Player, ItemStack]): ContextualExecutor =
-      playerCommandBuilder
+      playerCommandBuilder[Nothing]
         .execution { _ =>
           IO {
             SequentialEffect(
@@ -87,7 +87,7 @@ object MineStackCommand {
     def storeEverythingInInventory(
       implicit mineStackAPI: MineStackAPI[IO, Player, ItemStack]
     ): ContextualExecutor =
-      playerCommandBuilder
+      playerCommandBuilder[Nothing]
         .execution { context =>
           for {
             player <- IO(context.sender)

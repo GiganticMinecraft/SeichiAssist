@@ -68,7 +68,7 @@ class DonationCommand[F[_]: ConcurrentEffect](
 
   private val commandDescriptionExecutor: ContextualExecutor =
     ContextualExecutorBuilder
-      .beginConfiguration()
+      .beginConfiguration[Nothing]()
       .execution { _ =>
         IO {
           MessageEffect(

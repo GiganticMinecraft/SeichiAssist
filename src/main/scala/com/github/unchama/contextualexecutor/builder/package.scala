@@ -10,18 +10,18 @@ package object builder {
 
   type ResponseEffectOrResult[-CS, +T] = Result[TargetedEffect[CS], T]
 
-  type SingleArgumentParser[Output] = String => ResponseEffectOrResult[CommandSender, Output]
+  type SingleArgumentParser[+Output] = String => ResponseEffectOrResult[CommandSender, Output]
 
   type SenderTypeValidation[+CS] = CommandSender => IO[Option[CS]]
 
-  type CommandArgumentsParser[-CS] = (CS, RawCommandContext) => IO[Option[PartiallyParsedArgs]]
+  type CommandArgumentsParser[-CS, Args] = (CS, RawCommandContext) => IO[Option[PartiallyParsedArgs[Args]]]
 
-  type ScopedContextualExecution[-CS <: CommandSender] =
-    ParsedArgCommandContext[CS] => IO[TargetedEffect[CS]]
+  type ScopedContextualExecution[CS <: CommandSender, Args] =
+    ParsedArgCommandContext[CS, Args] => IO[TargetedEffect[CS]]
 
-  type ExecutionF[F[_], CS <: CommandSender, U] = ParsedArgCommandContext[CS] => F[U]
+  type ExecutionF[F[_], CS <: CommandSender, U, Args] = ParsedArgCommandContext[CS, Args] => F[U]
 
   // コンテキストから、 CS に対して実行できる作用への関数
-  type ExecutionCSEffect[F[_], CS <: CommandSender, U] =
-    ParsedArgCommandContext[CS] => Kleisli[F, CS, U]
+  type ExecutionCSEffect[F[_], CS <: CommandSender, U, Args] =
+    ParsedArgCommandContext[CS, Args] => Kleisli[F, CS, U]
 }

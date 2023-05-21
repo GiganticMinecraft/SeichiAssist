@@ -24,7 +24,7 @@ case class RawCommandContext(
  * @param yetToBeParsed
  *   コマンド引数のうち, [parsed]へと変換されていない文字列.
  */
-case class PartiallyParsedArgs(parsed: List[Any], yetToBeParsed: List[String])
+case class PartiallyParsedArgs[+Args](parsed: List[Args], yetToBeParsed: List[String])
 
 /**
  * コマンドの実行時のコマンド引数や実行者などの情報を変換, 加工したデータ.
@@ -36,8 +36,8 @@ case class PartiallyParsedArgs(parsed: List[Any], yetToBeParsed: List[String])
  * @param args
  *   引数情報
  */
-case class ParsedArgCommandContext[+CS <: CommandSender](
+case class ParsedArgCommandContext[+CS <: CommandSender, +Args](
   sender: CS,
   command: ExecutedCommand,
-  args: PartiallyParsedArgs
+  args: PartiallyParsedArgs[Args]
 )

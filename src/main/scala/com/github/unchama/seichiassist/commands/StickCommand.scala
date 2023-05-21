@@ -12,7 +12,7 @@ import scala.jdk.CollectionConverters._
 import scala.util.chaining.scalaUtilChainingOps
 
 object StickCommand {
-  val executor: TabExecutor = playerCommandBuilder
+  val executor: TabExecutor = playerCommandBuilder[Nothing]
     .execution { context =>
       val sender = context.sender
       // 初見プレイヤー用とは別に簡潔な説明

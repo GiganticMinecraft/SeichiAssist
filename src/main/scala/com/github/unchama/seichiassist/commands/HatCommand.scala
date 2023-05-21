@@ -8,7 +8,7 @@ import org.bukkit.command.TabExecutor
 
 object HatCommand {
   val executor: TabExecutor = BuilderTemplates
-    .playerCommandBuilder
+    .playerCommandBuilder[Nothing]
     .argumentsParsers(List())
     .execution { context =>
       val player = context.sender

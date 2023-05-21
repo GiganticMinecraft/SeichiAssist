@@ -69,7 +69,7 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
        */
       def executor[F[_]: ConcurrentEffect: NonServerThreadContextShift](
         implicit persistence: PresentPersistence[F, ItemStack]
-      ): ContextualExecutor = playerCommandBuilder
+      ): ContextualExecutor = playerCommandBuilder[Nothing]
         .execution { context =>
           val eff = for {
             // off-main-thread
@@ -233,7 +233,7 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
       def executor[F[_]: ConcurrentEffect: NonServerThreadContextShift](
         implicit persistence: PresentPersistence[F, ItemStack]
       ): ContextualExecutor =
-        playerCommandBuilder
+        playerCommandBuilder[Nothing]
           .execution { context =>
             val player = context.sender
             if (player.hasPermission("seichiassist.present.define")) {

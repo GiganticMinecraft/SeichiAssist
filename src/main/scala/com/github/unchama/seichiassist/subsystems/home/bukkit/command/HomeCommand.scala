@@ -84,7 +84,7 @@ class HomeCommand[F[
   private def listExecutor() = {
     // locationの座標は負の無限大方向へ切り捨て(Debug画面のBlock:で表示される座標と同じ丸め方)
     def toBlockPos(pos: Double) = pos.floor.toInt
-    playerCommandBuilder
+    playerCommandBuilder[Nothing]
       .execution { context =>
         val player = context.sender
         val eff = for {

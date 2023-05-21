@@ -25,7 +25,7 @@ object SeichiAssistCommand {
   )
 
   private val reloadConfigExecutor = ContextualExecutorBuilder
-    .beginConfiguration()
+    .beginConfiguration[Nothing]()
     .execution { _ =>
       IO {
         SeichiAssist.seichiAssistConfig = Config.loadFrom(SeichiAssist.instance)
@@ -35,7 +35,7 @@ object SeichiAssistCommand {
     .build()
 
   private val toggleDebugExecutor = ContextualExecutorBuilder
-    .beginConfiguration()
+    .beginConfiguration[Nothing]()
     .execution { _ =>
       IO {
         // debugフラグ反転処理
@@ -64,7 +64,7 @@ object SeichiAssistCommand {
     .build()
 
   private val setAnniversaryFlagExecutor = ContextualExecutorBuilder
-    .beginConfiguration()
+    .beginConfiguration[Nothing]()
     .refineSenderWithError[ConsoleCommandSender]("コンソール専用コマンドです")
     .execution { _ =>
       IO {
