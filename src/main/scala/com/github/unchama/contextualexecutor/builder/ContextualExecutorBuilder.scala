@@ -92,7 +92,9 @@ case class ContextualExecutorBuilder[CS <: CommandSender, Args](
    *
    * [ContextualExecutor]の制約にあるとおり, [execution]は任意スレッドからの呼び出しに対応しなければならない.
    */
-  def execution(execution: ScopedContextualExecution[CS, Args]): ContextualExecutorBuilder[CS, Args] =
+  def execution(
+    execution: ScopedContextualExecution[CS, Args]
+  ): ContextualExecutorBuilder[CS, Args] =
     this.copy(contextualExecution = execution)
 
   /**
@@ -125,7 +127,9 @@ case class ContextualExecutorBuilder[CS <: CommandSender, Args](
    *
    * [[ContextualExecutor]]の制約にあるとおり, effect`は任意スレッドからの呼び出しに対応しなければならない.
    */
-  def withEffectAsExecution[T](effect: Kleisli[IO, CS, T]): ContextualExecutorBuilder[CS, Args] =
+  def withEffectAsExecution[T](
+    effect: Kleisli[IO, CS, T]
+  ): ContextualExecutorBuilder[CS, Args] =
     execution(_ => IO.pure(effect.map(_ => ())))
 
   /**

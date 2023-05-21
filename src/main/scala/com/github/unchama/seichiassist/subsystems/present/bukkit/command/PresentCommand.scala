@@ -120,7 +120,11 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
         playerCommandBuilder
           .argumentsParsers(
             List(
-              Parsers.closedRangeInt[Int Refined Positive](1, Int.MaxValue, MessageEffect("ページ数には1以上の数を指定してください。"))
+              Parsers.closedRangeInt[Int Refined Positive](
+                1,
+                Int.MaxValue,
+                MessageEffect("ページ数には1以上の数を指定してください。")
+              )
             ),
             onMissingArguments = help
           )

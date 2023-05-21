@@ -14,12 +14,14 @@ package object builder {
 
   type SenderTypeValidation[+CS] = CommandSender => IO[Option[CS]]
 
-  type CommandArgumentsParser[-CS, Args] = (CS, RawCommandContext) => IO[Option[PartiallyParsedArgs[Args]]]
+  type CommandArgumentsParser[-CS, Args] =
+    (CS, RawCommandContext) => IO[Option[PartiallyParsedArgs[Args]]]
 
   type ScopedContextualExecution[CS <: CommandSender, Args] =
     ParsedArgCommandContext[CS, Args] => IO[TargetedEffect[CS]]
 
-  type ExecutionF[F[_], CS <: CommandSender, U, Args] = ParsedArgCommandContext[CS, Args] => F[U]
+  type ExecutionF[F[_], CS <: CommandSender, U, Args] =
+    ParsedArgCommandContext[CS, Args] => F[U]
 
   // コンテキストから、 CS に対して実行できる作用への関数
   type ExecutionCSEffect[F[_], CS <: CommandSender, U, Args] =
