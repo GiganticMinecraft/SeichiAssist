@@ -61,7 +61,7 @@ trait TopLevelRouter[F[_]] {
 
   implicit val canOpenAchievementMenu: F CanOpen AchievementMenu.type
 
-  implicit val canOpenMineStackMainMenu: F CanOpen MineStackMainMenu.type
+  implicit val ioCanOpenMineStackMenu: F CanOpen MineStackMainMenu.type
 
   implicit val ioCanOpenCategorizedMineStackMenu: F CanOpen CategorizedMineStackMenu
 

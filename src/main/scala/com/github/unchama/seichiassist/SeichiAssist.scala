@@ -711,7 +711,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu =
       menuRouter.ioCanOpenCategorizedMineStackMenu
     implicit val ioCanMineStackMainMenu: IO CanOpen MineStackMainMenu.type =
-      menuRouter.canOpenMineStackMainMenu
+      menuRouter.ioCanOpenMineStackMenu
 
     // コマンドの登録
     Map(
