@@ -20,7 +20,7 @@ object StickCommand {
       val stickItemStack = new ItemStack(Material.STICK, 1).tap { itemStack =>
         import itemStack._
         val meta = getItemMeta
-        meta.setDisplayName("棒メニューが開ける棒")
+        meta.setDisplayName("木の棒メニュー")
         meta.setLore(stickLore.asJava)
         setItemMeta(meta)
       }
