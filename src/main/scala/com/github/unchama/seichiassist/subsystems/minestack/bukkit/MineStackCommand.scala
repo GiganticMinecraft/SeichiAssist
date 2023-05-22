@@ -37,40 +37,39 @@ object MineStackCommand {
     def setAutoCollectionExecutor(
       isItemCollectedAutomatically: Boolean
     )(implicit mineStackAPI: MineStackAPI[IO, Player, ItemStack]): ContextualExecutor =
-      playerCommandBuilder
-        .buildWithEffectAsExecution(
-          SequentialEffect(
-            DeferredEffect {
-              IO(mineStackAPI.setAutoMineStack(isItemCollectedAutomatically))
-            },
-            if (isItemCollectedAutomatically)
-              MessageEffect("MineStack自動収集をONにしました。")
-            else
-              MessageEffect("MineStack自動収集をOFFにしました。")
-          )
+      playerCommandBuilder.buildWithEffectAsExecution(
+        SequentialEffect(
+          DeferredEffect {
+            IO(mineStackAPI.setAutoMineStack(isItemCollectedAutomatically))
+          },
+          if (isItemCollectedAutomatically)
+            MessageEffect("MineStack自動収集をONにしました。")
+          else
+            MessageEffect("MineStack自動収集をOFFにしました。")
         )
+      )
 
     def openCategorizedMineStackMenu(
       implicit ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu
     ): ContextualExecutor =
       playerCommandBuilder
-        .thenParse(Parsers
-          .closedRangeInt(1, Int.MaxValue, MessageEffect("カテゴリは正の値を指定してください。"))
-          .andThen(_.flatMap { categoryValue =>
-            MineStackObjectCategory
-              .fromSerializedValue(categoryValue - 1) match {
-              case Some(category) => succeedWith(category)
-              case None => failWith("指定されたカテゴリは存在しません。")
-            }
-          }))
+        .thenParse(
+          Parsers
+            .closedRangeInt(1, Int.MaxValue, MessageEffect("カテゴリは正の値を指定してください。"))
+            .andThen(_.flatMap { categoryValue =>
+              MineStackObjectCategory.fromSerializedValue(categoryValue - 1) match {
+                case Some(category) => succeedWith(category)
+                case None           => failWith("指定されたカテゴリは存在しません。")
+              }
+            })
+        )
         .thenParse(Parsers.closedRangeInt(1, Int.MaxValue, MessageEffect("ページ数は正の値を指定してください。")))
         .buildWith { context =>
           import shapeless.::
           val _0 :: _1 :: HNil = context.args.parsed
           IO.pure(
-            ioCanOpenCategorizedMenu.open(
-              new CategorizedMineStackMenu(_0, _1.toString.toInt - 1)
-            )
+            ioCanOpenCategorizedMenu
+              .open(new CategorizedMineStackMenu(_0, _1.toString.toInt - 1))
           )
         }
 
@@ -79,22 +78,21 @@ object MineStackCommand {
     def storeEverythingInInventory(
       implicit mineStackAPI: MineStackAPI[IO, Player, ItemStack]
     ): ContextualExecutor =
-      playerCommandBuilder
-        .buildWith { context =>
-          for {
-            player <- IO(context.sender)
-            inventory <- IO(player.getInventory)
-            targetIndexes <- inventory.getContents.toList.zipWithIndex.traverse {
-              case (itemStack, index) if itemStack != null =>
-                mineStackAPI
-                  .mineStackRepository
-                  .tryIntoMineStack(player, itemStack, itemStack.getAmount)
-                  .map(Option.when(_)(index))
-              case _ => IO.pure(None)
-            }
-            _ <- IO(targetIndexes.foreach(_.foreach(index => inventory.clear(index))))
-          } yield MessageEffect(s"${YELLOW}インベントリの中身をすべてマインスタックに収納しました。")
-        }
+      playerCommandBuilder.buildWith { context =>
+        for {
+          player <- IO(context.sender)
+          inventory <- IO(player.getInventory)
+          targetIndexes <- inventory.getContents.toList.zipWithIndex.traverse {
+            case (itemStack, index) if itemStack != null =>
+              mineStackAPI
+                .mineStackRepository
+                .tryIntoMineStack(player, itemStack, itemStack.getAmount)
+                .map(Option.when(_)(index))
+            case _ => IO.pure(None)
+          }
+          _ <- IO(targetIndexes.foreach(_.foreach(index => inventory.clear(index))))
+        } yield MessageEffect(s"${YELLOW}インベントリの中身をすべてマインスタックに収納しました。")
+      }
 
   }
 

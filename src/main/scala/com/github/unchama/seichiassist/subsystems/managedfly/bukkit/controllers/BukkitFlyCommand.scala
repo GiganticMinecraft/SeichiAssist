@@ -51,27 +51,21 @@ object BukkitFlyCommand {
     sessionReferenceRepository: KeyedDataRepository[Player, ActiveSessionReference[F, G]],
     factory: ActiveSessionFactory[F, Player]
   ): ContextualExecutor =
-    BuilderTemplates
-      .playerCommandBuilder
-      .buildWithExecutionF { context =>
-        for {
-          _ <-
-            sessionReferenceRepository(context.sender)
-              .replaceSession(
-                factory.start[G](RemainingFlyDuration.Infinity).run(context.sender)
-              )
-        } yield TargetedEffect.emptyEffect
-      }
+    BuilderTemplates.playerCommandBuilder.buildWithExecutionF { context =>
+      for {
+        _ <-
+          sessionReferenceRepository(context.sender)
+            .replaceSession(factory.start[G](RemainingFlyDuration.Infinity).run(context.sender))
+      } yield TargetedEffect.emptyEffect
+    }
 
   def addCommand[F[_]: ConcurrentEffect: Timer, G[_]: SyncEffect](
     implicit
     sessionReferenceRepository: KeyedDataRepository[Player, ActiveSessionReference[F, G]],
     factory: ActiveSessionFactory[F, Player]
   ): ContextualExecutor =
-    BuilderTemplates
-      .playerCommandBuilder
-      .thenParse(durationParser)
-      .buildWithExecutionF { context =>
+    BuilderTemplates.playerCommandBuilder.thenParse(durationParser).buildWithExecutionF {
+      context =>
         val duration = context.args.parsed.head
 
         for {
@@ -88,26 +82,24 @@ object BukkitFlyCommand {
               .replaceSession(factory.start[G](newTotalDuration).run(context.sender))
               .toIO
         } yield TargetedEffect.emptyEffect
-      }
+    }
 
   def finishCommand[F[_]: ConcurrentEffect, G[_]](
     implicit
     sessionReferenceRepository: KeyedDataRepository[Player, ActiveSessionReference[F, G]]
   ): ContextualExecutor =
-    BuilderTemplates
-      .playerCommandBuilder
-      .buildWithExecutionF { context =>
-        for {
-          sessionStopped <-
-            sessionReferenceRepository(context.sender).stopAnyRunningSession
-        } yield {
-          if (sessionStopped) {
-            MessageEffect(s"${GREEN}fly効果を停止しました。")
-          } else {
-            MessageEffect(s"${GREEN}fly効果は現在OFFです。")
-          }
+    BuilderTemplates.playerCommandBuilder.buildWithExecutionF { context =>
+      for {
+        sessionStopped <-
+          sessionReferenceRepository(context.sender).stopAnyRunningSession
+      } yield {
+        if (sessionStopped) {
+          MessageEffect(s"${GREEN}fly効果を停止しました。")
+        } else {
+          MessageEffect(s"${GREEN}fly効果は現在OFFです。")
         }
       }
+    }
 
   def executor[F[_]: ConcurrentEffect: Timer, G[_]: SyncEffect](
     implicit

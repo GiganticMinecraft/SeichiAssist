@@ -74,9 +74,7 @@ object AchievementCommand {
     .thenParse(operationParser)
     .thenParse(achievementNumberParser)
     .thenParse(scopeParser)
-    .ifMissingArguments(
-      descriptionPrintExecutor
-    )
+    .ifMissingArguments(descriptionPrintExecutor)
     .buildWithExecutionF { context =>
       val sender = context.sender
 

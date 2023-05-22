@@ -7,7 +7,11 @@ import cats.implicits._
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
-import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor, TraverseExecutor}
+import com.github.unchama.contextualexecutor.executors.{
+  BranchedExecutor,
+  EchoExecutor,
+  TraverseExecutor
+}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.domain.actions.UuidToLastSeenName
@@ -16,7 +20,6 @@ import com.github.unchama.seichiassist.subsystems.present.domain._
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
-import eu.timepit.refined._
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import eu.timepit.refined.numeric.Positive
@@ -24,9 +27,8 @@ import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{ChatColor, Material}
-import shapeless.{HNil, :: => HCons}
+import shapeless.HNil
 import shapeless.syntax.std.tuple._
-import shapeless.ops._
 
 /**
  * `/present` コマンドを定義する。
@@ -68,36 +70,35 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
        */
       def executor[F[_]: ConcurrentEffect: NonServerThreadContextShift](
         implicit persistence: PresentPersistence[F, ItemStack]
-      ): ContextualExecutor = playerCommandBuilder
-        .buildWith { context =>
-          val eff = for {
-            // off-main-thread
-            _ <- NonServerThreadContextShift[F].shift
-            state <- persistence.fetchState(context.sender.getUniqueId)
-          } yield {
-            val presents = state
-              .toList
-              // 配布対象外のプレゼントを除外
-              .filter { case (_, state) => state != PresentClaimingState.Unavailable }
-              .map {
-                case (id, state) =>
-                  s"ID=$id: ${decoratePresentState(state)}"
-              }
-              .filter(_.nonEmpty)
-
-            val lines = if (presents.isEmpty) {
-              List("対象のプレゼントが存在しません")
-            } else {
-              List(
-                s"${ChatColor.GRAY}${ChatColor.UNDERLINE}対象のプレゼント一覧：${ChatColor.RESET}"
-              ) ::: presents
+      ): ContextualExecutor = playerCommandBuilder.buildWith { context =>
+        val eff = for {
+          // off-main-thread
+          _ <- NonServerThreadContextShift[F].shift
+          state <- persistence.fetchState(context.sender.getUniqueId)
+        } yield {
+          val presents = state
+            .toList
+            // 配布対象外のプレゼントを除外
+            .filter { case (_, state) => state != PresentClaimingState.Unavailable }
+            .map {
+              case (id, state) =>
+                s"ID=$id: ${decoratePresentState(state)}"
             }
+            .filter(_.nonEmpty)
 
-            MessageEffect(lines)
+          val lines = if (presents.isEmpty) {
+            List("対象のプレゼントが存在しません")
+          } else {
+            List(
+              s"${ChatColor.GRAY}${ChatColor.UNDERLINE}対象のプレゼント一覧：${ChatColor.RESET}"
+            ) ::: presents
           }
 
-          eff.toIO
+          MessageEffect(lines)
         }
+
+        eff.toIO
+      }
     }
 
     object ListSubCommand {
@@ -116,11 +117,13 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
         implicit persistence: PresentPersistence[F, ItemStack]
       ): ContextualExecutor =
         playerCommandBuilder
-          .thenParse(Parsers.closedRangeInt[Int Refined Positive](
-            1,
-            Int.MaxValue,
-            MessageEffect("ページ数には1以上の数を指定してください。")
-          ))
+          .thenParse(
+            Parsers.closedRangeInt[Int Refined Positive](
+              1,
+              Int.MaxValue,
+              MessageEffect("ページ数には1以上の数を指定してください。")
+            )
+          )
           .ifMissingArguments(help)
           .buildWith { context =>
             val perPage: Int Refined Positive = 10
@@ -225,26 +228,27 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
       def executor[F[_]: ConcurrentEffect: NonServerThreadContextShift](
         implicit persistence: PresentPersistence[F, ItemStack]
       ): ContextualExecutor =
-        playerCommandBuilder
-          .buildWithExecutionF { context =>
-            val player = context.sender
-            if (player.hasPermission("seichiassist.present.define")) {
-              val mainHandItem = player.getInventory.getItemInMainHand
-              if (mainHandItem.getType eq Material.AIR) {
-                // おそらくこれは意図した動作ではないのでエラーメッセージを表示する
-                ConcurrentEffect[F].pure(MessageEffect("メインハンドに何も持っていません。プレゼントを定義するためには、メインハンドに対象アイテムを持ってください。"))
-              } else {
-                for {
-                  _ <- NonServerThreadContextShift[F].shift
-                  presentID <- persistence.define(mainHandItem)
-                } yield {
-                  MessageEffect(s"メインハンドに持ったアイテムをプレゼントとして定義しました。IDは${presentID}です。")
-                }
-              }
+        playerCommandBuilder.buildWithExecutionF { context =>
+          val player = context.sender
+          if (player.hasPermission("seichiassist.present.define")) {
+            val mainHandItem = player.getInventory.getItemInMainHand
+            if (mainHandItem.getType eq Material.AIR) {
+              // おそらくこれは意図した動作ではないのでエラーメッセージを表示する
+              ConcurrentEffect[F].pure(
+                MessageEffect("メインハンドに何も持っていません。プレゼントを定義するためには、メインハンドに対象アイテムを持ってください。")
+              )
             } else {
-              ConcurrentEffect[F].pure(noPermissionMessage)
+              for {
+                _ <- NonServerThreadContextShift[F].shift
+                presentID <- persistence.define(mainHandItem)
+              } yield {
+                MessageEffect(s"メインハンドに持ったアイテムをプレゼントとして定義しました。IDは${presentID}です。")
+              }
             }
+          } else {
+            ConcurrentEffect[F].pure(noPermissionMessage)
           }
+        }
     }
 
     object Delete {
@@ -266,8 +270,8 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
           .beginConfiguration
           .thenParse(presentIdParser)
           .ifMissingArguments(help)
-          .buildWithExecutionF {
-            context => {
+          .buildWithExecutionF { context =>
+            {
               val presentId = context.args.parsed.head
               if (!context.sender.hasPermission("seichiassist.present.delete")) {
                 ConcurrentEffect[F].pure(noPermissionMessage)

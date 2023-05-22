@@ -72,7 +72,9 @@ object Parsers {
   /**
    * `YYYY-mm-DD`形式の日付文字列をパースするパーサー。
    */
-  def hyphenatedDate(failureMessage: TargetedEffect[CommandSender] = emptyEffect): SingleArgumentParser[LocalDate] = in =>
+  def hyphenatedDate(
+    failureMessage: TargetedEffect[CommandSender] = emptyEffect
+  ): SingleArgumentParser[LocalDate] = in =>
     try {
       Right(LocalDate.parse(in, hyphenatedDateFormatter))
     } catch {

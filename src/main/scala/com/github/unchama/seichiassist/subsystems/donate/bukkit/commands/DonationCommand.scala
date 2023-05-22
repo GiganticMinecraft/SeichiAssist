@@ -1,11 +1,16 @@
 package com.github.unchama.seichiassist.subsystems.donate.bukkit.commands
 
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
-import cats.effect.{ConcurrentEffect, IO, Sync}
+import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
-import com.github.unchama.seichiassist.subsystems.donate.domain.{DonatePersistence, DonatePremiumEffectPoint, Obtained, PlayerName}
+import com.github.unchama.seichiassist.subsystems.donate.domain.{
+  DonatePersistence,
+  DonatePremiumEffectPoint,
+  Obtained,
+  PlayerName
+}
 import com.github.unchama.targetedeffect.UnfocusedEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
@@ -58,20 +63,18 @@ class DonationCommand[F[_]: ConcurrentEffect](
       }
 
   private val commandDescriptionExecutor: ContextualExecutor =
-    ContextualExecutorBuilder
-      .beginConfiguration
-      .buildWithEffectAsExecution {
-        UnfocusedEffect {
-          MessageEffect(
-            List(
-              s"$RED/donation record <プレイヤー名> <ポイント数> <(購入日)>",
-              "寄付者用プレミアムエフェクトポイント配布コマンドです(マルチ鯖対応済)",
-              "購入日を指定しなければ今日の日付になります。",
-              "※購入日はyyyy-MM-ddの形式で指定してください。"
-            )
+    ContextualExecutorBuilder.beginConfiguration.buildWithEffectAsExecution {
+      UnfocusedEffect {
+        MessageEffect(
+          List(
+            s"$RED/donation record <プレイヤー名> <ポイント数> <(購入日)>",
+            "寄付者用プレミアムエフェクトポイント配布コマンドです(マルチ鯖対応済)",
+            "購入日を指定しなければ今日の日付になります。",
+            "※購入日はyyyy-MM-ddの形式で指定してください。"
           )
-        }
+        )
       }
+    }
 
   val executor: TabExecutor =
     BranchedExecutor(

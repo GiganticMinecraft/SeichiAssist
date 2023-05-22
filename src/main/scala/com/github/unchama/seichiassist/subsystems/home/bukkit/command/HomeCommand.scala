@@ -55,14 +55,16 @@ class HomeCommand[F[
     )
   )
 
-  private val argsAndSenderConfiguredBuilder = playerCommandBuilder.thenParse(
-    Parsers.closedRangeInt(
-      HomeId.minimumNumber,
-      HomeId.maxNumber,
-      failureMessage =
-        MessageEffect(s"ホームの番号を${HomeId.minimumNumber}～${HomeId.maxNumber}の間で入力してください")
+  private val argsAndSenderConfiguredBuilder = playerCommandBuilder
+    .thenParse(
+      Parsers.closedRangeInt(
+        HomeId.minimumNumber,
+        HomeId.maxNumber,
+        failureMessage =
+          MessageEffect(s"ホームの番号を${HomeId.minimumNumber}～${HomeId.maxNumber}の間で入力してください")
+      )
     )
-  ).ifMissingArguments(printDescriptionExecutor)
+    .ifMissingArguments(printDescriptionExecutor)
 
   private def homeNotSetMessage: List[String] = List(s"${YELLOW}指定されたホームポイントが設定されていません。")
 
@@ -81,153 +83,142 @@ class HomeCommand[F[
   private def listExecutor() = {
     // locationの座標は負の無限大方向へ切り捨て(Debug画面のBlock:で表示される座標と同じ丸め方)
     def toBlockPos(pos: Double) = pos.floor.toInt
-    playerCommandBuilder
-      .buildWithExecutionF { context =>
-        val player = context.sender
-        val eff = for {
-          homeMap <- HomeReadAPI[F].list(player.getUniqueId)
-        } yield {
-          val title = s"${RED}登録ホームポイント一覧:"
-          val messages = title +: homeMap.toList.sortBy(_._1.value).map {
-            case (homeId, home) =>
-              import home.location._
-              val displayHomeName = home.name.getOrElse("名称未設定")
-              val displayWorldName =
-                ManagedWorld.fromName(worldName).map(_.japaneseName).getOrElse(worldName)
-              f"${YELLOW}ID ${homeId.value}%2d $displayWorldName(${toBlockPos(x)}, ${toBlockPos(
-                  y
-                )}, ${toBlockPos(z)}): $displayHomeName"
-          }
-          MessageEffect(messages)
+    playerCommandBuilder.buildWithExecutionF { context =>
+      val player = context.sender
+      val eff = for {
+        homeMap <- HomeReadAPI[F].list(player.getUniqueId)
+      } yield {
+        val title = s"${RED}登録ホームポイント一覧:"
+        val messages = title +: homeMap.toList.sortBy(_._1.value).map {
+          case (homeId, home) =>
+            import home.location._
+            val displayHomeName = home.name.getOrElse("名称未設定")
+            val displayWorldName =
+              ManagedWorld.fromName(worldName).map(_.japaneseName).getOrElse(worldName)
+            f"${YELLOW}ID ${homeId.value}%2d $displayWorldName(${toBlockPos(x)}, ${toBlockPos(y)}, ${toBlockPos(z)}): $displayHomeName"
         }
-        eff.toIO
+        MessageEffect(messages)
       }
+      eff.toIO
+    }
   }
 
   private def removeExecutor() =
-    argsAndSenderConfiguredBuilder
-      .buildWith { context =>
-        val homeId = HomeId(context.args.parsed.head)
-        val player = context.sender
+    argsAndSenderConfiguredBuilder.buildWith { context =>
+      val homeId = HomeId(context.args.parsed.head)
+      val player = context.sender
 
-        val eff = for {
-          maxAvailableHomeCount <- Home.maxAvailableHomeCountF(player)
-          isHomeAvailable = maxAvailableHomeCount >= homeId.value
-          // TODO: isHomeAvailableをif式にリフトするべき
-          _ <- MessageEffectF[F](s"ホームポイント${homeId}は現在のレベルでは使用できません")
-            .apply(player)
-            .whenA(!isHomeAvailable)
-          _ <-
-            NonServerThreadContextShift[F].shift >> HomeWriteAPI[F].remove(
-              player.getUniqueId,
-              homeId
-            ) >> MessageEffectF[F](s"ホームポイント${homeId}を削除しました。")
-              .apply(player)
-              .whenA(isHomeAvailable)
-        } yield TargetedEffect.emptyEffect
+      val eff = for {
+        maxAvailableHomeCount <- Home.maxAvailableHomeCountF(player)
+        isHomeAvailable = maxAvailableHomeCount >= homeId.value
+        // TODO: isHomeAvailableをif式にリフトするべき
+        _ <- MessageEffectF[F](s"ホームポイント${homeId}は現在のレベルでは使用できません")
+          .apply(player)
+          .whenA(!isHomeAvailable)
+        _ <-
+          NonServerThreadContextShift[F].shift >> HomeWriteAPI[F]
+            .remove(player.getUniqueId, homeId) >> MessageEffectF[F](
+            s"ホームポイント${homeId}を削除しました。"
+          ).apply(player).whenA(isHomeAvailable)
+      } yield TargetedEffect.emptyEffect
 
-        eff.toIO
-      }
+      eff.toIO
+    }
 
   private def warpExecutor =
-    argsAndSenderConfiguredBuilder
-      .buildWithExecutionF { context =>
-        val homeId = HomeId(context.args.parsed.head)
-        val player = context.sender
+    argsAndSenderConfiguredBuilder.buildWithExecutionF { context =>
+      val homeId = HomeId(context.args.parsed.head)
+      val player = context.sender
 
-        val eff = for {
-          maxAvailableHomeCount <- Home.maxAvailableHomeCountF(player)
-          isHomeAvailable = maxAvailableHomeCount >= homeId.value
-          _ <- NonServerThreadContextShift[F].shift
-          homeLocation <- HomeReadAPI[F].get(player.getUniqueId, homeId)
-        } yield {
-          if (isHomeAvailable)
-            homeLocation.fold(MessageEffect(s"ホームポイント${homeId}が設定されてません"))(home => {
-              val location = home.location
-              LocationCodec
-                .toBukkitLocation(location)
-                .fold(
-                  MessageEffect(
-                    List(s"${RED}ホームポイントへのワープに失敗しました", s"${RED}登録先のワールドが削除された可能性があります")
-                  )
-                )(bukkitLocation =>
-                  TeleportEffect.to[F](bukkitLocation).mapK(Effect.toIOK[F]) >>
-                    MessageEffect(s"ホームポイント${homeId}にワープしました")
+      val eff = for {
+        maxAvailableHomeCount <- Home.maxAvailableHomeCountF(player)
+        isHomeAvailable = maxAvailableHomeCount >= homeId.value
+        _ <- NonServerThreadContextShift[F].shift
+        homeLocation <- HomeReadAPI[F].get(player.getUniqueId, homeId)
+      } yield {
+        if (isHomeAvailable)
+          homeLocation.fold(MessageEffect(s"ホームポイント${homeId}が設定されてません"))(home => {
+            val location = home.location
+            LocationCodec
+              .toBukkitLocation(location)
+              .fold(
+                MessageEffect(
+                  List(s"${RED}ホームポイントへのワープに失敗しました", s"${RED}登録先のワールドが削除された可能性があります")
                 )
-            })
-          else
-            MessageEffect(s"ホームポイント${homeId}は現在のレベルでは使用できません")
-        }
-
-        eff.toIO
+              )(bukkitLocation =>
+                TeleportEffect.to[F](bukkitLocation).mapK(Effect.toIOK[F]) >>
+                  MessageEffect(s"ホームポイント${homeId}にワープしました")
+              )
+          })
+        else
+          MessageEffect(s"ホームポイント${homeId}は現在のレベルでは使用できません")
       }
+
+      eff.toIO
+    }
 
   def setHomeExecutor(): ContextualExecutor =
-    argsAndSenderConfiguredBuilder
-      .buildWithExecutionF { context =>
-        val homeId = HomeId(context.args.parsed.head)
-        val player = context.sender
+    argsAndSenderConfiguredBuilder.buildWithExecutionF { context =>
+      val homeId = HomeId(context.args.parsed.head)
+      val player = context.sender
 
-        val homeLocation = LocationCodec.fromBukkitLocation(player.getLocation)
+      val homeLocation = LocationCodec.fromBukkitLocation(player.getLocation)
 
-        val eff = for {
-          maxAvailableHomeCount <- Home.maxAvailableHomeCountF(player)
-          isHomeAvailable = maxAvailableHomeCount >= homeId.value
-          _ <- MessageEffectF[F](s"ホームポイント${homeId}は現在のレベルでは使用できません")
-            .apply(player)
-            .whenA(!isHomeAvailable)
-          _ <-
-            NonServerThreadContextShift[F].shift >> HomeWriteAPI[F].upsertLocation(
-              player.getUniqueId,
-              homeId
-            )(homeLocation) >> MessageEffectF[F](s"現在位置をホームポイント${homeId}に設定しました")
-              .apply(player)
-              .whenA(isHomeAvailable)
-        } yield TargetedEffect.emptyEffect
+      val eff = for {
+        maxAvailableHomeCount <- Home.maxAvailableHomeCountF(player)
+        isHomeAvailable = maxAvailableHomeCount >= homeId.value
+        _ <- MessageEffectF[F](s"ホームポイント${homeId}は現在のレベルでは使用できません")
+          .apply(player)
+          .whenA(!isHomeAvailable)
+        _ <-
+          NonServerThreadContextShift[F].shift >> HomeWriteAPI[F]
+            .upsertLocation(player.getUniqueId, homeId)(homeLocation) >> MessageEffectF[F](
+            s"現在位置をホームポイント${homeId}に設定しました"
+          ).apply(player).whenA(isHomeAvailable)
+      } yield TargetedEffect.emptyEffect
 
-        eff.toIO
-      }
+      eff.toIO
+    }
 
   private def nameExecutor() =
-    argsAndSenderConfiguredBuilder
-      .buildWithExecutionF { context =>
-        val homeId = HomeId(context.args.parsed.head)
+    argsAndSenderConfiguredBuilder.buildWithExecutionF { context =>
+      val homeId = HomeId(context.args.parsed.head)
 
-        val player = context.sender
-        val uuid = player.getUniqueId
+      val player = context.sender
+      val uuid = player.getUniqueId
 
-        val instruction =
-          List(s"ホームポイント${homeId}に設定する名前をチャットで入力してください", s"$YELLOW※入力されたチャット内容は他のプレイヤーには見えません")
+      val instruction =
+        List(s"ホームポイント${homeId}に設定する名前をチャットで入力してください", s"$YELLOW※入力されたチャット内容は他のプレイヤーには見えません")
 
-        def doneMessage(inputName: String): List[String] =
-          List(s"${GREEN}ホームポイント${homeId}の名前を", s"$GREEN${inputName}に更新しました")
+      def doneMessage(inputName: String): List[String] =
+        List(s"${GREEN}ホームポイント${homeId}の名前を", s"$GREEN${inputName}に更新しました")
 
-        val cancelledInputMessage = List(s"${YELLOW}入力がキャンセルされました。")
+      val cancelledInputMessage = List(s"${YELLOW}入力がキャンセルされました。")
 
-        for {
-          maxAvailableHomeCount <- Home.maxAvailableHomeCountF(player).toIO
-          isHomeAvailable = maxAvailableHomeCount >= homeId.value
-          _ <- MessageEffectF[F](s"ホームポイント${homeId}は現在のレベルでは使用できません")
-            .apply(player)
-            .toIO
-            .whenA(!isHomeAvailable)
-          _ <- Monad[IO]
-            .ifM(HomeReadAPI[F].configured(uuid, homeId).toIO)(
-              MessageEffect(instruction)(player) >>
-                scope.interceptFrom(uuid).flatMap {
-                  case Left(newName) =>
-                    HomeWriteAPI[F].rename(uuid, homeId)(newName).toIO.flatMap {
-                      case RenameResult.Done =>
-                        MessageEffect(doneMessage(newName))(player)
-                      case RenameResult.NotFound =>
-                        MessageEffect(homeNotSetMessage)(player)
-                    }
-                  case Right(Overridden) => MessageEffect(cancelledInputMessage)(player)
-                  case Right(_)          => IO.unit
-                },
-              MessageEffect(homeNotSetMessage)(player)
-            )
-            .whenA(isHomeAvailable)
-        } yield TargetedEffect.emptyEffect
-      }
+      for {
+        maxAvailableHomeCount <- Home.maxAvailableHomeCountF(player).toIO
+        isHomeAvailable = maxAvailableHomeCount >= homeId.value
+        _ <- MessageEffectF[F](s"ホームポイント${homeId}は現在のレベルでは使用できません")
+          .apply(player)
+          .toIO
+          .whenA(!isHomeAvailable)
+        _ <- Monad[IO]
+          .ifM(HomeReadAPI[F].configured(uuid, homeId).toIO)(
+            MessageEffect(instruction)(player) >>
+              scope.interceptFrom(uuid).flatMap {
+                case Left(newName) =>
+                  HomeWriteAPI[F].rename(uuid, homeId)(newName).toIO.flatMap {
+                    case RenameResult.Done =>
+                      MessageEffect(doneMessage(newName))(player)
+                    case RenameResult.NotFound =>
+                      MessageEffect(homeNotSetMessage)(player)
+                  }
+                case Right(Overridden) => MessageEffect(cancelledInputMessage)(player)
+                case Right(_)          => IO.unit
+              },
+            MessageEffect(homeNotSetMessage)(player)
+          )
+          .whenA(isHomeAvailable)
+      } yield TargetedEffect.emptyEffect
+    }
 }
