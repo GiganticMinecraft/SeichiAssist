@@ -121,16 +121,15 @@ class GachaCommand[
 
   object ChildExecutors {
 
-    private val getGachaPrizeIdExistsParser: SingleArgumentParser[Int] =
-      Parsers
-        .closedRangeInt(0, Int.MaxValue, MessageEffect("IDは0以上の整数を指定してください。"))
-        .andThen(_.flatMap { id =>
-          val intId = id
-          if (gachaPrizeAPI.existsGachaPrize(GachaPrizeId(intId)).toIO.unsafeRunSync())
-            succeedWith(intId)
-          else
-            failWith("指定されたIDのアイテムは存在しません！")
-        })
+    Parsers
+      .closedRangeInt(0, Int.MaxValue, MessageEffect("IDは0以上の整数を指定してください。"))
+      .andThen(_.flatMap { id =>
+        val intId = id
+        if (gachaPrizeAPI.existsGachaPrize(GachaPrizeId(intId)).toIO.unsafeRunSync())
+          succeedWith(intId)
+        else
+          failWith("指定されたIDのアイテムは存在しません！")
+      })
 
     private val gachaPrizeIdExistsParser: SingleArgumentParser[Int] =
       Parsers
@@ -216,7 +215,9 @@ class GachaCommand[
 
     val giveItem: ContextualExecutor =
       playerCommandBuilder
-        .thenParse(Parsers.closedRangeInt(0, Int.MaxValue, MessageEffect("IDは0以上の整数を指定してください。")))
+        .thenParse(
+          Parsers.closedRangeInt(0, Int.MaxValue, MessageEffect("IDは0以上の整数を指定してください。"))
+        )
         .thenParse(Parsers.identity)
         .buildWithExecutionF { context =>
           import shapeless.::
@@ -224,9 +225,7 @@ class GachaCommand[
           val ownerName = Some(owner)
 
           for {
-            gachaPrize <- gachaPrizeAPI.fetch(
-              GachaPrizeId(gachaPrizeId)
-            )
+            gachaPrize <- gachaPrizeAPI.fetch(GachaPrizeId(gachaPrizeId))
             existsGachaPrize = gachaPrize.nonEmpty
             _ <- new BukkitGrantGachaPrize[F]()
               .insertIntoPlayerInventoryOrDrop(gachaPrize.get, ownerName)(context.sender)
