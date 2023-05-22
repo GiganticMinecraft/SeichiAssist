@@ -8,7 +8,7 @@ import java.io._
 ThisBuild / scalaVersion := "2.13.4"
 // ThisBuild / version はGitHub Actionsによって取得/自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
-ThisBuild / version := "79"
+ThisBuild / version := "80"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
@@ -58,27 +58,27 @@ resolvers ++= Seq(
 val providedDependencies = Seq(
   "org.jetbrains" % "annotations" % "17.0.0",
   "org.apache.commons" % "commons-lang3" % "3.9",
-  "commons-codec" % "commons-codec" % "1.12",
+  "commons-codec" % "commons-codec" % "1.15",
   "org.spigotmc" % "spigot-api" % "1.12.2-R0.1-SNAPSHOT",
   // https://maven.enginehub.org/repo/com/sk89q/worldedit/worldedit-bukkit/
   "com.sk89q.worldguard" % "worldguard-legacy" % "6.2",
   "net.coreprotect" % "coreprotect" % "2.14.2",
-  "com.mojang" % "authlib" % "1.5.25",
+  "com.mojang" % "authlib" % "1.6.25",
 
   // no runtime
-  "org.typelevel" %% "simulacrum" % "1.0.0"
+  "org.typelevel" %% "simulacrum" % "1.0.1"
 ).map(_ % "provided")
 
 val testDependencies = Seq(
   "org.scalamock" %% "scalamock" % "4.4.0",
-  "org.scalatest" %% "scalatest" % "3.2.2",
+  "org.scalatest" %% "scalatest" % "3.2.16",
   "org.scalatestplus" %% "scalacheck-1-14" % "3.2.2.0",
   // テスト用のTestSchedulerを使うため
-  "io.monix" %% "monix" % "3.2.2"
+  "io.monix" %% "monix" % "3.4.1"
 ).map(_ % "test")
 
 val dependenciesToEmbed = Seq(
-  "org.scala-lang.modules" %% "scala-collection-contrib" % "0.2.1",
+  "org.scala-lang.modules" %% "scala-collection-contrib" % "0.3.0",
 
   // DB
   "org.mariadb.jdbc" % "mariadb-java-client" % "3.1.4",
@@ -89,9 +89,9 @@ val dependenciesToEmbed = Seq(
   "com.github.etaty" %% "rediscala" % "1.9.0",
 
   // effect system
-  "org.typelevel" %% "cats-core" % "2.1.0",
-  "org.typelevel" %% "cats-effect" % "2.1.0",
-  "co.fs2" %% "fs2-core" % "2.5.0",
+  "org.typelevel" %% "cats-core" % "2.9.0",
+  "org.typelevel" %% "cats-effect" % "2.5.5",
+  "co.fs2" %% "fs2-core" % "2.5.11",
 
   // algebra
   "io.chrisdavenport" %% "log4cats-core" % "1.1.1",
@@ -99,27 +99,27 @@ val dependenciesToEmbed = Seq(
   "io.chrisdavenport" %% "cats-effect-time" % "0.1.2",
 
   // logging
-  "org.slf4j" % "slf4j-api" % "1.7.28",
-  "org.slf4j" % "slf4j-jdk14" % "1.7.28",
+  "org.slf4j" % "slf4j-api" % "1.7.36",
+  "org.slf4j" % "slf4j-jdk14" % "1.7.36",
   "com.typesafe.scala-logging" % "scala-logging-slf4j_2.10" % "2.1.2",
 
   // type-safety utils
-  "eu.timepit" %% "refined" % "0.9.10",
-  "com.beachape" %% "enumeratum" % "1.5.13",
+  "eu.timepit" %% "refined" % "0.10.3",
+  "com.beachape" %% "enumeratum" % "1.7.2",
 
   // protobuf
   "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
 
   // JSON
-  "io.circe" %% "circe-core" % "0.14.1",
-  "io.circe" %% "circe-generic" % "0.14.1",
-  "io.circe" %% "circe-parser" % "0.14.1",
+  "io.circe" %% "circe-core" % "0.14.5",
+  "io.circe" %% "circe-generic" % "0.14.5",
+  "io.circe" %% "circe-parser" % "0.14.5",
 
   // ajd4jp
   "com.github.KisaragiEffective" % "ajd4jp-mirror" % "8.0.2.2021",
 
   // Sentry
-  "io.sentry" % "sentry" % "6.18.1"
+  "io.sentry" % "sentry" % "6.19.1"
 )
 
 // endregion

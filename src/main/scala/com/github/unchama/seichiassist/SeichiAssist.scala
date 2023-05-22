@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import cats.Parallel.Aux
 import cats.effect
 import cats.effect.concurrent.Ref
-import cats.effect.{Clock, ConcurrentEffect, Fiber, IO, SyncIO, Timer}
+import cats.effect.{ConcurrentEffect, Fiber, IO, SyncIO, Timer}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.buildassist.menu.BuildAssistMenuRouter
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
@@ -51,7 +51,10 @@ import com.github.unchama.seichiassist.infrastructure.logging.jul.NamedJULLogger
 import com.github.unchama.seichiassist.infrastructure.redisbungee.RedisBungeeNetworkConnectionCount
 import com.github.unchama.seichiassist.infrastructure.scalikejdbc.ScalikeJDBCConfiguration
 import com.github.unchama.seichiassist.listener._
-import com.github.unchama.seichiassist.menus.minestack.CategorizedMineStackMenu
+import com.github.unchama.seichiassist.menus.minestack.{
+  CategorizedMineStackMenu,
+  MineStackMainMenu
+}
 import com.github.unchama.seichiassist.menus.{BuildMainMenu, TopLevelRouter}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems._
@@ -246,12 +249,10 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val buildCountSystem: subsystems.buildcount.System[IO, SyncIO] = {
-    import PluginExecutionContexts.asyncShift
+    import PluginExecutionContexts.{asyncShift, clock}
 
     implicit val configuration: subsystems.buildcount.application.Configuration =
       seichiAssistConfig.buildCountConfiguration
-
-    implicit val syncIoClock: Clock[SyncIO] = Clock.create
 
     implicit val globalNotification: DiscordNotificationAPI[IO] =
       discordNotificationSystem.globalNotification
@@ -348,10 +349,9 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val mebiusSystem: Subsystem[IO] = {
-    import PluginExecutionContexts.{onMainThread, sleepAndRoutineContext, timer}
+    import PluginExecutionContexts.{onMainThread, sleepAndRoutineContext, timer, clock}
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
-    implicit val syncClock: Clock[SyncIO] = Clock.create[SyncIO]
     implicit val syncSeasonalEventsSystemAPI: SeasonalEventsAPI[SyncIO] =
       seasonalEventsSystem.api[SyncIO]
 
@@ -596,17 +596,23 @@ class SeichiAssist extends JavaPlugin() {
     // コンフィグ系の設定は全てConfig.javaに移動
     SeichiAssist.seichiAssistConfig = Config.loadFrom(this)
 
-    Sentry.init { options =>
-      options.setDsn("https://7f241763b17c49db982ea29ad64b0264@sentry.onp.admin.seichi.click/2")
-      // パフォーマンスモニタリングに使うトレースサンプルの送信割合
-      // tracesSampleRateを1.0にすると全てのイベントが送られるため、送りすぎないように調整する必要がある
-      options.setTracesSampleRate(0.25)
+    val serverId = SeichiAssist.seichiAssistConfig.getServerId
 
-      // どのサーバーからイベントが送られているのかを判別する識別子
-      options.setEnvironment(SeichiAssist.seichiAssistConfig.getServerId)
+    if (!serverId.startsWith("local-")) {
+      Sentry.init { options =>
+        options.setDsn(
+          "https://7f241763b17c49db982ea29ad64b0264@sentry.onp.admin.seichi.click/2"
+        )
+        // パフォーマンスモニタリングに使うトレースサンプルの送信割合
+        // tracesSampleRateを1.0にすると全てのイベントが送られるため、送りすぎないように調整する必要がある
+        options.setTracesSampleRate(0.25)
+
+        // どのサーバーからイベントが送られているのかを判別する識別子
+        options.setEnvironment(serverId)
+      }
+
+      Sentry.configureScope(_.setLevel(SentryLevel.WARNING))
     }
-
-    Sentry.configureScope(_.setLevel(SentryLevel.WARNING))
 
     if (SeichiAssist.seichiAssistConfig.getDebugMode == 1) {
       // debugmode=1の時は最初からデバッグモードで鯖を起動
@@ -704,6 +710,8 @@ class SeichiAssist extends JavaPlugin() {
       BuildAssistMenuRouter.apply.canOpenBuildMainMenu
     implicit val ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu =
       menuRouter.ioCanOpenCategorizedMineStackMenu
+    implicit val ioCanMineStackMainMenu: IO CanOpen MineStackMainMenu.type =
+      menuRouter.ioCanOpenMineStackMenu
 
     // コマンドの登録
     Map(

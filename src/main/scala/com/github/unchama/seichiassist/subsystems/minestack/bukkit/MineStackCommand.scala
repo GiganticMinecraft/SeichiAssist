@@ -7,9 +7,13 @@ import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.seichiassist.menus.minestack.CategorizedMineStackMenu
+import com.github.unchama.seichiassist.menus.minestack.{
+  CategorizedMineStackMenu,
+  MineStackMainMenu
+}
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory
+import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect}
 import org.bukkit.ChatColor._
@@ -20,6 +24,7 @@ import org.bukkit.inventory.ItemStack
 object MineStackCommand {
   def executor(
     implicit ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu,
+    ioCanOpenMinestackMainMenu: IO CanOpen MineStackMainMenu.type,
     mineStackAPI: MineStackAPI[IO, Player, ItemStack]
   ): TabExecutor =
     BranchedExecutor(
@@ -53,32 +58,37 @@ object MineStackCommand {
         .build()
 
     def openCategorizedMineStackMenu(
-      implicit ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu
+      implicit ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu,
+      ioCanOpenMinestackMainMenu: IO CanOpen MineStackMainMenu.type
     ): ContextualExecutor =
       playerCommandBuilder
         .argumentsParsers(
           List(
             Parsers
-              .closedRangeInt(1, Int.MaxValue, MessageEffect("カテゴリは正の値を指定してください。"))
-              .andThen(_.flatMap { categoryValue =>
-                MineStackObjectCategory
-                  .fromSerializedValue(categoryValue.asInstanceOf[Int] - 1) match {
-                  case Some(category) => succeedWith(category)
-                  case None           => failWith("指定されたカテゴリは存在しません。")
+              .closedRangeInt(0, Int.MaxValue, MessageEffect("カテゴリは0以上の値を入力してください"))
+              .andThen(_.flatMap { _categoryValue =>
+                val categoryValue = _categoryValue.asInstanceOf[Int]
+                MineStackObjectCategory.fromSerializedValue(categoryValue - 1) match {
+                  case Some(category)             => succeedWith(category)
+                  case None if categoryValue == 0 => succeedWith(emptyEffect)
+                  case None                       => failWith("指定されたカテゴリは存在しません。")
                 }
               }),
-            Parsers.closedRangeInt(1, Int.MaxValue, MessageEffect("ページ数は正の値を指定してください。"))
+            Parsers.closedRangeInt(0, Int.MaxValue, MessageEffect("ページ数は0以上の値を指定してください。"))
           )
         )
         .execution { context =>
-          IO.pure(
+          val categoryValue = context.args.parsed(1).toString.toInt
+          IO.pure(if (categoryValue == 0) {
+            ioCanOpenMinestackMainMenu.open(MineStackMainMenu)
+          } else {
             ioCanOpenCategorizedMenu.open(
               new CategorizedMineStackMenu(
                 context.args.parsed.head.asInstanceOf[MineStackObjectCategory],
-                context.args.parsed(1).toString.toInt - 1
+                categoryValue - 1
               )
             )
-          )
+          })
         }
         .build()
 
