@@ -9,8 +9,8 @@ import org.bukkit.command.TabExecutor
 
 object MapCommand {
   val executor: TabExecutor = BuilderTemplates
-    .playerCommandBuilder[Nothing]
-    .execution { context =>
+    .playerCommandBuilder
+    .buildWith { context =>
       IO {
         val location = context.sender.getLocation
         val url =

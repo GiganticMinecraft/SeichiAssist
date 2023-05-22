@@ -70,15 +70,17 @@ object AchievementCommand {
   def executor[F[_]: ConcurrentEffect](
     implicit service: AchievementBookingService[F]
   ): TabExecutor = ContextualExecutorBuilder
-    .beginConfiguration()
-    .argumentsParsers(
-      List(operationParser, achievementNumberParser, scopeParser),
-      onMissingArguments = descriptionPrintExecutor
+    .beginConfiguration
+    .thenParse(operationParser)
+    .thenParse(achievementNumberParser)
+    .thenParse(scopeParser)
+    .ifMissingArguments(
+      descriptionPrintExecutor
     )
-    .execution { context =>
+    .buildWithExecutionF { context =>
       val sender = context.sender
 
-      val operation = context.args.parsed.head.asInstanceOf[AchievementOperation]
+      val operation = context.args.parsed.head
       val achievementNumber = context.args.parsed(1).asInstanceOf[Int]
 
       def execution(): IO[TargetedEffect[CommandSender]] = {
@@ -142,6 +144,5 @@ object AchievementCommand {
 
       execution()
     }
-    .build()
     .asNonBlockingTabExecutor()
 }

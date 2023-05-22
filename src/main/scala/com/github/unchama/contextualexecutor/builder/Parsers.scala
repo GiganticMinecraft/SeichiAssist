@@ -8,6 +8,9 @@ import eu.timepit.refined.auto._
 import eu.timepit.refined.numeric.NonNegative
 import org.bukkit.command.CommandSender
 
+import java.time.LocalDate
+import java.time.format.{DateTimeFormatter, DateTimeParseException}
+
 object Parsers {
   import ParserResponse._
 
@@ -62,4 +65,19 @@ object Parsers {
   ): SingleArgumentParser[T] = {
     fromString.andThen(_.toRight(failureMessage))
   }
+
+  // It is safe to cache.
+  private val hyphenatedDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+  /**
+   * `YYYY-mm-DD`形式の日付文字列をパースするパーサー。
+   */
+  def hyphenatedDate(failureMessage: TargetedEffect[CommandSender] = emptyEffect): SingleArgumentParser[LocalDate] = in =>
+    try {
+      Right(LocalDate.parse(in, hyphenatedDateFormatter))
+    } catch {
+      case _: DateTimeParseException =>
+        Left(failureMessage)
+      case e => throw e
+    }
 }

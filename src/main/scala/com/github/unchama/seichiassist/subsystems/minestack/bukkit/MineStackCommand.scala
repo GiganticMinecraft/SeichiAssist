@@ -16,6 +16,7 @@ import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import shapeless.HNil
 
 object MineStackCommand {
   def executor(
@@ -36,59 +37,50 @@ object MineStackCommand {
     def setAutoCollectionExecutor(
       isItemCollectedAutomatically: Boolean
     )(implicit mineStackAPI: MineStackAPI[IO, Player, ItemStack]): ContextualExecutor =
-      playerCommandBuilder[Nothing]
-        .execution { _ =>
-          IO {
-            SequentialEffect(
-              DeferredEffect {
-                IO(mineStackAPI.setAutoMineStack(isItemCollectedAutomatically))
-              },
-              if (isItemCollectedAutomatically)
-                MessageEffect("MineStack自動収集をONにしました。")
-              else
-                MessageEffect("MineStack自動収集をOFFにしました。")
-            )
-          }
-        }
-        .build()
+      playerCommandBuilder
+        .buildWithEffectAsExecution(
+          SequentialEffect(
+            DeferredEffect {
+              IO(mineStackAPI.setAutoMineStack(isItemCollectedAutomatically))
+            },
+            if (isItemCollectedAutomatically)
+              MessageEffect("MineStack自動収集をONにしました。")
+            else
+              MessageEffect("MineStack自動収集をOFFにしました。")
+          )
+        )
 
     def openCategorizedMineStackMenu(
       implicit ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu
     ): ContextualExecutor =
       playerCommandBuilder
-        .argumentsParsers(
-          List(
-            Parsers
-              .closedRangeInt(1, Int.MaxValue, MessageEffect("カテゴリは正の値を指定してください。"))
-              .andThen(_.flatMap { categoryValue =>
-                MineStackObjectCategory
-                  .fromSerializedValue(categoryValue.asInstanceOf[Int] - 1) match {
-                  case Some(category) => succeedWith(category)
-                  case None           => failWith("指定されたカテゴリは存在しません。")
-                }
-              }),
-            Parsers.closedRangeInt(1, Int.MaxValue, MessageEffect("ページ数は正の値を指定してください。"))
-          )
-        )
-        .execution { context =>
+        .thenParse(Parsers
+          .closedRangeInt(1, Int.MaxValue, MessageEffect("カテゴリは正の値を指定してください。"))
+          .andThen(_.flatMap { categoryValue =>
+            MineStackObjectCategory
+              .fromSerializedValue(categoryValue - 1) match {
+              case Some(category) => succeedWith(category)
+              case None => failWith("指定されたカテゴリは存在しません。")
+            }
+          }))
+        .thenParse(Parsers.closedRangeInt(1, Int.MaxValue, MessageEffect("ページ数は正の値を指定してください。")))
+        .buildWith { context =>
+          import shapeless.::
+          val _0 :: _1 :: HNil = context.args.parsed
           IO.pure(
             ioCanOpenCategorizedMenu.open(
-              new CategorizedMineStackMenu(
-                context.args.parsed.head.asInstanceOf[MineStackObjectCategory],
-                context.args.parsed(1).toString.toInt - 1
-              )
+              new CategorizedMineStackMenu(_0, _1.toString.toInt - 1)
             )
           )
         }
-        .build()
 
     import cats.implicits._
 
     def storeEverythingInInventory(
       implicit mineStackAPI: MineStackAPI[IO, Player, ItemStack]
     ): ContextualExecutor =
-      playerCommandBuilder[Nothing]
-        .execution { context =>
+      playerCommandBuilder
+        .buildWith { context =>
           for {
             player <- IO(context.sender)
             inventory <- IO(player.getInventory)
@@ -103,7 +95,6 @@ object MineStackCommand {
             _ <- IO(targetIndexes.foreach(_.foreach(index => inventory.clear(index))))
           } yield MessageEffect(s"${YELLOW}インベントリの中身をすべてマインスタックに収納しました。")
         }
-        .build()
 
   }
 

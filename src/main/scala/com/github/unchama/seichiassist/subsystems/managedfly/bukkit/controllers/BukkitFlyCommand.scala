@@ -34,9 +34,8 @@ object BukkitFlyCommand {
 
   private val printUsageExecutor =
     BuilderTemplates
-      .playerCommandBuilder[Nothing]
-      .execution(_ => IO.pure(MessageEffect(commandHelpMessage)))
-      .build()
+      .playerCommandBuilder
+      .buildWithIOAsExecution(IO.pure(MessageEffect(commandHelpMessage)))
 
   private val durationParser =
     Parsers.closedRangeInt(1, Int.MaxValue, MessageEffect(durationParseFailedMessage)).andThen {
@@ -53,18 +52,16 @@ object BukkitFlyCommand {
     factory: ActiveSessionFactory[F, Player]
   ): ContextualExecutor =
     BuilderTemplates
-      .playerCommandBuilder[Nothing]
-      .execution { context =>
+      .playerCommandBuilder
+      .buildWithExecutionF { context =>
         for {
           _ <-
             sessionReferenceRepository(context.sender)
               .replaceSession(
                 factory.start[G](RemainingFlyDuration.Infinity).run(context.sender)
               )
-              .toIO
         } yield TargetedEffect.emptyEffect
       }
-      .build()
 
   def addCommand[F[_]: ConcurrentEffect: Timer, G[_]: SyncEffect](
     implicit
@@ -73,9 +70,9 @@ object BukkitFlyCommand {
   ): ContextualExecutor =
     BuilderTemplates
       .playerCommandBuilder
-      .argumentsParsers(List(durationParser))
-      .execution { context =>
-        val List(duration: RemainingFlyDuration) = context.args.parsed
+      .thenParse(durationParser)
+      .buildWithExecutionF { context =>
+        val duration = context.args.parsed.head
 
         for {
           currentStatus <- sessionReferenceRepository(context.sender)
@@ -92,18 +89,17 @@ object BukkitFlyCommand {
               .toIO
         } yield TargetedEffect.emptyEffect
       }
-      .build()
 
   def finishCommand[F[_]: ConcurrentEffect, G[_]](
     implicit
     sessionReferenceRepository: KeyedDataRepository[Player, ActiveSessionReference[F, G]]
   ): ContextualExecutor =
     BuilderTemplates
-      .playerCommandBuilder[Nothing]
-      .execution { context =>
+      .playerCommandBuilder
+      .buildWithExecutionF { context =>
         for {
           sessionStopped <-
-            sessionReferenceRepository(context.sender).stopAnyRunningSession.toIO
+            sessionReferenceRepository(context.sender).stopAnyRunningSession
         } yield {
           if (sessionStopped) {
             MessageEffect(s"${GREEN}fly効果を停止しました。")
@@ -112,7 +108,6 @@ object BukkitFlyCommand {
           }
         }
       }
-      .build()
 
   def executor[F[_]: ConcurrentEffect: Timer, G[_]: SyncEffect](
     implicit

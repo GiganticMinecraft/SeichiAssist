@@ -9,20 +9,15 @@ import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.command.MebiusCommandExecutorProvider.Messages
-import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{
-  MebiusForcedMaterial,
-  MebiusProperty
-}
-import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{
-  MebiusSpeech,
-  MebiusSpeechStrength
-}
+import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{MebiusForcedMaterial, MebiusProperty}
+import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{MebiusSpeech, MebiusSpeechStrength}
 import com.github.unchama.seichiassist.subsystems.mebius.service.MebiusSpeechService
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect, UnfocusedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.entity.Player
+import shapeless.HList
 
 class MebiusCommandExecutorProvider(
   implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]]
@@ -76,13 +71,12 @@ class MebiusCommandExecutorProvider(
     }
 
     val printDescriptionExecutor: ContextualExecutor = ContextualExecutorBuilder
-      .beginConfiguration[Nothing]()
-      .execution { _ => IO(Messages.commandDescription) }
-      .build()
+      .beginConfiguration
+      .buildWithEffectAsExecution(Kleisli.liftF(IO.pure(Messages.commandDescription)))
 
     val namingExecutor: ContextualExecutor = playerCommandBuilder
-      .argumentsParsers(List(Parsers.identity))
-      .execution { context =>
+      .thenParse(Parsers.identity)
+      .buildWith { context =>
         val newName = concatHeadAndRemainingArgs(context.args)
         val player = context.sender
 
@@ -109,11 +103,9 @@ class MebiusCommandExecutorProvider(
           }
         ).effectOn(player)
       }
-      .build()
 
-    val convertExecutor: ContextualExecutor = playerCommandBuilder[Nothing]
-      .argumentsParsers(List())
-      .execution { context =>
+    val convertExecutor: ContextualExecutor = playerCommandBuilder
+      .buildWith { context =>
         val mainHand = context.sender.getInventory.getItemInMainHand
 
         BukkitMebiusItemStackCodec.decodeMebiusProperty(mainHand) match {
@@ -146,14 +138,13 @@ class MebiusCommandExecutorProvider(
             IO.pure(MessageEffect("メインハンドに持っているアイテムはメビウスではありません！"))
         }
       }
-      .build()
 
-    private def concatHeadAndRemainingArgs[A](args: PartiallyParsedArgs[A]): String =
+    private def concatHeadAndRemainingArgs[A](args: PartiallyParsedArgs[shapeless.::[A, HList]]): String =
       args.parsed.head.toString + " " + args.yetToBeParsed.mkString(" ")
 
     object NicknameCommand {
-      private val resetNicknameExecutor = playerCommandBuilder[Nothing]
-        .execution { context =>
+      private val resetNicknameExecutor = playerCommandBuilder
+        .buildWith { context =>
           val player = context.sender
           setNicknameOverrideOnMebiusOn(
             player,
@@ -162,11 +153,11 @@ class MebiusCommandExecutorProvider(
             s"${RED}呼び名のリセットはMEBIUSを装着して行ってください."
           )
         }
-        .build()
 
-      private val setNicknameExecutor = playerCommandBuilder[String]
-        .argumentsParsers(List(Parsers.identity), onMissingArguments = printDescriptionExecutor)
-        .execution { context =>
+      private val setNicknameExecutor = playerCommandBuilder
+        .thenParse(Parsers.identity)
+        .ifMissingArguments(printDescriptionExecutor)
+        .buildWith { context =>
           val player = context.sender
           setNicknameOverrideOnMebiusOn(
             player,
@@ -175,7 +166,6 @@ class MebiusCommandExecutorProvider(
             s"${RED}呼び名の設定はMEBIUSを装着して行ってください."
           )
         }
-        .build()
 
       private def setNicknameOverrideOnMebiusOn(
         player: Player,
@@ -205,8 +195,8 @@ class MebiusCommandExecutorProvider(
         ).effectOn(player)
       }
 
-      private val checkNicknameExecutor = playerCommandBuilder[Nothing]
-        .execution { context =>
+      private val checkNicknameExecutor = playerCommandBuilder
+        .buildWith { context =>
           IO(MessageEffect {
             BukkitMebiusItemStackCodec
               .decodePropertyOfOwnedMebius(context.sender)(
@@ -218,7 +208,6 @@ class MebiusCommandExecutorProvider(
               } { name => s"${GREEN}現在のメビウスからの呼び名 : $name" }
           })
         }
-        .build()
 
       val executor: BranchedExecutor = BranchedExecutor(
         Map("reset" -> resetNicknameExecutor, "set" -> setNicknameExecutor),

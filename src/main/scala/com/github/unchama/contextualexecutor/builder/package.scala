@@ -8,6 +8,11 @@ import org.bukkit.command.CommandSender
 package object builder {
   type Result[+Error, +Success] = Either[Error, Success]
 
+  /**
+   * 失敗した結果のエラー通知を行うか、成功した結果を返すようなコンストラクト
+   * @tparam CS 通知する対象
+   * @tparam T 成功時の結果
+   */
   type ResponseEffectOrResult[-CS, +T] = Result[TargetedEffect[CS], T]
 
   type SingleArgumentParser[+Output] = String => ResponseEffectOrResult[CommandSender, Output]

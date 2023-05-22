@@ -2,12 +2,9 @@ package com.github.unchama.seichiassist.subsystems.vote.bukkit.command
 
 import cats.effect.ConcurrentEffect
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
-import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
+import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
-import com.github.unchama.seichiassist.infrastructure.minecraft.{
-  JdbcLastSeenNameToUuid,
-  LastSeenNameToUuidError
-}
+import com.github.unchama.seichiassist.infrastructure.minecraft.{JdbcLastSeenNameToUuid, LastSeenNameToUuidError}
 import com.github.unchama.seichiassist.subsystems.vote.domain.VotePersistence
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect}
@@ -50,7 +47,6 @@ class VoteCommand[F[_]: ConcurrentEffect](implicit votePersistence: VotePersiste
           DeferredEffect(distributionProcess.toIO)
         )
       }
-      .build()
   }
 
   val executor: TabExecutor = {

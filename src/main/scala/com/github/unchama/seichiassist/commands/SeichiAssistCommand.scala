@@ -4,6 +4,7 @@ import cats.effect.IO
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.seichiassist.{Config, SeichiAssist}
+import com.github.unchama.targetedeffect.UnfocusedEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
 import org.bukkit.command.{ConsoleCommandSender, TabExecutor}
@@ -25,58 +26,49 @@ object SeichiAssistCommand {
   )
 
   private val reloadConfigExecutor = ContextualExecutorBuilder
-    .beginConfiguration[Nothing]()
-    .execution { _ =>
-      IO {
-        SeichiAssist.seichiAssistConfig = Config.loadFrom(SeichiAssist.instance)
-        MessageEffect("config.ymlの設定値を再読み込みしました")
-      }
-    }
-    .build()
+    .beginConfiguration
+    .buildWithEffectAsExecution(UnfocusedEffect {
+      SeichiAssist.seichiAssistConfig = Config.loadFrom(SeichiAssist.instance)
+      MessageEffect("config.ymlの設定値を再読み込みしました")
+    })
 
   private val toggleDebugExecutor = ContextualExecutorBuilder
-    .beginConfiguration[Nothing]()
-    .execution { _ =>
-      IO {
-        // debugフラグ反転処理
-        if (SeichiAssist.seichiAssistConfig.getDebugMode == 1) {
-          // メッセージフラグを反転
-          SeichiAssist.DEBUG = !SeichiAssist.DEBUG
-          SeichiAssist.instance.restartRepeatedJobs()
+    .beginConfiguration
+    .buildWithEffectAsExecution(UnfocusedEffect {
+      // debugフラグ反転処理
+      if (SeichiAssist.seichiAssistConfig.getDebugMode == 1) {
+        // メッセージフラグを反転
+        SeichiAssist.DEBUG = !SeichiAssist.DEBUG
+        SeichiAssist.instance.restartRepeatedJobs()
 
-          val resultMessage = if (SeichiAssist.DEBUG) {
-            s"${GREEN}デバッグモードを有効にしました"
-          } else {
-            s"${GREEN}デバッグモードを無効にしました"
-          }
-
-          MessageEffect(resultMessage)
+        val resultMessage = if (SeichiAssist.DEBUG) {
+          s"${GREEN}デバッグモードを有効にしました"
         } else {
-          MessageEffect(
-            List(
-              s"${RED}このコマンドは現在の設定では実行できません",
-              s"${RED}config.ymlのdebugmodeの値を1に書き換えて再起動またはreloadしてください"
-            )
-          )
+          s"${GREEN}デバッグモードを無効にしました"
         }
+
+        MessageEffect(resultMessage)
+      } else {
+        MessageEffect(
+          List(
+            s"${RED}このコマンドは現在の設定では実行できません",
+            s"${RED}config.ymlのdebugmodeの値を1に書き換えて再起動またはreloadしてください"
+          )
+        )
       }
-    }
-    .build()
+    })
 
   private val setAnniversaryFlagExecutor = ContextualExecutorBuilder
-    .beginConfiguration[Nothing]()
+    .beginConfiguration
     .refineSenderWithError[ConsoleCommandSender]("コンソール専用コマンドです")
-    .execution { _ =>
-      IO {
-        SeichiAssist
-          .databaseGateway
-          .playerDataManipulator
-          .setAnniversary(anniversary = true, null)
+    .buildWithEffectAsExecution(UnfocusedEffect {
+      SeichiAssist
+        .databaseGateway
+        .playerDataManipulator
+        .setAnniversary(anniversary = true, null)
 
-        MessageEffect("Anniversaryアイテムの配布を開始しました。")
-      }
-    }
-    .build()
+      MessageEffect("Anniversaryアイテムの配布を開始しました。")
+    })
 
   val executor: TabExecutor = BranchedExecutor(
     Map(

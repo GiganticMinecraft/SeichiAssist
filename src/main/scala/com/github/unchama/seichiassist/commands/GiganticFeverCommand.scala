@@ -21,23 +21,14 @@ object GiganticFeverCommand {
     .execution { _ =>
       val config = SeichiAssist.seichiAssistConfig
 
-      SendMessageEffect.sendMessageToEveryoneIgnoringPreference(
-        s"${AQUA}フィーバー！この時間MOBたちは踊りに出かけてるぞ！今が整地時だ！"
-      )
-      SendMessageEffect.sendMessageToEveryoneIgnoringPreference(
-        s"$AQUA(${config.getGiganticFeverDisplayTime}間)"
-      )
-
-      WorldSettings.setDifficulty(worldsToToggleDifficulty, Difficulty.PEACEFUL)
-
-      IO.sleep(
-        FiniteDuration(config.getGiganticFeverMinutes * 60, scala.concurrent.duration.MINUTES)
-      )(IO.timer(ExecutionContext.global))
-
-      WorldSettings.setDifficulty(worldsToToggleDifficulty, Difficulty.HARD)
-      SendMessageEffect.sendMessageToEveryoneIgnoringPreference(s"${AQUA}フィーバー終了！MOBたちは戻ってきたぞ！")
-
-      IO(emptyEffect)
+      List(
+        broadcast(s"${AQUA}フィーバー！この時間MOBたちは踊りに出かけてるぞ！今が整地時だ！"),
+        broadcast(s"$AQUA(${config.getGiganticFeverDisplayTime}間)"),
+        WorldSettings.setDifficulty(worldsToToggleDifficulty, Difficulty.PEACEFUL),
+        IO.sleep((config.getGiganticFeverMinutes * 60).minutes)(IO.timer(ExecutionContext.global)),
+        WorldSettings.setDifficulty(worldsToToggleDifficulty, Difficulty.HARD),
+        broadcast(s"${AQUA}フィーバー終了！MOBたちは戻ってきたぞ！")
+      ).sequence.void
     }
     .build()
     .asNonBlockingTabExecutor()

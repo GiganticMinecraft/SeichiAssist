@@ -33,9 +33,10 @@ class OpenPocketCommand[F[_]: Effect: InteractInventory[*[_], Player, Inventory]
   import cats.implicits._
 
   val executor: TabExecutor = playerCommandBuilder
-    .argumentsParsers(List(Parsers.identity), onMissingArguments = descriptionPrintExecutor)
-    .execution { context =>
-      val playerName = context.args.parsed.head.asInstanceOf[String]
+    .thenParse(Parsers.identity)
+    .ifMissingArguments(descriptionPrintExecutor)
+    .buildWith { context =>
+      val playerName = context.args.parsed.head
 
       val computeEffect: IO[TargetedEffect[Player]] =
         for {
@@ -74,6 +75,5 @@ class OpenPocketCommand[F[_]: Effect: InteractInventory[*[_], Player, Inventory]
 
       computeEffect
     }
-    .build()
     .asNonBlockingTabExecutor()
 }

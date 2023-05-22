@@ -55,17 +55,14 @@ class HomeCommand[F[
     )
   )
 
-  private val argsAndSenderConfiguredBuilder = playerCommandBuilder.argumentsParsers(
-    List(
-      Parsers.closedRangeInt(
-        HomeId.minimumNumber,
-        HomeId.maxNumber,
-        failureMessage =
-          MessageEffect(s"ホームの番号を${HomeId.minimumNumber}～${HomeId.maxNumber}の間で入力してください")
-      )
-    ),
-    onMissingArguments = printDescriptionExecutor
-  )
+  private val argsAndSenderConfiguredBuilder = playerCommandBuilder.thenParse(
+    Parsers.closedRangeInt(
+      HomeId.minimumNumber,
+      HomeId.maxNumber,
+      failureMessage =
+        MessageEffect(s"ホームの番号を${HomeId.minimumNumber}～${HomeId.maxNumber}の間で入力してください")
+    )
+  ).ifMissingArguments(printDescriptionExecutor)
 
   private def homeNotSetMessage: List[String] = List(s"${YELLOW}指定されたホームポイントが設定されていません。")
 
@@ -84,8 +81,8 @@ class HomeCommand[F[
   private def listExecutor() = {
     // locationの座標は負の無限大方向へ切り捨て(Debug画面のBlock:で表示される座標と同じ丸め方)
     def toBlockPos(pos: Double) = pos.floor.toInt
-    playerCommandBuilder[Nothing]
-      .execution { context =>
+    playerCommandBuilder
+      .buildWithExecutionF { context =>
         val player = context.sender
         val eff = for {
           homeMap <- HomeReadAPI[F].list(player.getUniqueId)
@@ -105,18 +102,18 @@ class HomeCommand[F[
         }
         eff.toIO
       }
-      .build()
   }
 
   private def removeExecutor() =
     argsAndSenderConfiguredBuilder
-      .execution { context =>
-        val homeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
+      .buildWith { context =>
+        val homeId = HomeId(context.args.parsed.head)
         val player = context.sender
 
         val eff = for {
           maxAvailableHomeCount <- Home.maxAvailableHomeCountF(player)
           isHomeAvailable = maxAvailableHomeCount >= homeId.value
+          // TODO: isHomeAvailableをif式にリフトするべき
           _ <- MessageEffectF[F](s"ホームポイント${homeId}は現在のレベルでは使用できません")
             .apply(player)
             .whenA(!isHomeAvailable)
@@ -131,12 +128,11 @@ class HomeCommand[F[
 
         eff.toIO
       }
-      .build()
 
   private def warpExecutor =
     argsAndSenderConfiguredBuilder
-      .execution { context =>
-        val homeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
+      .buildWithExecutionF { context =>
+        val homeId = HomeId(context.args.parsed.head)
         val player = context.sender
 
         val eff = for {
@@ -165,12 +161,11 @@ class HomeCommand[F[
 
         eff.toIO
       }
-      .build()
 
   def setHomeExecutor(): ContextualExecutor =
     argsAndSenderConfiguredBuilder
-      .execution { context =>
-        val homeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
+      .buildWithExecutionF { context =>
+        val homeId = HomeId(context.args.parsed.head)
         val player = context.sender
 
         val homeLocation = LocationCodec.fromBukkitLocation(player.getLocation)
@@ -192,12 +187,11 @@ class HomeCommand[F[
 
         eff.toIO
       }
-      .build()
 
   private def nameExecutor() =
     argsAndSenderConfiguredBuilder
-      .execution { context =>
-        val homeId = HomeId(context.args.parsed.head.asInstanceOf[Int])
+      .buildWithExecutionF { context =>
+        val homeId = HomeId(context.args.parsed.head)
 
         val player = context.sender
         val uuid = player.getUniqueId
@@ -236,5 +230,4 @@ class HomeCommand[F[
             .whenA(isHomeAvailable)
         } yield TargetedEffect.emptyEffect
       }
-      .build()
 }

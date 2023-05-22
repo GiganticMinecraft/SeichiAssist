@@ -17,6 +17,5 @@ object EnderChestCommand {
       .withEffectAsExecution {
         enderChestAccessApi.openEnderChestOrNotifyInsufficientLevel.mapK(Effect.toIOK)
       }
-      .build()
       .asNonBlockingTabExecutor()
 }

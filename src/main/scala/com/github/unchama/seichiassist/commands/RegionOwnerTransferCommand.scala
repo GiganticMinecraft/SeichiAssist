@@ -15,22 +15,16 @@ import org.bukkit.entity.Player
 object RegionOwnerTransferCommand {
   import com.github.unchama.contextualexecutor.builder.ParserResponse._
 
-  val executor: TabExecutor = playerCommandBuilder[AnyRef]
-    .argumentsParsers(
-      List(
-        Parsers.identity,
-        recipientName => {
-          Bukkit.getPlayer(recipientName) match {
-            case recipient: Player => succeedWith(recipient)
-            case _                 => failWith(s"${recipientName}というプレイヤーはサーバーに参加したことがありません。")
-          }
-        }
-      )
-    )
-    .execution { context =>
-      val regionName = context.args.parsed.head.asInstanceOf[String]
-      val newOwner = context.args.parsed(1).asInstanceOf[Player]
-
+  val executor: TabExecutor = playerCommandBuilder
+    .thenParse(Parsers.identity)
+    .thenParse(recipientName => {
+      Bukkit.getPlayer(recipientName) match {
+        case recipient: Player => succeedWith(recipient)
+        case _ => failWith(s"${recipientName}というプレイヤーはサーバーに参加したことがありません。")
+      }
+    })
+    .buildWithExecutionF { context =>
+      val (regionName :: newOwner :: HNil) = context.args.parsed
       val sender = context.sender
 
       val region =

@@ -13,6 +13,7 @@ object SendMessageEffect {
 
   import scala.jdk.CollectionConverters._
 
+  @deprecated("It's side-effectful")
   def sendMessageToEveryoneIgnoringPreference[T](
     content: T
   )(implicit send: PlayerSendable[T, IO]): Unit = {

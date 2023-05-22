@@ -2,11 +2,7 @@ package com.github.unchama.seichiassist.commands
 
 import cats.effect.IO
 import com.github.unchama.contextualexecutor.builder.Parsers._
-import com.github.unchama.contextualexecutor.builder.{
-  ContextualExecutorBuilder,
-  ParserResponse,
-  ResponseEffectOrResult
-}
+import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, ParserResponse, ResponseEffectOrResult}
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import com.github.unchama.targetedeffect
@@ -17,6 +13,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion
 import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, ConsoleCommandSender, TabExecutor}
 import org.bukkit.{Bukkit, World}
+import shapeless.{::, HNil}
 
 import scala.jdk.CollectionConverters._
 
@@ -32,21 +29,18 @@ object RmpCommand {
       "全Ownerが[日数]間ログインしていないRegionを表示します"
     )
   })
+
   private val argsAndSenderConfiguredBuilder = ContextualExecutorBuilder
-    .beginConfiguration[Any]()
+    .beginConfiguration
     .refineSenderWithError[ConsoleCommandSender](s"${GREEN}このコマンドはコンソールから実行してください")
-    .argumentsParsers(
-      List(
-        arg => {
-          Bukkit.getWorld(arg) match {
-            case world: World => succeedWith(world)
-            case _            => failWith(s"存在しないワールドです: $arg")
-          }
-        },
-        nonNegativeInteger(MessageEffect(s"$RED[日数]には非負整数を入力してください"))
-      ),
-      onMissingArguments = printDescriptionExecutor
-    )
+    .thenParse((arg: String) => {
+      Bukkit.getWorld(arg) match {
+        case world: World if world != null => succeedWith(world)
+        case _ => failWith(s"存在しないワールドです: $arg")
+      }
+    })
+    .thenParse(nonNegativeInteger(MessageEffect(s"$RED[日数]には非負整数を入力してください")))
+
   private val removeExecutor = argsAndSenderConfiguredBuilder
     .execution { context =>
       val world = context.args.parsed.head.asInstanceOf[World]

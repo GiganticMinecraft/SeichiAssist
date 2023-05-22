@@ -12,9 +12,8 @@ import scala.jdk.CollectionConverters._
 import scala.util.chaining.scalaUtilChainingOps
 
 object StickCommand {
-  val executor: TabExecutor = playerCommandBuilder[Nothing]
-    .execution { context =>
-      val sender = context.sender
+  val executor: TabExecutor = playerCommandBuilder
+    .buildWithExecutionF { context =>
       // 初見プレイヤー用とは別に簡潔な説明
       val stickLore = List("棒を持って右クリックもしくは左クリックでメニューを開きます。", "各メニューの詳細は公式サイトで確認できます。")
       val stickItemStack = new ItemStack(Material.STICK, 1).tap { itemStack =>
