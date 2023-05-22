@@ -14,20 +14,11 @@ import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTempla
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.BukkitGrantGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.PlayerName
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{
-  GachaTicketAmount,
-  GrantResultOfGachaTicketFromAdminTeam
-}
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{GachaTicketAmount, GrantResultOfGachaTicketFromAdminTeam}
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain._
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
-  GachaEvent,
-  GachaEventName
-}
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
-  GachaPrize,
-  GachaPrizeId
-}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{GachaEvent, GachaEventName}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{GachaPrize, GachaPrizeId}
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
@@ -270,7 +261,7 @@ class GachaCommand[
         val gachaId = GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
         val eff = for {
           existsGachaPrize <- gachaPrizeAPI.existsGachaPrize(gachaId)
-          _ <- gachaPrizeAPI.removeByGachaPrizeId(gachaId)
+          _ <- gachaPrizeAPI.removeByGachaPrizeId(gachaId).whenA(existsGachaPrize)
         } yield {
           if (existsGachaPrize)
             MessageEffect(List("ガチャアイテムを削除しました", "ガチャアイテム削除を永続化するためには/gacha saveを実行してください。"))
@@ -298,19 +289,21 @@ class GachaCommand[
           val eff = for {
             existingGachaPrize <- gachaPrizeAPI.fetch(targetId)
             existsGachaPrize = existingGachaPrize.nonEmpty
-            _ <- gachaPrizeAPI.removeByGachaPrizeId(targetId)
-            itemStack = existingGachaPrize.get.itemStack
-            _ <- gachaPrizeAPI.addGachaPrize(_ =>
-              existingGachaPrize
-                .get
-                .copy(itemStack = itemStack.tap {
-                  _.setAmount(amount)
-                })
-            )
+            _ <- gachaPrizeAPI.removeByGachaPrizeId(targetId).whenA(existsGachaPrize)
+            itemStack = existingGachaPrize.map(_.itemStack)
+            _ <- gachaPrizeAPI
+              .addGachaPrize(_ =>
+                existingGachaPrize
+                  .get
+                  .copy(itemStack = itemStack.get.tap {
+                    _.setAmount(amount)
+                  })
+              )
+              .whenA(existsGachaPrize)
           } yield {
             if (existsGachaPrize)
               MessageEffect(
-                s"${targetId.id}|${itemStack.getType.toString}/${itemStack.getItemMeta.getDisplayName}${RESET}のアイテム数を${amount}個に変更しました。"
+                s"${targetId.id}|${itemStack.get.getType.toString}/${itemStack.get.getItemMeta.getDisplayName}${RESET}のアイテム数を${amount}個に変更しました。"
               )
             else
               MessageEffect("指定されたIDのガチャ景品は存在しません。")
@@ -335,10 +328,12 @@ class GachaCommand[
         val eff = for {
           existingGachaPrize <- gachaPrizeAPI.fetch(targetId)
           existsGachaPrize = existingGachaPrize.nonEmpty
-          _ <- gachaPrizeAPI.removeByGachaPrizeId(targetId)
-          _ <- gachaPrizeAPI.addGachaPrize(_ =>
-            existingGachaPrize.get.copy(probability = GachaProbability(newProb))
-          )
+          _ <- gachaPrizeAPI.removeByGachaPrizeId(targetId).whenA(existsGachaPrize)
+          _ <- gachaPrizeAPI
+            .addGachaPrize(_ =>
+              existingGachaPrize.get.copy(probability = GachaProbability(newProb))
+            )
+            .whenA(existsGachaPrize)
           itemStack = existingGachaPrize.get.itemStack
         } yield {
           if (existsGachaPrize)
