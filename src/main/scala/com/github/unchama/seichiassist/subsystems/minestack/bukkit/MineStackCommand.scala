@@ -78,13 +78,14 @@ object MineStackCommand {
           )
         )
         .execution { context =>
-          IO.pure(if (context.args.parsed(1).toString.toInt == 0) {
+          val categoryValue = context.args.parsed(1).toString.toInt
+          IO.pure(if (categoryValue == 0) {
             ioCanOpenMinestackMainMenu.open(MineStackMainMenu)
           } else {
             ioCanOpenCategorizedMenu.open(
               new CategorizedMineStackMenu(
                 context.args.parsed.head.asInstanceOf[MineStackObjectCategory],
-                context.args.parsed(1).toString.toInt - 1
+                categoryValue - 1
               )
             )
           })
