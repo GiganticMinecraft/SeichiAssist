@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.commands
 
-import cats.effect.IO
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.seichiassist.{Config, SeichiAssist}
@@ -10,7 +9,7 @@ import org.bukkit.ChatColor._
 import org.bukkit.command.{ConsoleCommandSender, TabExecutor}
 
 object SeichiAssistCommand {
-  private val descriptionExecutor = new EchoExecutor(
+  private val descriptionExecutor = EchoExecutor(
     MessageEffect(
       List(
         s"$YELLOW$BOLD[コマンドリファレンス]",

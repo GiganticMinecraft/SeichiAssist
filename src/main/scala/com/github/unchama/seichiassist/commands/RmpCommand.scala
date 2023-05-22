@@ -2,7 +2,11 @@ package com.github.unchama.seichiassist.commands
 
 import cats.effect.IO
 import com.github.unchama.contextualexecutor.builder.Parsers._
-import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, ParserResponse, ResponseEffectOrResult}
+import com.github.unchama.contextualexecutor.builder.{
+  ContextualExecutorBuilder,
+  ParserResponse,
+  ResponseEffectOrResult
+}
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import com.github.unchama.targetedeffect
@@ -36,38 +40,31 @@ object RmpCommand {
     .thenParse((arg: String) => {
       Bukkit.getWorld(arg) match {
         case world: World if world != null => succeedWith(world)
-        case _ => failWith(s"存在しないワールドです: $arg")
+        case _                             => failWith(s"存在しないワールドです: $arg")
       }
     })
     .thenParse(nonNegativeInteger(MessageEffect(s"$RED[日数]には非負整数を入力してください")))
 
-  private val removeExecutor = argsAndSenderConfiguredBuilder
-    .execution { context =>
-      val world = context.args.parsed.head.asInstanceOf[World]
-      val days = context.args.parsed(1).asInstanceOf[Int]
+  private val removeExecutor = argsAndSenderConfiguredBuilder.buildWith { context =>
+    val (world :: days :: HNil) = context.args.parsed
+    removeRegions(world, days.value)
+  }
 
-      removeRegions(world, days)
+  private val listExecutor = argsAndSenderConfiguredBuilder.buildWith { context =>
+    val (world :: days :: HNil) = context.args.parsed
+
+    IO {
+      getOldRegionsIn(world, days.value).map { removalTargets =>
+        if (removalTargets.isEmpty) {
+          MessageEffect(s"${GREEN}該当Regionは存在しません")
+        } else {
+          targetedeffect.SequentialEffect(removalTargets.map { target =>
+            MessageEffect(s"$GREEN[rmp] List Region => ${world.getName}.${target.getId}")
+          })
+        }
+      }.merge
     }
-    .build()
-
-  private val listExecutor = argsAndSenderConfiguredBuilder
-    .execution { context =>
-      val world = context.args.parsed.head.asInstanceOf[World]
-      val days = context.args.parsed(1).asInstanceOf[Int]
-
-      IO {
-        getOldRegionsIn(world, days).map { removalTargets =>
-          if (removalTargets.isEmpty) {
-            MessageEffect(s"${GREEN}該当Regionは存在しません")
-          } else {
-            targetedeffect.SequentialEffect(removalTargets.map { target =>
-              MessageEffect(s"$GREEN[rmp] List Region => ${world.getName}.${target.getId}")
-            })
-          }
-        }.merge
-      }
-    }
-    .build()
+  }
 
   private def removeRegions(world: World, days: Int): IO[TargetedEffect[CommandSender]] = IO {
     val isSeichiWorldWithWGRegionsOption =

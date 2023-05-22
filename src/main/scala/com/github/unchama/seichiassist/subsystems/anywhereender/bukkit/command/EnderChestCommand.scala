@@ -13,8 +13,7 @@ object EnderChestCommand {
     implicit enderChestAccessApi: AnywhereEnderChestAPI[F]
   ): TabExecutor =
     playerCommandBuilder
-      .argumentsParsers(List())
-      .withEffectAsExecution {
+      .buildWithEffectAsExecution {
         enderChestAccessApi.openEnderChestOrNotifyInsufficientLevel.mapK(Effect.toIOK)
       }
       .asNonBlockingTabExecutor()

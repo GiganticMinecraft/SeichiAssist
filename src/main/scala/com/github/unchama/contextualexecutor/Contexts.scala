@@ -1,6 +1,7 @@
 package com.github.unchama.contextualexecutor
 
 import org.bukkit.command.{Command, CommandSender}
+import shapeless.HList
 
 /**
  * コマンドの実行時に使用された[Command]とエイリアスの情報
@@ -26,10 +27,7 @@ case class RawCommandContext(
  *   特殊な処理を行う際にのみ利用されるべきものであり、ほとんどのユースケースでは型安全性が保証されないこのフィールドよりも
  *   [[parsed]]を参照してすでにパースされた値を取り扱うことが好ましい。
  */
-case class PartiallyParsedArgs[+Args <: HList](
-                                                parsed: Args,
-                                                yetToBeParsed: List[String]
-                                              )
+case class PartiallyParsedArgs[+Args <: HList](parsed: Args, yetToBeParsed: List[String])
 
 /**
  * コマンドの実行時のコマンド引数や実行者などの情報を変換, 加工したデータ.
@@ -41,7 +39,7 @@ case class PartiallyParsedArgs[+Args <: HList](
  * @param args
  *   引数情報
  */
-case class ParsedArgCommandContext[+CS <: CommandSender, +Args](
+case class ParsedArgCommandContext[+CS <: CommandSender, +Args <: HList](
   sender: CS,
   command: ExecutedCommand,
   args: PartiallyParsedArgs[Args]

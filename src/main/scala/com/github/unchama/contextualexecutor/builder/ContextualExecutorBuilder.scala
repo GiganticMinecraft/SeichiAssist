@@ -2,9 +2,13 @@ package com.github.unchama.contextualexecutor.builder
 
 import cats.data.{Kleisli, OptionT}
 import cats.effect.{Effect, IO}
-import com.github.unchama.contextualexecutor.{ContextualExecutor, ParsedArgCommandContext, PartiallyParsedArgs, RawCommandContext}
+import com.github.unchama.contextualexecutor.{
+  ContextualExecutor,
+  ParsedArgCommandContext,
+  PartiallyParsedArgs,
+  RawCommandContext
+}
 import com.github.unchama.targetedeffect.TargetedEffect
-import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.command.CommandSender
 import shapeless.ops.hlist.Prepend
@@ -24,8 +28,6 @@ import scala.reflect.ClassTag
  *   [CommandSender]の[CS]へのダウンキャストを試みる関数
  * @param argumentsParser
  *   [RawCommandContext]から[PartiallyParsedArgs]の作成を試みる関数
- * @param contextualExecution
- *   [ParsedArgCommandContext]に基づいてコマンドの副作用を計算する関数
  */
 // TODO(scala3): HListをTupleに置き換える。Shapelessで実装された同等の操作がネイティブに (`Tuple.Map` などを通じて) サポートされている。
 case class ContextualExecutorBuilder[CS <: CommandSender, HArgs <: HList](
@@ -33,24 +35,28 @@ case class ContextualExecutorBuilder[CS <: CommandSender, HArgs <: HList](
   argumentsParser: CommandArgumentsParser[CS, HArgs],
   onMissingArguments: Option[ContextualExecutor] = None
 ) {
+  import cats.implicits._
 
   /**
    * 引数を追加で受け取る。追加された引数は[[HArgs]]の末尾に追加され、新しいContextualExecutionBuilderが返される。
    */
-  def thenParse[LastArg](parserToBeAdded: SingleArgumentParser[LastArg])
-                        (implicit prepend: Prepend[HArgs, HCons[LastArg, HNil]]): ContextualExecutorBuilder[CS, prepend.Out] = {
+  def thenParse[LastArg](parserToBeAdded: SingleArgumentParser[LastArg])(
+    implicit prepend: Prepend[HArgs, HCons[LastArg, HNil]]
+  ): ContextualExecutorBuilder[CS, prepend.Out] = {
     this.copy(argumentsParser = (sender, rawContext) => {
       val program = for {
         head <- OptionT(this.argumentsParser(sender, rawContext))
         nextArgument <- head.yetToBeParsed.headOption match {
           case Some(value) => OptionT.some[IO](value)
-          case None => OptionT.liftF(onMissingArguments match {
-            case Some(onMissingArguments) => onMissingArguments.executionWith(rawContext)
-            case None => IO.unit
-          }) >> OptionT.none[IO, String]
+          case None =>
+            OptionT.liftF(onMissingArguments match {
+              case Some(onMissingArguments) => onMissingArguments.executionWith(rawContext)
+              case None                     => IO.unit
+            }) >> OptionT.none[IO, String]
         }
         parsedLastArg <- parserToBeAdded(nextArgument) match {
-          case Left(errorNotification) => OptionT.liftF(errorNotification(sender)) >> OptionT.none[IO, LastArg]
+          case Left(errorNotification) =>
+            OptionT.liftF(errorNotification(sender)) >> OptionT.none[IO, LastArg]
           case Right(lastArg) => OptionT.pure[IO](lastArg)
         }
       } yield {
@@ -62,7 +68,9 @@ case class ContextualExecutorBuilder[CS <: CommandSender, HArgs <: HList](
     })
   }
 
-  def ifMissingArguments(errorNotifier: ContextualExecutor): ContextualExecutorBuilder[CS, HArgs] = this.copy(onMissingArguments = Some(errorNotifier))
+  def ifMissingArguments(
+    errorNotifier: ContextualExecutor
+  ): ContextualExecutorBuilder[CS, HArgs] = this.copy(onMissingArguments = Some(errorNotifier))
 
   /**
    * @return
@@ -119,17 +127,18 @@ case class ContextualExecutorBuilder[CS <: CommandSender, HArgs <: HList](
    *   - 最後に, 変換された引数を用いて[[ParsedArgCommandContext]]を作成し, それを用いて[contextualExecution]で指定される動作を行う
    * 処理を[[ContextualExecutor.executionWith]]内で行う.
    */
-  def buildWith(contextualExecution: ScopedContextualExecution[CS, HArgs]): ContextualExecutor = (rawContext: RawCommandContext) => {
-    val optionalExecution = for {
-      refinedSender <- OptionT(senderTypeValidation(rawContext.sender))
-      parsedArgs <- OptionT(argumentsParser(refinedSender, rawContext))
-      context = ParsedArgCommandContext(refinedSender, rawContext.command, parsedArgs)
-      executionResponse <- OptionT.liftF(contextualExecution(context))
-      _ <- OptionT.liftF(executionResponse(context.sender))
-    } yield ()
+  def buildWith(contextualExecution: ScopedContextualExecution[CS, HArgs]): ContextualExecutor =
+    (rawContext: RawCommandContext) => {
+      val optionalExecution = for {
+        refinedSender <- OptionT(senderTypeValidation(rawContext.sender))
+        parsedArgs <- OptionT(argumentsParser(refinedSender, rawContext))
+        context = ParsedArgCommandContext(refinedSender, rawContext.command, parsedArgs)
+        executionResponse <- OptionT.liftF(contextualExecution(context))
+        _ <- OptionT.liftF(executionResponse(context.sender))
+      } yield ()
 
-    optionalExecution.value.map(_ => ())
-  }
+      optionalExecution.value.map(_ => ())
+    }
 
   /**
    * [contextualExecution]に[execution]に相当する関数が入った新しい[ContextualExecutorBuilder]を作成する.
@@ -137,7 +146,9 @@ case class ContextualExecutorBuilder[CS <: CommandSender, HArgs <: HList](
    *
    * [ContextualExecutor]の制約にあるとおり, [execution]は任意スレッドでの実行に対応しなければならない.
    */
-  def buildWithExecutionF[F[_] : Effect, U](execution: ExecutionF[F, CS, U, HArgs]): ContextualExecutor =
+  def buildWithExecutionF[F[_]: Effect, U](
+    execution: ExecutionF[F, CS, U, HArgs]
+  ): ContextualExecutor =
     buildWith(context => {
       Effect[F].toIO(execution(context)).as(TargetedEffect.emptyEffect)
     })
@@ -148,7 +159,9 @@ case class ContextualExecutorBuilder[CS <: CommandSender, HArgs <: HList](
    *
    * [[ContextualExecutor]]の制約にあるとおり, `execution` は任意スレッドからの呼び出しに対応しなければならない.
    */
-  def buildWithExecutionCSEffect[F[_] : Effect, U](execution: ExecutionCSEffect[F, CS, U, HArgs]): ContextualExecutor =
+  def buildWithExecutionCSEffect[F[_]: Effect, U](
+    execution: ExecutionCSEffect[F, CS, U, HArgs]
+  ): ContextualExecutor =
     buildWithExecutionF[F, U](context => execution(context).run(context.sender))
 
   /**

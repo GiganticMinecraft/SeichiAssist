@@ -20,6 +20,5 @@ object MapCommand {
         MessageEffect(url)
       }
     }
-    .build()
     .asNonBlockingTabExecutor()
 }
