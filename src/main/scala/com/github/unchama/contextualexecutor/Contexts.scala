@@ -20,7 +20,7 @@ case class RawCommandContext(
  * 変換されたコマンド引数の情報
  *
  * @param parsed
- *   コマンド引数のうち, [Any?]を型上限とするオブジェクトに変換されたもの.
+ *   コマンド引数のうち, パースされたもの.
  * @param yetToBeParsed
  *   コマンド引数のうち, [parsed]へと変換されていない文字列.
  */
