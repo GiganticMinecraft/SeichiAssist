@@ -7,9 +7,13 @@ import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.seichiassist.menus.minestack.CategorizedMineStackMenu
+import com.github.unchama.seichiassist.menus.minestack.{
+  CategorizedMineStackMenu,
+  MineStackMainMenu
+}
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory
+import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect}
 import org.bukkit.ChatColor._
@@ -21,6 +25,7 @@ import shapeless.HNil
 object MineStackCommand {
   def executor(
     implicit ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu,
+    ioCanOpenMinestackMainMenu: IO CanOpen MineStackMainMenu.type,
     mineStackAPI: MineStackAPI[IO, Player, ItemStack]
   ): TabExecutor =
     BranchedExecutor(
@@ -50,7 +55,8 @@ object MineStackCommand {
       )
 
     def openCategorizedMineStackMenu(
-      implicit ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu
+      implicit ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu,
+      ioCanOpenMinestackMainMenu: IO CanOpen MineStackMainMenu.type
     ): ContextualExecutor =
       playerCommandBuilder
         .thenParse(
@@ -59,6 +65,7 @@ object MineStackCommand {
             .andThen(_.flatMap { categoryValue =>
               MineStackObjectCategory.fromSerializedValue(categoryValue - 1) match {
                 case Some(category) => succeedWith(category)
+                case None if categoryValue == 0 => succeedWith(emptyEffect)
                 case None           => failWith("指定されたカテゴリは存在しません。")
               }
             })
@@ -66,11 +73,14 @@ object MineStackCommand {
         .thenParse(Parsers.closedRangeInt(1, Int.MaxValue, MessageEffect("ページ数は正の値を指定してください。")))
         .buildWith { context =>
           import shapeless.::
-          val _0 :: _1 :: HNil = context.args.parsed
-          IO.pure(
+          val category :: categoryId :: HNil = context.args.parsed
+
+          IO.pure(if (categoryId == 0) {
+            ioCanOpenMinestackMainMenu.open(MineStackMainMenu)
+          } else {
             ioCanOpenCategorizedMenu
-              .open(new CategorizedMineStackMenu(_0, _1.toString.toInt - 1))
-          )
+              .open(new CategorizedMineStackMenu(category, categoryId.toString.toInt - 1))
+          })
         }
 
     import cats.implicits._
