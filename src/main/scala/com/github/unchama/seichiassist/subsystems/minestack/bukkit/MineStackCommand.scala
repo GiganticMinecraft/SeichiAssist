@@ -64,8 +64,7 @@ object MineStackCommand {
             .closedRangeInt(1, Int.MaxValue, MessageEffect("カテゴリは正の値を指定してください。"))
             .andThen(_.flatMap { categoryValue =>
               MineStackObjectCategory.fromSerializedValue(categoryValue - 1) match {
-                case Some(category) => succeedWith(category)
-                case None if categoryValue == 0 => succeedWith(emptyEffect)
+                case Some(category) => succeedWith(Option.unless(categoryValue == 0)(category))
                 case None           => failWith("指定されたカテゴリは存在しません。")
               }
             })
@@ -73,14 +72,13 @@ object MineStackCommand {
         .thenParse(Parsers.closedRangeInt(1, Int.MaxValue, MessageEffect("ページ数は正の値を指定してください。")))
         .buildWith { context =>
           import shapeless.::
-          val category :: categoryId :: HNil = context.args.parsed
+          val categoryOpt :: page :: HNil = context.args.parsed
 
-          IO.pure(if (categoryId == 0) {
-            ioCanOpenMinestackMainMenu.open(MineStackMainMenu)
-          } else {
-            ioCanOpenCategorizedMenu
-              .open(new CategorizedMineStackMenu(category, categoryId.toString.toInt - 1))
-          })
+          IO.pure {
+            categoryOpt.fold(ioCanOpenMinestackMainMenu.open(MineStackMainMenu)) { category =>
+              ioCanOpenCategorizedMenu.open(new CategorizedMineStackMenu(category, page))
+            }
+          }
         }
 
     import cats.implicits._
