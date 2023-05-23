@@ -1,19 +1,20 @@
 package com.github.unchama.seichiassist.commands
 
-import cats.effect.IO
+import cats.effect.{Effect => CatsEffect}
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.FastDiggingSettingsWriteApi
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.settings.FastDiggingEffectSuppressionState
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.stats.FastDiggingEffectStatsSettings
-import com.github.unchama.targetedeffect.commandsender.MessageEffect
+import com.github.unchama.targetedeffect.commandsender.MessageEffectF
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 
-class EffectCommand[F[_]](api: FastDiggingSettingsWriteApi[IO, Player]) {
+// TODO: Effect.toIOKを剥がす
+class EffectCommand[F[_]: CatsEffect](api: FastDiggingSettingsWriteApi[F, Player]) {
   private val printUsageExecutor = playerCommandBuilder.buildWithEffectAsExecution(
-    MessageEffect(
+    MessageEffectF(
       List(
         s"$YELLOW$BOLD[コマンドリファレンス]",
         s"$RED/ef",
@@ -27,8 +28,8 @@ class EffectCommand[F[_]](api: FastDiggingSettingsWriteApi[IO, Player]) {
   import cats.implicits._
 
   private val toggleExecutor = playerCommandBuilder.buildWithEffectAsExecution {
-    api.toggleEffectSuppression.flatMap { newState =>
-      MessageEffect {
+    (api.toggleEffectSuppression.flatMap { newState =>
+      MessageEffectF {
         newState match {
           case FastDiggingEffectSuppressionState.EnabledWithoutLimit =>
             s"${GREEN}採掘速度上昇効果:ON(無制限)"
@@ -38,12 +39,12 @@ class EffectCommand[F[_]](api: FastDiggingSettingsWriteApi[IO, Player]) {
             s"${RED}採掘速度上昇効果:OFF"
         }
       }
-    } >> MessageEffect("再度 /ef コマンドを実行することでトグルします。")
+    } >> MessageEffectF("再度 /ef コマンドを実行することでトグルします。")).mapK(CatsEffect.toIOK)
   }
 
   private val messageFlagToggleExecutor = playerCommandBuilder.buildWithEffectAsExecution {
     api.toggleStatsSettings.flatMap { newSettings =>
-      MessageEffect {
+      MessageEffectF {
         newSettings match {
           case FastDiggingEffectStatsSettings.AlwaysReceiveDetails =>
             s"${GREEN}内訳表示:ON(OFFに戻したい時は再度コマンドを実行します。)"
@@ -51,7 +52,7 @@ class EffectCommand[F[_]](api: FastDiggingSettingsWriteApi[IO, Player]) {
             s"${GREEN}内訳表示:OFF"
         }
       }
-    }
+    }.mapK(CatsEffect.toIOK)
   }
 
   val executor: TabExecutor = BranchedExecutor(
