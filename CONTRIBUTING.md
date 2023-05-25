@@ -152,6 +152,9 @@ IntelliJ IDEAの設定でフォーマットに `scalafmt` を使う
 #### 手元でデバッグ
 SeichiAssistは手元でデバッグできる環境を整えています。環境を立ち上げるためには、Dockerが必要です。
 
+/pluginsディレクトリに対してjarファイル配置すると、そのjarファイルとSeichiAssistを同時に起動した場合の動作を確認することができます。
+整地鯖で利用しているプラグインはGiganticMinecraftのメンバーのみ[MinIOからダウンロード](https://minio-console.onp-k8s.admin.seichi.click/browser/seichi-plugins/ZGViLTEtMTYtNS8=)することができます。
+
 ##### Dockerを立ち上げる
 
 Linux環境では、`./prepare-docker.sh`、Windowsでは`prepare-docker.bat`を実行することで
