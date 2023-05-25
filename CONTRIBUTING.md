@@ -134,7 +134,7 @@ SeichiAssistは手元でデバッグできる環境を整えています。環�
 
 /pluginsディレクトリに対してjarファイル配置すると、そのjarファイルとSeichiAssistを同時に起動した場合の動作を確認することができます。
 整地鯖で利用しているプラグインはGiganticMinecraftのメンバーのみ[MinIOからダウンロード](https://minio-console.onp-k8s.admin.seichi.click/browser/seichi-plugins/ZGViLTEtMTYtNS8=)することができます。
-接続情報などの詳しい情報は、Discordなどで聞いてください。
+接続情報などの詳しい情報は、Discordで聞いてください。
 
 ##### Dockerを立ち上げる
 
