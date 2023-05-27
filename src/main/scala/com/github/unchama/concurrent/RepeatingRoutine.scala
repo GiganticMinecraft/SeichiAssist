@@ -2,7 +2,7 @@ package com.github.unchama.concurrent
 
 import cats.effect.{Sync, Timer}
 import cats.{Monad, MonadError}
-import com.github.unchama.generic.{ApplicativeErrorThrowableExtra, WeakRef}
+import com.github.unchama.generic.{ApplicativeErrorThrowableExtra}
 import io.chrisdavenport.log4cats.ErrorLogger
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 
@@ -12,8 +12,10 @@ object RepeatingRoutine {
 
   import cats.implicits._
 
-  private def sleepWith[F[_]: Timer: Monad](getInterval: F[FiniteDuration]): F[Unit] =
-    getInterval >>= (Timer[F].sleep(_))
+  private def sleepWith[F[_]: Timer: Monad](
+    getIntervalToNextExecution: F[FiniteDuration]
+  ): F[Unit] =
+    getIntervalToNextExecution >>= (Timer[F].sleep(_))
 
   def permanentRoutine[F[_]: Timer: Sync, U](
     getInterval: F[FiniteDuration],
@@ -26,28 +28,12 @@ object RepeatingRoutine {
 
   def foreverMRecovering[F[_]: Timer: MonadError[*[_], Throwable]: ErrorLogger, U, R](
     action: F[U]
-  )(getInterval: F[FiniteDuration]): F[R] = {
+  )(getIntervalToNextExecution: F[FiniteDuration]): F[R] = {
     val recoveringAction: F[Unit] =
       ApplicativeErrorThrowableExtra
         .recoverWithStackTrace(action.as(()))("繰り返し実行タスクの実行に失敗しました", ())
 
-    Monad[F].foreverM(sleepWith(getInterval) >> recoveringAction)
-  }
-
-  def whileReferencedRecovering[F[_]: Timer: MonadError[
-    *[_],
-    Throwable
-  ]: ErrorLogger, R <: AnyRef, U](
-    reference: WeakRef[F, R],
-    action: R => F[U],
-    getInterval: F[FiniteDuration]
-  ): F[Unit] = {
-    whileDefinedMRecovering(())(_ =>
-      reference.get.flatMap[Option[Unit]] {
-        case Some(value) => action(value).as(Some(()))
-        case None        => Monad[F].pure(None)
-      }
-    )(getInterval)
+    Monad[F].foreverM(sleepWith(getIntervalToNextExecution) >> recoveringAction)
   }
 
   /**
@@ -78,13 +64,15 @@ object RepeatingRoutine {
    */
   def whileDefinedMRecovering[F[_]: MonadError[*[_], Throwable]: Timer: ErrorLogger, State](
     init: State
-  )(action: State => F[Option[State]])(getInterval: F[FiniteDuration]): F[Unit] = {
+  )(
+    action: State => F[Option[State]]
+  )(getIntervalToNextExecution: F[FiniteDuration]): F[Unit] = {
     val recoveringAction: State => F[Option[State]] = s =>
       ApplicativeErrorThrowableExtra
         .recoverWithStackTrace(action(s))("繰り返し実行タスクの実行に失敗しました", None)
 
     Monad[F].tailRecM(init) { state =>
-      sleepWith(getInterval) >> recoveringAction(state) map {
+      sleepWith(getIntervalToNextExecution) >> recoveringAction(state) map {
         case Some(value) => Left(value)
         case None        => Right(())
       }

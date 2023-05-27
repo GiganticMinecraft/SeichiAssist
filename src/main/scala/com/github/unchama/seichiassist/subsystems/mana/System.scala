@@ -44,7 +44,7 @@ object System {
 
     for {
       topic <- Fs3Topic[F, Option[(Player, LevelCappedManaAmount)]]
-      globalMultiplierRef <- Ref.in[F, G, ManaMultiplier](ManaMultiplier(1))
+      dragonNightTimeMultiplierRef <- Ref.in[F, G, ManaMultiplier](ManaMultiplier(1))
       handles <- ContextCoercion {
         BukkitRepositoryControls.createHandles(
           ManaRepositoryDefinition.withContext[F, G, Player](
@@ -68,11 +68,12 @@ object System {
         override val manaAmount: KeyedDataRepository[Player, ManaManipulation[G]] =
           handles
             .repository
-            .map(ManaManipulation.fromLevelCappedAmountRef[G](globalMultiplierRef))
+            .map(ManaManipulation.fromLevelCappedAmountRef[G](dragonNightTimeMultiplierRef))
 
-        override def setManaConsumingMultiplier(manaMultiplier: ManaMultiplier): G[Unit] =
-          globalMultiplierRef.set(manaMultiplier)
-
+        override def setManaConsumptionWithDragonNightTime(
+          manaMultiplier: ManaMultiplier
+        ): G[Unit] =
+          dragonNightTimeMultiplierRef.set(manaMultiplier)
       }
 
       override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = List(
