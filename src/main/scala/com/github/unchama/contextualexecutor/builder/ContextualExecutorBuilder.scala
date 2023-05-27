@@ -187,7 +187,6 @@ case class ContextualExecutorBuilder[CS <: CommandSender, HArgs <: HList](
 }
 
 object ContextualExecutorBuilder {
-  // TODO: onMissingArguments
   private def defaultArgumentParser: CommandArgumentsParser[CommandSender, HNil] = {
     case (_, context) => IO.pure(Some(PartiallyParsedArgs(HNil, context.args)))
   }
