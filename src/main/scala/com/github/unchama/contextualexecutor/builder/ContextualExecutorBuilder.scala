@@ -68,6 +68,11 @@ case class ContextualExecutorBuilder[CS <: CommandSender, HArgs <: HList](
     })
   }
 
+  /**
+   * 引数が足りなかったときにエラーを通知するContextualExecutorを上書き設定する。
+   * @param errorNotifier エラーを知らせる[[ContextualExecutor]]
+   * @return 引数で指定されたエラーを通知するContextualExecutorが設定された新しいビルダー
+   */
   def ifMissingArguments(
     errorNotifier: ContextualExecutor
   ): ContextualExecutorBuilder[CS, HArgs] = this.copy(onMissingArguments = Some(errorNotifier))
