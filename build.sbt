@@ -9,7 +9,7 @@ import java.io._
 ThisBuild / scalaVersion := "2.13.11-bin-fd209dc-SNAPSHOT"
 // ThisBuild / version はGitHub Actionsによって取得/自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
-ThisBuild / version := "79"
+ThisBuild / version := "80"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
@@ -65,7 +65,7 @@ resolvers ++= Seq(
 // もし新しいライブラリを追加する場合、現在はプレリリース版を使っているので`... cross CrossVersion.binary`としないとmavenからバージョンを引っ張ってこられずに死ぬので注意
 // TODO: Scala 2.13.11がリリースされたらCrossVersion.binaryは要らなくなるので取り外す
 val providedDependencies = Seq(
-  "org.jetbrains" % "annotations" % "17.0.0",
+  "org.jetbrains" % "annotations" % "24.0.1",
   "org.apache.commons" % "commons-lang3" % "3.9",
   "commons-codec" % "commons-codec" % "1.15",
   "org.spigotmc" % "spigot-api" % "1.12.2-R0.1-SNAPSHOT",
@@ -79,7 +79,7 @@ val providedDependencies = Seq(
 ).map(_ % "provided")
 
 val testDependencies = Seq(
-  "org.scalamock" %% "scalamock" % "4.4.0" cross CrossVersion.binary,
+  "org.scalamock" %% "scalamock" % "5.2.0" cross CrossVersion.binary,
   "org.scalatest" %% "scalatest" % "3.2.16" cross CrossVersion.binary,
   "org.scalatestplus" %% "scalacheck-1-14" % "3.2.2.0" cross CrossVersion.binary,
   // テスト用のTestSchedulerを使うため
