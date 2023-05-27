@@ -6,7 +6,7 @@ import java.io._
 // region 全プロジェクト共通のメタデータ
 
 // TODO: Scala 2.13.11がリリースされたらリリースバージョンに変える
-ThisBuild / scalaVersion := "2.13.11-bin-c1a11b1-SNAPSHOT"
+ThisBuild / scalaVersion := "2.13.11-bin-fd209dc-SNAPSHOT"
 // ThisBuild / version はGitHub Actionsによって取得/自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
 ThisBuild / version := "79"
