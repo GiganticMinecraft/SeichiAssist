@@ -161,7 +161,7 @@ class MebiusCommandExecutorProvider(
 
       private val setNicknameExecutor = playerCommandBuilder
         .thenParse(Parsers.identity)
-        .ifMissingArguments(printDescriptionExecutor)
+        .ifArgumentsMissing(printDescriptionExecutor)
         .buildWith { context =>
           val player = context.sender
           setNicknameOverrideOnMebiusOn(

@@ -67,7 +67,7 @@ class HomeCommand[F[
           MessageEffect(s"ホームの番号を${HomeId.minimumNumber}～${HomeId.maxNumber}の間で入力してください")
       )
     )
-    .ifMissingArguments(printDescriptionExecutor)
+    .ifArgumentsMissing(printDescriptionExecutor)
 
   private def homeNotSetMessage: List[String] = List(s"${YELLOW}指定されたホームポイントが設定されていません。")
 

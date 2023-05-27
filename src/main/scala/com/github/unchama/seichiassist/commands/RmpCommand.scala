@@ -44,7 +44,7 @@ object RmpCommand {
       }
     })
     .thenParse(nonNegativeInteger(MessageEffect(s"$RED[日数]には非負整数を入力してください")))
-    .ifMissingArguments(printDescriptionExecutor)
+    .ifArgumentsMissing(printDescriptionExecutor)
 
   private val removeExecutor = argsAndSenderConfiguredBuilder.buildWith { context =>
     val (world :: days :: HNil) = context.args.parsed

@@ -34,7 +34,7 @@ class OpenPocketCommand[F[_]: Effect: InteractInventory[*[_], Player, Inventory]
 
   val executor: TabExecutor = playerCommandBuilder
     .thenParse(Parsers.identity)
-    .ifMissingArguments(descriptionPrintExecutor)
+    .ifArgumentsMissing(descriptionPrintExecutor)
     .buildWith { context =>
       val playerName = context.args.parsed.head
 

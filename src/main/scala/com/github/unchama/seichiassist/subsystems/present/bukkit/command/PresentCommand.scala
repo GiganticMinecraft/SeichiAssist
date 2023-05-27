@@ -124,7 +124,7 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
               MessageEffect("ページ数には1以上の数を指定してください。")
             )
           )
-          .ifMissingArguments(help)
+          .ifArgumentsMissing(help)
           .buildWith { context =>
             val perPage: Int Refined Positive = 10
             val page = context.args.parsed.head
@@ -171,7 +171,7 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
       ): ContextualExecutor =
         playerCommandBuilder
           .thenParse(presentIdParser)
-          .ifMissingArguments(help)
+          .ifArgumentsMissing(help)
           .buildWithExecutionF { context =>
             val player = context.sender.getUniqueId
             val presentId = context.args.parsed.head
@@ -269,7 +269,7 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
         ContextualExecutorBuilder
           .beginConfiguration
           .thenParse(presentIdParser)
-          .ifMissingArguments(help)
+          .ifArgumentsMissing(help)
           .buildWithExecutionF { context =>
             {
               val presentId = context.args.parsed.head
@@ -324,7 +324,7 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
           .beginConfiguration
           .thenParse(presentIdParser)
           .thenParse(presentScopeModeParser)
-          .ifMissingArguments(help)
+          .ifArgumentsMissing(help)
           .buildWithExecutionF { context =>
             if (context.sender.hasPermission("seichiassist.present.grant")) {
               import shapeless.::
@@ -398,7 +398,7 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
           .beginConfiguration
           .thenParse(presentIdParser)
           .thenParse(presentScopeModeParser)
-          .ifMissingArguments(help)
+          .ifArgumentsMissing(help)
           .buildWithExecutionF { context =>
             if (context.sender.hasPermission("seichiassist.present.revoke")) {
               import shapeless.::
