@@ -5,16 +5,12 @@ import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
-import com.github.unchama.seichiassist.subsystems.donate.domain.{
-  DonatePersistence,
-  DonatePremiumEffectPoint,
-  Obtained,
-  PlayerName
-}
+import com.github.unchama.seichiassist.subsystems.donate.domain.{DonatePersistence, DonatePremiumEffectPoint, Obtained, PlayerName}
 import com.github.unchama.targetedeffect.UnfocusedEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
+import shapeless.HNil
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -31,9 +27,9 @@ class DonationCommand[F[_]: ConcurrentEffect](
       .thenParse(Parsers.identity)
       .thenParse(Parsers.integer(MessageEffect(s"${RED}付与するプレミアムエフェクトポイントは整数で指定してください。")))
       .buildWithExecutionF { context =>
-        val args = context.args.parsed
-        val playerName = PlayerName(args.head)
-        val donatePoint = DonatePremiumEffectPoint(args(1).asInstanceOf[Int])
+        val rawName :: rawDonatePoint :: HNil = context.args.parsed
+        val playerName = PlayerName(rawName)
+        val donatePoint = DonatePremiumEffectPoint(rawDonatePoint)
 
         val dateRegex = "[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])".r
         val dateOpt = context.args.yetToBeParsed.headOption
