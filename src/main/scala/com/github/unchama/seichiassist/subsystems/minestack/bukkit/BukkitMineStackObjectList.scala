@@ -256,7 +256,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(BUILDING, "nether_wart_block", "ネザ－ウォートブロック", Material.NETHER_WART_BLOCK, 0),
     MineStackObjectByMaterial(BUILDING, "ender_stone", "エンドストーン", Material.ENDER_STONE, 0),
     MineStackObjectByMaterial(BUILDING, "end_bricks", "エンドストーンレンガ", Material.END_BRICKS, 0),
-    MineStackObjectByMaterial(BUILDING, "purpur_block", "プルパーブロック", Material.PURPUR_BLOCK, 0),
+    MineStackObjectByMaterial(BUILDING, "purpur_block", "プルファブロック", Material.PURPUR_BLOCK, 0),
     MineStackObjectByMaterial(BUILDING, "purpur_pillar", "柱状プルパーブロック", Material.PURPUR_PILLAR, 0),
     MineStackObjectByMaterial(BUILDING, "purpur_slab", "プルパーハーフブロック", Material.PURPUR_SLAB, 0),
     MineStackObjectByMaterial(BUILDING, "purpur_stairs", "プルパーの階段", Material.PURPUR_STAIRS, 0),
