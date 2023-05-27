@@ -1,10 +1,10 @@
 package com.github.unchama.contextualexecutor.builder
 
-import com.github.unchama.generic.CoerceTo
+import cats.effect.IO
+import com.github.unchama.generic.{CoerceTo, TryInto}
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import eu.timepit.refined.api.Refined
-import eu.timepit.refined.auto._
 import eu.timepit.refined.numeric.NonNegative
 import org.bukkit.command.CommandSender
 
@@ -21,24 +21,37 @@ object Parsers {
   def nonNegativeInteger(
     failureMessage: TargetedEffect[CommandSender] = emptyEffect
   ): SingleArgumentParser[Int Refined NonNegative] =
-    closedRangeInt(0, Int.MaxValue, failureMessage)
+    closedRangeInt[Int Refined NonNegative](0, Int.MaxValue, failureMessage)
 
   /**
+   * @tparam X refineされているかもしれない整数型。例: `Int`、[[Refined]][Int, [[eu.timepit.refined.numeric.Positive]]]
    * @return
    *   [smallEnd]より大きいか等しく[largeEnd]より小さいか等しい整数のパーサ
    */
-  def closedRangeInt[I](
-    smallEnd: I,
-    largeEnd: I,
+  def closedRangeInt[X](
+    smallEnd: Int,
+    largeEnd: Int,
     failureMessage: TargetedEffect[CommandSender] = emptyEffect
-  )(implicit coerceI: CoerceTo[I, Int]): SingleArgumentParser[I] = { arg =>
-    integer(failureMessage)(arg).flatMap { p =>
-      val parsed = p.asInstanceOf[I]
-      if ((coerceI.coerceTo(smallEnd) to coerceI.coerceTo(largeEnd)).contains(parsed))
-        succeedWith(parsed)
-      else
-        failWith(failureMessage)
-    }
+  )(
+    implicit coerceI: CoerceTo[X, Int],
+    assertion: TryInto[Int, X, String]
+  ): SingleArgumentParser[X] = { arg =>
+    integer(failureMessage)(arg)
+      .flatMap { p =>
+        assertion
+          .tryInto(p)
+          .swap
+          .map(errorMessage =>
+            TargetedEffect.delay[IO, CommandSender](cs => cs.sendMessage(errorMessage))
+          )
+          .swap
+      }
+      .flatMap { x =>
+        if ((smallEnd to largeEnd).contains(coerceI.coerceTo(x)))
+          succeedWith(x)
+        else
+          failWith(failureMessage)
+      }
   }
 
   def integer(

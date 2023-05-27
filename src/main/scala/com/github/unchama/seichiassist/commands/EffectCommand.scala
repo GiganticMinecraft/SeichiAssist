@@ -43,16 +43,19 @@ class EffectCommand[F[_]: CatsEffect](api: FastDiggingSettingsWriteApi[F, Player
   }
 
   private val messageFlagToggleExecutor = playerCommandBuilder.buildWithEffectAsExecution {
-    api.toggleStatsSettings.flatMap { newSettings =>
-      MessageEffectF {
-        newSettings match {
-          case FastDiggingEffectStatsSettings.AlwaysReceiveDetails =>
-            s"${GREEN}内訳表示:ON(OFFに戻したい時は再度コマンドを実行します。)"
-          case FastDiggingEffectStatsSettings.ReceiveTotalAmplifierOnUpdate =>
-            s"${GREEN}内訳表示:OFF"
+    api
+      .toggleStatsSettings
+      .flatMap { newSettings =>
+        MessageEffectF {
+          newSettings match {
+            case FastDiggingEffectStatsSettings.AlwaysReceiveDetails =>
+              s"${GREEN}内訳表示:ON(OFFに戻したい時は再度コマンドを実行します。)"
+            case FastDiggingEffectStatsSettings.ReceiveTotalAmplifierOnUpdate =>
+              s"${GREEN}内訳表示:OFF"
+          }
         }
       }
-    }.mapK(CatsEffect.toIOK)
+      .mapK(CatsEffect.toIOK)
   }
 
   val executor: TabExecutor = BranchedExecutor(

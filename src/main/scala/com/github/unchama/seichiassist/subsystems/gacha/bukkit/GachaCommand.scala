@@ -35,6 +35,9 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.targetedeffect.DeferredEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
+import eu.timepit.refined.api.Refined
+import eu.timepit.refined.numeric.{Interval, NonNegative, Positive}
+import eu.timepit.refined.auto._
 import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.entity.Player
@@ -122,7 +125,11 @@ class GachaCommand[
   object ChildExecutors {
 
     Parsers
-      .closedRangeInt(0, Int.MaxValue, MessageEffect("IDは0以上の整数を指定してください。"))
+      .closedRangeInt[Int Refined NonNegative](
+        0,
+        Int.MaxValue,
+        MessageEffect("IDは0以上の整数を指定してください。")
+      )
       .andThen(_.flatMap { id =>
         val intId = id
         if (gachaPrizeAPI.existsGachaPrize(GachaPrizeId(intId)).toIO.unsafeRunSync())
@@ -133,7 +140,11 @@ class GachaCommand[
 
     private val gachaPrizeIdExistsParser: SingleArgumentParser[Int] =
       Parsers
-        .closedRangeInt(1, Int.MaxValue, MessageEffect("IDは正の値を指定してください。"))
+        .closedRangeInt[Int Refined Positive](
+          1,
+          Int.MaxValue,
+          MessageEffect("IDは正の値を指定してください。")
+        )
         .andThen(_.flatMap { intId =>
           if (gachaPrizeAPI.existsGachaPrize(GachaPrizeId(intId)).toIO.unsafeRunSync()) {
             succeedWith(intId)
@@ -170,7 +181,11 @@ class GachaCommand[
         Right(x)
       })
       .thenParse(
-        Parsers.closedRangeInt(1, Int.MaxValue, MessageEffect("配布するガチャ券の枚数は正の値を指定してください。"))
+        Parsers.closedRangeInt[Int Refined Positive](
+          1,
+          Int.MaxValue,
+          MessageEffect("配布するガチャ券の枚数は正の値を指定してください。")
+        )
       )
       .buildWith { context =>
         import shapeless.::
@@ -216,7 +231,11 @@ class GachaCommand[
     val giveItem: ContextualExecutor =
       playerCommandBuilder
         .thenParse(
-          Parsers.closedRangeInt(0, Int.MaxValue, MessageEffect("IDは0以上の整数を指定してください。"))
+          Parsers.closedRangeInt[Int Refined NonNegative](
+            0,
+            Int.MaxValue,
+            MessageEffect("IDは0以上の整数を指定してください。")
+          )
         )
         .thenParse(Parsers.identity)
         .buildWithExecutionF { context =>
@@ -301,7 +320,13 @@ class GachaCommand[
 
     val remove: ContextualExecutor = ContextualExecutorBuilder
       .beginConfiguration
-      .thenParse(Parsers.closedRangeInt(1, Int.MaxValue, MessageEffect("IDは正の値を指定してください。")))
+      .thenParse(
+        Parsers.closedRangeInt[Int Refined Positive](
+          1,
+          Int.MaxValue,
+          MessageEffect("IDは正の値を指定してください。")
+        )
+      )
       .buildWithExecutionF { context =>
         val gachaId = GachaPrizeId(context.args.parsed.head)
         for {
@@ -319,7 +344,13 @@ class GachaCommand[
       ContextualExecutorBuilder
         .beginConfiguration
         .thenParse(gachaPrizeIdExistsParser)
-        .thenParse(Parsers.closedRangeInt(1, 64, MessageEffect("数は1～64で指定してください。")))
+        .thenParse(
+          Parsers.closedRangeInt[Int Refined Interval.Closed[1, 64]](
+            1,
+            64,
+            MessageEffect("数は1～64で指定してください。")
+          )
+        )
         .buildWith { context =>
           import shapeless.::
           val t :: amount :: HNil = context.args.parsed
