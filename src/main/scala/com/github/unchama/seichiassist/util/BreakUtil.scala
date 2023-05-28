@@ -219,23 +219,25 @@ object BreakUtil {
               new ItemStack(Material.COAL, bonus)
             case Material.DIAMOND_ORE =>
               new ItemStack(Material.DIAMOND, bonus)
+            case Material.EMERALD_ORE =>
+              new ItemStack(Material.EMERALD, bonus)
+            case Material.QUARTZ_ORE =>
+              new ItemStack(Material.QUARTZ, bonus)
+            // レッドストーン鉱石, グロウストーン, スイカブロック, シーランタン, ラピスラズリ鉱石は、
+            // ドロップアイテムの個数を求める計算が通常の鉱石の扱いと異なるため、bonusの値に依らない特別な処理が必要である。
+            case Material.REDSTONE_ORE | Material.GLOWING_REDSTONE_ORE =>
+              val withBonus = (rand * (fortuneLevel + 2) + 4).toInt
+              new ItemStack(Material.GLOWSTONE_DUST, withBonus)
             case Material.LAPIS_ORE =>
               val dye = new Dye()
               dye.setColor(DyeColor.BLUE)
-
-              val withBonus = bonus * (rand * 4 + 4).toInt
+              // 幸運エンチャントなしで掘った時のアイテムが得られる個数(4~9)に、幸運ボーナスを掛ける
+              val withBonus = (rand * 6 + 4).toInt * bonus
               dye.toItemStack(withBonus)
-            case Material.EMERALD_ORE =>
-              new ItemStack(Material.EMERALD, bonus)
-            case Material.REDSTONE_ORE | Material.GLOWING_REDSTONE_ORE =>
-              val withBonus = bonus * (rand + 4).toInt
-              new ItemStack(Material.REDSTONE, withBonus)
-            case Material.QUARTZ_ORE =>
-              new ItemStack(Material.QUARTZ, bonus)
             // グロウストーンは幸運エンチャントがついていると高確率でより多くのダストをドロップする
             // しかし、最大でも4個までしかドロップしない
             case Material.GLOWSTONE =>
-              val withBonus = bonus * (rand * 3 + 2).toInt
+              val withBonus = (rand * (fortuneLevel + 3) + 2).toInt
               val amount = if (withBonus > 4) 4 else withBonus
               new ItemStack(Material.GLOWSTONE_DUST, amount)
             case _ =>
@@ -254,11 +256,11 @@ object BreakUtil {
         case Material.LAPIS_ORE =>
           val dye = new Dye()
           dye.setColor(DyeColor.BLUE)
-          Some(BlockBreakResult.ItemDrop(dye.toItemStack((rand * 4 + 4).toInt)))
+          Some(BlockBreakResult.ItemDrop(dye.toItemStack((rand * 6 + 4).toInt)))
         case Material.EMERALD_ORE =>
           Some(BlockBreakResult.ItemDrop(new ItemStack(Material.EMERALD)))
         case Material.REDSTONE_ORE | Material.GLOWING_REDSTONE_ORE =>
-          Some(BlockBreakResult.ItemDrop(new ItemStack(Material.REDSTONE, (rand + 4).toInt)))
+          Some(BlockBreakResult.ItemDrop(new ItemStack(Material.REDSTONE, ((rand * 2) + 4).toInt)))
         case Material.QUARTZ_ORE =>
           Some(BlockBreakResult.ItemDrop(new ItemStack(Material.QUARTZ)))
         // グロウストーンは、2から4個のグロウストーンダストをドロップする
