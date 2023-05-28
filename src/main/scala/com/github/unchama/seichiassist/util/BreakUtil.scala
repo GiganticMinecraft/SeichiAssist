@@ -240,6 +240,14 @@ object BreakUtil {
               val withBonus = (rand * (fortuneLevel + 3) + 2).toInt
               val amount = if (withBonus > 4) 4 else withBonus
               new ItemStack(Material.GLOWSTONE_DUST, amount)
+            case Material.MELON_BLOCK =>
+              val withBonus = (rand * (fortuneLevel + 5) + 3).toInt
+              val amount = if (withBonus > 9) 9 else withBonus
+              new ItemStack(Material.MELON, amount)
+            case Material.SEA_LANTERN =>
+              val withBonus = (rand * (fortuneLevel + 2) + 2).toInt
+              val amount = if (withBonus > 5) 5 else withBonus
+              new ItemStack(Material.PRISMARINE_CRYSTALS, amount)
             case _ =>
               // unreachable
               new ItemStack(blockMaterial, bonus)
@@ -268,6 +276,18 @@ object BreakUtil {
           Some(
             BlockBreakResult
               .ItemDrop(new ItemStack(Material.GLOWSTONE_DUST, (rand * 3 + 2).toInt))
+          )
+        // スイカブロックは、3から7個のスイカをドロップする
+        case Material.MELON_BLOCK =>
+          Some(
+            BlockBreakResult
+              .ItemDrop(new ItemStack(Material.MELON, (rand * 5 + 3).toInt))
+          )
+        // シーランタンは、2から3個のプリズマリンクリスタルをドロップする
+        case Material.SEA_LANTERN =>
+          Some(
+            BlockBreakResult
+              .ItemDrop(new ItemStack(Material.PRISMARINE_CRYSTALS, (rand * 2 + 2).toInt))
           )
         case Material.STONE =>
           Some {
