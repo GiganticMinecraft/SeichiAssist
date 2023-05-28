@@ -181,7 +181,7 @@ object PassiveSkillMenu extends Menu {
     val computeToggleNetherQuartzBlockButton: IO[Button] = RecomputedButton(IO {
       val openerData = SeichiAssist.playermap(getUniqueId)
 
-      val baseLore = List(s"${GREEN}スキルでのネザー水晶類ブロック破壊")
+      val baseLore = List(s"${YELLOW}スキルでネザー水晶類ブロックを破壊するスキル")
       val statusLore = if (openerData.settings.allowBreakNetherQuartzBlock) {
         List(s"${GREEN}ON (スキルでネザー水晶類ブロックを破壊します。)", s"${DARK_RED}クリックでOFF")
       } else {
@@ -194,7 +194,7 @@ object PassiveSkillMenu extends Menu {
             if (openerData.settings.allowBreakNetherQuartzBlock)
               builder.enchanted()
           }
-          .title(s"$WHITE$UNDERLINE${BOLD}スキルでのネザー水晶類ブロック破壊")
+          .title(s"$WHITE$UNDERLINE${BOLD}ネザー水晶類ブロック破壊スキル切り替え")
           .lore(baseLore ++ statusLore)
           .build(),
         LeftClickButtonEffect {
@@ -203,12 +203,12 @@ object PassiveSkillMenu extends Menu {
             DeferredEffect(IO {
               if (openerData.settings.allowBreakNetherQuartzBlock) {
                 SequentialEffect(
-                  MessageEffect(s"${GREEN}スキルでのネザー水晶類ブロック破壊:ON"),
+                  MessageEffect(s"${GREEN}スキルでのネザー水晶類ブロック破壊を有効化しました。"),
                   FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
                 )
               } else {
                 SequentialEffect(
-                  MessageEffect(s"${GREEN}スキルでのネザー水晶類ブロック破壊:OFF"),
+                  MessageEffect(s"${RED}スキルでのネザー水晶類ブロック破壊を無効化しました。"),
                   FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
                 )
               }
