@@ -8,7 +8,11 @@ import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, Brea
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange._
-import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{AssaultArmor, DualBreak, TrialBreak}
+import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{
+  AssaultArmor,
+  DualBreak,
+  TrialBreak
+}
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.{Active, Disabled}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.CardinalDirection
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
@@ -112,7 +116,10 @@ object BreakUtil {
     checkTarget: Block,
     lockedBlocks: Set[Block] = unsafeGetLockedBlocks()
   ): Boolean = {
-    !isProtectedChest(player, checkTarget) &&
+    !isProtectedChest(player, checkTarget) && !isProtectedNetherQuartzBlock(
+      player,
+      checkTarget
+    ) &&
     canBreak(player, checkTarget, lockedBlocks)
   }
 

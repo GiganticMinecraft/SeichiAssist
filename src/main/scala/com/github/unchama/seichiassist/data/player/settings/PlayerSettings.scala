@@ -61,5 +61,4 @@ class PlayerSettings {
     performMultipleIDBlockBreakWhenOutsideSeichiWorld =
       !performMultipleIDBlockBreakWhenOutsideSeichiWorld
   }
-
 }
