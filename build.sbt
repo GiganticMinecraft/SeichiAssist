@@ -56,7 +56,7 @@ resolvers ++= Seq(
 )
 
 val providedDependencies = Seq(
-  "org.jetbrains" % "annotations" % "17.0.0",
+  "org.jetbrains" % "annotations" % "24.0.1",
   "org.apache.commons" % "commons-lang3" % "3.9",
   "commons-codec" % "commons-codec" % "1.15",
   "org.spigotmc" % "spigot-api" % "1.12.2-R0.1-SNAPSHOT",
@@ -70,7 +70,7 @@ val providedDependencies = Seq(
 ).map(_ % "provided")
 
 val testDependencies = Seq(
-  "org.scalamock" %% "scalamock" % "4.4.0",
+  "org.scalamock" %% "scalamock" % "5.2.0",
   "org.scalatest" %% "scalatest" % "3.2.16",
   "org.scalatestplus" %% "scalacheck-1-14" % "3.2.2.0",
   // テスト用のTestSchedulerを使うため

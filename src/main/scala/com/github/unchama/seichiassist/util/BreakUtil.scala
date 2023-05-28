@@ -51,11 +51,11 @@ object BreakUtil {
    * 複数ブロックのキャッシュのためにこれを事前にキャッシュして渡したほうが速い。 （引数を省略した場合呼び出しごとに再計算される）
    *
    * @param player
-   *   破壊者
+   * 破壊者
    * @param checkTarget
-   *   破壊対象のブロック
+   * 破壊対象のブロック
    * @param lockedBlocks
-   *   グローバルにロックされているブロックの集合
+   * グローバルにロックされているブロックの集合
    */
   def canBreak(
     player: Player,
@@ -187,7 +187,7 @@ object BreakUtil {
     }
 
     val rand = Math.random()
-    val bonus = Math.max(1, rand * (fortuneLevel + 2) - 1).toInt
+    val bonus = Math.max(1, rand * (fortuneLevel + 2)).toInt
 
     val blockDataLeast4Bits = (blockData & 0x0f).toByte
     val b_tree = (blockData & 0x03).toByte
@@ -219,25 +219,36 @@ object BreakUtil {
               new ItemStack(Material.COAL, bonus)
             case Material.DIAMOND_ORE =>
               new ItemStack(Material.DIAMOND, bonus)
+            case Material.EMERALD_ORE =>
+              new ItemStack(Material.EMERALD, bonus)
+            case Material.QUARTZ_ORE =>
+              new ItemStack(Material.QUARTZ, bonus)
+            // レッドストーン鉱石, グロウストーン, スイカブロック, シーランタン, ラピスラズリ鉱石は、
+            // ドロップアイテムの個数を求める計算が通常の鉱石の扱いと異なるため、特別な処理が必要である。
+            case Material.REDSTONE_ORE | Material.GLOWING_REDSTONE_ORE =>
+              val withBonus = (rand * (fortuneLevel + 2) + 4).toInt
+              new ItemStack(Material.GLOWSTONE_DUST, withBonus)
             case Material.LAPIS_ORE =>
               val dye = new Dye()
               dye.setColor(DyeColor.BLUE)
-
-              val withBonus = bonus * (rand * 4 + 4).toInt
+              // 幸運エンチャントなしで掘った時のアイテムが得られる個数(4~9)に、幸運ボーナスを掛ける
+              val withBonus = (rand * 6 + 4).toInt * bonus
               dye.toItemStack(withBonus)
-            case Material.EMERALD_ORE =>
-              new ItemStack(Material.EMERALD, bonus)
-            case Material.REDSTONE_ORE | Material.GLOWING_REDSTONE_ORE =>
-              val withBonus = bonus * (rand + 4).toInt
-              new ItemStack(Material.REDSTONE, withBonus)
-            case Material.QUARTZ_ORE =>
-              new ItemStack(Material.QUARTZ, bonus)
             // グロウストーンは幸運エンチャントがついていると高確率でより多くのダストをドロップする
             // しかし、最大でも4個までしかドロップしない
             case Material.GLOWSTONE =>
-              val withBonus = bonus * (rand * 3 + 2).toInt
+              val withBonus = (rand * (fortuneLevel + 3) + 2).toInt
               val amount = if (withBonus > 4) 4 else withBonus
               new ItemStack(Material.GLOWSTONE_DUST, amount)
+            // 同様に、メロンブロックは幸運エンチャントがついている場合、９個までしかドロップしない
+            case Material.MELON_BLOCK =>
+              val withBonus = (rand * (fortuneLevel + 5) + 3).toInt
+              val amount = if (withBonus > 9) 9 else withBonus
+              new ItemStack(Material.MELON, amount)
+            case Material.SEA_LANTERN =>
+              val withBonus = (rand * (fortuneLevel + 2) + 2).toInt
+              val amount = if (withBonus > 5) 5 else withBonus
+              new ItemStack(Material.PRISMARINE_CRYSTALS, amount)
             case _ =>
               // unreachable
               new ItemStack(blockMaterial, bonus)
@@ -254,11 +265,13 @@ object BreakUtil {
         case Material.LAPIS_ORE =>
           val dye = new Dye()
           dye.setColor(DyeColor.BLUE)
-          Some(BlockBreakResult.ItemDrop(dye.toItemStack((rand * 4 + 4).toInt)))
+          Some(BlockBreakResult.ItemDrop(dye.toItemStack((rand * 6 + 4).toInt)))
         case Material.EMERALD_ORE =>
           Some(BlockBreakResult.ItemDrop(new ItemStack(Material.EMERALD)))
         case Material.REDSTONE_ORE | Material.GLOWING_REDSTONE_ORE =>
-          Some(BlockBreakResult.ItemDrop(new ItemStack(Material.REDSTONE, (rand + 4).toInt)))
+          Some(
+            BlockBreakResult.ItemDrop(new ItemStack(Material.REDSTONE, ((rand * 2) + 4).toInt))
+          )
         case Material.QUARTZ_ORE =>
           Some(BlockBreakResult.ItemDrop(new ItemStack(Material.QUARTZ)))
         // グロウストーンは、2から4個のグロウストーンダストをドロップする
@@ -266,6 +279,15 @@ object BreakUtil {
           Some(
             BlockBreakResult
               .ItemDrop(new ItemStack(Material.GLOWSTONE_DUST, (rand * 3 + 2).toInt))
+          )
+        // スイカブロックは、3から7個のスイカをドロップする
+        case Material.MELON_BLOCK =>
+          Some(BlockBreakResult.ItemDrop(new ItemStack(Material.MELON, (rand * 5 + 3).toInt)))
+        // シーランタンは、2から3個のプリズマリンクリスタルをドロップする
+        case Material.SEA_LANTERN =>
+          Some(
+            BlockBreakResult
+              .ItemDrop(new ItemStack(Material.PRISMARINE_CRYSTALS, (rand * 2 + 2).toInt))
           )
         case Material.STONE =>
           Some {
@@ -306,6 +328,9 @@ object BreakUtil {
             BlockBreakResult
               .ItemDrop(new ItemStack(blockMaterial, 1, (blockDataLeast4Bits & 7).toShort))
           )
+        case Material.BOOKSHELF =>
+          // 本棚を破壊すると、本が3つドロップする
+          Some(BlockBreakResult.ItemDrop(new ItemStack(Material.BOOK, 3)))
         case _ =>
           Some(
             BlockBreakResult
@@ -317,10 +342,11 @@ object BreakUtil {
 
   /**
    * TODO: これはビジネスロジックである。breakcountシステムによって管理されるべき。
+   *
    * @param world
-   *   対象ワールド
+   * 対象ワールド
    * @return
-   *   ワールドに対応する整地量の倍率を計算する作用
+   * ワールドに対応する整地量の倍率を計算する作用
    */
   def blockCountWeight[F[_]: Monad](world: World): F[Double] =
     Monad[F].pure {
@@ -487,7 +513,7 @@ object BreakUtil {
    * 対象ブロック：以下のいずれかを満たす
    *  - Material.isSolid == true になるブロック（ただし岩盤を除く）
    *  - 液体ブロック（水,溶岩）
-   * ref: [バージョン1.12.x時の最新記事アーカイブ](https://minecraft.fandom.com/wiki/Solid_block?oldid=1132868)
+   *    ref: [バージョン1.12.x時の最新記事アーカイブ](https://minecraft.fandom.com/wiki/Solid_block?oldid=1132868)
    */
   private def isAffectedByGravity(material: Material): Boolean = {
     material match {
@@ -499,13 +525,13 @@ object BreakUtil {
 
   /**
    * @param player
-   *   破壊プレイヤー
+   * 破壊プレイヤー
    * @param block
-   *   手動破壊対象またはアサルト/遠距離の指定座標
+   * 手動破壊対象またはアサルト/遠距離の指定座標
    * @param isAssault
-   *   true: アサルトアーマーによる破壊 false: アクティブスキルまたは手動による破壊
+   * true: アサルトアーマーによる破壊 false: アクティブスキルまたは手動による破壊
    * @return
-   *   重力値（破壊範囲の上に積まれているブロック数）
+   * 重力値（破壊範囲の上に積まれているブロック数）
    */
   def getGravity(player: Player, block: Block, isAssault: Boolean): Int = {
     // 1. 重力値を適用すべきか判定
@@ -621,10 +647,11 @@ object BreakUtil {
 
   /**
    * エンティティが向いている方向を計算して取得する
+   *
    * @param entity
-   *   対象とするエンティティ
+   * 対象とするエンティティ
    * @return
-   *   エンティティが向いている方向が座標軸方向に近似できた場合はnon-nullな[[CardinalDirection]]、そうでない場合は`null`
+   * エンティティが向いている方向が座標軸方向に近似できた場合はnon-nullな[[CardinalDirection]]、そうでない場合は`null`
    */
   def getCardinalDirection(entity: Entity): CardinalDirection = {
     var rotation = ((entity.getLocation.getYaw + 180) % 360).toDouble
