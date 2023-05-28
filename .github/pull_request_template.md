@@ -1,6 +1,12 @@
 <!--
     プルリクエストの作成ありがとうございます！
-    ここにあなたが行った変更を簡潔に説明していきましょう。詳しすぎる必要はありません。
+    ここにあなたが行った変更を簡潔に説明してください。自明な場合は省略しても良いですが、なるべく書くようにしてください。
+    情報量が多い場合は<details>タグで折りたたんでください。例:
+    <details>
+    	<summary>ここに要約</summary>
+    	Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    </details>
+    [例示ここまで]
 -->
 
 **関連issue:**
