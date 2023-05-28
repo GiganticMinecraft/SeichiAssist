@@ -306,6 +306,9 @@ object BreakUtil {
             BlockBreakResult
               .ItemDrop(new ItemStack(blockMaterial, 1, (blockDataLeast4Bits & 7).toShort))
           )
+        case Material.BOOKSHELF =>
+          //本棚を破壊すると、本が3つドロップする
+          Some(BlockBreakResult.ItemDrop(new ItemStack(Material.BOOK, 3)))
         case _ =>
           Some(
             BlockBreakResult
