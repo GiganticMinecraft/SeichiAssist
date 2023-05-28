@@ -51,11 +51,11 @@ object BreakUtil {
    * 複数ブロックのキャッシュのためにこれを事前にキャッシュして渡したほうが速い。 （引数を省略した場合呼び出しごとに再計算される）
    *
    * @param player
-   *   破壊者
+   * 破壊者
    * @param checkTarget
-   *   破壊対象のブロック
+   * 破壊対象のブロック
    * @param lockedBlocks
-   *   グローバルにロックされているブロックの集合
+   * グローバルにロックされているブロックの集合
    */
   def canBreak(
     player: Player,
@@ -321,7 +321,7 @@ object BreakUtil {
         case Material.LOG | Material.LOG_2 =>
           Some(BlockBreakResult.ItemDrop(new ItemStack(blockMaterial, 1, b_tree.toShort)))
         case Material.WOOD_STEP | Material.STEP | Material.STONE_SLAB2
-          if (blockDataLeast4Bits & 8) != 0 =>
+            if (blockDataLeast4Bits & 8) != 0 =>
           // 上付きハーフブロックをそのままドロップするとmissing textureとして描画されるため、下付きの扱いとする
           Some(
             BlockBreakResult
@@ -341,10 +341,11 @@ object BreakUtil {
 
   /**
    * TODO: これはビジネスロジックである。breakcountシステムによって管理されるべき。
+   *
    * @param world
-   *   対象ワールド
+   * 対象ワールド
    * @return
-   *   ワールドに対応する整地量の倍率を計算する作用
+   * ワールドに対応する整地量の倍率を計算する作用
    */
   def blockCountWeight[F[_]: Monad](world: World): F[Double] =
     Monad[F].pure {
@@ -511,7 +512,7 @@ object BreakUtil {
    * 対象ブロック：以下のいずれかを満たす
    *  - Material.isSolid == true になるブロック（ただし岩盤を除く）
    *  - 液体ブロック（水,溶岩）
-   * ref: [バージョン1.12.x時の最新記事アーカイブ](https://minecraft.fandom.com/wiki/Solid_block?oldid=1132868)
+   *    ref: [バージョン1.12.x時の最新記事アーカイブ](https://minecraft.fandom.com/wiki/Solid_block?oldid=1132868)
    */
   private def isAffectedByGravity(material: Material): Boolean = {
     material match {
@@ -523,13 +524,13 @@ object BreakUtil {
 
   /**
    * @param player
-   *   破壊プレイヤー
+   * 破壊プレイヤー
    * @param block
-   *   手動破壊対象またはアサルト/遠距離の指定座標
+   * 手動破壊対象またはアサルト/遠距離の指定座標
    * @param isAssault
-   *   true: アサルトアーマーによる破壊 false: アクティブスキルまたは手動による破壊
+   * true: アサルトアーマーによる破壊 false: アクティブスキルまたは手動による破壊
    * @return
-   *   重力値（破壊範囲の上に積まれているブロック数）
+   * 重力値（破壊範囲の上に積まれているブロック数）
    */
   def getGravity(player: Player, block: Block, isAssault: Boolean): Int = {
     // 1. 重力値を適用すべきか判定
@@ -645,10 +646,11 @@ object BreakUtil {
 
   /**
    * エンティティが向いている方向を計算して取得する
+   *
    * @param entity
-   *   対象とするエンティティ
+   * 対象とするエンティティ
    * @return
-   *   エンティティが向いている方向が座標軸方向に近似できた場合はnon-nullな[[CardinalDirection]]、そうでない場合は`null`
+   * エンティティが向いている方向が座標軸方向に近似できた場合はnon-nullな[[CardinalDirection]]、そうでない場合は`null`
    */
   def getCardinalDirection(entity: Entity): CardinalDirection = {
     var rotation = ((entity.getLocation.getYaw + 180) % 360).toDouble
