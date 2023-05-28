@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.dragonnighttime
 
 import cats.effect.{Concurrent, Timer}
-import com.github.unchama.concurrent.RepeatingTaskContext
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.dragonnighttime.application._
 import com.github.unchama.seichiassist.subsystems.dragonnighttime.bukkit.instances._
