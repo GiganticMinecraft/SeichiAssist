@@ -8,11 +8,7 @@ import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, Brea
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange._
-import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{
-  AssaultArmor,
-  DualBreak,
-  TrialBreak
-}
+import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{AssaultArmor, DualBreak, TrialBreak}
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.{Active, Disabled}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.CardinalDirection
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
@@ -128,6 +124,22 @@ object BreakUtil {
           true
         } else if (!player.getWorld.isSeichi) {
           ActionBarMessageEffect(s"${RED}スキルでのチェスト破壊は整地ワールドでのみ有効です").run(player).unsafeRunSync()
+          true
+        } else {
+          false
+        }
+      case _ => false
+    }
+  }
+
+  def isProtectedNetherQuartzBlock(player: Player, checkTarget: Block): Boolean = {
+    checkTarget.getType match {
+      // 鉱石ブロックの方はプロテクトの対象外
+      case Material.QUARTZ_BLOCK | Material.QUARTZ_STAIRS =>
+        if (!SeichiAssist.playermap(player.getUniqueId).netherQuartzBlockflag) {
+          ActionBarMessageEffect(s"${RED}スキルでのネザー水晶類ブロックの破壊は無効化されています")
+            .run(player)
+            .unsafeRunSync()
           true
         } else {
           false
