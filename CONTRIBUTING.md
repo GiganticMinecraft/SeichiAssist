@@ -219,6 +219,21 @@ DockerマシンのIPアドレス(Linux等なら`localhost`)を`DOCKER_IP`とし�
 広い場所には、書くべきだと思ったことを書いてください。詳しすぎるということはありません。
 一通り書き終わったら、長い場所の右下にある「Create pull request」と書かれたボタンを押してください。
 
+#### Issueを紐付ける
+
+Issueに取り組んだプルリクエストの場合は説明欄またはコミットメッセージに `close: #<関連するIssue番号>` をつけるようにしてください。
+`close:` や `fix:` などのキーワードでIssueを紐付けるとプルリクエストがマージされた際自動的にそのIssueがクローズされるようになります。
+
+例:
+`#4`のIssueを紐付ける場合:
+```markdown
+close: #4
+```
+`#4`と`#6`のIssueを紐付ける場合:
+```markdown
+close: #4, close: #6
+```
+
 ### コードレビューを待つ
 Pull Requestが作成されたら、GitHubのサーバーでコンパイルやファイルのチェックが自動的に始まります。
 また、[確認できる人](https://github.com/orgs/GiganticMinecraft/people) (主に@kory33、@rito528、@KisaragiEffective、@Lucky3028)が方向性が正しいかどうかレビューを行います。それまでは優雅に紅茶を飲んだり踊ったりして待つことができます。
