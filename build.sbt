@@ -90,7 +90,7 @@ val dependenciesToEmbed = Seq(
 
   // effect system
   "org.typelevel" %% "cats-core" % "2.9.0",
-  "org.typelevel" %% "cats-effect" % "2.5.5",
+  "org.typelevel" %% "cats-effect" % "3.6-1f95fd7",
   "co.fs2" %% "fs2-core" % "2.5.11",
 
   // algebra
