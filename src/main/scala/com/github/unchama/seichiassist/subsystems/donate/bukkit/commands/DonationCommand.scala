@@ -27,6 +27,8 @@ class DonationCommand[F[_]: ConcurrentEffect](
       .thenParse(Parsers.identity)
       .thenParse(Parsers.integer(MessageEffect(s"${RED}付与するプレミアムエフェクトポイントは整数で指定してください。")))
       .buildWithExecutionF { context =>
+        import shapeless.::
+
         val rawName :: rawDonatePoint :: HNil = context.args.parsed
         val playerName = PlayerName(rawName)
         val donatePoint = DonatePremiumEffectPoint(rawDonatePoint)
