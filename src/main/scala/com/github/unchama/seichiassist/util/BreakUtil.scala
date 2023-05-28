@@ -224,7 +224,7 @@ object BreakUtil {
             case Material.QUARTZ_ORE =>
               new ItemStack(Material.QUARTZ, bonus)
             // レッドストーン鉱石, グロウストーン, スイカブロック, シーランタン, ラピスラズリ鉱石は、
-            // ドロップアイテムの個数を求める計算が通常の鉱石の扱いと異なるため、bonusの値に依らない特別な処理が必要である。
+            // ドロップアイテムの個数を求める計算が通常の鉱石の扱いと異なるため、特別な処理が必要である。
             case Material.REDSTONE_ORE | Material.GLOWING_REDSTONE_ORE =>
               val withBonus = (rand * (fortuneLevel + 2) + 4).toInt
               new ItemStack(Material.GLOWSTONE_DUST, withBonus)
@@ -240,6 +240,7 @@ object BreakUtil {
               val withBonus = (rand * (fortuneLevel + 3) + 2).toInt
               val amount = if (withBonus > 4) 4 else withBonus
               new ItemStack(Material.GLOWSTONE_DUST, amount)
+            // 同様に、メロンブロックは幸運エンチャントがついている場合、９個までしかドロップしない
             case Material.MELON_BLOCK =>
               val withBonus = (rand * (fortuneLevel + 5) + 3).toInt
               val amount = if (withBonus > 9) 9 else withBonus
