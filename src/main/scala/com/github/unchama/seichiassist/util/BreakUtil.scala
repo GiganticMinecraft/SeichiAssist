@@ -187,7 +187,7 @@ object BreakUtil {
     }
 
     val rand = Math.random()
-    val bonus = Math.max(1, rand * (fortuneLevel + 2) - 1).toInt
+    val bonus = Math.max(1, rand * (fortuneLevel + 2)).toInt
 
     val blockDataLeast4Bits = (blockData & 0x0f).toByte
     val b_tree = (blockData & 0x03).toByte
