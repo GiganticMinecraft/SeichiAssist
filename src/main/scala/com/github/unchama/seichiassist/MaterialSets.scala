@@ -14,7 +14,9 @@ object MaterialSets {
     Material.EMERALD_ORE,
     Material.REDSTONE_ORE,
     Material.GLOWING_REDSTONE_ORE,
-    Material.QUARTZ_ORE
+    Material.QUARTZ_ORE,
+    Material.MELON_BLOCK,
+    Material.SEA_LANTERN
   )
 
   // このMaterialは整地スキルに対応する
