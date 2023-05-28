@@ -268,7 +268,9 @@ object BreakUtil {
         case Material.EMERALD_ORE =>
           Some(BlockBreakResult.ItemDrop(new ItemStack(Material.EMERALD)))
         case Material.REDSTONE_ORE | Material.GLOWING_REDSTONE_ORE =>
-          Some(BlockBreakResult.ItemDrop(new ItemStack(Material.REDSTONE, ((rand * 2) + 4).toInt)))
+          Some(
+            BlockBreakResult.ItemDrop(new ItemStack(Material.REDSTONE, ((rand * 2) + 4).toInt))
+          )
         case Material.QUARTZ_ORE =>
           Some(BlockBreakResult.ItemDrop(new ItemStack(Material.QUARTZ)))
         // グロウストーンは、2から4個のグロウストーンダストをドロップする
@@ -279,10 +281,7 @@ object BreakUtil {
           )
         // スイカブロックは、3から7個のスイカをドロップする
         case Material.MELON_BLOCK =>
-          Some(
-            BlockBreakResult
-              .ItemDrop(new ItemStack(Material.MELON, (rand * 5 + 3).toInt))
-          )
+          Some(BlockBreakResult.ItemDrop(new ItemStack(Material.MELON, (rand * 5 + 3).toInt)))
         // シーランタンは、2から3個のプリズマリンクリスタルをドロップする
         case Material.SEA_LANTERN =>
           Some(
@@ -322,14 +321,14 @@ object BreakUtil {
         case Material.LOG | Material.LOG_2 =>
           Some(BlockBreakResult.ItemDrop(new ItemStack(blockMaterial, 1, b_tree.toShort)))
         case Material.WOOD_STEP | Material.STEP | Material.STONE_SLAB2
-            if (blockDataLeast4Bits & 8) != 0 =>
+          if (blockDataLeast4Bits & 8) != 0 =>
           // 上付きハーフブロックをそのままドロップするとmissing textureとして描画されるため、下付きの扱いとする
           Some(
             BlockBreakResult
               .ItemDrop(new ItemStack(blockMaterial, 1, (blockDataLeast4Bits & 7).toShort))
           )
         case Material.BOOKSHELF =>
-          //本棚を破壊すると、本が3つドロップする
+          // 本棚を破壊すると、本が3つドロップする
           Some(BlockBreakResult.ItemDrop(new ItemStack(Material.BOOK, 3)))
         case _ =>
           Some(
