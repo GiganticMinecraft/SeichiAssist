@@ -107,13 +107,10 @@ jobs:
           reviewdog-name: scalafmt
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Check lint with Scalafix on push
-        if: ${{ (github.event_name == 'push')}}
+      - name: Run scalafix check
+        # cf. https://scalacenter.github.io/scalafix/docs/users/installation.html#enforce-in-ci
         run: sbt "scalafix --check"
-      - name: Run lint with Scalafix on PR
-        if: ${{ (github.event_name == 'pull_request')}}
-        run: sbt scalafixAll
-      - name: Run reviewdog for Scalafix
+      - name: Annotate scalafix diagnostics with reviewdog
         uses: ./.github/actions/run-reviewdog
         if: ${{ (github.event_name == 'pull_request') && failure() }}
         with:
