@@ -11,9 +11,9 @@
 
 **関連issue:**
 <!--
-    既に作成されているissueを解決するpull requestの場合は該当のIssueを紐づける必要があります。
     Issueを紐付ける場合は以下に "close #<該当のIssue番号>" と指定してください。
     複数のIssueを紐付ける場合はそれに続いて "close #1, close #2" と指定してください。
+    https://docs.github.com/ja/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue
 -->
 
 close #
