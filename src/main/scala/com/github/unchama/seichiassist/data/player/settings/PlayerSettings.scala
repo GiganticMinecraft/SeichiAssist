@@ -22,9 +22,6 @@ class PlayerSettings {
   // 複数種類破壊トグル
   var performMultipleIDBlockBreakWhenOutsideSeichiWorld: Boolean = false
 
-  // スキルでのネザー水晶類ブロックの破壊トグル
-  var allowBreakNetherQuartzBlock: Boolean = true
-
   // PvPトグル
   var pvpflag = false
   var nickname: PlayerNickname = PlayerNickname(NicknameStyle.Level)
@@ -65,10 +62,4 @@ class PlayerSettings {
       !performMultipleIDBlockBreakWhenOutsideSeichiWorld
   }
 
-  /**
-   * スキルでのネザー水晶類ブロックの破壊のON/OFFを切り替える[UnforcedEffect]
-   */
-  val toggleAllowNetherQuartzBlockBreakFlag: TargetedEffect[Player] = UnfocusedEffect {
-    allowBreakNetherQuartzBlock = !allowBreakNetherQuartzBlock
-  }
 }

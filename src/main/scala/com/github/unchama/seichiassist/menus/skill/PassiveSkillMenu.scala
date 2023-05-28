@@ -68,10 +68,7 @@ object PassiveSkillMenu extends Menu {
 
   private class ButtonComputations(player: Player)(implicit environment: Environment) {
 
-    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
-      layoutPreparationContext,
-      onMainThread
-    }
+    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, onMainThread}
     import player._
 
     import scala.util.chaining._
@@ -182,7 +179,7 @@ object PassiveSkillMenu extends Menu {
       val openerData = SeichiAssist.playermap(getUniqueId)
 
       val baseLore = List(s"${YELLOW}スキルでネザー水晶類ブロックを破壊するスキル")
-      val statusLore = if (openerData.settings.allowBreakNetherQuartzBlock) {
+      val statusLore = if (openerData.netherQuartzBlockflag) {
         List(s"${GREEN}ON (スキルでネザー水晶類ブロックを破壊します。)", s"${DARK_RED}クリックでOFF")
       } else {
         List(s"${RED}OFF (スキルでネザー水晶類ブロックを破壊しません。)", s"${DARK_GREEN}クリックでON")
@@ -191,7 +188,7 @@ object PassiveSkillMenu extends Menu {
       Button(
         new IconItemStackBuilder(Material.QUARTZ_BLOCK)
           .tap { builder =>
-            if (openerData.settings.allowBreakNetherQuartzBlock)
+            if (openerData.netherQuartzBlockflag)
               builder.enchanted()
           }
           .title(s"$WHITE$UNDERLINE${BOLD}ネザー水晶類ブロック破壊スキル切り替え")
@@ -199,9 +196,9 @@ object PassiveSkillMenu extends Menu {
           .build(),
         LeftClickButtonEffect {
           SequentialEffect(
-            openerData.settings.toggleAllowNetherQuartzBlockBreakFlag,
+            openerData.toggleNetherQuartzBlockBreakFlag,
             DeferredEffect(IO {
-              if (openerData.settings.allowBreakNetherQuartzBlock) {
+              if (openerData.netherQuartzBlockflag) {
                 SequentialEffect(
                   MessageEffect(s"${GREEN}スキルでのネザー水晶類ブロック破壊を有効化しました。"),
                   FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
