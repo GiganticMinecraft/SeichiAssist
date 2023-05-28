@@ -68,7 +68,7 @@ class PlayerSettings {
   /**
    * スキルでのネザー水晶類ブロックの破壊のON/OFFを切り替える[UnforcedEffect]
    */
-  val toggleAllowBreakNetherQuartzBlock: TargetedEffect[Player] = UnfocusedEffect {
+  val toggleAllowNetherQuartzBlockBreakFlag: TargetedEffect[Player] = UnfocusedEffect {
     allowBreakNetherQuartzBlock = !allowBreakNetherQuartzBlock
   }
 }

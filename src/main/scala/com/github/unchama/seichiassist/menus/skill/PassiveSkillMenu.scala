@@ -57,7 +57,8 @@ object PassiveSkillMenu extends Menu {
     val dynamicPartComputation = List(
       ChestSlotRef(0, 0) -> computeToggleMultipleBlockTypeDestructionButton,
       ChestSlotRef(0, 1) -> computeToggleChestBreakButton,
-      ChestSlotRef(1, 0) -> computeGiganticBerserkButton
+      ChestSlotRef(1, 0) -> computeGiganticBerserkButton,
+      ChestSlotRef(1, 1) -> computeToggleNetherQuartzBlockButton
     ).traverse(_.sequence)
 
     for {
@@ -168,6 +169,46 @@ object PassiveSkillMenu extends Menu {
               } else {
                 SequentialEffect(
                   MessageEffect(s"${RED}スキルでのチェスト破壊を無効化しました。"),
+                  FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
+                )
+              }
+            })
+          )
+        }
+      )
+    })
+
+    val computeToggleNetherQuartzBlockButton: IO[Button] = RecomputedButton(IO {
+      val openerData = SeichiAssist.playermap(getUniqueId)
+
+      val baseLore = List(s"${GREEN}スキルでのネザー水晶類ブロック破壊")
+      val statusLore = if (openerData.settings.allowBreakNetherQuartzBlock) {
+        List(s"${GREEN}ON (スキルでネザー水晶類ブロックを破壊します。)", s"${DARK_RED}クリックでOFF")
+      } else {
+        List(s"${RED}OFF (スキルでネザー水晶類ブロックを破壊しません。)", s"${DARK_GREEN}クリックでON")
+      }
+
+      Button(
+        new IconItemStackBuilder(Material.QUARTZ_BLOCK)
+          .tap { builder =>
+            if (openerData.settings.allowBreakNetherQuartzBlock)
+              builder.enchanted()
+          }
+          .title(s"$WHITE$UNDERLINE${BOLD}スキルでのネザー水晶類ブロック破壊")
+          .lore(baseLore ++ statusLore)
+          .build(),
+        LeftClickButtonEffect {
+          SequentialEffect(
+            openerData.settings.toggleAllowNetherQuartzBlockBreakFlag,
+            DeferredEffect(IO {
+              if (openerData.settings.allowBreakNetherQuartzBlock) {
+                SequentialEffect(
+                  MessageEffect(s"${GREEN}スキルでのネザー水晶類ブロック破壊:ON"),
+                  FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
+                )
+              } else {
+                SequentialEffect(
+                  MessageEffect(s"${GREEN}スキルでのネザー水晶類ブロック破壊:OFF"),
                   FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
                 )
               }
