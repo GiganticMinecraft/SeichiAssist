@@ -61,6 +61,7 @@ import com.github.unchama.seichiassist.subsystems._
 import com.github.unchama.seichiassist.subsystems.anywhereender.AnywhereEnderChestAPI
 import com.github.unchama.seichiassist.subsystems.breakcount.{BreakCountAPI, BreakCountReadAPI}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
+import com.github.unchama.seichiassist.subsystems.breakflags.BreakFlagAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.donate.DonatePremiumPointAPI
@@ -701,6 +702,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val gachaAPI: GachaDrawAPI[IO, Player] = gachaSystem.api
     implicit val consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player] =
       consumeGachaTicketSystem.api
+    implicit val breakFlagAPI: BreakFlagAPI[IO, Player] = breakFlagSystem.api
 
     val menuRouter = TopLevelRouter.apply
     import SeichiAssist.Scopes.globalChatInterceptionScope

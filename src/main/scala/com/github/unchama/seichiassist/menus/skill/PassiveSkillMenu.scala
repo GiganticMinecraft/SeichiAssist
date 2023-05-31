@@ -146,10 +146,9 @@ object PassiveSkillMenu extends Menu {
 
     import environment._
 
-    val computeToggleChestBreakButton: IO[Button] = RecomputedButton(
-      for {
-        chestFlag <- breakFlagAPI.breakFlag(player, BreakFlagName.Chest)
-      } yield {
+    val computeToggleChestBreakButton: IO[Button] = RecomputedButton(for {
+      chestFlag <- breakFlagAPI.breakFlag(player, BreakFlagName.Chest)
+    } yield {
       val baseLore = List(s"${GREEN}スキルでチェストを破壊するスキル")
       val statusLore = if (chestFlag) {
         List(s"${RED}整地ワールドのみで発動中(デフォルト)", "", s"$DARK_GREEN${UNDERLINE}クリックで切り替え")
