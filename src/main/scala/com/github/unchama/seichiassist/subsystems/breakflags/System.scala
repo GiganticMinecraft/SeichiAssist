@@ -5,7 +5,11 @@ import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakflags.application.repository.BreakFlagRepositoryDefinition
-import com.github.unchama.seichiassist.subsystems.breakflags.domain.{BreakFlag, BreakFlagName, BreakFlagPersistence}
+import com.github.unchama.seichiassist.subsystems.breakflags.domain.{
+  BreakFlag,
+  BreakFlagName,
+  BreakFlagPersistence
+}
 import com.github.unchama.seichiassist.subsystems.breakflags.persistence.JdbcBreakFlagPersistence
 import org.bukkit.entity.Player
 
@@ -31,22 +35,27 @@ object System {
         override val api: BreakFlagAPI[F, Player] = new BreakFlagAPI[F, Player] {
           override def turnOnBreakFlag(player: Player, breakFlagName: BreakFlagName): F[Unit] =
             ContextCoercion(breakFlagRepository(player).update { breakFlags =>
-              breakFlags.filterNot(_.flagName == breakFlagName) :+ BreakFlag(breakFlagName, flag = true)
+              breakFlags
+                .filterNot(_.flagName == breakFlagName) :+ BreakFlag(breakFlagName, flag = true)
             })
 
           override def turnOffBreakFlag(player: Player, breakFlagName: BreakFlagName): F[Unit] =
             ContextCoercion(breakFlagRepository(player).update { breakFlags =>
-              breakFlags.filterNot(_.flagName == breakFlagName) :+ BreakFlag(breakFlagName, flag = false)
+              breakFlags.filterNot(_.flagName == breakFlagName) :+ BreakFlag(
+                breakFlagName,
+                flag = false
+              )
             })
 
-          override def breakFlag(player: Player, breakFlagName: BreakFlagName): F[Boolean] = ContextCoercion(for {
-            flags <- breakFlagRepository(player).get
-          } yield {
-            flags.find(_.flagName == breakFlagName) match {
-              case Some(value) => value.flag
-              case None => true // 破壊フラグのデフォルト値はtrue(破壊する)
-            }
-          })
+          override def breakFlag(player: Player, breakFlagName: BreakFlagName): F[Boolean] =
+            ContextCoercion(for {
+              flags <- breakFlagRepository(player).get
+            } yield {
+              flags.find(_.flagName == breakFlagName) match {
+                case Some(value) => value.flag
+                case None        => true // 破壊フラグのデフォルト値はtrue(破壊する)
+              }
+            })
         }
       }
     }

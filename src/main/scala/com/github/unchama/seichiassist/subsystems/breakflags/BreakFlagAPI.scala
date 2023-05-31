@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.breakflags
 
-import com.github.unchama.seichiassist.subsystems.breakflags.domain.{BreakFlag, BreakFlagName}
+import com.github.unchama.seichiassist.subsystems.breakflags.domain.BreakFlagName
 
 trait BreakFlagAPI[F[_], Player] {
 
