@@ -8,14 +8,11 @@ import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, Brea
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange._
-import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{
-  AssaultArmor,
-  DualBreak,
-  TrialBreak
-}
+import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{AssaultArmor, DualBreak, TrialBreak}
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.{Active, Disabled}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.CardinalDirection
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
+import com.github.unchama.seichiassist.subsystems.breakflags.domain.BreakFlagName
 import com.github.unchama.targetedeffect.player.ActionBarMessageEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.ExternalPlugins
@@ -126,7 +123,7 @@ object BreakUtil {
   def isProtectedChest(player: Player, checkTarget: Block): Boolean = {
     checkTarget.getType match {
       case Material.CHEST | Material.TRAPPED_CHEST =>
-        if (!SeichiAssist.playermap(player.getUniqueId).chestflag) {
+        if (!SeichiAssist.instance.breakFlagSystem.api.breakFlag(player, BreakFlagName.Chest).unsafeRunSync()) {
           ActionBarMessageEffect(s"${RED}スキルでのチェスト破壊は無効化されています").run(player).unsafeRunSync()
           true
         } else if (!player.getWorld.isSeichi) {
@@ -143,7 +140,7 @@ object BreakUtil {
     checkTarget.getType match {
       // 鉱石ブロックの方はプロテクトの対象外
       case Material.QUARTZ_BLOCK | Material.QUARTZ_STAIRS =>
-        if (!SeichiAssist.playermap(player.getUniqueId).netherQuartzBlockflag) {
+        if (!SeichiAssist.instance.breakFlagSystem.api.breakFlag(player, BreakFlagName.NetherQuartz).unsafeRunSync()) {
           ActionBarMessageEffect(s"${RED}スキルでのネザー水晶類ブロックの破壊は無効化されています")
             .run(player)
             .unsafeRunSync()

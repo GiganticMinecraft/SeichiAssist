@@ -11,6 +11,8 @@ import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
+import com.github.unchama.seichiassist.subsystems.breakflags.BreakFlagAPI
+import com.github.unchama.seichiassist.subsystems.breakflags.domain.BreakFlagName
 import com.github.unchama.targetedeffect._
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -30,6 +32,7 @@ object PassiveSkillMenu extends Menu {
 
   class Environment(
     implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player],
+    implicit val breakFlagAPI: BreakFlagAPI[IO, Player],
     val ioCanOpenFirstPage: IO CanOpen FirstPage.type
   )
 
@@ -141,16 +144,19 @@ object PassiveSkillMenu extends Menu {
         )
     }
 
-    val computeToggleChestBreakButton: IO[Button] = RecomputedButton(IO {
-      val openerData = SeichiAssist.playermap(getUniqueId)
+    import environment._
 
+    val computeToggleChestBreakButton: IO[Button] = RecomputedButton(
+      for {
+        chestFlag <- breakFlagAPI.breakFlag(player, BreakFlagName.Chest)
+      } yield {
       val baseLore = List(s"${GREEN}スキルでチェストを破壊するスキル")
-      val statusLore = if (openerData.chestflag) {
+      val statusLore = if (chestFlag) {
         List(s"${RED}整地ワールドのみで発動中(デフォルト)", "", s"$DARK_GREEN${UNDERLINE}クリックで切り替え")
       } else {
         List(s"${RED}発動しません", "", s"$DARK_GREEN${UNDERLINE}クリックで切り替え")
       }
-      val material = if (openerData.chestflag) Material.DIAMOND_AXE else Material.CHEST
+      val material = if (chestFlag) Material.DIAMOND_AXE else Material.CHEST
 
       Button(
         new IconItemStackBuilder(material)
@@ -159,9 +165,9 @@ object PassiveSkillMenu extends Menu {
           .build(),
         LeftClickButtonEffect {
           SequentialEffect(
-            openerData.toggleChestBreakFlag,
+            DeferredEffect(IO(breakFlagAPI.toggleBreakFlag(BreakFlagName.Chest))),
             DeferredEffect(IO {
-              if (openerData.chestflag) {
+              if (chestFlag) {
                 SequentialEffect(
                   MessageEffect(s"${GREEN}スキルでのチェスト破壊を有効化しました。"),
                   FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
@@ -178,11 +184,11 @@ object PassiveSkillMenu extends Menu {
       )
     })
 
-    val computeToggleNetherQuartzBlockButton: IO[Button] = RecomputedButton(IO {
-      val openerData = SeichiAssist.playermap(getUniqueId)
-
+    val computeToggleNetherQuartzBlockButton: IO[Button] = RecomputedButton(for {
+      quartzBreakFlag <- breakFlagAPI.breakFlag(player, BreakFlagName.NetherQuartz)
+    } yield {
       val baseLore = List(s"${YELLOW}スキルでネザー水晶類ブロックを破壊するスキル")
-      val statusLore = if (openerData.netherQuartzBlockflag) {
+      val statusLore = if (quartzBreakFlag) {
         List(s"${GREEN}ON (スキルでネザー水晶類ブロックを破壊します。)", s"${DARK_RED}クリックでOFF")
       } else {
         List(s"${RED}OFF (スキルでネザー水晶類ブロックを破壊しません。)", s"${DARK_GREEN}クリックでON")
@@ -191,7 +197,7 @@ object PassiveSkillMenu extends Menu {
       Button(
         new IconItemStackBuilder(Material.QUARTZ_BLOCK)
           .tap { builder =>
-            if (openerData.netherQuartzBlockflag)
+            if (quartzBreakFlag)
               builder.enchanted()
           }
           .title(s"$WHITE$UNDERLINE${BOLD}ネザー水晶類ブロック破壊スキル切り替え")
@@ -199,9 +205,9 @@ object PassiveSkillMenu extends Menu {
           .build(),
         LeftClickButtonEffect {
           SequentialEffect(
-            openerData.toggleNetherQuartzBlockBreakFlag,
+            DeferredEffect(IO(breakFlagAPI.toggleBreakFlag(BreakFlagName.NetherQuartz))),
             DeferredEffect(IO {
-              if (openerData.netherQuartzBlockflag) {
+              if (quartzBreakFlag) {
                 SequentialEffect(
                   MessageEffect(s"${GREEN}スキルでのネザー水晶類ブロック破壊を有効化しました。"),
                   FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)

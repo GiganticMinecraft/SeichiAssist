@@ -480,7 +480,9 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.vote.subsystems.fairyspeech.System.wired[IO]
   }
 
-  private lazy val breakFlagSystem: subsystems.breakflags.System[IO, Player] =
+  /* TODO: breakFlagSystemは本来privateであるべきだが、
+      BreakUtilで呼び出されているため、やむを得ずpublicになっている */
+  lazy val breakFlagSystem: subsystems.breakflags.System[IO, Player] =
     subsystems.breakflags.System.wired[IO, SyncIO].unsafeRunSync()
 
   /* TODO: mineStackSystemは本来privateであるべきだが、mineStackにアイテムを格納するAPIが現状の

@@ -1,15 +1,12 @@
 package com.github.unchama.seichiassist.subsystems.breakflags
 
+import cats.data.Kleisli
 import cats.effect.{Sync, SyncEffect}
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakflags.application.repository.BreakFlagRepositoryDefinition
-import com.github.unchama.seichiassist.subsystems.breakflags.domain.{
-  BreakFlag,
-  BreakFlagName,
-  BreakFlagPersistence
-}
+import com.github.unchama.seichiassist.subsystems.breakflags.domain.{BreakFlag, BreakFlagName, BreakFlagPersistence}
 import com.github.unchama.seichiassist.subsystems.breakflags.persistence.JdbcBreakFlagPersistence
 import org.bukkit.entity.Player
 
@@ -33,7 +30,7 @@ object System {
 
       new System[F, Player] {
         override val api: BreakFlagAPI[F, Player] = new BreakFlagAPI[F, Player] {
-          override def toggleBreakFlag(player: Player, breakFlagName: BreakFlagName): F[Unit] =
+          override def toggleBreakFlag(breakFlagName: BreakFlagName): Kleisli[F, Player, Unit] = Kleisli { player =>
             for {
               breakFlag <- breakFlag(player, breakFlagName)
               _ <- ContextCoercion(breakFlagRepository(player).update { breakFlags =>
@@ -43,6 +40,7 @@ object System {
                 )
               })
             } yield ()
+          }
 
           override def breakFlag(player: Player, breakFlagName: BreakFlagName): F[Boolean] =
             ContextCoercion(for {
