@@ -5,14 +5,9 @@ import com.github.unchama.seichiassist.subsystems.breakflags.domain.BreakFlagNam
 trait BreakFlagAPI[F[_], Player] {
 
   /**
-   * @return 破壊フラグを有効にする作用
+   * @return 破壊フラグをトグルする作用
    */
-  def turnOnBreakFlag(player: Player, breakFlagName: BreakFlagName): F[Unit]
-
-  /**
-   * @return 破壊フラグを無効にする作用
-   */
-  def turnOffBreakFlag(player: Player, breakFlagName: BreakFlagName): F[Unit]
+  def toggleBreakFlag(player: Player, breakFlagName: BreakFlagName): F[Unit]
 
   /**
    * @return 現在の破壊フラグを取得する作用

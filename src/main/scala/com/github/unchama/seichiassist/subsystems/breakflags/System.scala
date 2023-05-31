@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.breakflags
 
-import cats.effect.SyncEffect
+import cats.effect.{Sync, SyncEffect}
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
@@ -21,7 +21,7 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_], G[_]: SyncEffect: ContextCoercion[*[_], F]]: G[System[F, Player]] = {
+  def wired[F[_]: Sync, G[_]: SyncEffect: ContextCoercion[*[_], F]]: G[System[F, Player]] = {
     implicit val breakFlagPersistence: BreakFlagPersistence[G] = new JdbcBreakFlagPersistence[G]
 
     for {
@@ -33,19 +33,16 @@ object System {
 
       new System[F, Player] {
         override val api: BreakFlagAPI[F, Player] = new BreakFlagAPI[F, Player] {
-          override def turnOnBreakFlag(player: Player, breakFlagName: BreakFlagName): F[Unit] =
-            ContextCoercion(breakFlagRepository(player).update { breakFlags =>
-              breakFlags
-                .filterNot(_.flagName == breakFlagName) :+ BreakFlag(breakFlagName, flag = true)
-            })
-
-          override def turnOffBreakFlag(player: Player, breakFlagName: BreakFlagName): F[Unit] =
-            ContextCoercion(breakFlagRepository(player).update { breakFlags =>
-              breakFlags.filterNot(_.flagName == breakFlagName) :+ BreakFlag(
-                breakFlagName,
-                flag = false
-              )
-            })
+          override def toggleBreakFlag(player: Player, breakFlagName: BreakFlagName): F[Unit] =
+            for {
+              breakFlag <- breakFlag(player, breakFlagName)
+              _ <- ContextCoercion(breakFlagRepository(player).update { breakFlags =>
+                breakFlags.filterNot(_.flagName == breakFlagName) :+ BreakFlag(
+                  breakFlagName,
+                  flag = !breakFlag
+                )
+              })
+            } yield ()
 
           override def breakFlag(player: Player, breakFlagName: BreakFlagName): F[Boolean] =
             ContextCoercion(for {
