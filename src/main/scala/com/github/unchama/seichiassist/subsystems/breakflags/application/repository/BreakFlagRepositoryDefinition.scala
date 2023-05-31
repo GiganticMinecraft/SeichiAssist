@@ -9,7 +9,7 @@ import com.github.unchama.seichiassist.subsystems.breakflags.domain.{BreakFlag, 
 object BreakFlagRepositoryDefinition {
 
   def withContext[F[_]: Sync, Player](
-    persistence: BreakFlagPersistence[F]
+    implicit persistence: BreakFlagPersistence[F]
   ): RepositoryDefinition[F, Player, Ref[F, List[BreakFlag]]] =
     RefDictBackedRepositoryDefinition
       .usingUuidRefDict[F, Player, List[BreakFlag]](persistence)(List.empty)
