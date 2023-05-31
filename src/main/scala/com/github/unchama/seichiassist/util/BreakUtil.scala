@@ -116,7 +116,10 @@ object BreakUtil {
     checkTarget: Block,
     lockedBlocks: Set[Block] = unsafeGetLockedBlocks()
   ): Boolean = {
-    !isProtectedChest(player, checkTarget) &&
+    !isProtectedChest(player, checkTarget) && !isProtectedNetherQuartzBlock(
+      player,
+      checkTarget
+    ) &&
     canBreak(player, checkTarget, lockedBlocks)
   }
 
@@ -128,6 +131,22 @@ object BreakUtil {
           true
         } else if (!player.getWorld.isSeichi) {
           ActionBarMessageEffect(s"${RED}スキルでのチェスト破壊は整地ワールドでのみ有効です").run(player).unsafeRunSync()
+          true
+        } else {
+          false
+        }
+      case _ => false
+    }
+  }
+
+  def isProtectedNetherQuartzBlock(player: Player, checkTarget: Block): Boolean = {
+    checkTarget.getType match {
+      // 鉱石ブロックの方はプロテクトの対象外
+      case Material.QUARTZ_BLOCK | Material.QUARTZ_STAIRS =>
+        if (!SeichiAssist.playermap(player.getUniqueId).netherQuartzBlockflag) {
+          ActionBarMessageEffect(s"${RED}スキルでのネザー水晶類ブロックの破壊は無効化されています")
+            .run(player)
+            .unsafeRunSync()
           true
         } else {
           false
