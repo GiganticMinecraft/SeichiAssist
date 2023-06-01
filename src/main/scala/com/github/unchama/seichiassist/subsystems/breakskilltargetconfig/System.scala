@@ -57,6 +57,10 @@ object System {
               flags <- breakFlagRepository(player).get
             } yield flags.find(_.flagName == breakFlagName).fold(true)(_.includes))
         }
+
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
+          breakFlagRepositoryControls.coerceFinalizationContextTo[F]
+        )
       }
     }
   }
