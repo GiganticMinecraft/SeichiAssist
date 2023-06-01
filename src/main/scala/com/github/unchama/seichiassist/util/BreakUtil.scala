@@ -130,7 +130,7 @@ object BreakUtil {
         if (
           !SeichiAssist
             .instance
-            .breakFlagSystem
+            .breakSkillTargetConfigSystem
             .api
             .breakSkillTargetConfig(player, BreakSkillTargetConfigKey.Chest)
             .unsafeRunSync()
@@ -154,7 +154,7 @@ object BreakUtil {
         if (
           !SeichiAssist
             .instance
-            .breakFlagSystem
+            .breakSkillTargetConfigSystem
             .api
             .breakSkillTargetConfig(player, BreakSkillTargetConfigKey.MadeFromNetherQuartz)
             .unsafeRunSync()
