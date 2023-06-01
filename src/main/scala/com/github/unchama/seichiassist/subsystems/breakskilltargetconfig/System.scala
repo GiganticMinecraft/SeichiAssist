@@ -15,7 +15,7 @@ import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.persist
 import org.bukkit.entity.Player
 
 trait System[F[_], Player] extends Subsystem[F] {
-  val api: BreakFlagAPI[F, Player]
+  val api: BreakSkillTargetConfigAPI[F, Player]
 }
 
 object System {
@@ -33,7 +33,7 @@ object System {
       val breakFlagRepository = breakFlagRepositoryControls.repository
 
       new System[F, Player] {
-        override val api: BreakFlagAPI[F, Player] = new BreakFlagAPI[F, Player] {
+        override val api: BreakSkillTargetConfigAPI[F, Player] = new BreakSkillTargetConfigAPI[F, Player] {
           override def toggleBreakFlag(
             breakFlagName: BreakSkillTargetConfigKey
           ): Kleisli[F, Player, Unit] =

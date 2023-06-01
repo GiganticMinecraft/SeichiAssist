@@ -11,7 +11,7 @@ import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
-import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.BreakFlagAPI
+import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.BreakSkillTargetConfigAPI
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain.BreakSkillTargetConfigKey
 import com.github.unchama.targetedeffect._
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -32,7 +32,7 @@ object PassiveSkillMenu extends Menu {
 
   class Environment(
     implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player],
-    implicit val breakFlagAPI: BreakFlagAPI[IO, Player],
+    implicit val breakSkillTargetConfigAPI: BreakSkillTargetConfigAPI[IO, Player],
     val ioCanOpenFirstPage: IO CanOpen FirstPage.type
   )
 
@@ -147,7 +147,7 @@ object PassiveSkillMenu extends Menu {
     import environment._
 
     val computeToggleChestBreakButton: IO[Button] = RecomputedButton(for {
-      breakChest <- breakFlagAPI.breakFlag(player, BreakSkillTargetConfigKey.Chest)
+      breakChest <- breakSkillTargetConfigAPI.breakFlag(player, BreakSkillTargetConfigKey.Chest)
     } yield {
       val baseLore = List(s"${GREEN}スキルでチェストを破壊するスキル")
       val statusLore = if (breakChest) {
@@ -164,7 +164,7 @@ object PassiveSkillMenu extends Menu {
           .build(),
         LeftClickButtonEffect {
           SequentialEffect(
-            DeferredEffect(IO(breakFlagAPI.toggleBreakFlag(BreakSkillTargetConfigKey.Chest))),
+            DeferredEffect(IO(breakSkillTargetConfigAPI.toggleBreakFlag(BreakSkillTargetConfigKey.Chest))),
             DeferredEffect(IO {
               if (breakChest) {
                 SequentialEffect(
@@ -184,7 +184,7 @@ object PassiveSkillMenu extends Menu {
     })
 
     val computeToggleNetherQuartzBlockButton: IO[Button] = RecomputedButton(for {
-      breakQuartz <- breakFlagAPI
+      breakQuartz <- breakSkillTargetConfigAPI
         .breakFlag(player, BreakSkillTargetConfigKey.MadeFromNetherQuartz)
     } yield {
       val baseLore = List(s"${YELLOW}スキルでネザー水晶類ブロックを破壊するスキル")
@@ -206,7 +206,7 @@ object PassiveSkillMenu extends Menu {
         LeftClickButtonEffect {
           SequentialEffect(
             DeferredEffect(
-              IO(breakFlagAPI.toggleBreakFlag(BreakSkillTargetConfigKey.MadeFromNetherQuartz))
+              IO(breakSkillTargetConfigAPI.toggleBreakFlag(BreakSkillTargetConfigKey.MadeFromNetherQuartz))
             ),
             DeferredEffect(IO {
               if (breakQuartz) {
