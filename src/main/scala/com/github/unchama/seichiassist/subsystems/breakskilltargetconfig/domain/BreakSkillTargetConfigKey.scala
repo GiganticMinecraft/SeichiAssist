@@ -12,12 +12,12 @@ object BreakSkillTargetConfigKey extends Enum[BreakSkillTargetConfigKey] {
   val values: IndexedSeq[BreakSkillTargetConfigKey] = findValues
 
   /**
-   * Chestブロックを破壊するかを示すフラグ名
+   * チェストを破壊するかどうか
    */
   case object Chest extends BreakSkillTargetConfigKey
 
   /**
-   * ネザークォーツ系ブロックを破壊するかを示すフラグ名
+   * ネザークォーツをクラフトしたブロックを破壊するかどうか
    */
   case object NetherQuartz extends BreakSkillTargetConfigKey
 
