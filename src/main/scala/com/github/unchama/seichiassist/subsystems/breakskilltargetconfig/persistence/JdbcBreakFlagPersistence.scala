@@ -14,7 +14,7 @@ class JdbcBreakFlagPersistence[F[_]: Sync] extends BreakFlagPersistence[F] {
   override def read(key: UUID): F[Option[Set[BreakFlag]]] = Sync[F].delay {
     DB.readOnly { implicit session =>
       val breakFlags =
-        sql"SELECT flag_name, include FROM break_flags WHERE uuid = ${key.toString}"
+        sql"SELECT flag_name, include FROM player_break_preference WHERE uuid = ${key.toString}"
           .map { rs =>
             BreakSkillTargetConfigKey.withNameOption(rs.string("flag_name")).map { flagName =>
               BreakFlag(flagName, rs.boolean("include"))
@@ -36,7 +36,7 @@ class JdbcBreakFlagPersistence[F[_]: Sync] extends BreakFlagPersistence[F] {
         Seq(uuid, flag.flagName.entryName, flag.includes)
       }.toSeq
 
-      sql"""INSERT INTO break_flags (uuid, flag_name, include)
+      sql"""INSERT INTO player_break_preference (uuid, flag_name, include)
            | VALUES (?, ?, ?)
            | ON DUPLICATE KEY UPDATE
            | include = VALUE(include)
