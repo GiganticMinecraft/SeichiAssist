@@ -13,9 +13,9 @@ object BreakFlagRepositoryDefinition {
 
   def withContext[F[_]: Sync, Player](
     implicit persistence: BreakFlagPersistence[F]
-  ): RepositoryDefinition[F, Player, Ref[F, List[BreakFlag]]] =
+  ): RepositoryDefinition[F, Player, Ref[F, Set[BreakFlag]]] =
     RefDictBackedRepositoryDefinition
-      .usingUuidRefDict[F, Player, List[BreakFlag]](persistence)(List.empty)
+      .usingUuidRefDict[F, Player, Set[BreakFlag]](persistence)(Set.empty)
       .toRefRepository
 
 }

@@ -184,7 +184,8 @@ object PassiveSkillMenu extends Menu {
     })
 
     val computeToggleNetherQuartzBlockButton: IO[Button] = RecomputedButton(for {
-      breakQuartz <- breakFlagAPI.breakFlag(player, BreakSkillTargetConfigKey.MadeFromNetherQuartz)
+      breakQuartz <- breakFlagAPI
+        .breakFlag(player, BreakSkillTargetConfigKey.MadeFromNetherQuartz)
     } yield {
       val baseLore = List(s"${YELLOW}スキルでネザー水晶類ブロックを破壊するスキル")
       val statusLore = if (breakQuartz) {
@@ -204,7 +205,9 @@ object PassiveSkillMenu extends Menu {
           .build(),
         LeftClickButtonEffect {
           SequentialEffect(
-            DeferredEffect(IO(breakFlagAPI.toggleBreakFlag(BreakSkillTargetConfigKey.MadeFromNetherQuartz))),
+            DeferredEffect(
+              IO(breakFlagAPI.toggleBreakFlag(BreakSkillTargetConfigKey.MadeFromNetherQuartz))
+            ),
             DeferredEffect(IO {
               if (breakQuartz) {
                 SequentialEffect(
