@@ -41,7 +41,7 @@ object System {
               for {
                 breakFlag <- breakFlag(player, breakFlagName)
                 _ <- ContextCoercion(breakFlagRepository(player).update { breakFlags =>
-                  breakFlags.filterNot(_.flagName == breakFlagName) + BreakFlag(
+                  breakFlags.filterNot(_.configKey == breakFlagName) + BreakFlag(
                     breakFlagName,
                     includes = !breakFlag
                   )
@@ -55,7 +55,7 @@ object System {
           ): F[Boolean] =
             ContextCoercion(for {
               flags <- breakFlagRepository(player).get
-            } yield flags.find(_.flagName == breakFlagName).fold(true)(_.includes))
+            } yield flags.find(_.configKey == breakFlagName).fold(true)(_.includes))
         }
 
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(

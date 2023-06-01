@@ -33,7 +33,7 @@ class JdbcBreakFlagPersistence[F[_]: Sync] extends BreakFlagPersistence[F] {
     DB.localTx { implicit session =>
       val uuid = key.toString
       val batchParams = value.map { flag =>
-        Seq(uuid, flag.flagName.entryName, flag.includes)
+        Seq(uuid, flag.configKey.entryName, flag.includes)
       }.toSeq
 
       sql"""INSERT INTO player_break_preference (uuid, flag_name, include)
