@@ -5,13 +5,13 @@ import cats.effect.{Sync, SyncEffect}
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.application.repository.BreakFlagRepositoryDefinition
+import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.application.repository.BreakSkillTargetConfigRepositoryDefinition
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain.{
-  BreakFlag,
+  BreakSkillTargetConfig,
   BreakSkillTargetConfigKey,
-  BreakFlagPersistence
+  BreakSkillTargetConfigPersistence
 }
-import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.persistence.JdbcBreakFlagPersistence
+import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.persistence.JdbcBreakSkillTargetConfigPersistence
 import org.bukkit.entity.Player
 
 trait System[F[_], Player] extends Subsystem[F] {
@@ -23,11 +23,11 @@ object System {
   import cats.implicits._
 
   def wired[F[_]: Sync, G[_]: SyncEffect: ContextCoercion[*[_], F]]: G[System[F, Player]] = {
-    implicit val breakFlagPersistence: BreakFlagPersistence[G] = new JdbcBreakFlagPersistence[G]
+    implicit val breakFlagPersistence: BreakSkillTargetConfigPersistence[G] = new JdbcBreakSkillTargetConfigPersistence[G]
 
     for {
       breakFlagRepositoryControls <- BukkitRepositoryControls.createHandles(
-        BreakFlagRepositoryDefinition.withContext[G, Player]
+        BreakSkillTargetConfigRepositoryDefinition.withContext[G, Player]
       )
     } yield {
       val breakFlagRepository = breakFlagRepositoryControls.repository
@@ -41,7 +41,7 @@ object System {
               for {
                 breakFlag <- breakFlag(player, breakFlagName)
                 _ <- ContextCoercion(breakFlagRepository(player).update { breakFlags =>
-                  breakFlags.filterNot(_.configKey == breakFlagName) + BreakFlag(
+                  breakFlags.filterNot(_.configKey == breakFlagName) + BreakSkillTargetConfig(
                     breakFlagName,
                     includes = !breakFlag
                   )

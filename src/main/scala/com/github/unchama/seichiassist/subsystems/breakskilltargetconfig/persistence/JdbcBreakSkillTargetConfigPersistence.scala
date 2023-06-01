@@ -2,22 +2,22 @@ package com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.persis
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain.{
-  BreakFlag,
+  BreakSkillTargetConfig,
   BreakSkillTargetConfigKey,
-  BreakFlagPersistence
+  BreakSkillTargetConfigPersistence
 }
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID
 
-class JdbcBreakFlagPersistence[F[_]: Sync] extends BreakFlagPersistence[F] {
-  override def read(key: UUID): F[Option[Set[BreakFlag]]] = Sync[F].delay {
+class JdbcBreakSkillTargetConfigPersistence[F[_]: Sync] extends BreakSkillTargetConfigPersistence[F] {
+  override def read(key: UUID): F[Option[Set[BreakSkillTargetConfig]]] = Sync[F].delay {
     DB.readOnly { implicit session =>
       val breakFlags =
         sql"SELECT flag_name, include FROM player_break_preference WHERE uuid = ${key.toString}"
           .map { rs =>
             BreakSkillTargetConfigKey.withNameOption(rs.string("flag_name")).map { flagName =>
-              BreakFlag(flagName, rs.boolean("include"))
+              BreakSkillTargetConfig(flagName, rs.boolean("include"))
             }
           }
           .toList()
@@ -29,7 +29,7 @@ class JdbcBreakFlagPersistence[F[_]: Sync] extends BreakFlagPersistence[F] {
     }
   }
 
-  override def write(key: UUID, value: Set[BreakFlag]): F[Unit] = Sync[F].delay {
+  override def write(key: UUID, value: Set[BreakSkillTargetConfig]): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
       val uuid = key.toString
       val batchParams = value.map { flag =>

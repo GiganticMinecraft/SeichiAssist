@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.breakskilltargetconfig
 import cats.data.Kleisli
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain.BreakSkillTargetConfigKey
 
-trait BreakFlagAPI[F[_], Player] {
+trait BreakSkillTargetConfigAPI[F[_], Player] {
 
   /**
    * @return 破壊フラグをトグルする作用
@@ -17,8 +17,8 @@ trait BreakFlagAPI[F[_], Player] {
 
 }
 
-object BreakFlagAPI {
+object BreakSkillTargetConfigAPI {
 
-  def apply[F[_], Player](implicit ev: BreakFlagAPI[F, Player]): BreakFlagAPI[F, Player] = ev
+  def apply[F[_], Player](implicit ev: BreakSkillTargetConfigAPI[F, Player]): BreakSkillTargetConfigAPI[F, Player] = ev
 
 }
