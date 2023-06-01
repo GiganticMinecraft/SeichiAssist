@@ -132,7 +132,7 @@ object BreakUtil {
             .instance
             .breakFlagSystem
             .api
-            .breakFlag(player, BreakSkillTargetConfigKey.Chest)
+            .breakSkillTargetConfig(player, BreakSkillTargetConfigKey.Chest)
             .unsafeRunSync()
         ) {
           ActionBarMessageEffect(s"${RED}スキルでのチェスト破壊は無効化されています").run(player).unsafeRunSync()
@@ -156,7 +156,7 @@ object BreakUtil {
             .instance
             .breakFlagSystem
             .api
-            .breakFlag(player, BreakSkillTargetConfigKey.MadeFromNetherQuartz)
+            .breakSkillTargetConfig(player, BreakSkillTargetConfigKey.MadeFromNetherQuartz)
             .unsafeRunSync()
         ) {
           ActionBarMessageEffect(s"${RED}スキルでのネザー水晶類ブロックの破壊は無効化されています")

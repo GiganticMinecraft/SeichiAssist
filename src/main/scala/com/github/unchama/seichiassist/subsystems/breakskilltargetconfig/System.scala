@@ -34,12 +34,12 @@ object System {
 
       new System[F, Player] {
         override val api: BreakSkillTargetConfigAPI[F, Player] = new BreakSkillTargetConfigAPI[F, Player] {
-          override def toggleBreakFlag(
+          override def toggleBreakSkillTargetConfig(
             breakFlagName: BreakSkillTargetConfigKey
           ): Kleisli[F, Player, Unit] =
             Kleisli { player =>
               for {
-                breakFlag <- breakFlag(player, breakFlagName)
+                breakFlag <- breakSkillTargetConfig(player, breakFlagName)
                 _ <- ContextCoercion(breakFlagRepository(player).update { breakFlags =>
                   breakFlags.filterNot(_.configKey == breakFlagName) + BreakSkillTargetConfig(
                     breakFlagName,
@@ -49,7 +49,7 @@ object System {
               } yield ()
             }
 
-          override def breakFlag(
+          override def breakSkillTargetConfig(
             player: Player,
             breakFlagName: BreakSkillTargetConfigKey
           ): F[Boolean] =
