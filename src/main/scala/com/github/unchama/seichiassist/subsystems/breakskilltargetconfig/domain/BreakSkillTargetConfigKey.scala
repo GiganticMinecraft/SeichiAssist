@@ -3,7 +3,9 @@ package com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain
 import enumeratum.{Enum, EnumEntry}
 
 /**
- * 定義されたブロックを破壊するかしないかを表すためのフラグの名前を集めたEnum
+ * 予め決められたブロックの集合を表現する。
+ * これらの値は整地スキルでブロックを破壊する際に、
+ * プレイヤーの設定に応じて一部のブロックを除外する際に使われる。
  */
 sealed trait BreakSkillTargetConfigKey extends EnumEntry
 
