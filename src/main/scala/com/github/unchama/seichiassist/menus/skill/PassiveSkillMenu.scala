@@ -147,15 +147,15 @@ object PassiveSkillMenu extends Menu {
     import environment._
 
     val computeToggleChestBreakButton: IO[Button] = RecomputedButton(for {
-      chestFlag <- breakFlagAPI.breakFlag(player, BreakSkillTargetConfigKey.Chest)
+      breakChest <- breakFlagAPI.breakFlag(player, BreakSkillTargetConfigKey.Chest)
     } yield {
       val baseLore = List(s"${GREEN}スキルでチェストを破壊するスキル")
-      val statusLore = if (chestFlag) {
+      val statusLore = if (breakChest) {
         List(s"${RED}整地ワールドのみで発動中(デフォルト)", "", s"$DARK_GREEN${UNDERLINE}クリックで切り替え")
       } else {
         List(s"${RED}発動しません", "", s"$DARK_GREEN${UNDERLINE}クリックで切り替え")
       }
-      val material = if (chestFlag) Material.DIAMOND_AXE else Material.CHEST
+      val material = if (breakChest) Material.DIAMOND_AXE else Material.CHEST
 
       Button(
         new IconItemStackBuilder(material)
@@ -166,7 +166,7 @@ object PassiveSkillMenu extends Menu {
           SequentialEffect(
             DeferredEffect(IO(breakFlagAPI.toggleBreakFlag(BreakSkillTargetConfigKey.Chest))),
             DeferredEffect(IO {
-              if (chestFlag) {
+              if (breakChest) {
                 SequentialEffect(
                   MessageEffect(s"${GREEN}スキルでのチェスト破壊を有効化しました。"),
                   FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
@@ -184,10 +184,10 @@ object PassiveSkillMenu extends Menu {
     })
 
     val computeToggleNetherQuartzBlockButton: IO[Button] = RecomputedButton(for {
-      quartzBreakFlag <- breakFlagAPI.breakFlag(player, BreakSkillTargetConfigKey.NetherQuartz)
+      breakQuartz <- breakFlagAPI.breakFlag(player, BreakSkillTargetConfigKey.NetherQuartz)
     } yield {
       val baseLore = List(s"${YELLOW}スキルでネザー水晶類ブロックを破壊するスキル")
-      val statusLore = if (quartzBreakFlag) {
+      val statusLore = if (breakQuartz) {
         List(s"${GREEN}ON (スキルでネザー水晶類ブロックを破壊します。)", s"${DARK_RED}クリックでOFF")
       } else {
         List(s"${RED}OFF (スキルでネザー水晶類ブロックを破壊しません。)", s"${DARK_GREEN}クリックでON")
@@ -196,7 +196,7 @@ object PassiveSkillMenu extends Menu {
       Button(
         new IconItemStackBuilder(Material.QUARTZ_BLOCK)
           .tap { builder =>
-            if (quartzBreakFlag)
+            if (breakQuartz)
               builder.enchanted()
           }
           .title(s"$WHITE$UNDERLINE${BOLD}ネザー水晶類ブロック破壊スキル切り替え")
@@ -206,7 +206,7 @@ object PassiveSkillMenu extends Menu {
           SequentialEffect(
             DeferredEffect(IO(breakFlagAPI.toggleBreakFlag(BreakSkillTargetConfigKey.NetherQuartz))),
             DeferredEffect(IO {
-              if (quartzBreakFlag) {
+              if (breakQuartz) {
                 SequentialEffect(
                   MessageEffect(s"${GREEN}スキルでのネザー水晶類ブロック破壊を有効化しました。"),
                   FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
