@@ -41,7 +41,7 @@ object System {
                 _ <- ContextCoercion(breakFlagRepository(player).update { breakFlags =>
                   breakFlags.filterNot(_.flagName == breakFlagName) :+ BreakFlag(
                     breakFlagName,
-                    flag = !breakFlag
+                    includes = !breakFlag
                   )
                 })
               } yield ()
@@ -52,7 +52,7 @@ object System {
               flags <- breakFlagRepository(player).get
             } yield {
               flags.find(_.flagName == breakFlagName) match {
-                case Some(value) => value.flag
+                case Some(value) => value.includes
                 case None        => true // 破壊フラグのデフォルト値はtrue(破壊する)
               }
             })

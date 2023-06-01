@@ -31,7 +31,7 @@ class JdbcBreakFlagPersistence[F[_]: Sync] extends BreakFlagPersistence[F] {
   override def write(key: UUID, value: List[BreakFlag]): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
       val uuid = key.toString
-      val batchParams = value.map { flag => Seq(uuid, flag.flagName.entryName, flag.flag) }
+      val batchParams = value.map { flag => Seq(uuid, flag.flagName.entryName, flag.includes) }
 
       sql"""INSERT INTO break_flags (uuid, flag_name, can_break)
            | VALUES (?, ?, ?)
