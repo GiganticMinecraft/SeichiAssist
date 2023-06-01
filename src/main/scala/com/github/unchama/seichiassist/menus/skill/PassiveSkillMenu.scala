@@ -147,7 +147,8 @@ object PassiveSkillMenu extends Menu {
     import environment._
 
     val computeToggleChestBreakButton: IO[Button] = RecomputedButton(for {
-      breakChest <- breakSkillTargetConfigAPI.breakSkillTargetConfig(player, BreakSkillTargetConfigKey.Chest)
+      breakChest <- breakSkillTargetConfigAPI
+        .breakSkillTargetConfig(player, BreakSkillTargetConfigKey.Chest)
     } yield {
       val baseLore = List(s"${GREEN}スキルでチェストを破壊するスキル")
       val statusLore = if (breakChest) {
@@ -164,7 +165,12 @@ object PassiveSkillMenu extends Menu {
           .build(),
         LeftClickButtonEffect {
           SequentialEffect(
-            DeferredEffect(IO(breakSkillTargetConfigAPI.toggleBreakSkillTargetConfig(BreakSkillTargetConfigKey.Chest))),
+            DeferredEffect(
+              IO(
+                breakSkillTargetConfigAPI
+                  .toggleBreakSkillTargetConfig(BreakSkillTargetConfigKey.Chest)
+              )
+            ),
             DeferredEffect(IO {
               if (breakChest) {
                 SequentialEffect(
@@ -206,7 +212,10 @@ object PassiveSkillMenu extends Menu {
         LeftClickButtonEffect {
           SequentialEffect(
             DeferredEffect(
-              IO(breakSkillTargetConfigAPI.toggleBreakSkillTargetConfig(BreakSkillTargetConfigKey.MadeFromNetherQuartz))
+              IO(
+                breakSkillTargetConfigAPI
+                  .toggleBreakSkillTargetConfig(BreakSkillTargetConfigKey.MadeFromNetherQuartz)
+              )
             ),
             DeferredEffect(IO {
               if (breakQuartz) {

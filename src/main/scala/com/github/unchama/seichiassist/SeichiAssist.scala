@@ -702,7 +702,8 @@ class SeichiAssist extends JavaPlugin() {
     implicit val gachaAPI: GachaDrawAPI[IO, Player] = gachaSystem.api
     implicit val consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player] =
       consumeGachaTicketSystem.api
-    implicit val breakSkillTargetConfigAPI: BreakSkillTargetConfigAPI[IO, Player] = breakFlagSystem.api
+    implicit val breakSkillTargetConfigAPI: BreakSkillTargetConfigAPI[IO, Player] =
+      breakFlagSystem.api
 
     val menuRouter = TopLevelRouter.apply
     import SeichiAssist.Scopes.globalChatInterceptionScope

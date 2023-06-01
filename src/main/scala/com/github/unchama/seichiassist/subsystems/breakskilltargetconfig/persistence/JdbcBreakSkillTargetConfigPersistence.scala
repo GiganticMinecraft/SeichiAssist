@@ -10,7 +10,8 @@ import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID
 
-class JdbcBreakSkillTargetConfigPersistence[F[_]: Sync] extends BreakSkillTargetConfigPersistence[F] {
+class JdbcBreakSkillTargetConfigPersistence[F[_]: Sync]
+    extends BreakSkillTargetConfigPersistence[F] {
   override def read(key: UUID): F[Option[Set[BreakSkillTargetConfig]]] = Sync[F].delay {
     DB.readOnly { implicit session =>
       val breakFlags =

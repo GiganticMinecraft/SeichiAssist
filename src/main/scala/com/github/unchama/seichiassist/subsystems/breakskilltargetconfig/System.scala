@@ -23,7 +23,8 @@ object System {
   import cats.implicits._
 
   def wired[F[_]: Sync, G[_]: SyncEffect: ContextCoercion[*[_], F]]: G[System[F, Player]] = {
-    implicit val breakFlagPersistence: BreakSkillTargetConfigPersistence[G] = new JdbcBreakSkillTargetConfigPersistence[G]
+    implicit val breakFlagPersistence: BreakSkillTargetConfigPersistence[G] =
+      new JdbcBreakSkillTargetConfigPersistence[G]
 
     for {
       breakFlagRepositoryControls <- BukkitRepositoryControls.createHandles(
@@ -33,30 +34,31 @@ object System {
       val breakFlagRepository = breakFlagRepositoryControls.repository
 
       new System[F, Player] {
-        override val api: BreakSkillTargetConfigAPI[F, Player] = new BreakSkillTargetConfigAPI[F, Player] {
-          override def toggleBreakSkillTargetConfig(
-            breakFlagName: BreakSkillTargetConfigKey
-          ): Kleisli[F, Player, Unit] =
-            Kleisli { player =>
-              for {
-                breakFlag <- breakSkillTargetConfig(player, breakFlagName)
-                _ <- ContextCoercion(breakFlagRepository(player).update { breakFlags =>
-                  breakFlags.filterNot(_.configKey == breakFlagName) + BreakSkillTargetConfig(
-                    breakFlagName,
-                    includes = !breakFlag
-                  )
-                })
-              } yield ()
-            }
+        override val api: BreakSkillTargetConfigAPI[F, Player] =
+          new BreakSkillTargetConfigAPI[F, Player] {
+            override def toggleBreakSkillTargetConfig(
+              breakFlagName: BreakSkillTargetConfigKey
+            ): Kleisli[F, Player, Unit] =
+              Kleisli { player =>
+                for {
+                  breakFlag <- breakSkillTargetConfig(player, breakFlagName)
+                  _ <- ContextCoercion(breakFlagRepository(player).update { breakFlags =>
+                    breakFlags.filterNot(_.configKey == breakFlagName) + BreakSkillTargetConfig(
+                      breakFlagName,
+                      includes = !breakFlag
+                    )
+                  })
+                } yield ()
+              }
 
-          override def breakSkillTargetConfig(
-            player: Player,
-            breakFlagName: BreakSkillTargetConfigKey
-          ): F[Boolean] =
-            ContextCoercion(for {
-              flags <- breakFlagRepository(player).get
-            } yield flags.find(_.configKey == breakFlagName).fold(true)(_.includes))
-        }
+            override def breakSkillTargetConfig(
+              player: Player,
+              breakFlagName: BreakSkillTargetConfigKey
+            ): F[Boolean] =
+              ContextCoercion(for {
+                flags <- breakFlagRepository(player).get
+              } yield flags.find(_.configKey == breakFlagName).fold(true)(_.includes))
+          }
 
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
           breakFlagRepositoryControls.coerceFinalizationContextTo[F]
