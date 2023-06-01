@@ -98,7 +98,7 @@ object TopLevelRouter {
     gachaDrawAPI: GachaDrawAPI[IO, Player],
     consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player],
     fairySpeechAPI: FairySpeechAPI[IO, Player],
-    BreakSkillTargetConfigAPI: BreakSkillTargetConfigAPI[IO, Player]
+    breakSkillTargetConfigAPI: BreakSkillTargetConfigAPI[IO, Player]
   ): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     import assortedRankingApi._
 
