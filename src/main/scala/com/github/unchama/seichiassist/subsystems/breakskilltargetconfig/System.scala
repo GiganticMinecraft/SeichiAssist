@@ -50,12 +50,7 @@ object System {
           override def breakFlag(player: Player, breakFlagName: BreakSkillTargetConfigKey): F[Boolean] =
             ContextCoercion(for {
               flags <- breakFlagRepository(player).get
-            } yield {
-              flags.find(_.flagName == breakFlagName) match {
-                case Some(value) => value.includes
-                case None        => true // 破壊フラグのデフォルト値はtrue(破壊する)
-              }
-            })
+            } yield flags.find(_.flagName == breakFlagName).fold(true)(_.includes))
         }
       }
     }
