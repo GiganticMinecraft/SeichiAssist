@@ -1,4 +1,4 @@
-use SeichiAssist;
+USE seichiassist;
 
 CREATE TABLE break_flags(
     uuid CHAR(36) NOT NULL PRIMARY KEY,
