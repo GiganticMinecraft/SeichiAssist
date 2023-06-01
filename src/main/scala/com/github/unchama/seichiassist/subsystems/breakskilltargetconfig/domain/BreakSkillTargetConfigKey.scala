@@ -19,6 +19,6 @@ object BreakSkillTargetConfigKey extends Enum[BreakSkillTargetConfigKey] {
   /**
    * ネザークォーツをクラフトしたブロックを破壊するかどうか
    */
-  case object NetherQuartz extends BreakSkillTargetConfigKey
+  case object MadeFromNetherQuartz extends BreakSkillTargetConfigKey
 
 }

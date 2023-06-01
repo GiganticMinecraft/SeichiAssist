@@ -156,7 +156,7 @@ object BreakUtil {
             .instance
             .breakFlagSystem
             .api
-            .breakFlag(player, BreakSkillTargetConfigKey.NetherQuartz)
+            .breakFlag(player, BreakSkillTargetConfigKey.MadeFromNetherQuartz)
             .unsafeRunSync()
         ) {
           ActionBarMessageEffect(s"${RED}スキルでのネザー水晶類ブロックの破壊は無効化されています")
