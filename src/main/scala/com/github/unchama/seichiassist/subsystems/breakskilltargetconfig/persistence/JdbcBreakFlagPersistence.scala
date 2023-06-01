@@ -11,7 +11,7 @@ import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 import java.util.UUID
 
 class JdbcBreakFlagPersistence[F[_]: Sync] extends BreakFlagPersistence[F] {
-  override def read(key: UUID): F[Option[List[BreakFlag]]] = Sync[F].delay {
+  override def read(key: UUID): F[Option[Set[BreakFlag]]] = Sync[F].delay {
     DB.readOnly { implicit session =>
       val breakFlags =
         sql"SELECT flag_name, can_break FROM break_flags WHERE uuid = ${key.toString}"
@@ -22,16 +22,17 @@ class JdbcBreakFlagPersistence[F[_]: Sync] extends BreakFlagPersistence[F] {
           }
           .toList()
           .apply()
+          .toSet
           .collect { case Some(flag) => flag }
 
       Some(breakFlags)
     }
   }
 
-  override def write(key: UUID, value: List[BreakFlag]): F[Unit] = Sync[F].delay {
+  override def write(key: UUID, value: Set[BreakFlag]): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
       val uuid = key.toString
-      val batchParams = value.map { flag => Seq(uuid, flag.flagName.entryName, flag.includes) }
+      val batchParams = value.map { flag => Seq(uuid, flag.flagName.entryName, flag.includes) }.toSeq
 
       sql"""INSERT INTO break_flags (uuid, flag_name, can_break)
            | VALUES (?, ?, ?)
