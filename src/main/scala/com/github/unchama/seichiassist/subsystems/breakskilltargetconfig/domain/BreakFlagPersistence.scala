@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.breakflags.domain
+package com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain
 
 import com.github.unchama.generic.RefDict
 

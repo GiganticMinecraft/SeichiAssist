@@ -29,7 +29,7 @@ import com.github.unchama.seichiassist.subsystems.anywhereender.AnywhereEnderChe
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
-import com.github.unchama.seichiassist.subsystems.breakflags.BreakFlagAPI
+import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.BreakFlagAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.donate.DonatePremiumPointAPI

@@ -11,8 +11,8 @@ import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
-import com.github.unchama.seichiassist.subsystems.breakflags.BreakFlagAPI
-import com.github.unchama.seichiassist.subsystems.breakflags.domain.BreakFlagName
+import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.BreakFlagAPI
+import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain.BreakFlagName
 import com.github.unchama.targetedeffect._
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect

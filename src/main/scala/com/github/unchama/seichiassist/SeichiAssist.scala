@@ -61,7 +61,7 @@ import com.github.unchama.seichiassist.subsystems._
 import com.github.unchama.seichiassist.subsystems.anywhereender.AnywhereEnderChestAPI
 import com.github.unchama.seichiassist.subsystems.breakcount.{BreakCountAPI, BreakCountReadAPI}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
-import com.github.unchama.seichiassist.subsystems.breakflags.BreakFlagAPI
+import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.BreakFlagAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.donate.DonatePremiumPointAPI
@@ -483,8 +483,8 @@ class SeichiAssist extends JavaPlugin() {
 
   /* TODO: breakFlagSystemは本来privateであるべきだが、
       BreakUtilで呼び出されているため、やむを得ずpublicになっている */
-  lazy val breakFlagSystem: subsystems.breakflags.System[IO, Player] =
-    subsystems.breakflags.System.wired[IO, SyncIO].unsafeRunSync()
+  lazy val breakFlagSystem: subsystems.breakskilltargetconfig.System[IO, Player] =
+    subsystems.breakskilltargetconfig.System.wired[IO, SyncIO].unsafeRunSync()
 
   /* TODO: mineStackSystemは本来privateであるべきだが、mineStackにアイテムを格納するAPIが現状の
       BreakUtilの実装から呼び出されている都合上やむを得ずpublicになっている。*/

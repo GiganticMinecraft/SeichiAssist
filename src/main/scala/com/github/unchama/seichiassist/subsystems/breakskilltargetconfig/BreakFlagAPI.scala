@@ -1,7 +1,7 @@
-package com.github.unchama.seichiassist.subsystems.breakflags
+package com.github.unchama.seichiassist.subsystems.breakskilltargetconfig
 
 import cats.data.Kleisli
-import com.github.unchama.seichiassist.subsystems.breakflags.domain.BreakFlagName
+import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain.BreakFlagName
 
 trait BreakFlagAPI[F[_], Player] {
 

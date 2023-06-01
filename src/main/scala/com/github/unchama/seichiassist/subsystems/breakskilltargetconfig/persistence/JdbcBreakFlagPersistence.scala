@@ -1,7 +1,7 @@
-package com.github.unchama.seichiassist.subsystems.breakflags.persistence
+package com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.persistence
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.breakflags.domain.{
+import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain.{
   BreakFlag,
   BreakFlagName,
   BreakFlagPersistence

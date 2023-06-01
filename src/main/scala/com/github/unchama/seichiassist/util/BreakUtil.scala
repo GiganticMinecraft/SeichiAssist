@@ -16,7 +16,7 @@ import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.{Active, Disabled}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.CardinalDirection
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
-import com.github.unchama.seichiassist.subsystems.breakflags.domain.BreakFlagName
+import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain.BreakFlagName
 import com.github.unchama.targetedeffect.player.ActionBarMessageEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.ExternalPlugins

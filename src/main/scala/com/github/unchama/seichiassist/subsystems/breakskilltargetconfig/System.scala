@@ -1,17 +1,17 @@
-package com.github.unchama.seichiassist.subsystems.breakflags
+package com.github.unchama.seichiassist.subsystems.breakskilltargetconfig
 
 import cats.data.Kleisli
 import cats.effect.{Sync, SyncEffect}
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.breakflags.application.repository.BreakFlagRepositoryDefinition
-import com.github.unchama.seichiassist.subsystems.breakflags.domain.{
+import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.application.repository.BreakFlagRepositoryDefinition
+import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain.{
   BreakFlag,
   BreakFlagName,
   BreakFlagPersistence
 }
-import com.github.unchama.seichiassist.subsystems.breakflags.persistence.JdbcBreakFlagPersistence
+import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.persistence.JdbcBreakFlagPersistence
 import org.bukkit.entity.Player
 
 trait System[F[_], Player] extends Subsystem[F] {
