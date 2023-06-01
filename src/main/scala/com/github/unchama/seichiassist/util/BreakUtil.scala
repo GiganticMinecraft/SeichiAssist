@@ -16,7 +16,7 @@ import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.{Active, Disabled}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.CardinalDirection
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
-import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain.BreakFlagName
+import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain.BreakSkillTargetConfigKey
 import com.github.unchama.targetedeffect.player.ActionBarMessageEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.ExternalPlugins
@@ -132,7 +132,7 @@ object BreakUtil {
             .instance
             .breakFlagSystem
             .api
-            .breakFlag(player, BreakFlagName.Chest)
+            .breakFlag(player, BreakSkillTargetConfigKey.Chest)
             .unsafeRunSync()
         ) {
           ActionBarMessageEffect(s"${RED}スキルでのチェスト破壊は無効化されています").run(player).unsafeRunSync()
@@ -156,7 +156,7 @@ object BreakUtil {
             .instance
             .breakFlagSystem
             .api
-            .breakFlag(player, BreakFlagName.NetherQuartz)
+            .breakFlag(player, BreakSkillTargetConfigKey.NetherQuartz)
             .unsafeRunSync()
         ) {
           ActionBarMessageEffect(s"${RED}スキルでのネザー水晶類ブロックの破壊は無効化されています")

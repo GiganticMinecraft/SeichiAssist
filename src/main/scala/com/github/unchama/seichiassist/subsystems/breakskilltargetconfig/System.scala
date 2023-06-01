@@ -8,7 +8,7 @@ import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.application.repository.BreakFlagRepositoryDefinition
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain.{
   BreakFlag,
-  BreakFlagName,
+  BreakSkillTargetConfigKey,
   BreakFlagPersistence
 }
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.persistence.JdbcBreakFlagPersistence
@@ -34,7 +34,7 @@ object System {
 
       new System[F, Player] {
         override val api: BreakFlagAPI[F, Player] = new BreakFlagAPI[F, Player] {
-          override def toggleBreakFlag(breakFlagName: BreakFlagName): Kleisli[F, Player, Unit] =
+          override def toggleBreakFlag(breakFlagName: BreakSkillTargetConfigKey): Kleisli[F, Player, Unit] =
             Kleisli { player =>
               for {
                 breakFlag <- breakFlag(player, breakFlagName)
@@ -47,7 +47,7 @@ object System {
               } yield ()
             }
 
-          override def breakFlag(player: Player, breakFlagName: BreakFlagName): F[Boolean] =
+          override def breakFlag(player: Player, breakFlagName: BreakSkillTargetConfigKey): F[Boolean] =
             ContextCoercion(for {
               flags <- breakFlagRepository(player).get
             } yield {

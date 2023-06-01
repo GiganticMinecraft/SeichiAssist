@@ -5,20 +5,20 @@ import enumeratum.{Enum, EnumEntry}
 /**
  * 定義されたブロックを破壊するかしないかを表すためのフラグの名前を集めたEnum
  */
-sealed trait BreakFlagName extends EnumEntry
+sealed trait BreakSkillTargetConfigKey extends EnumEntry
 
-object BreakFlagName extends Enum[BreakFlagName] {
+object BreakSkillTargetConfigKey extends Enum[BreakSkillTargetConfigKey] {
 
-  val values: IndexedSeq[BreakFlagName] = findValues
+  val values: IndexedSeq[BreakSkillTargetConfigKey] = findValues
 
   /**
    * Chestブロックを破壊するかを示すフラグ名
    */
-  case object Chest extends BreakFlagName
+  case object Chest extends BreakSkillTargetConfigKey
 
   /**
    * ネザークォーツ系ブロックを破壊するかを示すフラグ名
    */
-  case object NetherQuartz extends BreakFlagName
+  case object NetherQuartz extends BreakSkillTargetConfigKey
 
 }

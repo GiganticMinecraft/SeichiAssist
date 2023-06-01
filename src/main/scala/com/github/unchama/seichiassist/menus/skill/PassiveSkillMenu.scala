@@ -12,7 +12,7 @@ import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.BreakFlagAPI
-import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain.BreakFlagName
+import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain.BreakSkillTargetConfigKey
 import com.github.unchama.targetedeffect._
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -147,7 +147,7 @@ object PassiveSkillMenu extends Menu {
     import environment._
 
     val computeToggleChestBreakButton: IO[Button] = RecomputedButton(for {
-      chestFlag <- breakFlagAPI.breakFlag(player, BreakFlagName.Chest)
+      chestFlag <- breakFlagAPI.breakFlag(player, BreakSkillTargetConfigKey.Chest)
     } yield {
       val baseLore = List(s"${GREEN}スキルでチェストを破壊するスキル")
       val statusLore = if (chestFlag) {
@@ -164,7 +164,7 @@ object PassiveSkillMenu extends Menu {
           .build(),
         LeftClickButtonEffect {
           SequentialEffect(
-            DeferredEffect(IO(breakFlagAPI.toggleBreakFlag(BreakFlagName.Chest))),
+            DeferredEffect(IO(breakFlagAPI.toggleBreakFlag(BreakSkillTargetConfigKey.Chest))),
             DeferredEffect(IO {
               if (chestFlag) {
                 SequentialEffect(
@@ -184,7 +184,7 @@ object PassiveSkillMenu extends Menu {
     })
 
     val computeToggleNetherQuartzBlockButton: IO[Button] = RecomputedButton(for {
-      quartzBreakFlag <- breakFlagAPI.breakFlag(player, BreakFlagName.NetherQuartz)
+      quartzBreakFlag <- breakFlagAPI.breakFlag(player, BreakSkillTargetConfigKey.NetherQuartz)
     } yield {
       val baseLore = List(s"${YELLOW}スキルでネザー水晶類ブロックを破壊するスキル")
       val statusLore = if (quartzBreakFlag) {
@@ -204,7 +204,7 @@ object PassiveSkillMenu extends Menu {
           .build(),
         LeftClickButtonEffect {
           SequentialEffect(
-            DeferredEffect(IO(breakFlagAPI.toggleBreakFlag(BreakFlagName.NetherQuartz))),
+            DeferredEffect(IO(breakFlagAPI.toggleBreakFlag(BreakSkillTargetConfigKey.NetherQuartz))),
             DeferredEffect(IO {
               if (quartzBreakFlag) {
                 SequentialEffect(

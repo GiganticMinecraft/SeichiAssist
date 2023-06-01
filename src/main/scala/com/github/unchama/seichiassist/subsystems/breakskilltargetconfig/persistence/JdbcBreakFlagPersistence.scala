@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.persis
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain.{
   BreakFlag,
-  BreakFlagName,
+  BreakSkillTargetConfigKey,
   BreakFlagPersistence
 }
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
@@ -16,7 +16,7 @@ class JdbcBreakFlagPersistence[F[_]: Sync] extends BreakFlagPersistence[F] {
       val breakFlags =
         sql"SELECT flag_name, can_break FROM break_flags WHERE uuid = ${key.toString}"
           .map { rs =>
-            BreakFlagName.withNameOption(rs.string("flag_name")).map { flagName =>
+            BreakSkillTargetConfigKey.withNameOption(rs.string("flag_name")).map { flagName =>
               BreakFlag(flagName, rs.boolean("can_break"))
             }
           }
