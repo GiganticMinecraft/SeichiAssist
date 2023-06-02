@@ -4,7 +4,7 @@
 
 ## 開発環境
 - [Intellij IDEA](https://www.jetbrains.com/idea/) などの統合開発環境
-- [AdoptOpenJDK 11](https://adoptium.net/temurin/releases/?version=11)
+- [AdoptOpenJDK 17](https://adoptium.net/temurin/releases/?version=17)
 - [Scala 2.13](https://www.scala-lang.org/download/)
 - [sbt 1.6](https://www.scala-sbt.org/1.x/docs/Setup.html)
 - Spigot 1.18.2
