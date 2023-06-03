@@ -5,8 +5,7 @@ import java.io._
 
 // region 全プロジェクト共通のメタデータ
 
-// TODO: Scala 2.13.11がリリースされたらリリースバージョンに変える
-ThisBuild / scalaVersion := "2.13.11-bin-fd209dc-SNAPSHOT"
+ThisBuild / scalaVersion := "2.13.11"
 // ThisBuild / version はGitHub Actionsによって取得/自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
 ThisBuild / version := "80"
@@ -14,8 +13,7 @@ ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
 // Scalafixが要求するため、semanticdbは有効化する
-// TODO: Scala 2.13.11がリリースされたらバージョン指定演算子を`%%`に戻す
-addCompilerPlugin("org.scalameta" % "semanticdb-scalac_2.13.10" % "4.7.6")
+addCompilerPlugin("org.scalameta" % "semanticdb-scalac" % "4.7.8")
 ThisBuild / scalacOptions += "-Yrangepos"
 
 // endregion
@@ -23,8 +21,7 @@ ThisBuild / scalacOptions += "-Yrangepos"
 // region 雑多な設定
 
 // kind-projector 構文を使いたいため
-// TODO: Scala 2.13.11がリリースされたらバージョン指定演算子を`%%`に戻す
-addCompilerPlugin("org.typelevel" % "kind-projector_2.13.10" % "0.13.2")
+addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.2")
 
 // CIビルドで詳細なログを確認するため
 ThisBuild / logLevel := {
@@ -62,8 +59,6 @@ resolvers ++= Seq(
   "scala-snapshots" at "https://scala-ci.typesafe.com/artifactory/scala-pr-validation-snapshots/",
 )
 
-// もし新しいライブラリを追加する場合、現在はプレリリース版を使っているので`... cross CrossVersion.binary`としないとmavenからバージョンを引っ張ってこられずに死ぬので注意
-// TODO: Scala 2.13.11がリリースされたらCrossVersion.binaryは要らなくなるので取り外す
 val providedDependencies = Seq(
   "org.jetbrains" % "annotations" % "24.0.1",
   "org.apache.commons" % "commons-lang3" % "3.9",
@@ -75,37 +70,37 @@ val providedDependencies = Seq(
   "com.mojang" % "authlib" % "1.6.25",
 
   // no runtime
-  "org.typelevel" %% "simulacrum" % "1.0.1" cross CrossVersion.binary
+  "org.typelevel" %% "simulacrum" % "1.0.1"
 ).map(_ % "provided")
 
 val testDependencies = Seq(
-  "org.scalamock" %% "scalamock" % "5.2.0" cross CrossVersion.binary,
-  "org.scalatest" %% "scalatest" % "3.2.16" cross CrossVersion.binary,
-  "org.scalatestplus" %% "scalacheck-1-14" % "3.2.2.0" cross CrossVersion.binary,
+  "org.scalamock" %% "scalamock" % "5.2.0",
+  "org.scalatest" %% "scalatest" % "3.2.16",
+  "org.scalatestplus" %% "scalacheck-1-14" % "3.2.2.0",
   // テスト用のTestSchedulerを使うため
-  "io.monix" %% "monix" % "3.4.1" cross CrossVersion.binary,
+  "io.monix" %% "monix" % "3.4.1",
 ).map(_ % "test")
 
 val dependenciesToEmbed = Seq(
-  "org.scala-lang.modules" %% "scala-collection-contrib" % "0.3.0" cross CrossVersion.binary,
+  "org.scala-lang.modules" %% "scala-collection-contrib" % "0.3.0",
 
   // DB
   "org.mariadb.jdbc" % "mariadb-java-client" % "3.1.4",
   "org.flywaydb" % "flyway-core" % "5.2.4",
-  "org.scalikejdbc" %% "scalikejdbc" % "3.5.0" cross CrossVersion.binary,
+  "org.scalikejdbc" %% "scalikejdbc" % "3.5.0",
 
   // redis
-  "com.github.etaty" %% "rediscala" % "1.9.0" cross CrossVersion.binary,
+  "com.github.etaty" %% "rediscala" % "1.9.0",
 
   // effect system
-  "org.typelevel" %% "cats-core" % "2.9.0" cross CrossVersion.binary,
-  "org.typelevel" %% "cats-effect" % "2.5.5" cross CrossVersion.binary,
-  "co.fs2" %% "fs2-core" % "2.5.11" cross CrossVersion.binary,
+  "org.typelevel" %% "cats-core" % "2.9.0",
+  "org.typelevel" %% "cats-effect" % "2.5.5",
+  "co.fs2" %% "fs2-core" % "2.5.11",
 
   // algebra
-  "io.chrisdavenport" %% "log4cats-core" % "1.1.1" cross CrossVersion.binary,
-  "io.chrisdavenport" %% "log4cats-slf4j" % "1.1.1" cross CrossVersion.binary,
-  "io.chrisdavenport" %% "cats-effect-time" % "0.1.2" cross CrossVersion.binary,
+  "io.chrisdavenport" %% "log4cats-core" % "1.1.1",
+  "io.chrisdavenport" %% "log4cats-slf4j" % "1.1.1",
+  "io.chrisdavenport" %% "cats-effect-time" % "0.1.2",
 
   // logging
   "org.slf4j" % "slf4j-api" % "1.7.36",
@@ -113,16 +108,16 @@ val dependenciesToEmbed = Seq(
   "com.typesafe.scala-logging" % "scala-logging-slf4j_2.10" % "2.1.2",
 
   // type-safety utils
-  "eu.timepit" %% "refined" % "0.10.3" cross CrossVersion.binary,
-  "com.beachape" %% "enumeratum" % "1.7.2" cross CrossVersion.binary,
+  "eu.timepit" %% "refined" % "0.10.3",
+  "com.beachape" %% "enumeratum" % "1.7.2",
 
   // protobuf
-  "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion cross CrossVersion.binary,
+  "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
 
   // JSON
-  "io.circe" %% "circe-core" % "0.14.5" cross CrossVersion.binary,
-  "io.circe" %% "circe-generic" % "0.14.5" cross CrossVersion.binary,
-  "io.circe" %% "circe-parser" % "0.14.5" cross CrossVersion.binary,
+  "io.circe" %% "circe-core" % "0.14.5",
+  "io.circe" %% "circe-generic" % "0.14.5",
+  "io.circe" %% "circe-parser" % "0.14.5",
 
   // ajd4jp
   "com.github.KisaragiEffective" % "ajd4jp-mirror" % "8.0.2.2021",
