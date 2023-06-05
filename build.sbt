@@ -13,8 +13,7 @@ ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
 // Scalafixが要求するため、semanticdbは有効化する
-addCompilerPlugin("org.scalameta" %% "semanticdb-scalac" % "4.7.8" cross CrossVersion.full)
-ThisBuild / scalacOptions += "-Yrangepos"
+ThisBuild / semanticdbEnabled := true
 
 // endregion
 
