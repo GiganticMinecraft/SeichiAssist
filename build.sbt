@@ -49,13 +49,8 @@ resolvers ++= Seq(
   "repo.maven.apache.org" at "https://repo.maven.apache.org/maven2",
   "hub.spigotmc.org" at "https://hub.spigotmc.org/nexus/content/repositories/snapshots",
   "oss.sonatype.org" at "https://oss.sonatype.org/content/repositories/snapshots",
-<<<<<<< HEAD
   "repo.phoenix616.dev" at "https://repo.phoenix616.dev", // authlibのための
   // ajd4jpのミラーのため
-=======
-  "nexus.okkero.com" at "https://nexus.okkero.com/repository/maven-releases/",
-  "repo.phoenix616.dev" at "https://repo.phoenix616.dev",
->>>>>>> 77a43e1e4 (revert repo)
   "jitpack.io" at "https://jitpack.io"
 )
 
