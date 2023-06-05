@@ -36,8 +36,6 @@ ThisBuild / logLevel := {
 // ScalaTest のオプションは https://www.scalatest.org/user_guide/using_the_runner を参照のこと。
 Compile / testOptions += Tests.Argument("-oS")
 
-ThisBuild / scalaBinaryVersion := "2.13"
-
 // endregion
 
 // region 依存関係
@@ -56,7 +54,6 @@ resolvers ++= Seq(
   "repo.phoenix616.dev" at "https://repo.phoenix616.dev", // authlibのための
   // ajd4jpのミラーのため
   "jitpack.io" at "https://jitpack.io",
-  "scala-snapshots" at "https://scala-ci.typesafe.com/artifactory/scala-pr-validation-snapshots/",
 )
 
 val providedDependencies = Seq(
