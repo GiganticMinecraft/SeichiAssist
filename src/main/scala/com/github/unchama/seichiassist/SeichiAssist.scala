@@ -98,12 +98,11 @@ import com.github.unchama.util.{ActionStatus, ClassUtils}
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import io.sentry.Sentry
 import io.sentry.SentryLevel
-import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.entity.{Entity, Player, Projectile}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
-import org.bukkit.{Bukkit, Location, Material}
+import org.bukkit.{Bukkit, Location}
 import org.flywaydb.core.Flyway
 import org.slf4j.Logger
 import org.slf4j.impl.JDK14LoggerFactory
@@ -487,7 +486,6 @@ class SeichiAssist extends JavaPlugin() {
   lazy val mineStackSystem: subsystems.minestack.System[IO, Player, ItemStack] =
     subsystems.minestack.System.wired[IO, SyncIO].unsafeRunSync()
 
-
   private lazy val gridRegionSystem: subsystems.gridregion.System[IO, Player, Location] =
     subsystems.gridregion.System.wired[IO, SyncIO].unsafeRunSync()
 
@@ -527,7 +525,7 @@ class SeichiAssist extends JavaPlugin() {
     mineStackSystem,
     consumeGachaTicketSystem,
     openirontrapdoor.System.wired,
-    gridRegionSystem,
+    gridRegionSystem
   )
 
   private lazy val buildAssist: BuildAssist = {

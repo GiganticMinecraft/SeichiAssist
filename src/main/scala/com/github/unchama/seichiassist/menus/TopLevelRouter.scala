@@ -148,7 +148,6 @@ object TopLevelRouter {
     implicit lazy val rankingRootMenuEnv: RankingRootMenu.Environment =
       new RankingRootMenu.Environment
 
-
     implicit lazy val voteMenuEnv: VoteMenu.Environment = new VoteMenu.Environment
 
     implicit lazy val gridRegionMenuEnv: GridRegionMenu.Environment =
