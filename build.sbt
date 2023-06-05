@@ -48,8 +48,6 @@ resolvers ++= Seq(
   "repo.maven.apache.org" at "https://repo.maven.apache.org/maven2",
   "hub.spigotmc.org" at "https://hub.spigotmc.org/nexus/content/repositories/snapshots",
   "oss.sonatype.org" at "https://oss.sonatype.org/content/repositories/snapshots",
-  "nexus.okkero.com" at "https://nexus.okkero.com/repository/maven-releases/",
-  "maven.elmakers.com" at "https://maven.elmakers.com/repository/", // spigot-api 1.12.2がhub.spigotmc.orgからダウンロードできなくなったため
   "repo.phoenix616.dev" at "https://repo.phoenix616.dev", // authlibのための
   // ajd4jpのミラーのため
   "jitpack.io" at "https://jitpack.io"
