@@ -13,7 +13,7 @@ ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
 // Scalafixが要求するため、semanticdbは有効化する
-addCompilerPlugin("org.scalameta" % "semanticdb-scalac" % "4.7.8")
+addCompilerPlugin("org.scalameta" %% "semanticdb-scalac" % "4.7.8")
 ThisBuild / scalacOptions += "-Yrangepos"
 
 // endregion
@@ -21,7 +21,7 @@ ThisBuild / scalacOptions += "-Yrangepos"
 // region 雑多な設定
 
 // kind-projector 構文を使いたいため
-addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.2")
+addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.2")
 
 // CIビルドで詳細なログを確認するため
 ThisBuild / logLevel := {
