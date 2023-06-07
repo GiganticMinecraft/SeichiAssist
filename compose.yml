@@ -23,7 +23,7 @@ services:
     environment:
       - VERSION=1.18.2
       - EULA=TRUE
-      - TYPE=SPIGOT
+      - TYPE=PAPER
       - ONLINE_MODE=FALSE
       - ENABLE_JMX=true
       - JMX_PORT=7091
@@ -53,7 +53,7 @@ services:
     environment:
       - VERSION=1.18.2
       - EULA=TRUE
-      - TYPE=SPIGOT
+      - TYPE=PAPER
       - ONLINE_MODE=FALSE
       - ENABLE_JMX=true
       - JMX_PORT=7091
