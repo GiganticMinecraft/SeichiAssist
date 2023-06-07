@@ -5,7 +5,7 @@ import java.io._
 
 // region 全プロジェクト共通のメタデータ
 
-ThisBuild / scalaVersion := "2.13.4"
+ThisBuild / scalaVersion := "2.13.11"
 // ThisBuild / version はGitHub Actionsによって取得/自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
 ThisBuild / version := "80"
@@ -14,6 +14,7 @@ ThisBuild / description := "ギガンティック☆整地鯖の独自要素を�
 
 // Scalafixが要求するため、semanticdbは有効化する
 ThisBuild / semanticdbEnabled := true
+ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
 
 // endregion
 
