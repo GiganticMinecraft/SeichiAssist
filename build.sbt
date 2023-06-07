@@ -14,6 +14,7 @@ ThisBuild / description := "ギガンティック☆整地鯖の独自要素を�
 
 // Scalafixが要求するため、semanticdbは有効化する
 ThisBuild / semanticdbEnabled := true
+ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
 
 // endregion
 
