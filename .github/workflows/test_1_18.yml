@@ -1,9 +1,9 @@
-name: 1.16 build check
+name: 1.18 build check
 
 on:
   push:
     branches:
-      - update_1_161_16_to_1_18
+      - 1_16_to_1_18
     paths:
       - src/**
       - build.sbt
