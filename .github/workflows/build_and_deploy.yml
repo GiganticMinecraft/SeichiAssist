@@ -70,6 +70,7 @@ jobs:
             timestamp=`git log -1 --pretty=format:'%cd' --date=format:'%Y%m%d%H%M.%S' $jar`
             touch -t "$timestamp" $jar
           done
+
       # scalapbは.protoの再コンパイルの必要性を判定する際にタイムスタンプを見ているから、コミット時刻に合わせる
       - name: Restore protocol timestamps
         ## 参考: https://qiita.com/tomlla/items/219cea9dd071c8a9e147
