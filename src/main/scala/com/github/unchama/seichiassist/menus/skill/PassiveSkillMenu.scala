@@ -165,12 +165,8 @@ object PassiveSkillMenu extends Menu {
           .build(),
         LeftClickButtonEffect {
           SequentialEffect(
-            DeferredEffect(
-              IO(
-                breakSkillTargetConfigAPI
-                  .toggleBreakSkillTargetConfig(BreakSkillTargetConfigKey.Chest)
-              )
-            ),
+            breakSkillTargetConfigAPI
+                  .toggleBreakSkillTargetConfig(BreakSkillTargetConfigKey.Chest),
             DeferredEffect(IO {
               if (breakChest) {
                 SequentialEffect(
@@ -211,12 +207,8 @@ object PassiveSkillMenu extends Menu {
           .build(),
         LeftClickButtonEffect {
           SequentialEffect(
-            DeferredEffect(
-              IO(
-                breakSkillTargetConfigAPI
-                  .toggleBreakSkillTargetConfig(BreakSkillTargetConfigKey.MadeFromNetherQuartz)
-              )
-            ),
+            breakSkillTargetConfigAPI
+              .toggleBreakSkillTargetConfig(BreakSkillTargetConfigKey.MadeFromNetherQuartz),
             DeferredEffect(IO {
               if (breakQuartz) {
                 SequentialEffect(
