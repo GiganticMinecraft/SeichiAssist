@@ -7,7 +7,10 @@ jobs:
   get_run_number:
     runs-on: ubuntu-20.04
     outputs:
-      value: ${{github.run_number}}
+      value: ${{ steps.job.outputs.value }}
+    steps:
+      - name: echo run_number
+        run: echo ${{ github.run_number }}
 
   create_release:
     runs-on: ubuntu-20.04
