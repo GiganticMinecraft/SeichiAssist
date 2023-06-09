@@ -5,7 +5,10 @@ trait BreakSkillTargetConfigRepository[F[_], Player] {
   /**
    * @return `configKey`の破壊フラグをトグルする作用
    */
-  def toggleBreakSkillTargetConfig(player: Player, configKey: BreakSkillTargetConfigKey): F[Unit]
+  def toggleBreakSkillTargetConfig(
+    player: Player,
+    configKey: BreakSkillTargetConfigKey
+  ): F[Unit]
 
   /**
    * @return `player`の現在の破壊フラグを取得する作用
