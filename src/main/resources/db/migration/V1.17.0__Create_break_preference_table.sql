@@ -5,6 +5,5 @@ CREATE TABLE player_break_preference(
     flag_name ENUM('Chest', 'MadeFromNetherQuartz') NOT NULL,
     include BOOL NOT NULL DEFAULT TRUE,
     PRIMARY KEY(uuid, flag_name),
-    FOREIGN KEY (uuid) REFERENCES playerdata(uuid),
     INDEX index_player_break_preference_on_uuid (uuid)
 );
