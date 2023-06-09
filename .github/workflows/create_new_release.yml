@@ -5,7 +5,7 @@ on:
 
 jobs:
   get_branch_name:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     outputs:
       value: ${{ steps.job.outputs.value }}
     steps:
@@ -14,7 +14,7 @@ jobs:
         run: echo "::set-output name=value::$(echo ${GITHUB_REF#refs/heads/})"
 
   bump_version:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: get_branch_name
     outputs:
       old_version: ${{ steps.bump.outputs.old_version }}
@@ -72,7 +72,7 @@ jobs:
             HEAD:${{ needs.get_branch_name.outputs.value }}
 
   create_release:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: bump_version
     steps:
       - uses: actions/checkout@master
@@ -100,7 +100,7 @@ jobs:
           prerelease: false
 
   create_pull-request_to_master:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: [get_branch_name, bump_version]
     steps:
       - uses: actions/checkout@master

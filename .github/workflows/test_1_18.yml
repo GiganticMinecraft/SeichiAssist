@@ -17,7 +17,7 @@ jobs:
   build_check:
     env:
       BUILD_ENVIRONMENT_IS_CI_OR_LOCAL: "CI"
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     container: ghcr.io/giganticminecraft/seichiassist-builder-v2:3731293
     steps:
       - name: Checkout repository
