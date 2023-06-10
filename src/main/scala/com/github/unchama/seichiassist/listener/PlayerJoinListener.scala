@@ -12,7 +12,7 @@ import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{
   NormalMebius
 }
 import com.github.unchama.seichiassist.util.{SendMessageEffect, SendSoundEffect}
-import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.player.{FocusedSoundEffect, PlayerEffects}
 import net.coreprotect.model.Config
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment
@@ -20,12 +20,13 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.{
   AsyncPlayerPreLoginEvent,
   PlayerChangedWorldEvent,
-  PlayerJoinEvent
+  PlayerJoinEvent,
+  PlayerTeleportEvent
 }
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BookMeta
-import org.bukkit.{Material, Sound}
+import org.bukkit.{Bukkit, Location, Material, Sound}
 
 import java.util.UUID
 import scala.collection.mutable
@@ -208,7 +209,54 @@ class PlayerJoinListener extends Listener {
 
       // 初見さんにメッセージを送信
       player.sendMessage {
-        "整地鯖では整地をするとレベルが上がり、様々な恩恵が受けられます。\n初めての方は整地ワールドで掘ってレベルを上げてみましょう！\n木の棒を右クリックしてメニューを開き右上のビーコンボタンをクリック！"
+        "チュートリアルを受けた後:\n整地鯖では整地をするとレベルが上がり、様々な恩恵が受けられます。\n初めての方はチュートリアルを整地ワールドで掘ってレベルを上げてみましょう！\n木の棒を右クリックしてメニューを開き右上のビーコンボタンをクリック！"
+      }
+
+      // 初見プレイヤーをチュートリアル地点へテレポートする
+      // 元コードは #992 で、それを一部修正したものに当たる
+      // ハードコーディング
+      if (SeichiAssist.seichiAssistConfig.getServerNum == 7) {
+        val tutorialLocation: Option[Location] = {
+          val world = Bukkit.getWorld("world_spawn")
+          // ハードコーディング
+          Option.when(world ne null)(new Location(world, 582.5, 216.0, 817.5))
+        }
+        val tpTutorialSuccess = tutorialLocation.fold(false) { loc =>
+          player.teleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN)
+        }
+
+        if (tpTutorialSuccess) {
+          player.sendMessage(s"${YELLOW}チュートリアル地点にテレポートしました。")
+          IO {
+            import scalikejdbc._
+            DB.localTx { _ =>
+              sql"""
+                     update seichiassist.tutorial set taken = true where uuid = ${player.getUniqueId}
+                   """
+            }
+          }.unsafeRunAsyncAndForget()
+        } else {
+          player.sendMessage(s"${RED}チュートリアル地点へのテレポートに失敗しました。")
+          if (tutorialLocation.isEmpty) {
+            SeichiAssist.instance.loggerF.info(s"指定されたワールドはサーバーに存在しません。").unsafeRunSync()
+          }
+        }
+      } else {
+        val compute = IO {
+          import scalikejdbc._
+          DB.readOnly { implicit session =>
+            sql"""
+                   select taken from seichiassist.tutorial where uuid = ${player.getUniqueId}
+                 """.map { rs => rs.boolean("taken_tutorial") }.first().apply().getOrElse(false)
+          }
+        }
+
+        val needed: Boolean = compute.unsafeRunSync()
+        if (needed) {
+          player.sendMessage("チュートリアル地点にテレポートします...")
+          // ハードコーディング
+          PlayerEffects.connectToServerEffect("s7").run(player).unsafeRunSync();
+        }
       }
     }
 
@@ -221,21 +269,6 @@ class PlayerJoinListener extends Listener {
         70,
         20
       )
-
-    // エデンサーバーへ入場する際に警告を行う
-    // TODO: エデンサーバーの不具合が解消されたら削除すること
-    if (SeichiAssist.seichiAssistConfig.getServerNum == 2) {
-      player.sendMessage(
-        Array(
-          s"${RED}${BOLD}${UNDERLINE}【ご注意ください】${RESET}",
-          s"${YELLOW}${BOLD}エデンサーバーは現在、管理者の意図しないタイミングでシャットダウン（いわゆる「鯖落ち」）が起こることがあります。",
-          s"${YELLOW}${BOLD}もし鯖落ちによりアイテムの消失等が発生しても、補償はできかねます。",
-          s"${YELLOW}${BOLD}当サーバーは以上の内容をご理解の上ご利用ください。",
-          s"${YELLOW}${BOLD}不安な場合はアルカディアサーバーやヴァルハラサーバーのご利用をおすすめいたします。",
-          s"${YELLOW}${BOLD}ご迷惑をおかけいたしまして申し訳ございません。。"
-        )
-      )
-    }
   }
 
   // プレイヤーがワールドを移動したとき
