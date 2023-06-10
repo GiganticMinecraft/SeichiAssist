@@ -9,8 +9,9 @@ jobs:
     outputs:
       value: ${{ steps.version.outputs.version }}
     steps:
-      - name: version
-        run: echo "version=${{ github.run_number }}"
+      - name: Output release version
+        id: version
+        run: echo "version=${{ github.run_number }}"  >> "$GITHUB_OUTPUT"
 
   create_release:
     runs-on: ubuntu-20.04
