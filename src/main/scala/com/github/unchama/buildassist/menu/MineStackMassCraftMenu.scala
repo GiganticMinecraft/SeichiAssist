@@ -609,9 +609,9 @@ object MineStackMassCraftMenu {
         ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
           MassCraftRecipe(
             NonEmptyList.of(("wood", 4), ("stick", 2)),
-            NonEmptyList.of(("wood_fence", 3))
+            NonEmptyList.of(("fence", 3))
           ),
-          oneToTenThousand,
+          oneToThousand,
           3
         ),
         ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
@@ -619,7 +619,7 @@ object MineStackMassCraftMenu {
             NonEmptyList.of(("wood_1", 4), ("stick", 2)),
             NonEmptyList.of(("spruce_fence", 3))
           ),
-          oneToTenThousand,
+          oneToThousand,
           3
         ),
         ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
@@ -627,7 +627,7 @@ object MineStackMassCraftMenu {
             NonEmptyList.of(("wood_2", 4), ("stick", 2)),
             NonEmptyList.of(("birch_fence", 3))
           ),
-          oneToTenThousand,
+          oneToThousand,
           3
         ),
         ChestSlotRef(3, 0) -> MassCraftRecipeBlock(
@@ -635,7 +635,7 @@ object MineStackMassCraftMenu {
             NonEmptyList.of(("wood_3", 4), ("stick", 2)),
             NonEmptyList.of(("jungle_fence", 3))
           ),
-          oneToTenThousand,
+          oneToThousand,
           3
         ),
         ChestSlotRef(4, 0) -> MassCraftRecipeBlock(
@@ -643,48 +643,48 @@ object MineStackMassCraftMenu {
             NonEmptyList.of(("wood_4", 4), ("stick", 2)),
             NonEmptyList.of(("acacia_fence", 3))
           ),
-          oneToTenThousand,
+          oneToThousand,
           3
         ),
-        ChestSlotRef(5, 0) -> MassCraftRecipeBlock(
+        ChestSlotRef(0, 5) -> MassCraftRecipeBlock(
           MassCraftRecipe(
             NonEmptyList.of(("wood_5", 4), ("stick", 2)),
             NonEmptyList.of(("dark_oak_fence", 3))
           ),
-          oneToTenThousand,
+          oneToThousand,
           3
         )
       ),
       // 木材ハーフ
       List(
         ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
-          MassCraftRecipe(NonEmptyList.of(("wood", 3)), NonEmptyList.of(("wood_fence", 6))),
-          oneToTenThousand,
+          MassCraftRecipe(NonEmptyList.of(("wood", 3)), NonEmptyList.of(("wood_step0", 6))),
+          oneToThousand,
           3
         ),
         ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
-          MassCraftRecipe(NonEmptyList.of(("wood1", 3)), NonEmptyList.of(("wood_step1", 6))),
-          oneToTenThousand,
+          MassCraftRecipe(NonEmptyList.of(("wood_1", 3)), NonEmptyList.of(("wood_step1", 6))),
+          oneToThousand,
           3
         ),
         ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
           MassCraftRecipe(NonEmptyList.of(("wood_2", 3)), NonEmptyList.of(("wood_step2", 6))),
-          oneToTenThousand,
+          oneToThousand,
           3
         ),
         ChestSlotRef(3, 0) -> MassCraftRecipeBlock(
           MassCraftRecipe(NonEmptyList.of(("wood_3", 3)), NonEmptyList.of(("wood_step3", 6))),
-          oneToTenThousand,
+          oneToThousand,
           3
         ),
         ChestSlotRef(4, 0) -> MassCraftRecipeBlock(
           MassCraftRecipe(NonEmptyList.of(("wood_4", 3)), NonEmptyList.of(("wood_step4", 6))),
-          oneToTenThousand,
+          oneToThousand,
           3
         ),
-        ChestSlotRef(5, 0) -> MassCraftRecipeBlock(
+        ChestSlotRef(0, 5) -> MassCraftRecipeBlock(
           MassCraftRecipe(NonEmptyList.of(("wood_5", 3)), NonEmptyList.of(("wood_step5", 6))),
-          oneToTenThousand,
+          oneToThousand,
           3
         )
       )

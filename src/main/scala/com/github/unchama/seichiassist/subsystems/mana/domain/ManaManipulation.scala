@@ -35,7 +35,7 @@ object ManaManipulation {
   import cats.implicits._
 
   def fromLevelCappedAmountRef[F[_]: FlatMap](
-    multiplierRef: Ref[F, ManaMultiplier]
+    dragonNightTimeMultiplierRef: Ref[F, ManaMultiplier]
   )(ref: Ref[F, LevelCappedManaAmount]): ManaManipulation[F] =
     new ManaManipulation[F] {
       override def restoreAbsolute(amount: ManaAmount): F[Unit] =
@@ -45,7 +45,7 @@ object ManaManipulation {
         ref.update(cappedAmount => cappedAmount.add(cappedAmount.cap.multiply(fraction)))
 
       override def tryAcquire(amount: ManaAmount): F[Option[ManaAmount]] = {
-        multiplierRef.get.flatMap { multiplier =>
+        dragonNightTimeMultiplierRef.get.flatMap { multiplier =>
           ref.modify { original =>
             original.tryUse(amount)(multiplier) match {
               case Some(reduced) => (reduced, Some(amount))

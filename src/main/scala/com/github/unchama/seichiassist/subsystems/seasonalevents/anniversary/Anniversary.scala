@@ -8,7 +8,7 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.{
 import java.time.LocalDate
 
 object Anniversary {
-  val EVENT_YEAR = 2022
+  val EVENT_YEAR = 2023
   val ANNIVERSARY_COUNT: Int = EVENT_YEAR - 2016
   val START_DATE: LocalDate = LocalDate.of(EVENT_YEAR, 6, 29)
   val END_DATE: LocalDate = LocalDate.of(EVENT_YEAR, 7, 5)
