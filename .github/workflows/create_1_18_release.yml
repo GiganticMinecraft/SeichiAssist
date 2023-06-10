@@ -91,7 +91,7 @@ jobs:
         run: |
           mv target/build/SeichiAssist.jar target/build/SeichiAssist-for-1.18-v${{ needs.get_version.outputs.value }}.jar
 
-      - name: Crate release
+      - name: Create release
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
