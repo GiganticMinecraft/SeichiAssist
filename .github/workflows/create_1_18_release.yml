@@ -87,7 +87,7 @@ jobs:
       - name: Build artifact
         run: ./sbt assembly
 
-      - name: Change artifact name
+      - name: Rename artifact
         run: |
           mv target/build/SeichiAssist.jar target/build/SeichiAssist-for-1.18-v${{ needs.get_version.outputs.value }}.jar
 
