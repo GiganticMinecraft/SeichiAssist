@@ -4,18 +4,18 @@ on:
   workflow_dispatch:
 
 jobs:
-  get_run_number:
+  get_version:
     runs-on: ubuntu-20.04
     outputs:
-      value: ${{ steps.job.outputs.value }}
+      value: ${{ steps.version.outputs.version }}
     steps:
-      - name: echo run_number
-        run: echo ${{ github.run_number }}
+      - name: version
+        run: echo "version=${{ github.run_number }}"
 
   create_release:
     runs-on: ubuntu-20.04
     container: ghcr.io/giganticminecraft/seichiassist-builder-v2:424c09f
-    needs: [get_run_number]
+    needs: [get_version]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -88,14 +88,14 @@ jobs:
 
       - name: Change artifact name
         run: |
-          mv target/build/SeichiAssist.jar target/build/SeichiAssist-for-1.18-v${{ needs.github.run_number }}.jar
+          mv target/build/SeichiAssist.jar target/build/SeichiAssist-for-1.18-v${{ needs.get_version.outputs.value }}.jar
 
       - name: Crate release
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: target/build/SeichiAssist-for-1.18-v${{ needs.github.run_number }}.jar
+          files: target/build/SeichiAssist-for-1.18-v${{ needs.get_version.outputs.value }}.jar
           tag_name: "v${{ needs.github.run_number }}-for-1.18"
           draft: false
 
