@@ -14,17 +14,17 @@ on:
       - .github/workflows/**.yml
       - .github/actions/**/**.yml
 
-  pull_request:
-    branches:
-      - develop
-    paths:
-      - src/**/
-      - build.sbt
-      - .scalafix.conf
-      - .scalafmt.conf
-      - project/*
-      - .github/workflows/**.yml
-      - .github/actions/**/**.yml
+  # pull_request:
+  #   branches:
+  #     - develop
+  #   paths:
+  #     - src/**/
+  #     - build.sbt
+  #     - .scalafix.conf
+  #     - .scalafmt.conf
+  #     - project/*
+  #     - .github/workflows/**.yml
+  #     - .github/actions/**/**.yml
 
 jobs:
   build_test_and_upload:
