@@ -1,7 +1,7 @@
 name: Create 1.18 release
 
 on:
-  workflow_dispatch:
+  workflow_run:
 
 jobs:
   get_run_number:
