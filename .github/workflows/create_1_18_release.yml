@@ -91,13 +91,13 @@ jobs:
         run: |
           mv target/build/SeichiAssist.jar target/build/SeichiAssist-for-1.18-v${{ needs.get_version.outputs.value }}.jar
 
-      - name: Crate release
+      - name: Create release
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: target/build/SeichiAssist-for-1.18-v${{ needs.get_version.outputs.value }}.jar
-          tag_name: "v${{ needs.github.run_number }}-for-1.18"
+          tag_name: "v${{ needs.get_version.outputs.value }}-for-1.18"
           draft: false
 
       - name: Clean build artifact for caching target folder
