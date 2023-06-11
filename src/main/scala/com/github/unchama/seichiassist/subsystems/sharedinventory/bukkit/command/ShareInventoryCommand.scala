@@ -29,13 +29,13 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
       val sender = context.sender
       for {
         sharedFlag <- sharedInventoryAPI.sharedFlag(sender).toIO
-        _ <-
+        eff <-
           if (sharedFlag == SharedFlag.Sharing) {
             withdrawFromSharedInventory(sender)
           } else {
             depositToSharedInventory(sender)
           }
-      } yield emptyEffect
+      } yield eff
     }
     .build()
     .asNonBlockingTabExecutor()
