@@ -65,7 +65,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(MOB_DROP, "bone", "骨", Material.BONE, 0),
     MineStackObjectByMaterial(MOB_DROP, "sulphur", "火薬", Material.SULPHUR, 0),
     MineStackObjectByMaterial(MOB_DROP, "arrow", "矢", Material.ARROW, 0),
-    MineStackObjectByMaterial(MOB_DROP, "tipped_arrow", "鈍化の矢", Material.TIPPED_ARROW, 0),
+    MineStackObjectByMaterial(MOB_DROP, "tipped_arrow", "鈍化の矢", Material.TIPPED_ARROW, 2),
     MineStackObjectByMaterial(MOB_DROP, "spider_eye", "蜘蛛の目", Material.SPIDER_EYE, 0),
     MineStackObjectByMaterial(MOB_DROP, "string", "糸", Material.STRING, 0),
     MineStackObjectByMaterial(MOB_DROP, "name_tag", "名札", Material.NAME_TAG, 0),
