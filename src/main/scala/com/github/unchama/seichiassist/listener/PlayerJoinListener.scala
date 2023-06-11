@@ -13,7 +13,7 @@ import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{
 }
 import com.github.unchama.seichiassist.util.{SendMessageEffect, SendSoundEffect}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import net.coreprotect.model.Config
+import net.coreprotect.config.ConfigHandler
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
@@ -246,10 +246,10 @@ class PlayerJoinListener extends Listener {
 
     // coreprotectを切る
     // inspectマップにtrueで登録されている場合
-    if (Config.inspecting.getOrDefault(p.getName, false)) {
+    if (ConfigHandler.inspecting.getOrDefault(p.getName, false)) {
       // falseに変更する
       p.sendMessage("§3CoreProtect §f- Inspector now disabled.")
-      Config.inspecting.put(p.getName, false)
+      ConfigHandler.inspecting.put(p.getName, false)
     }
 
     // アサルトスキルを切る

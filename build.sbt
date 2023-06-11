@@ -61,7 +61,7 @@ val providedDependencies = Seq(
   "org.spigotmc" % "spigot-api" % "1.18.2-R0.1-SNAPSHOT",
   // https://maven.enginehub.org/repo/com/sk89q/worldedit/worldedit-bukkit/
   "com.sk89q.worldguard" % "worldguard-bukkit" % "7.0.7",
-  "net.coreprotect" % "coreprotect" % "2.15.0",
+  "net.coreprotect" % "coreprotect" % "21.3",
   "com.mojang" % "authlib" % "3.11.50",
 
   // no runtime
@@ -205,7 +205,11 @@ lazy val root = (project in file(".")).settings(
   ),
   javacOptions ++= Seq("-encoding", "utf8"),
   assembly / assemblyShadeRules ++= Seq(
-    ShadeRule.rename("org.mariadb.jdbc.**" -> "com.github.unchama.seichiassist.relocateddependencies.org.mariadb.jdbc.@1").inAll
+    ShadeRule
+      .rename(
+        "org.mariadb.jdbc.**" -> "com.github.unchama.seichiassist.relocateddependencies.org.mariadb.jdbc.@1"
+      )
+      .inAll
   ),
   // sbt-assembly 1.0.0からはTestを明示的にタスクツリーに入れる必要がある
   // cf. https://github.com/sbt/sbt-assembly/pull/432/commits/361224a6202856bc2e572df811d0e6a1f1efda98
