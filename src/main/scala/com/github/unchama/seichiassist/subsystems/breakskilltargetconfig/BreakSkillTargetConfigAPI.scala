@@ -9,16 +9,13 @@ trait BreakSkillTargetConfigAPI[F[_], Player] {
    * @return 破壊フラグをトグルする作用
    */
   def toggleBreakSkillTargetConfig(
-    breakFlagName: BreakSkillTargetConfigKey
+    configKey: BreakSkillTargetConfigKey
   ): Kleisli[F, Player, Unit]
 
   /**
    * @return 現在の破壊フラグを取得する作用
    */
-  def breakSkillTargetConfig(
-    player: Player,
-    breakFlagName: BreakSkillTargetConfigKey
-  ): F[Boolean]
+  def breakSkillTargetConfig(player: Player, configKey: BreakSkillTargetConfigKey): F[Boolean]
 
 }
 
