@@ -41,7 +41,7 @@ object System {
               Kleisli { player =>
                 ContextCoercion(
                   breakSkillTargetConfigRepository(player)
-                    .toggleBreakSkillTargetConfig(configKey)
+                    .update(_.toggleBreakSkillTargetConfig(configKey))
                 )
               }
 
@@ -50,7 +50,9 @@ object System {
               configKey: BreakSkillTargetConfigKey
             ): F[Boolean] =
               ContextCoercion(
-                breakSkillTargetConfigRepository(player).breakSkillTargetConfig(configKey)
+                breakSkillTargetConfigRepository(player)
+                  .get
+                  .map(_.breakSkillTargetConfig(configKey))
               )
           }
 

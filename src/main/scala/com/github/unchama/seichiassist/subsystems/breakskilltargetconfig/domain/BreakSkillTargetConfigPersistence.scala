@@ -4,5 +4,4 @@ import com.github.unchama.generic.RefDict
 
 import java.util.UUID
 
-trait BreakSkillTargetConfigPersistence[F[_]]
-    extends RefDict[F, UUID, BreakSkillTargetConfigRepository[F]]
+trait BreakSkillTargetConfigPersistence[F[_]] extends RefDict[F, UUID, BreakSkillTargetConfig]
