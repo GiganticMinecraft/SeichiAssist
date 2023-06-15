@@ -96,6 +96,8 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
         //       りんごを消費できなかったときと同じ処理を行うと仕様として紛らわしいので、
         //       回復量が300未満だった場合はりんごを消費して回復したことにする
         if (appleConsumeAmount == 0 && recoveryManaAmount > 300)
+          FairyManaRecoveryState.RecoverWithoutAppleButLessThanAApple
+        else if (appleConsumeAmount == 0)
           FairyManaRecoveryState.RecoveredWithoutApple
         else FairyManaRecoveryState.RecoveredWithApple
       }
@@ -116,16 +118,16 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
             MessageEffectF(
               s"$RESET$YELLOW${BOLD}マナ妖精が${Math.floor(recoveryManaAmount)}マナを回復してくれました"
             ),
-            if (
-              manaRecoveryState == FairyManaRecoveryState.RecoveredWithApple && appleConsumeAmount != 0
-            )
-              MessageEffectF(s"$RESET$YELLOW${BOLD}あっ！${appleConsumeAmount}個のがちゃりんごが食べられてる！")
-            else if (
-              manaRecoveryState == FairyManaRecoveryState.RecoveredWithApple && appleConsumeAmount == 0
-            )
-              MessageEffectF(s"$RESET$YELLOW${BOLD}回復量ががちゃりんご１つ分に満たなかったため、あなたは妖精にりんごを渡しませんでした。")
-            else
-              MessageEffectF(s"$RESET$YELLOW${BOLD}あなたは妖精にりんごを渡しませんでした。")
+            manaRecoveryState match {
+              case FairyManaRecoveryState.RecoverWithoutAppleButLessThanAApple =>
+                MessageEffectF(
+                  s"$RESET$YELLOW${BOLD}回復量ががちゃりんご１つ分に満たなかったため、あなたは妖精にりんごを渡しませんでした。"
+                )
+              case FairyManaRecoveryState.RecoveredWithApple =>
+                MessageEffectF(s"$RESET$YELLOW${BOLD}あっ！${appleConsumeAmount}個のがちゃりんごが食べられてる！")
+              case _ =>
+                MessageEffectF(s"$RESET$YELLOW${BOLD}あなたは妖精にりんごを渡しませんでした。")
+            }
           ).apply(player)
       }.whenA(isFairyUsing && isRecoverTiming && !nonRecoveredManaAmount.isFull)
       finishUse <- JavaTime[F]
