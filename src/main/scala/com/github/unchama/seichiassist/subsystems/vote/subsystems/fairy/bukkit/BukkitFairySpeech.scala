@@ -50,6 +50,8 @@ class BukkitFairySpeech[F[_]: Sync: JavaTime](
         FairyMessageTable.manaFullMessages
       case FairyManaRecoveryState.RecoveredWithApple =>
         FairyMessageTable.consumed
+      case FairyManaRecoveryState.RecoverWithoutAppleButLessThanAApple =>
+        FairyMessageTable.consumed
       case FairyManaRecoveryState.RecoveredWithoutApple =>
         FairyMessageTable.notConsumed
     }
