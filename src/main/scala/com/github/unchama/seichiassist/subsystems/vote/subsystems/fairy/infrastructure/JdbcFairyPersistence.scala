@@ -183,19 +183,19 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
 
   override def fetchMostConsumedApplePlayersByFairy(
     top: Int
-  ): F[Vector[Option[AppleConsumeAmountRank]]] =
+  ): F[Vector[AppleConsumeAmountRank]] =
     Sync[F].delay {
       DB.readOnly { implicit session =>
-        sql"""SELECT name,given_apple_amount,COUNT(*) AS rank FROM vote_fairy
+        sql"""SELECT name, given_apple_amount, RANK() OVER(ORDER BY given_apple_amount DESC) AS rank FROM vote_fairy
              | INNER JOIN playerdata ON (vote_fairy.uuid = playerdata.uuid) 
-             | ORDER BY rank DESC LIMIT $top;"""
+             | LIMIT $top;"""
           .stripMargin
           .map { rs =>
-            for {
-              name <- rs.stringOpt("name")
-              rank <- rs.intOpt("rank")
-              givenAppleAmount <- rs.intOpt("given_apple_amount")
-            } yield AppleConsumeAmountRank(name, rank, AppleAmount(givenAppleAmount))
+            val name = rs.string("name")
+            val rank = rs.int("rank")
+            val givenAppleAmount = rs.int("given_apple_amount")
+
+            AppleConsumeAmountRank(name, rank, AppleAmount(givenAppleAmount))
           }
           .toList()
           .apply()

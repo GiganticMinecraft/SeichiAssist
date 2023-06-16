@@ -388,12 +388,14 @@ object VoteMenu extends Menu {
           topFourRanking.lift(1),
           topFourRanking.lift(2),
           topFourRanking.lift(3)
-        ).flatMap(_.flatten).flatMap { rankData =>
-          List(
-            s"${GRAY}たくさんくれたﾆﾝｹﾞﾝ第${rankData.rank}位！",
-            s"${GRAY}なまえ：${rankData.playerName} りんご：${rankData.consumed.amount}個"
-          )
-        }
+        ).map {
+          case Some(rankData) =>
+            List(
+              s"${GRAY}たくさんくれたﾆﾝｹﾞﾝ第${rankData.rank}位！",
+              s"${GRAY}なまえ：${rankData.playerName} りんご：${rankData.consumed.amount}個"
+            )
+          case None => List.empty
+        }.foldLeft(List.empty[String])((left, right) => left ++ right)
       val statistics = myRank.map { rank =>
         List(
           s"${AQUA}ぜーんぶで${allEatenAppleAmount.amount}個もらえた！",
