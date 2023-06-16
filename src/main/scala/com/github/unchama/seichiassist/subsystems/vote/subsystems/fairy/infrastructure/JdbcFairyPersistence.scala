@@ -161,11 +161,11 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   ): F[Option[AppleConsumeAmountRank]] =
     Sync[F].delay {
       DB.readOnly { implicit session =>
-        sql"""SELECT vote_fairy.uuid AS uuid,name,given_apple_amount,COUNT(*) AS rank 
+        sql"""SELECT vote_fairy.uuid AS uuid, name, given_apple_amount,
+             | RANK() OVER(ORDER BY given_apple_amount DESC) AS rank
              | FROM vote_fairy 
              | INNER JOIN playerdata
-             | ON (playerdata.uuid = vote_fairy.uuid)
-             | ORDER BY rank DESC;"""
+             | ON (playerdata.uuid = vote_fairy.uuid)"""
           .stripMargin
           .map(rs =>
             rs.string("uuid") -> AppleConsumeAmountRank(
