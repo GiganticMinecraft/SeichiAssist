@@ -1,8 +1,8 @@
 # 開発体制
 
 ## 開発を始めるために必要なもの
-- [Intellij IDEA](https://www.jetbrains.com/idea/) などの統合開発環境
-- [AdoptOpenJDK 1.8](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot)
+- [IntelliJ IDEA](https://www.jetbrains.com/idea/) などの統合開発環境
+- [JDK 8](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot)
 - [sbt 1.6](https://www.scala-sbt.org/1.x/docs/Setup.html)
 - [Scala 2.13](https://www.scala-lang.org/download/)
 - Spigot 1.12.2
@@ -16,7 +16,7 @@
 [AdoptOpenJDK 1.8](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot) のインストールを推奨します。
 
 #### 統合開発環境
-次に、[Intellij IDEA](https://www.jetbrains.com/idea/)などの統合開発環境を導入します。
+次に、[IntelliJ IDEA](https://www.jetbrains.com/idea/)などの統合開発環境を導入します。
 
 有料版 **Ultimate Edition** と機能が制限された無料版 **Community Edition** が2つありますが、SeichiAssist を開発する上では無料版で十分です。
 
@@ -26,7 +26,7 @@
 >
 > 学生の場合は、[学生ライセンス](https://www.jetbrains.com/community/education/#students)を申請することで Ultimate Edition を無料で利用できます。
 
-##### Intellij
+##### IntelliJ
 * インストールする時、Gitプラグインを有効にします。
 * Scala用の[プラグイン](https://plugins.jetbrains.com/plugin/1347-scala)を導入してください。
 
