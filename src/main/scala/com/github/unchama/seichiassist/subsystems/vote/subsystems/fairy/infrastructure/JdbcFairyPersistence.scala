@@ -165,7 +165,8 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
              | RANK() OVER(ORDER BY given_apple_amount DESC) AS rank
              | FROM vote_fairy 
              | INNER JOIN playerdata
-             | ON (playerdata.uuid = vote_fairy.uuid)"""
+             | ON (playerdata.uuid = vote_fairy.uuid)
+             | ORDER BY rank"""
           .stripMargin
           .map(rs =>
             rs.string("uuid") -> AppleConsumeAmountRank(
@@ -187,7 +188,8 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
     Sync[F].delay {
       DB.readOnly { implicit session =>
         sql"""SELECT name, given_apple_amount, RANK() OVER(ORDER BY given_apple_amount DESC) AS rank FROM vote_fairy
-             | INNER JOIN playerdata ON (vote_fairy.uuid = playerdata.uuid) 
+             | INNER JOIN playerdata ON (vote_fairy.uuid = playerdata.uuid)
+             | ORDER BY rank
              | LIMIT $top;"""
           .stripMargin
           .map { rs =>
