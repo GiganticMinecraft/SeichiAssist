@@ -28,14 +28,13 @@ object RegionOwnerTransferCommand {
       val (regionName :: newOwner :: HNil) = context.args.parsed
       val sender = context.sender
 
-      IO {
-        WorldGuardPlugin.inst().getRegionManager(sender.getWorld).getRegion(regionName)
-      }.flatMap { region =>
-        if (region == null) {
-          MessageEffect(s"${regionName}という名前の保護は存在しません。").run(sender)
-        } else {
-          attemptRegionTransfer(sender, newOwner, region)
-        }
+      val region =
+        WorldGuardWrapper.findByRegionName(regionName)
+
+      region match {
+        case Some(region) =>
+          attemptRegionTransfer(sender, newOwner, region.getRegion(regionName))
+        case None => IO(MessageEffect(s"${regionName}という名前の保護は存在しません。"))
       }
     }
     .asNonBlockingTabExecutor()
@@ -48,7 +47,7 @@ object RegionOwnerTransferCommand {
     val owners = region.getOwners
     val regionWorld = donner.getWorld
 
-    val recipientLimit = WorldGuardWrapper.getMaxRegionCount(recipient, regionWorld)
+    val recipientLimit = WorldGuardWrapper.getMaxRegion(recipient, regionWorld)
     val recipientHas = WorldGuardWrapper.getNumberOfRegions(recipient, regionWorld)
 
     if (recipientLimit <= recipientHas) {
