@@ -7,7 +7,7 @@ object BukkitMebiusAppearanceMaterialCodec {
 
   private val appearanceThresholds = List(
     1 -> Material.LEATHER_HELMET,
-    5 -> Material.GOLD_HELMET,
+    5 -> Material.GOLDEN_HELMET,
     10 -> Material.CHAINMAIL_HELMET,
     20 -> Material.IRON_HELMET,
     25 -> Material.DIAMOND_HELMET
