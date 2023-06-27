@@ -91,7 +91,7 @@ class AnniversaryListener(
     // Y座標を下に動かして（木の上方から）オークの木の頂点を探し、そのブロックを置き換える
     (10 to 0 by -1)
       .map(placedBlock.getRelative(0, _, 0))
-      .find(block => block.getType == Material.LOG || block.getType == Material.LEAVES)
+      .find(block => block.getType == Material.OAK_LOG || block.getType == Material.OAK_LEAVES)
       .foreach(replaceBlockOnTreeTop(_, event.getPlayer.getName))
   }
 

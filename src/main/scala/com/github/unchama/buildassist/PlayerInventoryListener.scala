@@ -58,7 +58,7 @@ class PlayerInventoryListener(
     // プレイヤーデータが無い場合は処理終了
 
     // インベントリ名が以下の時処理
-    if (topinventory.getTitle == s"${DARK_PURPLE.toString}$BOLD「直列設置」設定") {
+    if (view.getTitle == s"${DARK_PURPLE.toString}$BOLD「直列設置」設定") {
       event.setCancelled(true)
 
       // プレイヤーインベントリのクリックの場合終了
@@ -68,7 +68,7 @@ class PlayerInventoryListener(
       /*
        * クリックしたボタンに応じた各処理内容の記述ここから
        */
-      if (itemstackcurrent.getType == Material.SKULL_ITEM) {
+      if (itemstackcurrent.getType == Material.PLAYER_HEAD) {
         // ホームメニューへ帰還
 
         effectEnvironment.unsafeRunAsyncTargetedEffect(player)(
@@ -78,7 +78,7 @@ class PlayerInventoryListener(
           ),
           "BuildMainMenuを開く"
         )
-      } else if (itemstackcurrent.getType == Material.WOOD) {
+      } else if (itemstackcurrent.getType == Material.OAK_WOOD) {
         // 直列設置設定
         if (playerLevel < BuildAssist.config.getblocklineuplevel) {
           player.sendMessage(RED.toString + "建築Lvが足りません")
@@ -91,7 +91,7 @@ class PlayerInventoryListener(
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           player.openInventory(MenuInventoryData.getBlockLineUpData(player))
         }
-      } else if (itemstackcurrent.getType == Material.STEP) {
+      } else if (itemstackcurrent.getType == Material.STONE_SLAB) {
         // 直列設置ハーフブロック設定
         if (playerdata.line_up_step_flg >= 2) {
           playerdata.line_up_step_flg = 0
