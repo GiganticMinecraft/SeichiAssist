@@ -57,7 +57,11 @@ object OnClickTitleMenu {
     if (topInventory.row != 4) {
       return
     }
-    val current = event.getCurrentItem
+    val current = event
+      .getCurrentItem
+      .ifNull(
+        return
+      )
 
     val player = he.asInstanceOf[Player]
     val pd = SeichiAssist.playermap(player.getUniqueId)
@@ -68,8 +72,8 @@ object OnClickTitleMenu {
     }
 
     val mat = current.getType
-    val isSkull = mat == Material.SKULL_ITEM
-    topInventory.getTitle match {
+    val isSkull = mat == Material.PLAYER_HEAD
+    view.getTitle match {
       case MenuType.HEAD.invName =>
         event.setCancelled(true)
         mat match {

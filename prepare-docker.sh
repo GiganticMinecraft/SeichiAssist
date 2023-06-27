@@ -4,6 +4,7 @@ build_image() {
   set -e
 
   rm -r target/build || true
+  ./sbt clean
 
   ## ソースコードからSeichiAssist.jarをビルド
   ./sbt assembly

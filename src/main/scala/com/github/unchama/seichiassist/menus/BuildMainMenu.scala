@@ -207,7 +207,7 @@ private case class ButtonComputations(player: Player)(
       IO {
         val openerData = BuildAssist.instance.temporaryData(getUniqueId)
 
-        val iconItemStack = new IconItemStackBuilder(Material.WOOD)
+        val iconItemStack = new IconItemStackBuilder(Material.OAK_WOOD)
           .title(s"$YELLOW${EMPHASIZE}直列設置: ${BuildAssist.line_up_str(openerData.line_up_flg)}")
           .lore(
             s"$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
@@ -279,7 +279,7 @@ private case class ButtonComputations(player: Player)(
   def computeButtonToOpenMenuToCraftItemsWhereMineStack(
     implicit canOpenMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu]
   ): IO[Button] = IO {
-    val iconItemStackBuilder = new IconItemStackBuilder(Material.WORKBENCH)
+    val iconItemStackBuilder = new IconItemStackBuilder(Material.CRAFTING_TABLE)
       .title(s"$YELLOW${EMPHASIZE}MineStackブロック一括クラフト画面へ")
       .lore(s"$RESET$DARK_RED${UNDERLINE}クリックで移動")
       .build()

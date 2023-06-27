@@ -54,7 +54,7 @@ object BukkitNotifyLevelUp {
               .sendPlainText(notificationMessage)
               .toIO
               .unsafeRunAsyncAndForget()
-            SendSoundEffect.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
+            SendSoundEffect.sendEverySound(Sound.ENTITY_ENDER_DRAGON_DEATH, 1.0f, 1.2f)
           })
         } else Applicative[F].unit
       }

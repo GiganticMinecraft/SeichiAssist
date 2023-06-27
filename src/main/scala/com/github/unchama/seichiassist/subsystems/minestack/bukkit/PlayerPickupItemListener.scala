@@ -48,7 +48,6 @@ class PlayerPickupItemListener[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_
               item.remove()
               if (SeichiAssist.DEBUG) {
                 player.sendMessage(RED.toString + "pick:" + itemStack.toString)
-                player.sendMessage(RED.toString + "pickDurability:" + itemStack.getDurability)
               }
             }
             .whenA(isSucceedTryIntoMineStack)

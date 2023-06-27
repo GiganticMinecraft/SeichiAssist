@@ -161,12 +161,11 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   ): F[Option[AppleConsumeAmountRank]] =
     Sync[F].delay {
       DB.readOnly { implicit session =>
-        sql"""SELECT vote_fairy.uuid AS uuid, name, given_apple_amount,
-             | RANK() OVER(ORDER BY given_apple_amount DESC) AS rank
+        sql"""SELECT vote_fairy.uuid AS uuid,name,given_apple_amount,COUNT(*) AS rank 
              | FROM vote_fairy 
              | INNER JOIN playerdata
              | ON (playerdata.uuid = vote_fairy.uuid)
-             | ORDER BY rank"""
+             | ORDER BY rank DESC;"""
           .stripMargin
           .map(rs =>
             rs.string("uuid") -> AppleConsumeAmountRank(
@@ -184,20 +183,19 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
 
   override def fetchMostConsumedApplePlayersByFairy(
     top: Int
-  ): F[Vector[AppleConsumeAmountRank]] =
+  ): F[Vector[Option[AppleConsumeAmountRank]]] =
     Sync[F].delay {
       DB.readOnly { implicit session =>
-        sql"""SELECT name, given_apple_amount, RANK() OVER(ORDER BY given_apple_amount DESC) AS rank FROM vote_fairy
-             | INNER JOIN playerdata ON (vote_fairy.uuid = playerdata.uuid)
-             | ORDER BY rank
-             | LIMIT $top;"""
+        sql"""SELECT name,given_apple_amount,COUNT(*) AS rank FROM vote_fairy
+             | INNER JOIN playerdata ON (vote_fairy.uuid = playerdata.uuid) 
+             | ORDER BY rank DESC LIMIT $top;"""
           .stripMargin
           .map { rs =>
-            val name = rs.string("name")
-            val rank = rs.int("rank")
-            val givenAppleAmount = rs.int("given_apple_amount")
-
-            AppleConsumeAmountRank(name, rank, AppleAmount(givenAppleAmount))
+            for {
+              name <- rs.stringOpt("name")
+              rank <- rs.intOpt("rank")
+              givenAppleAmount <- rs.intOpt("given_apple_amount")
+            } yield AppleConsumeAmountRank(name, rank, AppleAmount(givenAppleAmount))
           }
           .toList()
           .apply()

@@ -8,7 +8,7 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki.Seiz
 import com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki.SeizonsikiItemData._
 import com.github.unchama.seichiassist.util.SendMessageEffect.sendMessageToEveryoneIgnoringPreference
 import com.github.unchama.seichiassist.util.EntityDeathCause.isEntityKilledByThornsEnchant
-import de.tr7zw.itemnbtapi.NBTItem
+import de.tr7zw.nbtapi.NBTItem
 import org.bukkit.ChatColor.{DARK_GREEN, LIGHT_PURPLE, UNDERLINE}
 import org.bukkit.Sound
 import org.bukkit.entity.{EntityType, Player}
@@ -56,7 +56,7 @@ class SeizonsikiListener[F[_], G[_]: SyncEffect](implicit manaApi: ManaWriteApi[
 
     val player = event.getPlayer
     val today = LocalDate.now()
-    val exp = new NBTItem(item).getObject(NBTTagConstants.expiryDateTag, classOf[LocalDate])
+    val exp = LocalDate.ofEpochDay(new NBTItem(item).getLong(NBTTagConstants.expiryDateTag))
     if (today.isBefore(exp)) {
       // マナを10%回復する
       manaApi.manaAmount(player).restoreFraction(0.1).runSync[SyncIO].unsafeRunSync()
