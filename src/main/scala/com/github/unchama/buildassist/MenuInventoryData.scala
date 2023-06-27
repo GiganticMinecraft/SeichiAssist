@@ -2,6 +2,8 @@ package com.github.unchama.buildassist
 
 import cats.effect.SyncIO
 import com.github.unchama.buildassist.util.AsyncInventorySetter
+import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
+import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository
 import com.github.unchama.seichiassist.util.ItemMetaFactory
 import org.bukkit.ChatColor._
@@ -26,25 +28,21 @@ object MenuInventoryData {
     val playerdata = BuildAssist.instance.temporaryData(uuid)
 
     val inventory = Bukkit.getServer.createInventory(null, 4 * 9, s"$DARK_PURPLE$BOLD「直列設置」設定")
-    var itemstack = new ItemStack(Material.SKULL_ITEM, 1)
-    var itemmeta: ItemMeta = Bukkit.getItemFactory.getItemMeta(Material.WOOD)
+    var itemstack = new ItemStack(Material.PLAYER_HEAD, 11)
+    var itemmeta: ItemMeta = itemstack.getItemMeta
     val skullmeta: SkullMeta = ItemMetaFactory.SKULL.getValue
     var lore = List(s"$RESET$DARK_RED${UNDERLINE}クリックで移動")
 
     // ホームを開く
     itemstack.setDurability(3.toShort)
-    skullmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}ホームへ")
-    skullmeta.setLore(lore.asJava)
-
-    /**
-     * 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
-     */
-    skullmeta.setOwner("MHF_ArrowLeft")
-    itemstack.setItemMeta(skullmeta)
+    new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft)
+      .title(s"$YELLOW$UNDERLINE${BOLD}ホームへ")
+      .lore(lore)
+      .transformItemMetaOnBuild(skullmeta)
     AsyncInventorySetter.setItemAsync(inventory, 27, itemstack)
 
     // 直列設置設定
-    itemstack = new ItemStack(Material.WOOD, 1)
+    itemstack = new ItemStack(Material.OAK_WOOD, 1)
     itemmeta.setDisplayName(
       s"$YELLOW$UNDERLINE${BOLD}直列設置 ：${BuildAssist.line_up_str(playerdata.line_up_flg)}"
     )
@@ -59,8 +57,8 @@ object MenuInventoryData {
     inventory.setItem(0, itemstack)
 
     // 直列設置ハーフブロック設定
-    itemstack = new ItemStack(Material.STEP, 1)
-    itemmeta = Bukkit.getItemFactory.getItemMeta(Material.STEP)
+    itemstack = new ItemStack(Material.STONE_SLAB, 1)
+    itemmeta = itemstack.getItemMeta
     itemmeta.setDisplayName(
       s"$YELLOW$UNDERLINE${BOLD}ハーフブロック設定 ：${BuildAssist.line_up_step_str(playerdata.line_up_step_flg)}"
     )
