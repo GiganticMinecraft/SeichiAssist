@@ -662,4 +662,3 @@ execRunner "$java_cmd" \
   -jar "$sbt_jar" \
   "${sbt_commands[@]}" \
   "${residual_args[@]}"
-  

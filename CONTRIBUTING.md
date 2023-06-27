@@ -1,7 +1,7 @@
 # 開発体制
 
 ## 開発を始めるために必要なもの
-- [Intellij IDEA](https://www.jetbrains.com/idea/) などの統合開発環境
+- [IntelliJ IDEA](https://www.jetbrains.com/idea/) などの統合開発環境
 - [AdoptOpenJDK 17](https://adoptium.net/temurin/releases/?version=17)
 - [sbt 1.6](https://www.scala-sbt.org/1.x/docs/Setup.html)
 - [Scala 2.13](https://www.scala-lang.org/download/)
@@ -16,7 +16,7 @@
 [AdoptOpenJDK 17](https://adoptium.net/temurin/releases/?version=17) のインストールを推奨します。
 
 #### 統合開発環境
-次に、[Intellij IDEA](https://www.jetbrains.com/idea/)などの統合開発環境を導入します。
+次に、[IntelliJ IDEA](https://www.jetbrains.com/idea/)などの統合開発環境を導入します。
 
 有料版 **Ultimate Edition** と機能が制限された無料版 **Community Edition** が2つありますが、SeichiAssist を開発する上では無料版で十分です。
 
@@ -26,7 +26,7 @@
 >
 > 学生の場合は、[学生ライセンス](https://www.jetbrains.com/community/education/#students)を申請することで Ultimate Edition を無料で利用できます。
 
-##### Intellij
+##### IntelliJ
 * インストールする時、Gitプラグインを有効にします。
 * Scala用の[プラグイン](https://plugins.jetbrains.com/plugin/1347-scala)を導入してください。
 
@@ -216,11 +216,34 @@ DockerマシンのIPアドレス(Linux等なら`localhost`)を`DOCKER_IP`とし�
 その後、自分の手元から自分のGitHubアカウントへ内容を反映します。
 
 #### Pull Requestの作成
-次に、自分のGitHubアカウントにあるSeichiAssistを開いて、変更を依頼する手続き (Pull Request) の準備画面へ移動します。
-画面が切り替わります。右上のCreate pull requestと書かれたボタンを押してください。
-そうすると、高さが狭い場所と広い場所が表示されます。
-狭い場所には、変更の概要を50文字以内で簡単に書いてください。 (TODO: コンベンショナルコミット)
-広い場所には、書くべきだと思ったことを書いてください。詳しすぎるということはありません。
+次に、自分のGitHubアカウントにあるSeichiAssistを開いて、変更を依頼する手続き (Pull Request) の準備画面へ移動し、右上のCreate pull requestと書かれたボタンを押すとこのような入力欄が表示されます。
+
+```md
+close #
+
+----
+
+### このPRの変更点と理由:
+
+### 補足情報:
+```
+(一部省略)
+
+書くべき主な内容の説明はコメントに記載されています。
+
+どれも必須ではありませんが、メンテナたちにどんな変更をしたのか正確に伝えるためにもなるべく書くことを心かけるといいでしょう。
+
+- **`close #`**
+  - プルリクエストと対象のIssueを紐付ける事ができます。
+  - そのプルリクエストに関係し、なおかつマージ後に自動でクローズしたいIssueの番号を指定してください。
+  - 複数のIssueを紐付ける場合は `close #1, close #2` と繰り返し指定します。
+  - 詳細: [キーワードを使用してPull RequestをIssueにリンクする - GitHub Docs](https://docs.github.com/ja/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue)
+- **`このPRの変更点と理由:`**
+  - このプルリクエストで行った変更点とその理由を記述します。
+  - 自明な場合は書く必要はありませんが、なるべく書くようにします。
+- **`補足情報:`**
+  - その他、メンテナたちに伝えたい事があれば自由に書いてください。
+
 一通り書き終わったら、長い場所の右下にある「Create pull request」と書かれたボタンを押してください。
 
 ### コードレビューを待つ

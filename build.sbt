@@ -8,7 +8,7 @@ import java.io._
 ThisBuild / scalaVersion := "2.13.11"
 // ThisBuild / version はGitHub Actionsによって取得/自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
-ThisBuild / version := "81"
+ThisBuild / version := "82"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
@@ -118,7 +118,7 @@ val dependenciesToEmbed = Seq(
   "com.github.KisaragiEffective" % "ajd4jp-mirror" % "8.0.2.2021",
 
   // Sentry
-  "io.sentry" % "sentry" % "6.23.0"
+  "io.sentry" % "sentry" % "6.24.0"
 )
 
 // endregion
@@ -205,11 +205,7 @@ lazy val root = (project in file(".")).settings(
   ),
   javacOptions ++= Seq("-encoding", "utf8"),
   assembly / assemblyShadeRules ++= Seq(
-    ShadeRule
-      .rename(
-        "org.mariadb.jdbc.**" -> "com.github.unchama.seichiassist.relocateddependencies.org.mariadb.jdbc.@1"
-      )
-      .inAll
+    ShadeRule.rename("org.mariadb.jdbc.**" -> "com.github.unchama.seichiassist.relocateddependencies.org.mariadb.jdbc.@1").inAll
   ),
   // sbt-assembly 1.0.0からはTestを明示的にタスクツリーに入れる必要がある
   // cf. https://github.com/sbt/sbt-assembly/pull/432/commits/361224a6202856bc2e572df811d0e6a1f1efda98
