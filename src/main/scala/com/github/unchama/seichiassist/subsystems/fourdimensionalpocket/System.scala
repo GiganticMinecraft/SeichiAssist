@@ -76,7 +76,7 @@ object System {
         override val openPocketInventory: Kleisli[F, Player, Unit] = Kleisli { player =>
           Sync[F].delay {
             // 開く音を再生
-            player.playSound(player.getLocation, Sound.BLOCK_ENDERCHEST_OPEN, 1f, 0.1f)
+            player.playSound(player.getLocation, Sound.BLOCK_ENDER_CHEST_OPEN, 1f, 0.1f)
           } >> ContextCoercion {
             pocketInventoryRepositoryHandles.repository(player)._1.readLatest
           }.flatMap(inventory => interactInventory.open(inventory)(player))

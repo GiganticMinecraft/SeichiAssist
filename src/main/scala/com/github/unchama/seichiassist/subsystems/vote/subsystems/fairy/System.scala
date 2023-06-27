@@ -105,7 +105,7 @@ object System {
 
             override def rankingByMostConsumedApple(
               top: Int
-            ): IO[Vector[AppleConsumeAmountRank]] =
+            ): IO[Vector[Option[AppleConsumeAmountRank]]] =
               persistence.fetchMostConsumedApplePlayersByFairy(top)
 
             override def totalConsumedApple: IO[AppleAmount] =
