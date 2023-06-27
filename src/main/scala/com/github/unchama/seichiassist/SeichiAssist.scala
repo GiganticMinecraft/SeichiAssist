@@ -221,7 +221,6 @@ class SeichiAssist extends JavaPlugin() {
 
   private lazy val itemMigrationSystem: subsystems.itemmigration.System[IO] = {
     import PluginExecutionContexts.asyncShift
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
     subsystems.itemmigration.System.wired[IO, SyncIO].unsafeRunSync()
   }
@@ -385,7 +384,6 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val presentSystem: Subsystem[IO] = {
     import PluginExecutionContexts.{asyncShift, onMainThread}
 
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val uuidToLastSeenName: UuidToLastSeenName[IO] = new GlobalPlayerAccessor[IO]
     subsystems.present.System.wired
@@ -602,8 +600,8 @@ class SeichiAssist extends JavaPlugin() {
     // BungeeCordとのI/O
     Bukkit
       .getMessenger
-      .registerIncomingPluginChannel(this, "SeichiAssistBungee", new BungeeReceiver(this))
-    Bukkit.getMessenger.registerOutgoingPluginChannel(this, "SeichiAssistBungee")
+      .registerIncomingPluginChannel(this, "BungeeCord", new BungeeReceiver(this))
+    Bukkit.getMessenger.registerOutgoingPluginChannel(this, "BungeeCord")
 
     // コンフィグ系の設定は全てConfig.javaに移動
     SeichiAssist.seichiAssistConfig = Config.loadFrom(this)

@@ -178,11 +178,11 @@ object ActiveSkillMenu extends Menu {
             case SeichiSkill.Thunderstorm =>
               new IconItemStackBuilder(Material.MINECART)
             case SeichiSkill.StarlightBreaker =>
-              new IconItemStackBuilder(Material.STORAGE_MINECART)
+              new IconItemStackBuilder(Material.CHEST_MINECART)
             case SeichiSkill.EarthDivide =>
-              new IconItemStackBuilder(Material.POWERED_MINECART)
+              new IconItemStackBuilder(Material.FURNACE_MINECART)
             case SeichiSkill.HeavenGaeBolg =>
-              new IconItemStackBuilder(Material.EXPLOSIVE_MINECART)
+              new IconItemStackBuilder(Material.TNT_MINECART)
             case SeichiSkill.Decision =>
               new IconItemStackBuilder(Material.HOPPER_MINECART)
 
@@ -212,7 +212,7 @@ object ActiveSkillMenu extends Menu {
             case SeichiSkill.MoerakiBoulders =>
               new IconItemStackBuilder(Material.NETHER_BRICK)
             case SeichiSkill.Eldfell =>
-              new IconItemStackBuilder(Material.MAGMA)
+              new IconItemStackBuilder(Material.MAGMA_BLOCK)
             case SeichiSkill.VenderBlizzard =>
               new IconItemStackBuilder(Material.NETHER_STAR)
             case SeichiSkill.AssaultArmor =>
@@ -385,7 +385,7 @@ object ActiveSkillMenu extends Menu {
                                   s"$GOLD$BOLD$notificationMessage"
                                 )
                               }),
-                              BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
+                              BroadcastSoundEffect(Sound.ENTITY_ENDER_DRAGON_DEATH, 1.0f, 1.2f)
                             )
                           )
                         } else (unlockedState, emptyEffect)
