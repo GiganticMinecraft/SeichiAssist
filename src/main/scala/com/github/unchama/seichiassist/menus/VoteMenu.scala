@@ -383,12 +383,7 @@ object VoteMenu extends Menu {
         s"$RESET${DARK_GRAY}召喚されたらラッキーだよ！"
       )
       val topFourRankingLore =
-        List(
-          topFourRanking.headOption,
-          topFourRanking.lift(1),
-          topFourRanking.lift(2),
-          topFourRanking.lift(3)
-        ).flatMap(_.flatten).flatMap { rankData =>
+        topFourRanking.flatMap { rankData =>
           List(
             s"${GRAY}たくさんくれたﾆﾝｹﾞﾝ第${rankData.rank}位！",
             s"${GRAY}なまえ：${rankData.playerName} りんご：${rankData.consumed.amount}個"

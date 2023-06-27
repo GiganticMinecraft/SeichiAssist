@@ -55,7 +55,7 @@ trait FairyReadAPI[F[_], G[_], Player] {
   /**
    * @return 妖精に食べさせたりんごの量の上位`top`件を返す作用
    */
-  def rankingByMostConsumedApple(top: Int): F[Vector[Option[AppleConsumeAmountRank]]]
+  def rankingByMostConsumedApple(top: Int): F[Vector[AppleConsumeAmountRank]]
 
   /**
    * @return 妖精が食べたりんごの合計数を返す作用
