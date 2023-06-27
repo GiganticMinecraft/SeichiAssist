@@ -91,7 +91,7 @@ trait FairyPersistence[F[_]] {
    * @param top 最上位から何番目まで取得するか件数を指定する。0以下であってはならない。
    * @return 指定した件数が要素数となり、その並びが消費量の降順になっているような順序つきのコレクションを返す作用。
    */
-  def fetchMostConsumedApplePlayersByFairy(top: Int): F[Vector[AppleConsumeAmountRank]]
+  def fetchMostConsumedApplePlayersByFairy(top: Int): F[Vector[Option[AppleConsumeAmountRank]]]
 
   /**
    * @return 妖精が今まで食べたりんごの合計数を返す作用

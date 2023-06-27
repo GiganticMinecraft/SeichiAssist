@@ -35,7 +35,7 @@ object BukkitNotifyLevelUp {
           Sync[F].delay {
             sendMessageToEveryoneIgnoringPreference(messageLevelMaxGlobal)(forString[IO])
             player.sendMessage(messageLevelMaxPlayer)
-            sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
+            sendEverySound(Sound.ENTITY_ENDER_DRAGON_DEATH, 1.0f, 1.2f)
           } >> LaunchFireWorksEffect.launchFireWorks[F](
             player.getLocation
           ) >> DiscordNotificationAPI[F].sendPlainText(messageLevelMaxDiscord)
