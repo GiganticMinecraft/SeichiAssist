@@ -18,6 +18,7 @@ import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.{Player, Projectile}
 import org.bukkit.event.entity._
 import org.bukkit.event.{EventHandler, Listener}
+import org.bukkit.inventory.meta.Damageable
 
 class EntityListener(
   implicit effectEnvironment: EffectEnvironment,
@@ -77,7 +78,11 @@ class EntityListener(
       )
 
     // 耐久値がマイナスかつ耐久無限ツールでない時処理を終了
-    if (tool.getDurability > tool.getType.getMaxDurability && !tool.getItemMeta.isUnbreakable)
+    if (
+      tool.getItemMeta.asInstanceOf[Damageable].getDamage > tool
+        .getType
+        .getMaxDurability && !tool.getItemMeta.isUnbreakable
+    )
       return
 
     runArrowSkillOfHitBlock(player, block, tool)
@@ -132,7 +137,7 @@ class EntityListener(
     val nextDurability = {
       val durabilityEnchantment = tool.getEnchantmentLevel(Enchantment.DURABILITY)
 
-      tool.getDurability +
+      tool.getItemMeta.asInstanceOf[Damageable].getDamage +
         BreakUtil.calcDurability(
           durabilityEnchantment,
           breakBlocks.size + 10 * (lavaBlocks.size + waterBlocks.size)
@@ -157,7 +162,11 @@ class EntityListener(
       return
 
     // 耐久値を減らす
-    if (!tool.getItemMeta.isUnbreakable) tool.setDurability(nextDurability)
+    if (!tool.getItemMeta.isUnbreakable) {
+      val meta = tool.getItemMeta
+      meta.asInstanceOf[Damageable].setDamage(nextDurability)
+      tool.setItemMeta(meta)
+    }
 
     // 以降破壊する処理
     // 溶岩と水を破壊する
