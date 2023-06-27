@@ -13,7 +13,8 @@
 
 # Local files
 deployLocal.sh
-localDependencies/spigot-1.12.2.jar
+localDependencies/spigot-1.18.2.jar
+plugins/*
 
 # Docker
 docker/spigot/serverfiles/eula.txt

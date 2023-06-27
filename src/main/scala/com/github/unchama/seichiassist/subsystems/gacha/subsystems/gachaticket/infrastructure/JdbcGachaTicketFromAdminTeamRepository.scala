@@ -42,7 +42,7 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
       DB.localTx { implicit session =>
         val affectedRows =
           sql"UPDATE playerdata SET numofsorryforbug = numofsorryforbug + ${amount.value} WHERE name = ${playerName.name}"
-            .update
+            .update()
             .apply()
 
         getReceiptResult(affectedRows)

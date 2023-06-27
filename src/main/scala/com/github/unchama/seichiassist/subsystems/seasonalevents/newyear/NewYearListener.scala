@@ -20,7 +20,7 @@ import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import de.tr7zw.itemnbtapi.NBTItem
+import de.tr7zw.nbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.entity.Player
@@ -91,7 +91,7 @@ class NewYearListener[F[_]: ConcurrentEffect: NonServerThreadContextShift, G[_]:
     val player = event.getPlayer
     val today = LocalDate.now()
     val expiryDate =
-      new NBTItem(item).getObject(NBTTagConstants.expiryDateTag, classOf[LocalDate])
+      LocalDate.ofEpochDay(new NBTItem(item).getLong(NBTTagConstants.expiryDateTag))
     if (today.isBefore(expiryDate) || today.isEqual(expiryDate)) {
       // マナを10%回復する
       manaApi.manaAmount(player).restoreFraction(0.1).runSync[SyncIO].unsafeRunSync()
@@ -117,7 +117,7 @@ class NewYearListener[F[_]: ConcurrentEffect: NonServerThreadContextShift, G[_]:
         addItem(player, newYearBag)
         player.sendMessage(s"$AQUA「お年玉袋」を見つけたよ！")
       }
-      player.playSound(player.getLocation, Sound.BLOCK_NOTE_HARP, 3.0f, 1.0f)
+      player.playSound(player.getLocation, Sound.BLOCK_NOTE_BLOCK_HARP, 3.0f, 1.0f)
     }
   }
 }

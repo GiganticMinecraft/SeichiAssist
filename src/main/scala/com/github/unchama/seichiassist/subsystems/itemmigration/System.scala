@@ -4,7 +4,6 @@ import cats.effect.{ConcurrentEffect, ContextShift, IO, Sync, SyncEffect, SyncIO
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
-import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.itemmigration.application.ItemMigrationStateRepositoryDefinitions
 import com.github.unchama.itemmigration.bukkit.controllers.player.PlayerItemMigrationController
 import com.github.unchama.itemmigration.service.ItemMigrationService
@@ -33,8 +32,7 @@ object System {
   import cats.implicits._
 
   def wired[F[_]: ConcurrentEffect: ContextShift, G[_]: SyncEffect: ContextCoercion[*[_], F]](
-    implicit effectEnvironment: EffectEnvironment,
-    logger: Logger
+    implicit logger: Logger
   ): G[System[F]] = for {
     migrations <- Sync[G].delay {
       implicit val syncIOUuidRepository: UuidRepository[SyncIO] =

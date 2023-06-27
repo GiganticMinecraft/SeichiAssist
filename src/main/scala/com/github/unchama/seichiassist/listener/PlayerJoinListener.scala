@@ -13,7 +13,7 @@ import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{
 }
 import com.github.unchama.seichiassist.util.{SendMessageEffect, SendSoundEffect}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import net.coreprotect.model.Config
+import net.coreprotect.config.ConfigHandler
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
@@ -144,13 +144,13 @@ class PlayerJoinListener extends Listener {
         // 耐久Ⅲ
         .tap(_.addEnchantment(Enchantment.DURABILITY, 3))
       inv.addItem(pickaxe)
-      inv.addItem(new ItemStack(Material.DIAMOND_SPADE))
+      inv.addItem(new ItemStack(Material.DIAMOND_SHOVEL))
 
       inv.addItem(
-        new ItemStack(Material.LOG, 64, 0.toShort),
-        new ItemStack(Material.LOG, 64, 0.toShort),
-        new ItemStack(Material.LOG, 64, 2.toShort),
-        new ItemStack(Material.LOG_2, 64, 1.toShort)
+        new ItemStack(Material.OAK_LOG, 64),
+        new ItemStack(Material.OAK_LOG, 64),
+        new ItemStack(Material.BIRCH_LOG, 64),
+        new ItemStack(Material.DARK_OAK_LOG, 64)
       )
 
       inv.addItem(new ItemStack(Material.BAKED_POTATO, 64))
@@ -196,8 +196,7 @@ class PlayerJoinListener extends Listener {
         BukkitMebiusItemStackCodec.materialize(
           // **getDisplayNameは二つ名も含むのでMCIDにはgetNameが適切**
           MebiusProperty
-            .initialProperty(NormalMebius, player.getName, player.getUniqueId.toString),
-          damageValue = 0.toShort
+            .initialProperty(NormalMebius, player.getName, player.getUniqueId.toString)
         )
       )
 
@@ -215,7 +214,7 @@ class PlayerJoinListener extends Listener {
     // 整地専用サーバーの場合は上級者向けのサーバーである旨を通知
     if (SeichiAssist.seichiAssistConfig.getServerNum == 5)
       player.sendTitle(
-        s"${WHITE}ここは$BLUE${UNDERLINE}上級者向けのサーバー${WHITE}",
+        s"${WHITE}ここは$BLUE${UNDERLINE}上級者向けのサーバー$WHITE",
         s"${WHITE}始めたては他がおすすめ",
         10,
         70,
@@ -226,14 +225,12 @@ class PlayerJoinListener extends Listener {
     // TODO: エデンサーバーの不具合が解消されたら削除すること
     if (SeichiAssist.seichiAssistConfig.getServerNum == 2) {
       player.sendMessage(
-        Array(
-          s"${RED}${BOLD}${UNDERLINE}【ご注意ください】${RESET}",
-          s"${YELLOW}${BOLD}エデンサーバーは現在、管理者の意図しないタイミングでシャットダウン（いわゆる「鯖落ち」）が起こることがあります。",
-          s"${YELLOW}${BOLD}もし鯖落ちによりアイテムの消失等が発生しても、補償はできかねます。",
-          s"${YELLOW}${BOLD}当サーバーは以上の内容をご理解の上ご利用ください。",
-          s"${YELLOW}${BOLD}不安な場合はアルカディアサーバーやヴァルハラサーバーのご利用をおすすめいたします。",
-          s"${YELLOW}${BOLD}ご迷惑をおかけいたしまして申し訳ございません。。"
-        )
+        s"${RED}${BOLD}${UNDERLINE}【ご注意ください】${RESET}",
+        s"${YELLOW}${BOLD}エデンサーバーは現在、管理者の意図しないタイミングでシャットダウン（いわゆる「鯖落ち」）が起こることがあります。",
+        s"${YELLOW}${BOLD}もし鯖落ちによりアイテムの消失等が発生しても、補償はできかねます。",
+        s"${YELLOW}${BOLD}当サーバーは以上の内容をご理解の上ご利用ください。",
+        s"${YELLOW}${BOLD}不安な場合はアルカディアサーバーやヴァルハラサーバーのご利用をおすすめいたします。",
+        s"${YELLOW}${BOLD}ご迷惑をおかけいたしまして申し訳ございません。。"
       )
     }
   }
@@ -249,10 +246,10 @@ class PlayerJoinListener extends Listener {
 
     // coreprotectを切る
     // inspectマップにtrueで登録されている場合
-    if (Config.inspecting.getOrDefault(p.getName, false)) {
+    if (ConfigHandler.inspecting.getOrDefault(p.getName, false)) {
       // falseに変更する
       p.sendMessage("§3CoreProtect §f- Inspector now disabled.")
-      Config.inspecting.put(p.getName, false)
+      ConfigHandler.inspecting.put(p.getName, false)
     }
 
     // アサルトスキルを切る

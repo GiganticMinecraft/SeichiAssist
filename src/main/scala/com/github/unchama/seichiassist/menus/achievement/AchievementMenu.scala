@@ -40,11 +40,11 @@ object AchievementMenu extends Menu {
 
   val categoryLayout: Map[Int, AchievementCategoryRepr] =
     Map(
-      ChestSlotRef(1, 1) -> (BrokenBlock, Material.GOLD_PICKAXE),
+      ChestSlotRef(1, 1) -> (BrokenBlock, Material.GOLDEN_PICKAXE),
       ChestSlotRef(1, 3) -> (Building, Material.GLASS),
       ChestSlotRef(1, 5) -> (Login, Material.COMPASS),
       ChestSlotRef(1, 7) -> (Challenges, Material.BLAZE_POWDER),
-      ChestSlotRef(2, 4) -> (Specials, Material.EYE_OF_ENDER)
+      ChestSlotRef(2, 4) -> (Specials, Material.ENDER_EYE)
     )
 
   def buttonFor(
@@ -88,7 +88,7 @@ object AchievementMenu extends Menu {
       categoryLayout.view.mapValues(category => buttonFor(category)).toMap
 
     val toggleTitleToPlayerLevelButton = Button(
-      new IconItemStackBuilder(Material.REDSTONE_TORCH_ON)
+      new IconItemStackBuilder(Material.REDSTONE_TORCH)
         .title(ColorScheme.navigation("整地Lvを表示"))
         .lore(
           List(

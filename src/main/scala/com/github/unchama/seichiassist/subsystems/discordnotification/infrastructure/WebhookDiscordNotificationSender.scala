@@ -24,14 +24,14 @@ class WebhookDiscordNotificationSender[F[_]: Sync: ContextShift] private (webhoo
         import io.circe.generic.auto._
         import io.circe.syntax._
         val markdownSafeMessage = message
-          .replaceAllLiterally("\\", "\\\\")
-          .replaceAllLiterally("_", "\\_")
-          .replaceAllLiterally("*", "\\*")
-          .replaceAllLiterally("`", "\\`")
-          .replaceAllLiterally("|", "\\|")
-          .replaceAllLiterally("@", "\\@")
-          .replaceAllLiterally("~", "\\~")
-          .replaceAllLiterally(":", "\\:")
+          .replace("\\", "\\\\")
+          .replace("_", "\\_")
+          .replace("*", "\\*")
+          .replace("`", "\\`")
+          .replace("|", "\\|")
+          .replace("@", "\\@")
+          .replace("~", "\\~")
+          .replace(":", "\\:")
 
         val json =
           WebhookDiscordNotificationSender.PlainMessage(markdownSafeMessage).asJson.noSpaces

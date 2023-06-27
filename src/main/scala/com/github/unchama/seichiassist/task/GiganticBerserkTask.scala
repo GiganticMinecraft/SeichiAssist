@@ -35,7 +35,7 @@ class GiganticBerserkTask {
 
     // 確率でマナを回復させる
     val d = Math.random
-    if (d < playerdata.giganticBerserk.manaRegenerationProbability) {
+    if (d < playerdata.giganticBerserk.manaRegenerationProbability()) {
       if (playerdata.giganticBerserk.reachedLimit()) {
         manaApi.manaAmount(p).restoreCompletely.unsafeRunSync()
         player.sendMessage(
@@ -92,7 +92,7 @@ class GiganticBerserkTask {
         val program = List(
           DiscordNotificationAPI[F].sendPlainText(messageWithoutColor).toIO,
           IO {
-            SendSoundEffect.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 1.2f)
+            SendSoundEffect.sendEverySound(Sound.ENTITY_ENDER_DRAGON_DEATH, 1, 1.2f)
             SendMessageEffect.sendMessageToEveryoneIgnoringPreference(messageWithColor)
           }
         ).sequence

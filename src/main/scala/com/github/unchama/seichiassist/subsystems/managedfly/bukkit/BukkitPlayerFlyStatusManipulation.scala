@@ -92,7 +92,7 @@ class BukkitPlayerFlyStatusManipulation[AsyncContext[
   private val sendMessages: List[String] => Kleisli[AsyncContext, Player, Unit] = { messages =>
     Kleisli { player =>
       Sync[AsyncContext].delay {
-        player.sendMessage(messages.toArray)
+        player.sendMessage(messages.mkString("\n"))
       }
     }
   }
