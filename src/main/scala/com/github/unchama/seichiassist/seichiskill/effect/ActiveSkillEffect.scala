@@ -248,7 +248,7 @@ object ActiveSkillNormalEffect extends Enum[ActiveSkillNormalEffect] {
         s"${DARK_RED}メテオ",
         "隕石を落とす",
         100,
-        Material.FIREBALL
+        Material.FIRE_CHARGE
       )
 
 }
@@ -290,7 +290,7 @@ sealed abstract class ActiveSkillPremiumEffect(
             standard,
             tool,
             shouldPlayBreakSound = false,
-            Material.WOOL
+            Material.WHITE_WOOL
           )
           _ <- IO {
             breakBlocks.foreach { b =>
@@ -351,7 +351,7 @@ case object ActiveSkillPremiumEffect extends Enum[ActiveSkillPremiumEffect] {
         s"$RED$UNDERLINE${BOLD}マジック",
         "鶏が出る手品",
         10,
-        Material.RED_ROSE
+        Material.POPPY
       )
 
 }

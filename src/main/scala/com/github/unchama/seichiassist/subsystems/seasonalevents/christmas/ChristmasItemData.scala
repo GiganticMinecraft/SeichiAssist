@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.christmas
 
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas.EVENT_YEAR
-import de.tr7zw.itemnbtapi.NBTItem
+import de.tr7zw.nbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Color.fromRGB
 import org.bukkit.enchantments.Enchantment
@@ -197,7 +197,7 @@ object ChristmasItemData {
       s"$RED${UNDERLINE}スポーン地点にいる村人に欲しい物を詰めてもらおう！"
     ).map(str => s"$RESET$str").asJava
 
-    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.INK_SACK).tap { meta =>
+    Bukkit.getItemFactory.getItemMeta(Material.INK_SAC).tap { meta =>
       import meta._
       setDisplayName(s"${AQUA}靴下(${EVENT_YEAR}年)")
       setLore(loreList)
@@ -206,11 +206,7 @@ object ChristmasItemData {
     }
 
     // 赤の染料
-    val itemStack = new ItemStack(Material.INK_SACK, 1).tap { itemStack =>
-      import itemStack._
-      setDurability(1.toShort)
-      setItemMeta(itemMeta)
-    }
+    val itemStack = new ItemStack(Material.RED_DYE, 1)
 
     itemStack
   }
