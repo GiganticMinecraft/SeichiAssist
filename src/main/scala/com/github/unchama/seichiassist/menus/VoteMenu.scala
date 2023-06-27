@@ -149,7 +149,7 @@ object VoteMenu extends Menu {
     }
 
     val showVoteURLButton: Button = Button(
-      new IconItemStackBuilder(Material.BOOK_AND_QUILL)
+      new IconItemStackBuilder(Material.WRITABLE_BOOK)
         .title(s"$YELLOW$UNDERLINE${BOLD}投票ページにアクセス")
         .lore(
           List(
@@ -181,7 +181,7 @@ object VoteMenu extends Menu {
         fairySummonCost <- fairyAPI.fairySummonCost(player)
       } yield {
         Button(
-          new IconItemStackBuilder(Material.WATCH)
+          new IconItemStackBuilder(Material.CLOCK)
             .title(s"$AQUA$UNDERLINE${BOLD}マナ妖精 時間設定")
             .lore(
               List(
@@ -383,7 +383,12 @@ object VoteMenu extends Menu {
         s"$RESET${DARK_GRAY}召喚されたらラッキーだよ！"
       )
       val topFourRankingLore =
-        topFourRanking.flatMap { rankData =>
+        List(
+          topFourRanking.headOption,
+          topFourRanking.lift(1),
+          topFourRanking.lift(2),
+          topFourRanking.lift(3)
+        ).flatMap(_.flatten).flatMap { rankData =>
           List(
             s"${GRAY}たくさんくれたﾆﾝｹﾞﾝ第${rankData.rank}位！",
             s"${GRAY}なまえ：${rankData.playerName} りんご：${rankData.consumed.amount}個"
