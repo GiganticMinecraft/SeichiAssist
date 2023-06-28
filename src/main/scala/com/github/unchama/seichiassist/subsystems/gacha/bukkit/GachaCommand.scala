@@ -149,22 +149,21 @@ class GachaCommand[
             val uuidRegex =
               "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}".r
 
-            (if (uuidRegex.matches(value)) {
-               Kleisli.liftF[F, CommandSender, GrantResultOfGachaTicketFromAdminTeam](
-                 gachaTicketAPI.addByUUID(gachaTicketAmount, UUID.fromString(value))
-               )
-             } else {
-               Kleisli.liftF[F, CommandSender, GrantResultOfGachaTicketFromAdminTeam](
-                 gachaTicketAPI.addByPlayerName(gachaTicketAmount, PlayerName(value))
-               )
-             }).flatMap {
-              case GrantResultOfGachaTicketFromAdminTeam.Success =>
-                MessageEffectF(s"${GREEN}ガチャ券${amount}枚加算成功")
-              case GrantResultOfGachaTicketFromAdminTeam.NotExists =>
-                MessageEffectF(s"${RED}プレイヤーが存在しません。")
-              case GrantResultOfGachaTicketFromAdminTeam.GrantedToMultiplePlayers =>
-                MessageEffectF(s"${RED}加算は成功しましたが、複数プレイヤーが存在しました。")
-            }
+            Kleisli
+              .liftF {
+                if (uuidRegex.matches(value))
+                  gachaTicketAPI.addByUUID(gachaTicketAmount, UUID.fromString(value))
+                else
+                  gachaTicketAPI.addByPlayerName(gachaTicketAmount, PlayerName(value))
+              }
+              .flatMap {
+                case GrantResultOfGachaTicketFromAdminTeam.Success =>
+                  MessageEffectF(s"${GREEN}ガチャ券${amount}枚加算成功")
+                case GrantResultOfGachaTicketFromAdminTeam.NotExists =>
+                  MessageEffectF(s"${RED}プレイヤーが存在しません。")
+                case GrantResultOfGachaTicketFromAdminTeam.GrantedToMultiplePlayers =>
+                  MessageEffectF(s"${RED}加算は成功しましたが、複数プレイヤーが存在しました。")
+              }
         }
       }
       .build()
