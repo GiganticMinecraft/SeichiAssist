@@ -86,13 +86,14 @@ object System {
             override def replace(gachaPrizesList: Vector[GachaPrize[ItemStack]]): F[Unit] =
               allGachaPrizesListReference.set(gachaPrizesList)
 
-            override def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Unit] = for {
+            override def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Boolean] = for {
+              existsGachaPrize <- fetch(gachaPrizeId).map(_.nonEmpty)
               _ <- allGachaPrizesListReference.update { prizes =>
                 prizes.filterNot(_.id == gachaPrizeId)
               }
               _ <- _gachaPersistence.deleteMineStackGachaObject(gachaPrizeId)
               _ <- _gachaPersistence.removeGachaPrize(gachaPrizeId)
-            } yield ()
+            } yield existsGachaPrize
 
             override def addGachaPrize(gachaPrize: GachaPrizeByGachaPrizeId): F[Unit] = for {
               _ <- allGachaPrizesListReference.update { prizes =>

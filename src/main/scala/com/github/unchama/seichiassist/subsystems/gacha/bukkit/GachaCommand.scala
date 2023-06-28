@@ -268,13 +268,12 @@ class GachaCommand[
       .execution { context =>
         val gachaId = GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
         val eff = for {
-          existsGachaPrize <- gachaPrizeAPI.existsGachaPrize(gachaId)
-          _ <- gachaPrizeAPI.removeByGachaPrizeId(gachaId).whenA(existsGachaPrize)
+          isRemovedGachaPrize <- gachaPrizeAPI.removeByGachaPrizeId(gachaId)
         } yield {
-          if (existsGachaPrize)
+          if (isRemovedGachaPrize)
             MessageEffect(List("ガチャアイテムを削除しました", "ガチャアイテム削除を保存するためには/gacha saveを実行してください。"))
           else
-            MessageEffect("指定されたIDのガチャ景品は存在しません。")
+            MessageEffect("指定されたIDのガチャ景品が存在しないため、ガチャアイテムを削除できませんでした。")
         }
 
         eff.toIO
@@ -295,26 +294,23 @@ class GachaCommand[
           val targetId = GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
           val amount = context.args.parsed(1).asInstanceOf[Int]
           val eff = for {
-            existingGachaPrize <- gachaPrizeAPI.fetch(targetId)
-            existsGachaPrize = existingGachaPrize.nonEmpty
-            _ <- gachaPrizeAPI.removeByGachaPrizeId(targetId).whenA(existsGachaPrize)
-            itemStack = existingGachaPrize.map(_.itemStack)
-            _ <- gachaPrizeAPI
-              .addGachaPrize(_ =>
-                existingGachaPrize
-                  .get
-                  .copy(itemStack = itemStack.get.tap {
-                    _.setAmount(amount)
-                  })
-              )
-              .whenA(existsGachaPrize)
+            currentGachaPrize <- gachaPrizeAPI.fetch(targetId)
+            _ <- gachaPrizeAPI.removeByGachaPrizeId(targetId)
+            itemStack = currentGachaPrize.map(_.itemStack)
+            isChangedAmount <- currentGachaPrize.flatTraverse { gachaPrize =>
+              itemStack.traverse { itemStack =>
+                gachaPrizeAPI.addGachaPrize(_ =>
+                  gachaPrize.copy(itemStack = itemStack.tap(_.setAmount(amount)))
+                )
+              }
+            }
           } yield {
-            if (existsGachaPrize)
+            if (isChangedAmount.nonEmpty)
               MessageEffect(
                 s"${targetId.id}|${itemStack.get.getType.toString}/${itemStack.get.getItemMeta.getDisplayName}${RESET}のアイテム数を${amount}個に変更しました。"
               )
             else
-              MessageEffect("指定されたIDのガチャ景品は存在しません。")
+              MessageEffect("指定されたIDのガチャ景品が存在しないため、アイテム数が変更できませんでした。")
           }
 
           eff.toIO
@@ -334,20 +330,18 @@ class GachaCommand[
         val targetId = GachaPrizeId(args.head.asInstanceOf[Int])
         val newProb = args(1).asInstanceOf[Double]
         val eff = for {
-          existingGachaPrize <- gachaPrizeAPI.fetch(targetId)
-          existsGachaPrize = existingGachaPrize.nonEmpty
-          _ <- gachaPrizeAPI.removeByGachaPrizeId(targetId).whenA(existsGachaPrize)
-          _ <- gachaPrizeAPI
-            .addGachaPrize(_ =>
-              existingGachaPrize.get.copy(probability = GachaProbability(newProb))
-            )
-            .whenA(existsGachaPrize)
-          itemStack = existingGachaPrize.get.itemStack
+          currentGachaPrize <- gachaPrizeAPI.fetch(targetId)
+          _ <- gachaPrizeAPI.removeByGachaPrizeId(targetId)
+          changeProbabilityAction <- currentGachaPrize.traverse { gachaPrize =>
+            gachaPrizeAPI
+              .addGachaPrize(_ => gachaPrize.copy(probability = GachaProbability(newProb)))
+          }
+          itemStack = currentGachaPrize.map(_.itemStack)
         } yield {
-          if (existsGachaPrize)
-            MessageEffect(s"${targetId.id}|${itemStack.getType.toString}/${itemStack
-                .getItemMeta
-                .getDisplayName}${RESET}の確率を$newProb(${newProb * 100}%)に変更しました。")
+          if (changeProbabilityAction.nonEmpty)
+            MessageEffect(
+              s"${targetId.id}|${itemStack.get.getType.toString}/${itemStack.get.getItemMeta.getDisplayName}${RESET}の確率を$newProb(${newProb * 100}%)に変更しました。"
+            )
           else
             MessageEffect("指定されたIDのガチャ景品は存在しません。")
         }

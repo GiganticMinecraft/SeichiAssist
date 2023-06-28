@@ -154,9 +154,9 @@ trait GachaPrizeWriteAPI[F[_], ItemStack] {
   final def clear: F[Unit] = replace(Vector.empty)
 
   /**
-   * @return ガチャ景品リストから指定された`gachaPrizeId`に紐づく[[GachaPrize]]を削除する作用
+   * @return ガチャ景品リストから指定された`gachaPrizeId`に紐づく[[GachaPrize]]を削除し、その結果を返す作用
    */
-  def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Unit]
+  def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Boolean]
 
   final type GachaPrizeByGachaPrizeId = GachaPrizeId => GachaPrize[ItemStack]
 
