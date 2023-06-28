@@ -415,7 +415,7 @@ class GachaCommand[
 
           if (!dateRegex.matches(startDate) || !dateRegex.matches(endDate)) {
             IO(MessageEffect(s"${RED}開始日/終了日はyyyy-MM-ddの形式で指定してください。"))
-          } else if (eventName.name.length <= 30) {
+          } else if (eventName.name.length > 30) {
             IO(MessageEffect(s"${RED}イベント名は30字以内で指定してください。"))
           } else {
             val eff = for {
