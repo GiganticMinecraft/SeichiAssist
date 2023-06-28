@@ -289,7 +289,7 @@ class GachaCommand[
         .argumentsParsers(
           List(
             Parsers.closedRangeInt(1, Int.MaxValue, MessageEffect("IDは正の値を指定してください。")),
-            Parsers.closedRangeInt(1, 64, MessageEffect("数は1～64で指定してください。"))
+            Parsers.closedRangeInt(1, 64, MessageEffect("アイテム数は1～64で指定してください。"))
           )
         )
         .execution { context =>
