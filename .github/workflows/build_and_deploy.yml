@@ -250,7 +250,7 @@ jobs:
         with:
           webhook: ${{ secrets.DISCORD_DEBUG_SERVER_NOTIFICATION_WEBHOOK }}
           title: "デバッグサーバーへデプロイ"
-          description: "deb_s1等にプラグインを配置しました。数分から数十分後に再起動します。"
+          description: "deb_s1等にプラグインを配置しました。30分後に再起動します。"
           username: GitHub Actions
           noprefix: true
           avatar_url: ${{ secrets.DISCORD_AVATAR_URL }}
