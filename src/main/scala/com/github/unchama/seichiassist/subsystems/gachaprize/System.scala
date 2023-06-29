@@ -100,6 +100,7 @@ object System {
                 ) +: prizes
               }
               newGachaPrizes <- allGachaPrizesListReference.get
+              _ <- _gachaPersistence.addGachaPrize(newGachaPrizes.head)
               _ <- _gachaPersistence
                 .addMineStackGachaObject(
                   newGachaPrizes.head.id,
