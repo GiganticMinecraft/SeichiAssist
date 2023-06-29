@@ -18,7 +18,7 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
   override def list: F[Vector[GachaPrize[ItemStack]]] = {
     Sync[F].delay {
       DB.readOnly { implicit session =>
-        sql"SELECT gachadata.id AS gacha_prize_id, probability, itemstack, event_name FROM gachadata INNER JOIN gacha_events ON gachadata.event_id = gacha_events.id"
+        sql"SELECT gachadata.id AS gacha_prize_id, probability, itemstack, event_name FROM gachadata LEFT OUTER JOIN gacha_events ON gachadata.event_id = gacha_events.id"
           .stripMargin
           .map { rs =>
             val probability = rs.double("probability")
