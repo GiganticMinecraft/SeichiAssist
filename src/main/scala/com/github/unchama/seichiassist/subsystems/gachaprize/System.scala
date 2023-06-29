@@ -88,7 +88,7 @@ object System {
 
             override def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Unit] = for {
               _ <- allGachaPrizesListReference.update { prizes =>
-                prizes.filter(_.id == gachaPrizeId)
+                prizes.filterNot(_.id == gachaPrizeId)
               }
               _ <- _gachaPersistence.deleteMineStackGachaObject(gachaPrizeId)
             } yield ()
@@ -100,6 +100,7 @@ object System {
                 ) +: prizes
               }
               newGachaPrizes <- allGachaPrizesListReference.get
+              _ <- _gachaPersistence.addGachaPrize(newGachaPrizes.head)
               _ <- _gachaPersistence
                 .addMineStackGachaObject(
                   newGachaPrizes.head.id,
@@ -114,7 +115,7 @@ object System {
             } yield {
               createdEvents.find(_.isHolding) match {
                 case Some(value) =>
-                  prizes.filter(_.gachaEventName.contains(value.eventName))
+                  prizes.filter(_.gachaEventName.contains(value.eventName)) :+ expBottle
                 case None =>
                   prizes.filter(_.gachaEventName.isEmpty)
               }

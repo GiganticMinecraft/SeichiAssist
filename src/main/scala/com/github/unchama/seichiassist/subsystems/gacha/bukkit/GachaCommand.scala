@@ -229,7 +229,7 @@ class GachaCommand[
         .execution { context =>
           val eventName = context.args.yetToBeParsed.headOption.map(GachaEventName)
           val eff = for {
-            gachaPrizes <- gachaPrizeAPI.listOfNow
+            gachaPrizes <- gachaPrizeAPI.allGachaPrizeList
           } yield {
             val gachaPrizeInformation = gachaPrizes
               .filter { gachaPrize =>
@@ -288,8 +288,8 @@ class GachaCommand[
         .beginConfiguration()
         .argumentsParsers(
           List(
-            Parsers.closedRangeInt(1, 64, MessageEffect("数は1～64で指定してください。")),
-            Parsers.closedRangeInt(1, Int.MaxValue, MessageEffect("IDは正の値を指定してください。"))
+            Parsers.closedRangeInt(1, Int.MaxValue, MessageEffect("IDは正の値を指定してください。")),
+            Parsers.closedRangeInt(1, 64, MessageEffect("アイテム数は1～64で指定してください。"))
           )
         )
         .execution { context =>
@@ -326,8 +326,8 @@ class GachaCommand[
       .beginConfiguration()
       .argumentsParsers(
         List(
-          probabilityParser,
-          Parsers.closedRangeInt(1, Int.MaxValue, MessageEffect("IDは正の値を指定してください。"))
+          Parsers.closedRangeInt(1, Int.MaxValue, MessageEffect("IDは正の値を指定してください。")),
+          probabilityParser
         )
       )
       .execution { context =>
@@ -379,7 +379,7 @@ class GachaCommand[
         .beginConfiguration()
         .execution { _ =>
           val eff = for {
-            gachaPrizes <- gachaPrizeAPI.listOfNow
+            gachaPrizes <- gachaPrizeAPI.allGachaPrizeList
             _ <- gachaPrizeAPI.replace(gachaPrizes)
           } yield MessageEffect("ガチャデータをmysqlに保存しました。")
 
@@ -415,7 +415,7 @@ class GachaCommand[
 
           if (!dateRegex.matches(startDate) || !dateRegex.matches(endDate)) {
             IO(MessageEffect(s"${RED}開始日/終了日はyyyy-MM-ddの形式で指定してください。"))
-          } else if (eventName.name.length <= 30) {
+          } else if (eventName.name.length > 30) {
             IO(MessageEffect(s"${RED}イベント名は30字以内で指定してください。"))
           } else {
             val eff = for {
