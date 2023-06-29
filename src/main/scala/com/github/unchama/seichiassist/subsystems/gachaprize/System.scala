@@ -133,11 +133,18 @@ object System {
             override def createGachaEvent(gachaEvent: GachaEvent): F[Unit] = {
               for {
                 _ <- _gachaEventPersistence.createGachaEvent(gachaEvent)
-                prizes <- allGachaPrizesListReference.get
-                defaultGachaPrizes = prizes
+                currentAllGachaPrizes <- allGachaPrizesListReference.get
+                maxId = currentAllGachaPrizes.map(_.id.id).max
+                eventGachaPrizes = currentAllGachaPrizes
                   .filter(_.gachaEventName.isEmpty)
-                  .map(_.copy(gachaEventName = Some(gachaEvent.eventName)))
-                _ <- replace(defaultGachaPrizes ++ prizes)
+                  .map(gachaPrize =>
+                    gachaPrize.copy(
+                      gachaEventName = Some(gachaEvent.eventName),
+                      id = maxId + gachaPrize.id
+                    )
+                  )
+                _ <- replace(eventGachaPrizes ++ currentAllGachaPrizes)
+                _ <- _gachaPersistence.addGachaPrizes(eventGachaPrizes)
               } yield ()
             }
 
