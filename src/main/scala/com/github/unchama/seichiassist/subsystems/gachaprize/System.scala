@@ -140,7 +140,7 @@ object System {
                   .map(gachaPrize =>
                     gachaPrize.copy(
                       gachaEventName = Some(gachaEvent.eventName),
-                      id = maxId + gachaPrize.id
+                      id = GachaPrizeId(maxId + gachaPrize.id.id)
                     )
                   )
                 _ <- replace(eventGachaPrizes ++ currentAllGachaPrizes)
