@@ -88,7 +88,7 @@ object System {
 
             override def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Unit] = for {
               _ <- allGachaPrizesListReference.update { prizes =>
-                prizes.filter(_.id == gachaPrizeId)
+                prizes.filterNot(_.id == gachaPrizeId)
               }
               _ <- _gachaPersistence.deleteMineStackGachaObject(gachaPrizeId)
             } yield ()
