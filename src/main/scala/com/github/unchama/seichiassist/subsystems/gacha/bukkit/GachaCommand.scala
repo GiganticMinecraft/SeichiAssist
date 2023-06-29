@@ -229,7 +229,7 @@ class GachaCommand[
         .execution { context =>
           val eventName = context.args.yetToBeParsed.headOption.map(GachaEventName)
           val eff = for {
-            gachaPrizes <- gachaPrizeAPI.listOfNow
+            gachaPrizes <- gachaPrizeAPI.allGachaPrizeList
           } yield {
             val gachaPrizeInformation = gachaPrizes
               .filter { gachaPrize =>
