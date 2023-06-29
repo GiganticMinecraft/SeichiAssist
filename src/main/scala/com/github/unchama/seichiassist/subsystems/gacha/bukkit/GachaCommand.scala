@@ -379,7 +379,7 @@ class GachaCommand[
         .beginConfiguration()
         .execution { _ =>
           val eff = for {
-            gachaPrizes <- gachaPrizeAPI.listOfNow
+            gachaPrizes <- gachaPrizeAPI.allGachaPrizeList
             _ <- gachaPrizeAPI.replace(gachaPrizes)
           } yield MessageEffect("ガチャデータをmysqlに保存しました。")
 
