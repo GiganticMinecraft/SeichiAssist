@@ -67,9 +67,13 @@ object System {
               if (gachaPrizes.nonEmpty) gachaPrizes.map(_.id.id).max + 1 else 1
             )
             newGachaPrize = gachaPrize(gachaPrizeId)
+            _ = println(newGachaPrize.nonGachaEventItem)
             _ <- _gachaPersistence.addGachaPrize(newGachaPrize)
             _ <- _gachaPersistence
-              .addMineStackGachaObject(gachaPrizeId, s"gachadata0_${gachaPrizeId.id - 1}")
+              .addMineStackGachaObject(
+                gachaPrizeId,
+                s"gachadata0_${gachaPrizeId.id - 1}"
+              ) // そもそも永続化しなくて良さそう？？？
               .whenA(newGachaPrize.nonGachaEventItem)
           } yield ()
 

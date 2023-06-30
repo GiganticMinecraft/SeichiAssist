@@ -187,12 +187,12 @@ class GachaCommand[
 
     val add: ContextualExecutor =
       playerCommandBuilder
-        .argumentsParsers(List(probabilityParser, Parsers.identity))
+        .argumentsParsers(List(probabilityParser))
         .execution { context =>
           val player = context.sender
           val args = context.args.parsed
           val probability = args.head.asInstanceOf[Double]
-          val eventName = Option(args(1).toString).map(GachaEventName)
+          val eventName = context.args.yetToBeParsed.headOption.map(GachaEventName)
           val mainHandItem = player.getInventory.getItemInMainHand
           val eff = for {
             _ <- gachaPrizeAPI.addGachaPrize(
@@ -204,9 +204,7 @@ class GachaCommand[
                 eventName
               )
             )
-          } yield MessageEffect(
-            List("ガチャアイテムを追加しました！", "ガチャアイテムを保存するためには/gacha saveを実行してください。")
-          )
+          } yield MessageEffect(List("ガチャアイテムを追加しました！"))
 
           eff.toIO
         }
@@ -261,7 +259,7 @@ class GachaCommand[
           isRemovedGachaPrize <- gachaPrizeAPI.removeByGachaPrizeId(gachaId)
         } yield {
           if (isRemovedGachaPrize)
-            MessageEffect(List("ガチャアイテムを削除しました", "ガチャアイテム削除を保存するためには/gacha saveを実行してください。"))
+            MessageEffect(List("ガチャアイテムを削除しました"))
           else
             MessageEffect("指定されたIDのガチャ景品が存在しないため、ガチャアイテムを削除できませんでした。")
         }
