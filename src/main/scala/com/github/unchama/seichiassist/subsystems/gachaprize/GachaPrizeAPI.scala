@@ -93,13 +93,6 @@ trait GachaPrizeReadAPI[F[_], ItemStack] {
   } yield prizes.find(_.id == gachaPrizeId)
 
   /**
-   * 指定された[[GachaPrizeId]]に対応する[[GachaPrize]]が存在するか確認する
-   * @return 存在するならtrue、存在しないならfalseを返す作用
-   */
-  final def existsGachaPrize(gachaPrizeId: GachaPrizeId): F[Boolean] =
-    F.map(fetch(gachaPrizeId))(_.nonEmpty)
-
-  /**
    * @return [[StaticGachaPrizeFactory]]を返す
    */
   def staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack]
