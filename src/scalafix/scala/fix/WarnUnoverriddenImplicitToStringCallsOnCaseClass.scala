@@ -27,10 +27,11 @@ class WarnUnoverriddenImplicitToStringCallsOnCaseClass extends SemanticRule("War
 
             // lazily evaluated since most classes are not `case class`
             lazy val isToStringOverriden = info.overriddenSymbols.exists(overridenMethodSym => overridenMethodSym.value == "toString" && {
-              val sig = overridenMethodSym.info.get.signature
-              sig match {
-                // もしtoString()のreturn typeがStringかそのサブタイプにならないような型であれば、
-                // scalafixが走る前にコンパイルが落ちるのでここで改めて考慮する必要はない
+              overridenMethodSym.info.get.signature match {
+                // def toString[](): <return type> の形の override を見つけたい。
+                // もし toString() の return type が String のサブタイプにならないような型であれば
+                // scalafix が走る前にコンパイルが落ちるので、ここで改めて return type が
+                // String のサブタイプであるかは考慮する必要はない
                 case MethodSignature(List(), List(), _) => true
                 case _ => false
               }
