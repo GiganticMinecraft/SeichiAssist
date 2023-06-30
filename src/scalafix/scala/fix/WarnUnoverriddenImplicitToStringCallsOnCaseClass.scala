@@ -29,12 +29,9 @@ class WarnUnoverriddenImplicitToStringCallsOnCaseClass extends SemanticRule("War
             lazy val isToStringOverriden = info.overriddenSymbols.exists(overridenMethodSym => overridenMethodSym.value == "toString" && {
               val sig = overridenMethodSym.info.get.signature
               sig match {
-                case MethodSignature(List(), List(), returnType) =>
-                  val ret = simpleDealias(returnType)
-                  ret match {
-                    case TypeRef(_, symbol, _) => symbol.value == "java.lang.String"
-                    case _ => false
-                  }
+                // もしtoString()のreturn typeがStringかそのサブタイプにならないような型であれば、
+                // scalafixが走る前にコンパイルが落ちるのでここで改めて考慮する必要はない
+                case MethodSignature(List(), List(), _) => true
                 case _ => false
               }
             })
@@ -55,22 +52,5 @@ class WarnUnoverriddenImplicitToStringCallsOnCaseClass extends SemanticRule("War
     }
 
     Patch.fromIterable(s)
-  }
-
-  def simpleDealias(tpe: SemanticType)(implicit sym: Symtab): SemanticType = {
-    def dealiasSymbol(symbol: Symbol): Symbol =
-      symbol.info.get.signature match {
-        case TypeSignature(_, lowerBound@TypeRef(_, dealiased, _), upperBound)
-          if lowerBound == upperBound =>
-          dealiased
-        case _ =>
-          symbol
-      }
-
-    tpe match {
-      case TypeRef(prefix, symbol, typeArguments) =>
-        TypeRef(prefix, dealiasSymbol(symbol), typeArguments.map(simpleDealias))
-      case other => other
-    }
   }
 }
