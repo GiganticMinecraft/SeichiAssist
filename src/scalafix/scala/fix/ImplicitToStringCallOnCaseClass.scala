@@ -7,6 +7,7 @@ import scala.meta._
 /**
  * Lints on string interpolation where its variable part contains `case class` without `toString`.
  */
+// noinspection ScalaUnusedSymbol; referred from scalafix implicitly
 class ImplicitToStringCallOnCaseClass extends SemanticRule("ImplicitToStringCallOnCaseClass") {
   override def fix(implicit doc: SemanticDocument): Patch = {
     val s = doc.tree.collect {
