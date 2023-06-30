@@ -72,13 +72,9 @@ object System {
             override protected implicit val F: Monad[F] = implicitly
 
             override def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Boolean] = for {
-              existsGachaPrize <- fetch(gachaPrizeId).map(_.nonEmpty)
-              _ <- allGachaPrizesListReference.update { prizes =>
-                prizes.filterNot(_.id == gachaPrizeId)
-              }
-              _ <- _gachaPersistence.deleteMineStackGachaObject(gachaPrizeId)
+              originalGachaPrizes <- _gachaPersistence.list
               _ <- _gachaPersistence.removeGachaPrize(gachaPrizeId)
-            } yield existsGachaPrize
+            } yield originalGachaPrizes.exists(_.id == gachaPrizeId)
 
             override def addGachaPrize(gachaPrize: GachaPrizeByGachaPrizeId): F[Unit] = for {
               _ <- allGachaPrizesListReference.update { prizes =>
