@@ -18,15 +18,13 @@ class JdbcBreakSkillTargetConfigPersistence[F[_]: Sync]
       sql"SELECT flag_name, include FROM player_break_preference WHERE uuid = ${key.toString}"
         .map { rs =>
           BreakSkillTargetConfigKey.withNameOption(rs.string("flag_name")).map { flagName =>
-            Map(flagName -> rs.boolean("include"))
+            flagName -> rs.boolean("include")
           }
         }
         .toList()
         .apply()
-        .collect { case Some(flag) => flag }
-        .foldLeft(Map.empty[BreakSkillTargetConfigKey, Boolean]) {
-          case (previous, next) => previous ++ next
-        }
+        .flatten
+        .toMap
     }
 
     Some(BreakSkillTargetConfig(config))
