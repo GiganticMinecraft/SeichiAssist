@@ -9,7 +9,7 @@ import scala.meta._
  */
 // noinspection ScalaUnusedSymbol; referred from scalafix implicitly
 // NOTE: see AST on https://xuwei-k.github.io/scalameta-ast/ or https://astexplorer.net
-class ImplicitToStringCallOnCaseClass extends SemanticRule("ImplicitToStringCallOnCaseClass") {
+class WarnUnoverriddenImplicitToStringCallsOnCaseClass extends SemanticRule("WarnUnoverriddenImplicitToStringCallsOnCaseClass") {
   override def fix(implicit doc: SemanticDocument): Patch = {
     val s = doc.tree.collect {
       // string interpolation in standard library
