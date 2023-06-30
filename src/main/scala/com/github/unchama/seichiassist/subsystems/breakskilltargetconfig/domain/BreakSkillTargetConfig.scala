@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain
 case class BreakSkillTargetConfig(config: Map[BreakSkillTargetConfigKey, Boolean]) {
 
   /**
-   * @return `configKey`の破壊フラグをトグルする作用
+   * @return `configKey`の破壊フラグをトグルする
    */
   def toggleBreakSkillTargetConfig(
     configKey: BreakSkillTargetConfigKey
@@ -15,7 +15,7 @@ case class BreakSkillTargetConfig(config: Map[BreakSkillTargetConfigKey, Boolean
     )
 
   /**
-   * @return 現在の破壊フラグを取得する作用
+   * @return 現在の破壊フラグを取得する
    */
   def breakSkillTargetConfig(configKey: BreakSkillTargetConfigKey): Boolean =
     this.config.getOrElse(configKey, false)
