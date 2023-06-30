@@ -52,8 +52,11 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
           .apply()
       }
 
-      sql"INSERT INTO gachadata VALUES (${gachaPrize.id.id}, ${gachaPrize.probability.value}, ${serializeAndDeserialize
-          .serialize(gachaPrize.itemStack)}, $eventId)".execute().apply()
+      sql"INSERT INTO gachadata (id, probability, itemstack, event_id) VALUES (${gachaPrize.id.id}, ${gachaPrize
+          .probability
+          .value}, ${serializeAndDeserialize.serialize(gachaPrize.itemStack)}, $eventId)"
+        .execute()
+        .apply()
     }
   }
 
@@ -77,7 +80,9 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
           )
         }
 
-        sql"INSERT INTO gachadata VALUES (?, ?, ?, ?)".batch(batchParams).apply[List]()
+        sql"INSERT INTO gachadata (id, probability, itemstack, event_id) VALUES (?, ?, ?, ?)"
+          .batch(batchParams)
+          .apply[List]()
       }
     }
 
