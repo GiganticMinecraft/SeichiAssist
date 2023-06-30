@@ -81,7 +81,7 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
         }
 
         sql"INSERT INTO gachadata (id, probability, itemstack, event_id) VALUES (?, ?, ?, ?)"
-          .batch(batchParams)
+          .batch(batchParams: _*)
           .apply[List]()
       }
     }
@@ -98,7 +98,7 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
             gachaPrize.gachaEventName.map(_.name)
           )
         }
-        sql"insert into gachadata values (?,?,?,?)".batch(batchParams).apply[List]()
+        sql"insert into gachadata values (?,?,?,?)".batch(batchParams: _*).apply[List]()
       }
     }
   }
