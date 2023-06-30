@@ -409,7 +409,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val gachaPrizeSystem: subsystems.gachaprize.System[IO] =
-    subsystems.gachaprize.System.wired.unsafeRunSync()
+    subsystems.gachaprize.System.wired
 
   private implicit lazy val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player] =
     gachaPrizeSystem.api
