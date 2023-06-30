@@ -92,23 +92,6 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
       }
     }
 
-  override def set(gachaPrizesList: Vector[GachaPrize[ItemStack]]): F[Unit] = {
-    Sync[F].delay {
-      DB.localTx { implicit session =>
-        sql"truncate table gachadata".execute().apply()
-        val batchParams = gachaPrizesList.map { gachaPrize =>
-          Seq(
-            gachaPrize.id.id,
-            gachaPrize.probability.value,
-            serializeAndDeserialize.serialize(gachaPrize.itemStack),
-            gachaPrize.gachaEventName.map(_.name)
-          )
-        }
-        sql"insert into gachadata values (?,?,?,?)".batch(batchParams: _*).apply[List]()
-      }
-    }
-  }
-
   override def addMineStackGachaObject(id: GachaPrizeId, objectName: String): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>

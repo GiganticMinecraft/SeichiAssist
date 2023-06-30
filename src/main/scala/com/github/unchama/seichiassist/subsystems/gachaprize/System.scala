@@ -64,27 +64,12 @@ object System {
         None
       )
       gachaPrizes = expBottle +: persistedGachaPrizes
-      gachaPrizesListReference <- Ref.of[F, Vector[GachaPrize[ItemStack]]](gachaPrizes)
       allGachaPrizesListReference <- Ref.of[F, Vector[GachaPrize[ItemStack]]](gachaPrizes)
     } yield {
       new System[F] {
         override implicit val api: GachaPrizeAPI[F, ItemStack, Player] =
           new GachaPrizeAPI[F, ItemStack, Player] {
             override protected implicit val F: Monad[F] = implicitly
-
-            override def load: F[Unit] = for {
-              createdEvents <- _gachaEventPersistence.gachaEvents
-              _ <- gachaPrizesListReference.update { prizes =>
-                createdEvents
-                  .find(_.isHolding)
-                  .fold(prizes.filter(_.gachaEventName.isEmpty))(value =>
-                    prizes.filter(_.gachaEventName.contains(value.eventName))
-                  )
-              }
-            } yield ()
-
-            override def replace(gachaPrizesList: Vector[GachaPrize[ItemStack]]): F[Unit] =
-              allGachaPrizesListReference.set(gachaPrizesList)
 
             override def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Boolean] = for {
               existsGachaPrize <- fetch(gachaPrizeId).map(_.nonEmpty)
@@ -145,7 +130,7 @@ object System {
                       id = GachaPrizeId(maxId + gachaPrize.id.id)
                     )
                   )
-                _ <- replace(eventGachaPrizes ++ currentAllGachaPrizes)
+                _ <- allGachaPrizesListReference.set(eventGachaPrizes ++ currentAllGachaPrizes)
                 _ <- _gachaPersistence.addGachaPrizes(eventGachaPrizes)
               } yield ()
             }
@@ -185,7 +170,7 @@ object System {
 
     for {
       system <- system
-      _ <- system.api.load
+//      _ <- system.api.load
     } yield system
   }
 
