@@ -11,7 +11,7 @@ class ImplicitToStringCallOnCaseClass extends SemanticRule("ImplicitToStringCall
   override def fix(implicit doc: SemanticDocument): Patch = {
     val s = doc.tree.collect {
       // string interpolation in standard library
-      case inter @ Term.Interpolate((prefix, _, args)) =>
+      case Term.Interpolate((prefix, _, args)) =>
         if (prefix.value != "s") {
           return Patch.empty
         }
