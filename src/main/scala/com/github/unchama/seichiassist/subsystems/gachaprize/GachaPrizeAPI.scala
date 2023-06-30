@@ -86,6 +86,13 @@ trait GachaPrizeReadAPI[F[_], ItemStack] {
   def allGachaPrizeList: F[Vector[GachaPrize[ItemStack]]]
 
   /**
+   * @return デフォルトで排出されるガチャ景品を取得する作用
+   */
+  final def defaultGachaPrizes: F[Vector[GachaPrize[ItemStack]]] = for {
+    gachaPrizes <- allGachaPrizeList
+  } yield gachaPrizes.filter(_.gachaEventName.isEmpty)
+
+  /**
    * @return `gachaPrizeId`に対応する[[GachaPrize]]を返す作用
    */
   final def fetch(gachaPrizeId: GachaPrizeId): F[Option[GachaPrize[ItemStack]]] = for {

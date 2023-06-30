@@ -662,9 +662,9 @@ class BukkitMineStackObjectList[F[_]: Sync](
     itemStack: ItemStack,
     player: Player
   ): F[Option[MineStackObject[ItemStack]]] = for {
-    gachaPrizes <- gachaPrizeAPI.allGachaPrizeList
+    gachaPrizes <- gachaPrizeAPI.defaultGachaPrizes
     canBeSignedAsGachaPrize = gachaPrizeAPI.canBeSignedAsGachaPrize
-    foundGachaPrizeOpt = gachaPrizes.filter(_.gachaEventName.isEmpty).find { gachaPrize =>
+    foundGachaPrizeOpt = gachaPrizes.find { gachaPrize =>
       if (gachaPrize.signOwner) {
         gachaPrize
           .materializeWithOwnerSignature(player.getName)(canBeSignedAsGachaPrize)
