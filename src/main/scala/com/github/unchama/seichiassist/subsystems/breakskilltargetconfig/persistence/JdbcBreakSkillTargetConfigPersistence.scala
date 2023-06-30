@@ -15,10 +15,10 @@ class JdbcBreakSkillTargetConfigPersistence[F[_]: Sync]
 
   override def read(key: UUID): F[Option[BreakSkillTargetConfig]] = Sync[F].delay {
     val config = DB.readOnly { implicit session =>
-      sql"SELECT flag_name, include FROM player_break_preference WHERE uuid = ${key.toString}"
+      sql"SELECT block_category, do_break FROM player_break_preference WHERE uuid = ${key.toString}"
         .map { rs =>
-          BreakSkillTargetConfigKey.withNameOption(rs.string("flag_name")).map { flagName =>
-            flagName -> rs.boolean("include")
+          BreakSkillTargetConfigKey.withNameOption(rs.string("block_category")).map {
+            flagName => flagName -> rs.boolean("do_break")
           }
         }
         .toList()
@@ -37,15 +37,15 @@ class JdbcBreakSkillTargetConfigPersistence[F[_]: Sync]
         value
           .config
           .map {
-            case (configKey, includes) =>
-              Seq(uuid, configKey.entryName, includes)
+            case (blockCategory, doBreak) =>
+              Seq(uuid, blockCategory.entryName, doBreak)
           }
           .toSeq
 
-      sql"""INSERT INTO player_break_preference (uuid, flag_name, include)
+      sql"""INSERT INTO player_break_preference (uuid, block_category, do_break)
            | VALUES (?, ?, ?)
            | ON DUPLICATE KEY UPDATE
-           | include = VALUE(include)
+           | do_break = VALUE(do_break)
                    """.stripMargin.batch(batchParams: _*).apply[List]()
     }
   }
