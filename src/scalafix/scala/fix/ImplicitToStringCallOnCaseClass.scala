@@ -55,12 +55,6 @@ class ImplicitToStringCallOnCaseClass extends SemanticRule("ImplicitToStringCall
     Patch.fromIterable(s)
   }
 
-  def getType(symbol: Symbol)(implicit sym: Symtab): SemanticType =
-    symbol.info.get.signature match {
-      case MethodSignature(_, _, returnType) =>
-        returnType
-    }
-
   def simpleDealias(tpe: SemanticType)(implicit sym: Symtab): SemanticType = {
     def dealiasSymbol(symbol: Symbol): Symbol =
       symbol.info.get.signature match {
@@ -74,6 +68,7 @@ class ImplicitToStringCallOnCaseClass extends SemanticRule("ImplicitToStringCall
     tpe match {
       case TypeRef(prefix, symbol, typeArguments) =>
         TypeRef(prefix, dealiasSymbol(symbol), typeArguments.map(simpleDealias))
+      case other => other
     }
   }
 }
