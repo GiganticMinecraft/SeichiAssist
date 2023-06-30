@@ -72,13 +72,6 @@ class GachaCommand[
         "リスト該当番号のガチャ景品の個数変更。64まで",
         s"$RED/gacha setprob <番号> <確率>",
         "リスト該当番号のガチャ景品の確率変更",
-        s"$RED/gacha clear",
-        "ガチャリストを全消去する。取扱注意",
-        s"$RED/gacha save",
-        "コマンドによるガチャリストへの変更をmysqlに送信",
-        s"$RED/gacha reload",
-        "ガチャリストをmysqlから読み込む",
-        s"$DARK_GRAY※onEnable時と同じ処理",
         s"$RED/gacha create-event <イベント名(30字以内、日本語可)> <開始日> <終了日>",
         "日付はyyyy-MM-ddの形式で指定をしてください。",
         s"$DARK_GRAY※通常排出のガチャ景品リストがコピーされます。",
@@ -102,9 +95,6 @@ class GachaCommand[
         "list" -> list,
         "setamount" -> setAmount,
         "setprob" -> setProbability,
-        "clear" -> clear,
-        "save" -> save,
-        "reload" -> reload,
         "create-event" -> createEvent,
         "delete-event" -> deleteEvent,
         "list-event" -> eventList
@@ -345,48 +335,6 @@ class GachaCommand[
           else
             MessageEffect("指定されたIDのガチャ景品は存在しません。")
         }
-        eff.toIO
-      }
-      .build()
-
-    val clear: ContextualExecutor =
-      ContextualExecutorBuilder
-        .beginConfiguration()
-        .execution { _ =>
-          val eff = for {
-            _ <- gachaPrizeAPI.clear
-          } yield MessageEffect(
-            List(
-              "すべて削除しました。",
-              "/gacha saveを実行するとmysqlのデータも全削除されます。",
-              "削除を取り消すには/gacha reloadコマンドを実行します。"
-            )
-          )
-          eff.toIO
-
-        }
-        .build()
-
-    val save: ContextualExecutor =
-      ContextualExecutorBuilder
-        .beginConfiguration()
-        .execution { _ =>
-          val eff = for {
-            gachaPrizes <- gachaPrizeAPI.allGachaPrizeList
-            _ <- gachaPrizeAPI.replace(gachaPrizes)
-          } yield MessageEffect("ガチャデータをmysqlに保存しました。")
-
-          eff.toIO
-        }
-        .build()
-
-    val reload: ContextualExecutor = ContextualExecutorBuilder
-      .beginConfiguration()
-      .execution { _ =>
-        val eff = for {
-          _ <- gachaPrizeAPI.load
-        } yield MessageEffect("ガチャデータをmysqlから読み込みました。")
-
         eff.toIO
       }
       .build()

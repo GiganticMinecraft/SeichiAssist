@@ -139,21 +139,6 @@ object GachaPrizeReadAPI {
 trait GachaPrizeWriteAPI[F[_], ItemStack] {
 
   /**
-   * @return ガチャの景品リストをロードする作用
-   */
-  def load: F[Unit]
-
-  /**
-   * @return ガチャの景品リストを`gachaPrizesList`に置き換える作用
-   */
-  def replace(gachaPrizesList: Vector[GachaPrize[ItemStack]]): F[Unit]
-
-  /**
-   * @return ガチャ景品リストを空にする作用
-   */
-  final def clear: F[Unit] = replace(Vector.empty)
-
-  /**
    * @return ガチャ景品リストから指定された`gachaPrizeId`に紐づく[[GachaPrize]]を削除し、その結果を返す作用
    */
   def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Boolean]
