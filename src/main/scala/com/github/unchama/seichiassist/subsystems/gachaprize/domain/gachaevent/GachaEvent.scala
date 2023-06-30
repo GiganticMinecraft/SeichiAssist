@@ -28,9 +28,9 @@ case class GachaEvent(eventName: GachaEventName, startDate: LocalDate, endDate: 
   def isHolding: Boolean = {
     val now = LocalDate.now()
     val isAfterStartDateOrFirstDay = now.equals(startDate) || now.isAfter(startDate)
-    val isBeforeEndDateOrFinalDay = now.equals(endDate) || now.isBefore(endDate)
+    val isBeforeEndDateOrEndDay = now.equals(endDate) || now.isBefore(endDate)
 
-    isAfterStartDateOrFirstDay && isBeforeEndDateOrFinalDay
+    isAfterStartDateOrFirstDay && isBeforeEndDateOrEndDay
   }
 
 }
