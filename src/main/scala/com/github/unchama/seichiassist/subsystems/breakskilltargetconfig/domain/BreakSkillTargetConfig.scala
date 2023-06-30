@@ -8,11 +8,7 @@ case class BreakSkillTargetConfig(config: Map[BreakSkillTargetConfigKey, Boolean
   def toggleBreakSkillTargetConfig(
     configKey: BreakSkillTargetConfigKey
   ): BreakSkillTargetConfig =
-    this.copy(
-      this.config.filterNot(_._1 == configKey) ++ Map(
-        configKey -> this.config.getOrElse(configKey, false)
-      )
-    )
+    this.copy(this.config + (configKey -> this.config.getOrElse(configKey, false)))
 
   /**
    * @return 現在の破壊フラグを取得する
