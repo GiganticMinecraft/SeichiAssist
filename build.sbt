@@ -15,6 +15,8 @@ ThisBuild / description := "ギガンティック☆整地鯖の独自要素を�
 // Scalafixが要求するため、semanticdbは有効化する
 ThisBuild / semanticdbEnabled := true
 ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
+ThisBuild / scalafixScalaBinaryVersion :=
+  CrossVersion.binaryScalaVersion(scalaVersion.value)
 
 // endregion
 
@@ -67,6 +69,9 @@ val providedDependencies = Seq(
   // no runtime
   "org.typelevel" %% "simulacrum" % "1.0.1"
 ).map(_ % "provided")
+
+val scalafixCoreDep =
+  "ch.epfl.scala" %% "scalafix-core" % _root_.scalafix.sbt.BuildInfo.scalafixVersion % ScalafixConfig
 
 val testDependencies = Seq(
   "org.scalamock" %% "scalamock" % "5.2.0",
@@ -189,7 +194,7 @@ Compile / PB.targets := Seq(scalapb.gen() -> (Compile / sourceManaged).value / "
 lazy val root = (project in file(".")).settings(
   name := "SeichiAssist",
   assembly / assemblyOutputPath := baseDirectory.value / "target" / "build" / "SeichiAssist.jar",
-  libraryDependencies := providedDependencies ++ testDependencies ++ dependenciesToEmbed,
+  libraryDependencies := (providedDependencies :+ scalafixCoreDep) ++ testDependencies ++ dependenciesToEmbed,
   excludeDependencies := Seq(ExclusionRule(organization = "org.bukkit", name = "bukkit")),
   unmanagedBase := baseDirectory.value / "localDependencies",
   scalacOptions ++= Seq(
