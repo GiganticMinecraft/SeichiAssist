@@ -45,7 +45,7 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
 
   override def addGachaPrize(gachaPrize: GachaPrize[ItemStack]): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      val eventId = gachaPrize.gachaEventName.flatMap { eventName =>
+      val eventId = gachaPrize.gachaEvent.flatMap { eventName =>
         sql"SELECT id FROM gacha_events WHERE event_name = ${eventName.name}"
           .map(_.int("id"))
           .single()
@@ -70,7 +70,7 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
     Sync[F].delay {
       DB.localTx { implicit session =>
         // ここでは一つのイベントのアイテムのみが複数指定されることを想定しているので、1つ目のイベントで決め打ちする
-        val eventId = gachaPrizes.head.gachaEventName.flatMap { eventName =>
+        val eventId = gachaPrizes.head.gachaEvent.flatMap { eventName =>
           sql"SELECT id FROM gacha_events WHERE event_name = ${eventName.name}"
             .map(_.int("id"))
             .single()

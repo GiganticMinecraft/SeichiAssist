@@ -70,7 +70,7 @@ object System {
             _ <- _gachaPersistence.addGachaPrize(newGachaPrize)
             _ <- _gachaPersistence
               .addMineStackGachaObject(gachaPrizeId, s"gachadata0_${gachaPrizeId.id - 1}")
-              .whenA(newGachaPrize.gachaEventName.isEmpty)
+              .whenA(newGachaPrize.nonGachaEventItem)
           } yield ()
 
           override def listOfNow: F[Vector[GachaPrize[ItemStack]]] = for {
@@ -79,9 +79,9 @@ object System {
           } yield {
             createdEvents.find(_.isHolding) match {
               case Some(value) =>
-                prizes.filter(_.gachaEventName.contains(value.eventName)) // :+ expBottle
+                prizes.filter(_.gachaEvent.contains(value.eventName)) // :+ expBottle
               case None =>
-                prizes.filter(_.gachaEventName.isEmpty)
+                prizes.filter(_.nonGachaEventItem)
             }
           }
 
@@ -100,10 +100,10 @@ object System {
               currentAllGachaPrizes <- _gachaPersistence.list
               maxId = currentAllGachaPrizes.map(_.id.id).max
               eventGachaPrizes = currentAllGachaPrizes
-                .filter(_.gachaEventName.isEmpty)
+                .filter(_.nonGachaEventItem)
                 .map(gachaPrize =>
                   gachaPrize.copy(
-                    gachaEventName = Some(gachaEvent.eventName),
+                    gachaEvent = Some(gachaEvent.eventName),
                     id = GachaPrizeId(maxId + gachaPrize.id.id)
                   )
                 )

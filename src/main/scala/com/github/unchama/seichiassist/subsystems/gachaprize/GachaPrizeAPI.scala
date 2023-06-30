@@ -90,7 +90,7 @@ trait GachaPrizeReadAPI[F[_], ItemStack] {
    */
   final def defaultGachaPrizes: F[Vector[GachaPrize[ItemStack]]] = for {
     gachaPrizes <- allGachaPrizeList
-  } yield gachaPrizes.filter(_.gachaEventName.isEmpty)
+  } yield gachaPrizes.filter(_.nonGachaEventItem)
 
   /**
    * @return `gachaPrizeId`に対応する[[GachaPrize]]を返す作用

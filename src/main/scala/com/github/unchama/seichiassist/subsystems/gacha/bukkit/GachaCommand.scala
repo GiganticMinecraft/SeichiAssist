@@ -222,9 +222,9 @@ class GachaCommand[
           } yield {
             val gachaPrizeInformation = gachaPrizes
               .filter { gachaPrize =>
-                if (eventName.isEmpty) gachaPrize.gachaEventName.isEmpty
+                if (eventName.isEmpty) gachaPrize.nonGachaEventItem
                 else
-                  gachaPrize.gachaEventName.nonEmpty && gachaPrize.gachaEventName == eventName
+                  gachaPrize.isGachaEventItem && gachaPrize.gachaEvent == eventName
               }
               .sortBy(_.id.id)
               .map { gachaPrize =>

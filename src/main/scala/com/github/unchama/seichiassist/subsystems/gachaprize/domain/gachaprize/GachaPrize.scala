@@ -12,7 +12,7 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.G
  * @param itemStack ガチャで排出されるアイテム。
  * @param probability ガチャで排出される確率
  * @param signOwner 記名する場合はtrueにしてください
- * @param gachaEventName ガチャイベントで排出されるアイテムの場合は設定してください。
+ * @param gachaEvent ガチャイベントで排出されるアイテムの場合は設定してください。
  *                       `None`の場合は通常排出アイテムとして扱います。
  */
 case class GachaPrize[ItemStack: Cloneable](
@@ -20,7 +20,7 @@ case class GachaPrize[ItemStack: Cloneable](
   probability: GachaProbability,
   signOwner: Boolean,
   id: GachaPrizeId,
-  gachaEventName: Option[GachaEventName]
+  gachaEvent: Option[GachaEventName]
 ) {
 
   def materializeWithOwnerSignature(
@@ -29,5 +29,9 @@ case class GachaPrize[ItemStack: Cloneable](
     if (signOwner) sign.signWith(ownerName)(this)
     else Cloneable[ItemStack].clone(itemStack)
   }
+
+  def isGachaEventItem: Boolean = gachaEvent.nonEmpty
+
+  def nonGachaEventItem: Boolean = gachaEvent.isEmpty
 
 }
