@@ -76,7 +76,7 @@ trait GachaPrizeReadAPI[F[_], ItemStack] {
   protected implicit val F: Monad[F]
 
   /**
-   * @return 今のガチャ景品リストを取得する作用
+   * @return 現在排出対象となっているガチャ景品リストを取得する作用
    */
   def listOfNow: F[Vector[GachaPrize[ItemStack]]]
 
