@@ -98,15 +98,6 @@ trait GachaPrizeReadAPI[F[_], ItemStack] {
   def staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack]
 
   /**
-   * @param itemStack 記名されている[[ItemStack]]
-   * @return 通常排出ガチャ景品の中から`name`が記名された`itemStack`に一致する[[GachaPrize]]を取得する作用
-   */
-  def findOfRegularPrizesBySignedItemStack(
-    itemStack: ItemStack,
-    name: String
-  ): F[Option[GachaPrize[ItemStack]]]
-
-  /**
    * @return [[CanBeSignedAsGachaPrize]]を返す
    */
   def canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]

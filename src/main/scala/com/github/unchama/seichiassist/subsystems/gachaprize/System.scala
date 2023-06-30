@@ -116,20 +116,6 @@ object System {
 
           override def canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
             _canBeSignedAsGachaPrize
-
-          override def findOfRegularPrizesBySignedItemStack(
-            itemStack: ItemStack,
-            name: String
-          ): F[Option[GachaPrize[ItemStack]]] = for {
-            prizes <- _gachaPersistence.list
-            defaultGachaPrizes = prizes.filter(_.gachaEventName.isEmpty)
-          } yield defaultGachaPrizes.find { gachaPrize =>
-            if (gachaPrize.signOwner) {
-              gachaPrize.materializeWithOwnerSignature(name).isSimilar(itemStack)
-            } else {
-              gachaPrize.itemStack.isSimilar(itemStack)
-            }
-          }
         }
     }
   }
