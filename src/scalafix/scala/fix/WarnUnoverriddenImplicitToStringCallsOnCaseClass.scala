@@ -41,7 +41,8 @@ class WarnUnoverriddenImplicitToStringCallsOnCaseClass extends SemanticRule("War
             }
 
             Patch.lint(new Diagnostic {
-              override def message: String = "Case class value shouldn't interpolated, please use `toString` if it is really intended snippet"
+              override def message: String = "Case class value shouldn't be interpolated, use `toString` " +
+                "if you wish to interpolate the String representation into the string"
 
               // points to arg
               override def position: _root_.scala.meta.Position = arg.pos
