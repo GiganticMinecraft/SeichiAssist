@@ -130,15 +130,6 @@ object System {
               gachaPrize.itemStack.isSimilar(itemStack)
             }
           }
-
-          override def findOfRegularGachaPrizesByNotSignedItemStack(
-            itemStack: ItemStack
-          ): F[Option[GachaPrize[ItemStack]]] = for {
-            prizes <- _gachaPersistence.list
-            defaultGachaPrizes = prizes.filter(_.gachaEventName.isEmpty)
-          } yield defaultGachaPrizes.find { gachaPrize =>
-            gachaPrize.itemStack.isSimilar(itemStack)
-          }
         }
     }
   }
