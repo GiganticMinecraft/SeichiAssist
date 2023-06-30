@@ -18,6 +18,11 @@ trait GachaPrizeListPersistence[F[_], ItemStack] {
   def addGachaPrize(gachaPrize: GachaPrize[ItemStack]): F[Unit]
 
   /**
+   * @return ガチャアイテムを削除する作用
+   */
+  def removeGachaPrize(gachaPrizeId: GachaPrizeId): F[Unit]
+
+  /**
    * @return 複数のガチャアイテムを追加する作用
    */
   def addGachaPrizes(gachaPrizes: Vector[GachaPrize[ItemStack]]): F[Unit]
