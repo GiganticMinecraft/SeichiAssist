@@ -92,19 +92,4 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
       }
     }
 
-  override def addMineStackGachaObject(id: GachaPrizeId, objectName: String): F[Unit] =
-    Sync[F].delay {
-      DB.localTx { implicit session =>
-        sql"INSERT INTO mine_stack_gacha_objects (id, mine_stack_object_name) VALUES (${id.id}, $objectName)"
-          .execute()
-          .apply()
-      }
-    }
-
-  override def deleteMineStackGachaObject(id: GachaPrizeId): F[Unit] = Sync[F].delay {
-    DB.localTx { implicit session =>
-      sql"DELETE FROM mine_stack_gacha_objects WHERE id = ${id.id}".execute().apply()
-    }
-  }
-
 }

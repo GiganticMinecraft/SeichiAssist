@@ -3,10 +3,7 @@ package com.github.unchama.seichiassist.subsystems.minestack
 import cats.data.Kleisli
 import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, SyncEffect}
-import com.github.unchama.datarepository.bukkit.player.{
-  BukkitRepositoryControls,
-  PlayerDataRepository
-}
+import com.github.unchama.datarepository.bukkit.player.{BukkitRepositoryControls, PlayerDataRepository}
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
@@ -14,31 +11,12 @@ import com.github.unchama.minecraft.bukkit.objects.BukkitMaterial
 import com.github.unchama.minecraft.objects.MinecraftMaterial
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
-import com.github.unchama.seichiassist.subsystems.minestack.application.repository.{
-  MineStackObjectRepositoryDefinition,
-  MineStackSettingsRepositoryDefinition,
-  MineStackUsageHistoryRepositoryDefinitions
-}
-import com.github.unchama.seichiassist.subsystems.minestack.bukkit.{
-  BukkitMineStackObjectList,
-  BukkitMineStackRepository,
-  PlayerPickupItemListener
-}
+import com.github.unchama.seichiassist.subsystems.minestack.application.repository.{MineStackObjectRepositoryDefinition, MineStackSettingsRepositoryDefinition, MineStackUsageHistoryRepositoryDefinitions}
+import com.github.unchama.seichiassist.subsystems.minestack.bukkit.{BukkitMineStackObjectList, BukkitMineStackRepository, PlayerPickupItemListener}
 import com.github.unchama.seichiassist.subsystems.minestack.domain._
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
-  MineStackObject,
-  MineStackObjectList,
-  MineStackObjectWithAmount
-}
-import com.github.unchama.seichiassist.subsystems.minestack.domain.persistence.{
-  MineStackGachaObjectPersistence,
-  PlayerSettingPersistence
-}
-import com.github.unchama.seichiassist.subsystems.minestack.infrastructure.{
-  JdbcMineStackGachaObjectPersistence,
-  JdbcMineStackObjectPersistence,
-  JdbcPlayerSettingPersistence
-}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{MineStackObject, MineStackObjectList, MineStackObjectWithAmount}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.persistence.PlayerSettingPersistence
+import com.github.unchama.seichiassist.subsystems.minestack.infrastructure.{JdbcMineStackObjectPersistence, JdbcPlayerSettingPersistence}
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
@@ -57,9 +35,6 @@ object System {
   def wired[F[_]: ConcurrentEffect, G[_]: SyncEffect: ContextCoercion[*[_], F]](
     implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player]
   ): F[System[F, Player, ItemStack]] = {
-    implicit val mineStackGachaObjectPersistence
-      : MineStackGachaObjectPersistence[F, ItemStack] =
-      new JdbcMineStackGachaObjectPersistence[F, ItemStack, Player]
     implicit val minecraftMaterial: MinecraftMaterial[Material, ItemStack] = new BukkitMaterial
     implicit val _mineStackObjectList: MineStackObjectList[F, ItemStack, Player] =
       new BukkitMineStackObjectList[F]

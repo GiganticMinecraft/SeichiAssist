@@ -12,14 +12,12 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
 }
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory._
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject._
-import com.github.unchama.seichiassist.subsystems.minestack.domain.persistence.MineStackGachaObjectPersistence
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 class BukkitMineStackObjectList[F[_]: Sync](
   implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
-  mineStackGachaObjectPersistence: MineStackGachaObjectPersistence[F, ItemStack],
   minecraftMaterial: MinecraftMaterial[Material, ItemStack]
 ) extends MineStackObjectList[F, ItemStack, Player] {
 
@@ -607,19 +605,19 @@ class BukkitMineStackObjectList[F[_]: Sync](
   import cats.implicits._
 
   private val gachaPrizesObjects: F[Ref[F, Vector[MineStackObject[ItemStack]]]] = for {
-    gachaObjects <- mineStackGachaObjectPersistence.getAllMineStackGachaObjects
-    prizes <- Ref.of[F, Vector[MineStackObject[ItemStack]]](
-      gachaObjects.sortBy(_.gachaPrize.id.id).map { gachaObject =>
+    gachaPrizes <- gachaPrizeAPI.defaultGachaPrizes
+    mineStackObjects <- Ref.of[F, Vector[MineStackObject[ItemStack]]](
+      gachaPrizes.sortBy(_.id.id).map { gachaPrize =>
         MineStackObjectByItemStack(
           GACHA_PRIZES,
-          gachaObject.objectName,
+          s"gachadata0_${gachaPrize.id.id}",
           None,
           hasNameLore = true,
-          gachaObject.gachaPrize.itemStack
+          gachaPrize.itemStack
         )
       }
     )
-  } yield prizes
+  } yield mineStackObjects
 
   // ガチャアイテムを除外したMineStackGroups
   private val exceptGachaItemMineStackGroups: List[MineStackObjectGroup[ItemStack]] = List(
