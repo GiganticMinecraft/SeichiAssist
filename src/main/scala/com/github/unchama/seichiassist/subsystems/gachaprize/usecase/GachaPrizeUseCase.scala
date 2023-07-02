@@ -35,10 +35,8 @@ class GachaPrizeUseCase[F[_]: Sync, ItemStack](
 
   private def holdingGachaEvent: F[Option[GachaEvent]] = for {
     gachaEvents <- gachaEventPersistence.gachaEvents
-    holdingEvents <- gachaEvents.traverse { gachaEvent =>
-      isHolding(gachaEvent).ifM(Sync[F].pure(Some(gachaEvent)), Sync[F].pure(None))
-    }
-  } yield holdingEvents.find(_.nonEmpty)
+    holdingEvent <- gachaEvents.findM(isHolding)
+  } yield holdingEvent
 
   def addGachaPrize(gachaPrizeById: GachaPrizeId => GachaPrize[ItemStack]): F[Unit] = for {
     gachaPrizeList <- gachaPrizeListPersistence.list
