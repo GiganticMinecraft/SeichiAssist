@@ -108,7 +108,7 @@ val dependenciesToEmbed = Seq(
   "com.typesafe.scala-logging" % "scala-logging-slf4j_2.10" % "2.1.2",
 
   // type-safety utils
-  "eu.timepit" %% "refined" % "0.10.3",
+  "eu.timepit" %% "refined" % "0.11.0",
   "com.beachape" %% "enumeratum" % "1.7.2",
 
   // protobuf
