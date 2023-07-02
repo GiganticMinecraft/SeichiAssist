@@ -1,12 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize
 
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
-  CanBeSignedAsGachaPrize,
-  GachaProbability
-}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{CanBeSignedAsGachaPrize, GachaProbability}
 import com.github.unchama.generic.Cloneable
-
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.GachaEventName
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{GachaEvent, GachaEventName}
 
 /**
  * @param itemStack ガチャで排出されるアイテム。
@@ -20,7 +16,7 @@ case class GachaPrize[ItemStack: Cloneable](
   probability: GachaProbability,
   signOwner: Boolean,
   id: GachaPrizeId,
-  gachaEvent: Option[GachaEventName]
+  gachaEvent: Option[GachaEvent]
 ) {
 
   def materializeWithOwnerSignature(

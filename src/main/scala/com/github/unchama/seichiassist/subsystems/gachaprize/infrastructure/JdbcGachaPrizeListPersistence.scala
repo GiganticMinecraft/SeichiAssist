@@ -21,11 +21,21 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
   override def list: F[Vector[GachaPrize[ItemStack]]] = {
     Sync[F].delay {
       DB.readOnly { implicit session =>
-        sql"SELECT gachadata.id AS gacha_prize_id, probability, itemstack, event_name FROM gachadata LEFT OUTER JOIN gacha_events ON gachadata.event_id = gacha_events.id"
+        sql"""SELECT gachadata.id AS gacha_prize_id, probability, itemstack, event_name, event_start_time, event_start_date FROM gachadata
+             | LEFT OUTER JOIN gacha_events
+             | ON gachadata.event_id = gacha_events.id"""
           .stripMargin
           .map { rs =>
-            val probability = rs.double("probability")
             // TODO ガチャアイテムに対して記名を行うかどうかを確率に依存すべきではない
+            val probability = rs.double("probability")
+            val gachaEvent = rs.stringOpt("gacha_prize_id").map { eventName =>
+              GachaEvent(
+                GachaEventName(eventName),
+                rs.localDate("event_start_time"),
+                rs.localDate("event_end_time")
+              )
+            }
+
             serializeAndDeserialize
               .deserialize(rs.string("itemstack"))
               .map { itemStack =>
@@ -34,7 +44,7 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
                   GachaProbability(probability),
                   probability < 0.1,
                   GachaPrizeId(rs.int("gacha_prize_id")),
-                  rs.stringOpt("event_name").map(GachaEventName)
+                  gachaEvent
                 )
               }
               .merge
@@ -48,8 +58,8 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
 
   override def addGachaPrize(gachaPrize: GachaPrize[ItemStack]): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      val eventId = gachaPrize.gachaEvent.flatMap { eventName =>
-        sql"SELECT id FROM gacha_events WHERE event_name = ${eventName.name}"
+      val eventId = gachaPrize.gachaEvent.flatMap { gachaEvent =>
+        sql"SELECT id FROM gacha_events WHERE event_name = ${gachaEvent.eventName.name}"
           .map(_.int("id"))
           .single()
           .apply()
