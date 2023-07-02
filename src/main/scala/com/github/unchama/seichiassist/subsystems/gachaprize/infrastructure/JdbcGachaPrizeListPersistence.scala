@@ -18,11 +18,7 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
   override def list: F[Vector[GachaPrize[ItemStack]]] = {
     Sync[F].delay {
       DB.readOnly { implicit session =>
-        sql"""SELECT gachadata.id, gachadata.probability, gachadata.itemstack, gacha_events.event_name FROM gachadata
-             | LEFT OUTER JOIN gacha_events ON gachadata.event_id = gacha_events.id
-             | UNION
-             | SELECT gachadata.id, gachadata.probability, gachadata.itemstack, gacha_events.event_name FROM gachadata
-             | RIGHT OUTER JOIN gacha_events ON gachadata.event_id = gacha_events.id"""
+        sql"SELECT gachadata.id AS gacha_prize_id, probability, itemstack, event_name FROM gachadata LEFT OUTER JOIN gacha_events ON gachadata.event_id = gacha_events.id"
           .stripMargin
           .map { rs =>
             val probability = rs.double("probability")
@@ -34,7 +30,7 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
                   itemStack,
                   GachaProbability(probability),
                   probability < 0.1,
-                  GachaPrizeId(rs.int("id")),
+                  GachaPrizeId(rs.int("gacha_prize_id")),
                   rs.stringOpt("event_name").map(GachaEventName)
                 )
               }
@@ -46,6 +42,55 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
       }
     }
   }
+
+  override def addGachaPrize(gachaPrize: GachaPrize[ItemStack]): F[Unit] = Sync[F].delay {
+    DB.localTx { implicit session =>
+      val eventId = gachaPrize.gachaEventName.flatMap { eventName =>
+        sql"SELECT id FROM gacha_events WHERE event_name = ${eventName.name}"
+          .map(_.int("id"))
+          .single()
+          .apply()
+      }
+
+      sql"INSERT INTO gachadata (id, probability, itemstack, event_id) VALUES (${gachaPrize.id.id}, ${gachaPrize
+          .probability
+          .value}, ${serializeAndDeserialize.serialize(gachaPrize.itemStack)}, $eventId)"
+        .execute()
+        .apply()
+    }
+  }
+
+  override def removeGachaPrize(gachaPrizeId: GachaPrizeId): F[Unit] = Sync[F].delay {
+    DB.localTx { implicit session =>
+      sql"DELETE FROM gachadata WHERE id = ${gachaPrizeId.id}".execute().apply()
+    }
+  }
+
+  override def addGachaPrizes(gachaPrizes: Vector[GachaPrize[ItemStack]]): F[Unit] =
+    Sync[F].delay {
+      DB.localTx { implicit session =>
+        // ここでは一つのイベントのアイテムのみが複数指定されることを想定しているので、1つ目のイベントで決め打ちする
+        val eventId = gachaPrizes.head.gachaEventName.flatMap { eventName =>
+          sql"SELECT id FROM gacha_events WHERE event_name = ${eventName.name}"
+            .map(_.int("id"))
+            .single()
+            .apply()
+        }
+
+        val batchParams = gachaPrizes.map { gachaPrize =>
+          Seq(
+            gachaPrize.id.id,
+            gachaPrize.probability.value,
+            serializeAndDeserialize.serialize(gachaPrize.itemStack),
+            eventId
+          )
+        }
+
+        sql"INSERT INTO gachadata (id, probability, itemstack, event_id) VALUES (?, ?, ?, ?)"
+          .batch(batchParams: _*)
+          .apply[List]()
+      }
+    }
 
   override def set(gachaPrizesList: Vector[GachaPrize[ItemStack]]): F[Unit] = {
     Sync[F].delay {
@@ -59,7 +104,7 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
             gachaPrize.gachaEventName.map(_.name)
           )
         }
-        sql"insert into gachadata values (?,?,?,?)".batch(batchParams).apply[List]()
+        sql"insert into gachadata values (?,?,?,?)".batch(batchParams: _*).apply[List]()
       }
     }
   }

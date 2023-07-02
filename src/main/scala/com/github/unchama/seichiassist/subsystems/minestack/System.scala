@@ -147,11 +147,9 @@ object System {
                 } yield ()
               }
 
-            override def autoMineStack(player: Player): F[Boolean] = for {
-              currentState <- ContextCoercion(
-                mineStackSettingRepository(player).isAutoCollectionTurnedOn
-              )
-            } yield currentState
+            override def autoMineStack(player: Player): F[Boolean] = ContextCoercion(
+              mineStackSettingRepository(player).isAutoCollectionTurnedOn
+            )
 
             override def mineStackObjectList: MineStackObjectList[F, ItemStack, Player] =
               _mineStackObjectList

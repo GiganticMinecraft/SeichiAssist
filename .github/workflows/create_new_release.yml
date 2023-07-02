@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Extract branch name
         id: job
-        run: echo "::set-output name=value::$(echo ${GITHUB_REF#refs/heads/})"
+        run: echo "value=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
 
   bump_version:
     runs-on: ubuntu-20.04
@@ -34,7 +34,7 @@ jobs:
 
           update_version_to () {
             echo "置換先のバージョン： $1"
-            echo "::set-output name=new_version::$1"
+            echo "new_version=$1" >> $GITHUB_OUTPUT
             sed -i -e "s/ThisBuild \/ version := \"[0-9]\+\"/ThisBuild \/ version := \"$1\"/g" build.sbt
           }
 
@@ -43,7 +43,7 @@ jobs:
             exit 1
           fi
 
-          echo "::set-output name=old_version::$(get_defined_versions)"
+          echo "old_version=$(get_defined_versions)" >> $GITHUB_OUTPUT
 
           update_version_to $(get_defined_versions | xargs expr 1 +)
       # 本来であればActionsに権限を増やしたりbranch protection ruleに例外を設けるなどしてpushを許したいが、

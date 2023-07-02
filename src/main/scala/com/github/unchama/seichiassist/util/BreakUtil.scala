@@ -16,6 +16,7 @@ import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.{Active, Disabled}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.CardinalDirection
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
+import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain.BreakSkillTargetConfigKey
 import com.github.unchama.targetedeffect.player.ActionBarMessageEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.ExternalPlugins
@@ -116,18 +117,51 @@ object BreakUtil {
     checkTarget: Block,
     lockedBlocks: Set[Block] = unsafeGetLockedBlocks()
   ): Boolean = {
-    !isProtectedChest(player, checkTarget) &&
+    !isProtectedChest(player, checkTarget) && !isProtectedNetherQuartzBlock(
+      player,
+      checkTarget
+    ) &&
     canBreak(player, checkTarget, lockedBlocks)
   }
 
   def isProtectedChest(player: Player, checkTarget: Block): Boolean = {
     checkTarget.getType match {
       case Material.CHEST | Material.TRAPPED_CHEST =>
-        if (!SeichiAssist.playermap(player.getUniqueId).chestflag) {
+        if (
+          !SeichiAssist
+            .instance
+            .breakSkillTargetConfigSystem
+            .api
+            .breakSkillTargetConfig(player, BreakSkillTargetConfigKey.Chest)
+            .unsafeRunSync()
+        ) {
           ActionBarMessageEffect(s"${RED}スキルでのチェスト破壊は無効化されています").run(player).unsafeRunSync()
           true
         } else if (!player.getWorld.isSeichi) {
           ActionBarMessageEffect(s"${RED}スキルでのチェスト破壊は整地ワールドでのみ有効です").run(player).unsafeRunSync()
+          true
+        } else {
+          false
+        }
+      case _ => false
+    }
+  }
+
+  def isProtectedNetherQuartzBlock(player: Player, checkTarget: Block): Boolean = {
+    checkTarget.getType match {
+      // 鉱石ブロックの方はプロテクトの対象外
+      case Material.QUARTZ_BLOCK | Material.QUARTZ_STAIRS =>
+        if (
+          !SeichiAssist
+            .instance
+            .breakSkillTargetConfigSystem
+            .api
+            .breakSkillTargetConfig(player, BreakSkillTargetConfigKey.MadeFromNetherQuartz)
+            .unsafeRunSync()
+        ) {
+          ActionBarMessageEffect(s"${RED}スキルでのネザー水晶類ブロックの破壊は無効化されています")
+            .run(player)
+            .unsafeRunSync()
           true
         } else {
           false
