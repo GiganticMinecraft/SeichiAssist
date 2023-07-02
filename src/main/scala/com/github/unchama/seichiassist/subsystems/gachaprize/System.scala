@@ -60,10 +60,8 @@ object System {
         new GachaPrizeAPI[F, ItemStack, Player] {
           override protected implicit val F: Monad[F] = implicitly
 
-          override def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Boolean] = for {
-            originalGachaPrizes <- _gachaPersistence.list
-            _ <- _gachaPersistence.removeGachaPrize(gachaPrizeId)
-          } yield originalGachaPrizes.exists(_.id == gachaPrizeId)
+          override def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Boolean] =
+            gachaPrizeUseCase.removeByGachaPrizeId(gachaPrizeId)
 
           override def addGachaPrize(
             gachaPrizeByGachaPrizeId: GachaPrizeByGachaPrizeId

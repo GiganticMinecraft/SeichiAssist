@@ -22,4 +22,9 @@ class GachaPrizeUseCase[F[_]: Sync, ItemStack](
     _ <- gachaPrizeListPersistence.addGachaPrize(gachaPrize)
   } yield ()
 
+  def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Boolean] = for {
+    originalGachaPrizes <- gachaPrizeListPersistence.list
+    _ <- gachaPrizeListPersistence.removeGachaPrize(gachaPrizeId)
+  } yield originalGachaPrizes.exists(_.id == gachaPrizeId)
+
 }
