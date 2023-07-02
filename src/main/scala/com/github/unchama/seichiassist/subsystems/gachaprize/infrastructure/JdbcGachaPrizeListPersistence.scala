@@ -60,6 +60,12 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
     }
   }
 
+  override def removeGachaPrize(gachaPrizeId: GachaPrizeId): F[Unit] = Sync[F].delay {
+    DB.localTx { implicit session =>
+      sql"DELETE FROM gachadata WHERE id = ${gachaPrizeId.id}".execute().apply()
+    }
+  }
+
   override def addGachaPrizes(gachaPrizes: Vector[GachaPrize[ItemStack]]): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
