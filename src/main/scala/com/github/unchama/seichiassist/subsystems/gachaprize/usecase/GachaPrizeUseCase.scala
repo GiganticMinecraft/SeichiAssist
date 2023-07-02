@@ -2,11 +2,8 @@ package com.github.unchama.seichiassist.subsystems.gachaprize.usecase
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaPrizeListPersistence
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.GachaEventPersistence
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
-  GachaPrize,
-  GachaPrizeId
-}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{GachaEvent, GachaEventPersistence}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{GachaPrize, GachaPrizeId}
 
 class GachaPrizeUseCase[F[_]: Sync, ItemStack](
   implicit gachaPrizeListPersistence: GachaPrizeListPersistence[F, ItemStack],
@@ -14,6 +11,15 @@ class GachaPrizeUseCase[F[_]: Sync, ItemStack](
 ) {
 
   import cats.implicits._
+
+  def createGachaEvent(gachaEvent: GachaEvent): F[Unit] = for {
+    _ <- gachaEventPersistence.createGachaEvent(gachaEvent)
+    _ <- gachaPrizeListPersistence.duplicateDefaultGachaPrizes(gachaEvent)
+  } yield ()
+
+  private def holdingGachaEvent: F[Option[GachaEvent]] = for {
+    gachaEvents <- gachaEventPersistence.gachaEvents
+  } yield gachaEvents.find(_.isHolding)
 
   def addGachaPrize(gachaPrizeById: GachaPrizeId => GachaPrize[ItemStack]): F[Unit] = for {
     gachaPrizeList <- gachaPrizeListPersistence.list
@@ -30,15 +36,8 @@ class GachaPrizeUseCase[F[_]: Sync, ItemStack](
   } yield originalGachaPrizes.exists(_.id == gachaPrizeId)
 
   def listOfNow: F[Vector[GachaPrize[ItemStack]]] = for {
-    prizes <- gachaPrizeListPersistence.list
-    createdEvents <- gachaEventPersistence.gachaEvents
-  } yield {
-    createdEvents.find(_.isHolding) match {
-      case Some(value) =>
-        prizes.filter(_.gachaEvent.contains(value.eventName))
-      case None =>
-        prizes.filter(_.nonGachaEventItem)
-    }
-  }
+    gachaPrizes <- gachaPrizeListPersistence.list
+    holingGachaEvent <- holdingGachaEvent
+  } yield gachaPrizes.filter(_.gachaEvent == holingGachaEvent)
 
 }

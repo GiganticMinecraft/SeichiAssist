@@ -12,7 +12,7 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{GachaPrize, GachaPrizeId}
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{CanBeSignedAsGachaPrize, GachaPrizeListPersistence, StaticGachaPrizeFactory}
 import com.github.unchama.seichiassist.subsystems.gachaprize.infrastructure.{JdbcGachaEventPersistence, JdbcGachaPrizeListPersistence}
-import com.github.unchama.seichiassist.subsystems.gachaprize.usecase.{GachaEventUseCase, GachaPrizeUseCase}
+import com.github.unchama.seichiassist.subsystems.gachaprize.usecase.GachaPrizeUseCase
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -33,7 +33,6 @@ object System {
       BukkitStaticGachaPrizeFactory
     implicit val _gachaEventPersistence: GachaEventPersistence[F] =
       new JdbcGachaEventPersistence[F]
-    val gachaEventUseCase: GachaEventUseCase[F, ItemStack] = new GachaEventUseCase[F, ItemStack]
     val gachaPrizeUseCase: GachaPrizeUseCase[F, ItemStack] = new GachaPrizeUseCase[F, ItemStack]
 
     new System[F] {
@@ -62,7 +61,7 @@ object System {
             _gachaEventPersistence.gachaEvents
 
           override def createGachaEvent(gachaEvent: GachaEvent): F[Unit] =
-            gachaEventUseCase.createGachaEvent(gachaEvent)
+            gachaPrizeUseCase.createGachaEvent(gachaEvent)
 
           override def deleteGachaEvent(gachaEventName: GachaEventName): F[Unit] =
             _gachaEventPersistence.deleteGachaEvent(gachaEventName)
