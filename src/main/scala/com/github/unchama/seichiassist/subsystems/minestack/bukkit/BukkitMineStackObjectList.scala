@@ -422,7 +422,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
       )
     ),
     MineStackObjectWithColorVariants(
-      MineStackObjectByMaterial(BUILDING, "wool_0", "羊毛", Material.WOOL, 0),
+      MineStackObjectByMaterial(BUILDING, "wool_0", "白色の羊毛", Material.WOOL, 0),
       List(
         MineStackObjectByMaterial(BUILDING, "wool_1", "橙色の羊毛", Material.WOOL, 1),
         MineStackObjectByMaterial(BUILDING, "wool_2", "赤紫色の羊毛", Material.WOOL, 2),
@@ -442,7 +442,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
       )
     ),
     MineStackObjectWithColorVariants(
-      MineStackObjectByMaterial(BUILDING, "carpet_0", "カーペット", Material.CARPET, 0),
+      MineStackObjectByMaterial(BUILDING, "carpet_0", "白色のカーペット", Material.CARPET, 0),
       List(
         MineStackObjectByMaterial(BUILDING, "carpet_1", "橙色のカーペット", Material.CARPET, 1),
         MineStackObjectByMaterial(BUILDING, "carpet_2", "赤紫色のカーペット", Material.CARPET, 2),

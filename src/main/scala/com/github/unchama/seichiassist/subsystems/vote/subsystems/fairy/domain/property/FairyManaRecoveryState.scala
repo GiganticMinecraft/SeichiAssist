@@ -18,6 +18,11 @@ object FairyManaRecoveryState {
   case object RecoveredWithoutApple extends FairyManaRecoveryState
 
   /**
+   * マナを回復したが、回復量がりんご一つ分に満たなかったため、りんごを消費しなかった
+   */
+  case object RecoverWithoutAppleButLessThanAApple extends FairyManaRecoveryState
+
+  /**
    * りんごを消費してマナを回復した
    */
   case object RecoveredWithApple extends FairyManaRecoveryState

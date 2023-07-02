@@ -108,7 +108,7 @@ services:
     volumes:
       - redis-data:/data
   db:
-    image: mariadb:10.11.3
+    image: mariadb:10.11.4
     environment:
       - TZ=Asia/Tokyo
       - MYSQL_ROOT_PASSWORD=unchamaisgod

@@ -15,7 +15,7 @@ on:
       - .github/workflows/check-sql-version-duplicated-files.yml
 jobs:
   check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3

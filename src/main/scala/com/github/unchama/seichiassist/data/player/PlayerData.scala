@@ -41,26 +41,6 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
   // プレイヤー名
   val lowercaseName: String = name.toLowerCase()
 
-  // チェスト破壊トグル
-  var chestflag = true
-
-  // ネザー水晶類ブロック破壊トグル
-  var netherQuartzBlockflag = true
-
-  /**
-   * チェスト破壊のON/OFFを切り替える[UnfocusedEffect]
-   */
-  val toggleChestBreakFlag: TargetedEffect[Player] = UnfocusedEffect {
-    chestflag = !chestflag
-  }
-
-  /**
-   * ネザー水晶類ブロック破壊のON/OFFを切り替える[UnfocusedEffect]
-   */
-  val toggleNetherQuartzBlockBreakFlag: TargetedEffect[Player] = UnfocusedEffect {
-    netherQuartzBlockflag = !netherQuartzBlockflag
-  }
-
   var canCreateRegion = true
   var unitPerClick = 1
   // 投票受け取りボタン連打防止用
