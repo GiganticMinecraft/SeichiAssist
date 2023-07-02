@@ -131,7 +131,7 @@ trait GachaPrizeWriteAPI[F[_], ItemStack] {
   /**
    * @return ガチャ景品リストに`gachaPrize`を追加する作用
    */
-  def addGachaPrize(gachaPrize: GachaPrizeByGachaPrizeId): F[Unit]
+  def addGachaPrize(gachaPrizeByGachaPrizeId: GachaPrizeByGachaPrizeId): F[Unit]
 
 }
 

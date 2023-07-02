@@ -26,7 +26,10 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.infrastructure.{
   JdbcGachaEventPersistence,
   JdbcGachaPrizeListPersistence
 }
-import com.github.unchama.seichiassist.subsystems.gachaprize.usecase.GachaEventUseCase
+import com.github.unchama.seichiassist.subsystems.gachaprize.usecase.{
+  GachaEventUseCase,
+  GachaPrizeUseCase
+}
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -50,6 +53,7 @@ object System {
     implicit val _gachaEventPersistence: GachaEventPersistence[F] =
       new JdbcGachaEventPersistence[F]
     val gachaEventUseCase: GachaEventUseCase[F, ItemStack] = new GachaEventUseCase[F, ItemStack]
+    val gachaPrizeUseCase: GachaPrizeUseCase[F, ItemStack] = new GachaPrizeUseCase[F, ItemStack]
 
     new System[F] {
       override implicit val api: GachaPrizeAPI[F, ItemStack, Player] =
@@ -61,15 +65,10 @@ object System {
             _ <- _gachaPersistence.removeGachaPrize(gachaPrizeId)
           } yield originalGachaPrizes.exists(_.id == gachaPrizeId)
 
-          override def addGachaPrize(gachaPrize: GachaPrizeByGachaPrizeId): F[Unit] = for {
-            gachaPrizes <- _gachaPersistence.list
-            gachaPrizeId = GachaPrizeId(
-              if (gachaPrizes.nonEmpty) gachaPrizes.map(_.id.id).max + 1 else 1
-            )
-            newGachaPrize = gachaPrize(gachaPrizeId)
-            _ = println(newGachaPrize.nonGachaEventItem)
-            _ <- _gachaPersistence.addGachaPrize(newGachaPrize)
-          } yield ()
+          override def addGachaPrize(
+            gachaPrizeByGachaPrizeId: GachaPrizeByGachaPrizeId
+          ): F[Unit] =
+            gachaPrizeUseCase.addGachaPrize(gachaPrizeByGachaPrizeId)
 
           override def listOfNow: F[Vector[GachaPrize[ItemStack]]] = for {
             prizes <- _gachaPersistence.list
