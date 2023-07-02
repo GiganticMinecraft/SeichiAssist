@@ -61,6 +61,7 @@ import com.github.unchama.seichiassist.subsystems._
 import com.github.unchama.seichiassist.subsystems.anywhereender.AnywhereEnderChestAPI
 import com.github.unchama.seichiassist.subsystems.breakcount.{BreakCountAPI, BreakCountReadAPI}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
+import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.BreakSkillTargetConfigAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.donate.DonatePremiumPointAPI
@@ -480,6 +481,11 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.vote.subsystems.fairyspeech.System.wired[IO]
   }
 
+  /* TODO: breakSkillTargetConfigSystemは本来privateであるべきだが、
+      BreakUtilで呼び出されているため、やむを得ずpublicになっている */
+  lazy val breakSkillTargetConfigSystem: subsystems.breakskilltargetconfig.System[IO, Player] =
+    subsystems.breakskilltargetconfig.System.wired[IO, SyncIO].unsafeRunSync()
+
   /* TODO: mineStackSystemは本来privateであるべきだが、mineStackにアイテムを格納するAPIが現状の
       BreakUtilの実装から呼び出されている都合上やむを得ずpublicになっている。*/
   lazy val mineStackSystem: subsystems.minestack.System[IO, Player, ItemStack] =
@@ -520,7 +526,8 @@ class SeichiAssist extends JavaPlugin() {
     sharedInventorySystem,
     mineStackSystem,
     consumeGachaTicketSystem,
-    openirontrapdoor.System.wired
+    openirontrapdoor.System.wired,
+    breakSkillTargetConfigSystem
   )
 
   private lazy val buildAssist: BuildAssist = {
@@ -695,6 +702,8 @@ class SeichiAssist extends JavaPlugin() {
     implicit val gachaAPI: GachaDrawAPI[IO, Player] = gachaSystem.api
     implicit val consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player] =
       consumeGachaTicketSystem.api
+    implicit val breakSkillTargetConfigAPI: BreakSkillTargetConfigAPI[IO, Player] =
+      breakSkillTargetConfigSystem.api
 
     val menuRouter = TopLevelRouter.apply
     import SeichiAssist.Scopes.globalChatInterceptionScope
