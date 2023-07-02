@@ -26,6 +26,7 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.infrastructure.{
   JdbcGachaEventPersistence,
   JdbcGachaPrizeListPersistence
 }
+import com.github.unchama.seichiassist.subsystems.gachaprize.usecase.GachaEventUseCase
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -41,12 +42,14 @@ object System {
     implicit val _serializeAndDeserialize: SerializeAndDeserialize[Nothing, ItemStack] =
       BukkitItemStackSerializeAndDeserialize
     implicit val _gachaPersistence: GachaPrizeListPersistence[F, ItemStack] =
-      new JdbcGachaPrizeListPersistence[F, ItemStack]()
+      new JdbcGachaPrizeListPersistence[F, ItemStack]
     implicit val _canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
       BukkitItemStackCanBeSignedAsGachaPrize
     implicit val _staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack] =
       BukkitStaticGachaPrizeFactory
-    val _gachaEventPersistence: GachaEventPersistence[F] = new JdbcGachaEventPersistence[F]
+    implicit val _gachaEventPersistence: GachaEventPersistence[F] =
+      new JdbcGachaEventPersistence[F]
+    val gachaEventUseCase: GachaEventUseCase[F, ItemStack] = new GachaEventUseCase[F, ItemStack]
 
     new System[F] {
       override implicit val api: GachaPrizeAPI[F, ItemStack, Player] =
@@ -89,22 +92,8 @@ object System {
           override def createdGachaEvents: F[Vector[GachaEvent]] =
             _gachaEventPersistence.gachaEvents
 
-          override def createGachaEvent(gachaEvent: GachaEvent): F[Unit] = {
-            for {
-              _ <- _gachaEventPersistence.createGachaEvent(gachaEvent)
-              currentAllGachaPrizes <- _gachaPersistence.list
-              maxId = currentAllGachaPrizes.map(_.id.id).max
-              eventGachaPrizes = currentAllGachaPrizes
-                .filter(_.nonGachaEventItem)
-                .map(gachaPrize =>
-                  gachaPrize.copy(
-                    gachaEvent = Some(gachaEvent.eventName),
-                    id = GachaPrizeId(maxId + gachaPrize.id.id)
-                  )
-                )
-              _ <- _gachaPersistence.addGachaPrizes(eventGachaPrizes)
-            } yield ()
-          }
+          override def createGachaEvent(gachaEvent: GachaEvent): F[Unit] =
+            gachaEventUseCase.createGachaEvent(gachaEvent)
 
           override def deleteGachaEvent(gachaEventName: GachaEventName): F[Unit] =
             _gachaEventPersistence.deleteGachaEvent(gachaEventName)
