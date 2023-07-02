@@ -9,6 +9,7 @@ trait GachaEventPersistence[F[_]] {
 
   /**
    * @return ガチャイベントを削除する作用
+   * TODO: GachaEventNameじゃなくてGachaEventを受け取りたい
    */
   def deleteGachaEvent(eventName: GachaEventName): F[Unit]
 
