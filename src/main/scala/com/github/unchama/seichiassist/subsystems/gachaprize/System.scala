@@ -8,28 +8,11 @@ import com.github.unchama.minecraft.bukkit.algebra.CloneableBukkitItemStack.inst
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.BukkitItemStackCanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.factories.BukkitStaticGachaPrizeFactory
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
-  GachaEvent,
-  GachaEventName,
-  GachaEventPersistence
-}
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
-  GachaPrize,
-  GachaPrizeId
-}
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
-  CanBeSignedAsGachaPrize,
-  GachaPrizeListPersistence,
-  StaticGachaPrizeFactory
-}
-import com.github.unchama.seichiassist.subsystems.gachaprize.infrastructure.{
-  JdbcGachaEventPersistence,
-  JdbcGachaPrizeListPersistence
-}
-import com.github.unchama.seichiassist.subsystems.gachaprize.usecase.{
-  GachaEventUseCase,
-  GachaPrizeUseCase
-}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{GachaEvent, GachaEventName, GachaEventPersistence}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{GachaPrize, GachaPrizeId}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{CanBeSignedAsGachaPrize, GachaPrizeListPersistence, StaticGachaPrizeFactory}
+import com.github.unchama.seichiassist.subsystems.gachaprize.infrastructure.{JdbcGachaEventPersistence, JdbcGachaPrizeListPersistence}
+import com.github.unchama.seichiassist.subsystems.gachaprize.usecase.{GachaEventUseCase, GachaPrizeUseCase}
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -38,8 +21,6 @@ trait System[F[_]] extends Subsystem[F] {
 }
 
 object System {
-
-  import cats.implicits._
 
   def wired[F[_]: ConcurrentEffect]: System[F] = {
     implicit val _serializeAndDeserialize: SerializeAndDeserialize[Nothing, ItemStack] =

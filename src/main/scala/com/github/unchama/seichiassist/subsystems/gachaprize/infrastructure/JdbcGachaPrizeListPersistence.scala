@@ -69,32 +69,6 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
     }
   }
 
-  override def addGachaPrizes(gachaPrizes: Vector[GachaPrize[ItemStack]]): F[Unit] =
-    Sync[F].delay {
-      DB.localTx { implicit session =>
-        // ここでは一つのイベントのアイテムのみが複数指定されることを想定しているので、1つ目のイベントで決め打ちする
-        val eventId = gachaPrizes.head.gachaEvent.flatMap { eventName =>
-          sql"SELECT id FROM gacha_events WHERE event_name = ${eventName.name}"
-            .map(_.int("id"))
-            .single()
-            .apply()
-        }
-
-        val batchParams = gachaPrizes.map { gachaPrize =>
-          Seq(
-            gachaPrize.id.id,
-            gachaPrize.probability.value,
-            serializeAndDeserialize.serialize(gachaPrize.itemStack),
-            eventId
-          )
-        }
-
-        sql"INSERT INTO gachadata (id, probability, itemstack, event_id) VALUES (?, ?, ?, ?)"
-          .batch(batchParams: _*)
-          .apply[List]()
-      }
-    }
-
   override def duplicateDefaultGachaPrizes(gachaEvent: GachaEvent): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
       sql"""INSERT INTO gachadata (probability, itemstack, event_id)
