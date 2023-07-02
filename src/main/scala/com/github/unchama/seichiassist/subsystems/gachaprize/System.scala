@@ -68,17 +68,8 @@ object System {
           ): F[Unit] =
             gachaPrizeUseCase.addGachaPrize(gachaPrizeByGachaPrizeId)
 
-          override def listOfNow: F[Vector[GachaPrize[ItemStack]]] = for {
-            prizes <- _gachaPersistence.list
-            createdEvents <- _gachaEventPersistence.gachaEvents
-          } yield {
-            createdEvents.find(_.isHolding) match {
-              case Some(value) =>
-                prizes.filter(_.gachaEvent.contains(value.eventName)) // :+ expBottle
-              case None =>
-                prizes.filter(_.nonGachaEventItem)
-            }
-          }
+          override def listOfNow: F[Vector[GachaPrize[ItemStack]]] =
+            gachaPrizeUseCase.listOfNow
 
           override def allGachaPrizeList: F[Vector[GachaPrize[ItemStack]]] =
             _gachaPersistence.list

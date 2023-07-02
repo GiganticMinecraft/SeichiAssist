@@ -2,13 +2,15 @@ package com.github.unchama.seichiassist.subsystems.gachaprize.usecase
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaPrizeListPersistence
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.GachaEventPersistence
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
   GachaPrize,
   GachaPrizeId
 }
 
 class GachaPrizeUseCase[F[_]: Sync, ItemStack](
-  implicit gachaPrizeListPersistence: GachaPrizeListPersistence[F, ItemStack]
+  implicit gachaPrizeListPersistence: GachaPrizeListPersistence[F, ItemStack],
+  gachaEventPersistence: GachaEventPersistence[F]
 ) {
 
   import cats.implicits._
@@ -26,5 +28,17 @@ class GachaPrizeUseCase[F[_]: Sync, ItemStack](
     originalGachaPrizes <- gachaPrizeListPersistence.list
     _ <- gachaPrizeListPersistence.removeGachaPrize(gachaPrizeId)
   } yield originalGachaPrizes.exists(_.id == gachaPrizeId)
+
+  def listOfNow: F[Vector[GachaPrize[ItemStack]]] = for {
+    prizes <- gachaPrizeListPersistence.list
+    createdEvents <- gachaEventPersistence.gachaEvents
+  } yield {
+    createdEvents.find(_.isHolding) match {
+      case Some(value) =>
+        prizes.filter(_.gachaEvent.contains(value.eventName))
+      case None =>
+        prizes.filter(_.nonGachaEventItem)
+    }
+  }
 
 }
