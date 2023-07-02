@@ -392,6 +392,11 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
         }
         .build()
 
+    private def toTimeString(localDate: LocalDate): String = {
+      val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+      dateTimeFormatter.format(localDate)
+    }
+
     val eventList: ContextualExecutor =
       ContextualExecutorBuilder
         .beginConfiguration()
@@ -400,7 +405,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
             events <- gachaPrizeAPI.createdGachaEvents
           } yield {
             val messages = "イベント名 | 開始日 | 終了日" +: events.map { event =>
-              s"${event.eventName} | ${event.getStartDateString} | ${event.getEndDateString}"
+              s"${event.eventName} | ${toTimeString(event.startDate)} | ${toTimeString(event.endDate)}"
             }
             MessageEffect(messages.toList)
           }

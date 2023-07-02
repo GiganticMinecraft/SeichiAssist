@@ -2,8 +2,16 @@ package com.github.unchama.seichiassist.subsystems.gachaprize.usecase
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaPrizeListPersistence
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{GachaEvent, GachaEventPersistence}
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{GachaPrize, GachaPrizeId}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
+  GachaEvent,
+  GachaEventPersistence
+}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
+  GachaPrize,
+  GachaPrizeId
+}
+
+import java.time.LocalDate
 
 class GachaPrizeUseCase[F[_]: Sync, ItemStack](
   implicit gachaPrizeListPersistence: GachaPrizeListPersistence[F, ItemStack],
@@ -17,9 +25,20 @@ class GachaPrizeUseCase[F[_]: Sync, ItemStack](
     _ <- gachaPrizeListPersistence.duplicateDefaultGachaPrizes(gachaEvent)
   } yield ()
 
+  private def isHolding(gachaEvent: GachaEvent): F[Boolean] = for {
+    now <- Sync[F].delay(LocalDate.now())
+    isAfterStartDateOrFirstDay = now.equals(gachaEvent.startDate) || now.isAfter(
+      gachaEvent.startDate
+    )
+    isBeforeEndDateOrEndDay = now.equals(gachaEvent.endDate) || now.isBefore(gachaEvent.endDate)
+  } yield isAfterStartDateOrFirstDay && isBeforeEndDateOrEndDay
+
   private def holdingGachaEvent: F[Option[GachaEvent]] = for {
     gachaEvents <- gachaEventPersistence.gachaEvents
-  } yield gachaEvents.find(_.isHolding)
+    holdingEvents <- gachaEvents.traverse { gachaEvent =>
+      isHolding(gachaEvent).ifM(Sync[F].pure(Some(gachaEvent)), Sync[F].pure(None))
+    }
+  } yield holdingEvents.find(_.nonEmpty)
 
   def addGachaPrize(gachaPrizeById: GachaPrizeId => GachaPrize[ItemStack]): F[Unit] = for {
     gachaPrizeList <- gachaPrizeListPersistence.list
