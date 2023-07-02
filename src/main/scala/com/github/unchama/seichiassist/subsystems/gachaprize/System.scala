@@ -91,6 +91,7 @@ object System {
                 prizes.filterNot(_.id == gachaPrizeId)
               }
               _ <- _gachaPersistence.deleteMineStackGachaObject(gachaPrizeId)
+              _ <- _gachaPersistence.removeGachaPrize(gachaPrizeId)
             } yield ()
 
             override def addGachaPrize(gachaPrize: GachaPrizeByGachaPrizeId): F[Unit] = for {
