@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.subsystems.gacha
 
 import cats.data.Kleisli
 import cats.effect.ConcurrentEffect
-import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.minecraft.bukkit.algebra.CloneableBukkitItemStack.instance
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
@@ -41,7 +40,7 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread: NonServerThreadContextShift](
+  def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread](
     implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
     gachaTicketAPI: GachaTicketAPI[F],
     mineStackAPI: MineStackAPI[F, Player, ItemStack]

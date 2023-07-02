@@ -6,7 +6,6 @@ import cats.effect.Sync
 import com.github.unchama.generic.ApplicativeExtra.whenAOrElse
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.domain.GrantState
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.GachaPrize
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
@@ -22,33 +21,36 @@ class BukkitGrantGachaPrize[F[_]: Sync: OnMinecraftServerThread](
   import cats.implicits._
 
   override def tryInsertIntoMineStack(
-    prize: GachaPrize[ItemStack]
-  ): Kleisli[F, Player, Boolean] =
+    prizes: Vector[GachaPrize[ItemStack]]
+  ): Kleisli[F, Player, Vector[GachaPrize[ItemStack]]] =
     Kleisli { player =>
-      val itemStack = prize.itemStack
       for {
         currentAutoMineStackState <- mineStackAPI.autoMineStack(player)
-        isSucceedTryIntoMineStack <- whenAOrElse(currentAutoMineStackState)(
-          mineStackAPI
-            .mineStackRepository
-            .tryIntoMineStack(player, itemStack, itemStack.getAmount),
-          false
-        )
-      } yield isSucceedTryIntoMineStack
+        results <- prizes.traverse { gachaPrize =>
+          val itemStack = gachaPrize.itemStack
+          whenAOrElse(currentAutoMineStackState)(
+            mineStackAPI
+              .mineStackRepository
+              .tryIntoMineStack(player, itemStack, itemStack.getAmount)
+              .map(result => gachaPrize -> result),
+            gachaPrize -> false
+          )
+        }
+      } yield results.collect {
+        case (gachaPrize, result) if !result => gachaPrize
+      }
     }
 
   override def insertIntoPlayerInventoryOrDrop(
-    prize: GachaPrize[ItemStack],
+    prizes: Vector[GachaPrize[ItemStack]],
     ownerName: Option[String]
-  ): Kleisli[F, Player, GrantState] =
+  ): Kleisli[F, Player, Unit] =
     Kleisli { player =>
-      for {
-        isInventoryFull <- Sync[F].delay(InventoryOperations.isPlayerInventoryFull(player))
-        newItemStack = ownerName.fold(prize.itemStack)(prize.materializeWithOwnerSignature)
-        _ <-
-          InventoryOperations.grantItemStacksEffect(newItemStack).apply(player)
-      } yield if (isInventoryFull) GrantState.AddedInventory else GrantState.Dropped
+      val newItemStacks = prizes.map { prize =>
+        ownerName.fold(prize.itemStack)(prize.materializeWithOwnerSignature)
+      }
 
+      InventoryOperations.grantItemStacksEffect(newItemStacks: _*).apply(player)
     }
 
   override implicit val F: Monad[F] = implicitly

@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.subsystems.gacha.bukkit
 import cats.data.Kleisli
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, IO}
-import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.ParserResponse.{failWith, succeedWith}
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
@@ -41,9 +40,7 @@ import java.time.format.DateTimeFormatter
 import java.util.UUID
 import scala.util.chaining.scalaUtilChainingOps
 
-class GachaCommand[
-  F[_]: OnMinecraftServerThread: NonServerThreadContextShift: ConcurrentEffect
-](
+class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
   implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
   canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack],
   gachaTicketAPI: GachaTicketAPI[F],
@@ -172,7 +169,9 @@ class GachaCommand[
             )
             existsGachaPrize = gachaPrize.nonEmpty
             _ <- new BukkitGrantGachaPrize[F]()
-              .insertIntoPlayerInventoryOrDrop(gachaPrize.get, ownerName)(context.sender)
+              .insertIntoPlayerInventoryOrDrop(Vector(gachaPrize.get), ownerName)(
+                context.sender
+              )
               .whenA(existsGachaPrize)
           } yield {
             if (existsGachaPrize)

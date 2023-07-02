@@ -12,24 +12,33 @@ trait GrantGachaPrize[F[_], ItemStack] {
 
   implicit val F: Monad[F]
 
-  def tryInsertIntoMineStack(prize: GachaPrize[ItemStack]): Kleisli[F, Player, Boolean]
+  /**
+   * @param prizes MineStackに格納したい[[GachaPrize]]の集合
+   * @return `prizes`をMineStackに格納することを試み、格納できなかった[[GachaPrize]]の集合を返す作用
+   */
+  def tryInsertIntoMineStack(
+    prizes: Vector[GachaPrize[ItemStack]]
+  ): Kleisli[F, Player, Vector[GachaPrize[ItemStack]]]
 
   def insertIntoPlayerInventoryOrDrop(
-    prize: GachaPrize[ItemStack],
+    prizes: Vector[GachaPrize[ItemStack]],
     ownerName: Option[String]
-  ): Kleisli[F, Player, GrantState]
+  ): Kleisli[F, Player, Unit]
 
-  final def grantGachaPrize(prize: GachaPrize[ItemStack]): Kleisli[F, Player, GrantState] =
+  final def grantGachaPrize(
+    prizes: Vector[GachaPrize[ItemStack]]
+  ): Kleisli[F, Player, GrantState] =
     Kleisli { player =>
       for {
-        insertMineStackResult <- tryInsertIntoMineStack(prize)(player)
-        grantState <-
-          if (insertMineStackResult) {
-            F.pure(GrantState.GrantedMineStack)
-          } else {
-            insertIntoPlayerInventoryOrDrop(prize, Some(player.getName))(player)
-          }
-      } yield grantState
+        failedIntoMineStackGachaPrizes <- tryInsertIntoMineStack(prizes)(player)
+        _ <- insertIntoPlayerInventoryOrDrop(
+          failedIntoMineStackGachaPrizes,
+          Some(player.getName)
+        )(player).whenA(failedIntoMineStackGachaPrizes.nonEmpty)
+      } yield {
+        if (failedIntoMineStackGachaPrizes.isEmpty) GrantState.GrantedMineStack
+        else GrantState.GrantedInventory
+      }
     }
 
 }

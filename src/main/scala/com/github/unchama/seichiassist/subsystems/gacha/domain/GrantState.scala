@@ -4,10 +4,15 @@ sealed trait GrantState
 
 object GrantState {
 
+  /**
+   * ガチャ景品をMineStackに付与した
+   */
   case object GrantedMineStack extends GrantState
 
-  case object AddedInventory extends GrantState
-
-  case object Dropped extends GrantState
+  /**
+   * ガチャ景品をインベントリに付与した
+   * ドロップしたことは考慮しない
+   */
+  case object GrantedInventory extends GrantState
 
 }
