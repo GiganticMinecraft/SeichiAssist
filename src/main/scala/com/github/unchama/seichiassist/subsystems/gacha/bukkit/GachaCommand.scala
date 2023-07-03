@@ -242,7 +242,7 @@ class GachaCommand[
           import shapeless.::
           val gachaPrizeId :: shapeless.HNil = context.args.parsed
           // optional
-          val ownerName = context.args.yetToBeParsed.head
+          val ownerName = context.args.yetToBeParsed.headOption
 
           for {
             gachaPrize <- gachaPrizeAPI.fetch(GachaPrizeId(gachaPrizeId))
