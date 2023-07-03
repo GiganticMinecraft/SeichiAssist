@@ -2,11 +2,15 @@ package com.github.unchama.seichiassist.subsystems.gacha.bukkit
 
 import cats.data.Kleisli
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
-import cats.effect.{ConcurrentEffect, Effect, IO}
+import cats.effect.{ConcurrentEffect, Effect}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.ParserResponse.{failWith, succeedWith}
-import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers, SingleArgumentParser}
+import com.github.unchama.contextualexecutor.builder.{
+  ContextualExecutorBuilder,
+  Parsers,
+  SingleArgumentParser
+}
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.minecraft.bukkit.algebra.CloneableBukkitItemStack.instance
@@ -14,11 +18,20 @@ import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTempla
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.BukkitGrantGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.PlayerName
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{GachaTicketAmount, GrantResultOfGachaTicketFromAdminTeam}
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{
+  GachaTicketAmount,
+  GrantResultOfGachaTicketFromAdminTeam
+}
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain._
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{GachaEvent, GachaEventName}
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{GachaPrize, GachaPrizeId}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
+  GachaEvent,
+  GachaEventName
+}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
+  GachaPrize,
+  GachaPrizeId
+}
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.targetedeffect.DeferredEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
@@ -243,26 +256,28 @@ class GachaCommand[
         }
 
     val add: ContextualExecutor =
-      playerCommandBuilder.thenParse(probabilityParser).thenParse(eventName => Right(GachaEventName(eventName))).buildWithExecutionF {
-        context =>
+      playerCommandBuilder
+        .thenParse(probabilityParser)
+        .thenParse(eventName => Right(GachaEventName(eventName)))
+        .buildWithExecutionF { context =>
           import shapeless.::
           val player = context.sender
           val probability :: eventName :: HNil = context.args.parsed
           val mainHandItem = player.getInventory.getItemInMainHand
           for {
-              _ <- gachaPrizeAPI.addGachaPrize(
-                GachaPrize(
-                  mainHandItem,
-                  GachaProbability(probability),
-                  probability < 0.1,
-                  _,
-                  Some(eventName)
-                )
+            _ <- gachaPrizeAPI.addGachaPrize(
+              GachaPrize(
+                mainHandItem,
+                GachaProbability(probability),
+                probability < 0.1,
+                _,
+                Some(eventName)
               )
-            } yield MessageEffect(
-              List("ガチャアイテムを追加しました！", "ガチャアイテムを保存するためには/gacha saveを実行してください。")
             )
-      }
+          } yield MessageEffect(
+            List("ガチャアイテムを追加しました！", "ガチャアイテムを保存するためには/gacha saveを実行してください。")
+          )
+        }
 
     val list: ContextualExecutor =
       ContextualExecutorBuilder.beginConfiguration.buildWithExecutionF { context =>
