@@ -81,11 +81,12 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
 
   override def duplicateDefaultGachaPrizes(gachaEvent: GachaEvent): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
+      val eventName = gachaEvent.eventName.name
+
       sql"""INSERT INTO gachadata (probability, itemstack, event_id)
-           | SELECT probability, itemstack, event_id FROM gachadata
-           | INNER JOIN gacha_events
-           | ON gachadata.event_id IS NOT NULL
-           | AND gacha_events.event_name = gachadata.event_name""".stripMargin.execute().apply()
+           | (SELECT probability, itemstack, (SELECT id FROM gacha_events WHERE event_name = $eventName) FROM gachadata
+           | WHERE event_id IS NULL)
+         """.stripMargin.execute().apply()
     }
   }
 }
