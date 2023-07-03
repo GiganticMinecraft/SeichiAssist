@@ -138,7 +138,7 @@ class GachaCommand[
           failWith("指定されたIDのアイテムは存在しません！")
       })
 
-    private val gachaPrizeIdExistsParser: SingleArgumentParser[Int] =
+    private val gachaPrizeIdExistsParser: SingleArgumentParser[GachaPrizeId] =
       Parsers
         .closedRangeInt[Int Refined Positive](
           1,
@@ -146,8 +146,9 @@ class GachaCommand[
           MessageEffect("IDは正の値を指定してください。")
         )
         .andThen(_.flatMap { intId =>
-          if (gachaPrizeAPI.existsGachaPrize(GachaPrizeId(intId)).toIO.unsafeRunSync()) {
-            succeedWith(intId)
+          val id = GachaPrizeId(intId)
+          if (gachaPrizeAPI.existsGachaPrize(id).toIO.unsafeRunSync()) {
+            succeedWith(id)
           } else {
             failWith("指定されたIDのアイテムは存在しません！")
           }
@@ -258,12 +259,11 @@ class GachaCommand[
         }
 
     val add: ContextualExecutor =
-      playerCommandBuilder.thenParse(probabilityParser).thenParse(Parsers.identity).buildWith {
+      playerCommandBuilder.thenParse(probabilityParser).thenParse(eventName => Right(GachaEventName(eventName))).buildWith {
         context =>
           import shapeless.::
           val player = context.sender
-          val probability :: e :: HNil = context.args.parsed
-          val eventName = GachaEventName(e)
+          val probability :: eventName :: HNil = context.args.parsed
           val mainHandItem = player.getInventory.getItemInMainHand
           val eff =
             for {
@@ -387,9 +387,8 @@ class GachaCommand[
       .thenParse(probabilityParser)
       .buildWith { context =>
         import shapeless.::
-        val target :: np :: HNil = context.args.parsed
+        val target :: newProb :: HNil = context.args.parsed
         val targetId = GachaPrizeId(target)
-        val newProb = np
         val eff = for {
           existingGachaPrize <- gachaPrizeAPI.fetch(targetId)
           existsGachaPrize = existingGachaPrize.nonEmpty

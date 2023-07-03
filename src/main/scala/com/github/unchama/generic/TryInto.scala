@@ -3,7 +3,7 @@ package com.github.unchama.generic
 import eu.timepit.refined.api.{Refined, Validate}
 import eu.timepit.refined.refineV
 
-trait TryInto[From, To, ConversionErr] {
+sealed trait TryInto[From, To, ConversionErr] {
   def tryInto(from: From): Either[ConversionErr, To]
 }
 
