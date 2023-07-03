@@ -409,7 +409,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
             events <- gachaPrizeAPI.createdGachaEvents
           } yield {
             val messages = "イベント名 | 開始日 | 終了日" +: events.map { event =>
-              s"${event.eventName} | ${toTimeString(event.startDate)} | ${toTimeString(event.endDate)}"
+              s"${event.eventName.name} | ${toTimeString(event.startDate)} | ${toTimeString(event.endDate)}"
             }
             MessageEffect(messages.toList)
           }
