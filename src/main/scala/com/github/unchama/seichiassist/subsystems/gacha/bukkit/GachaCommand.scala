@@ -238,11 +238,11 @@ class GachaCommand[
             MessageEffect("IDは0以上の整数を指定してください。")
           )
         )
-        .thenParse(Parsers.identity)
         .buildWithExecutionF { context =>
           import shapeless.::
-          val gachaPrizeId :: owner :: shapeless.HNil = context.args.parsed
-          val ownerName = Some(owner)
+          val gachaPrizeId :: shapeless.HNil = context.args.parsed
+          // optional
+          val ownerName = context.args.yetToBeParsed.head
 
           for {
             gachaPrize <- gachaPrizeAPI.fetch(GachaPrizeId(gachaPrizeId))
