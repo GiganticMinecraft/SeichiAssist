@@ -8,8 +8,13 @@ sealed trait TryInto[From, To, ConversionErr] {
 }
 
 object TryInto {
-  implicit def refineByPredicate[A, P: Validate[A, *]]: TryInto[A, A Refined P, String] =
-    from => refineV(from)
+  private def fromFunction[F, T, E](fn: F => Either[E, T]): TryInto[F, T, E] = {
+    new TryInto[F, T, E] {
+      override def tryInto(from: F): Either[E, T] = fn(from)
+    }
+  }
 
-  implicit def refl[From <: To, To]: TryInto[From, To, Nothing] = from => Right(from)
+  implicit def refineByPredicate[A, P: Validate[A, *]]: TryInto[A, A Refined P, String] = fromFunction(refineV(_))
+
+  implicit def refl[From <: To, To]: TryInto[From, To, Nothing] = fromFunction(from => Right(from))
 }

@@ -18,8 +18,18 @@ sealed trait CoerceTo[-From, +To] {
 }
 
 object CoerceTo {
-  implicit def identity[T]: CoerceTo[T, T] = t => t
+  implicit def identity[T]: CoerceTo[T, T] = new CoerceTo[T, T] {
+    /**
+     * 値の情報を削除する。削除は副作用を起こしてはならず、いかなる例外も起こしてはならず、べき等、かつ一貫した値を生成する必要がある。
+     *
+     * @param from
+     * @return
+     */
+    override def coerceTo(from: T): T = from
+  }
 
   implicit def forgetRefinedPredicate[T, Predicate]: CoerceTo[T Refined Predicate, T] =
-    refined => refined.value
+    {
+      case Refined(value: T) => value
+    }
 }
