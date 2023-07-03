@@ -107,13 +107,10 @@ jobs:
           reviewdog-name: scalafmt
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Check lint with Scalafix on push
-        if: ${{ (github.event_name == 'push')}}
+      - name: Run scalafix check
+        # cf. https://scalacenter.github.io/scalafix/docs/users/installation.html#enforce-in-ci
         run: sbt "scalafix --check"
-      - name: Run lint with Scalafix on PR
-        if: ${{ (github.event_name == 'pull_request')}}
-        run: sbt scalafixAll
-      - name: Run reviewdog for Scalafix
+      - name: Annotate scalafix diagnostics with reviewdog
         uses: ./.github/actions/run-reviewdog
         if: ${{ (github.event_name == 'pull_request') && failure() }}
         with:
@@ -175,7 +172,7 @@ jobs:
           git push origin $TAG_NAME
           echo "value=$TAG_NAME" >> $GITHUB_OUTPUT
       - name: Download artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: SeichiAssist-build
         id: download
@@ -197,7 +194,7 @@ jobs:
       - output-sha
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: SeichiAssist-build
         id: download
@@ -250,7 +247,7 @@ jobs:
         with:
           webhook: ${{ secrets.DISCORD_DEBUG_SERVER_NOTIFICATION_WEBHOOK }}
           title: "デバッグサーバーへデプロイ"
-          description: "deb_s1等にプラグインを配置しました。数分後に再起動します。"
+          description: "deb_s1等にプラグインを配置しました。30分程度で再起動します。"
           username: GitHub Actions
           noprefix: true
           avatar_url: ${{ secrets.DISCORD_AVATAR_URL }}
@@ -262,7 +259,7 @@ jobs:
       - build_test_and_upload
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: SeichiAssist-build
         id: download

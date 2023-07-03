@@ -87,7 +87,7 @@ services:
       - spigotb
     stdin_open: true
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin:4.9.7
+    image: phpmyadmin/phpmyadmin:5.2.1
     environment:
       - TZ=Asia/Tokyo
       - PMA_ARBITRARY=1
@@ -108,7 +108,7 @@ services:
     volumes:
       - redis-data:/data
   db:
-    image: mariadb:10.11.3
+    image: mariadb:10.11.4
     environment:
       - TZ=Asia/Tokyo
       - MYSQL_ROOT_PASSWORD=unchamaisgod

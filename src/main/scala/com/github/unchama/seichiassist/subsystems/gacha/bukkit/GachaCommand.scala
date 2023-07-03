@@ -287,7 +287,7 @@ class GachaCommand[
       ContextualExecutorBuilder.beginConfiguration.buildWithExecutionF { context =>
         val eventName = context.args.yetToBeParsed.headOption.map(GachaEventName)
         val eff = for {
-          gachaPrizes <- gachaPrizeAPI.listOfNow
+          gachaPrizes <- gachaPrizeAPI.allGachaPrizeList
         } yield {
           val gachaPrizeInformation = gachaPrizes
             .filter { gachaPrize =>
@@ -428,10 +428,12 @@ class GachaCommand[
 
     val save: ContextualExecutor =
       ContextualExecutorBuilder.beginConfiguration.buildWithEffectAsExecution {
-        DeferredEffect(for {
-          gachaPrizes <- gachaPrizeAPI.listOfNow.toIO
-          _ <- gachaPrizeAPI.replace(gachaPrizes).toIO
+        val eff = DeferredEffect(for {
+          gachaPrizes <- gachaPrizeAPI.allGachaPrizeList
+          _ <- gachaPrizeAPI.replace(gachaPrizes)
         } yield MessageEffect("ガチャデータをmysqlに保存しました。"))
+
+        eff.toIO
       }
 
     val reload: ContextualExecutor =
@@ -457,7 +459,7 @@ class GachaCommand[
 
           if (!dateRegex.matches(startDate) || !dateRegex.matches(endDate)) {
             IO(MessageEffect(s"${RED}開始日/終了日はyyyy-MM-ddの形式で指定してください。"))
-          } else if (eventName.name.length <= 30) {
+          } else if (eventName.name.length > 30) {
             IO(MessageEffect(s"${RED}イベント名は30字以内で指定してください。"))
           } else {
             val eff = for {

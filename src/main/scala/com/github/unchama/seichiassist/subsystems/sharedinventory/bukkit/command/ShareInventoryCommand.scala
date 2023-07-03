@@ -8,7 +8,6 @@ import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventor
 import com.github.unchama.seichiassist.subsystems.sharedinventory.domain.SharedFlag
 import com.github.unchama.seichiassist.subsystems.sharedinventory.domain.bukkit.InventoryContents
 import com.github.unchama.seichiassist.util.InventoryOperations
-import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.CommandEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
@@ -30,13 +29,13 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
       for {
         // TODO: this `toIO` is not needed
         sharedFlag <- sharedInventoryAPI.sharedFlag(sender).toIO
-        _ <-
+        eff <-
           if (sharedFlag == SharedFlag.Sharing) {
             withdrawFromSharedInventory(sender)
           } else {
             depositToSharedInventory(sender)
           }
-      } yield emptyEffect
+      } yield eff
     }
     .asNonBlockingTabExecutor()
 
