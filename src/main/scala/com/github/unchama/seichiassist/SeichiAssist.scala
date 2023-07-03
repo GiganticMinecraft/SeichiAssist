@@ -417,7 +417,7 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val gachaSystem: subsystems.gacha.System[IO, Player] = {
     implicit val gachaTicketAPI: GachaTicketAPI[IO] = gachaTicketSystem.api
 
-    subsystems.gacha.System.wired[IO].unsafeRunSync()
+    subsystems.gacha.System.wired[IO]
   }
 
   private lazy val consumeGachaTicketSystem

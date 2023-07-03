@@ -38,13 +38,11 @@ trait System[F[_], Player] extends Subsystem[F] {
 
 object System {
 
-  import cats.implicits._
-
   def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread](
     implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
     gachaTicketAPI: GachaTicketAPI[F],
     mineStackAPI: MineStackAPI[F, Player, ItemStack]
-  ): F[System[F, Player]] = {
+  ): System[F, Player] = {
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
       gachaPrizeAPI.canBeSignedAsGachaPrize
     implicit val grantGachaPrize: GrantGachaPrize[F, ItemStack] =
@@ -53,23 +51,17 @@ object System {
       gachaPrizeAPI.staticGachaPrizeFactory
     implicit val lotteryOfGachaItems: LotteryOfGachaItems[F, ItemStack] =
       new LotteryOfGachaItems[F, ItemStack]
+    implicit val drawGacha: DrawGacha[F, Player] = new BukkitDrawGacha[F]
 
-    for {
-      gachaPrizesListReference <- gachaPrizeAPI.listOfNow
-    } yield {
-      implicit val _drawGacha: DrawGacha[F, Player] =
-        new BukkitDrawGacha[F](gachaPrizesListReference)
+    new System[F, Player] {
+      override val api: GachaDrawAPI[F, Player] = (draws: Int) =>
+        Kleisli { player => drawGacha.draw(player, draws) }
 
-      new System[F, Player] {
-        override val api: GachaDrawAPI[F, Player] = (draws: Int) =>
-          Kleisli { player => _drawGacha.draw(player, draws) }
+      override val commands: Map[String, TabExecutor] = Map(
+        "gacha" -> new GachaCommand[F].executor
+      )
 
-        override val commands: Map[String, TabExecutor] = Map(
-          "gacha" -> new GachaCommand[F].executor
-        )
-
-        override val listeners: Seq[Listener] = Seq(new PlayerPullGachaListener[F])
-      }
+      override val listeners: Seq[Listener] = Seq(new PlayerPullGachaListener[F])
     }
   }
 
