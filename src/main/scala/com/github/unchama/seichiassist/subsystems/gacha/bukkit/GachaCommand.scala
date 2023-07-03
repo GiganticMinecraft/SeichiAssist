@@ -193,14 +193,16 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
           val probability = args.head.asInstanceOf[Double]
           val eventName = context.args.yetToBeParsed.headOption.map(GachaEventName)
           val mainHandItem = player.getInventory.getItemInMainHand
+
           val eff = for {
+            events <- gachaPrizeAPI.createdGachaEvents
             _ <- gachaPrizeAPI.addGachaPrize(
               GachaPrize(
                 mainHandItem,
                 GachaProbability(probability),
                 probability < 0.1,
                 _,
-                eventName
+                events.find(gachaEvent => eventName.contains(gachaEvent.eventName))
               )
             )
           } yield MessageEffect(List("ガチャアイテムを追加しました！"))
@@ -221,7 +223,9 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
               .filter { gachaPrize =>
                 if (eventName.isEmpty) gachaPrize.nonGachaEventItem
                 else
-                  gachaPrize.isGachaEventItem && gachaPrize.gachaEvent.map(_.eventName) == eventName
+                  gachaPrize.isGachaEventItem && gachaPrize
+                    .gachaEvent
+                    .map(_.eventName) == eventName
               }
               .sortBy(_.id.id)
               .map { gachaPrize =>
