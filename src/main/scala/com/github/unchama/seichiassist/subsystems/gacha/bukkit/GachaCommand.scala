@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gacha.bukkit
 
 import cats.data.Kleisli
+import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, Effect, IO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.contextualexecutor.ContextualExecutor
@@ -176,18 +177,17 @@ class GachaCommand[
       )
       .buildWithExecutionCSEffect { context =>
         import shapeless.::
-        import cats.effect.implicits._
         val selector :: amount :: HNil = context.args.parsed
         val gachaTicketAmount = GachaTicketAmount(amount)
         selector match {
           case GiveAll =>
             Kleisli
-              .liftF(gachaTicketAPI.addToAllKnownPlayers(gachaTicketAmount).toIO)
+              .liftF(gachaTicketAPI.addToAllKnownPlayers(gachaTicketAmount))
               .flatMap(_ => MessageEffectF(s"${GREEN}全プレイヤーへガチャ券${amount}枚加算成功"))
           case ByUUID(uuid) =>
             Kleisli
-              .liftF[IO, CommandSender, GrantResultOfGachaTicketFromAdminTeam](
-                gachaTicketAPI.addByUUID(gachaTicketAmount, uuid).toIO
+              .liftF[F, CommandSender, GrantResultOfGachaTicketFromAdminTeam](
+                gachaTicketAPI.addByUUID(gachaTicketAmount, uuid)
               )
               .flatMap {
                 case GrantResultOfGachaTicketFromAdminTeam.Success =>
@@ -199,8 +199,8 @@ class GachaCommand[
               }
           case ByName(playerLogin) =>
             Kleisli
-              .liftF[IO, CommandSender, GrantResultOfGachaTicketFromAdminTeam](
-                gachaTicketAPI.addByPlayerName(gachaTicketAmount, PlayerName(playerLogin)).toIO
+              .liftF[F, CommandSender, GrantResultOfGachaTicketFromAdminTeam](
+                gachaTicketAPI.addByPlayerName(gachaTicketAmount, PlayerName(playerLogin))
               )
               .flatMap {
                 case GrantResultOfGachaTicketFromAdminTeam.Success =>
@@ -385,11 +385,11 @@ class GachaCommand[
       }
 
     val clear: ContextualExecutor =
-      ContextualExecutorBuilder.beginConfiguration.buildWithEffectAsExecution {
+      ContextualExecutorBuilder.beginConfiguration.buildWithExecutionCSEffect { _ =>
         DeferredEffect(
           for {
-            _ <- gachaPrizeAPI.clear.toIO
-          } yield MessageEffect(
+            _ <- gachaPrizeAPI.clear
+          } yield MessageEffectF(
             List(
               "すべて削除しました。",
               "/gacha saveを実行するとmysqlのデータも全削除されます。",
@@ -400,18 +400,18 @@ class GachaCommand[
       }
 
     val save: ContextualExecutor =
-      ContextualExecutorBuilder.beginConfiguration.buildWithEffectAsExecution {
+      ContextualExecutorBuilder.beginConfiguration.buildWithExecutionCSEffect { _ =>
         DeferredEffect(for {
           gachaPrizes <- gachaPrizeAPI.allGachaPrizeList
           _ <- gachaPrizeAPI.replace(gachaPrizes)
-        } yield MessageEffect("ガチャデータをmysqlに保存しました。"))
+        } yield MessageEffectF("ガチャデータをmysqlに保存しました。"))
       }
 
     val reload: ContextualExecutor =
-      ContextualExecutorBuilder.beginConfiguration.buildWithEffectAsExecution {
+      ContextualExecutorBuilder.beginConfiguration.buildWithExecutionCSEffect { _ =>
         DeferredEffect(for {
           _ <- gachaPrizeAPI.load
-        } yield MessageEffect("ガチャデータをmysqlから読み込みました。"))
+        } yield MessageEffectF("ガチャデータをmysqlから読み込みました。"))
       }
 
     val createEvent: ContextualExecutor =
