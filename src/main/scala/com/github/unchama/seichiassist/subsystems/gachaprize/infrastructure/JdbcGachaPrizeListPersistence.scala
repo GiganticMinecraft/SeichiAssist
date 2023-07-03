@@ -21,14 +21,14 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
   override def list: F[Vector[GachaPrize[ItemStack]]] = {
     Sync[F].delay {
       DB.readOnly { implicit session =>
-        sql"""SELECT gachadata.id AS gacha_prize_id, probability, itemstack, event_name, event_start_time, event_start_date FROM gachadata
+        sql"""SELECT gachadata.id AS gacha_prize_id, probability, itemstack, event_name, event_start_time, event_end_time FROM gachadata
              | LEFT OUTER JOIN gacha_events
              | ON gachadata.event_id = gacha_events.id"""
           .stripMargin
           .map { rs =>
             // TODO ガチャアイテムに対して記名を行うかどうかを確率に依存すべきではない
             val probability = rs.double("probability")
-            val gachaEvent = rs.stringOpt("gacha_prize_id").map { eventName =>
+            val gachaEvent = rs.stringOpt("event_name").map { eventName =>
               GachaEvent(
                 GachaEventName(eventName),
                 rs.localDate("event_start_time"),
