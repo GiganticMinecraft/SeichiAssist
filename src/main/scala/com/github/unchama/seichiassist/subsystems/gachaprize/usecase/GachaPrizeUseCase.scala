@@ -1,7 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.gachaprize.usecase
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaPrizeListPersistence
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
+  GachaPrizeListPersistence,
+  GachaProbability,
+  StaticGachaPrizeFactory
+}
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
   GachaEvent,
   GachaEventPersistence
@@ -10,12 +14,14 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
   GachaPrize,
   GachaPrizeId
 }
+import com.github.unchama.generic.Cloneable
 
 import java.time.LocalDate
 
-class GachaPrizeUseCase[F[_]: Sync, ItemStack](
+class GachaPrizeUseCase[F[_]: Sync, ItemStack: Cloneable](
   implicit gachaPrizeListPersistence: GachaPrizeListPersistence[F, ItemStack],
-  gachaEventPersistence: GachaEventPersistence[F]
+  gachaEventPersistence: GachaEventPersistence[F],
+  gachaPrizeFactory: StaticGachaPrizeFactory[ItemStack]
 ) {
 
   import cats.implicits._
@@ -55,6 +61,13 @@ class GachaPrizeUseCase[F[_]: Sync, ItemStack](
   def listOfNow: F[Vector[GachaPrize[ItemStack]]] = for {
     gachaPrizes <- gachaPrizeListPersistence.list
     holingGachaEvent <- holdingGachaEvent
-  } yield gachaPrizes.filter(_.gachaEvent == holingGachaEvent)
+    expBottle = GachaPrize(
+      gachaPrizeFactory.expBottle,
+      GachaProbability(0.1),
+      signOwner = false,
+      GachaPrizeId(2),
+      None
+    )
+  } yield gachaPrizes.filter(_.gachaEvent == holingGachaEvent) :+ expBottle
 
 }

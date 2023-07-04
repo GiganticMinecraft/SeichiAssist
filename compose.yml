@@ -115,6 +115,7 @@ services:
       - MYSQL_DATABASE=seichiassist
     command: [
         '--wait_timeout=86400',
+        '--innodb_autoinc_lock_mode=0'
     ]
     networks:
       - seichi
