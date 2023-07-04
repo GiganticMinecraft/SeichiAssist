@@ -125,9 +125,9 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
         val gachaTicketAmount = GachaTicketAmount(amount)
         args.head.toString match {
           case "all" =>
-            Kleisli
-              .liftF(gachaTicketAPI.addToAllKnownPlayers(gachaTicketAmount))
-              .flatMap(_ => MessageEffectF(s"${GREEN}全プレイヤーへガチャ券${amount}枚加算成功"))
+            Kleisli.liftF[F, CommandSender, Unit](
+              gachaTicketAPI.addToAllKnownPlayers(gachaTicketAmount)
+            ) *> MessageEffectF(s"${GREEN}全プレイヤーへガチャ券${amount}枚加算成功")
           case value =>
             val uuidRegex =
               "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}".r

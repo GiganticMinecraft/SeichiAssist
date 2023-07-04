@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions
 
 import cats.effect.{IO, Sync}
-import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.{
   DrawGacha,
