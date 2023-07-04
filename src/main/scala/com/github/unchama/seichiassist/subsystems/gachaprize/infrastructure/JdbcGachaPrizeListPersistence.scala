@@ -3,16 +3,11 @@ package com.github.unchama.seichiassist.subsystems.gachaprize.infrastructure
 import cats.effect.Sync
 import com.github.unchama.generic.serialization.SerializeAndDeserialize
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain._
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
-  GachaEvent,
-  GachaEventName
-}
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
-  GachaPrize,
-  GachaPrizeId
-}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{GachaEvent, GachaEventName}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.GachaPrize
 import scalikejdbc._
 import com.github.unchama.generic.Cloneable
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain
 
 class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
   implicit serializeAndDeserialize: SerializeAndDeserialize[Nothing, ItemStack]
@@ -39,7 +34,7 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
             serializeAndDeserialize
               .deserialize(rs.string("itemstack"))
               .map { itemStack =>
-                gachaprize.GachaPrize(
+                domain.GachaPrize(
                   itemStack,
                   GachaProbability(probability),
                   probability < 0.1,

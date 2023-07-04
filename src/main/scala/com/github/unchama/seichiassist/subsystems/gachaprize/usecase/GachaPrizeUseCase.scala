@@ -1,20 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.gachaprize.usecase
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
-  GachaPrizeListPersistence,
-  GachaProbability,
-  StaticGachaPrizeFactory
-}
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
-  GachaEvent,
-  GachaEventPersistence
-}
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
-  GachaPrize,
-  GachaPrizeId
-}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{GachaPrize, GachaPrizeId, GachaPrizeListPersistence, GachaProbability, StaticGachaPrizeFactory}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{GachaEvent, GachaEventPersistence}
 import com.github.unchama.generic.Cloneable
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain
 
 import java.time.LocalDate
 
@@ -61,7 +51,7 @@ class GachaPrizeUseCase[F[_]: Sync, ItemStack: Cloneable](
   def listOfNow: F[Vector[GachaPrize[ItemStack]]] = for {
     gachaPrizes <- gachaPrizeListPersistence.list
     holingGachaEvent <- holdingGachaEvent
-    expBottle = GachaPrize(
+    expBottle = domain.GachaPrize(
       gachaPrizeFactory.expBottle,
       GachaProbability(0.1),
       signOwner = false,

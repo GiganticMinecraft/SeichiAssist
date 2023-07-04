@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gachaprize
 
 import cats.effect.concurrent.Ref
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.GachaPrize
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaPrize
 
 package object domain {
 

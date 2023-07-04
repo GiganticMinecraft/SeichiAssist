@@ -1,15 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.gacha.domain
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
-  GachaPrize,
-  GachaPrizeId
-}
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
-  GachaProbability,
-  StaticGachaPrizeFactory,
-  gachaprize
-}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.GachaPrize
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{GachaPrize, GachaPrizeId, GachaProbability, StaticGachaPrizeFactory, gachaprize}
 import com.github.unchama.generic.Cloneable
 
 import scala.annotation.tailrec
@@ -48,7 +41,7 @@ class LotteryOfGachaItems[F[_]: Sync, ItemStack: Cloneable](
     gachaPrizes: Vector[GachaPrize[ItemStack]]
   ): GachaPrize[ItemStack] = {
     if (gachaPrizes.isEmpty) {
-      gachaprize.GachaPrize(
+      GachaPrize(
         staticGachaPrizeFactory.gachaRingo,
         GachaProbability(1.0),
         signOwner = false,

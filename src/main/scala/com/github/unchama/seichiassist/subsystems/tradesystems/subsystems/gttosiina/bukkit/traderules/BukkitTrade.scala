@@ -1,10 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.bukkit.traderules
 
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.CanBeSignedAsGachaPrize
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{CanBeSignedAsGachaPrize, GachaPrize}
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaRarity.GachaRarity
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaRarity.GachaRarity.Gigantic
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.GachaPrize
 import com.github.unchama.seichiassist.subsystems.tradesystems.domain.{
   TradeResult,
   TradeRule,

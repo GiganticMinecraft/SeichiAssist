@@ -1,9 +1,5 @@
-package com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize
+package com.github.unchama.seichiassist.subsystems.gachaprize.domain
 
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
-  CanBeSignedAsGachaPrize,
-  GachaProbability
-}
 import com.github.unchama.generic.Cloneable
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.GachaEvent
 

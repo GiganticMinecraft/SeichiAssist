@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.gacha.application.actions
 import cats.Monad
 import cats.data.Kleisli
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GrantState
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.GachaPrize
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaPrize
 import org.bukkit.entity.Player
 
 trait GrantGachaPrize[F[_], ItemStack] {
