@@ -1,8 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize
 
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{CanBeSignedAsGachaPrize, GachaProbability}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
+  CanBeSignedAsGachaPrize,
+  GachaProbability
+}
 import com.github.unchama.generic.Cloneable
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{GachaEvent, GachaEventName}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.GachaEvent
 
 /**
  * @param itemStack ガチャで排出されるアイテム。

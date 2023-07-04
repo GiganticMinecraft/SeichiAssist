@@ -8,10 +8,24 @@ import com.github.unchama.minecraft.bukkit.algebra.CloneableBukkitItemStack.inst
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.BukkitItemStackCanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.factories.BukkitStaticGachaPrizeFactory
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{GachaEvent, GachaEventName, GachaEventPersistence}
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{GachaPrize, GachaPrizeId}
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{CanBeSignedAsGachaPrize, GachaPrizeListPersistence, StaticGachaPrizeFactory}
-import com.github.unchama.seichiassist.subsystems.gachaprize.infrastructure.{JdbcGachaEventPersistence, JdbcGachaPrizeListPersistence}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
+  GachaEvent,
+  GachaEventName,
+  GachaEventPersistence
+}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
+  GachaPrize,
+  GachaPrizeId
+}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
+  CanBeSignedAsGachaPrize,
+  GachaPrizeListPersistence,
+  StaticGachaPrizeFactory
+}
+import com.github.unchama.seichiassist.subsystems.gachaprize.infrastructure.{
+  JdbcGachaEventPersistence,
+  JdbcGachaPrizeListPersistence
+}
 import com.github.unchama.seichiassist.subsystems.gachaprize.usecase.GachaPrizeUseCase
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
