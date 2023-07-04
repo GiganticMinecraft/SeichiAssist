@@ -13,7 +13,13 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
   GachaEventName,
   GachaEventPersistence
 }
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{CanBeSignedAsGachaPrize, GachaPrize, GachaPrizeId, GachaPrizeListPersistence, StaticGachaPrizeFactory}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
+  CanBeSignedAsGachaPrize,
+  GachaPrize,
+  GachaPrizeId,
+  GachaPrizeListPersistence,
+  StaticGachaPrizeFactory
+}
 import com.github.unchama.seichiassist.subsystems.gachaprize.infrastructure.{
   JdbcGachaEventPersistence,
   JdbcGachaPrizeListPersistence

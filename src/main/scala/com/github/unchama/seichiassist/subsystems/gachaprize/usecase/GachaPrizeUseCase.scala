@@ -1,8 +1,17 @@
 package com.github.unchama.seichiassist.subsystems.gachaprize.usecase
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{GachaPrize, GachaPrizeId, GachaPrizeListPersistence, GachaProbability, StaticGachaPrizeFactory}
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{GachaEvent, GachaEventPersistence}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
+  GachaPrize,
+  GachaPrizeId,
+  GachaPrizeListPersistence,
+  GachaProbability,
+  StaticGachaPrizeFactory
+}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
+  GachaEvent,
+  GachaEventPersistence
+}
 import com.github.unchama.generic.Cloneable
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain
 

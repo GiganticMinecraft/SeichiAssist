@@ -18,7 +18,7 @@ import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-class BukkitDrawGacha[F[_]: Sync: OnMinecraftServerThread](
+class BukkitDrawGacha[F[_]: Sync](
   implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
   lotteryOfGachaItems: LotteryOfGachaItems[F, ItemStack],
   grantGachaPrize: GrantGachaPrize[F, ItemStack]

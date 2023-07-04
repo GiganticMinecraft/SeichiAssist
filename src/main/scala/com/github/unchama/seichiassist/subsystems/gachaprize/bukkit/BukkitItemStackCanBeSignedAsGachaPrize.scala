@@ -1,6 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.gachaprize.bukkit
 
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{CanBeSignedAsGachaPrize, GachaPrize}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
+  CanBeSignedAsGachaPrize,
+  GachaPrize
+}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.ChatColor._

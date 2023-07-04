@@ -3,8 +3,11 @@ package com.github.unchama.seichiassist.subsystems.gachaprize.infrastructure
 import cats.effect.Sync
 import com.github.unchama.generic.serialization.SerializeAndDeserialize
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain._
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{GachaEvent, GachaEventName}
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.GachaPrize
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
+  GachaEvent,
+  GachaEventName
+}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaPrize
 import scalikejdbc._
 import com.github.unchama.generic.Cloneable
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain

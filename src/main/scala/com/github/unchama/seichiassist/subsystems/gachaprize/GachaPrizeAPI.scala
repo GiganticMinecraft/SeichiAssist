@@ -5,7 +5,12 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
   GachaEvent,
   GachaEventName
 }
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{CanBeSignedAsGachaPrize, GachaPrize, GachaPrizeId, StaticGachaPrizeFactory}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
+  CanBeSignedAsGachaPrize,
+  GachaPrize,
+  GachaPrizeId,
+  StaticGachaPrizeFactory
+}
 
 trait GachaEventReadAPI[F[_]] {
 
