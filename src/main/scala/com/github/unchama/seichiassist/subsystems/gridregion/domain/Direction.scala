@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gridregion.domain
 
 import com.github.unchama.generic.MathExtra
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.RelativeDirection._
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.HorizontalAxisAlignedRelativeDirection._
 
 /**
  * @param start 始点(範囲に含まれる)
@@ -15,19 +15,19 @@ case class YawRange(start: Float, end: Float) {
 }
 
 /**
- * 相対的な方向を定義したenum
+ * 水平軸上の相対的な方向を定義したenum
  */
-sealed trait RelativeDirection
+sealed trait HorizontalAxisAlignedRelativeDirection
 
-object RelativeDirection {
+object HorizontalAxisAlignedRelativeDirection {
 
-  case object Ahead extends RelativeDirection
+  case object Ahead extends HorizontalAxisAlignedRelativeDirection
 
-  case object Behind extends RelativeDirection
+  case object Behind extends HorizontalAxisAlignedRelativeDirection
 
-  case object Left extends RelativeDirection
+  case object Left extends HorizontalAxisAlignedRelativeDirection
 
-  case object Right extends RelativeDirection
+  case object Right extends HorizontalAxisAlignedRelativeDirection
 
 }
 
@@ -78,7 +78,7 @@ object Direction {
    * @return 現在向いている方向(`yaw`)から、相対的な方向(`RelativeDirection`)と
    *         紐づいている方角(`Direction`)を返す。
    */
-  def relativeDirection(yaw: Float): Map[RelativeDirection, Direction] = {
+  def relativeDirection(yaw: Float): Map[HorizontalAxisAlignedRelativeDirection, Direction] = {
     val directionOrder: Map[Direction, Direction] =
       Map(North -> East, East -> South, South -> West, West -> North)
     val relativeDirectionOrder = List(Ahead, Right, Behind, Left)

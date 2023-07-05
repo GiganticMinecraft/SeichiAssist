@@ -47,10 +47,10 @@ object GridRegionMenu extends Menu {
     for {
       toggleUnitPerClick <- toggleUnitPerClickButton
       nowRegionSettings <- nowRegionSettingButton
-      regionUnitExpansionAhead <- regionUnitExpansionButton(RelativeDirection.Ahead)
-      regionUnitExpansionLeft <- regionUnitExpansionButton(RelativeDirection.Left)
-      regionUnitExpansionBehind <- regionUnitExpansionButton(RelativeDirection.Behind)
-      regionUnitExpansionRight <- regionUnitExpansionButton(RelativeDirection.Right)
+      regionUnitExpansionAhead <- regionUnitExpansionButton(HorizontalAxisAlignedRelativeDirection.Ahead)
+      regionUnitExpansionLeft <- regionUnitExpansionButton(HorizontalAxisAlignedRelativeDirection.Left)
+      regionUnitExpansionBehind <- regionUnitExpansionButton(HorizontalAxisAlignedRelativeDirection.Behind)
+      regionUnitExpansionRight <- regionUnitExpansionButton(HorizontalAxisAlignedRelativeDirection.Right)
       createRegion <- createRegionButton
     } yield MenuSlotLayout(
       0 -> toggleUnitPerClick,
@@ -94,7 +94,7 @@ object GridRegionMenu extends Menu {
 
     private def gridLore(
       direction: Direction,
-      relativeDirection: RelativeDirection
+      relativeDirection: HorizontalAxisAlignedRelativeDirection
     ): IO[List[String]] = for {
       currentRegionUnits <- gridRegionAPI.regionUnits(player)
       regionUnit = currentRegionUnits.fromRelativeDirectionToRegionUnit(relativeDirection)
@@ -106,7 +106,7 @@ object GridRegionMenu extends Menu {
       s"${GRAY}現在の指定方向のユニット数：$AQUA${regionUnit.units}$GRAY($AQUA${regionUnit.computeBlockAmount}${GRAY}ブロック)"
     )
 
-    def regionUnitExpansionButton(relativeDirection: RelativeDirection): IO[Button] =
+    def regionUnitExpansionButton(relativeDirection: HorizontalAxisAlignedRelativeDirection): IO[Button] =
       RecomputedButton {
         val yaw = player.getEyeLocation.getYaw
         val direction = Direction.relativeDirection(yaw)(relativeDirection)
@@ -131,17 +131,17 @@ object GridRegionMenu extends Menu {
           }
 
           val relativeDirectionString = relativeDirection match {
-            case RelativeDirection.Ahead  => "前へ"
-            case RelativeDirection.Behind => "後ろへ"
-            case RelativeDirection.Left   => "左へ"
-            case RelativeDirection.Right  => "右へ"
+            case HorizontalAxisAlignedRelativeDirection.Ahead  => "前へ"
+            case HorizontalAxisAlignedRelativeDirection.Behind => "後ろへ"
+            case HorizontalAxisAlignedRelativeDirection.Left   => "左へ"
+            case HorizontalAxisAlignedRelativeDirection.Right  => "右へ"
           }
 
           val stainedGlassPaneDurability = relativeDirection match {
-            case RelativeDirection.Ahead  => 14
-            case RelativeDirection.Left   => 10
-            case RelativeDirection.Behind => 13
-            case RelativeDirection.Right  => 5
+            case HorizontalAxisAlignedRelativeDirection.Ahead  => 14
+            case HorizontalAxisAlignedRelativeDirection.Left   => 10
+            case HorizontalAxisAlignedRelativeDirection.Behind => 13
+            case HorizontalAxisAlignedRelativeDirection.Right  => 5
           }
 
           val itemStack =
@@ -249,7 +249,7 @@ object GridRegionMenu extends Menu {
         canCreateRegionResult <- gridRegionAPI.canCreateRegion(
           player,
           regionUnits,
-          Direction.relativeDirection(yaw)(RelativeDirection.Ahead)
+          Direction.relativeDirection(yaw)(HorizontalAxisAlignedRelativeDirection.Ahead)
         )
       } yield {
         canCreateRegionResult match {

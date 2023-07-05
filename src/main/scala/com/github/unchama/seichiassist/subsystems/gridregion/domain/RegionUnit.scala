@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.gridregion.domain
 
 import cats.implicits._
 import com.github.unchama.generic.algebra.typeclasses.OrderedMonus
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.RelativeDirection._
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.HorizontalAxisAlignedRelativeDirection._
 
 /**
  * 1ユニット <=> 15 * 15ブロックの保護領域
@@ -55,20 +55,20 @@ case class RegionUnits(
   /**
    * @return [[RegionUnits]]の中から`relativeDirection`に紐づく[[RegionUnit]]を返す
    */
-  def fromRelativeDirectionToRegionUnit(relativeDirection: RelativeDirection): RegionUnit =
+  def fromRelativeDirectionToRegionUnit(relativeDirection: HorizontalAxisAlignedRelativeDirection): RegionUnit =
     relativeDirection match {
-      case RelativeDirection.Ahead  => ahead
-      case RelativeDirection.Behind => behind
-      case RelativeDirection.Left   => left
-      case RelativeDirection.Right  => right
+      case HorizontalAxisAlignedRelativeDirection.Ahead  => ahead
+      case HorizontalAxisAlignedRelativeDirection.Behind => behind
+      case HorizontalAxisAlignedRelativeDirection.Left   => left
+      case HorizontalAxisAlignedRelativeDirection.Right  => right
     }
 
   /**
    * @return `relativeDirection`方向の[[RegionUnit]]を`extension`だけ拡張した[[RegionUnits]]
    */
   def expansionRegionUnits(
-    relativeDirection: RelativeDirection,
-    extension: RegionUnit
+                            relativeDirection: HorizontalAxisAlignedRelativeDirection,
+                            extension: RegionUnit
   ): RegionUnits =
     relativeDirection match {
       case Ahead  => this.copy(ahead = ahead |+| extension)
@@ -81,8 +81,8 @@ case class RegionUnits(
    * @return `relativeDirection`方向の[[RegionUnit]]を`extension`だけ縮小した[[RegionUnits]]
    */
   def contractRegionUnits(
-    relativeDirection: RelativeDirection,
-    extension: RegionUnit
+                           relativeDirection: HorizontalAxisAlignedRelativeDirection,
+                           extension: RegionUnit
   ): RegionUnits =
     relativeDirection match {
       case Ahead  => this.copy(ahead = ahead |-| extension)
