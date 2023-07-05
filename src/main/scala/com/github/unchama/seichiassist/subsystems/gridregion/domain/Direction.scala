@@ -4,10 +4,10 @@ import com.github.unchama.generic.MathExtra
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.RelativeDirection._
 
 /**
- * @param start 始点
- * @param end 終点
+ * @param start 始点(範囲に含まれる)
+ * @param end 終点(範囲に含まれない)
  */
-case class DirectionRange(start: Float, end: Float) {
+case class YawRange(start: Float, end: Float) {
   private def isWithinDirection(value: Float): Boolean = 0f <= value && value <= 360f
 
   require(isWithinDirection(start))
@@ -35,7 +35,7 @@ object RelativeDirection {
  * 方角の範囲を列挙するenum用のabstract class
  * @param range 方角の範囲
  */
-abstract class Direction(val uiLabel: String, private val range: DirectionRange*) {
+abstract class Direction(val uiLabel: String, private val range: YawRange*) {
   require(range.nonEmpty)
 
   /**
@@ -48,14 +48,13 @@ abstract class Direction(val uiLabel: String, private val range: DirectionRange*
 
 object Direction {
 
-  case object North
-      extends Direction("北(North)", DirectionRange(0f, 45f), DirectionRange(316f, 360f))
+  case object North extends Direction("北(North)", YawRange(0f, 45f), YawRange(316f, 360f))
 
-  case object East extends Direction("東(East)", DirectionRange(46f, 135f))
+  case object East extends Direction("東(East)", YawRange(46f, 135f))
 
-  case object South extends Direction("南(South)", DirectionRange(136f, 225f))
+  case object South extends Direction("南(South)", YawRange(136f, 225f))
 
-  case object West extends Direction("西(West)", DirectionRange(226f, 315f))
+  case object West extends Direction("西(West)", YawRange(226f, 315f))
 
   /**
    * `yaw`から[[Direction]]に変換する
