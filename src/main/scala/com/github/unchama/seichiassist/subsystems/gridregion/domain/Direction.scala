@@ -10,7 +10,8 @@ import com.github.unchama.seichiassist.subsystems.gridregion.domain.RelativeDire
 case class DirectionRange(start: Float, end: Float) {
   private def isWithinDirection(value: Float): Boolean = 0f <= value && value <= 360f
 
-  require(isWithinDirection(start) && isWithinDirection(end))
+  require(isWithinDirection(start))
+  require(isWithinDirection(end))
 }
 
 /**
