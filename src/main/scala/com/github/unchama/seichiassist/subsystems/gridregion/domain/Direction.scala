@@ -48,13 +48,13 @@ abstract class Direction(val uiLabel: String, private val range: YawRange*) {
 
 object Direction {
 
-  case object North extends Direction("北(North)", YawRange(0f, 45f), YawRange(316f, 360f))
+  case object North extends Direction("北(North)", YawRange(0f, 45f), YawRange(315f, 360f))
 
-  case object East extends Direction("東(East)", YawRange(46f, 135f))
+  case object East extends Direction("東(East)", YawRange(45f, 135f))
 
-  case object South extends Direction("南(South)", YawRange(136f, 225f))
+  case object South extends Direction("南(South)", YawRange(135f, 225f))
 
-  case object West extends Direction("西(West)", YawRange(226f, 315f))
+  case object West extends Direction("西(West)", YawRange(225f, 315f))
 
   /**
    * `yaw`から[[Direction]]に変換する
