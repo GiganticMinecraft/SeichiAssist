@@ -4,14 +4,28 @@ import com.github.unchama.generic.MathExtra
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.HorizontalAxisAlignedRelativeDirection._
 
 /**
+ *  この`yaw`は、SpigotAPIが提供している値と合わせている。
+ *  ref: https://helpch.at/docs/1.12/org/bukkit/Location.html#getYaw--
+ *
+ *  SpigotAPIから提供される`yaw`は、具体的に以下のようなものである。
+ *   - 南を起点に0から始まる
+ *   - 時計回りに北までで180となる
+ *   - 反時計周りで北までで-180となる
+ */
+case class Yaw(yaw: Float) {
+  require(0f <= yaw && yaw <= 360f)
+}
+
+/**
  * @param start 始点(範囲に含まれる)
  * @param end 終点(範囲に含まれない)
  */
-case class YawRange(start: Float, end: Float) {
-  private def isWithinDirection(value: Float): Boolean = 0f <= value && value <= 360f
+case class YawRange(start: Yaw, end: Yaw)
 
-  require(isWithinDirection(start))
-  require(isWithinDirection(end))
+object YawRange {
+
+  def apply(start: Float, end: Float): YawRange = YawRange(Yaw(start), Yaw(end))
+
 }
 
 /**
@@ -42,35 +56,27 @@ abstract class Direction(val uiLabel: String, private val range: YawRange*) {
    * @return `yaw`が`range`の範囲内ならばtrueを返す
    */
   def isWithinRange(yaw: Float): Boolean =
-    range.exists(range => range.start <= yaw && yaw <= range.end)
+    range.exists(range => range.start.yaw <= yaw && yaw <= range.end.yaw)
 
 }
 
 object Direction {
 
-  case object North extends Direction("北(North)", YawRange(0f, 45f), YawRange(315f, 360f))
+  case object North extends Direction("北(North)", YawRange(-180f, -135f), YawRange(135f, 180f))
 
-  case object East extends Direction("東(East)", YawRange(45f, 135f))
+  case object East extends Direction("東(East)", YawRange(-135f, -45f))
 
-  case object South extends Direction("南(South)", YawRange(135f, 225f))
+  case object South extends Direction("南(South)", YawRange(-45f, 45f))
 
-  case object West extends Direction("西(West)", YawRange(225f, 315f))
+  case object West extends Direction("西(West)", YawRange(45f, 135))
 
   /**
    * `yaw`から[[Direction]]に変換する
-   *
-   * `yaw`は以下の定義が成り立つものとする。
-   *  - 南を起点に0から始まる
-   *  - 時計回りに北までで180となる
-   *  - 反時計周りで北までで-180となる
    */
   private def convertYawToDirection(yaw: Float): Direction = {
-    // yawに+180することで北を起点とし、1周で360となる。
-    val revisionYaw = yaw + 180
-
-    if (North.isWithinRange(revisionYaw)) North
-    else if (East.isWithinRange(revisionYaw)) East
-    else if (South.isWithinRange(revisionYaw)) South
+    if (North.isWithinRange(yaw)) North
+    else if (East.isWithinRange(yaw)) East
+    else if (South.isWithinRange(yaw)) South
     else West
   }
 
