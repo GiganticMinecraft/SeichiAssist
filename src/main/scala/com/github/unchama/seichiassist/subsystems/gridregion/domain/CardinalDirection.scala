@@ -49,7 +49,7 @@ object HorizontalAxisAlignedRelativeDirection {
  * 方角の範囲を列挙するenum用のabstract class
  * @param range 方角の範囲
  */
-abstract class Direction(val uiLabel: String, private val range: YawRange*) {
+abstract class CardinalDirection(val uiLabel: String, private val range: YawRange*) {
   require(range.nonEmpty)
 
   /**
@@ -60,20 +60,20 @@ abstract class Direction(val uiLabel: String, private val range: YawRange*) {
 
 }
 
-object Direction {
+object CardinalDirection {
 
-  case object North extends Direction("北(North)", YawRange(-180f, -135f), YawRange(135f, 180f))
+  case object North extends CardinalDirection("北(North)", YawRange(-180f, -135f), YawRange(135f, 180f))
 
-  case object East extends Direction("東(East)", YawRange(-135f, -45f))
+  case object East extends CardinalDirection("東(East)", YawRange(-135f, -45f))
 
-  case object South extends Direction("南(South)", YawRange(-45f, 45f))
+  case object South extends CardinalDirection("南(South)", YawRange(-45f, 45f))
 
-  case object West extends Direction("西(West)", YawRange(45f, 135))
+  case object West extends CardinalDirection("西(West)", YawRange(45f, 135))
 
   /**
-   * `yaw`から[[Direction]]に変換する
+   * `yaw`から[[CardinalDirection]]に変換する
    */
-  private def convertYawToDirection(yaw: Float): Direction = {
+  private def convertYawToDirection(yaw: Float): CardinalDirection = {
     if (North.isWithinRange(yaw)) North
     else if (East.isWithinRange(yaw)) East
     else if (South.isWithinRange(yaw)) South
@@ -82,11 +82,11 @@ object Direction {
 
   /**
    * @return 現在向いている方向(`yaw`)から、相対的な方向([[HorizontalAxisAlignedRelativeDirection]])と
-   *         紐づいている方角([[Direction]])を返す。
+   *         紐づいている方角([[CardinalDirection]])を返す。
    */
   def relativeToCardinalDirections(
     yaw: Float
-  ): Map[HorizontalAxisAlignedRelativeDirection, Direction] = {
+  ): Map[HorizontalAxisAlignedRelativeDirection, CardinalDirection] = {
     val directions = List(North, East, South, West)
     val horizontalAxisAlignedRelativeDirections = List(Ahead, Right, Behind, Left)
 

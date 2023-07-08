@@ -46,7 +46,7 @@ trait GridRegionReadAPI[F[_], Player, Location] {
   def canCreateRegion(
     player: Player,
     regionUnits: RegionUnits,
-    direction: Direction
+    direction: CardinalDirection
   ): F[CreateRegionResult]
 
   /**
@@ -55,7 +55,7 @@ trait GridRegionReadAPI[F[_], Player, Location] {
   def regionSelection(
     player: Player,
     regionUnits: RegionUnits,
-    direction: Direction
+    direction: CardinalDirection
   ): RegionSelection[Location]
 
   /**

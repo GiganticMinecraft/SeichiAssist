@@ -116,14 +116,14 @@ object System {
             override def canCreateRegion(
               player: Player,
               regionUnits: RegionUnits,
-              direction: Direction
+              direction: CardinalDirection
             ): F[CreateRegionResult] =
               ContextCoercion(regionOperations.canCreateRegion(player, regionUnits, direction))
 
             override def regionSelection(
               player: Player,
               regionUnits: RegionUnits,
-              direction: Direction
+              direction: CardinalDirection
             ): RegionSelection[Location] =
               regionOperations.getSelection(player.getLocation, regionUnits, direction)
 

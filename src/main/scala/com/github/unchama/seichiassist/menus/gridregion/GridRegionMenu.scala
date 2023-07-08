@@ -101,8 +101,8 @@ object GridRegionMenu extends Menu {
     }
 
     private def gridLore(
-      direction: Direction,
-      relativeDirection: HorizontalAxisAlignedRelativeDirection
+                          direction: CardinalDirection,
+                          relativeDirection: HorizontalAxisAlignedRelativeDirection
     ): IO[List[String]] = for {
       currentRegionUnits <- gridRegionAPI.regionUnits(player)
       regionUnit = currentRegionUnits.fromRelativeDirectionToRegionUnit(relativeDirection)
@@ -119,7 +119,7 @@ object GridRegionMenu extends Menu {
     ): IO[Button] =
       RecomputedButton {
         val yaw = player.getEyeLocation.getYaw
-        val direction = Direction.relativeToCardinalDirections(yaw)(relativeDirection)
+        val direction = CardinalDirection.relativeToCardinalDirections(yaw)(relativeDirection)
         for {
           gridLore <- gridLore(direction, relativeDirection)
           regionUnits <- gridRegionAPI.regionUnits(player)
@@ -259,7 +259,7 @@ object GridRegionMenu extends Menu {
         canCreateRegionResult <- gridRegionAPI.canCreateRegion(
           player,
           regionUnits,
-          Direction.relativeToCardinalDirections(yaw)(HorizontalAxisAlignedRelativeDirection.Ahead)
+          CardinalDirection.relativeToCardinalDirections(yaw)(HorizontalAxisAlignedRelativeDirection.Ahead)
         )
       } yield {
         canCreateRegionResult match {

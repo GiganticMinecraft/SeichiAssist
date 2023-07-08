@@ -16,7 +16,7 @@ class BukkitRegionOperations[F[_]: Sync](
   override def getSelection(
     currentLocation: Location,
     regionUnits: RegionUnits,
-    direction: Direction
+    direction: CardinalDirection
   ): RegionSelection[Location] = {
     val computedAheadBlockAmount = regionUnits.ahead.computeBlockAmount
     val computedLeftBlockAmount = regionUnits.left.computeBlockAmount
@@ -29,28 +29,28 @@ class BukkitRegionOperations[F[_]: Sync](
      * に合わせる
      */
     val (startPosition, endPosition) = direction match {
-      case Direction.East =>
+      case CardinalDirection.East =>
         (
           currentLocation
             .clone()
             .subtract(computedBehindBlockAmount, 0.0, computedLeftBlockAmount),
           currentLocation.clone().add(computedAheadBlockAmount, 0.0, computedRightBlockAmount)
         )
-      case Direction.North =>
+      case CardinalDirection.North =>
         (
           currentLocation
             .clone()
             .subtract(computedLeftBlockAmount, 0.0, computedAheadBlockAmount),
           currentLocation.clone().add(computedRightBlockAmount, 0.0, computedBehindBlockAmount)
         )
-      case Direction.South =>
+      case CardinalDirection.South =>
         (
           currentLocation
             .clone()
             .subtract(computedRightBlockAmount, 0.0, computedBehindBlockAmount),
           currentLocation.clone().add(computedLeftBlockAmount, 0.0, computedAheadBlockAmount)
         )
-      case Direction.West =>
+      case CardinalDirection.West =>
         (
           currentLocation
             .clone()
@@ -88,7 +88,7 @@ class BukkitRegionOperations[F[_]: Sync](
   override def canCreateRegion(
     player: Player,
     regionUnits: RegionUnits,
-    direction: Direction
+    direction: CardinalDirection
   ): F[CreateRegionResult] = {
     val selection = WorldEditWrapper.getSelection(player)
     for {
