@@ -6,12 +6,3 @@ case class RegionCount(value: Int) {
   def increment: RegionCount = this.copy(value = value + 1)
 
 }
-
-object RegionCount {
-
-  /**
-   * [[RegionCount]]の初期値
-   */
-  val initial: RegionCount = RegionCount(0)
-
-}

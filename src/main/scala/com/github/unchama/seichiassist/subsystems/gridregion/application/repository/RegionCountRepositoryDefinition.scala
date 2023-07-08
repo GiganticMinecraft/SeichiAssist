@@ -14,7 +14,7 @@ object RegionCountRepositoryDefinition {
     implicit persistence: RegionCountPersistence[F]
   ): RepositoryDefinition[F, Player, Ref[F, RegionCount]] =
     RefDictBackedRepositoryDefinition
-      .usingUuidRefDict[F, Player, RegionCount](persistence)(RegionCount.initial)
+      .usingUuidRefDict[F, Player, RegionCount](persistence)(RegionCount(0))
       .toRefRepository
       .augmentToTwoPhased((_, ref) => Sync[F].pure(ref))(value => Sync[F].pure(value))
 
