@@ -47,10 +47,18 @@ object GridRegionMenu extends Menu {
     for {
       toggleUnitPerClick <- toggleUnitPerClickButton
       nowRegionSettings <- nowRegionSettingButton
-      regionUnitExpansionAhead <- regionUnitExpansionButton(HorizontalAxisAlignedRelativeDirection.Ahead)
-      regionUnitExpansionLeft <- regionUnitExpansionButton(HorizontalAxisAlignedRelativeDirection.Left)
-      regionUnitExpansionBehind <- regionUnitExpansionButton(HorizontalAxisAlignedRelativeDirection.Behind)
-      regionUnitExpansionRight <- regionUnitExpansionButton(HorizontalAxisAlignedRelativeDirection.Right)
+      regionUnitExpansionAhead <- regionUnitExpansionButton(
+        HorizontalAxisAlignedRelativeDirection.Ahead
+      )
+      regionUnitExpansionLeft <- regionUnitExpansionButton(
+        HorizontalAxisAlignedRelativeDirection.Left
+      )
+      regionUnitExpansionBehind <- regionUnitExpansionButton(
+        HorizontalAxisAlignedRelativeDirection.Behind
+      )
+      regionUnitExpansionRight <- regionUnitExpansionButton(
+        HorizontalAxisAlignedRelativeDirection.Right
+      )
       createRegion <- createRegionButton
     } yield MenuSlotLayout(
       0 -> toggleUnitPerClick,
@@ -106,7 +114,9 @@ object GridRegionMenu extends Menu {
       s"${GRAY}現在の指定方向のユニット数：$AQUA${regionUnit.units}$GRAY($AQUA${regionUnit.computeBlockAmount}${GRAY}ブロック)"
     )
 
-    def regionUnitExpansionButton(relativeDirection: HorizontalAxisAlignedRelativeDirection): IO[Button] =
+    def regionUnitExpansionButton(
+      relativeDirection: HorizontalAxisAlignedRelativeDirection
+    ): IO[Button] =
       RecomputedButton {
         val yaw = player.getEyeLocation.getYaw
         val direction = Direction.relativeDirection(yaw)(relativeDirection)

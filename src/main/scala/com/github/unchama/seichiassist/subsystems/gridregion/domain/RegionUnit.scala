@@ -55,7 +55,9 @@ case class RegionUnits(
   /**
    * @return [[RegionUnits]]の中から`relativeDirection`に紐づく[[RegionUnit]]を返す
    */
-  def fromRelativeDirectionToRegionUnit(relativeDirection: HorizontalAxisAlignedRelativeDirection): RegionUnit =
+  def fromRelativeDirectionToRegionUnit(
+    relativeDirection: HorizontalAxisAlignedRelativeDirection
+  ): RegionUnit =
     relativeDirection match {
       case HorizontalAxisAlignedRelativeDirection.Ahead  => ahead
       case HorizontalAxisAlignedRelativeDirection.Behind => behind
@@ -67,8 +69,8 @@ case class RegionUnits(
    * @return `relativeDirection`方向の[[RegionUnit]]を`extension`だけ拡張した[[RegionUnits]]
    */
   def expansionRegionUnits(
-                            relativeDirection: HorizontalAxisAlignedRelativeDirection,
-                            extension: RegionUnit
+    relativeDirection: HorizontalAxisAlignedRelativeDirection,
+    extension: RegionUnit
   ): RegionUnits =
     relativeDirection match {
       case Ahead  => this.copy(ahead = ahead |+| extension)
@@ -81,8 +83,8 @@ case class RegionUnits(
    * @return `relativeDirection`方向の[[RegionUnit]]を`extension`だけ縮小した[[RegionUnits]]
    */
   def contractRegionUnits(
-                           relativeDirection: HorizontalAxisAlignedRelativeDirection,
-                           extension: RegionUnit
+    relativeDirection: HorizontalAxisAlignedRelativeDirection,
+    extension: RegionUnit
   ): RegionUnits =
     relativeDirection match {
       case Ahead  => this.copy(ahead = ahead |-| extension)
