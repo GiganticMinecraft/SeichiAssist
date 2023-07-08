@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.gridregion.domain
 
-import com.github.unchama.generic.MathExtra
+import com.github.unchama.generic.ListExtra
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.HorizontalAxisAlignedRelativeDirection._
 
 /**
@@ -81,18 +81,19 @@ object Direction {
   }
 
   /**
-   * @return 現在向いている方向(`yaw`)から、相対的な方向(`RelativeDirection`)と
-   *         紐づいている方角(`Direction`)を返す。
+   * @return 現在向いている方向(`yaw`)から、相対的な方向([[HorizontalAxisAlignedRelativeDirection]])と
+   *         紐づいている方角([[Direction]])を返す。
    */
-  def relativeDirection(yaw: Float): Map[HorizontalAxisAlignedRelativeDirection, Direction] = {
-    val directionOrder: Map[Direction, Direction] =
-      Map(North -> East, East -> South, South -> West, West -> North)
-    val relativeDirectionOrder = List(Ahead, Right, Behind, Left)
+  def relativeToCardinalDirections(
+    yaw: Float
+  ): Map[HorizontalAxisAlignedRelativeDirection, Direction] = {
+    val directions = List(North, East, South, West)
+    val horizontalAxisAlignedRelativeDirections = List(Ahead, Right, Behind, Left)
 
-    val computedDirectionOrder =
-      MathExtra.recurrenceRelation(directionOrder, convertYawToDirection(yaw))()
+    val rotatedDirections =
+      ListExtra.rotateLeftUntil(directions)(_ == convertYawToDirection(yaw)).get
 
-    (relativeDirectionOrder zip computedDirectionOrder).toMap
+    (horizontalAxisAlignedRelativeDirections zip rotatedDirections).toMap
   }
 
 }

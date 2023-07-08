@@ -1,5 +1,7 @@
 package com.github.unchama.generic
 
+import scala.annotation.tailrec
+
 object ListExtra {
 
   /**
@@ -73,6 +75,23 @@ object ListExtra {
     val firstTarget = firstList.find(predicate)
     val secondTarget = secondList.find(predicate)
     map(firstTarget.product(secondTarget))
+  }
+
+  /**
+   * 最初の要素が `predicate` を満たすようになるまで `list` を左回転する。
+   *
+   * `list` が空である場合、または `list` を一周回転させても最初の要素が
+   * `predicate` を満たすことが無かった (つまり、すべての要素が
+   * `predicate` を満たさなかった) 場合には `None` が返される。
+   */
+  @tailrec
+  def rotateLeftUntil[A](list: List[A])(predicate: A => Boolean): Option[List[A]] = {
+    list.find(predicate) match {
+      case Some(_) =>
+        if (predicate(list.head)) Some(list)
+        else rotateLeftUntil(list.filterNot(_ == list.head) :+ list.head)(predicate)
+      case _ => None
+    }
   }
 
 }

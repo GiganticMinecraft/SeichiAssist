@@ -119,7 +119,7 @@ object GridRegionMenu extends Menu {
     ): IO[Button] =
       RecomputedButton {
         val yaw = player.getEyeLocation.getYaw
-        val direction = Direction.relativeDirection(yaw)(relativeDirection)
+        val direction = Direction.relativeToCardinalDirections(yaw)(relativeDirection)
         for {
           gridLore <- gridLore(direction, relativeDirection)
           regionUnits <- gridRegionAPI.regionUnits(player)
@@ -259,7 +259,7 @@ object GridRegionMenu extends Menu {
         canCreateRegionResult <- gridRegionAPI.canCreateRegion(
           player,
           regionUnits,
-          Direction.relativeDirection(yaw)(HorizontalAxisAlignedRelativeDirection.Ahead)
+          Direction.relativeToCardinalDirections(yaw)(HorizontalAxisAlignedRelativeDirection.Ahead)
         )
       } yield {
         canCreateRegionResult match {
