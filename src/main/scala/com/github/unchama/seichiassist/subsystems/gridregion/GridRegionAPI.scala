@@ -9,7 +9,7 @@ trait GridRegionTemplateAPI[F[_], Player] {
   /**
    * @return `player`が保存した[[RegionTemplate]]の一覧を返す作用
    */
-  def savedGridRegionTemplate(player: Player): F[Vector[RegionTemplate]]
+  def savedGridRegionTemplates(player: Player): F[Vector[RegionTemplate]]
 
   /**
    * @return [[Player]]が[[RegionTemplate]]を保存する作用

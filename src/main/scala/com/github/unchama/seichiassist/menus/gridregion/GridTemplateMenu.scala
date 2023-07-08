@@ -77,7 +77,7 @@ object GridTemplateMenu extends Menu {
 
     def gridTemplateButton(id: Int): IO[Button] = RecomputedButton {
       for {
-        templates <- gridRegionAPI.savedGridRegionTemplate(player)
+        templates <- gridRegionAPI.savedGridRegionTemplates(player)
         currentRegionUnits <- gridRegionAPI.regionUnits(player)
       } yield {
         val template = templates.find { regionTemplate =>
