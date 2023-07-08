@@ -62,7 +62,8 @@ abstract class CardinalDirection(val uiLabel: String, private val range: YawRang
 
 object CardinalDirection {
 
-  case object North extends CardinalDirection("北(North)", YawRange(-180f, -135f), YawRange(135f, 180f))
+  case object North
+      extends CardinalDirection("北(North)", YawRange(-180f, -135f), YawRange(135f, 180f))
 
   case object East extends CardinalDirection("東(East)", YawRange(-135f, -45f))
 

@@ -532,7 +532,7 @@ class SeichiAssist extends JavaPlugin() {
     consumeGachaTicketSystem,
     openirontrapdoor.System.wired,
     gridRegionSystem,
-    breakSkillTargetConfigSystem,
+    breakSkillTargetConfigSystem
   )
 
   private lazy val buildAssist: BuildAssist = {
