@@ -89,17 +89,6 @@ object System {
             override def unitPerClick(player: Player): F[RegionUnit] =
               ContextCoercion(regionUnitPerClickSettingRepository(player).unitPerClick)
 
-            override def isWithinLimits(
-              regionUnits: RegionUnits,
-              worldName: String
-            ): Boolean = {
-              val totalRegionUnits =
-                regionUnits.computeTotalRegionUnits
-              val limit = SeichiAssist.seichiAssistConfig.getGridLimitPerWorld(worldName)
-
-              totalRegionUnits.units <= limit
-            }
-
             override def regionUnits(player: Player): F[RegionUnits] =
               ContextCoercion(regionUnitsRepository(player).regionUnits)
 

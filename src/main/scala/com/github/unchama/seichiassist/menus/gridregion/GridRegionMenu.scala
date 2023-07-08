@@ -16,6 +16,7 @@ import com.github.unchama.menuinventory.{
   MenuSlotLayout
 }
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gridregion.GridRegionAPI
 import com.github.unchama.seichiassist.subsystems.gridregion.domain._
 import com.github.unchama.targetedeffect.player.PlayerEffects.closeInventoryEffect
@@ -131,10 +132,12 @@ object GridRegionMenu extends Menu {
           val contractedRegionUnits =
             regionUnits.contractRegionUnits(relativeDirection, currentPerClickRegionUnit)
 
+          val limit = SeichiAssist.seichiAssistConfig.getGridLimitPerWorld(worldName)
+
           val lore = gridLore :+ {
-            if (gridRegionAPI.isWithinLimits(expandedRegionUnits, worldName))
+            if (expandedRegionUnits.computeTotalRegionUnits.units <= limit)
               s"$RED${UNDERLINE}これ以上拡張できません"
-            else if (gridRegionAPI.isWithinLimits(contractedRegionUnits, worldName))
+            else if (contractedRegionUnits.computeTotalRegionUnits.units <= limit)
               s"$RED${UNDERLINE}これ以上縮小できません"
             else
               ""
