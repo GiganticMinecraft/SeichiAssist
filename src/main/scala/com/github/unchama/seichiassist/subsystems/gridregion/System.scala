@@ -12,7 +12,6 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gridregion.application.repository.{
   RegionCountRepositoryDefinition,
-  RegionTemplateRepositoryDefinition,
   RegionUnitPerClickSettingRepositoryDefinition,
   RegionUnitsRepositoryDefinition
 }
@@ -44,7 +43,7 @@ object System {
     : G[System[F, Player, Location]] = {
     implicit val regionCountPersistence: RegionCountPersistence[G] =
       new JdbcRegionCountPersistence[G]
-    implicit val regionTemplatePersistence: RegionTemplatePersistence[G] =
+    val regionTemplatePersistence: RegionTemplatePersistence[G] =
       new JdbcRegionTemplatePersistence[G]
 
     for {
@@ -66,9 +65,6 @@ object System {
       )
       regionCountRepositoryControls <- BukkitRepositoryControls.createHandles(
         RegionCountRepositoryDefinition.withContext[G, Player]
-      )
-      regionTemplateRepositoryControls <- BukkitRepositoryControls.createHandles(
-        RegionTemplateRepositoryDefinition.withContext[G, Player]
       )
     } yield {
       val regionUnitPerClickSettingRepository =
@@ -124,18 +120,13 @@ object System {
               ContextCoercion(regionCountRepository(player).get)
 
             override def savedGridRegionTemplates(player: Player): F[Vector[RegionTemplate]] =
-              ContextCoercion(regionTemplateRepositoryControls.repository(player).get)
+              ContextCoercion(regionTemplatePersistence.regionTemplates(player.getUniqueId))
 
             override def saveGridRegionTemplate(
               regionTemplate: RegionTemplate
             ): Kleisli[F, Player, Unit] = Kleisli { player =>
               ContextCoercion(
-                regionTemplateRepositoryControls.repository(player).update { oldTemplates =>
-                  val templateListExcludingSameTemplateId =
-                    oldTemplates.filterNot(_.templateId == regionTemplate.templateId)
-
-                  regionTemplate +: templateListExcludingSameTemplateId
-                }
+                regionTemplatePersistence.saveRegionTemplate(player.getUniqueId, regionTemplate)
               )
             }
           }
@@ -143,8 +134,7 @@ object System {
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
           regionUnitPerClickSettingRepositoryControls,
           regionUnitsRepositoryControls,
-          regionCountRepositoryControls,
-          regionTemplateRepositoryControls
+          regionCountRepositoryControls
         ).map(_.coerceFinalizationContextTo[F])
       }
     }
