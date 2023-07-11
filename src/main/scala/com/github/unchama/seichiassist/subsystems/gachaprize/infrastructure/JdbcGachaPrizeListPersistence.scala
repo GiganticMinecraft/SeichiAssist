@@ -54,7 +54,7 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
     }
   }
 
-  override def addGachaPrize(gachaPrize: GachaPrize[ItemStack]): F[Unit] = Sync[F].delay {
+  override def upsertGachaPrize(gachaPrize: GachaPrize[ItemStack]): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
       val eventId = gachaPrize.gachaEvent.flatMap { gachaEvent =>
         sql"SELECT id FROM gacha_events WHERE event_name = ${gachaEvent.eventName.name}"
@@ -63,11 +63,19 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
           .apply()
       }
 
-      sql"INSERT INTO gachadata (id, probability, itemstack, event_id) VALUES (${gachaPrize.id.id}, ${gachaPrize
-          .probability
-          .value}, ${serializeAndDeserialize.serialize(gachaPrize.itemStack)}, $eventId)"
-        .execute()
-        .apply()
+      val serializedItemStack = serializeAndDeserialize.serialize(gachaPrize.itemStack)
+
+      sql"""INSERT INTO gachadata (id, probability, itemstack, event_id)
+           | VALUES (
+           |   ${gachaPrize.id.id},
+           |   ${gachaPrize.probability.value},
+           |   $serializedItemStack,
+           |   $eventId
+           | )
+           | ON DUPLICATE KEY UPDATE
+           |   probability = ${gachaPrize.probability.value},
+           |   itemstack = $serializedItemStack
+         """.stripMargin.execute().apply()
     }
   }
 
@@ -87,4 +95,5 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
          """.stripMargin.execute().apply()
     }
   }
+
 }

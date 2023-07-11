@@ -49,7 +49,7 @@ class GachaPrizeUseCase[F[_]: Sync, ItemStack: Cloneable](
       if (gachaPrizeList.nonEmpty) gachaPrizeList.map(_.id.id).max + 1 else 1
     )
     gachaPrize = gachaPrizeById(gachaPrizeId)
-    _ <- gachaPrizeListPersistence.addGachaPrize(gachaPrize)
+    _ <- gachaPrizeListPersistence.upsertGachaPrize(gachaPrize)
   } yield ()
 
   def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Boolean] = for {
