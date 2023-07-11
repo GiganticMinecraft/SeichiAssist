@@ -84,7 +84,7 @@ trait GachaPrizeReadAPI[F[_], ItemStack] {
   def allGachaPrizeList: F[Vector[GachaPrize[ItemStack]]]
 
   /**
-   * @return デフォルトで排出されるガチャ景品を取得する作用
+   * @return イベント開催中ではないときに排出されるガチャ景品を取得する作用
    */
   final def defaultGachaPrizes: F[Vector[GachaPrize[ItemStack]]] = for {
     gachaPrizes <- allGachaPrizeList
