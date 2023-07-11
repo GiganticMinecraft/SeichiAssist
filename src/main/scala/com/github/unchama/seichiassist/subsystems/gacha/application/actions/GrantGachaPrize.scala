@@ -20,6 +20,12 @@ trait GrantGachaPrize[F[_], ItemStack] {
     prizes: Vector[GachaPrize[ItemStack]]
   ): Kleisli[F, Player, Vector[GachaPrize[ItemStack]]]
 
+  /**
+   * @param prizes プレイヤーに付与する[[GachaPrize]]のVector
+   * @param ownerName `prizes`の各アイテムに対して、署名をする名義
+   * @return `prizes`の各アイテムをプレイヤーのインベントリに挿入するか、
+   *         それができなかった場合には地面にドロップする作用
+   */
   def insertIntoPlayerInventoryOrDrop(
     prizes: Vector[GachaPrize[ItemStack]],
     ownerName: Option[String]
@@ -34,7 +40,7 @@ trait GrantGachaPrize[F[_], ItemStack] {
         _ <- insertIntoPlayerInventoryOrDrop(
           failedIntoMineStackGachaPrizes,
           Some(player.getName)
-        )(player).whenA(failedIntoMineStackGachaPrizes.nonEmpty)
+        )(player)
       } yield {
         if (failedIntoMineStackGachaPrizes.isEmpty) GrantState.GrantedMineStack
         else GrantState.GrantedInventory
