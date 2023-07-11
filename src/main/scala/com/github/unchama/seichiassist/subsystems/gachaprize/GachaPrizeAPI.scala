@@ -127,9 +127,15 @@ trait GachaPrizeWriteAPI[F[_], ItemStack] {
   final type GachaPrizeByGachaPrizeId = GachaPrizeId => GachaPrize[ItemStack]
 
   /**
-   * @return ガチャ景品リストに`gachaPrize`を追加する作用
+   * @return ガチャ景品リストに`gachaPrizeByGachaPrizeId`から取り出される[[GachaPrize]]を追加する作用
    */
   def addGachaPrize(gachaPrizeByGachaPrizeId: GachaPrizeByGachaPrizeId): F[Unit]
+
+  /**
+   * @return `gachaPrize`と同じガチャIDのガチャ景品が存在すれば`gachaPrize`に更新し、
+   *         なければ`gachaPrize`を追加します
+   */
+  def upsertGachaPrize(gachaPrize: GachaPrize[ItemStack]): F[Unit]
 
 }
 

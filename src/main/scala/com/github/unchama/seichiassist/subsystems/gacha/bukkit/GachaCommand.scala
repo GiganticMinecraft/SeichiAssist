@@ -287,11 +287,10 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
           val amount = context.args.parsed(1).asInstanceOf[Int]
           val eff = for {
             currentGachaPrize <- gachaPrizeAPI.fetch(targetId)
-            _ <- gachaPrizeAPI.removeByGachaPrizeId(targetId)
             itemStack = currentGachaPrize.map(_.itemStack)
             isChangedAmount <- currentGachaPrize.flatTraverse { gachaPrize =>
               itemStack.traverse { itemStack =>
-                gachaPrizeAPI.addGachaPrize(_ =>
+                gachaPrizeAPI.upsertGachaPrize(
                   gachaPrize.copy(itemStack = itemStack.tap(_.setAmount(amount)))
                 )
               }
@@ -323,10 +322,10 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
         val newProb = args(1).asInstanceOf[Double]
         val eff = for {
           currentGachaPrize <- gachaPrizeAPI.fetch(targetId)
-          _ <- gachaPrizeAPI.removeByGachaPrizeId(targetId)
           changeProbabilityAction <- currentGachaPrize.traverse { gachaPrize =>
-            gachaPrizeAPI
-              .addGachaPrize(_ => gachaPrize.copy(probability = GachaProbability(newProb)))
+            gachaPrizeAPI.upsertGachaPrize(
+              gachaPrize.copy(probability = GachaProbability(newProb))
+            )
           }
           itemStack = currentGachaPrize.map(_.itemStack)
         } yield {

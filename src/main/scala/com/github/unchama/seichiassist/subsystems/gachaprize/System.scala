@@ -60,6 +60,9 @@ object System {
           ): F[Unit] =
             gachaPrizeUseCase.addGachaPrize(gachaPrizeByGachaPrizeId)
 
+          override def upsertGachaPrize(gachaPrize: GachaPrize[ItemStack]): F[Unit] =
+            _gachaPersistence.upsertGachaPrize(gachaPrize)
+
           override def listOfNow: F[Vector[GachaPrize[ItemStack]]] =
             gachaPrizeUseCase.listOfNow
 
