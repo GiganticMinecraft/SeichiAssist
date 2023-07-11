@@ -6,9 +6,9 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.G
 /**
  * @param itemStack ガチャで排出されるアイテム。
  * @param probability ガチャで排出される確率
- * @param signOwner 記名する場合はtrueにしてください
- * @param gachaEvent ガチャイベントで排出されるアイテムの場合は設定してください。
- *                       `None`の場合は通常排出アイテムとして扱います。
+ * @param signOwner ガチャ景品に対して記名をする場合はtrue、しない場合はfalse
+ * @param gachaEvent このガチャ景品をイベント排出景品として扱う場合に紐付けるイベント情報
+ *                   Noneの場合はイベントが開催されていない場合に排出されるアイテムとして扱われます。
  */
 case class GachaPrize[ItemStack: Cloneable](
   itemStack: ItemStack,
