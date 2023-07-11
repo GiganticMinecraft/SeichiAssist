@@ -13,8 +13,8 @@ trait GrantGachaPrize[F[_], ItemStack] {
   implicit val F: Monad[F]
 
   /**
-   * @param prizes MineStackに格納したい[[GachaPrize]]の集合
-   * @return `prizes`をMineStackに格納することを試み、格納できなかった[[GachaPrize]]の集合を返す作用
+   * @param prizes MineStackに格納したい[[GachaPrize]]のVector
+   * @return `prizes`をMineStackに格納することを試み、格納できなかった[[GachaPrize]]のVectorを返す作用
    */
   def tryInsertIntoMineStack(
     prizes: Vector[GachaPrize[ItemStack]]
