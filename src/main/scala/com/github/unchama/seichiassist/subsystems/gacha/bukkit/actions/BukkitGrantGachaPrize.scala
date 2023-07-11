@@ -5,6 +5,7 @@ import cats.data.Kleisli
 import cats.effect.Sync
 import com.github.unchama.generic.ApplicativeExtra.whenAOrElse
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.minecraft.algebra.HasName
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
   CanBeSignedAsGachaPrize,
@@ -18,7 +19,7 @@ import org.bukkit.inventory.ItemStack
 class BukkitGrantGachaPrize[F[_]: Sync: OnMinecraftServerThread](
   implicit canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack],
   mineStackAPI: MineStackAPI[F, Player, ItemStack]
-) extends GrantGachaPrize[F, ItemStack] {
+) extends GrantGachaPrize[F, ItemStack, Player] {
 
   import cats.implicits._
 
@@ -56,4 +57,5 @@ class BukkitGrantGachaPrize[F[_]: Sync: OnMinecraftServerThread](
     }
 
   override implicit val F: Monad[F] = implicitly
+  override implicit val Player: HasName[Player] = implicitly
 }

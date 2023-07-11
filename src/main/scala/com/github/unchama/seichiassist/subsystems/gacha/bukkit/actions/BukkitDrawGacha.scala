@@ -20,7 +20,7 @@ import org.bukkit.inventory.ItemStack
 class BukkitDrawGacha[F[_]: Sync](
   implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
   lotteryOfGachaItems: LotteryOfGachaItems[F, ItemStack],
-  grantGachaPrize: GrantGachaPrize[F, ItemStack]
+  grantGachaPrize: GrantGachaPrize[F, ItemStack, Player]
 ) extends DrawGacha[F, Player] {
 
   import PlayerSendable._

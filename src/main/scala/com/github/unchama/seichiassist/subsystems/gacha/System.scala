@@ -45,7 +45,7 @@ object System {
   ): System[F, Player] = {
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
       gachaPrizeAPI.canBeSignedAsGachaPrize
-    implicit val grantGachaPrize: GrantGachaPrize[F, ItemStack] =
+    implicit val grantGachaPrize: GrantGachaPrize[F, ItemStack, Player] =
       new BukkitGrantGachaPrize[F]
     implicit val staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack] =
       gachaPrizeAPI.staticGachaPrizeFactory

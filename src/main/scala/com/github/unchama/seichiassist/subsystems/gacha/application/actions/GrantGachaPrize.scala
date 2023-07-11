@@ -2,15 +2,17 @@ package com.github.unchama.seichiassist.subsystems.gacha.application.actions
 
 import cats.Monad
 import cats.data.Kleisli
+import com.github.unchama.minecraft.algebra.HasName
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GrantState
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaPrize
-import org.bukkit.entity.Player
 
-trait GrantGachaPrize[F[_], ItemStack] {
+trait GrantGachaPrize[F[_], ItemStack, Player] {
 
   import cats.implicits._
 
   implicit val F: Monad[F]
+
+  implicit val Player: HasName[Player]
 
   /**
    * @param prizes MineStackに格納したい[[GachaPrize]]のVector
@@ -39,7 +41,7 @@ trait GrantGachaPrize[F[_], ItemStack] {
         failedIntoMineStackGachaPrizes <- tryInsertIntoMineStack(prizes)(player)
         _ <- insertIntoPlayerInventoryOrDrop(
           failedIntoMineStackGachaPrizes,
-          Some(player.getName)
+          Some(HasName[Player].of(player))
         )(player)
       } yield {
         if (failedIntoMineStackGachaPrizes.isEmpty) GrantState.GrantedMineStack
