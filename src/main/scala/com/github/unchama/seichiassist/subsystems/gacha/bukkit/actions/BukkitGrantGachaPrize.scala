@@ -34,7 +34,7 @@ class BukkitGrantGachaPrize[F[_]: Sync: OnMinecraftServerThread](
             mineStackAPI
               .mineStackRepository
               .tryIntoMineStack(player, itemStack, itemStack.getAmount)
-              .map(result => gachaPrize -> result),
+              .map(hasBeenStoredInMineStack => gachaPrize -> hasBeenStoredInMineStack),
             gachaPrize -> false
           )
         }
