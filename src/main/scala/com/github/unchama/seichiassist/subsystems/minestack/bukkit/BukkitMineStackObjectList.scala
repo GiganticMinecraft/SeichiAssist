@@ -605,7 +605,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
   import cats.implicits._
 
   private val gachaPrizesObjects: F[Ref[F, Vector[MineStackObject[ItemStack]]]] = for {
-    gachaPrizes <- gachaPrizeAPI.defaultGachaPrizes
+    gachaPrizes <- gachaPrizeAPI.gachaPrizesWhenGachaEventsIsNotHolding
     mineStackObjects <- Ref.of[F, Vector[MineStackObject[ItemStack]]](
       gachaPrizes.sortBy(_.id.id).map { gachaPrize =>
         MineStackObjectByItemStack(
@@ -660,7 +660,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     itemStack: ItemStack,
     player: Player
   ): F[Option[MineStackObject[ItemStack]]] = for {
-    gachaPrizes <- gachaPrizeAPI.defaultGachaPrizes
+    gachaPrizes <- gachaPrizeAPI.gachaPrizesWhenGachaEventsIsNotHolding
     canBeSignedAsGachaPrize = gachaPrizeAPI.canBeSignedAsGachaPrize
     foundGachaPrizeOpt = gachaPrizes.find { gachaPrize =>
       if (gachaPrize.signOwner) {
