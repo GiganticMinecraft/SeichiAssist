@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.gacha.bukkit
 
 import cats.data.Kleisli
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
-import cats.effect.{ConcurrentEffect, IO}
+import cats.effect.{ConcurrentEffect, IO, Sync}
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.ParserResponse.{failWith, succeedWith}
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
@@ -10,7 +10,6 @@ import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoEx
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.minecraft.bukkit.algebra.CloneableBukkitItemStack.instance
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.BukkitGrantGachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.PlayerName
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.{
@@ -24,6 +23,7 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
   GachaEventName
 }
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
+import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
 import org.bukkit.ChatColor._
@@ -164,11 +164,16 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
               GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
             )
             existsGachaPrize = gachaPrize.nonEmpty
-            _ <- new BukkitGrantGachaPrize[F]()
-              .insertIntoPlayerInventoryOrDrop(Vector(gachaPrize.get), ownerName)(
-                context.sender
-              )
-              .whenA(existsGachaPrize)
+            _ <- Sync[F].delay {
+              gachaPrize.foreach { gachaPrize =>
+                val itemStack = ownerName match {
+                  case Some(name) => gachaPrize.materializeWithOwnerSignature(name)
+                  case None       => gachaPrize.itemStack
+                }
+
+                InventoryOperations.grantItemStacksEffect(itemStack).apply(context.sender)
+              }
+            }
           } yield {
             if (existsGachaPrize)
               MessageEffect("ガチャアイテムを付与しました。")

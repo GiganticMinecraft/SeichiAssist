@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.subsystems.gacha.application.actions
 
 import cats.Monad
 import cats.data.Kleisli
-import com.github.unchama.minecraft.algebra.HasName
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GrantState
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaPrize
 
@@ -11,8 +10,6 @@ trait GrantGachaPrize[F[_], ItemStack, Player] {
   import cats.implicits._
 
   implicit val F: Monad[F]
-
-  implicit val Player: HasName[Player]
 
   /**
    * @param prizes MineStackに格納したい[[GachaPrize]]のVector
@@ -24,13 +21,11 @@ trait GrantGachaPrize[F[_], ItemStack, Player] {
 
   /**
    * @param prizes プレイヤーに付与する[[GachaPrize]]のVector
-   * @param ownerName `prizes`の各アイテムに対して、署名をする名義
    * @return `prizes`の各アイテムをプレイヤーのインベントリに挿入するか、
    *         それができなかった場合には地面にドロップする作用
    */
   def insertIntoPlayerInventoryOrDrop(
-    prizes: Vector[GachaPrize[ItemStack]],
-    ownerName: Option[String]
+    prizes: Vector[GachaPrize[ItemStack]]
   ): Kleisli[F, Player, Unit]
 
   final def grantGachaPrize(
@@ -39,10 +34,7 @@ trait GrantGachaPrize[F[_], ItemStack, Player] {
     Kleisli { player =>
       for {
         failedIntoMineStackGachaPrizes <- tryInsertIntoMineStack(prizes)(player)
-        _ <- insertIntoPlayerInventoryOrDrop(
-          failedIntoMineStackGachaPrizes,
-          Some(HasName[Player].of(player))
-        )(player)
+        _ <- insertIntoPlayerInventoryOrDrop(failedIntoMineStackGachaPrizes)(player)
       } yield {
         if (failedIntoMineStackGachaPrizes.isEmpty) GrantState.GrantedMineStack
         else GrantState.GrantedInventory
