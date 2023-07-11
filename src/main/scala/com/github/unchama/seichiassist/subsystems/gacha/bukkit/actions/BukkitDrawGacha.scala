@@ -30,8 +30,8 @@ class BukkitDrawGacha[F[_]: Sync](
 
   override def draw(player: Player, count: Int): F[Unit] = {
     for {
-      gachaPrizesRepository <- gachaPrizeAPI.listOfNow
-      gachaPrizes <- lotteryOfGachaItems.runLottery(count, gachaPrizesRepository)
+      currentGachaPrizes <- gachaPrizeAPI.listOfNow
+      gachaPrizes <- lotteryOfGachaItems.runLottery(count, currentGachaPrizes)
       grantState <- grantGachaPrize.grantGachaPrize(gachaPrizes)(player)
       _ <- gachaPrizes.traverse { gachaPrize =>
         val additionalMessage = grantState match {
