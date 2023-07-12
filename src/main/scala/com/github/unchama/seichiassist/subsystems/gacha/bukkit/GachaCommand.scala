@@ -39,8 +39,7 @@ import scala.util.chaining.scalaUtilChainingOps
 class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
   implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
   canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack],
-  gachaTicketAPI: GachaTicketAPI[F],
-  mineStackAPI: MineStackAPI[F, Player, ItemStack]
+  gachaTicketAPI: GachaTicketAPI[F]
 ) {
 
   import cats.implicits._

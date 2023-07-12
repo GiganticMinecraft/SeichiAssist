@@ -30,15 +30,18 @@ trait GrantGachaPrize[F[_], ItemStack, Player] {
 
   final def grantGachaPrize(
     prizes: Vector[GachaPrize[ItemStack]]
-  ): Kleisli[F, Player, GrantState] =
+  ): Kleisli[F, Player, Vector[(GachaPrize[ItemStack], GrantState)]] =
     Kleisli { player =>
       for {
         failedIntoMineStackGachaPrizes <- tryInsertIntoMineStack(prizes)(player)
         _ <- insertIntoPlayerInventoryOrDrop(failedIntoMineStackGachaPrizes)(player)
-      } yield {
-        if (failedIntoMineStackGachaPrizes.isEmpty) GrantState.GrantedMineStack
-        else GrantState.GrantedInventory
-      }
+        intoMineStackGachaPrizes = prizes.diff(failedIntoMineStackGachaPrizes).map {
+          gachaPrize => (gachaPrize, GrantState.GrantedMineStack)
+        }
+        intoInventoryOrDropGachaPrizes = failedIntoMineStackGachaPrizes.map { gachaPrize =>
+          (gachaPrize, GrantState.GrantedInventory)
+        }
+      } yield intoMineStackGachaPrizes ++ intoInventoryOrDropGachaPrizes
     }
 
 }
