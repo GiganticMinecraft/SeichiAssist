@@ -23,10 +23,6 @@ class JdbcGachaEventPersistence[F[_]: Sync] extends GachaEventPersistence[F] {
 
   override def deleteGachaEvent(eventName: GachaEventName): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      sql"""DELETE data FROM gachadata AS data
-           | LEFT JOIN gacha_events AS events
-           | ON data.event_id = events.id
-           | WHERE events.event_name = ${eventName.name}""".stripMargin.execute().apply()
       sql"DELETE FROM gacha_events WHERE event_name = ${eventName.name}".execute().apply()
     }
   }
