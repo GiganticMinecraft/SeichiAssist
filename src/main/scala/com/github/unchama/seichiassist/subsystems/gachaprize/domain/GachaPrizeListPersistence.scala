@@ -11,7 +11,7 @@ trait GachaPrizeListPersistence[F[_], ItemStack] {
 
   /**
    * @return `gachaPrize`と同様のgachaPrizeIdが存在すれば`gachaPrize`に更新し、
-   *         存在しなければ`gachaPrize`を追加します。
+   *         存在しなければ`gachaPrize`を追加する作用
    */
   def upsertGachaPrize(gachaPrize: GachaPrize[ItemStack]): F[Unit]
 
@@ -21,7 +21,8 @@ trait GachaPrizeListPersistence[F[_], ItemStack] {
   def removeGachaPrize(gachaPrizeId: GachaPrizeId): F[Unit]
 
   /**
-   * @return 通常排出のガチャ景品をイベント景品として複製する作用
+   * @return イベント開催中ではない時に排出されるガチャ景品を、
+   *         `gachaEvent`の景品としてidとガチャイベント以外を同一の内容で追加する作用
    */
   def duplicateDefaultGachaPrizes(gachaEvent: GachaEvent): F[Unit]
 
