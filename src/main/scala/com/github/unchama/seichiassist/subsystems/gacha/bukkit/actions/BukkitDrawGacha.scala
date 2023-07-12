@@ -38,7 +38,7 @@ class BukkitDrawGacha[F[_]: Sync](
           val additionalMessage = grantState match {
             case GrantState.GrantedMineStack =>
               s"${AQUA}景品をマインスタックに収納しました。"
-            case GrantState.GrantedInventory =>
+            case GrantState.GrantedInventoryOrDrop =>
               s"${AQUA}景品をインベントリに収納しました。"
           }
 

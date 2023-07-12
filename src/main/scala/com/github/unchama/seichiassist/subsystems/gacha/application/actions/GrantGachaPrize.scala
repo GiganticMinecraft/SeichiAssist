@@ -39,7 +39,7 @@ trait GrantGachaPrize[F[_], ItemStack, Player] {
           gachaPrize => (gachaPrize, GrantState.GrantedMineStack)
         }
         intoInventoryOrDropGachaPrizes = failedIntoMineStackGachaPrizes.map { gachaPrize =>
-          (gachaPrize, GrantState.GrantedInventory)
+          (gachaPrize, GrantState.GrantedInventoryOrDrop)
         }
       } yield intoMineStackGachaPrizes ++ intoInventoryOrDropGachaPrizes
     }

@@ -2,6 +2,10 @@ package com.github.unchama.seichiassist.subsystems.gacha.domain
 
 sealed trait GrantState
 
+/**
+ * ガチャ景品をどこに付与したのかを表すenum
+ * MineStackに付与したか、プレイヤー(インベントリ)に直接付与したかを表す。
+ */
 object GrantState {
 
   /**
@@ -10,9 +14,8 @@ object GrantState {
   case object GrantedMineStack extends GrantState
 
   /**
-   * ガチャ景品をインベントリに付与した
-   * ドロップしたことは考慮しない
+   * ガチャ景品をインベントリに直接付与、または地面にドロップした
    */
-  case object GrantedInventory extends GrantState
+  case object GrantedInventoryOrDrop extends GrantState
 
 }
