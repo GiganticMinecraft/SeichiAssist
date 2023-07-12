@@ -22,7 +22,6 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
   GachaEvent,
   GachaEventName
 }
-import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
