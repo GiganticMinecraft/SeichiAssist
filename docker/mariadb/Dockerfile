@@ -3,7 +3,6 @@ FROM mariadb:10.11.4
 
 WORKDIR /docker-entrypoint-initdb.d
 
-RUN apt-get update && \
-    apt-get install -y wget && \
-    wget https://redmine.seichi.click/attachments/download/995/gachadata.sql && \
-    sed '1i USE seichiassist;' gachadata.sql
+ADD https://redmine.seichi.click/attachments/download/995/gachadata.sql /docker-entrypoint-initdb.d
+
+RUN sed '1i USE seichiassist;' gachadata.sql
