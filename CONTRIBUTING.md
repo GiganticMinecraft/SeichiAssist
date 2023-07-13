@@ -161,26 +161,6 @@ Linux環境では、`./prepare-docker.sh`、Windowsでは`prepare-docker.bat`を
 
 なお、SeichiAssistがJDK 8以外でコンパイルされた場合は、実行時にエラーとなります。必ずJDKのバージョンを揃えるようにしてください。
 
-##### データベースの初期化
-
-> **Warning**
->
-> この手順は初めてDockerを立ち上げた場合のみに必要です。
-
-初回起動後、データベースが作成されますが、ガチャ景品のデータがありません。そのため、次のSQLのダンプをインポートします。
-- [`gachadata.sql`](https://redmine.seichi.click/attachments/download/995/gachadata.sql)
-
-SQLのダンプをインポートする手順は以下の通りです。
-1. 一旦サーバーを起動させる
-2. phpMyAdminを開く
-3. トップ画面の上部メニューから「データベース」を開く
-4. `seichiassist`と`flyway_managed_schema`にチェックを入れて、「削除」、「OK」
-5. 「データベースを作成する」の下にあるテキストボックスに`seichiassist`と入力し、「作成」
-6. `seichiassist`のデータベースを開き、上部メニューから「インポート」
-7. 「File to import」の「ファイルを選択」から、ダウンロードした`gachadata.sql`を選択
-8. 画面下部の「実行」
-9. サーバーを再起動させる
-
 ##### デバッグ用環境への接続
 
 DockerマシンのIPアドレス(Linux等なら`localhost`)を`DOCKER_IP`とします。
