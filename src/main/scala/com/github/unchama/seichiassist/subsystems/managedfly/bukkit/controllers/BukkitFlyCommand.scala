@@ -24,9 +24,15 @@ import org.bukkit.entity.Player
 object BukkitFlyCommand {
 
   private val commandHelpMessage = List(
-    s"${GREEN}fly機能を時間付きで利用したい場合は末尾に「add 利用したい時間(分単位)」の数値を、",
-    s"${GREEN}fly機能を無期限で利用したい場合は末尾に「endless」を、",
-    s"${GREEN}fly機能を中断したい場合は、末尾に「finish」または「end」を記入してください。"
+    s"${GREEN}[Usage]",
+    s"${GREEN}/fly add [利用したい時間(分単位)]",
+    s"${GREEN}  fly機能を時間付きで利用します。",
+    "",
+    s"${GREEN}/fly endless",
+    s"${GREEN}  fly機能を無期限で利用します。",
+    "",
+    s"${GREEN}/fly finish or /fly end",
+    s"${GREEN}  fly機能を中断します。"
   )
 
   private val durationParseFailedMessage =
