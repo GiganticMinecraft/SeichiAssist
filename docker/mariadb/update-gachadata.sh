@@ -1,6 +1,6 @@
 #!/bin/bash
 
-wget -O gachadata.sql -P /docker-entrypoint-initdb.d https://redmine.seichi.click/attachments/download/995/gachadata.sql
+wget -O gachadata.sql -P /docker-entrypoint-initdb.d https://redmine.seichi.click/attachments/download/997/gachadata.sql
 
 # TODO: 定期的にdumpされたgachadata.sqlの最新版をダウンロードできるようにする https://github.com/GiganticMinecraft/SeichiAssist/issues/2172
 # 外部キー制約がかかっているgachadataテーブルをDROPしたいので、一旦外部キー制約のチェックをオフにする
