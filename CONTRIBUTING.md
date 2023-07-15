@@ -157,9 +157,12 @@ SeichiAssistは手元でデバッグできる環境を整えています。環�
 Linux環境では、`./prepare-docker.sh`、Windowsでは`prepare-docker.bat`を実行することで
 デバッグ用のBungeecordとSpigotの環境を構築することができます。
 
+また、第1引数としてupdate-gachadataを指定すると、最新のガチャ景品データが最新のものに更新されます。
+
 サーバーやDB等を停止する場合、 `docker compose down` を実行してください。
 
 なお、SeichiAssistがJDK 8以外でコンパイルされた場合は、実行時にエラーとなります。必ずJDKのバージョンを揃えるようにしてください。
+
 
 ##### デバッグ用環境への接続
 
