@@ -32,7 +32,7 @@ if [ $1 == "update-gachadata" ]; then
 
   # ここで遅延を入れないとdbが起動する前にgachadataを更新するスクリプトが走ってしまう
   sleep 3
-  docker exec -it seichiassist-db-1 /update-gachadata.sh
+  docker exec -it seichiassist-db-1 /docker-entrypoint-initdb.d/update-gachadata.sh
   echo "Completed updating gachadata."
   stop_docker_service
 fi
