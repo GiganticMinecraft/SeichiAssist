@@ -11,7 +11,7 @@ if "%1" == "update-gachadata" (
     timeout 3
 
     call docker exec -it seichiassist-db-1 /update-gachadata.sh
-    echo Completed update gachadata.
+    echo Completed updating gachadata.
 )
 
 call docker compose down
