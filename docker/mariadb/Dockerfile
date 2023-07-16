@@ -7,4 +7,4 @@ WORKDIR /docker-entrypoint-initdb.d
 # 初めて mariadb が起動したときに /docker-entrypoint-initdb.d ディレクトリにある .sh ファイルが実行される
 COPY --link ./docker/mariadb/update-gachadata.sh /docker-entrypoint-initdb.d
 
-RUN sed '1i USE seichiassist;' gachadata.sql && apt-get update -y && apt-get install wget -y
+RUN apt-get update -y && apt-get install wget -y
