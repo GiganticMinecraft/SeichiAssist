@@ -3,9 +3,6 @@ FROM mariadb:10.11.4
 
 WORKDIR /docker-entrypoint-initdb.d
 
-ARG UPDATE_GACHADATA
-ENV UPDATE_GACHADATA=$UPDATE_GACHADATA
-
 COPY --link ./docker/mariadb/update-gachadata.sh /
 
 # TODO: 定期的にdumpされたgachadata.sqlの最新版をダウンロードできるようにする https://github.com/GiganticMinecraft/SeichiAssist/issues/2172
