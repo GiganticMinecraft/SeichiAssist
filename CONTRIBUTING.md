@@ -159,6 +159,8 @@ Linux環境では、`./prepare-docker.sh`、Windowsでは`prepare-docker.bat`を
 
 また、第1引数として`update-gachadata`を指定すると、ガチャ景品データがダウンロードされ、開発環境のデータから置き換えられます。
 
+例 `./prepare-docker.sh update-gachadata`
+
 サーバーやDB等を停止する場合、 `docker compose down` を実行してください。
 
 なお、SeichiAssistがJDK 8以外でコンパイルされた場合は、実行時にエラーとなります。必ずJDKのバージョンを揃えるようにしてください。
