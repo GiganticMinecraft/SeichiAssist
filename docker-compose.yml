@@ -108,10 +108,13 @@ services:
     volumes:
       - redis-data:/data
   db:
-    image: mariadb:10.11.4
+    build:
+      context: .
+      dockerfile: ./docker/mariadb/Dockerfile
     environment:
       - TZ=Asia/Tokyo
       - MYSQL_ROOT_PASSWORD=unchamaisgod
+      - MYSQL_DATABASE=seichiassist
     command: [
         '--wait_timeout=86400',
     ]
