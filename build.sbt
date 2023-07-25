@@ -109,7 +109,7 @@ val dependenciesToEmbed = Seq(
 
   // type-safety utils
   "eu.timepit" %% "refined" % "0.11.0",
-  "com.beachape" %% "enumeratum" % "1.7.2",
+  "com.beachape" %% "enumeratum" % "1.7.3",
 
   // protobuf
   "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
