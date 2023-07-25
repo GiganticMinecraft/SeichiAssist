@@ -35,7 +35,7 @@ Scalaを書くことができる場合はScalaを使ってください。
 
 ## 「サブシステム」へ分割、依存、及び準拠する
 SeichiAssistには複数の関心事があり、その大半が「サブシステム」と呼ばれるひとまとまりとして`com.github.unchama.seichiassist.subsystems`以下にまとめられています。
-[最新の一覧](https://github.com/GiganticMinecraft/SeichiAssist/tree/develop/src/main/scala/com/github/unchama/seichiassist/subsystems)。
+[最新の一覧](https://github.com/GiganticMinecraft/SeichiAssist/tree/develop/src/main/scala/com/github/unchama/seichiassist/subsystems)
 
 各サブシステムはそれぞれ他のサブシステムなどで使うことを想定したAPIを `trait` として持ち、各サブシステムはその抽象に対してのみ依存することができます。サブシステムの実装はAPIに具象的な実装を与える必要があります。APIの名前はおおよそ`Api`か`API`で終わります。
 
