@@ -26,6 +26,9 @@ Scalaを書くことができる場合はScalaを使ってください。
 
 もしどうしても使わなければならない場合は、注意して影響範囲を**最小限に**押し込めるとともに、そこへのフローをできる限り制限してください。
 
+----
+※以下は、2023年7月25日現在の情報であり、古くなっている可能性があります
+
 ## メニュー画面を実装するために`InventoryClickEvent`を使わない
 `InventoryClickEvent`はメニュー以外のインベントリ (例: チェスト) を操作したときも拾ってしまうため、メニューを実装するためにホックすることは推奨されません。
 代わりに、[`Menu`](https://github.com/GiganticMinecraft/SeichiAssist/blob/41e63c0493621ff8afa32bce902d34a62ae466d2/src/main/scala/com/github/unchama/menuinventory/Menu.scala)を使ってください。
