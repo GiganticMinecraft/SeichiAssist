@@ -261,7 +261,7 @@ object BreakUtil {
             // ドロップアイテムの個数を求める計算が通常の鉱石の扱いと異なるため、特別な処理が必要である。
             case Material.REDSTONE_ORE | Material.GLOWING_REDSTONE_ORE =>
               val withBonus = (rand * (fortuneLevel + 2) + 4).toInt
-              new ItemStack(Material.GLOWSTONE_DUST, withBonus)
+              new ItemStack(Material.REDSTONE, withBonus)
             case Material.LAPIS_ORE =>
               val dye = new Dye()
               dye.setColor(DyeColor.BLUE)
