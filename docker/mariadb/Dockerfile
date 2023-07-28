@@ -7,4 +7,7 @@ WORKDIR /docker-entrypoint-initdb.d
 # 初めて mariadb が起動したときに /docker-entrypoint-initdb.d ディレクトリにある .sh ファイルが実行される
 COPY --link ./docker/mariadb/update-gachadata.sh /docker-entrypoint-initdb.d
 
-RUN apt-get update -y && apt-get install wget -y
+RUN apt-get update -y && apt-get install wget -y && \
+    # gachadataを保存するディレクトリに権限がないとgachadata.sqlをダウンロードしてリネームする処理が権限不足でできない
+    mkdir -m a=rwx /gachadata/ && \
+    chmod +x /docker-entrypoint-initdb.d/update-gachadata.sh

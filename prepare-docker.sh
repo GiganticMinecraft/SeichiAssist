@@ -28,7 +28,7 @@ echo "stop_docker_service build_image" | xargs -P 0 -n 1 bash -c
 
 if [ $1 == "update-gachadata" ]; then
   echo Updating gachadata...
-  call docker compose up -d db
+  docker compose up -d db
 
   # ここで遅延を入れないとdbが起動する前にgachadataを更新するスクリプトが走ってしまう
   sleep 3
