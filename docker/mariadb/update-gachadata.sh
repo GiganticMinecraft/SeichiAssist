@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# TODO: 定期的にdumpされたgachadata.sqlの最新版をダウンロードできるようにする https://github.com/GiganticMinecraft/SeichiAssist/issues/2172
-wget -O gachadata.sql -P / https://redmine.seichi.click/attachments/download/997/gachadata.sql
+wget -O gachadata.sql -P / https://gachadata.public-gigantic-api.seichi.click/
 
 # 外部キー制約がかかっているgachadataテーブルをDROPしたいので、一旦外部キー制約のチェックをオフにする
 mysql -uroot -punchamaisgod -e '
