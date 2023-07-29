@@ -3,7 +3,7 @@
 ## 開発を始めるために必要なもの
 - [IntelliJ IDEA](https://www.jetbrains.com/idea/) などの統合開発環境
 - [JDK 8](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot)
-- [sbt 1.6](https://www.scala-sbt.org/1.x/docs/Setup.html)
+- [sbt 1.9](https://www.scala-sbt.org/1.x/docs/Setup.html)
 - [Scala 2.13](https://www.scala-lang.org/download/)
 - Spigot 1.12.2
 - Docker
