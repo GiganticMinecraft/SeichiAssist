@@ -158,6 +158,8 @@ Linux環境では、`./prepare-docker.sh`、Windowsでは`prepare-docker.bat`を
 デバッグ用のBungeecordとSpigotの環境を構築することができます。
 
 また、第1引数として以下のように`update-gachadata`を指定すると、ガチャ景品データがダウンロードされ、開発環境のデータから置き換えられます。
+※初回起動時にはgachadataテーブルが空の状態になっているので、ガチャ景品データが必要な場合はオプションを付けずに一度起動したあとに、`update-gachadata`オプションを付けて起動してください。
+※初回起動時に`update-gachadata`を指定するとFlywayによるマイグレーションと競合し、起動することができません。(2023/07/27時点)
 
 ```
 ./prepare-docker.sh update-gachadata
