@@ -25,7 +25,6 @@ import org.bukkit.World.Environment
 import org.bukkit._
 import org.bukkit.block.Block
 import org.bukkit.entity.{Entity, EntityType, Player}
-import org.bukkit.inventory.ItemStack
 
 import java.util.Random
 import java.util.stream.IntStream
