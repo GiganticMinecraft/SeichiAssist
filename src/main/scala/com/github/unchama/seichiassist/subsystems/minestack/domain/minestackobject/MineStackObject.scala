@@ -39,7 +39,7 @@ case class MineStackObject[ItemStack: Cloneable](
 
     for {
       gachaPrizes <- gachaPrizeAPI.allGachaPrizeList
-    } yield gachaPrizes.filter(_.nonGachaEventItem).find(_.itemStack == itemStack).map {
+    } yield gachaPrizes.find(_.itemStack == itemStack).map {
       gachaPrize => gachaPrize.materializeWithOwnerSignature(name)
     }
   }
