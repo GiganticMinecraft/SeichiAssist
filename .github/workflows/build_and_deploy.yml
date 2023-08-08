@@ -67,6 +67,8 @@ jobs:
       - name: Restore localDependencies' timestamps
         # 参考: https://qiita.com/tomlla/items/219cea9dd071c8a9e147
         run: |
+          git config --global --add safe.directory /__w/SeichiAssist/SeichiAssist
+          
           for jar in localDependencies/*.jar; do
             timestamp=`git log -1 --pretty=format:'%cd' --date=format:'%Y%m%d%H%M.%S' $jar`
             touch -t "$timestamp" $jar
