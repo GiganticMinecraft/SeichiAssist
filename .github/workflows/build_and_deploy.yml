@@ -14,7 +14,7 @@ jobs:
     env:
       BUILD_ENVIRONMENT_IS_CI_OR_LOCAL: "CI"
     runs-on: ubuntu-22.04
-    container: ghcr.io/giganticminecraft/seichiassist-builder-v2:424c09f
+    container: ghcr.io/giganticminecraft/seichiassist-builder-v2:5357f57
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
