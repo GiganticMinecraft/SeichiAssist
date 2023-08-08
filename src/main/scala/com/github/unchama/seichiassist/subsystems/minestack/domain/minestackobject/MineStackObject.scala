@@ -19,6 +19,14 @@ case class MineStackObject[ItemStack: Cloneable](
   def itemStack: ItemStack = Cloneable[ItemStack].clone(_itemStack)
 
   /**
+   * [[MineStackObject]]は[[MineStackObjectCategory]]が[[MineStackObjectCategory.GACHA_PRIZES]]のアイテムとして
+   * [[com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaPrize]]の
+   * 通常排出アイテム(`_.nonGachaEventItem`)を含む。
+   *
+   * また、[[MineStackObjectCategory.GACHA_PRIZES]]は記名する事ができるアイテムを持つという性質があるが、
+   * [[MineStackObject]]自体にはその性質がないため、[[MineStackObject]]の通常排出アイテムの中に
+   * [[itemStack]]と同じアイテムが存在するならば、`name`を所有者として記名した[[ItemStack]]を返す。
+   *
    * @return 記名済みの[[ItemStack]]へ変換することを試みる作用
    */
   def tryToSignedItemStack[F[_]: Sync, Player](
