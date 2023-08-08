@@ -8,7 +8,7 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.GrantGachaPrize
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
   CanBeSignedAsGachaPrize,
-  GachaPrize
+  GachaPrizeTableEntry
 }
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.util.InventoryOperations
@@ -23,8 +23,8 @@ class BukkitGrantGachaPrize[F[_]: Sync: OnMinecraftServerThread](
   import cats.implicits._
 
   override def tryInsertIntoMineStack(
-    prizes: Vector[GachaPrize[ItemStack]]
-  ): Kleisli[F, Player, Vector[GachaPrize[ItemStack]]] =
+    prizes: Vector[GachaPrizeTableEntry[ItemStack]]
+  ): Kleisli[F, Player, Vector[GachaPrizeTableEntry[ItemStack]]] =
     Kleisli { player =>
       for {
         currentAutoMineStackState <- mineStackAPI.autoMineStack(player)
@@ -44,7 +44,7 @@ class BukkitGrantGachaPrize[F[_]: Sync: OnMinecraftServerThread](
     }
 
   override def insertIntoPlayerInventoryOrDrop(
-    prizes: Vector[GachaPrize[ItemStack]]
+    prizes: Vector[GachaPrizeTableEntry[ItemStack]]
   ): Kleisli[F, Player, Unit] =
     Kleisli { player =>
       val newItemStacks = prizes.map { prize =>

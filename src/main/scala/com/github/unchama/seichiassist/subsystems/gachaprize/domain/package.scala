@@ -4,6 +4,6 @@ import cats.effect.concurrent.Ref
 
 package object domain {
 
-  type GlobalGachaPrizeList[F[_], ItemStack] = Ref[F, Vector[GachaPrize[ItemStack]]]
+  type GlobalGachaPrizeList[F[_], ItemStack] = Ref[F, Vector[GachaPrizeTableEntry[ItemStack]]]
 
 }

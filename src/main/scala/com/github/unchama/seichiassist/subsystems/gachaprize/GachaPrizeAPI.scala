@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
 }
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
   CanBeSignedAsGachaPrize,
-  GachaPrize,
+  GachaPrizeTableEntry,
   GachaPrizeId,
   StaticGachaPrizeFactory
 }
@@ -76,24 +76,24 @@ trait GachaPrizeReadAPI[F[_], ItemStack] {
   /**
    * @return 現在排出対象となっているガチャ景品リストを取得する作用
    */
-  def listOfNow: F[Vector[GachaPrize[ItemStack]]]
+  def listOfNow: F[Vector[GachaPrizeTableEntry[ItemStack]]]
 
   /**
    * @return すべてのガチャ景品を取得する作用
    */
-  def allGachaPrizeList: F[Vector[GachaPrize[ItemStack]]]
+  def allGachaPrizeList: F[Vector[GachaPrizeTableEntry[ItemStack]]]
 
   /**
    * @return イベント開催中ではないときに排出されるガチャ景品を取得する作用
    */
-  final def gachaPrizesWhenGachaEventsIsNotHolding: F[Vector[GachaPrize[ItemStack]]] = for {
+  final def gachaPrizesWhenGachaEventsIsNotHolding: F[Vector[GachaPrizeTableEntry[ItemStack]]] = for {
     gachaPrizes <- allGachaPrizeList
   } yield gachaPrizes.filter(_.nonGachaEventItem)
 
   /**
-   * @return `gachaPrizeId`に対応する[[GachaPrize]]を返す作用
+   * @return `gachaPrizeId`に対応する[[GachaPrizeTableEntry]]を返す作用
    */
-  final def fetch(gachaPrizeId: GachaPrizeId): F[Option[GachaPrize[ItemStack]]] = for {
+  final def fetch(gachaPrizeId: GachaPrizeId): F[Option[GachaPrizeTableEntry[ItemStack]]] = for {
     prizes <- allGachaPrizeList
   } yield prizes.find(_.id == gachaPrizeId)
 
@@ -120,14 +120,14 @@ object GachaPrizeReadAPI {
 trait GachaPrizeWriteAPI[F[_], ItemStack] {
 
   /**
-   * @return ガチャ景品リストから指定された`gachaPrizeId`に紐づく[[GachaPrize]]を削除し、その結果を返す作用
+   * @return ガチャ景品リストから指定された`gachaPrizeId`に紐づく[[GachaPrizeTableEntry]]を削除し、その結果を返す作用
    */
   def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Boolean]
 
-  final type GachaPrizeByGachaPrizeId = GachaPrizeId => GachaPrize[ItemStack]
+  final type GachaPrizeByGachaPrizeId = GachaPrizeId => GachaPrizeTableEntry[ItemStack]
 
   /**
-   * @return ガチャ景品リストに`gachaPrizeByGachaPrizeId`から取り出される[[GachaPrize]]を追加する作用
+   * @return ガチャ景品リストに`gachaPrizeByGachaPrizeId`から取り出される[[GachaPrizeTableEntry]]を追加する作用
    */
   def addGachaPrize(gachaPrizeByGachaPrizeId: GachaPrizeByGachaPrizeId): F[Unit]
 
@@ -135,7 +135,7 @@ trait GachaPrizeWriteAPI[F[_], ItemStack] {
    * @return `gachaPrize`と同じガチャIDのガチャ景品が存在すれば`gachaPrize`に更新し、
    *         なければ`gachaPrize`を追加します
    */
-  def upsertGachaPrize(gachaPrize: GachaPrize[ItemStack]): F[Unit]
+  def upsertGachaPrize(gachaPrize: GachaPrizeTableEntry[ItemStack]): F[Unit]
 
 }
 

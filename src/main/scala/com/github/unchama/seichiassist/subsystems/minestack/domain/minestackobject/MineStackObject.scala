@@ -20,7 +20,7 @@ case class MineStackObject[ItemStack: Cloneable](
 
   /**
    * [[MineStackObject]]は[[MineStackObjectCategory]]が[[MineStackObjectCategory.GACHA_PRIZES]]のアイテムとして
-   * [[com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaPrize]]の
+   * [[com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaPrizeTableEntry]]の
    * 通常排出アイテム(`_.nonGachaEventItem`)を含む。
    *
    * また、[[MineStackObjectCategory.GACHA_PRIZES]]は記名する事ができるアイテムを持つという性質があるが、

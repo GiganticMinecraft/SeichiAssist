@@ -196,7 +196,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
           val eff = for {
             events <- gachaPrizeAPI.createdGachaEvents
             _ <- gachaPrizeAPI.addGachaPrize(
-              domain.GachaPrize(
+              domain.GachaPrizeTableEntry(
                 mainHandItem,
                 GachaProbability(probability),
                 probability < 0.1,

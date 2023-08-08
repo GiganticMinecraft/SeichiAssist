@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.gachaprize.usecase
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
-  GachaPrize,
+  GachaPrizeTableEntry,
   GachaPrizeId,
   GachaPrizeListPersistence,
   GachaProbability,
@@ -43,7 +43,7 @@ class GachaPrizeUseCase[F[_]: Sync, ItemStack: Cloneable](
     holdingEvent <- gachaEvents.findM(isHolding)
   } yield holdingEvent
 
-  def addGachaPrize(gachaPrizeById: GachaPrizeId => GachaPrize[ItemStack]): F[Unit] = for {
+  def addGachaPrize(gachaPrizeById: GachaPrizeId => GachaPrizeTableEntry[ItemStack]): F[Unit] = for {
     gachaPrizeList <- gachaPrizeListPersistence.list
     gachaPrizeId = GachaPrizeId(
       if (gachaPrizeList.nonEmpty) gachaPrizeList.map(_.id.id).max + 1 else 1
@@ -57,10 +57,10 @@ class GachaPrizeUseCase[F[_]: Sync, ItemStack: Cloneable](
     _ <- gachaPrizeListPersistence.removeGachaPrize(gachaPrizeId)
   } yield originalGachaPrizes.exists(_.id == gachaPrizeId)
 
-  def listOfNow: F[Vector[GachaPrize[ItemStack]]] = for {
+  def listOfNow: F[Vector[GachaPrizeTableEntry[ItemStack]]] = for {
     gachaPrizes <- gachaPrizeListPersistence.list
     holingGachaEvent <- holdingGachaEvent
-    expBottle = domain.GachaPrize(
+    expBottle = domain.GachaPrizeTableEntry(
       gachaPrizeFactory.expBottle,
       GachaProbability(0.1),
       signOwner = false,

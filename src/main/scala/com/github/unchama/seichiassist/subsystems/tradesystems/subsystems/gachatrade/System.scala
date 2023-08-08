@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
   CanBeSignedAsGachaPrize,
-  GachaPrize
+  GachaPrizeTableEntry
 }
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.listeners.GachaTradeListener
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.traderules.BukkitTrade
@@ -28,10 +28,10 @@ object System {
       gachaPrizeAPI.canBeSignedAsGachaPrize
     implicit val gachaListProvider: GachaListProvider[F, ItemStack] =
       new GachaListProvider[F, ItemStack] {
-        override def readGachaList: F[Vector[GachaPrize[ItemStack]]] = gachaPrizeAPI.listOfNow
+        override def readGachaList: F[Vector[GachaPrizeTableEntry[ItemStack]]] = gachaPrizeAPI.listOfNow
       }
     val gachaTradeRule: GachaTradeRule[ItemStack] =
-      (playerName: String, gachaList: Vector[GachaPrize[ItemStack]]) =>
+      (playerName: String, gachaList: Vector[GachaPrizeTableEntry[ItemStack]]) =>
         new BukkitTrade(playerName, gachaList)
 
     new Subsystem[F] {

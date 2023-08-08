@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
   GachaEvent,
   GachaEventName
 }
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaPrize
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaPrizeTableEntry
 import scalikejdbc._
 import com.github.unchama.generic.Cloneable
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain
@@ -16,7 +16,7 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
   implicit serializeAndDeserialize: SerializeAndDeserialize[Nothing, ItemStack]
 ) extends GachaPrizeListPersistence[F, ItemStack] {
 
-  override def list: F[Vector[GachaPrize[ItemStack]]] = {
+  override def list: F[Vector[GachaPrizeTableEntry[ItemStack]]] = {
     Sync[F].delay {
       DB.readOnly { implicit session =>
         sql"""SELECT gachadata.id AS gacha_prize_id, probability, itemstack, event_name, event_start_time, event_end_time FROM gachadata
@@ -37,7 +37,7 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
             serializeAndDeserialize
               .deserialize(rs.string("itemstack"))
               .map { itemStack =>
-                domain.GachaPrize(
+                domain.GachaPrizeTableEntry(
                   itemStack,
                   GachaProbability(probability),
                   probability < 0.1,
@@ -54,7 +54,7 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
     }
   }
 
-  override def upsertGachaPrize(gachaPrize: GachaPrize[ItemStack]): F[Unit] = Sync[F].delay {
+  override def upsertGachaPrize(gachaPrize: GachaPrizeTableEntry[ItemStack]): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
       val eventId = gachaPrize.gachaEvent.flatMap { gachaEvent =>
         sql"SELECT id FROM gacha_events WHERE event_name = ${gachaEvent.eventName.name}"

@@ -15,7 +15,7 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
 }
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
   CanBeSignedAsGachaPrize,
-  GachaPrize,
+  GachaPrizeTableEntry,
   GachaPrizeId,
   GachaPrizeListPersistence,
   StaticGachaPrizeFactory
@@ -60,13 +60,13 @@ object System {
           ): F[Unit] =
             gachaPrizeUseCase.addGachaPrize(gachaPrizeByGachaPrizeId)
 
-          override def upsertGachaPrize(gachaPrize: GachaPrize[ItemStack]): F[Unit] =
+          override def upsertGachaPrize(gachaPrize: GachaPrizeTableEntry[ItemStack]): F[Unit] =
             _gachaPersistence.upsertGachaPrize(gachaPrize)
 
-          override def listOfNow: F[Vector[GachaPrize[ItemStack]]] =
+          override def listOfNow: F[Vector[GachaPrizeTableEntry[ItemStack]]] =
             gachaPrizeUseCase.listOfNow
 
-          override def allGachaPrizeList: F[Vector[GachaPrize[ItemStack]]] =
+          override def allGachaPrizeList: F[Vector[GachaPrizeTableEntry[ItemStack]]] =
             _gachaPersistence.list
 
           override def staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack] =

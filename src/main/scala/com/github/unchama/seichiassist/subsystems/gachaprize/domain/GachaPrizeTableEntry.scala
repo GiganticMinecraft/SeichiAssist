@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.G
  * @param gachaEvent このガチャ景品をイベント排出景品として扱う場合に紐付けるイベント情報
  *                   Noneの場合はイベントが開催されていない場合に排出されるアイテムとして扱われます。
  */
-case class GachaPrize[ItemStack: Cloneable](
+case class GachaPrizeTableEntry[ItemStack: Cloneable](
   itemStack: ItemStack,
   probability: GachaProbability,
   signOwner: Boolean,

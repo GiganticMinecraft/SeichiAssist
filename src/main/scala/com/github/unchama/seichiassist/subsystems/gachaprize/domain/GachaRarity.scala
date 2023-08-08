@@ -37,7 +37,7 @@ object GachaRarity {
 
     override def values: IndexedSeq[GachaRarity] = findValues
 
-    def of[ItemStack](gachaPrize: GachaPrize[ItemStack]): GachaRarity =
+    def of[ItemStack](gachaPrize: GachaPrizeTableEntry[ItemStack]): GachaRarity =
       GachaRarity
         .values
         .filter { rarity => rarity.probabilityUpperLimit.value > gachaPrize.probability.value }
