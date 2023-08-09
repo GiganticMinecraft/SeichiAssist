@@ -43,14 +43,15 @@ class GachaPrizeUseCase[F[_]: Sync, ItemStack: Cloneable](
     holdingEvent <- gachaEvents.findM(isHolding)
   } yield holdingEvent
 
-  def addGachaPrize(gachaPrizeById: GachaPrizeId => GachaPrizeTableEntry[ItemStack]): F[Unit] = for {
-    gachaPrizeList <- gachaPrizeListPersistence.list
-    gachaPrizeId = GachaPrizeId(
-      if (gachaPrizeList.nonEmpty) gachaPrizeList.map(_.id.id).max + 1 else 1
-    )
-    gachaPrize = gachaPrizeById(gachaPrizeId)
-    _ <- gachaPrizeListPersistence.upsertGachaPrize(gachaPrize)
-  } yield ()
+  def addGachaPrize(gachaPrizeById: GachaPrizeId => GachaPrizeTableEntry[ItemStack]): F[Unit] =
+    for {
+      gachaPrizeList <- gachaPrizeListPersistence.list
+      gachaPrizeId = GachaPrizeId(
+        if (gachaPrizeList.nonEmpty) gachaPrizeList.map(_.id.id).max + 1 else 1
+      )
+      gachaPrize = gachaPrizeById(gachaPrizeId)
+      _ <- gachaPrizeListPersistence.upsertGachaPrize(gachaPrize)
+    } yield ()
 
   def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Boolean] = for {
     originalGachaPrizes <- gachaPrizeListPersistence.list

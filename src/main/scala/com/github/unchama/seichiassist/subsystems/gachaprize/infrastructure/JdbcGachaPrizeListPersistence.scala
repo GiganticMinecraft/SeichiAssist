@@ -54,30 +54,31 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
     }
   }
 
-  override def upsertGachaPrize(gachaPrize: GachaPrizeTableEntry[ItemStack]): F[Unit] = Sync[F].delay {
-    DB.localTx { implicit session =>
-      val eventId = gachaPrize.gachaEvent.flatMap { gachaEvent =>
-        sql"SELECT id FROM gacha_events WHERE event_name = ${gachaEvent.eventName.name}"
-          .map(_.int("id"))
-          .single()
-          .apply()
-      }
+  override def upsertGachaPrize(gachaPrize: GachaPrizeTableEntry[ItemStack]): F[Unit] =
+    Sync[F].delay {
+      DB.localTx { implicit session =>
+        val eventId = gachaPrize.gachaEvent.flatMap { gachaEvent =>
+          sql"SELECT id FROM gacha_events WHERE event_name = ${gachaEvent.eventName.name}"
+            .map(_.int("id"))
+            .single()
+            .apply()
+        }
 
-      val serializedItemStack = serializeAndDeserialize.serialize(gachaPrize.itemStack)
+        val serializedItemStack = serializeAndDeserialize.serialize(gachaPrize.itemStack)
 
-      sql"""INSERT INTO gachadata (id, probability, itemstack, event_id)
-           | VALUES (
-           |   ${gachaPrize.id.id},
-           |   ${gachaPrize.probability.value},
-           |   $serializedItemStack,
-           |   $eventId
-           | )
-           | ON DUPLICATE KEY UPDATE
-           |   probability = ${gachaPrize.probability.value},
-           |   itemstack = $serializedItemStack
+        sql"""INSERT INTO gachadata (id, probability, itemstack, event_id)
+             | VALUES (
+             |   ${gachaPrize.id.id},
+             |   ${gachaPrize.probability.value},
+             |   $serializedItemStack,
+             |   $eventId
+             | )
+             | ON DUPLICATE KEY UPDATE
+             |   probability = ${gachaPrize.probability.value},
+             |   itemstack = $serializedItemStack
          """.stripMargin.execute().apply()
+      }
     }
-  }
 
   override def removeGachaPrize(gachaPrizeId: GachaPrizeId): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>

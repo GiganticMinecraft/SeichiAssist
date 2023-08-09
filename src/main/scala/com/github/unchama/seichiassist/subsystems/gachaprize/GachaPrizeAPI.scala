@@ -86,16 +86,18 @@ trait GachaPrizeReadAPI[F[_], ItemStack] {
   /**
    * @return イベント開催中ではないときに排出されるガチャ景品を取得する作用
    */
-  final def gachaPrizesWhenGachaEventsIsNotHolding: F[Vector[GachaPrizeTableEntry[ItemStack]]] = for {
-    gachaPrizes <- allGachaPrizeList
-  } yield gachaPrizes.filter(_.nonGachaEventItem)
+  final def gachaPrizesWhenGachaEventsIsNotHolding: F[Vector[GachaPrizeTableEntry[ItemStack]]] =
+    for {
+      gachaPrizes <- allGachaPrizeList
+    } yield gachaPrizes.filter(_.nonGachaEventItem)
 
   /**
    * @return `gachaPrizeId`に対応する[[GachaPrizeTableEntry]]を返す作用
    */
-  final def fetch(gachaPrizeId: GachaPrizeId): F[Option[GachaPrizeTableEntry[ItemStack]]] = for {
-    prizes <- allGachaPrizeList
-  } yield prizes.find(_.id == gachaPrizeId)
+  final def fetch(gachaPrizeId: GachaPrizeId): F[Option[GachaPrizeTableEntry[ItemStack]]] =
+    for {
+      prizes <- allGachaPrizeList
+    } yield prizes.find(_.id == gachaPrizeId)
 
   /**
    * @return [[StaticGachaPrizeFactory]]を返す

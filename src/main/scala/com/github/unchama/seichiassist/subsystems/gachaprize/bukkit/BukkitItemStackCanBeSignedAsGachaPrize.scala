@@ -9,8 +9,8 @@ import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.ChatColor._
 
 object BukkitItemStackCanBeSignedAsGachaPrize extends CanBeSignedAsGachaPrize[ItemStack] {
-  override def signWith(ownerName: String): GachaPrizeTableEntry[ItemStack] => ItemStack = { gachaPrize =>
-    appendOwnerInformation(ownerName)(gachaPrize.itemStack.clone())
+  override def signWith(ownerName: String): GachaPrizeTableEntry[ItemStack] => ItemStack = {
+    gachaPrize => appendOwnerInformation(ownerName)(gachaPrize.itemStack.clone())
   }
 
   /**
