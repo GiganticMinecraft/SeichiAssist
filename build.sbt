@@ -93,7 +93,7 @@ val dependenciesToEmbed = Seq(
   "com.github.etaty" %% "rediscala" % "1.9.0",
 
   // effect system
-  "org.typelevel" %% "cats-core" % "2.9.0",
+  "org.typelevel" %% "cats-core" % "2.10.0",
   "org.typelevel" %% "cats-effect" % "2.5.5",
   "co.fs2" %% "fs2-core" % "2.5.11",
 
