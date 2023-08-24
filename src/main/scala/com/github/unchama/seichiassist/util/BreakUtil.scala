@@ -117,10 +117,7 @@ object BreakUtil {
     checkTarget: Block,
     lockedBlocks: Set[Block] = unsafeGetLockedBlocks()
   ): Boolean = {
-    !isProtectedChest(player, checkTarget) && canBreakNetherQuartzBlock(
-      player,
-      checkTarget
-    ) &&
+    !isProtectedChest(player, checkTarget) && canBreakNetherQuartzBlock(player, checkTarget) &&
     canBreak(player, checkTarget, lockedBlocks)
   }
 
