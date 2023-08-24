@@ -145,11 +145,11 @@ object BreakUtil {
   }
 
   /**
-   * ブロックが破壊可能なネザー水晶類ブロックかどうか判定する。
-   * ここでいう「ネザー水晶類ブロック」に鉱石は含まれる。
+   * ブロックが破壊可能な「ネザー水晶でできたブロック」かどうか判定する。
+   * ここでいう「ネザー水晶でできたブロック」に鉱石は含まれない。
    * @param player ネザー水晶類破壊設定を取得するプレイヤー
    * @param targetBlock 判定を行うブロック
-   * @return `targetBlock`が破壊可能なネザー水晶類ブロックかどうか
+   * @return `targetBlock`が破壊可能な「ネザー水晶でできたブロック」かどうか
    */
   private def canBreakNetherQuartzBlock(player: Player, targetBlock: Block): Boolean = {
     val materialType = targetBlock.getType
