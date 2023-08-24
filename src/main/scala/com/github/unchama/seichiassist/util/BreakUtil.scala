@@ -117,7 +117,7 @@ object BreakUtil {
     checkTarget: Block,
     lockedBlocks: Set[Block] = unsafeGetLockedBlocks()
   ): Boolean = {
-    !isProtectedChest(player, checkTarget) && !isProtectedNetherQuartzBlock(
+    !isProtectedChest(player, checkTarget) && canBreakNetherQuartzBlock(
       player,
       checkTarget
     ) &&
@@ -154,24 +154,24 @@ object BreakUtil {
    * @param targetBlock 判定を行うブロック
    * @return `targetBlock`が保護対象のネザー水晶類ブロックかどうか
    */
-  private def isProtectedNetherQuartzBlock(player: Player, targetBlock: Block): Boolean = {
+  private def canBreakNetherQuartzBlock(player: Player, targetBlock: Block): Boolean = {
     val materialType = targetBlock.getType
     val isQuartzBlock =
       materialType == Material.QUARTZ_BLOCK || materialType == Material.QUARTZ_STAIRS
     val isQuartzSlab = materialType == Material.STEP && targetBlock.getData == 7.toByte
     val isQuartz = isQuartzBlock || isQuartzSlab
-    val isProtectedNetherQuartzBlock = isQuartz && !SeichiAssist
+    val canBreakNetherQuartzBlock = !isQuartz && SeichiAssist
       .instance
       .breakSkillTargetConfigSystem
       .api
       .breakSkillTargetConfig(player, BreakSkillTargetConfigKey.MadeFromNetherQuartz)
       .unsafeRunSync()
 
-    if (isProtectedNetherQuartzBlock) {
+    if (!canBreakNetherQuartzBlock) {
       ActionBarMessageEffect(s"${RED}スキルでのネザー水晶類ブロックの破壊は無効化されています").run(player).unsafeRunSync()
     }
 
-    isProtectedNetherQuartzBlock
+    canBreakNetherQuartzBlock
   }
 
   private def equalsIgnoreNameCaseWorld(name: String): Boolean = {
