@@ -160,20 +160,18 @@ object BreakUtil {
       materialType == Material.QUARTZ_BLOCK || materialType == Material.QUARTZ_STAIRS
     val isQuartzSlab = materialType == Material.STEP && targetBlock.getData == 7.toByte
     val isQuartz = isQuartzBlock || isQuartzSlab
+    val isProtectedNetherQuartzBlock = isQuartz && !SeichiAssist
+      .instance
+      .breakSkillTargetConfigSystem
+      .api
+      .breakSkillTargetConfig(player, BreakSkillTargetConfigKey.MadeFromNetherQuartz)
+      .unsafeRunSync()
 
-    if (
-      isQuartz && !SeichiAssist
-        .instance
-        .breakSkillTargetConfigSystem
-        .api
-        .breakSkillTargetConfig(player, BreakSkillTargetConfigKey.MadeFromNetherQuartz)
-        .unsafeRunSync()
-    ) {
+    if (isProtectedNetherQuartzBlock) {
       ActionBarMessageEffect(s"${RED}スキルでのネザー水晶類ブロックの破壊は無効化されています").run(player).unsafeRunSync()
-      true
-    } else {
-      false
     }
+
+    isProtectedNetherQuartzBlock
   }
 
   private def equalsIgnoreNameCaseWorld(name: String): Boolean = {
