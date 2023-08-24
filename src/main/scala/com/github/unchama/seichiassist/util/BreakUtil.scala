@@ -117,7 +117,7 @@ object BreakUtil {
     checkTarget: Block,
     lockedBlocks: Set[Block] = unsafeGetLockedBlocks()
   ): Boolean = {
-    !isProtectedChest(player, checkTarget) && !isProtectedNetherQuartzBlock(
+    !isProtectedChest(player, checkTarget) && canBreakBlockMadeFromQuartz(
       player,
       checkTarget
     ) &&
@@ -147,27 +147,30 @@ object BreakUtil {
     }
   }
 
-  def isProtectedNetherQuartzBlock(player: Player, checkTarget: Block): Boolean = {
-    checkTarget.getType match {
-      // 鉱石ブロックの方はプロテクトの対象外
-      case Material.QUARTZ_BLOCK | Material.QUARTZ_STAIRS =>
-        if (
-          !SeichiAssist
-            .instance
-            .breakSkillTargetConfigSystem
-            .api
-            .breakSkillTargetConfig(player, BreakSkillTargetConfigKey.MadeFromNetherQuartz)
-            .unsafeRunSync()
-        ) {
-          ActionBarMessageEffect(s"${RED}スキルでのネザー水晶類ブロックの破壊は無効化されています")
-            .run(player)
-            .unsafeRunSync()
-          true
-        } else {
-          false
-        }
-      case _ => false
+  /**
+   * ブロックが破壊可能な「ネザー水晶でできたブロック」かどうか判定する。
+   * @param player ネザー水晶類破壊設定を取得するプレイヤー
+   * @param targetBlock 判定を行うブロック
+   * @return `targetBlock`が「ネザー水晶でできたブロック」であれば破壊可能かどうか、そうでなければ常にtrue
+   */
+  private def canBreakBlockMadeFromQuartz(player: Player, targetBlock: Block): Boolean = {
+    val materialType = targetBlock.getType
+    val isQuartzBlockOrQuartzStairs =
+      materialType == Material.QUARTZ_BLOCK || materialType == Material.QUARTZ_STAIRS
+    val isQuartzSlab = materialType == Material.STEP && targetBlock.getData == 7.toByte
+    val isMadeFromQuartz = isQuartzBlockOrQuartzStairs || isQuartzSlab
+    val canBreakBlockMadeFromQuartz = !isMadeFromQuartz && SeichiAssist
+      .instance
+      .breakSkillTargetConfigSystem
+      .api
+      .breakSkillTargetConfig(player, BreakSkillTargetConfigKey.MadeFromNetherQuartz)
+      .unsafeRunSync()
+
+    if (!canBreakBlockMadeFromQuartz) {
+      ActionBarMessageEffect(s"${RED}スキルでのネザー水晶類ブロックの破壊は無効化されています").run(player).unsafeRunSync()
     }
+
+    canBreakBlockMadeFromQuartz
   }
 
   private def equalsIgnoreNameCaseWorld(name: String): Boolean = {
