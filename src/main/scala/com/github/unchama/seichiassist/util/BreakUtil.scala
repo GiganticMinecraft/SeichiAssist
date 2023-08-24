@@ -151,14 +151,14 @@ object BreakUtil {
    * ブロックがネザー水晶類破壊フラグの保護対象かどうか判定する。
    * ここでいう「ネザー水晶類」に鉱石は含まれない。
    * @param player ネザー水晶類破壊設定を取得するプレイヤー
-   * @param checkTarget 判定するブロック
+   * @param targetBlock 判定するブロック
    * @return ブロックがネザー水晶類破壊フラグの保護対象かどうか
    */
-  private def isProtectedNetherQuartzBlock(player: Player, checkTarget: Block): Boolean = {
-    val materialType = checkTarget.getType
+  private def isProtectedNetherQuartzBlock(player: Player, targetBlock: Block): Boolean = {
+    val materialType = targetBlock.getType
     val isQuartzBlock =
       materialType == Material.QUARTZ_BLOCK || materialType == Material.QUARTZ_STAIRS
-    val isQuartzSlab = materialType == Material.STEP && checkTarget.getData == 7.toByte
+    val isQuartzSlab = materialType == Material.STEP && targetBlock.getData == 7.toByte
     val isQuartz = isQuartzBlock || isQuartzSlab
 
     if (
