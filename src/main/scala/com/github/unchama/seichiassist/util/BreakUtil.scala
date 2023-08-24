@@ -117,7 +117,10 @@ object BreakUtil {
     checkTarget: Block,
     lockedBlocks: Set[Block] = unsafeGetLockedBlocks()
   ): Boolean = {
-    !isProtectedChest(player, checkTarget) && canBreakBlockMadeFromQuartz(player, checkTarget) &&
+    !isProtectedChest(player, checkTarget) && canBreakBlockMadeFromQuartz(
+      player,
+      checkTarget
+    ) &&
     canBreak(player, checkTarget, lockedBlocks)
   }
 
@@ -147,8 +150,8 @@ object BreakUtil {
   /**
    * ブロックが破壊可能な「ネザー水晶でできたブロック」かどうか判定する。
    * @param player ネザー水晶類破壊設定を取得するプレイヤー
-   * @param targetBlock 判定を行うブロック（ここにはネザー水晶でできたブロックではないブロックも入ってくる）
-   * @return `targetBlock`が破壊可能な「ネザー水晶でできたブロック」かどうか
+   * @param targetBlock 判定を行うブロック
+   * @return `targetBlock`が「ネザー水晶でできたブロック」であれば破壊可能かどうか、そうでなければ常にtrue
    */
   private def canBreakBlockMadeFromQuartz(player: Player, targetBlock: Block): Boolean = {
     val materialType = targetBlock.getType
