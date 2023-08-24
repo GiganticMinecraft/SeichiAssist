@@ -147,7 +147,7 @@ object BreakUtil {
   /**
    * ブロックが破壊可能な「ネザー水晶でできたブロック」かどうか判定する。
    * @param player ネザー水晶類破壊設定を取得するプレイヤー
-   * @param targetBlock 判定を行うブロック
+   * @param targetBlock 判定を行うブロック（ここにはネザー水晶でできたブロックではないブロックも入ってくる）
    * @return `targetBlock`が破壊可能な「ネザー水晶でできたブロック」かどうか
    */
   private def canBreakBlockMadeFromQuartz(player: Player, targetBlock: Block): Boolean = {
