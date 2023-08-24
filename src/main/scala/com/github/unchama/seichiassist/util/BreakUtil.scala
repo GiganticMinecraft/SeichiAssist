@@ -148,25 +148,24 @@ object BreakUtil {
   }
 
   def isProtectedNetherQuartzBlock(player: Player, checkTarget: Block): Boolean = {
-    checkTarget.getType match {
-      // 鉱石ブロックの方はプロテクトの対象外
-      case Material.QUARTZ_BLOCK | Material.QUARTZ_STAIRS =>
-        if (
-          !SeichiAssist
-            .instance
-            .breakSkillTargetConfigSystem
-            .api
-            .breakSkillTargetConfig(player, BreakSkillTargetConfigKey.MadeFromNetherQuartz)
-            .unsafeRunSync()
-        ) {
-          ActionBarMessageEffect(s"${RED}スキルでのネザー水晶類ブロックの破壊は無効化されています")
-            .run(player)
-            .unsafeRunSync()
-          true
-        } else {
-          false
-        }
-      case _ => false
+    val materialType = checkTarget.getType
+    val isQuartzBlock =
+      materialType == Material.QUARTZ_BLOCK || materialType == Material.QUARTZ_STAIRS
+    val isQuartzSlab = materialType == Material.STEP && checkTarget.getData == 7.toByte
+    val isQuartz = isQuartzBlock || isQuartzSlab
+
+    if (
+      isQuartz && !SeichiAssist
+        .instance
+        .breakSkillTargetConfigSystem
+        .api
+        .breakSkillTargetConfig(player, BreakSkillTargetConfigKey.MadeFromNetherQuartz)
+        .unsafeRunSync()
+    ) {
+      ActionBarMessageEffect(s"${RED}スキルでのネザー水晶類ブロックの破壊は無効化されています").run(player).unsafeRunSync()
+      true
+    } else {
+      false
     }
   }
 
