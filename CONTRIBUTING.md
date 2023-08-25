@@ -40,7 +40,7 @@ Scalaはsbtによって自動的にダウンロード及びインストールさ
 #### Docker
 SpigotサーバーのDockerコンテナを立ち上げるために、Dockerのインストールが必要です。
 
-詳しくは [こちら](https://docs.docker.com/get-started/overview/) をご確認ください。
+詳しくは [Dockerの概要](https://docs.docker.com/get-started/overview/) 及び [Dockerのインストール](https://docs.docker.com/get-docker/) をご確認ください。
 
 #### Spigot
 SpigotサーバーはDockerコンテナによって提供されます。
