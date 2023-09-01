@@ -11,7 +11,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
   FairySpawnRequestErrorOrSpawn,
   FairySummonRequest
 }
-import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
+import com.github.unchama.targetedeffect.commandsender.MessageEffectF
 import org.bukkit.entity.Player
 
 class BukkitFairySummonRequest[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
