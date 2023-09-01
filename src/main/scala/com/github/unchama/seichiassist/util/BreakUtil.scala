@@ -16,6 +16,7 @@ import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.{Active, Disabled}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.CardinalDirection
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
+import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain.BreakSkillTargetConfigKey
 import com.github.unchama.targetedeffect.player.ActionBarMessageEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.ExternalPlugins
@@ -116,7 +117,7 @@ object BreakUtil {
     checkTarget: Block,
     lockedBlocks: Set[Block] = unsafeGetLockedBlocks()
   ): Boolean = {
-    !isProtectedChest(player, checkTarget) && !isProtectedNetherQuartzBlock(
+    !isProtectedChest(player, checkTarget) && canBreakBlockMadeFromQuartz(
       player,
       checkTarget
     ) &&
@@ -126,7 +127,14 @@ object BreakUtil {
   def isProtectedChest(player: Player, checkTarget: Block): Boolean = {
     checkTarget.getType match {
       case Material.CHEST | Material.TRAPPED_CHEST =>
-        if (!SeichiAssist.playermap(player.getUniqueId).chestflag) {
+        if (
+          !SeichiAssist
+            .instance
+            .breakSkillTargetConfigSystem
+            .api
+            .breakSkillTargetConfig(player, BreakSkillTargetConfigKey.Chest)
+            .unsafeRunSync()
+        ) {
           ActionBarMessageEffect(s"${RED}スキルでのチェスト破壊は無効化されています").run(player).unsafeRunSync()
           true
         } else if (!player.getWorld.isSeichi) {
@@ -139,20 +147,30 @@ object BreakUtil {
     }
   }
 
-  def isProtectedNetherQuartzBlock(player: Player, checkTarget: Block): Boolean = {
-    checkTarget.getType match {
-      // 鉱石ブロックの方はプロテクトの対象外
-      case Material.QUARTZ_BLOCK | Material.QUARTZ_STAIRS =>
-        if (!SeichiAssist.playermap(player.getUniqueId).netherQuartzBlockflag) {
-          ActionBarMessageEffect(s"${RED}スキルでのネザー水晶類ブロックの破壊は無効化されています")
-            .run(player)
-            .unsafeRunSync()
-          true
-        } else {
-          false
-        }
-      case _ => false
+  /**
+   * ブロックが破壊可能な「ネザー水晶でできたブロック」かどうか判定する。
+   * @param player ネザー水晶類破壊設定を取得するプレイヤー
+   * @param targetBlock 判定を行うブロック
+   * @return `targetBlock`が「ネザー水晶でできたブロック」であれば破壊可能かどうか、そうでなければ常にtrue
+   */
+  private def canBreakBlockMadeFromQuartz(player: Player, targetBlock: Block): Boolean = {
+    val materialType = targetBlock.getType
+    val isQuartzBlockOrQuartzStairs =
+      materialType == Material.QUARTZ_BLOCK || materialType == Material.QUARTZ_STAIRS
+    val isQuartzSlab = materialType == Material.STEP && targetBlock.getData == 7.toByte
+    val isMadeFromQuartz = isQuartzBlockOrQuartzStairs || isQuartzSlab
+    val canBreakBlockMadeFromQuartz = !isMadeFromQuartz && SeichiAssist
+      .instance
+      .breakSkillTargetConfigSystem
+      .api
+      .breakSkillTargetConfig(player, BreakSkillTargetConfigKey.MadeFromNetherQuartz)
+      .unsafeRunSync()
+
+    if (!canBreakBlockMadeFromQuartz) {
+      ActionBarMessageEffect(s"${RED}スキルでのネザー水晶類ブロックの破壊は無効化されています").run(player).unsafeRunSync()
     }
+
+    canBreakBlockMadeFromQuartz
   }
 
   private def equalsIgnoreNameCaseWorld(name: String): Boolean = {
@@ -246,7 +264,7 @@ object BreakUtil {
             // ドロップアイテムの個数を求める計算が通常の鉱石の扱いと異なるため、特別な処理が必要である。
             case Material.REDSTONE_ORE | Material.GLOWING_REDSTONE_ORE =>
               val withBonus = (rand * (fortuneLevel + 2) + 4).toInt
-              new ItemStack(Material.GLOWSTONE_DUST, withBonus)
+              new ItemStack(Material.REDSTONE, withBonus)
             case Material.LAPIS_ORE =>
               val dye = new Dye()
               dye.setColor(DyeColor.BLUE)
