@@ -5,7 +5,6 @@ import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.SummonFairy
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairySummonRequestError
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
   FairyPersistence,
   FairySpawnRequestErrorOrSpawn,
