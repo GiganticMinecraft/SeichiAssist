@@ -159,7 +159,11 @@ object BreakUtil {
       materialType == Material.QUARTZ_BLOCK || materialType == Material.QUARTZ_STAIRS
     val isQuartzSlab = materialType == Material.STEP && targetBlock.getData == 7.toByte
     val isMadeFromQuartz = isQuartzBlockOrQuartzStairs || isQuartzSlab
-    val canBreakBlockMadeFromQuartz = !isMadeFromQuartz && SeichiAssist
+    if (!isMadeFromQuartz) {
+      return true
+    }
+
+    val canBreakBlockMadeFromQuartz = SeichiAssist
       .instance
       .breakSkillTargetConfigSystem
       .api
