@@ -158,8 +158,8 @@ object BreakUtil {
     val isQuartzBlockOrQuartzStairs =
       materialType == Material.QUARTZ_BLOCK || materialType == Material.QUARTZ_STAIRS
     val isQuartzSlab = materialType == Material.STEP && targetBlock.getData == 7.toByte
-    val isMadeFromQuartz = isQuartzBlockOrQuartzStairs || isQuartzSlab
-    if (!isMadeFromQuartz) {
+    val isNotMadeFromQuartz = !isQuartzBlockOrQuartzStairs && !isQuartzSlab
+    if (isNotMadeFromQuartz) {
       return true
     }
 
