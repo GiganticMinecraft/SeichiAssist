@@ -155,10 +155,10 @@ object BreakUtil {
    */
   private def canBreakBlockMadeFromQuartz(player: Player, targetBlock: Block): Boolean = {
     val materialType = targetBlock.getType
-    val isQuartzBlockOrQuartzStairs =
-      materialType == Material.QUARTZ_BLOCK || materialType == Material.QUARTZ_STAIRS
-    val isQuartzSlab = materialType == Material.STEP && targetBlock.getData == 7.toByte
-    val isNotMadeFromQuartz = !isQuartzBlockOrQuartzStairs && !isQuartzSlab
+    val isNotQuartzBlockAndQuartzStairs =
+      materialType != Material.QUARTZ_BLOCK && materialType != Material.QUARTZ_STAIRS
+    val isNotQuartzSlab = materialType != Material.STEP || targetBlock.getData != 7.toByte
+    val isNotMadeFromQuartz = isNotQuartzBlockAndQuartzStairs && isNotQuartzSlab
     if (isNotMadeFromQuartz) {
       return true
     }
