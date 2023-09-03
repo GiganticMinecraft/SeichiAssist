@@ -36,22 +36,21 @@ object Parsers {
     implicit coerceI: CoerceTo[X, Int],
     assertion: TryInto[Int, X, String]
   ): SingleArgumentParser[X] = { arg =>
-    integer(failureMessage)(arg)
-      .flatMap { p =>
-        assertion
-          .tryInto(p)
-          .swap
-          .map(errorMessage =>
-            TargetedEffect.delay[IO, CommandSender](cs => cs.sendMessage(errorMessage))
-          )
-          .swap
-      }
-      .flatMap { x =>
-        if ((smallEnd to largeEnd).contains(coerceI.coerceTo(x)))
-          succeedWith(x)
-        else
-          failWith(failureMessage)
-      }
+    for {
+      p <- integer(failureMessage)(arg)
+      x <- assertion
+        .tryInto(p)
+        .swap
+        .map(errorMessage =>
+          TargetedEffect.delay[IO, CommandSender](cs => cs.sendMessage(errorMessage))
+        )
+        .swap
+
+      res <- if ((smallEnd to largeEnd).contains(coerceI.coerceTo(x)))
+        succeedWith(x)
+      else
+        failWith(failureMessage)
+    } yield res
   }
 
   def integer(
