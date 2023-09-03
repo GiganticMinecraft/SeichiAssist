@@ -37,14 +37,14 @@ object Parsers {
     assertion: TryInto[Int, X, String]
   ): SingleArgumentParser[X] = { arg =>
     for {
-      p <- integer(failureMessage)(arg)
+      parsedInt <- integer(failureMessage)(arg)
       x <- assertion
-        .tryInto(p)
-        .swap
+        .tryInto(parsedInt)
+        // RではなくLを写す
+        .left
         .map(errorMessage =>
           TargetedEffect.delay[IO, CommandSender](cs => cs.sendMessage(errorMessage))
         )
-        .swap
 
       res <- if ((smallEnd to largeEnd).contains(coerceI.coerceTo(x)))
         succeedWith(x)
