@@ -157,7 +157,9 @@ object BreakUtil {
     val materialType = targetBlock.getType
     val isNotQuartzBlockAndQuartzStairs =
       materialType != Material.QUARTZ_BLOCK && materialType != Material.QUARTZ_STAIRS
-    val isNotQuartzSlab = materialType != Material.STEP || targetBlock.getData != 7.toByte
+    // NOTE: targetBlock#getDataが7は下つきハーフブロック、15は上つきハーフブロック
+    val isNotQuartzSlab =
+      materialType != Material.STEP || (targetBlock.getData != 7.toByte && targetBlock.getData != 15.toByte)
     val isNotMadeFromQuartz = isNotQuartzBlockAndQuartzStairs && isNotQuartzSlab
     if (isNotMadeFromQuartz) {
       return true
