@@ -3,14 +3,14 @@ package com.github.unchama.generic
 import eu.timepit.refined.api.Refined
 
 /**
- * 値の情報を削除してプリミティブな値を生成する。
+ * `From`型の値を`To`型の値に「強制」する方法を提供する。
  */
 sealed trait CoerceTo[-From, +To] {
 
   /**
-   * 値の情報を削除する。削除は副作用を起こしてはならず、いかなる例外も起こしてはならず、べき等、かつ一貫した値を生成する必要がある。
-   * @param from
-   * @return
+   * 値を「強制」する。強制は、参照透過である必要があり、いかなる例外も投げてはならない。
+   * @param from 強制する前の値
+   * @return 強制されたあとの値
    */
   def coerceTo(from: From): To
 
@@ -21,10 +21,7 @@ object CoerceTo {
   implicit def identity[T]: CoerceTo[T, T] = new CoerceTo[T, T] {
 
     /**
-     * 値の情報を削除する。削除は副作用を起こしてはならず、いかなる例外も起こしてはならず、べき等、かつ一貫した値を生成する必要がある。
-     *
-     * @param from
-     * @return
+     * @inheritdoc
      */
     override def coerceTo(from: T): T = from
   }
@@ -33,10 +30,7 @@ object CoerceTo {
     new CoerceTo[T Refined Predicate, T] {
 
       /**
-       * 値の情報を削除する。削除は副作用を起こしてはならず、いかなる例外も起こしてはならず、べき等、かつ一貫した値を生成する必要がある。
-       *
-       * @param from
-       * @return
+       * @inheritdoc
        */
       override def coerceTo(from: Refined[T, Predicate]): T = from match {
         case Refined(t) => t
