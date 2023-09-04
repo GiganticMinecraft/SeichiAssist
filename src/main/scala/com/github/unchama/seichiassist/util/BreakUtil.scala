@@ -246,6 +246,9 @@ object BreakUtil {
                 Material.PURPUR_SLAB if (blockDataLeast4Bits & 8) != 0 =>
               // 上付きハーフブロックのmissing texture化を防ぐ
               new ItemStack(blockMaterial, 1, (blockDataLeast4Bits & 7).toShort)
+            case Material.QUARTZ_BLOCK if (blockData >= 2 && blockData <= 4) =>
+              // 柱状クォーツブロックのmissing texture化を防ぐ
+              new ItemStack(blockMaterial, 1, 2.toShort)
             case _ =>
               new ItemStack(blockMaterial, 1, blockDataLeast4Bits.toShort)
           }
@@ -369,6 +372,9 @@ object BreakUtil {
             BlockBreakResult
               .ItemDrop(new ItemStack(blockMaterial, 1, (blockDataLeast4Bits & 7).toShort))
           )
+        case Material.QUARTZ_BLOCK if (blockData >= 2 && blockData <= 4) =>
+          // 柱状クォーツブロックのmissing texture化を防ぐ (柱状クォーツのData valueは2, 3, 4のいずれか)
+          Some(BlockBreakResult.ItemDrop(new ItemStack(blockMaterial, 1, 2.toShort)))
         case Material.BOOKSHELF =>
           // 本棚を破壊すると、本が3つドロップする
           Some(BlockBreakResult.ItemDrop(new ItemStack(Material.BOOK, 3)))
