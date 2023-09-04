@@ -86,17 +86,19 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
         else 0
       }
 
-      recoveryManaAmount <- Sync[F].delay(
-        (defaultRecoveryMana.recoveryMana * 0.7 + bonusRecoveryAmount) * (appleConsumeAmountFromMineStack / pureAppleConsumeAmount)
+      recoveryManaAmount <- Sync[F].pure(defaultRecoveryMana.recoveryMana * 0.7 + bonusRecoveryAmount)
+
+      recoveryManaAmountInMinedGachaRingo <- Sync[F].delay(
+        recoveryManaAmount * (appleConsumeAmountFromMineStack.toDouble / pureAppleConsumeAmount)
       )
 
       manaRecoveryState <- Sync[F].delay {
         // NOTE: recoveryManaAmountが300を下回ると、がちゃりんごを一つも消費しないが、
         //       りんごを消費できなかったときと同じ処理を行うと仕様として紛らわしいので、
         //       回復量が300未満だった場合はりんごを消費して回復したことにする
-        if (appleConsumeAmountFromMineStack == 0 && recoveryManaAmount < 300)
+        if (recoveryManaAmount == 0 && recoveryManaAmountInMinedGachaRingo < 300)
           FairyManaRecoveryState.RecoverWithoutAppleButLessThanAApple
-        else if (appleConsumeAmountFromMineStack == 0)
+        else if (recoveryManaAmountInMinedGachaRingo == 0)
           FairyManaRecoveryState.RecoveredWithoutApple
         else FairyManaRecoveryState.RecoveredWithApple
       }
@@ -107,7 +109,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
           AppleAmount(appleConsumeAmountFromMineStack)
         ) >>
           ContextCoercion(
-            manaApi.manaAmount(player).restoreAbsolute(ManaAmount(recoveryManaAmount))
+            manaApi.manaAmount(player).restoreAbsolute(ManaAmount(recoveryManaAmountInMinedGachaRingo))
           ) >>
           fairySpeech.speechRandomly(player, manaRecoveryState) >>
           mineStackAPI
@@ -115,7 +117,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
             .subtractStackedAmountOf(player, gachaRingoObject.get, appleConsumeAmountFromMineStack) >>
           SequentialEffect(
             MessageEffectF(
-              s"$RESET$YELLOW${BOLD}マナ妖精が${Math.floor(recoveryManaAmount)}マナを回復してくれました"
+              s"$RESET$YELLOW${BOLD}マナ妖精が${Math.floor(recoveryManaAmountInMinedGachaRingo)}マナを回復してくれました"
             ),
             manaRecoveryState match {
               case FairyManaRecoveryState.RecoverWithoutAppleButLessThanAApple =>
