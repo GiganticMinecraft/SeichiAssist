@@ -94,7 +94,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
         // NOTE: recoveryManaAmountが300を下回ると、がちゃりんごを一つも消費しないが、
         //       りんごを消費できなかったときと同じ処理を行うと仕様として紛らわしいので、
         //       回復量が300未満だった場合はりんごを消費して回復したことにする
-        if (appleConsumeAmount == 0 && recoveryManaAmount > 300)
+        if (appleConsumeAmount == 0 && recoveryManaAmount < 300)
           FairyManaRecoveryState.RecoverWithoutAppleButLessThanAApple
         else if (appleConsumeAmount == 0)
           FairyManaRecoveryState.RecoveredWithoutApple
