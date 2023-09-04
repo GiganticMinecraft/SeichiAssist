@@ -90,7 +90,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
         defaultRecoveryMana.recoveryMana * 0.7 + bonusRecoveryAmount
       )
 
-      recoveryManaAmountInMinedGachaRingo <- Sync[F].delay(
+      recoveryManaAmountInMinedGachaRingo <- Sync[F].pure(
         recoveryManaAmount * (appleConsumeAmountFromMineStack.toDouble / pureAppleConsumeAmount)
       )
 
