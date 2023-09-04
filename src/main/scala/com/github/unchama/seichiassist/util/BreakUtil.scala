@@ -358,7 +358,7 @@ object BreakUtil {
           Some(BlockBreakResult.SpawnSilverFish(blockLocation))
         case Material.LOG | Material.LOG_2 =>
           Some(BlockBreakResult.ItemDrop(new ItemStack(blockMaterial, 1, b_tree.toShort)))
-        case Material.WOOD_STEP | Material.STEP | Material.STONE_SLAB2
+        case Material.WOOD_STEP | Material.STEP | Material.STONE_SLAB2 | Material.PURPUR_SLAB
             if (blockDataLeast4Bits & 8) != 0 =>
           // 上付きハーフブロックをそのままドロップするとmissing textureとして描画されるため、下付きの扱いとする
           Some(
