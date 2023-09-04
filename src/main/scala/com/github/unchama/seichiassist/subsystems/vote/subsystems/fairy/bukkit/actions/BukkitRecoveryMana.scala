@@ -34,11 +34,10 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
   mineStackAPI: MineStackAPI[F, Player, ItemStack]
 ) extends RecoveryMana[F] {
 
-  private val uuid: UUID = player.getUniqueId
-
   import cats.implicits._
 
-  override def recovery(consumptionPeriod: FiniteDuration): F[Unit] =
+  override def recovery(consumptionPeriod: FiniteDuration): F[Unit] = {
+    val uuid: UUID = player.getUniqueId
     for {
       isFairyUsing <- fairyPersistence.isFairyUsing(uuid)
       fairyEndTimeOpt <- fairyPersistence.fairyEndTime(uuid)
@@ -138,5 +137,6 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
           .bye(player) >> fairyPersistence.updateIsFairyUsing(uuid, isFairyUsing = false)
       }.whenA(finishUse)
     } yield ()
+  }
 
 }
