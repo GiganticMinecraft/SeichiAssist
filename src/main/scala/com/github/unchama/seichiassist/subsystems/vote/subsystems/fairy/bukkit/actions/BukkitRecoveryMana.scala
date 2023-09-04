@@ -86,7 +86,9 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
         else 0
       }
 
-      recoveryManaAmount <- Sync[F].pure(defaultRecoveryMana.recoveryMana * 0.7 + bonusRecoveryAmount)
+      recoveryManaAmount <- Sync[F].pure(
+        defaultRecoveryMana.recoveryMana * 0.7 + bonusRecoveryAmount
+      )
 
       recoveryManaAmountInMinedGachaRingo <- Sync[F].delay(
         recoveryManaAmount * (appleConsumeAmountFromMineStack.toDouble / pureAppleConsumeAmount)
@@ -109,12 +111,18 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
           AppleAmount(appleConsumeAmountFromMineStack)
         ) >>
           ContextCoercion(
-            manaApi.manaAmount(player).restoreAbsolute(ManaAmount(recoveryManaAmountInMinedGachaRingo))
+            manaApi
+              .manaAmount(player)
+              .restoreAbsolute(ManaAmount(recoveryManaAmountInMinedGachaRingo))
           ) >>
           fairySpeech.speechRandomly(player, manaRecoveryState) >>
           mineStackAPI
             .mineStackRepository
-            .subtractStackedAmountOf(player, gachaRingoObject.get, appleConsumeAmountFromMineStack) >>
+            .subtractStackedAmountOf(
+              player,
+              gachaRingoObject.get,
+              appleConsumeAmountFromMineStack
+            ) >>
           SequentialEffect(
             MessageEffectF(
               s"$RESET$YELLOW${BOLD}マナ妖精が${Math.floor(recoveryManaAmountInMinedGachaRingo)}マナを回復してくれました"
@@ -125,7 +133,9 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
                   s"$RESET$YELLOW${BOLD}回復量ががちゃりんご１つ分に満たなかったため、あなたは妖精にりんごを渡しませんでした。"
                 )
               case FairyManaRecoveryState.RecoveredWithApple =>
-                MessageEffectF(s"$RESET$YELLOW${BOLD}あっ！${appleConsumeAmountFromMineStack}個のがちゃりんごが食べられてる！")
+                MessageEffectF(
+                  s"$RESET$YELLOW${BOLD}あっ！${appleConsumeAmountFromMineStack}個のがちゃりんごが食べられてる！"
+                )
               case _ =>
                 MessageEffectF(s"$RESET$YELLOW${BOLD}あなたは妖精にりんごを渡しませんでした。")
             }
