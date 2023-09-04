@@ -242,6 +242,10 @@ object BreakUtil {
               new ItemStack(blockMaterial, 1, b_tree.toShort)
             case Material.MONSTER_EGGS =>
               new ItemStack(Material.STONE)
+            case Material.WOOD_STEP | Material.STEP | Material.STONE_SLAB2 |
+                Material.PURPUR_SLAB if (blockDataLeast4Bits & 8) != 0 =>
+              // 上付きハーフブロックのmissing texture化を防ぐ
+              new ItemStack(blockMaterial, 1, (blockDataLeast4Bits & 7).toShort)
             case _ =>
               new ItemStack(blockMaterial, 1, blockDataLeast4Bits.toShort)
           }
