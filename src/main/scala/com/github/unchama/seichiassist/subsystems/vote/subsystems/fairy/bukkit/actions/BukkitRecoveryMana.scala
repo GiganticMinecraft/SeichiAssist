@@ -44,11 +44,11 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
       consumeStrategy <- fairyPersistence.appleConsumeStrategy(uuid)
       isRecoverTiming = consumeStrategy match {
         case FairyAppleConsumeStrategy.Permissible                               => true
-        case FairyAppleConsumeStrategy.Consume if consumptionPeriod == 1.minutes => true
+        case FairyAppleConsumeStrategy.Consume if consumptionPeriod.toSeconds % 60 == 0 => true
         case FairyAppleConsumeStrategy.LessConsume
-            if consumptionPeriod == 1.minutes + 30.seconds =>
+            if consumptionPeriod.toSeconds % 90 == 0 =>
           true
-        case FairyAppleConsumeStrategy.NoConsume if consumptionPeriod == 2.minutes => true
+        case FairyAppleConsumeStrategy.NoConsume if consumptionPeriod.toSeconds % 120 == 0 => true
         case _                                                                     => false
       }
       nonRecoveredManaAmount <- ContextCoercion {
