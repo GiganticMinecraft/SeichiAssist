@@ -798,8 +798,6 @@ class SeichiAssist extends JavaPlugin() {
     hasBeenLoadedAlready = true
     kickAllPlayersDueToInitialization.unsafeRunSync()
 
-    removeRegions()
-
     logger.info("SeichiAssistが有効化されました！")
   }
 
@@ -812,13 +810,6 @@ class SeichiAssist extends JavaPlugin() {
         e.printStackTrace()
         Bukkit.shutdown()
     }
-  }
-
-  // FIXME: rmpコマンドを実装しているシステムをsubsystemに切り出したらapiを利用して処理をする
-  // ref: https://github.com/GiganticMinecraft/SeichiAssist/pulls#discussion_r1020897163
-  private def removeRegions(): Unit = {
-    Bukkit.dispatchCommand(Bukkit.getConsoleSender, "rmp remove world_SW_2 3")
-    Bukkit.dispatchCommand(Bukkit.getConsoleSender, "rmp remove world_SW_4 3")
   }
 
   private def startRepeatedJobs(): Unit = {

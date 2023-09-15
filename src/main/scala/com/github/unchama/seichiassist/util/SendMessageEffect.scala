@@ -13,12 +13,18 @@ object SendMessageEffect {
 
   import scala.jdk.CollectionConverters._
 
+  @deprecated("It's side-effectful")
   def sendMessageToEveryoneIgnoringPreference[T](
     content: T
   )(implicit send: PlayerSendable[T, IO]): Unit = {
-    implicit val g: GetConnectedBukkitPlayers[IO] = new GetConnectedBukkitPlayers[IO]
+    sendMessageToEveryoneIgnoringPreferenceIO(content).unsafeRunAsyncAndForget()
+  }
 
-    sendMessageToEveryoneIgnoringPreferenceM[T, IO](content).unsafeRunAsyncAndForget()
+  def sendMessageToEveryoneIgnoringPreferenceIO[T: PlayerSendable[*, IO]](
+    content: T
+  ): IO[Unit] = {
+    implicit val g: GetConnectedBukkitPlayers[IO] = new GetConnectedBukkitPlayers[IO]
+    sendMessageToEveryoneIgnoringPreferenceM[T, IO](content)
   }
 
   def sendMessageToEveryoneIgnoringPreferenceM[T, F[_]: Monad: GetConnectedPlayers[*[
@@ -32,6 +38,7 @@ object SendMessageEffect {
     } yield ()
   }
 
+  @deprecated("It's side-effectful")
   def sendMessageToEveryone[T](content: T)(implicit ev: PlayerSendable[T, IO]): Unit = {
     import cats.implicits._
 

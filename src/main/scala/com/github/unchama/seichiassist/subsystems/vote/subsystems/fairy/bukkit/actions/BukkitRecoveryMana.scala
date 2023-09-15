@@ -22,7 +22,7 @@ import org.bukkit.inventory.ItemStack
 
 import java.time.ZoneId
 import java.util.UUID
-import scala.concurrent.duration.{DurationInt, FiniteDuration}
+import scala.concurrent.duration.FiniteDuration
 import scala.util.Random
 
 class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion[*[_], F]](
@@ -34,23 +34,22 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
   mineStackAPI: MineStackAPI[F, Player, ItemStack]
 ) extends RecoveryMana[F] {
 
-  private val uuid: UUID = player.getUniqueId
-
   import cats.implicits._
 
-  override def recovery(consumptionPeriod: FiniteDuration): F[Unit] =
+  override def recovery(consumptionPeriod: FiniteDuration): F[Unit] = {
+    val uuid: UUID = player.getUniqueId
     for {
       isFairyUsing <- fairyPersistence.isFairyUsing(uuid)
       fairyEndTimeOpt <- fairyPersistence.fairyEndTime(uuid)
       consumeStrategy <- fairyPersistence.appleConsumeStrategy(uuid)
       isRecoverTiming = consumeStrategy match {
-        case FairyAppleConsumeStrategy.Permissible                               => true
-        case FairyAppleConsumeStrategy.Consume if consumptionPeriod == 1.minutes => true
-        case FairyAppleConsumeStrategy.LessConsume
-            if consumptionPeriod == 1.minutes + 30.seconds =>
+        case FairyAppleConsumeStrategy.Permissible                                      => true
+        case FairyAppleConsumeStrategy.Consume if consumptionPeriod.toSeconds % 60 == 0 => true
+        case FairyAppleConsumeStrategy.LessConsume if consumptionPeriod.toSeconds % 90 == 0 =>
           true
-        case FairyAppleConsumeStrategy.NoConsume if consumptionPeriod == 2.minutes => true
-        case _                                                                     => false
+        case FairyAppleConsumeStrategy.NoConsume if consumptionPeriod.toSeconds % 120 == 0 =>
+          true
+        case _ => false
       }
       nonRecoveredManaAmount <- ContextCoercion {
         manaApi.readManaAmount(player)
@@ -69,7 +68,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
       // MineStackに入っているガチャりんごの数を考慮していないりんごの消費量
       pureAppleConsumeAmount <- Sync[F].delay(defaultRecoveryMana.recoveryMana / 300)
       // MineStackに入っているガチャりんごの数を考慮したりんごの消費量
-      appleConsumeAmount <- Sync[F].delay(
+      appleConsumeAmountFromMineStack <- Sync[F].delay(
         Math.min(pureAppleConsumeAmount, mineStackedGachaRingoAmount).toInt
       )
 
@@ -83,21 +82,25 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
       bonusRecoveryAmount <- Sync[F].delay {
         val random = new Random().nextDouble()
 
-        if (random <= 0.03) appleConsumeAmount * 0.3
+        if (random <= 0.03) appleConsumeAmountFromMineStack * 0.3
         else 0
       }
 
-      recoveryManaAmount <- Sync[F].delay(
+      recoveryManaAmount <- Sync[F].pure(
         defaultRecoveryMana.recoveryMana * 0.7 + bonusRecoveryAmount
+      )
+
+      recoveryManaAmountInMinedGachaRingo <- Sync[F].pure(
+        recoveryManaAmount * (appleConsumeAmountFromMineStack.toDouble / pureAppleConsumeAmount)
       )
 
       manaRecoveryState <- Sync[F].delay {
         // NOTE: recoveryManaAmountが300を下回ると、がちゃりんごを一つも消費しないが、
         //       りんごを消費できなかったときと同じ処理を行うと仕様として紛らわしいので、
         //       回復量が300未満だった場合はりんごを消費して回復したことにする
-        if (appleConsumeAmount == 0 && recoveryManaAmount > 300)
+        if (recoveryManaAmount == 0 && recoveryManaAmountInMinedGachaRingo < 300)
           FairyManaRecoveryState.RecoverWithoutAppleButLessThanAApple
-        else if (appleConsumeAmount == 0)
+        else if (recoveryManaAmountInMinedGachaRingo == 0)
           FairyManaRecoveryState.RecoveredWithoutApple
         else FairyManaRecoveryState.RecoveredWithApple
       }
@@ -105,18 +108,24 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
       _ <- {
         fairyPersistence.increaseConsumedAppleAmountByFairy(
           uuid,
-          AppleAmount(appleConsumeAmount)
+          AppleAmount(appleConsumeAmountFromMineStack)
         ) >>
           ContextCoercion(
-            manaApi.manaAmount(player).restoreAbsolute(ManaAmount(recoveryManaAmount))
+            manaApi
+              .manaAmount(player)
+              .restoreAbsolute(ManaAmount(recoveryManaAmountInMinedGachaRingo))
           ) >>
           fairySpeech.speechRandomly(player, manaRecoveryState) >>
           mineStackAPI
             .mineStackRepository
-            .subtractStackedAmountOf(player, gachaRingoObject.get, appleConsumeAmount) >>
+            .subtractStackedAmountOf(
+              player,
+              gachaRingoObject.get,
+              appleConsumeAmountFromMineStack
+            ) >>
           SequentialEffect(
             MessageEffectF(
-              s"$RESET$YELLOW${BOLD}マナ妖精が${Math.floor(recoveryManaAmount)}マナを回復してくれました"
+              s"$RESET$YELLOW${BOLD}マナ妖精が${Math.floor(recoveryManaAmountInMinedGachaRingo)}マナを回復してくれました"
             ),
             manaRecoveryState match {
               case FairyManaRecoveryState.RecoverWithoutAppleButLessThanAApple =>
@@ -124,7 +133,9 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
                   s"$RESET$YELLOW${BOLD}回復量ががちゃりんご１つ分に満たなかったため、あなたは妖精にりんごを渡しませんでした。"
                 )
               case FairyManaRecoveryState.RecoveredWithApple =>
-                MessageEffectF(s"$RESET$YELLOW${BOLD}あっ！${appleConsumeAmount}個のがちゃりんごが食べられてる！")
+                MessageEffectF(
+                  s"$RESET$YELLOW${BOLD}あっ！${appleConsumeAmountFromMineStack}個のがちゃりんごが食べられてる！"
+                )
               case _ =>
                 MessageEffectF(s"$RESET$YELLOW${BOLD}あなたは妖精にりんごを渡しませんでした。")
             }
@@ -138,5 +149,6 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
           .bye(player) >> fairyPersistence.updateIsFairyUsing(uuid, isFairyUsing = false)
       }.whenA(finishUse)
     } yield ()
+  }
 
 }

@@ -128,7 +128,7 @@ object VoteMenu extends Menu {
                 s"$RESET${GRAY}投票特典を受け取るには",
                 s"$RESET${GRAY}投票ページで投票した後",
                 s"$RESET${AQUA}特典受け取り済み投票回数: ${benefits.value}",
-                s"$RESET${AQUA}特典未受け取り投票係数: $notReceivedBenefits",
+                s"$RESET${AQUA}特典未受け取り投票回数: $notReceivedBenefits",
                 s"$RESET${AQUA}所有pt: ${effectPoint.value}"
               )
             )

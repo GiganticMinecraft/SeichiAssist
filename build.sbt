@@ -5,10 +5,10 @@ import java.io._
 
 // region 全プロジェクト共通のメタデータ
 
-ThisBuild / scalaVersion := "2.13.11"
+ThisBuild / scalaVersion := "2.13.12"
 // ThisBuild / version はGitHub Actionsによって取得/自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
-ThisBuild / version := "84"
+ThisBuild / version := "88"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
@@ -58,8 +58,6 @@ resolvers ++= Seq(
 
 val providedDependencies = Seq(
   "org.jetbrains" % "annotations" % "24.0.1",
-  "org.apache.commons" % "commons-lang3" % "3.12.0",
-  "commons-codec" % "commons-codec" % "1.16.0",
   "org.spigotmc" % "spigot-api" % "1.12.2-R0.1-SNAPSHOT",
   // https://maven.enginehub.org/repo/com/sk89q/worldedit/worldedit-bukkit/
   "com.sk89q.worldguard" % "worldguard-legacy" % "6.2",
@@ -75,7 +73,7 @@ val scalafixCoreDep =
 
 val testDependencies = Seq(
   "org.scalamock" %% "scalamock" % "5.2.0",
-  "org.scalatest" %% "scalatest" % "3.2.16",
+  "org.scalatest" %% "scalatest" % "3.2.17",
   "org.scalatestplus" %% "scalacheck-1-14" % "3.2.2.0",
   // テスト用のTestSchedulerを使うため
   "io.monix" %% "monix" % "3.4.1"
@@ -85,7 +83,7 @@ val dependenciesToEmbed = Seq(
   "org.scala-lang.modules" %% "scala-collection-contrib" % "0.3.0",
 
   // DB
-  "org.mariadb.jdbc" % "mariadb-java-client" % "3.1.4",
+  "org.mariadb.jdbc" % "mariadb-java-client" % "3.2.0",
   "org.flywaydb" % "flyway-core" % "5.2.4",
   "org.scalikejdbc" %% "scalikejdbc" % "3.5.0",
 
@@ -93,7 +91,7 @@ val dependenciesToEmbed = Seq(
   "com.github.etaty" %% "rediscala" % "1.9.0",
 
   // effect system
-  "org.typelevel" %% "cats-core" % "2.9.0",
+  "org.typelevel" %% "cats-core" % "2.10.0",
   "org.typelevel" %% "cats-effect" % "2.5.5",
   "co.fs2" %% "fs2-core" % "2.5.11",
 
@@ -109,21 +107,21 @@ val dependenciesToEmbed = Seq(
 
   // type-safety utils
   "eu.timepit" %% "refined" % "0.11.0",
-  "com.beachape" %% "enumeratum" % "1.7.2",
+  "com.beachape" %% "enumeratum" % "1.7.3",
 
   // protobuf
   "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
 
   // JSON
-  "io.circe" %% "circe-core" % "0.14.5",
-  "io.circe" %% "circe-generic" % "0.14.5",
-  "io.circe" %% "circe-parser" % "0.14.5",
+  "io.circe" %% "circe-core" % "0.14.6",
+  "io.circe" %% "circe-generic" % "0.14.6",
+  "io.circe" %% "circe-parser" % "0.14.6",
 
   // ajd4jp
   "com.github.KisaragiEffective" % "ajd4jp-mirror" % "8.0.2.2021",
 
   // Sentry
-  "io.sentry" % "sentry" % "6.25.0"
+  "io.sentry" % "sentry" % "6.29.0"
 )
 
 // endregion

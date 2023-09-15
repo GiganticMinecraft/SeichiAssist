@@ -33,5 +33,5 @@ object ParserResponse {
   /**
    * [result]により「成功」したことを示す[ResponseEffectOrResult]を作成する.
    */
-  def succeedWith(result: Any): ResponseEffectOrResult[Any, Any] = Right(result)
+  def succeedWith[R](result: R): ResponseEffectOrResult[Any, R] = Right(result)
 }

@@ -19,10 +19,10 @@ class LastQuitCommand[F[_]: ConcurrentEffect](implicit lastQuitAPI: LastQuitAPI[
   import cats.implicits._
 
   val executor: TabExecutor = ContextualExecutorBuilder
-    .beginConfiguration()
-    .argumentsParsers(List(Parsers.identity))
-    .execution { context =>
-      val playerName = context.args.parsed.head.toString
+    .beginConfiguration
+    .thenParse(Parsers.identity)
+    .buildWithExecutionF { context =>
+      val playerName = context.args.parsed.head
 
       for {
         uuidEither <- new JdbcLastSeenNameToUuid[IO].of(playerName)
@@ -55,7 +55,6 @@ class LastQuitCommand[F[_]: ConcurrentEffect](implicit lastQuitAPI: LastQuitAPI[
         }
       }
     }
-    .build()
     .asNonBlockingTabExecutor()
 
 }
