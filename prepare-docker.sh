@@ -26,6 +26,17 @@ export -f stop_docker_service
 # 既存のサービスを落とし、ビルド完了を待つ処理を並列実行する
 echo "stop_docker_service build_image" | xargs -P 0 -n 1 bash -c
 
+if [ $1 = "update-gachadata" ]; then
+  echo Updating gachadata...
+  docker compose up -d db
+
+  # ここで遅延を入れないとdbが起動する前にgachadataを更新するスクリプトが走ってしまう
+  sleep 3
+  docker exec -it seichiassist-db-1 /update-gachadata.sh
+  echo "Completed updating gachadata."
+  stop_docker_service
+fi
+
 ## デバッグに必要なdockerコンテナを起動
 ## (起動後はCtrl+Cで停止できます)
 docker compose up --abort-on-container-exit
@@ -35,7 +46,7 @@ docker compose up --abort-on-container-exit
 ## 以下、リファレンス ##
 
 ## バックグラウンドでdockerコンテナを起動
-## (カレントディレクトリにdocker-compose.ymlが存在する必要がある)
+## (カレントディレクトリにcompose.ymlが存在する必要がある)
 # docker compose up -d
 
 ## バックグラウンドで起動したdockerコンテナを停止

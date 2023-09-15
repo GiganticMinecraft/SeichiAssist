@@ -3,7 +3,7 @@
 ## 開発を始めるために必要なもの
 - [IntelliJ IDEA](https://www.jetbrains.com/idea/) などの統合開発環境
 - [JDK 8](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot)
-- [sbt 1.6](https://www.scala-sbt.org/1.x/docs/Setup.html)
+- [sbt 1.9](https://www.scala-sbt.org/1.x/docs/Setup.html)
 - [Scala 2.13](https://www.scala-lang.org/download/)
 - Spigot 1.12.2
 - Docker
@@ -40,7 +40,7 @@ Scalaはsbtによって自動的にダウンロード及びインストールさ
 #### Docker
 SpigotサーバーのDockerコンテナを立ち上げるために、Dockerのインストールが必要です。
 
-詳しくは [こちら](https://docs.docker.com/get-started/overview/) をご確認ください。
+詳しくは [Dockerの概要](https://docs.docker.com/get-started/overview/) 及び [Dockerのインストール](https://docs.docker.com/get-docker/) をご確認ください。
 
 #### Spigot
 SpigotサーバーはDockerコンテナによって提供されます。
@@ -157,29 +157,18 @@ SeichiAssistは手元でデバッグできる環境を整えています。環�
 Linux環境では、`./prepare-docker.sh`、Windowsでは`prepare-docker.bat`を実行することで
 デバッグ用のBungeecordとSpigotの環境を構築することができます。
 
+また、第1引数として以下のように`update-gachadata`を指定すると、ガチャ景品データがダウンロードされ、開発環境のデータから置き換えられます。
+※初回起動時にはgachadataテーブルが空の状態になっているので、ガチャ景品データが必要な場合はオプションを付けずに一度起動したあとに、`update-gachadata`オプションを付けて起動してください。
+※初回起動時に`update-gachadata`を指定するとFlywayによるマイグレーションと競合し、起動することができません。(2023/07/27時点)
+
+```
+./prepare-docker.sh update-gachadata
+```
+
 サーバーやDB等を停止する場合、 `docker compose down` を実行してください。
 
 なお、SeichiAssistがJDK 8以外でコンパイルされた場合は、実行時にエラーとなります。必ずJDKのバージョンを揃えるようにしてください。
 
-##### データベースの初期化
-
-> **Warning**
->
-> この手順は初めてDockerを立ち上げた場合のみに必要です。
-
-初回起動後、データベースが作成されますが、ガチャ景品のデータがありません。そのため、次のSQLのダンプをインポートします。
-- [`gachadata.sql`](https://redmine.seichi.click/attachments/download/995/gachadata.sql)
-
-SQLのダンプをインポートする手順は以下の通りです。
-1. 一旦サーバーを起動させる
-2. phpMyAdminを開く
-3. トップ画面の上部メニューから「データベース」を開く
-4. `seichiassist`と`flyway_managed_schema`にチェックを入れて、「削除」、「OK」
-5. 「データベースを作成する」の下にあるテキストボックスに`seichiassist`と入力し、「作成」
-6. `seichiassist`のデータベースを開き、上部メニューから「インポート」
-7. 「File to import」の「ファイルを選択」から、ダウンロードした`gachadata.sql`を選択
-8. 画面下部の「実行」
-9. サーバーを再起動させる
 
 ##### デバッグ用環境への接続
 

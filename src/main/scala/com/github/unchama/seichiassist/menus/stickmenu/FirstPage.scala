@@ -741,7 +741,7 @@ object FirstPage extends Menu {
           // TODO メニューに置き換える
           openInventoryEffect(
             InventoryUtil.createInventory(
-              size = 4.chestRows,
+              size = 6.chestRows,
               title = Some(s"$LIGHT_PURPLE${BOLD}交換したい鉱石を入れてください")
             )
           )

@@ -46,8 +46,8 @@ class PlayerInventoryListener(
     // エラー分岐
     val inventory = event.getInventory
 
-    // インベントリサイズが36でない時終了
-    if (inventory.row != 4) return
+    // インベントリサイズが54でない時終了
+    if (inventory.row != 6) return
 
     if (inventory.getTitle != s"$LIGHT_PURPLE${BOLD}交換したい鉱石を入れてください") return
 

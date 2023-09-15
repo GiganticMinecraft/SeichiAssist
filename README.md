@@ -2,13 +2,6 @@
 
 [![GitHub Actions](https://github.com/GiganticMinecraft/SeichiAssist/actions/workflows/build_and_deploy.yml/badge.svg)](https://github.com/GiganticMinecraft/SeichiAssist/actions/workflows/build_and_deploy.yml)
 
-## 開発環境
-- [Intellij IDEA](https://www.jetbrains.com/idea/) などの統合開発環境
-- [AdoptOpenJDK 1.8](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot)
-- [Scala 2.13](https://www.scala-lang.org/download/)
-- [sbt 1.6](https://www.scala-sbt.org/1.x/docs/Setup.html)
-- Spigot 1.12.2
-
 ## 前提プラグイン
 - [CoreProtect-2.14.4](https://www.spigotmc.org/resources/coreprotect.8631/download?version=231781)
 - [item-nbt-api-plugin-1.8.2-SNAPSHOT](https://www.spigotmc.org/resources/item-entity-tile-nbt-api.7939/download?version=241690)
