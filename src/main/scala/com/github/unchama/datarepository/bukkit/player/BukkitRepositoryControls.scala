@@ -5,11 +5,7 @@ import cats.{Monad, ~>}
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.datarepository.template._
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
-import com.github.unchama.datarepository.template.initialization.{
-  PrefetchResult,
-  SinglePhasedRepositoryInitialization,
-  TwoPhasedRepositoryInitialization
-}
+import com.github.unchama.datarepository.template.initialization.{PrefetchResult, SinglePhasedRepositoryInitialization, TwoPhasedRepositoryInitialization}
 import com.github.unchama.generic.ContextCoercion
 import org.bukkit.entity.Player
 import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerJoinEvent}
@@ -50,18 +46,19 @@ object BukkitRepositoryControls {
   import org.bukkit.entity.Player
   import org.bukkit.event.Listener
 
-  private trait PreLoginListener extends Listener {
+  private trait PreLoginAndJoinListener extends Listener {
     def onPlayerPreLogin(event: AsyncPlayerPreLoginEvent): Unit
+    def onPlayerJoin(event: PlayerJoinEvent): Unit
   }
 
   private object Initializers {
     def singlePhased[F[_]: SyncEffect, R](
       initialization: SinglePhasedRepositoryInitialization[F, R]
-    )(tapOnJoin: (Player, R) => F[Unit])(dataMap: TrieMap[UUID, R]): PreLoginListener = {
+    )(tapOnJoin: (Player, R) => F[Unit])(dataMap: TrieMap[UUID, R]): PreLoginAndJoinListener = {
       // noinspection ScalaUnusedSymbol
-      new PreLoginListener {
+      new PreLoginAndJoinListener {
         @EventHandler(priority = EventPriority.LOWEST)
-        override final def onPlayerPreLogin(event: AsyncPlayerPreLoginEvent): Unit = {
+        override def onPlayerPreLogin(event: AsyncPlayerPreLoginEvent): Unit = {
           initialization
             .prepareData(event.getUniqueId, event.getName)
             .runSync[SyncIO]
@@ -81,7 +78,7 @@ object BukkitRepositoryControls {
         }
 
         @EventHandler(priority = EventPriority.LOWEST)
-        final def onPlayerJoin(event: PlayerJoinEvent): Unit = {
+        override def onPlayerJoin(event: PlayerJoinEvent): Unit = {
           val player = event.getPlayer
 
           tapOnJoin(player, dataMap(player.getUniqueId)).runSync[SyncIO].unsafeRunSync()
@@ -94,22 +91,22 @@ object BukkitRepositoryControls {
     )(
       temporaryDataMap: TrieMap[UUID, initialization.IntermediateData],
       dataMap: TrieMap[Player, R]
-    ): Listener = {
+    ): PreLoginAndJoinListener = {
 
       val temporaryDataMapInitializer =
         singlePhased(initialization.prefetchIntermediateValue(_, _))((_, _) => Monad[F].unit)(
           temporaryDataMap
         )
 
-      new Listener {
+      new PreLoginAndJoinListener {
         // noinspection ScalaUnusedSymbol
         @EventHandler(priority = EventPriority.LOWEST)
-        final def onPlayerPreLogin(event: AsyncPlayerPreLoginEvent): Unit =
+        override def onPlayerPreLogin(event: AsyncPlayerPreLoginEvent): Unit =
           temporaryDataMapInitializer.onPlayerPreLogin(event)
 
         // noinspection ScalaUnusedSymbol
         @EventHandler(priority = EventPriority.LOWEST)
-        final def onPlayerJoin(event: PlayerJoinEvent): Unit = {
+        override def onPlayerJoin(event: PlayerJoinEvent): Unit = {
           val player = event.getPlayer
 
           temporaryDataMap.get(player.getUniqueId) match {
