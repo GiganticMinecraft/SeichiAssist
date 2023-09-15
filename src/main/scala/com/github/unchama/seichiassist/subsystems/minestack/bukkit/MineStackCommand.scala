@@ -89,7 +89,7 @@ object MineStackCommand {
 
           IO.pure {
             categoryOpt.fold(ioCanOpenMinestackMainMenu.open(MineStackMainMenu)) { category =>
-              ioCanOpenCategorizedMenu.open(new CategorizedMineStackMenu(category, page))
+              ioCanOpenCategorizedMenu.open(new CategorizedMineStackMenu(category, page - 1))
             }
           }
         }
