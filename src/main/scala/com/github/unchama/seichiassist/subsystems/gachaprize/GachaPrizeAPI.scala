@@ -99,6 +99,11 @@ trait GachaPrizeReadAPI[F[_], ItemStack] {
       prizes <- allGachaPrizeList
     } yield prizes.find(_.id == gachaPrizeId)
 
+  final def existsGachaPrize(gachaPrizeId: GachaPrizeId): F[Boolean] =
+    for {
+      prizeEntryOption <- fetch(gachaPrizeId)
+    } yield prizeEntryOption.isDefined
+
   /**
    * @return [[StaticGachaPrizeFactory]]を返す
    */
