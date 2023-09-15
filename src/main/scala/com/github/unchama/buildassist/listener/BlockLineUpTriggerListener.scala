@@ -147,7 +147,7 @@ class BlockLineUpTriggerListener[
     val shouldPlaceDoubleSlabs = playerHoldsSlabBlock && slabLineUpStepMode == 2
 
     val upsideBit = 8
-    val noDecayBit = 8
+    val noDecayBit = 4
     val placingBlockData: Byte =
       if (playerHoldsSlabBlock && slabLineUpStepMode == 0)
         (mainHandItemData | upsideBit).toByte
