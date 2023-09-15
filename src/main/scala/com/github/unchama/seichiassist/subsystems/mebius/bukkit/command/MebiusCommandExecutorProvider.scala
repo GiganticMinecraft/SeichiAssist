@@ -23,6 +23,7 @@ import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect, Unfo
 import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.entity.Player
+import shapeless.HList
 
 class MebiusCommandExecutorProvider(
   implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]]
@@ -76,13 +77,11 @@ class MebiusCommandExecutorProvider(
     }
 
     val printDescriptionExecutor: ContextualExecutor = ContextualExecutorBuilder
-      .beginConfiguration()
-      .execution { _ => IO(Messages.commandDescription) }
-      .build()
+      .beginConfiguration
+      .buildWithEffectAsExecution(Kleisli.liftF(IO.pure(Messages.commandDescription)))
 
-    val namingExecutor: ContextualExecutor = playerCommandBuilder
-      .argumentsParsers(List(Parsers.identity))
-      .execution { context =>
+    val namingExecutor: ContextualExecutor =
+      playerCommandBuilder.thenParse(Parsers.identity).buildWith { context =>
         val newName = concatHeadAndRemainingArgs(context.args)
         val player = context.sender
 
@@ -109,64 +108,61 @@ class MebiusCommandExecutorProvider(
           }
         ).effectOn(player)
       }
-      .build()
 
-    val convertExecutor: ContextualExecutor = playerCommandBuilder
-      .argumentsParsers(List())
-      .execution { context =>
-        val mainHand = context.sender.getInventory.getItemInMainHand
+    val convertExecutor: ContextualExecutor = playerCommandBuilder.buildWith { context =>
+      val mainHand = context.sender.getInventory.getItemInMainHand
 
-        BukkitMebiusItemStackCodec.decodeMebiusProperty(mainHand) match {
-          case Some(property) =>
-            if (property.level.isMaximum) {
-              val newProperty = property.toggleForcedMaterial
-              val newItem =
-                BukkitMebiusItemStackCodec.materialize(newProperty, mainHand.getDurability)
+      BukkitMebiusItemStackCodec.decodeMebiusProperty(mainHand) match {
+        case Some(property) =>
+          if (property.level.isMaximum) {
+            val newProperty = property.toggleForcedMaterial
+            val newItem =
+              BukkitMebiusItemStackCodec.materialize(newProperty, mainHand.getDurability)
 
-              val newMaterialName = newProperty.forcedMaterial match {
-                case MebiusForcedMaterial.None    => "ダイヤモンド"
-                case MebiusForcedMaterial.Leather => "革"
-                case MebiusForcedMaterial.Gold    => "金"
-                case MebiusForcedMaterial.Iron    => "鉄"
-                case MebiusForcedMaterial.Chain   => "チェーン"
-              }
-
-              IO.pure {
-                SequentialEffect(
-                  UnfocusedEffect {
-                    context.sender.getInventory.setItemInMainHand(newItem)
-                  },
-                  MessageEffect(s"メインハンドのメビウスの材質を${newMaterialName}に変換しました！")
-                )
-              }
-            } else {
-              IO.pure(MessageEffect("メビウスの見た目を変えるためには、メビウスが最大レベルに到達している必要があります！"))
+            val newMaterialName = newProperty.forcedMaterial match {
+              case MebiusForcedMaterial.None    => "ダイヤモンド"
+              case MebiusForcedMaterial.Leather => "革"
+              case MebiusForcedMaterial.Gold    => "金"
+              case MebiusForcedMaterial.Iron    => "鉄"
+              case MebiusForcedMaterial.Chain   => "チェーン"
             }
-          case None =>
-            IO.pure(MessageEffect("メインハンドに持っているアイテムはメビウスではありません！"))
-        }
-      }
-      .build()
 
-    private def concatHeadAndRemainingArgs(args: PartiallyParsedArgs): String =
+            IO.pure {
+              SequentialEffect(
+                UnfocusedEffect {
+                  context.sender.getInventory.setItemInMainHand(newItem)
+                },
+                MessageEffect(s"メインハンドのメビウスの材質を${newMaterialName}に変換しました！")
+              )
+            }
+          } else {
+            IO.pure(MessageEffect("メビウスの見た目を変えるためには、メビウスが最大レベルに到達している必要があります！"))
+          }
+        case None =>
+          IO.pure(MessageEffect("メインハンドに持っているアイテムはメビウスではありません！"))
+      }
+    }
+
+    private def concatHeadAndRemainingArgs[A](
+      args: PartiallyParsedArgs[shapeless.::[A, HList]]
+    ): String =
       args.parsed.head.toString + " " + args.yetToBeParsed.mkString(" ")
 
     object NicknameCommand {
-      private val resetNicknameExecutor = playerCommandBuilder
-        .execution { context =>
-          val player = context.sender
-          setNicknameOverrideOnMebiusOn(
-            player,
-            player.getName,
-            newName => s"${GREEN}メビウスからの呼び名を${newName}にリセットしました.",
-            s"${RED}呼び名のリセットはMEBIUSを装着して行ってください."
-          )
-        }
-        .build()
+      private val resetNicknameExecutor = playerCommandBuilder.buildWith { context =>
+        val player = context.sender
+        setNicknameOverrideOnMebiusOn(
+          player,
+          player.getName,
+          newName => s"${GREEN}メビウスからの呼び名を${newName}にリセットしました.",
+          s"${RED}呼び名のリセットはMEBIUSを装着して行ってください."
+        )
+      }
 
       private val setNicknameExecutor = playerCommandBuilder
-        .argumentsParsers(List(Parsers.identity), onMissingArguments = printDescriptionExecutor)
-        .execution { context =>
+        .thenParse(Parsers.identity)
+        .ifArgumentsMissing(printDescriptionExecutor)
+        .buildWith { context =>
           val player = context.sender
           setNicknameOverrideOnMebiusOn(
             player,
@@ -175,7 +171,6 @@ class MebiusCommandExecutorProvider(
             s"${RED}呼び名の設定はMEBIUSを装着して行ってください."
           )
         }
-        .build()
 
       private def setNicknameOverrideOnMebiusOn(
         player: Player,
@@ -205,20 +200,16 @@ class MebiusCommandExecutorProvider(
         ).effectOn(player)
       }
 
-      private val checkNicknameExecutor = playerCommandBuilder
-        .execution { context =>
-          IO(MessageEffect {
-            BukkitMebiusItemStackCodec
-              .decodePropertyOfOwnedMebius(context.sender)(
-                context.sender.getInventory.getHelmet
-              )
-              .map(_.ownerNickname)
-              .fold {
-                s"${RED}呼び名の確認はMEBIUSを装着して行ってください."
-              } { name => s"${GREEN}現在のメビウスからの呼び名 : $name" }
-          })
-        }
-        .build()
+      private val checkNicknameExecutor = playerCommandBuilder.buildWith { context =>
+        IO(MessageEffect {
+          BukkitMebiusItemStackCodec
+            .decodePropertyOfOwnedMebius(context.sender)(context.sender.getInventory.getHelmet)
+            .map(_.ownerNickname)
+            .fold {
+              s"${RED}呼び名の確認はMEBIUSを装着して行ってください."
+            } { name => s"${GREEN}現在のメビウスからの呼び名 : $name" }
+        })
+      }
 
       val executor: BranchedExecutor = BranchedExecutor(
         Map("reset" -> resetNicknameExecutor, "set" -> setNicknameExecutor),

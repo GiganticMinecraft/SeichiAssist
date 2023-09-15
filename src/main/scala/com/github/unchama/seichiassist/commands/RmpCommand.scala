@@ -17,6 +17,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion
 import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, ConsoleCommandSender, TabExecutor}
 import org.bukkit.{Bukkit, World}
+import shapeless.{::, HNil}
 
 import scala.jdk.CollectionConverters._
 
@@ -32,48 +33,39 @@ object RmpCommand {
       "全Ownerが[日数]間ログインしていないRegionを表示します"
     )
   })
+
   private val argsAndSenderConfiguredBuilder = ContextualExecutorBuilder
-    .beginConfiguration()
+    .beginConfiguration
     .refineSenderWithError[ConsoleCommandSender](s"${GREEN}このコマンドはコンソールから実行してください")
-    .argumentsParsers(
-      List(
-        arg => {
-          Bukkit.getWorld(arg) match {
-            case world: World => succeedWith(world)
-            case _            => failWith(s"存在しないワールドです: $arg")
-          }
-        },
-        nonNegativeInteger(MessageEffect(s"$RED[日数]には非負整数を入力してください"))
-      ),
-      onMissingArguments = printDescriptionExecutor
-    )
-  private val removeExecutor = argsAndSenderConfiguredBuilder
-    .execution { context =>
-      val world = context.args.parsed.head.asInstanceOf[World]
-      val days = context.args.parsed(1).asInstanceOf[Int]
-
-      removeRegions(world, days)
-    }
-    .build()
-
-  private val listExecutor = argsAndSenderConfiguredBuilder
-    .execution { context =>
-      val world = context.args.parsed.head.asInstanceOf[World]
-      val days = context.args.parsed(1).asInstanceOf[Int]
-
-      IO {
-        getOldRegionsIn(world, days).map { removalTargets =>
-          if (removalTargets.isEmpty) {
-            MessageEffect(s"${GREEN}該当Regionは存在しません")
-          } else {
-            targetedeffect.SequentialEffect(removalTargets.map { target =>
-              MessageEffect(s"$GREEN[rmp] List Region => ${world.getName}.${target.getId}")
-            })
-          }
-        }.merge
+    .thenParse((arg: String) => {
+      Bukkit.getWorld(arg) match {
+        case world: World if world != null => succeedWith(world)
+        case _                             => failWith(s"存在しないワールドです: $arg")
       }
+    })
+    .thenParse(nonNegativeInteger(MessageEffect(s"$RED[日数]には非負整数を入力してください")))
+    .ifArgumentsMissing(printDescriptionExecutor)
+
+  private val removeExecutor = argsAndSenderConfiguredBuilder.buildWith { context =>
+    val (world :: days :: HNil) = context.args.parsed
+    removeRegions(world, days.value)
+  }
+
+  private val listExecutor = argsAndSenderConfiguredBuilder.buildWith { context =>
+    val (world :: days :: HNil) = context.args.parsed
+
+    IO {
+      getOldRegionsIn(world, days.value).map { removalTargets =>
+        if (removalTargets.isEmpty) {
+          MessageEffect(s"${GREEN}該当Regionは存在しません")
+        } else {
+          targetedeffect.SequentialEffect(removalTargets.map { target =>
+            MessageEffect(s"$GREEN[rmp] List Region => ${world.getName}.${target.getId}")
+          })
+        }
+      }.merge
     }
-    .build()
+  }
 
   private def removeRegions(world: World, days: Int): IO[TargetedEffect[CommandSender]] = IO {
     val isSeichiWorldWithWGRegionsOption =
