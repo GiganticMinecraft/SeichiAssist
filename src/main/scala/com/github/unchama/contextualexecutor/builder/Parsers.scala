@@ -46,10 +46,11 @@ object Parsers {
           TargetedEffect.delay[IO, CommandSender](cs => cs.sendMessage(errorMessage))
         )
 
-      res <- if ((smallEnd to largeEnd).contains(coerceI.coerceTo(x)))
-        succeedWith(x)
-      else
-        failWith(failureMessage)
+      res <-
+        if ((smallEnd to largeEnd).contains(coerceI.coerceTo(x)))
+          succeedWith(x)
+        else
+          failWith(failureMessage)
     } yield res
   }
 
