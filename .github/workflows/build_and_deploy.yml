@@ -14,7 +14,7 @@ jobs:
   build_test_and_upload:
     env:
       BUILD_ENVIRONMENT_IS_CI_OR_LOCAL: "CI"
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     container: ghcr.io/giganticminecraft/seichiassist-builder:1a64049
     steps:
       - name: Checkout repository
@@ -171,7 +171,7 @@ jobs:
           prerelease: true
 
   push_artifact_to_debug_server_definition:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     if: github.ref == 'refs/heads/develop'
     needs:
       - build_test_and_upload
@@ -237,7 +237,7 @@ jobs:
           avatar_url: ${{ secrets.DISCORD_AVATAR_URL }}
 
   deploy_artifact_to_production:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     if: github.ref == 'refs/heads/master'
     needs:
       - build_test_and_upload
