@@ -18,7 +18,7 @@ jobs:
     container: ghcr.io/giganticminecraft/seichiassist-builder:1a64049
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: 'recursive'
 
@@ -130,7 +130,7 @@ jobs:
       sha: ${{ steps.output-sha.outputs.sha }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Outputs the value
         id: output-sha
         run: |
@@ -147,7 +147,7 @@ jobs:
       - output-sha
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Create and push a tag
         id: tag-name
         run: |
