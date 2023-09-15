@@ -10,7 +10,7 @@ import org.bukkit.command.TabExecutor
 object MapCommand {
   val executor: TabExecutor = BuilderTemplates
     .playerCommandBuilder
-    .execution { context =>
+    .buildWith { context =>
       IO {
         val location = context.sender.getLocation
         val url =
@@ -20,6 +20,5 @@ object MapCommand {
         MessageEffect(url)
       }
     }
-    .build()
     .asNonBlockingTabExecutor()
 }

@@ -18,16 +18,14 @@ object StickMenuCommand {
   def executorA(
     implicit ioCanOpenStickMenuFirstPage: IO CanOpen FirstPage.type
   ): ContextualExecutor =
-    playerCommandBuilder
-      .execution { _ => IO.pure(ioCanOpenStickMenuFirstPage.open(StickMenu.firstPage)) }
-      .build()
+    playerCommandBuilder.buildWithEffectAsExecution(
+      ioCanOpenStickMenuFirstPage.open(StickMenu.firstPage)
+    )
 
   def executorB(
     implicit ioCanOpenBuildMainMenu: IO CanOpen BuildMainMenu.type
   ): ContextualExecutor =
-    playerCommandBuilder
-      .execution { _ => IO.pure(ioCanOpenBuildMainMenu.open(BuildMainMenu)) }
-      .build()
+    playerCommandBuilder.buildWithEffectAsExecution(ioCanOpenBuildMainMenu.open(BuildMainMenu))
 
   def executor(
     implicit ioCanOpenStickMenuFirstPage: IO CanOpen FirstPage.type,

@@ -23,12 +23,12 @@ object HomeId {
   /**
    * プレイヤーのレベルに応じて追加で持つことができる[[HomeId]]の数
    */
-  private val maxNumberExtra = 8
+  private final val maxNumberExtra = 8
 
   /**
    * [[HomeId]]が持つことができる最大値
    */
-  val maxNumber = Home.initialHomePerPlayer + maxNumberExtra
+  final val maxNumber = Home.initialHomePerPlayer + maxNumberExtra
 
   /**
    * 追加ホームポイント

@@ -24,9 +24,10 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
   import cats.implicits._
 
   val executor: TabExecutor = playerCommandBuilder
-    .execution { context =>
+    .buildWithExecutionF { context =>
       val sender = context.sender
       for {
+        // TODO: this `toIO` is not needed
         sharedFlag <- sharedInventoryAPI.sharedFlag(sender).toIO
         eff <-
           if (sharedFlag == SharedFlag.Sharing) {
@@ -36,7 +37,6 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
           }
       } yield eff
     }
-    .build()
     .asNonBlockingTabExecutor()
 
   private def withdrawFromSharedInventory(player: Player): IO[TargetedEffect[Player]] = {

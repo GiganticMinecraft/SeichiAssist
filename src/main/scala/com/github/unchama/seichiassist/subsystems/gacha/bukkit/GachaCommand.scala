@@ -2,10 +2,15 @@ package com.github.unchama.seichiassist.subsystems.gacha.bukkit
 
 import cats.data.Kleisli
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
-import cats.effect.{ConcurrentEffect, IO, Sync}
+import cats.effect.{ConcurrentEffect, IO, Sync, Effect}
+import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.ParserResponse.{failWith, succeedWith}
-import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
+import com.github.unchama.contextualexecutor.builder.{
+  ContextualExecutorBuilder,
+  Parsers,
+  SingleArgumentParser
+}
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.minecraft.bukkit.algebra.CloneableBukkitItemStack.instance
@@ -23,12 +28,16 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
   GachaEventName
 }
 import com.github.unchama.seichiassist.util.InventoryOperations
-import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.DeferredEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
+import eu.timepit.refined.api.Refined
+import eu.timepit.refined.numeric.{Interval, NonNegative, Positive}
+import eu.timepit.refined.auto._
 import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import shapeless.HNil
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -97,10 +106,25 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
 
   object ChildExecutors {
 
-    private val probabilityParser: String => Either[TargetedEffect[CommandSender], Any] =
+    private val gachaPrizeIdExistsParser: SingleArgumentParser[GachaPrizeId] =
+      Parsers
+        .closedRangeInt[Int Refined Positive](
+          1,
+          Int.MaxValue,
+          MessageEffect("IDは正の値を指定してください。")
+        )
+        .andThen(_.flatMap { intId =>
+          val id = GachaPrizeId(intId)
+          if (gachaPrizeAPI.existsGachaPrize(id).toIO.unsafeRunSync()) {
+            succeedWith(id)
+          } else {
+            failWith("指定されたIDのアイテムは存在しません！")
+          }
+        })
+
+    private val probabilityParser: SingleArgumentParser[Double] =
       Parsers.double(MessageEffect("確率は小数点数で指定してください。")).andThen {
-        _.flatMap { num =>
-          val doubleNum = num.asInstanceOf[Double]
+        _.flatMap { doubleNum =>
           if (doubleNum <= 1.0 && doubleNum >= 0.0) {
             succeedWith(doubleNum)
           } else {
@@ -110,32 +134,31 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
       }
 
     val giveGachaTickets: ContextualExecutor = ContextualExecutorBuilder
-      .beginConfiguration()
-      .argumentsParsers(
-        List(
-          Parsers.identity,
-          Parsers.closedRangeInt(1, Int.MaxValue, MessageEffect("配布するガチャ券の枚数は正の値を指定してください。"))
-        )
+      .beginConfiguration
+      .thenParse(Parsers.identity)
+      .thenParse(
+        Parsers.closedRangeInt(1, Int.MaxValue, MessageEffect("配布するガチャ券の枚数は正の値を指定してください。"))
+          .map(GachaTicketAmount)
       )
-      .executionCSEffect { context =>
-        val args = context.args.parsed
-        val amount = args(1).asInstanceOf[Int]
-        val gachaTicketAmount = GachaTicketAmount(amount)
-        args.head.toString match {
+      .buildWithExecutionCSEffect { context =>
+        import shapeless.::
+        val selector :: amount :: HNil = context.args.parsed
+        selector match {
           case "all" =>
-            Kleisli.liftF[F, CommandSender, Unit](
-              gachaTicketAPI.addToAllKnownPlayers(gachaTicketAmount)
-            ) *> MessageEffectF(s"${GREEN}全プレイヤーへガチャ券${amount}枚加算成功")
+            Kleisli
+              .liftF(gachaTicketAPI.addToAllKnownPlayers(gachaTicketAmount))
+              .flatMap(_ => MessageEffectF(s"${GREEN}全プレイヤーへガチャ券${amount}枚加算成功"))
           case value =>
             val uuidRegex =
               "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}".r
 
             Kleisli
               .liftF {
-                if (uuidRegex.matches(value))
+                if (uuidRegex.matches(value)) {
                   gachaTicketAPI.addByUUID(gachaTicketAmount, UUID.fromString(value))
-                else
+                } else {
                   gachaTicketAPI.addByPlayerName(gachaTicketAmount, PlayerName(value))
+                }
               }
               .flatMap {
                 case GrantResultOfGachaTicketFromAdminTeam.Success =>
@@ -147,20 +170,24 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
               }
         }
       }
-      .build()
 
     val giveItem: ContextualExecutor =
       playerCommandBuilder
-        .argumentsParsers(
-          List(Parsers.closedRangeInt(0, Int.MaxValue, MessageEffect("IDは0以上の整数を指定してください。")))
+        .thenParse(
+          Parsers.closedRangeInt[Int Refined NonNegative](
+            0,
+            Int.MaxValue,
+            MessageEffect("IDは0以上の整数を指定してください。")
+          )
         )
-        .execution { context =>
+        .buildWithExecutionF { context =>
+          import shapeless.::
+          val gachaPrizeId :: shapeless.HNil = context.args.parsed
+          // optional
           val ownerName = context.args.yetToBeParsed.headOption
 
-          val eff = for {
-            gachaPrize <- gachaPrizeAPI.fetch(
-              GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
-            )
+          for {
+            gachaPrize <- gachaPrizeAPI.fetch(GachaPrizeId(gachaPrizeId))
             existsGachaPrize = gachaPrize.nonEmpty
             _ <- Sync[F].delay {
               gachaPrize.foreach { gachaPrize =>
@@ -178,22 +205,18 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
             else
               MessageEffect("指定されたIDのガチャ景品は存在しません。")
           }
-
-          eff.toIO
         }
-        .build()
 
     val add: ContextualExecutor =
       playerCommandBuilder
         .argumentsParsers(List(probabilityParser))
-        .execution { context =>
+        .buildWithExecutionF { context =>
           val player = context.sender
-          val args = context.args.parsed
-          val probability = args.head.asInstanceOf[Double]
+          val probability :: HNil = context.args.parsed
           val eventName = context.args.yetToBeParsed.headOption.map(GachaEventName)
           val mainHandItem = player.getInventory.getItemInMainHand
 
-          val eff = for {
+           for {
             events <- gachaPrizeAPI.createdGachaEvents
             _ <- gachaPrizeAPI.addGachaPrize(
               domain.GachaPrizeTableEntry(
@@ -205,59 +228,55 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
               )
             )
           } yield MessageEffect(List("ガチャアイテムを追加しました！"))
-
-          eff.toIO
         }
-        .build()
 
     val list: ContextualExecutor =
-      ContextualExecutorBuilder
-        .beginConfiguration()
-        .execution { context =>
-          val eventName = context.args.yetToBeParsed.headOption.map(GachaEventName)
-          val eff = for {
-            gachaPrizes <- gachaPrizeAPI.allGachaPrizeList
-          } yield {
-            val gachaPrizeInformation = gachaPrizes
-              .filter { gachaPrize =>
-                if (eventName.isEmpty) gachaPrize.nonGachaEventItem
-                else
-                  gachaPrize.isGachaEventItem && gachaPrize
+      ContextualExecutorBuilder.beginConfiguration.buildWithExecutionF { context =>
+        val eventName = context.args.yetToBeParsed.headOption.map(GachaEventName)
+        for {
+          gachaPrizes <- gachaPrizeAPI.allGachaPrizeList
+        } yield {
+          val gachaPrizeInformation = gachaPrizes
+            .filter { gachaPrize =>
+              if (eventName.isEmpty) gachaPrize.nonGachaEventItem
+              else
+                gachaPrize.isGachaEventItem && gachaPrize
                     .gachaEvent
                     .map(_.eventName) == eventName
-              }
-              .sortBy(_.id.id)
-              .map { gachaPrize =>
-                val itemStack = gachaPrize.itemStack
-                val probability = gachaPrize.probability.value
+            }
+            .sortBy(_.id.id)
+            .map { gachaPrize =>
+              val itemStack = gachaPrize.itemStack
+              val probability = gachaPrize.probability.value
 
-                s"${gachaPrize.id.id}|${itemStack.getType.toString}/${itemStack
-                    .getItemMeta
-                    .getDisplayName}$RESET|${itemStack.getAmount}|$probability(${probability * 100}%)"
-              }
-              .toList
+              s"${gachaPrize.id.id}|${itemStack.getType.toString}/${itemStack
+                  .getItemMeta
+                  .getDisplayName}$RESET|${itemStack.getAmount}|$probability(${probability * 100}%)"
+            }
+            .toList
 
-            val totalProbability = gachaPrizes.map(_.probability.value).sum
-            MessageEffect(
-              List(s"${RED}アイテム番号|アイテム名|アイテム数|出現確率") ++ gachaPrizeInformation ++ List(
-                s"${RED}合計確率: $totalProbability(${totalProbability * 100}%)",
-                s"${RED}合計確率は100%以内に収まるようにしてください。"
-              )
+          val totalProbability = gachaPrizes.map(_.probability.value).sum
+          MessageEffect(
+            List(s"${RED}アイテム番号|アイテム名|アイテム数|出現確率") ++ gachaPrizeInformation ++ List(
+              s"${RED}合計確率: $totalProbability(${totalProbability * 100}%)",
+              s"${RED}合計確率は100%以内に収まるようにしてください。"
             )
-          }
-
-          eff.toIO
+          )
         }
-        .build()
+      }
 
     val remove: ContextualExecutor = ContextualExecutorBuilder
-      .beginConfiguration()
-      .argumentsParsers(
-        List(Parsers.closedRangeInt(1, Int.MaxValue, MessageEffect("IDは正の値を指定してください。")))
+      .beginConfiguration
+      .thenParse(
+        Parsers.closedRangeInt[Int Refined Positive](
+          1,
+          Int.MaxValue,
+          MessageEffect("IDは正の値を指定してください。")
+        )
       )
-      .execution { context =>
-        val gachaId = GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
-        val eff = for {
+      .buildWithExecutionF { context =>
+        val gachaId = GachaPrizeId(context.args.parsed.head)
+        for {
           isRemovedGachaPrize <- gachaPrizeAPI.removeByGachaPrizeId(gachaId)
         } yield {
           if (isRemovedGachaPrize)
@@ -265,25 +284,23 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
           else
             MessageEffect("指定されたIDのガチャ景品が存在しないため、ガチャアイテムを削除できませんでした。")
         }
-
-        eff.toIO
-
       }
-      .build()
 
     val setAmount: ContextualExecutor =
       ContextualExecutorBuilder
-        .beginConfiguration()
-        .argumentsParsers(
-          List(
-            Parsers.closedRangeInt(1, Int.MaxValue, MessageEffect("IDは正の値を指定してください。")),
-            Parsers.closedRangeInt(1, 64, MessageEffect("アイテム数は1～64で指定してください。"))
+        .beginConfiguration
+        .thenParse(gachaPrizeIdExistsParser)
+        .thenParse(
+          Parsers.closedRangeInt[Int Refined Interval.Closed[1, 64]](
+            1,
+            64,
+            MessageEffect("数は1～64で指定してください。")
           )
         )
-        .execution { context =>
-          val targetId = GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
-          val amount = context.args.parsed(1).asInstanceOf[Int]
-          val eff = for {
+        .buildWithExecutionF { context =>
+          import shapeless.::
+          val targetId :: amount :: HNil = context.args.parsed
+          for {
             currentGachaPrize <- gachaPrizeAPI.fetch(targetId)
             itemStack = currentGachaPrize.map(_.itemStack)
             isChangedAmount <- currentGachaPrize.flatTraverse { gachaPrize =>
@@ -301,24 +318,16 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
             else
               MessageEffect("指定されたIDのガチャ景品が存在しないため、アイテム数が変更できませんでした。")
           }
-
-          eff.toIO
         }
-        .build()
 
     val setProbability: ContextualExecutor = ContextualExecutorBuilder
-      .beginConfiguration()
-      .argumentsParsers(
-        List(
-          Parsers.closedRangeInt(1, Int.MaxValue, MessageEffect("IDは正の値を指定してください。")),
-          probabilityParser
-        )
-      )
-      .execution { context =>
-        val args = context.args.parsed
-        val targetId = GachaPrizeId(args.head.asInstanceOf[Int])
-        val newProb = args(1).asInstanceOf[Double]
-        val eff = for {
+      .beginConfiguration
+      .thenParse(gachaPrizeIdExistsParser)
+      .thenParse(probabilityParser)
+      .buildWithExecutionF { context =>
+        import shapeless.::
+        val targetId :: newProb :: HNil = context.args.parsed
+        for {
           currentGachaPrize <- gachaPrizeAPI.fetch(targetId)
           changeProbabilityAction <- currentGachaPrize.traverse { gachaPrize =>
             gachaPrizeAPI.upsertGachaPrize(
@@ -334,31 +343,28 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
           else
             MessageEffect("指定されたIDのガチャ景品は存在しません。")
         }
-        eff.toIO
       }
-      .build()
 
     val createEvent: ContextualExecutor =
       ContextualExecutorBuilder
-        .beginConfiguration()
-        .argumentsParsers {
-          List(Parsers.identity, Parsers.identity, Parsers.identity)
-        }
-        .execution { values =>
-          val parsedArgs = values.args.parsed
-          val eventName = GachaEventName(parsedArgs.head.toString)
+        .beginConfiguration
+        .thenParse(Parsers.identity)
+        .thenParse(Parsers.identity)
+        .thenParse(Parsers.identity)
+        .buildWithExecutionF { context =>
+          import shapeless.::
+          val e :: startDate :: endDate :: HNil = context.args.parsed
+          val eventName = GachaEventName(e)
 
           val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-          val startDate = parsedArgs(1).toString
-          val endDate = parsedArgs.last.toString
           val dateRegex = "[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])".r
 
           if (!dateRegex.matches(startDate) || !dateRegex.matches(endDate)) {
-            IO(MessageEffect(s"${RED}開始日/終了日はyyyy-MM-ddの形式で指定してください。"))
+            Effect[F].pure(MessageEffect(s"${RED}開始日/終了日はyyyy-MM-ddの形式で指定してください。"))
           } else if (eventName.name.length > 30) {
-            IO(MessageEffect(s"${RED}イベント名は30字以内で指定してください。"))
+            Effect[F].pure(MessageEffect(s"${RED}イベント名は30字以内で指定してください。"))
           } else {
-            val eff = for {
+            for {
               existsEvent <- gachaPrizeAPI.existsGachaEvent(eventName)
               _ <- gachaPrizeAPI
                 .createGachaEvent(
@@ -374,25 +380,19 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
               if (existsEvent) MessageEffect(s"${RED}指定された名前のイベントが既に存在します。")
               else MessageEffect(s"${AQUA}イベントを作成しました。")
             }
-
-            eff.toIO
           }
         }
-        .build()
 
     val deleteEvent: ContextualExecutor =
       ContextualExecutorBuilder
-        .beginConfiguration()
-        .argumentsParsers(List(Parsers.identity))
-        .execution { values =>
-          val eventName = GachaEventName(values.args.parsed.head.toString)
-          val eff = for {
+        .beginConfiguration
+        .thenParse(Parsers.identity)
+        .buildWithExecutionF { context =>
+          val eventName = GachaEventName(context.args.parsed.head)
+          for {
             _ <- gachaPrizeAPI.deleteGachaEvent(eventName)
           } yield MessageEffect(s"ガチャイベント: ${eventName.name}を削除しました。")
-
-          eff.toIO
         }
-        .build()
 
     private def toTimeString(localDate: LocalDate): String = {
       val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -400,22 +400,16 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
     }
 
     val eventList: ContextualExecutor =
-      ContextualExecutorBuilder
-        .beginConfiguration()
-        .execution { _ =>
-          val eff = for {
-            events <- gachaPrizeAPI.createdGachaEvents
-          } yield {
-            val messages = "イベント名 | 開始日 | 終了日" +: events.map { event =>
-              s"${event.eventName.name} | ${toTimeString(event.startDate)} | ${toTimeString(event.endDate)}"
-            }
-            MessageEffect(messages.toList)
+      ContextualExecutorBuilder.beginConfiguration.buildWithExecutionF { _ =>
+        for {
+          events <- gachaPrizeAPI.createdGachaEvents
+        } yield {
+          val messages = "イベント名 | 開始日 | 終了日" +: events.map { event =>
+            s"${event.eventName.name} | ${toTimeString(event.startDate)} | ${toTimeString(event.endDate)}"
           }
-
-          eff.toIO
+          MessageEffect(messages.toList)
         }
-        .build()
-
+      }
   }
 
 }

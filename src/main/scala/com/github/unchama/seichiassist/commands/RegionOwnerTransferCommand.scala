@@ -11,37 +11,33 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion
 import org.bukkit.Bukkit
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
+import shapeless.{HNil, ::}
 
 object RegionOwnerTransferCommand {
   import com.github.unchama.contextualexecutor.builder.ParserResponse._
 
   val executor: TabExecutor = playerCommandBuilder
-    .argumentsParsers(
-      List(
-        Parsers.identity,
-        recipientName => {
-          Bukkit.getPlayer(recipientName) match {
-            case recipient: Player => succeedWith(recipient)
-            case _                 => failWith(s"${recipientName}というプレイヤーはサーバーに参加したことがありません。")
-          }
-        }
-      )
-    )
-    .execution { context =>
-      val regionName = context.args.parsed.head.asInstanceOf[String]
-      val newOwner = context.args.parsed(1).asInstanceOf[Player]
-
+    .thenParse(Parsers.identity)
+    .thenParse(recipientName => {
+      Bukkit.getPlayer(recipientName) match {
+        case recipient: Player => succeedWith(recipient)
+        case _                 => failWith(s"${recipientName}というプレイヤーはサーバーに参加したことがありません。")
+      }
+    })
+    .buildWithExecutionF { context =>
+      val (regionName :: newOwner :: HNil) = context.args.parsed
       val sender = context.sender
 
-      val region =
+      IO {
         WorldGuardPlugin.inst().getRegionManager(sender.getWorld).getRegion(regionName)
-      if (region == null) {
-        IO(MessageEffect(s"${regionName}という名前の保護は存在しません。"))
+      }.flatMap { region =>
+        if (region == null) {
+          MessageEffect(s"${regionName}という名前の保護は存在しません。").run(sender)
+        } else {
+          attemptRegionTransfer(sender, newOwner, region)
+        }
       }
-
-      attemptRegionTransfer(sender, newOwner, region)
     }
-    .build()
     .asNonBlockingTabExecutor()
 
   private def attemptRegionTransfer(
