@@ -178,6 +178,17 @@ class GachaCommand[
         import shapeless.::
         val selector :: amount :: HNil = context.args.parsed
         val gachaTicketAmount = GachaTicketAmount(amount)
+
+        def notifyResultOfGrantToSpecificPlayer(result: GrantResultOfGachaTicketFromAdminTeam) =
+          result match {
+            case GrantResultOfGachaTicketFromAdminTeam.Success =>
+              MessageEffectF(s"${GREEN}ガチャ券${amount}枚加算成功")
+            case GrantResultOfGachaTicketFromAdminTeam.NotExists =>
+              MessageEffectF(s"${RED}プレイヤーが存在しません。")
+            case GrantResultOfGachaTicketFromAdminTeam.GrantedToMultiplePlayers =>
+              MessageEffectF(s"${RED}加算は成功しましたが、複数プレイヤーが存在しました。")
+          }
+
         selector match {
           case GiveAll =>
             Kleisli
@@ -188,27 +199,13 @@ class GachaCommand[
               .liftF[F, CommandSender, GrantResultOfGachaTicketFromAdminTeam](
                 gachaTicketAPI.addByUUID(gachaTicketAmount, uuid)
               )
-              .flatMap {
-                case GrantResultOfGachaTicketFromAdminTeam.Success =>
-                  MessageEffectF(s"${GREEN}ガチャ券${amount}枚加算成功")
-                case GrantResultOfGachaTicketFromAdminTeam.NotExists =>
-                  MessageEffectF(s"${RED}プレイヤーが存在しません。")
-                case GrantResultOfGachaTicketFromAdminTeam.GrantedToMultiplePlayers =>
-                  MessageEffectF(s"${RED}加算は成功しましたが、複数プレイヤーが存在しました。")
-              }
+              .flatMap(notifyResultOfGrantToSpecificPlayer)
           case ByName(playerLogin) =>
             Kleisli
               .liftF[F, CommandSender, GrantResultOfGachaTicketFromAdminTeam](
                 gachaTicketAPI.addByPlayerName(gachaTicketAmount, PlayerName(playerLogin))
               )
-              .flatMap {
-                case GrantResultOfGachaTicketFromAdminTeam.Success =>
-                  MessageEffectF(s"${GREEN}ガチャ券${amount}枚加算成功")
-                case GrantResultOfGachaTicketFromAdminTeam.NotExists =>
-                  MessageEffectF(s"${RED}プレイヤーが存在しません。")
-                case GrantResultOfGachaTicketFromAdminTeam.GrantedToMultiplePlayers =>
-                  MessageEffectF(s"${RED}加算は成功しましたが、複数プレイヤーが存在しました。")
-              }
+              .flatMap(notifyResultOfGrantToSpecificPlayer)
         }
       }
 
