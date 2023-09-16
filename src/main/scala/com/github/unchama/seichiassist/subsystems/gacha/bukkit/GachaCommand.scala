@@ -284,7 +284,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
         for {
           didRemoveGachaPrize <- gachaPrizeAPI.removeByGachaPrizeId(gachaId)
         } yield {
-          if (isRemovedGachaPrize)
+          if (didRemoveGachaPrize)
             MessageEffect(List("ガチャアイテムを削除しました"))
           else
             MessageEffect("指定されたIDのガチャ景品が存在しないため、ガチャアイテムを削除できませんでした。")
