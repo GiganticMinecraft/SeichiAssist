@@ -43,6 +43,9 @@ class GachaPrizeUseCase[F[_]: Sync, ItemStack: Cloneable](
     holdingEvent <- gachaEvents.findM(isHolding)
   } yield holdingEvent
 
+  // FIXME: 並列実行で max がうまく取れず壊れる。
+  //        管理者しかコマンドを打たないので修正優先度は低いが、本来は
+  //        Persistence にまで `gachaPrizeById` を直接渡してレコードを生成すべき。
   def addGachaPrize(gachaPrizeById: GachaPrizeId => GachaPrizeTableEntry[ItemStack]): F[Unit] =
     for {
       gachaPrizeList <- gachaPrizeListPersistence.list
