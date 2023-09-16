@@ -5,8 +5,6 @@ import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{
-  ClickEventFilter,
-  FilteredButtonEffect,
   LeftClickButtonEffect,
   RightClickButtonEffect
 }
@@ -18,7 +16,6 @@ import com.github.unchama.menuinventory.{
   MenuSlotLayout
 }
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gridregion.GridRegionAPI
 import com.github.unchama.seichiassist.subsystems.gridregion.domain._
 import com.github.unchama.targetedeffect.player.PlayerEffects.closeInventoryEffect

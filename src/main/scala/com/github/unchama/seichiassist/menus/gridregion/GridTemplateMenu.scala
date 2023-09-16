@@ -5,8 +5,6 @@ import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
 import com.github.unchama.menuinventory.slot.button.action.{
-  ClickEventFilter,
-  FilteredButtonEffect,
   LeftClickButtonEffect,
   RightClickButtonEffect
 }
@@ -20,13 +18,13 @@ import com.github.unchama.menuinventory.{
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.menus.CommonButtons
-import com.github.unchama.seichiassist.subsystems.gridregion.{GridRegionAPI, domain}
+import com.github.unchama.seichiassist.subsystems.gridregion.GridRegionAPI
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
   RegionTemplate,
   RegionTemplateId
 }
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
-import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect}
+import com.github.unchama.targetedeffect.SequentialEffect
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.{Location, Material}

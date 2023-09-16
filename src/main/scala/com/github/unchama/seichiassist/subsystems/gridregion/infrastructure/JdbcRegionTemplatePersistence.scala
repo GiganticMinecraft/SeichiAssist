@@ -6,7 +6,6 @@ import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
   RegionTemplate,
   RegionTemplateId,
   RegionUnitLength,
-  RegionUnitCount,
   SubjectiveRegionShape
 }
 import scalikejdbc._
