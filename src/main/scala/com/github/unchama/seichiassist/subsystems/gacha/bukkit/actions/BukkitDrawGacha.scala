@@ -47,44 +47,44 @@ class BukkitDrawGacha[F[_]: Sync](
             case GachaRarity.Gigantic =>
               val prizeItem = gachaPrize.itemStack
 
-                val localizedEnchantmentList =
-                  prizeItem.getItemMeta.getEnchants.asScala.toSeq.map {
-                    case (enchantment, level) =>
-                      s"$GRAY${EnchantNameToJapanese.getEnchantName(enchantment.getKey.toString, level)}"
-                  }
-
-                import scala.util.chaining._
-                val message =
-                  new TextComponent().tap { c =>
-                    import c._
-                    setText(
-                      s"$AQUA${prizeItem.getItemMeta.getDisplayName}${GOLD}を引きました！おめでとうございます！"
-                    )
-                    setHoverEvent {
-                      new HoverEvent(
-                        HoverEvent.Action.SHOW_TEXT,
-                        new Text(
-                          s" ${prizeItem.getItemMeta.getDisplayName}\n" +
-                            ListFormatters.getDescFormat(localizedEnchantmentList.toList) +
-                            ListFormatters
-                              .getDescFormat(prizeItem.getItemMeta.getLore.asScala.toList)
-                        )
-                      )
-                    }
-                  }
-                Sync[F].delay {
-                  player.sendMessage(s"${RED}おめでとう！！！！！Gigantic☆大当たり！$additionalMessage")
-                  player.spigot().sendMessage(message)
-                  sendMessageToEveryone(s"$GOLD${player.getName}がガチャでGigantic☆大当たり！")(
-                    forString[IO]
-                  )
-                  sendMessageToEveryone(message)(forTextComponent[IO])
-                  SendSoundEffect.sendEverySoundWithoutIgnore(
-                    Sound.ENTITY_ENDER_DRAGON_DEATH,
-                    0.5f,
-                    2f
-                  )
+              val localizedEnchantmentList =
+                prizeItem.getItemMeta.getEnchants.asScala.toSeq.map {
+                  case (enchantment, level) =>
+                    s"$GRAY${EnchantNameToJapanese.getEnchantName(enchantment.getKey.toString, level)}"
                 }
+
+              import scala.util.chaining._
+              val message =
+                new TextComponent().tap { c =>
+                  import c._
+                  setText(
+                    s"$AQUA${prizeItem.getItemMeta.getDisplayName}${GOLD}を引きました！おめでとうございます！"
+                  )
+                  setHoverEvent {
+                    new HoverEvent(
+                      HoverEvent.Action.SHOW_TEXT,
+                      new Text(
+                        s" ${prizeItem.getItemMeta.getDisplayName}\n" +
+                          ListFormatters.getDescFormat(localizedEnchantmentList.toList) +
+                          ListFormatters
+                            .getDescFormat(prizeItem.getItemMeta.getLore.asScala.toList)
+                      )
+                    )
+                  }
+                }
+              Sync[F].delay {
+                player.sendMessage(s"${RED}おめでとう！！！！！Gigantic☆大当たり！$additionalMessage")
+                player.spigot().sendMessage(message)
+                sendMessageToEveryone(s"$GOLD${player.getName}がガチャでGigantic☆大当たり！")(
+                  forString[IO]
+                )
+                sendMessageToEveryone(message)(forTextComponent[IO])
+                SendSoundEffect.sendEverySoundWithoutIgnore(
+                  Sound.ENTITY_ENDER_DRAGON_DEATH,
+                  0.5f,
+                  2f
+                )
+              }
             case GachaRarity.Big =>
               Sync[F].delay {
                 player.playSound(player.getLocation, Sound.ENTITY_WITHER_SPAWN, 0.8f, 1f)

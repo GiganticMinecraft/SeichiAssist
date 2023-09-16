@@ -111,12 +111,12 @@ class MebiusCommandExecutorProvider(
     val convertExecutor: ContextualExecutor = playerCommandBuilder.buildWith { context =>
       val mainHand = context.sender.getInventory.getItemInMainHand
 
-        BukkitMebiusItemStackCodec.decodeMebiusProperty(mainHand) match {
-          case Some(property) =>
-            if (property.level.isMaximum) {
-              val newProperty = property.toggleForcedMaterial
-              val newItem =
-                BukkitMebiusItemStackCodec.materialize(newProperty)
+      BukkitMebiusItemStackCodec.decodeMebiusProperty(mainHand) match {
+        case Some(property) =>
+          if (property.level.isMaximum) {
+            val newProperty = property.toggleForcedMaterial
+            val newItem =
+              BukkitMebiusItemStackCodec.materialize(newProperty)
 
             val newMaterialName = newProperty.forcedMaterial match {
               case MebiusForcedMaterial.None    => "ダイヤモンド"

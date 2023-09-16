@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.util
 import cats.Monad
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.generic.ApplicativeExtra.whenAOrElse
-import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
