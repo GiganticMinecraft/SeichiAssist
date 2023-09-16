@@ -11,7 +11,8 @@ trait GachaPrizeListPersistence[F[_], ItemStack] {
 
   /**
    * @return `gachaPrize`と同様のgachaPrizeIdが存在すれば`gachaPrize`に更新し、
-   *         存在しなければ`gachaPrize`を追加する作用
+   *         存在しなければ`gachaPrize`を追加する作用。
+   *         `gachaEvent` の更新のみ、無効な変更として無視する。
    */
   def upsertGachaPrize(gachaPrize: GachaPrizeTableEntry[ItemStack]): F[Unit]
 
