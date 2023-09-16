@@ -9,7 +9,7 @@ import com.github.unchama.seichiassist.subsystems.gridregion.domain.HorizontalAx
 import com.github.unchama.seichiassist.subsystems.gridregion.domain._
 import com.github.unchama.util.external.{WorldEditWrapper, WorldGuardWrapper}
 import com.sk89q.worldedit.math.BlockVector3
-import com.sk89q.worldguard.protection.regions.{ProtectedCuboidRegion, ProtectedRegion}
+import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
@@ -77,7 +77,11 @@ class BukkitRegionOperations[F[_]: Sync](
     wgManager = WorldGuardWrapper.getRegionManager(player.getWorld)
     selection = WorldEditWrapper.getSelection(player)
     regionName = s"${player.getName}_${regionCount.value}"
-    region = new ProtectedCuboidRegion(regionName, BlockVector3.at(selection.getBlockX, 0, selection.getBlockZ), BlockVector3.at(selection.getBlockX, 255, selection.getBlockZ))
+    region = new ProtectedCuboidRegion(
+      regionName,
+      BlockVector3.at(selection.getBlockX, 0, selection.getBlockZ),
+      BlockVector3.at(selection.getBlockX, 255, selection.getBlockZ)
+    )
     regionCreateResult <- Sync[F].delay {
       wgManager.addRegion(region)
     }
