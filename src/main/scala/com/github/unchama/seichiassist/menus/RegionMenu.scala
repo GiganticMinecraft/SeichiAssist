@@ -67,11 +67,10 @@ object RegionMenu extends Menu {
     import player._
     import environment._
 
-
     val computeButtonToClaimRegion: IO[Button] = for {
       regionCount <- gridRegionAPI.regionCount(player)
     } yield {
-      val openerData = SeichiAssist.playermap(player.getUniqueId)
+      SeichiAssist.playermap(player.getUniqueId)
       val selection = WorldEdit
         .getInstance()
         .getSessionManager
