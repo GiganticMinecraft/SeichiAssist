@@ -21,7 +21,8 @@ trait GrantGachaPrize[F[_], ItemStack, Player] {
 
   /**
    * @param prizes プレイヤーに付与する[[GachaPrizeTableEntry]]のVector
-   * @return `prizes`の各アイテムをプレイヤーのインベントリに挿入するか、
+   * FIXME: 「記名する」というドメインロジックはシステムのより中核に近いところに移動したい…
+   * @return `prizes` の各アイテムを (必要ならば記名した上で、) プレイヤーのインベントリに挿入するか、
    *         それができなかった場合には地面にドロップする作用
    */
   def insertIntoPlayerInventoryOrDrop(
