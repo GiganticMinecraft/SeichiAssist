@@ -105,7 +105,7 @@ object GridTemplateMenu extends Menu {
 
             val leftClickButtonEffect = FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
               SequentialEffect(
-                DeferredEffect(IO(gridRegionAPI.saveRegionUnits(regionTemplate.shape))),
+                DeferredEffect(IO(gridRegionAPI.updateCurrentRegionShapeSettings(regionTemplate.shape))),
                 MessageEffect(s"${GREEN}グリッド式保護設定データ読み込み完了")
               )
             }

@@ -42,7 +42,10 @@ trait GridRegionReadAPI[F[_], Player, Location] {
   /**
    * @return `player`の現在地点と`regionUnits`から[[RegionSelectionCorners]]を計算して返す
    */
-  def regionSelection(player: Player, shape: SubjectiveRegionShape): RegionSelectionCorners[Location]
+  def regionSelection(
+    player: Player,
+    shape: SubjectiveRegionShape
+  ): RegionSelectionCorners[Location]
 
   /**
    * @return `player`の[[RegionCount]]を取得する作用
@@ -54,19 +57,21 @@ trait GridRegionReadAPI[F[_], Player, Location] {
 trait GridRegionWriteAPI[F[_], Player, Location] {
 
   /**
-   * @return 1回のクリックで増減させる[[RegionUnitCount]]の量をトグルする作用
+   * @return [[SubjectiveRegionShape]] を調整する UI 上の１回のクリックで増減させる[[RegionUnitLength]]の量をトグルする作用
    */
-  def toggleUnitPerClick: Kleisli[F, Player, Unit]
+  def toggleRulChangePerClick: Kleisli[F, Player, Unit]
 
   /**
-   * @return [[Player]]の[[SubjectiveRegionShape]]を上書きする作用
+   * @return [[Player]] が持つ [[SubjectiveRegionShape]] 設定を上書きする作用
    */
-  def saveRegionUnits(regionUnits: SubjectiveRegionShape): Kleisli[F, Player, Unit]
+  def updateCurrentRegionShapeSettings(
+    regionUnits: SubjectiveRegionShape
+  ): Kleisli[F, Player, Unit]
 
   /**
-   * @return 保護を作成する作用
+   * @return プレーヤーが現在 WorldGuard で選択している領域にて保護を作成する作用
    */
-  def createRegion: Kleisli[F, Player, Unit]
+  def createAndClaimRegionSelectedOnWorldGuard: Kleisli[F, Player, Unit]
 
 }
 

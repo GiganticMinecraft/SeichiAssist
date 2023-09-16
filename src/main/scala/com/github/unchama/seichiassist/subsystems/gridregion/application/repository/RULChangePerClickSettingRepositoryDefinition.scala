@@ -4,19 +4,18 @@ import cats.Applicative
 import cats.effect.Sync
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
 import com.github.unchama.datarepository.template.initialization.TwoPhasedRepositoryInitialization
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.RegionUnitPerClickSetting
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.RULChangePerClickSetting
 
-object RegionUnitPerClickSettingRepositoryDefinition {
-
+object RULChangePerClickSettingRepositoryDefinition {
   def initialization[F[_]: Sync, Player]
-    : TwoPhasedRepositoryInitialization[F, Player, RegionUnitPerClickSetting[F]] =
+    : TwoPhasedRepositoryInitialization[F, Player, RULChangePerClickSetting[F]] =
     TwoPhasedRepositoryInitialization
-      .withoutPrefetching[F, Player, RegionUnitPerClickSetting[F]] { _ =>
-        RegionUnitPerClickSetting[F]
+      .withoutPrefetching[F, Player, RULChangePerClickSetting[F]] { _ =>
+        RULChangePerClickSetting[F]
       }
 
   def finalization[F[_]: Applicative, Player]
-    : RepositoryFinalization[F, Player, RegionUnitPerClickSetting[F]] =
+    : RepositoryFinalization[F, Player, RULChangePerClickSetting[F]] =
     RepositoryFinalization.trivial
 
 }

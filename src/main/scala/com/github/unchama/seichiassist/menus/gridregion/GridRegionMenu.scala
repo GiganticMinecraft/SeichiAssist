@@ -47,7 +47,7 @@ object GridRegionMenu extends Menu {
 
     for {
       toggleUnitPerClick <- toggleUnitPerClickButton
-      nowRegionSettings <- nowRegionSettingButton
+      nowRegionSettings <- currentRegionShapeButton
       regionUnitExpansionAhead <- regionUnitExpansionButton(
         HorizontalAxisAlignedSubjectiveDirection.Ahead
       )
@@ -93,7 +93,7 @@ object GridRegionMenu extends Menu {
           .build()
 
         val leftClickEffect = LeftClickButtonEffect(
-          DeferredEffect(IO(gridRegionAPI.toggleUnitPerClick)),
+          gridRegionAPI.toggleRulChangePerClick,
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
         )
 
@@ -168,7 +168,7 @@ object GridRegionMenu extends Menu {
             val endPosition = regionSelection.endPosition
 
             SequentialEffect(
-              DeferredEffect(IO(gridRegionAPI.saveRegionUnits(contractedShape))),
+              gridRegionAPI.updateCurrentRegionShapeSettings(contractedShape),
               CommandEffect("/;"),
               CommandEffect(s"/pos1 ${startPosition.getX.toInt},0,${startPosition.getZ.toInt}"),
               CommandEffect(s"/pos2 ${endPosition.getX.toInt},0,${endPosition.getZ.toInt}"),
@@ -201,7 +201,9 @@ object GridRegionMenu extends Menu {
         .build()
 
       val leftClickButtonEffect = LeftClickButtonEffect(
-        DeferredEffect(IO(gridRegionAPI.saveRegionUnits(SubjectiveRegionShape.minimal))),
+        DeferredEffect(
+          IO(gridRegionAPI.updateCurrentRegionShapeSettings(SubjectiveRegionShape.minimal))
+        ),
         CommandEffect("/;"),
         FocusedSoundEffect(Sound.BLOCK_ANVIL_DESTROY, 0.5f, 1.0f)
       )
@@ -209,7 +211,7 @@ object GridRegionMenu extends Menu {
       Button(itemStack, leftClickButtonEffect)
     }
 
-    val nowRegionSettingButton: IO[Button] = RecomputedButton {
+    val currentRegionShapeButton: IO[Button] = RecomputedButton {
       for {
         shape <- gridRegionAPI.currentlySelectedShape(player)
       } yield {
@@ -243,34 +245,37 @@ object GridRegionMenu extends Menu {
       } yield {
         canCreateRegionResult match {
           case RegionCreationResult.Success =>
-            val itemStack = new IconItemStackBuilder(Material.WOOL, 11)
-              .title(s"${GREEN}保護作成")
-              .lore(List(s"${DARK_GREEN}保護作成可能です", s"$RED${UNDERLINE}クリックで作成"))
-              .build()
-            val leftClickButtonEffect = LeftClickButtonEffect(
-              DeferredEffect(IO(gridRegionAPI.createRegion)),
-              FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f),
-              closeInventoryEffect
-            )
-            Button(itemStack, leftClickButtonEffect)
-          case RegionCreationResult.WorldProhibitsRegionCreation =>
-            val itemStack = new IconItemStackBuilder(Material.WOOL, 14)
-              .title(s"${RED}保護作成")
-              .lore(List(s"$RED${UNDERLINE}このワールドでは保護を作成できません"))
-              .build()
-            Button(itemStack)
-          case RegionCreationResult.Error =>
-            val itemStack = new IconItemStackBuilder(Material.WOOL, 1)
-              .title(s"${RED}以下の原因により保護の作成できません")
-              .lore(
-                List(
-                  s"$RED${UNDERLINE}以下の原因により保護を作成できません。",
-                  s"$RED・保護の範囲が他の保護と重複している",
-                  s"$RED・保護の作成上限に達している"
-                )
+            Button(
+              new IconItemStackBuilder(Material.WOOL, 11)
+                .title(s"${GREEN}保護作成")
+                .lore(List(s"${DARK_GREEN}保護作成可能です", s"$RED${UNDERLINE}クリックで作成"))
+                .build(),
+              LeftClickButtonEffect(
+                gridRegionAPI.createAndClaimRegionSelectedOnWorldGuard,
+                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f),
+                closeInventoryEffect
               )
-              .build()
-            Button(itemStack)
+            )
+          case RegionCreationResult.WorldProhibitsRegionCreation =>
+            Button(
+              new IconItemStackBuilder(Material.WOOL, 14)
+                .title(s"${RED}保護作成")
+                .lore(List(s"$RED${UNDERLINE}このワールドでは保護を作成できません"))
+                .build()
+            )
+          case RegionCreationResult.Error =>
+            Button(
+              new IconItemStackBuilder(Material.WOOL, 1)
+                .title(s"${RED}以下の原因により保護の作成できません")
+                .lore(
+                  List(
+                    s"$RED${UNDERLINE}以下の原因により保護を作成できません。",
+                    s"$RED・保護の範囲が他の保護と重複している",
+                    s"$RED・保護の作成上限に達している"
+                  )
+                )
+                .build()
+            )
         }
       }
     }

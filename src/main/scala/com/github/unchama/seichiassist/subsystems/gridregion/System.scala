@@ -12,7 +12,7 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gridregion.application.repository.{
   RegionCountRepositoryDefinition,
-  RegionUnitPerClickSettingRepositoryDefinition,
+  RULChangePerClickSettingRepositoryDefinition,
   RegionUnitsRepositoryDefinition
 }
 import com.github.unchama.seichiassist.subsystems.gridregion.bukkit.BukkitRegionOperations
@@ -46,12 +46,12 @@ object System {
       new JdbcRegionTemplatePersistence[G]
 
     for {
-      regionUnitPerClickSettingRepositoryControls <- BukkitRepositoryControls.createHandles(
+      rulChangePerClickSettingRepositoryControls <- BukkitRepositoryControls.createHandles(
         RepositoryDefinition
           .Phased
           .TwoPhased(
-            RegionUnitPerClickSettingRepositoryDefinition.initialization[G, Player],
-            RegionUnitPerClickSettingRepositoryDefinition.finalization[G, Player]
+            RULChangePerClickSettingRepositoryDefinition.initialization[G, Player],
+            RULChangePerClickSettingRepositoryDefinition.finalization[G, Player]
           )
       )
       regionUnitsRepositoryControls <- BukkitRepositoryControls.createHandles(
@@ -66,8 +66,8 @@ object System {
         RegionCountRepositoryDefinition.withContext[G, Player]
       )
     } yield {
-      val regionUnitPerClickSettingRepository =
-        regionUnitPerClickSettingRepositoryControls.repository
+      val rulPerClickSettingRepository =
+        rulChangePerClickSettingRepositoryControls.repository
       val regionUnitsRepository =
         regionUnitsRepositoryControls.repository
       implicit val regionCountRepository: KeyedDataRepository[Player, Ref[G, RegionCount]] =
@@ -77,17 +77,17 @@ object System {
       new System[F, Player, Location] {
         override val api: GridRegionAPI[F, Player, Location] =
           new GridRegionAPI[F, Player, Location] {
-            override def toggleUnitPerClick: Kleisli[F, Player, Unit] = Kleisli { player =>
-              ContextCoercion(regionUnitPerClickSettingRepository(player).toggleUnitPerClick)
+            override def toggleRulChangePerClick: Kleisli[F, Player, Unit] = Kleisli { player =>
+              ContextCoercion(rulPerClickSettingRepository(player).toggleUnitPerClick)
             }
 
             override def lengthChangePerClick(player: Player): F[RegionUnitLength] =
-              ContextCoercion(regionUnitPerClickSettingRepository(player).rulChangePerClick)
+              ContextCoercion(rulPerClickSettingRepository(player).rulChangePerClick)
 
             override def currentlySelectedShape(player: Player): F[SubjectiveRegionShape] =
               ContextCoercion(regionUnitsRepository(player).currentShape)
 
-            override def saveRegionUnits(
+            override def updateCurrentRegionShapeSettings(
               regionUnits: SubjectiveRegionShape
             ): Kleisli[F, Player, Unit] =
               Kleisli { player =>
@@ -111,9 +111,10 @@ object System {
             ): RegionSelectionCorners[Location] =
               regionOperations.getSelectionCorners(player.getLocation, shape)
 
-            override def createRegion: Kleisli[F, Player, Unit] = Kleisli { player =>
-              ContextCoercion(regionOperations.tryCreatingSelectedWorldGuardRegion(player))
-            }
+            override def createAndClaimRegionSelectedOnWorldGuard: Kleisli[F, Player, Unit] =
+              Kleisli { player =>
+                ContextCoercion(regionOperations.tryCreatingSelectedWorldGuardRegion(player))
+              }
 
             override def regionCount(player: Player): F[RegionCount] =
               ContextCoercion(regionCountRepository(player).get)
@@ -131,7 +132,7 @@ object System {
           }
 
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
-          regionUnitPerClickSettingRepositoryControls,
+          rulChangePerClickSettingRepositoryControls,
           regionUnitsRepositoryControls,
           regionCountRepositoryControls
         ).map(_.coerceFinalizationContextTo[F])
