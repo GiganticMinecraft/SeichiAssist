@@ -335,7 +335,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
         val targetId :: newProb :: HNil = context.args.parsed
         for {
           currentGachaPrize <- gachaPrizeAPI.fetch(targetId)
-          changeProbabilityAction <- currentGachaPrize.traverse { gachaPrize =>
+          probabilityChange <- currentGachaPrize.traverse { gachaPrize =>
             gachaPrizeAPI.upsertGachaPrize(
               gachaPrize.copy(probability = GachaProbability(newProb))
             )
