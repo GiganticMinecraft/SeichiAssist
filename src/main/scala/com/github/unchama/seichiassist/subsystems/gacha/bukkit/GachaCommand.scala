@@ -247,9 +247,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
             .filter { gachaPrize =>
               if (eventName.isEmpty) gachaPrize.nonGachaEventItem
               else
-                gachaPrize.isGachaEventItem && gachaPrize
-                  .gachaEvent
-                  .map(_.eventName) == eventName
+                gachaPrize.gachaEvent.map(_.eventName) == eventName
             }
             .sortBy(_.id.id)
             .map { gachaPrize =>
