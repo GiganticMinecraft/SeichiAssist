@@ -143,7 +143,7 @@ object GridRegionMenu extends Menu {
           case HorizontalAxisAlignedSubjectiveDirection.Right  => "右へ"
         }
 
-        val stainedGlassPaneDurability = relativeDirection match {
+        relativeDirection match {
           case HorizontalAxisAlignedSubjectiveDirection.Ahead  => 14
           case HorizontalAxisAlignedSubjectiveDirection.Left   => 10
           case HorizontalAxisAlignedSubjectiveDirection.Behind => 13
@@ -169,8 +169,10 @@ object GridRegionMenu extends Menu {
         }
 
         Button(
-          new IconItemStackBuilder(Material.GLASS_PANE
-          ).title(s"$DARK_GREEN${relativeDirectionString}ユニット増やす/減らす").lore(lore).build(),
+          new IconItemStackBuilder(Material.GLASS_PANE)
+            .title(s"$DARK_GREEN${relativeDirectionString}ユニット増やす/減らす")
+            .lore(lore)
+            .build(),
           LeftClickButtonEffect(updateCurrentRegionShapeTo(expandedShape)),
           RightClickButtonEffect(updateCurrentRegionShapeTo(contractedShape))
         )
