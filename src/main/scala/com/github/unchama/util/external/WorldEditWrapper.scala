@@ -14,6 +14,7 @@ object WorldEditWrapper {
   /**
    * @return `player`が選択している範囲
    */
-  def getSelection(player: Player): BlockVector3 = plugin.getSession(player).getPlacementPosition(plugin.wrapPlayer(player))
+  def getSelection(player: Player): BlockVector3 =
+    plugin.getSession(player).getPlacementPosition(plugin.wrapPlayer(player))
 
 }

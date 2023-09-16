@@ -37,7 +37,6 @@ object WorldGuardWrapper {
       .toList
   }
 
-
   def getRegions(world: World): List[ProtectedRegion] = {
     worldGuard
       .getPlatform
