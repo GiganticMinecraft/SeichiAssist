@@ -61,6 +61,7 @@ class GachaPrizeUseCase[F[_]: Sync, ItemStack: Cloneable](
   def listOfNow: F[Vector[GachaPrizeTableEntry[ItemStack]]] = for {
     gachaPrizes <- gachaPrizeListPersistence.list
     holingGachaEvent <- holdingGachaEvent
+    // どのイベント中でも経験値瓶は絶対に出す
     expBottle = domain.GachaPrizeTableEntry(
       gachaPrizeFactory.expBottle,
       GachaProbability(0.1),
