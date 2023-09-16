@@ -307,22 +307,22 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
           val targetId :: amount :: HNil = context.args.parsed
           for {
             currentGachaPrize <- gachaPrizeAPI.fetch(targetId)
-            didChangeAmount <- currentGachaPrize match {
-              case Some(prize) =>
-                gachaPrizeAPI
-                  .upsertGachaPrize(
-                    prize.copy(itemStack = prize.itemStack.tap(_.setAmount(amount)))
-                  )
-                  .as(true)
-              case None => Monad[F].pure(false)
+            oldItemStack <- currentGachaPrize.traverse { prize =>
+              gachaPrizeAPI
+                .upsertGachaPrize(
+                  prize.copy(itemStack = prize.itemStack.tap(_.setAmount(amount)))
+                )
+                .as(Some(prize.itemStack))
             }
           } yield {
-            if (didChangeAmount)
-              MessageEffect(
-                s"${targetId.id}|${itemStack.get.getType.toString}/${itemStack.get.getItemMeta.getDisplayName}${RESET}のアイテム数を${amount}個に変更しました。"
-              )
-            else
-              MessageEffect("指定されたIDのガチャ景品が存在しないため、アイテム数が変更できませんでした。")
+            oldItemStack match {
+              case Some(itemStack) =>
+                MessageEffect(
+                  s"${targetId.id}|${itemStack.get.getType.toString}/${itemStack.get.getItemMeta.getDisplayName}${RESET}のアイテム数を${amount}個に変更しました。"
+                )
+              case None =>
+                MessageEffect("指定されたIDのガチャ景品が存在しないため、アイテム数が変更できませんでした。")
+            }
           }
         }
 
