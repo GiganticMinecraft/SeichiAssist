@@ -3,33 +3,44 @@ package com.github.unchama.seichiassist.subsystems.gacha.application.actions
 import cats.Monad
 import cats.data.Kleisli
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GrantState
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.GachaPrize
-import org.bukkit.entity.Player
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaPrizeTableEntry
 
-trait GrantGachaPrize[F[_], ItemStack] {
+trait GrantGachaPrize[F[_], ItemStack, Player] {
 
   import cats.implicits._
 
   implicit val F: Monad[F]
 
-  def tryInsertIntoMineStack(prize: GachaPrize[ItemStack]): Kleisli[F, Player, Boolean]
+  /**
+   * @param prizes MineStackに格納したい[[GachaPrizeTableEntry]]のVector
+   * @return `prizes`をMineStackに格納することを試み、格納できなかった[[GachaPrizeTableEntry]]のVectorを返す作用
+   */
+  def tryInsertIntoMineStack(
+    prizes: Vector[GachaPrizeTableEntry[ItemStack]]
+  ): Kleisli[F, Player, Vector[GachaPrizeTableEntry[ItemStack]]]
 
+  /**
+   * @param prizes プレイヤーに付与する[[GachaPrizeTableEntry]]のVector
+   * FIXME: 「記名する」というドメインロジックはシステムのより中核に近いところに移動したい…
+   * @return `prizes` の各アイテムを (必要ならば記名した上で、) プレイヤーのインベントリに挿入するか、
+   *         それができなかった場合には地面にドロップする作用
+   */
   def insertIntoPlayerInventoryOrDrop(
-    prize: GachaPrize[ItemStack],
-    ownerName: Option[String]
-  ): Kleisli[F, Player, GrantState]
+    prizes: Vector[GachaPrizeTableEntry[ItemStack]]
+  ): Kleisli[F, Player, Unit]
 
-  final def grantGachaPrize(prize: GachaPrize[ItemStack]): Kleisli[F, Player, GrantState] =
+  final def grantGachaPrize(
+    prizes: Vector[GachaPrizeTableEntry[ItemStack]]
+  ): Kleisli[F, Player, Vector[(GachaPrizeTableEntry[ItemStack], GrantState)]] =
     Kleisli { player =>
       for {
-        insertMineStackResult <- tryInsertIntoMineStack(prize)(player)
-        grantState <-
-          if (insertMineStackResult) {
-            F.pure(GrantState.GrantedMineStack)
-          } else {
-            insertIntoPlayerInventoryOrDrop(prize, Some(player.getName))(player)
-          }
-      } yield grantState
+        prizesNotInsertedIntoMineStack <- tryInsertIntoMineStack(prizes)(player)
+        _ <- insertIntoPlayerInventoryOrDrop(prizesNotInsertedIntoMineStack)(player)
+      } yield {
+        val prizesInsertedIntoMineStack = prizes.diff(prizesNotInsertedIntoMineStack)
+        prizesInsertedIntoMineStack.map(_ -> GrantState.GrantedMineStack) ++
+          prizesNotInsertedIntoMineStack.map(_ -> GrantState.GrantedInventoryOrDrop)
+      }
     }
 
 }

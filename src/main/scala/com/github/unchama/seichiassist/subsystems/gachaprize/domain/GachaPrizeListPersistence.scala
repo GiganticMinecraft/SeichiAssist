@@ -1,26 +1,20 @@
 package com.github.unchama.seichiassist.subsystems.gachaprize.domain
 
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
-  GachaPrize,
-  GachaPrizeId
-}
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.GachaEvent
 
 trait GachaPrizeListPersistence[F[_], ItemStack] {
 
   /**
    * @return ガチャアイテムとして登録されているアイテムの一覧を返す作用
    */
-  def list: F[Vector[GachaPrize[ItemStack]]]
+  def list: F[Vector[GachaPrizeTableEntry[ItemStack]]]
 
   /**
-   * @return ガチャアイテムを追加する作用
+   * @return `gachaPrize`と同様のgachaPrizeIdが存在すれば`gachaPrize`に更新し、
+   *         存在しなければ`gachaPrize`を追加する作用。
+   *         `gachaEvent` の更新のみ、無効な変更として無視する。
    */
-  def addGachaPrize(gachaPrize: GachaPrize[ItemStack]): F[Unit]
-
-  /**
-   * @return 複数のガチャアイテムを追加する作用
-   */
-  def addGachaPrizes(gachaPrizes: Vector[GachaPrize[ItemStack]]): F[Unit]
+  def upsertGachaPrize(gachaPrize: GachaPrizeTableEntry[ItemStack]): F[Unit]
 
   /**
    * @return ガチャアイテムを削除する作用
@@ -28,18 +22,9 @@ trait GachaPrizeListPersistence[F[_], ItemStack] {
   def removeGachaPrize(gachaPrizeId: GachaPrizeId): F[Unit]
 
   /**
-   * @return ガチャリストを更新する作用
+   * @return イベント開催中ではない時に排出されるガチャ景品を、
+   *         `gachaEvent`の景品としてidとガチャイベント以外を同一の内容で追加する作用
    */
-  def set(gachaPrizesList: Vector[GachaPrize[ItemStack]]): F[Unit]
-
-  /**
-   * @return mineStackGachaObjectを追加する作用
-   */
-  def addMineStackGachaObject(id: GachaPrizeId, objectName: String): F[Unit]
-
-  /**
-   * @return mineStackGachaObjectを削除する作用
-   */
-  def deleteMineStackGachaObject(id: GachaPrizeId): F[Unit]
+  def duplicateDefaultGachaPrizes(gachaEvent: GachaEvent): F[Unit]
 
 }

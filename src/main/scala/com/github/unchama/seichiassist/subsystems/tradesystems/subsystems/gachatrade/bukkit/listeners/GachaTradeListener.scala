@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gacha
 
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, IO}
-import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.GachaPoint
@@ -21,9 +20,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 
-class GachaTradeListener[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
-  rule: GachaTradeRule[ItemStack]
-)(
+class GachaTradeListener[F[_]: ConcurrentEffect, G[_]](rule: GachaTradeRule[ItemStack])(
   implicit gachaListProvider: GachaListProvider[F, ItemStack],
   gachaPointApi: GachaPointApi[F, G, Player]
 ) extends Listener {

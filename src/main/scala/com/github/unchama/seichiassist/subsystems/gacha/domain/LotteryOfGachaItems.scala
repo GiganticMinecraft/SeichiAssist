@@ -1,14 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.gacha.domain
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaprize.{
-  GachaPrize,
-  GachaPrizeId
-}
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
+  GachaPrizeTableEntry,
+  GachaPrizeId,
   GachaProbability,
-  StaticGachaPrizeFactory,
-  gachaprize
+  StaticGachaPrizeFactory
 }
 import com.github.unchama.generic.Cloneable
 
@@ -22,8 +19,8 @@ class LotteryOfGachaItems[F[_]: Sync, ItemStack: Cloneable](
 
   def runLottery(
     amount: Int,
-    gachaPrizesListRepository: Vector[GachaPrize[ItemStack]]
-  ): F[Vector[GachaPrize[ItemStack]]] =
+    gachaPrizesListRepository: Vector[GachaPrizeTableEntry[ItemStack]]
+  ): F[Vector[GachaPrizeTableEntry[ItemStack]]] =
     for {
       randomList <-
         (0 until amount).toList.traverse(_ => Sync[F].delay(Math.random()))
@@ -45,10 +42,10 @@ class LotteryOfGachaItems[F[_]: Sync, ItemStack: Cloneable](
   private def lottery(
     sumGachaProbability: GachaProbability,
     probability: GachaProbability,
-    gachaPrizes: Vector[GachaPrize[ItemStack]]
-  ): GachaPrize[ItemStack] = {
+    gachaPrizes: Vector[GachaPrizeTableEntry[ItemStack]]
+  ): GachaPrizeTableEntry[ItemStack] = {
     if (gachaPrizes.isEmpty) {
-      gachaprize.GachaPrize(
+      GachaPrizeTableEntry(
         staticGachaPrizeFactory.gachaRingo,
         GachaProbability(1.0),
         signOwner = false,

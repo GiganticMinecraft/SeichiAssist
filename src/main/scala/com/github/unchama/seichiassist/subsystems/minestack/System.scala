@@ -30,12 +30,8 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
   MineStackObjectList,
   MineStackObjectWithAmount
 }
-import com.github.unchama.seichiassist.subsystems.minestack.domain.persistence.{
-  MineStackGachaObjectPersistence,
-  PlayerSettingPersistence
-}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.persistence.PlayerSettingPersistence
 import com.github.unchama.seichiassist.subsystems.minestack.infrastructure.{
-  JdbcMineStackGachaObjectPersistence,
   JdbcMineStackObjectPersistence,
   JdbcPlayerSettingPersistence
 }
@@ -57,9 +53,6 @@ object System {
   def wired[F[_]: ConcurrentEffect, G[_]: SyncEffect: ContextCoercion[*[_], F]](
     implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player]
   ): F[System[F, Player, ItemStack]] = {
-    implicit val mineStackGachaObjectPersistence
-      : MineStackGachaObjectPersistence[F, ItemStack] =
-      new JdbcMineStackGachaObjectPersistence[F, ItemStack, Player]
     implicit val minecraftMaterial: MinecraftMaterial[Material, ItemStack] = new BukkitMaterial
     implicit val _mineStackObjectList: MineStackObjectList[F, ItemStack, Player] =
       new BukkitMineStackObjectList[F]
