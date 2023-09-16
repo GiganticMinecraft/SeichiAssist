@@ -1,7 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.gridregion.domain
 
 import cats.implicits._
+import com.github.unchama.generic.ListExtra
 import com.github.unchama.generic.algebra.typeclasses.OrderedMonus
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.CardinalDirection._
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.HorizontalAxisAlignedSubjectiveDirection._
 
 /**
@@ -112,6 +114,24 @@ case class SubjectiveRegionShape(
     val vertical = ahead |+| behind |+| RegionUnitLength(1)
     val horizontal = right |+| left |+| RegionUnitLength(1)
     RegionUnitCount(vertical.rul * horizontal.rul)
+  }
+
+  /**
+   * @return 「前方」を `aheadDirection` としたときの、この領域形が各方角にどれだけ長さを持つかを返す関数。
+   */
+  def lengthsAlongCardinalDirections(
+    aheadDirection: CardinalDirection
+  ): CardinalDirection => RegionUnitLength = {
+    val clockwiseRelativeDirections = List(Ahead, Right, Behind, Left)
+    val clockwiseCardinalDirections = List[CardinalDirection](North, East, South, West)
+
+    val cardinalDirectionsStartingFromAheadDirection =
+      ListExtra.rotateLeftUntil(clockwiseCardinalDirections)(_ == aheadDirection).get
+
+    val cardinalDirectionToRelativeDirection =
+      cardinalDirectionsStartingFromAheadDirection.zip(clockwiseRelativeDirections).toMap
+
+    c => lengthInto(cardinalDirectionToRelativeDirection(c))
   }
 }
 
