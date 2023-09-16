@@ -2,8 +2,7 @@ package com.github.unchama.seichiassist.subsystems.gridregion.infrastructure
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.persistence.RegionTemplatePersistence
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.regiontemplate.{RegionTemplate, RegionTemplateId}
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.{RegionUnitLength, RegionUnits, SubjectiveRegionShape, regiontemplate}
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.{RegionTemplate, RegionTemplateId, RegionUnitLength, RegionUnits, SubjectiveRegionShape, regiontemplate}
 import scalikejdbc._
 
 import java.util.UUID
@@ -26,7 +25,7 @@ class JdbcRegionTemplatePersistence[F[_]: Sync] extends RegionTemplatePersistenc
             RegionUnitLength(rs.int("left_length"))
           )
 
-          regiontemplate.RegionTemplate(id, regionUnits)
+          RegionTemplate(id, regionUnits)
         }
         .toList()
         .apply()
@@ -42,16 +41,16 @@ class JdbcRegionTemplatePersistence[F[_]: Sync] extends RegionTemplatePersistenc
              | VALUES (
              |  ${value.templateId},
              |  ${uuid.toString},
-             |  ${value.regionUnits.ahead.rul},
-             |  ${value.regionUnits.right.rul},
-             |  ${value.regionUnits.behind.rul},
-             |  ${value.regionUnits.left.rul}
+             |  ${value.shape.ahead.rul},
+             |  ${value.shape.right.rul},
+             |  ${value.shape.behind.rul},
+             |  ${value.shape.left.rul}
              | )
              | ON DUPLICATE KEY UPDATE
-             |  ahead_length = ${value.regionUnits.ahead.rul}
-             |  right_length = ${value.regionUnits.right.rul}
-             |  behind_length = ${value.regionUnits.behind.rul}
-             |  left_length = ${value.regionUnits.left.rul}
+             |  ahead_length = ${value.shape.ahead.rul}
+             |  right_length = ${value.shape.right.rul}
+             |  behind_length = ${value.shape.behind.rul}
+             |  left_length = ${value.shape.left.rul}
            """.stripMargin.execute().apply()
       }
     }

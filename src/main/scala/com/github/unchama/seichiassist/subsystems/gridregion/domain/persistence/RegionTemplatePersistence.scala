@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.gridregion.domain.persistence
 
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.regiontemplate.RegionTemplate
-
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.RegionTemplate
 import java.util.UUID
 
 trait RegionTemplatePersistence[F[_]] {

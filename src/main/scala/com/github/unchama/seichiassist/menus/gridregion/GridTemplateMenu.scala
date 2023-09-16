@@ -4,24 +4,14 @@ import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
-import com.github.unchama.menuinventory.slot.button.action.{
-  ClickEventFilter,
-  FilteredButtonEffect,
-  LeftClickButtonEffect
-}
+import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
-import com.github.unchama.menuinventory.{
-  LayoutPreparationContext,
-  Menu,
-  MenuFrame,
-  MenuSlotLayout
-}
+import com.github.unchama.menuinventory.{LayoutPreparationContext, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.menus.CommonButtons
-import com.github.unchama.seichiassist.subsystems.gridregion.GridRegionAPI
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.regiontemplate
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.regiontemplate.RegionTemplateId
+import com.github.unchama.seichiassist.subsystems.gridregion.{GridRegionAPI, domain}
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.{RegionTemplate, RegionTemplateId, regiontemplate}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect}
 import org.bukkit.ChatColor._
@@ -88,10 +78,10 @@ object GridTemplateMenu extends Menu {
           case Some(regionTemplate) =>
             val lore = List(
               s"${GREEN}設定内容",
-              s"${GRAY}前方向：$AQUA${regionTemplate.regionUnits.ahead.rul}${GRAY}ユニット",
-              s"${GRAY}後ろ方向：$AQUA${regionTemplate.regionUnits.behind.rul}${GRAY}ユニット",
-              s"${GRAY}右方向：$AQUA${regionTemplate.regionUnits.right.rul}${GRAY}ユニット",
-              s"${GRAY}左方向：$AQUA${regionTemplate.regionUnits.left.rul}${GRAY}ユニット",
+              s"${GRAY}前方向：$AQUA${regionTemplate.shape.ahead.rul}${GRAY}ユニット",
+              s"${GRAY}後ろ方向：$AQUA${regionTemplate.shape.behind.rul}${GRAY}ユニット",
+              s"${GRAY}右方向：$AQUA${regionTemplate.shape.right.rul}${GRAY}ユニット",
+              s"${GRAY}左方向：$AQUA${regionTemplate.shape.left.rul}${GRAY}ユニット",
               s"${GREEN}左クリックで設定を読み込み",
               s"${RED}右クリックで現在の設定で上書き"
             )
@@ -103,7 +93,7 @@ object GridTemplateMenu extends Menu {
 
             val leftClickButtonEffect = FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
               SequentialEffect(
-                DeferredEffect(IO(gridRegionAPI.saveRegionUnits(regionTemplate.regionUnits))),
+                DeferredEffect(IO(gridRegionAPI.saveRegionUnits(regionTemplate.shape))),
                 MessageEffect(s"${GREEN}グリッド式保護設定データ読み込み完了")
               )
             }
@@ -111,7 +101,7 @@ object GridTemplateMenu extends Menu {
             val rightClickButtonEffect =
               FilteredButtonEffect(ClickEventFilter.RIGHT_CLICK) { _ =>
                 val template =
-                  regiontemplate.RegionTemplate(regionTemplate.templateId, currentRegionUnits)
+                  RegionTemplate(regionTemplate.templateId, currentRegionUnits)
                 SequentialEffect(
                   DeferredEffect(IO(gridRegionAPI.saveGridRegionTemplate(template))),
                   MessageEffect(s"${GREEN}グリッド式保護の現在の設定を保存しました。")
@@ -129,7 +119,7 @@ object GridTemplateMenu extends Menu {
               .build()
 
             val template =
-              regiontemplate.RegionTemplate(RegionTemplateId(id), currentRegionUnits)
+              domain.RegionTemplate(RegionTemplateId(id), currentRegionUnits)
 
             val leftClickButtonEffect = LeftClickButtonEffect(
               DeferredEffect(IO(gridRegionAPI.saveGridRegionTemplate(template))),

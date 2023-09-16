@@ -21,7 +21,6 @@ import com.github.unchama.seichiassist.subsystems.gridregion.domain.persistence.
   RegionCountPersistence,
   RegionTemplatePersistence
 }
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.regiontemplate.RegionTemplate
 import com.github.unchama.seichiassist.subsystems.gridregion.infrastructure.{
   JdbcRegionCountPersistence,
   JdbcRegionTemplatePersistence

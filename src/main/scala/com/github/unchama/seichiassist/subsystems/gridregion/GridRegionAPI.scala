@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.subsystems.gridregion
 
 import cats.data.Kleisli
 import com.github.unchama.seichiassist.subsystems.gridregion.domain._
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.regiontemplate.RegionTemplate
 
 trait GridRegionTemplateAPI[F[_], Player] {
 
