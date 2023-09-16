@@ -317,7 +317,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
               case None => Monad[F].pure(false)
             }
           } yield {
-            if (isChangedAmount.nonEmpty)
+            if (didChangeAmount)
               MessageEffect(
                 s"${targetId.id}|${itemStack.get.getType.toString}/${itemStack.get.getItemMeta.getDisplayName}${RESET}のアイテム数を${amount}個に変更しました。"
               )
