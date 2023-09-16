@@ -84,13 +84,13 @@ object ListExtra {
    * `predicate` を満たすことが無かった (つまり、すべての要素が
    * `predicate` を満たさなかった) 場合には `None` が返される。
    */
-  @tailrec
   def rotateLeftUntil[A](list: List[A])(predicate: A => Boolean): Option[List[A]] = {
-    list.find(predicate) match {
-      case Some(_) =>
-        if (predicate(list.head)) Some(list)
-        else rotateLeftUntil(list.filterNot(_ == list.head) :+ list.head)(predicate)
-      case _ => None
+    val rotationSize = list.indexWhere(predicate)
+    if (rotationSize == -1) {
+      None
+    } else {
+      val (cutPrefix, cutSuffix) = list.splitAt(rotationSize)
+      Some(cutSuffix ++ cutPrefix)
     }
   }
 
