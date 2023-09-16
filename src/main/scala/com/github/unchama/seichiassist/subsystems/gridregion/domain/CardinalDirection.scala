@@ -13,18 +13,38 @@ import com.github.unchama.seichiassist.subsystems.gridregion.domain.HorizontalAx
  *   - 反時計周りで北までで-180となる
  */
 case class Yaw(yaw: Float) {
-  require(0f <= yaw && yaw <= 360f)
+  require(-180f <= yaw && yaw <= 180f)
 }
 
 /**
+ * 方角の半開区間。始点から時計回り (「南西北東」と回る方向) に進み終点に行きつくまでの角度の範囲を表す。
+ *
  * @param start 始点(範囲に含まれる)
  * @param end 終点(範囲に含まれない)
  */
-case class YawRange(start: Yaw, end: Yaw)
+case class ClockwiseYawRange(start: Yaw, end: Yaw) {
 
-object YawRange {
+  /**
+   * この [[ClockwiseYawRange]] (の閉包) が 180 度線(= -180 度線) を跨いでいるかどうか。
+   */
+  val crossesNorthboundMeridian: Boolean = end.yaw < start.yaw
 
-  def apply(start: Float, end: Float): YawRange = YawRange(Yaw(start), Yaw(end))
+  /**
+   * 与えられた角度がこの区間に入っているかどうか。
+   */
+  def contains(yaw: Yaw): Boolean = {
+    if (crossesNorthboundMeridian) {
+      start.yaw <= yaw.yaw || yaw.yaw < end.yaw || yaw.yaw == 180f
+    } else {
+      start.yaw <= yaw.yaw && yaw.yaw < end.yaw
+    }
+  }
+}
+
+object ClockwiseYawRange {
+
+  def apply(start: Float, end: Float): ClockwiseYawRange =
+    ClockwiseYawRange(Yaw(start), Yaw(end))
 
 }
 
@@ -42,53 +62,42 @@ object HorizontalAxisAlignedSubjectiveDirection {
 
 /**
  * 方角の範囲を列挙するenum用のabstract class
- * @param range 方角の範囲
+ * @param yawRange 方角の範囲
  */
-abstract class CardinalDirection(val uiLabel: String, private val range: YawRange*) {
-  require(range.nonEmpty)
-
-  /**
-   * @return `yaw`が`range`の範囲内ならばtrueを返す
-   */
-  def isWithinRange(yaw: Float): Boolean =
-    range.exists(range => range.start.yaw <= yaw && yaw <= range.end.yaw)
-
-}
+abstract class CardinalDirection(
+  val uiLabel: String,
+  private[CardinalDirection] val yawRange: ClockwiseYawRange
+)
 
 object CardinalDirection {
 
-  case object North
-      extends CardinalDirection("北(North)", YawRange(-180f, -135f), YawRange(135f, 180f))
-
-  case object East extends CardinalDirection("東(East)", YawRange(-135f, -45f))
-
-  case object South extends CardinalDirection("南(South)", YawRange(-45f, 45f))
-
-  case object West extends CardinalDirection("西(West)", YawRange(45f, 135))
+  case object North extends CardinalDirection("北(North)", ClockwiseYawRange(135f, -135f))
+  case object East extends CardinalDirection("東(East)", ClockwiseYawRange(-135f, -45f))
+  case object South extends CardinalDirection("南(South)", ClockwiseYawRange(-45f, 45f))
+  case object West extends CardinalDirection("西(West)", ClockwiseYawRange(45f, 135))
 
   /**
    * `yaw`から[[CardinalDirection]]に変換する
    */
-  private def convertYawToDirection(yaw: Float): CardinalDirection = {
-    if (North.isWithinRange(yaw)) North
-    else if (East.isWithinRange(yaw)) East
-    else if (South.isWithinRange(yaw)) South
+  private def convertYawToDirection(yaw: Yaw): CardinalDirection = {
+    if (North.yawRange.contains(yaw)) North
+    else if (East.yawRange.contains(yaw)) East
+    else if (South.yawRange.contains(yaw)) South
     else West
   }
 
   /**
-   * @return 現在向いている方向(`yaw`)から、相対的な方向([[HorizontalAxisAlignedSubjectiveDirection]])と
+   * @return 現在向いている方向(`aheadYaw`)から、相対的な方向([[HorizontalAxisAlignedSubjectiveDirection]])と
    *         紐づいている方角([[CardinalDirection]])を返す。
    */
   def relativeToCardinalDirections(
-    yaw: Float
+    aheadYaw: Float
   ): Map[HorizontalAxisAlignedSubjectiveDirection, CardinalDirection] = {
+    val aheadDirection = convertYawToDirection(Yaw(aheadYaw))
     val directions = List(North, East, South, West)
     val horizontalAxisAlignedRelativeDirections = List(Ahead, Right, Behind, Left)
 
-    val rotatedDirections =
-      ListExtra.rotateLeftUntil(directions)(_ == convertYawToDirection(yaw)).get
-
+    val rotatedDirections = ListExtra.rotateLeftUntil(directions)(_ == aheadDirection).get
     (horizontalAxisAlignedRelativeDirections zip rotatedDirections).toMap
   }
 
