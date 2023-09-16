@@ -224,7 +224,7 @@ object GridRegionMenu extends Menu {
           s"${GRAY}右方向：${showRegionShapeDimension(shape.right)}",
           s"${GRAY}左方向：${showRegionShapeDimension(shape.left)}",
           s"${GRAY}保護ユニット数：$AQUA${shape.regionUnits.count}",
-          s"${GRAY}保護ユニット上限値：$RED${gridRegionAPI.regionUnitLimit(worldName).value}"
+          s"${GRAY}保護ユニット上限値：$RED${gridRegionAPI.regionUnitLimit(worldName).limit}"
         )
 
         val itemStack = new IconItemStackBuilder(Material.STAINED_GLASS_PANE, 11)

@@ -25,9 +25,9 @@ trait GridRegionReadAPI[F[_], Player, Location] {
   def lengthChangePerClick(player: Player): F[RegionUnitLength]
 
   /**
-   * @return 指定された`worldName`の[[RegionUnitLimit]]
+   * @return 指定された`worldName`の[[RegionUnitSizeLimit]]
    */
-  def regionUnitLimit(worldName: String): RegionUnitLimit
+  def regionUnitLimit(worldName: String): RegionUnitSizeLimit
 
   /**
    * @return [[Player]]が現在設定している[[SubjectiveRegionShape]]を取得する作用

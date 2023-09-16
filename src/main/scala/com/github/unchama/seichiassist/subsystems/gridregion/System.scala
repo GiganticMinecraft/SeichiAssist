@@ -82,10 +82,10 @@ object System {
             }
 
             override def lengthChangePerClick(player: Player): F[RegionUnitLength] =
-              ContextCoercion(regionUnitPerClickSettingRepository(player).unitPerClick)
+              ContextCoercion(regionUnitPerClickSettingRepository(player).rulChangePerClick)
 
             override def currentlySelectedShape(player: Player): F[SubjectiveRegionShape] =
-              ContextCoercion(regionUnitsRepository(player).regionUnits)
+              ContextCoercion(regionUnitsRepository(player).currentShape)
 
             override def saveRegionUnits(
               regionUnits: SubjectiveRegionShape
@@ -94,9 +94,9 @@ object System {
                 ContextCoercion(regionUnitsRepository(player).set(regionUnits))
               }
 
-            override def regionUnitLimit(worldName: String): RegionUnitLimit = {
+            override def regionUnitLimit(worldName: String): RegionUnitSizeLimit = {
               val limit = SeichiAssist.seichiAssistConfig.getGridLimitPerWorld(worldName)
-              RegionUnitLimit(limit)
+              RegionUnitSizeLimit(RegionUnitCount(limit))
             }
 
             override def canCreateRegion(
