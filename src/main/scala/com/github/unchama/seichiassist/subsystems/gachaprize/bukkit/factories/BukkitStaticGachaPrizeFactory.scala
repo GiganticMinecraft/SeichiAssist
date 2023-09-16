@@ -28,6 +28,8 @@ object BukkitStaticGachaPrizeFactory extends StaticGachaPrizeFactory[ItemStack] 
       setItemMeta(meta)
   }
 
+  override val expBottle: ItemStack = new ItemStack(Material.EXP_BOTTLE, 20)
+
   override val mineHeadItem: ItemStack =
     new ItemStack(Material.CARROT_STICK, 1, 1.toShort).tap { itemStack =>
       import itemStack._

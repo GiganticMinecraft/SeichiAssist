@@ -18,7 +18,7 @@ object AddSeichiExpAsGachaPoint {
       case (player, amount) =>
         val point = GachaPoint(amount)
 
-        refRepository.lift(player).traverse(ref => ref.update(_.add(point))).as(())
+        refRepository.lift(player).traverse(ref => ref.update(_.add(point))).void
     }
 
 }

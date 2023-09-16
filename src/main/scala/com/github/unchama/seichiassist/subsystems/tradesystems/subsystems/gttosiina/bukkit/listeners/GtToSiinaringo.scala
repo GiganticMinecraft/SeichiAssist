@@ -39,7 +39,7 @@ class GtToSiinaringo[F[_]: ConcurrentEffect](
     if (inventory.getTitle != s"$GOLD${BOLD}椎名林檎と交換したい景品を入れてネ") return
     // 交換後の情報
     val tradedInformation =
-      new BukkitTrade(name, gachaPrizeAPI.listOfNow.toIO.unsafeRunSync())
+      new BukkitTrade(name, gachaPrizeAPI.allGachaPrizeList.toIO.unsafeRunSync())
         .trade(inventory.getContents.toList)
 
     val totalAmountOfTradeResult =
