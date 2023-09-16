@@ -307,13 +307,14 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
           val targetId :: amount :: HNil = context.args.parsed
           for {
             currentGachaPrize <- gachaPrizeAPI.fetch(targetId)
-            itemStack = currentGachaPrize.map(_.itemStack)
-            isChangedAmount <- currentGachaPrize.flatTraverse { gachaPrize =>
-              itemStack.traverse { itemStack =>
-                gachaPrizeAPI.upsertGachaPrize(
-                  gachaPrize.copy(itemStack = itemStack.tap(_.setAmount(amount)))
-                )
-              }
+            didChangeAmount <- currentGachaPrize match {
+              case Some(prize) =>
+                gachaPrizeAPI
+                  .upsertGachaPrize(
+                    prize.copy(itemStack = prize.itemStack.tap(_.setAmount(amount)))
+                  )
+                  .as(true)
+              case None => Monad[F].pure(false)
             }
           } yield {
             if (isChangedAmount.nonEmpty)
