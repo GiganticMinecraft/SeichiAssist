@@ -7,7 +7,8 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{
   ClickEventFilter,
   FilteredButtonEffect,
-  LeftClickButtonEffect
+  LeftClickButtonEffect,
+  RightClickButtonEffect
 }
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
 import com.github.unchama.menuinventory.{
@@ -175,12 +176,8 @@ object GridRegionMenu extends Menu {
             Material.STAINED_GLASS_PANE,
             stainedGlassPaneDurability.toShort
           ).title(s"$DARK_GREEN${relativeDirectionString}ユニット増やす/減らす").lore(lore).build(),
-          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-            updateCurrentRegionShapeTo(expandedShape)
-          },
-          FilteredButtonEffect(ClickEventFilter.RIGHT_CLICK) { _ =>
-            updateCurrentRegionShapeTo(contractedShape)
-          }
+          LeftClickButtonEffect(updateCurrentRegionShapeTo(expandedShape)),
+          RightClickButtonEffect(updateCurrentRegionShapeTo(contractedShape))
         )
       }
     }
@@ -284,7 +281,5 @@ object GridRegionMenu extends Menu {
         }
       }
     }
-
   }
-
 }
