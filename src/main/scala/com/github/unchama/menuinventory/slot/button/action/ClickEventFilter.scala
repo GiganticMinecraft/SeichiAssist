@@ -23,5 +23,7 @@ case class ClickEventFilter(private val predicate: InventoryClickEvent => Boolea
 object ClickEventFilter {
   val LEFT_CLICK: ClickEventFilter = ClickEventFilter(_.isLeftClick)
   val RIGHT_CLICK: ClickEventFilter = ClickEventFilter(_.isRightClick)
+  val LEFT_OR_RIGHT_CLICK: ClickEventFilter =
+    ClickEventFilter(e => e.isRightClick || e.isLeftClick)
   val ALWAYS_INVOKE: ClickEventFilter = ClickEventFilter(_ => true)
 }

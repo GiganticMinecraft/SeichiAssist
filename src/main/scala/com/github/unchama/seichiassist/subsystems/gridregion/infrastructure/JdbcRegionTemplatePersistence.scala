@@ -2,7 +2,13 @@ package com.github.unchama.seichiassist.subsystems.gridregion.infrastructure
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.persistence.RegionTemplatePersistence
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.{RegionTemplate, RegionTemplateId, RegionUnitLength, RegionUnits, SubjectiveRegionShape, regiontemplate}
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
+  RegionTemplate,
+  RegionTemplateId,
+  RegionUnitLength,
+  RegionUnitCount,
+  SubjectiveRegionShape
+}
 import scalikejdbc._
 
 import java.util.UUID

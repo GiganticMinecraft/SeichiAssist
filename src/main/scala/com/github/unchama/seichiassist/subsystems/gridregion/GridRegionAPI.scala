@@ -37,20 +37,12 @@ trait GridRegionReadAPI[F[_], Player, Location] {
   /**
    * @return [[Player]]が[[SubjectiveRegionShape]]分だけ保護を作成できるかどうかを返す作用
    */
-  def canCreateRegion(
-    player: Player,
-    regionUnits: SubjectiveRegionShape,
-    direction: CardinalDirection
-  ): F[RegionCreationResult]
+  def canCreateRegion(player: Player, shape: SubjectiveRegionShape): F[RegionCreationResult]
 
   /**
-   * @return `player`の現在地点と`regionUnits`から[[RegionSelection]]を計算して返す
+   * @return `player`の現在地点と`regionUnits`から[[RegionSelectionCorners]]を計算して返す
    */
-  def regionSelection(
-    player: Player,
-    regionUnits: SubjectiveRegionShape,
-    direction: CardinalDirection
-  ): RegionSelection[Location]
+  def regionSelection(player: Player, shape: SubjectiveRegionShape): RegionSelectionCorners[Location]
 
   /**
    * @return `player`の[[RegionCount]]を取得する作用
@@ -62,7 +54,7 @@ trait GridRegionReadAPI[F[_], Player, Location] {
 trait GridRegionWriteAPI[F[_], Player, Location] {
 
   /**
-   * @return 1回のクリックで増減させる[[RegionUnits]]の量をトグルする作用
+   * @return 1回のクリックで増減させる[[RegionUnitCount]]の量をトグルする作用
    */
   def toggleUnitPerClick: Kleisli[F, Player, Unit]
 

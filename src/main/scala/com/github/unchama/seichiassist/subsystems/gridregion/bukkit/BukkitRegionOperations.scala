@@ -13,22 +13,25 @@ class BukkitRegionOperations[F[_]: Sync](
   implicit regionCountRepository: KeyedDataRepository[Player, Ref[F, RegionCount]]
 ) extends RegionOperations[F, Location, Player] {
 
-  override def getSelection(
-                             currentLocation: Location,
-                             regionUnits: SubjectiveRegionShape,
-                             direction: CardinalDirection
-  ): RegionSelection[Location] = {
-    val computedAheadBlockAmount = regionUnits.ahead.rul
-    val computedLeftBlockAmount = regionUnits.left.rul
-    val computedBehindBlockAmount = regionUnits.behind.rul
-    val computedRightBlockAmount = regionUnits.right.rul
+  override def getSelectionCorners(
+    currentLocation: Location,
+    shape: SubjectiveRegionShape
+  ): RegionSelectionCorners[Location] = {
+    val computedAheadBlockAmount = shape.ahead.rul
+    val computedLeftBlockAmount = shape.left.rul
+    val computedBehindBlockAmount = shape.behind.rul
+    val computedRightBlockAmount = shape.right.rul
+
+    val aheadDirection = CardinalDirection.relativeToCardinalDirections(currentLocation.getYaw)(
+      HorizontalAxisAlignedSubjectiveDirection.Ahead
+    )
 
     /*
      * startPosition - 北西
      * endPosition - 南東
      * に合わせる
      */
-    val (startPosition, endPosition) = direction match {
+    val (startPosition, endPosition) = aheadDirection match {
       case CardinalDirection.East =>
         (
           currentLocation
@@ -59,12 +62,12 @@ class BukkitRegionOperations[F[_]: Sync](
         )
     }
 
-    RegionSelection(startPosition, endPosition)
+    RegionSelectionCorners(startPosition, endPosition)
   }
 
   import cats.implicits._
 
-  override def tryCreateRegion(player: Player): F[Unit] = for {
+  override def tryCreatingSelectedWorldGuardRegion(player: Player): F[Unit] = for {
     regionCount <- regionCountRepository(player).get
     regionCreateResult <- Sync[F].delay {
       WorldEditWrapper
@@ -86,9 +89,8 @@ class BukkitRegionOperations[F[_]: Sync](
   } yield regionCreateResult
 
   override def canCreateRegion(
-                                player: Player,
-                                regionUnits: SubjectiveRegionShape,
-                                direction: CardinalDirection
+    player: Player,
+    shape: SubjectiveRegionShape
   ): F[RegionCreationResult] = {
     val selection = WorldEditWrapper.getSelection(player)
     for {

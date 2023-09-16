@@ -40,7 +40,7 @@ object RegionUnitLength {
  * そのうえで、「保護領域」は、1つ以上の保護ユニットを長方形状に敷き詰めた領域として定義される。
  * したがって、`RegionUnit(n)` は、n個の保護ユニットを長方形状に敷き詰めた領域内の保護ユニット数を指す。
  */
-case class RegionUnits(count: Int) {
+case class RegionUnitCount(count: Int) {
   require(count >= 1)
 }
 
@@ -108,10 +108,10 @@ case class SubjectiveRegionShape(
   /**
    * @return この領域形内の保護ユニット数
    */
-  def regionUnits: RegionUnits = {
+  def regionUnits: RegionUnitCount = {
     val vertical = ahead |+| behind |+| RegionUnitLength(1)
     val horizontal = right |+| left |+| RegionUnitLength(1)
-    RegionUnits(vertical.rul * horizontal.rul)
+    RegionUnitCount(vertical.rul * horizontal.rul)
   }
 }
 

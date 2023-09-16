@@ -117,87 +117,68 @@ object GridRegionMenu extends Menu {
 
     def regionUnitExpansionButton(
       relativeDirection: HorizontalAxisAlignedSubjectiveDirection
-    ): IO[Button] =
-      RecomputedButton {
-        val yaw = player.getEyeLocation.getYaw
-        val direction = CardinalDirection.relativeToCardinalDirections(yaw)(relativeDirection)
-        for {
-          gridLore <- gridLore(direction, relativeDirection)
-          regionUnits <- gridRegionAPI.currentlySelectedShape(player)
-          currentPerClickRegionUnit <- gridRegionAPI.lengthChangePerClick(player)
-        } yield {
-          val worldName = player.getEyeLocation.getWorld.getName
-          val expandedRegionUnits =
-            regionUnits.extendTowards(relativeDirection)(currentPerClickRegionUnit)
-          val contractedRegionUnits =
-            regionUnits.contractAlong(relativeDirection)(currentPerClickRegionUnit)
+    ): IO[Button] = RecomputedButton {
+      for {
+        yaw <- IO(player.getEyeLocation.getYaw)
+        direction = CardinalDirection.relativeToCardinalDirections(yaw)(relativeDirection)
+        gridLore <- gridLore(direction, relativeDirection)
+        currentShape <- gridRegionAPI.currentlySelectedShape(player)
+        currentPerClickRegionUnit <- gridRegionAPI.lengthChangePerClick(player)
+      } yield {
+        val worldName = player.getEyeLocation.getWorld.getName
+        val expandedShape =
+          currentShape.extendTowards(relativeDirection)(currentPerClickRegionUnit)
+        val contractedShape =
+          currentShape.contractAlong(relativeDirection)(currentPerClickRegionUnit)
 
-          val limit = SeichiAssist.seichiAssistConfig.getGridLimitPerWorld(worldName)
+        val limit = SeichiAssist.seichiAssistConfig.getGridLimitPerWorld(worldName)
 
-          val lore = gridLore :+ {
-            if (expandedRegionUnits.regionUnits.count <= limit)
-              s"$RED${UNDERLINE}これ以上拡張できません"
-            else if (contractedRegionUnits.regionUnits.count <= limit)
-              s"$RED${UNDERLINE}これ以上縮小できません"
-            else
-              ""
-          }
-
-          val relativeDirectionString = relativeDirection match {
-            case HorizontalAxisAlignedSubjectiveDirection.Ahead  => "前へ"
-            case HorizontalAxisAlignedSubjectiveDirection.Behind => "後ろへ"
-            case HorizontalAxisAlignedSubjectiveDirection.Left   => "左へ"
-            case HorizontalAxisAlignedSubjectiveDirection.Right  => "右へ"
-          }
-
-          val stainedGlassPaneDurability = relativeDirection match {
-            case HorizontalAxisAlignedSubjectiveDirection.Ahead  => 14
-            case HorizontalAxisAlignedSubjectiveDirection.Left   => 10
-            case HorizontalAxisAlignedSubjectiveDirection.Behind => 13
-            case HorizontalAxisAlignedSubjectiveDirection.Right  => 5
-          }
-
-          val itemStack =
-            new IconItemStackBuilder(
-              Material.STAINED_GLASS_PANE,
-              stainedGlassPaneDurability.toShort
-            ).title(s"$DARK_GREEN${relativeDirectionString}ユニット増やす/減らす").lore(lore).build()
-
-          val leftClickButtonEffect = FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-            val regionSelection =
-              gridRegionAPI.regionSelection(player, expandedRegionUnits, direction)
-            val startPosition = regionSelection.startPosition
-            val endPosition = regionSelection.endPosition
-
-            SequentialEffect(
-              DeferredEffect(IO(gridRegionAPI.saveRegionUnits(expandedRegionUnits))),
-              CommandEffect("/;"),
-              CommandEffect(s"/pos1 ${startPosition.getX.toInt},0,${startPosition.getZ.toInt}"),
-              CommandEffect(s"/pos2 ${endPosition.getX.toInt},0,${endPosition.getZ.toInt}"),
-              FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-              GridRegionMenu.open
-            )
-          }
-
-          val rightClickButtonEffect = FilteredButtonEffect(ClickEventFilter.RIGHT_CLICK) { _ =>
-            val regionSelection =
-              gridRegionAPI.regionSelection(player, contractedRegionUnits, direction)
-            val startPosition = regionSelection.startPosition
-            val endPosition = regionSelection.endPosition
-
-            SequentialEffect(
-              DeferredEffect(IO(gridRegionAPI.saveRegionUnits(contractedRegionUnits))),
-              CommandEffect("/;"),
-              CommandEffect(s"/pos1 ${startPosition.getX.toInt},0,${startPosition.getZ.toInt}"),
-              CommandEffect(s"/pos2 ${endPosition.getX.toInt},0,${endPosition.getZ.toInt}"),
-              FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-              GridRegionMenu.open
-            )
-          }
-
-          Button(itemStack, leftClickButtonEffect, rightClickButtonEffect)
+        val lore = gridLore :+ {
+          if (expandedShape.regionUnits.count <= limit)
+            s"$RED${UNDERLINE}これ以上拡張できません"
+          else if (contractedShape.regionUnits.count <= limit)
+            s"$RED${UNDERLINE}これ以上縮小できません"
+          else
+            ""
         }
+
+        val relativeDirectionString = relativeDirection match {
+          case HorizontalAxisAlignedSubjectiveDirection.Ahead  => "前へ"
+          case HorizontalAxisAlignedSubjectiveDirection.Behind => "後ろへ"
+          case HorizontalAxisAlignedSubjectiveDirection.Left   => "左へ"
+          case HorizontalAxisAlignedSubjectiveDirection.Right  => "右へ"
+        }
+
+        val stainedGlassPaneDurability = relativeDirection match {
+          case HorizontalAxisAlignedSubjectiveDirection.Ahead  => 14
+          case HorizontalAxisAlignedSubjectiveDirection.Left   => 10
+          case HorizontalAxisAlignedSubjectiveDirection.Behind => 13
+          case HorizontalAxisAlignedSubjectiveDirection.Right  => 5
+        }
+
+        Button(
+          new IconItemStackBuilder(
+            Material.STAINED_GLASS_PANE,
+            stainedGlassPaneDurability.toShort
+          ).title(s"$DARK_GREEN${relativeDirectionString}ユニット増やす/減らす").lore(lore).build(),
+          FilteredButtonEffect(ClickEventFilter.LEFT_OR_RIGHT_CLICK) { _ =>
+            val regionSelection =
+              gridRegionAPI.regionSelection(player, contractedShape)
+            val startPosition = regionSelection.startPosition
+            val endPosition = regionSelection.endPosition
+
+            SequentialEffect(
+              DeferredEffect(IO(gridRegionAPI.saveRegionUnits(contractedShape))),
+              CommandEffect("/;"),
+              CommandEffect(s"/pos1 ${startPosition.getX.toInt},0,${startPosition.getZ.toInt}"),
+              CommandEffect(s"/pos2 ${endPosition.getX.toInt},0,${endPosition.getZ.toInt}"),
+              FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+              GridRegionMenu.open
+            )
+          }
+        )
       }
+    }
 
     val openGridRegionSettingMenuButton: Button = {
       val itemStack = new IconItemStackBuilder(Material.CHEST)
@@ -258,14 +239,7 @@ object GridRegionMenu extends Menu {
     val createRegionButton: IO[Button] = RecomputedButton {
       for {
         regionUnits <- gridRegionAPI.currentlySelectedShape(player)
-        yaw = player.getEyeLocation.getYaw
-        canCreateRegionResult <- gridRegionAPI.canCreateRegion(
-          player,
-          regionUnits,
-          CardinalDirection.relativeToCardinalDirections(yaw)(
-            HorizontalAxisAlignedSubjectiveDirection.Ahead
-          )
-        )
+        canCreateRegionResult <- gridRegionAPI.canCreateRegion(player, regionUnits)
       } yield {
         canCreateRegionResult match {
           case RegionCreationResult.Success =>

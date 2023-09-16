@@ -87,7 +87,9 @@ object System {
             override def currentlySelectedShape(player: Player): F[SubjectiveRegionShape] =
               ContextCoercion(regionUnitsRepository(player).regionUnits)
 
-            override def saveRegionUnits(regionUnits: SubjectiveRegionShape): Kleisli[F, Player, Unit] =
+            override def saveRegionUnits(
+              regionUnits: SubjectiveRegionShape
+            ): Kleisli[F, Player, Unit] =
               Kleisli { player =>
                 ContextCoercion(regionUnitsRepository(player).set(regionUnits))
               }
@@ -98,21 +100,19 @@ object System {
             }
 
             override def canCreateRegion(
-                                          player: Player,
-                                          regionUnits: SubjectiveRegionShape,
-                                          direction: CardinalDirection
+              player: Player,
+              shape: SubjectiveRegionShape
             ): F[RegionCreationResult] =
-              ContextCoercion(regionOperations.canCreateRegion(player, regionUnits, direction))
+              ContextCoercion(regionOperations.canCreateRegion(player, shape))
 
             override def regionSelection(
-                                          player: Player,
-                                          regionUnits: SubjectiveRegionShape,
-                                          direction: CardinalDirection
-            ): RegionSelection[Location] =
-              regionOperations.getSelection(player.getLocation, regionUnits, direction)
+              player: Player,
+              shape: SubjectiveRegionShape
+            ): RegionSelectionCorners[Location] =
+              regionOperations.getSelectionCorners(player.getLocation, shape)
 
             override def createRegion: Kleisli[F, Player, Unit] = Kleisli { player =>
-              ContextCoercion(regionOperations.tryCreateRegion(player))
+              ContextCoercion(regionOperations.tryCreatingSelectedWorldGuardRegion(player))
             }
 
             override def regionCount(player: Player): F[RegionCount] =
