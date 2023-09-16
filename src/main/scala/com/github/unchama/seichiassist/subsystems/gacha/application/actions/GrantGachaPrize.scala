@@ -35,7 +35,7 @@ trait GrantGachaPrize[F[_], ItemStack, Player] {
     Kleisli { player =>
       for {
         prizesNotInsertedIntoMineStack <- tryInsertIntoMineStack(prizes)(player)
-        _ <- insertIntoPlayerInventoryOrDrop(prizesNotInsertedIntoMineStack )(player)
+        _ <- insertIntoPlayerInventoryOrDrop(prizesNotInsertedIntoMineStack)(player)
       } yield {
         val prizesInsertedIntoMineStack = prizes.diff(prizesNotInsertedIntoMineStack)
         prizesInsertedIntoMineStack.map(_ -> GrantState.GrantedMineStack) ++
