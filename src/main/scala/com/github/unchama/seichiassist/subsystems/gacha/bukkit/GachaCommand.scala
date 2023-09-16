@@ -342,7 +342,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
           }
           itemStack = currentGachaPrize.map(_.itemStack)
         } yield {
-          if (changeProbabilityAction.nonEmpty)
+          if (probabilityChange.nonEmpty)
             MessageEffect(
               s"${targetId.id}|${itemStack.get.getType.toString}/${itemStack.get.getItemMeta.getDisplayName}${RESET}の確率を$newProb(${newProb * 100}%)に変更しました。"
             )
