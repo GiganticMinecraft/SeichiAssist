@@ -1,7 +1,5 @@
 package com.github.unchama.generic
 
-import scala.annotation.tailrec
-
 object ListExtra {
 
   /**
