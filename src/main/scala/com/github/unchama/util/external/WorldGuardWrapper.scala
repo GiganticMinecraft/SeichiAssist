@@ -1,10 +1,9 @@
 package com.github.unchama.util.external
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter
-import com.sk89q.worldguard.{LocalPlayer, WorldGuard}
 import com.sk89q.worldguard.protection.managers.RegionManager
 import com.sk89q.worldguard.protection.regions.{ProtectedCuboidRegion, ProtectedRegion}
-import com.sk89q.worldguard.protection.util.DomainInputResolver
+import com.sk89q.worldguard.{LocalPlayer, WorldGuard}
 import org.bukkit.entity.Player
 import org.bukkit.{Location, World}
 
