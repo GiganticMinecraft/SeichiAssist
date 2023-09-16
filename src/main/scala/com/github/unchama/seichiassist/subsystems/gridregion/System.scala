@@ -101,7 +101,7 @@ object System {
                                           player: Player,
                                           regionUnits: SubjectiveRegionShape,
                                           direction: CardinalDirection
-            ): F[CreateRegionResult] =
+            ): F[RegionCreationResult] =
               ContextCoercion(regionOperations.canCreateRegion(player, regionUnits, direction))
 
             override def regionSelection(

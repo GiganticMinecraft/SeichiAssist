@@ -41,7 +41,7 @@ trait GridRegionReadAPI[F[_], Player, Location] {
     player: Player,
     regionUnits: SubjectiveRegionShape,
     direction: CardinalDirection
-  ): F[CreateRegionResult]
+  ): F[RegionCreationResult]
 
   /**
    * @return `player`の現在地点と`regionUnits`から[[RegionSelection]]を計算して返す

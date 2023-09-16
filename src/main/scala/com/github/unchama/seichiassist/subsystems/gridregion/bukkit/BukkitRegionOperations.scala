@@ -89,7 +89,7 @@ class BukkitRegionOperations[F[_]: Sync](
                                 player: Player,
                                 regionUnits: SubjectiveRegionShape,
                                 direction: CardinalDirection
-  ): F[CreateRegionResult] = {
+  ): F[RegionCreationResult] = {
     val selection = WorldEditWrapper.getSelection(player)
     for {
       regionCount <- regionCountRepository(player).get
@@ -97,9 +97,9 @@ class BukkitRegionOperations[F[_]: Sync](
       wgManager = WorldGuardWrapper.getRegionManager(world)
       result <-
         if (!SeichiAssist.seichiAssistConfig.isGridProtectionEnabled(world)) {
-          Sync[F].pure(CreateRegionResult.ThisWorldRegionCanNotBeCreated)
+          Sync[F].pure(RegionCreationResult.WorldProhibitsRegionCreation)
         } else if (selection.isEmpty || wgManager.isEmpty) {
-          Sync[F].pure(CreateRegionResult.RegionCanNotBeCreatedByOtherError)
+          Sync[F].pure(RegionCreationResult.Error)
         } else {
           Sync[F].delay {
             val regions = WorldGuardWrapper.getApplicableRegionCount(
@@ -109,15 +109,15 @@ class BukkitRegionOperations[F[_]: Sync](
               selection.get.getNativeMaximumPoint.toBlockVector
             )
             if (regions != 0) {
-              CreateRegionResult.RegionCanNotBeCreatedByOtherError
+              RegionCreationResult.Error
             } else {
               val maxRegionCount = WorldGuardWrapper.getMaxRegionCount(player, world)
               val regionCountPerPlayer = WorldGuardWrapper.getRegionCountOfPlayer(player, world)
 
               if (maxRegionCount >= 0 && regionCountPerPlayer >= maxRegionCount) {
-                CreateRegionResult.RegionCanNotBeCreatedByOtherError
+                RegionCreationResult.Error
               } else {
-                CreateRegionResult.Success
+                RegionCreationResult.Success
               }
             }
           }

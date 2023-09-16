@@ -268,7 +268,7 @@ object GridRegionMenu extends Menu {
         )
       } yield {
         canCreateRegionResult match {
-          case CreateRegionResult.Success =>
+          case RegionCreationResult.Success =>
             val itemStack = new IconItemStackBuilder(Material.WOOL, 11)
               .title(s"${GREEN}保護作成")
               .lore(List(s"${DARK_GREEN}保護作成可能です", s"$RED${UNDERLINE}クリックで作成"))
@@ -279,13 +279,13 @@ object GridRegionMenu extends Menu {
               closeInventoryEffect
             )
             Button(itemStack, leftClickButtonEffect)
-          case CreateRegionResult.ThisWorldRegionCanNotBeCreated =>
+          case RegionCreationResult.WorldProhibitsRegionCreation =>
             val itemStack = new IconItemStackBuilder(Material.WOOL, 14)
               .title(s"${RED}保護作成")
               .lore(List(s"$RED${UNDERLINE}このワールドでは保護を作成できません"))
               .build()
             Button(itemStack)
-          case CreateRegionResult.RegionCanNotBeCreatedByOtherError =>
+          case RegionCreationResult.Error =>
             val itemStack = new IconItemStackBuilder(Material.WOOL, 1)
               .title(s"${RED}以下の原因により保護の作成できません")
               .lore(
