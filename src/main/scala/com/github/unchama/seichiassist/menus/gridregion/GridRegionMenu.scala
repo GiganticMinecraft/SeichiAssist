@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.menus.gridregion
 
+import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.router.CanOpen
@@ -156,25 +157,34 @@ object GridRegionMenu extends Menu {
           case HorizontalAxisAlignedSubjectiveDirection.Right  => 5
         }
 
+        def updateCurrentRegionShapeTo(
+          shape: SubjectiveRegionShape
+        ): Kleisli[IO, Player, Unit] = {
+          val regionSelection =
+            gridRegionAPI.regionSelection(player, shape)
+          val startPosition = regionSelection.startPosition
+          val endPosition = regionSelection.endPosition
+
+          SequentialEffect(
+            gridRegionAPI.updateCurrentRegionShapeSettings(shape),
+            CommandEffect("/;"),
+            CommandEffect(s"/pos1 ${startPosition.getX.toInt},0,${startPosition.getZ.toInt}"),
+            CommandEffect(s"/pos2 ${endPosition.getX.toInt},0,${endPosition.getZ.toInt}"),
+            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+            GridRegionMenu.open
+          )
+        }
+
         Button(
           new IconItemStackBuilder(
             Material.STAINED_GLASS_PANE,
             stainedGlassPaneDurability.toShort
           ).title(s"$DARK_GREEN${relativeDirectionString}ユニット増やす/減らす").lore(lore).build(),
-          FilteredButtonEffect(ClickEventFilter.LEFT_OR_RIGHT_CLICK) { _ =>
-            val regionSelection =
-              gridRegionAPI.regionSelection(player, contractedShape)
-            val startPosition = regionSelection.startPosition
-            val endPosition = regionSelection.endPosition
-
-            SequentialEffect(
-              gridRegionAPI.updateCurrentRegionShapeSettings(contractedShape),
-              CommandEffect("/;"),
-              CommandEffect(s"/pos1 ${startPosition.getX.toInt},0,${startPosition.getZ.toInt}"),
-              CommandEffect(s"/pos2 ${endPosition.getX.toInt},0,${endPosition.getZ.toInt}"),
-              FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-              GridRegionMenu.open
-            )
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
+            updateCurrentRegionShapeTo(expandedShape)
+          },
+          FilteredButtonEffect(ClickEventFilter.RIGHT_CLICK) { _ =>
+            updateCurrentRegionShapeTo(contractedShape)
           }
         )
       }
