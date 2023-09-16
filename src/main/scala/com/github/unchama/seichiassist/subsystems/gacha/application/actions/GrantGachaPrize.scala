@@ -33,15 +33,13 @@ trait GrantGachaPrize[F[_], ItemStack, Player] {
   ): Kleisli[F, Player, Vector[(GachaPrizeTableEntry[ItemStack], GrantState)]] =
     Kleisli { player =>
       for {
-        failedIntoMineStackGachaPrizes <- tryInsertIntoMineStack(prizes)(player)
-        _ <- insertIntoPlayerInventoryOrDrop(failedIntoMineStackGachaPrizes)(player)
-        intoMineStackGachaPrizes = prizes.diff(failedIntoMineStackGachaPrizes).map {
-          gachaPrize => (gachaPrize, GrantState.GrantedMineStack)
-        }
-        intoInventoryOrDropGachaPrizes = failedIntoMineStackGachaPrizes.map { gachaPrize =>
-          (gachaPrize, GrantState.GrantedInventoryOrDrop)
-        }
-      } yield intoMineStackGachaPrizes ++ intoInventoryOrDropGachaPrizes
+        prizesNotInsertedIntoMineStack <- tryInsertIntoMineStack(prizes)(player)
+        _ <- insertIntoPlayerInventoryOrDrop(prizesNotInsertedIntoMineStack )(player)
+      } yield {
+        val prizesInsertedIntoMineStack = prizes.diff(prizesNotInsertedIntoMineStack)
+        prizesInsertedIntoMineStack.map(_ -> GrantState.GrantedMineStack) ++
+          prizesNotInsertedIntoMineStack.map(_ -> GrantState.GrantedInventoryOrDrop)
+      }
     }
 
 }
