@@ -4,12 +4,10 @@ import cats.effect.IO
 import cats.effect.concurrent.Ref
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.achievement.Nicknames
-import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiStarLevel
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.domain.EffectPoint
-import com.github.unchama.seichiassist.util.RelativeDirection
 import com.github.unchama.seichiassist.util.exp.{ExperienceManager, IExperienceManager}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
@@ -55,15 +53,6 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
 
   // 詫び券をあげる数
   var unclaimedApologyItems = 0
-  // ワールドガード保護自動設定用
-  var regionCount = 0
-
-  /**
-   * 保護申請の番号を更新させる[UnfocusedEffect]
-   */
-  val incrementRegionNumber: TargetedEffect[Any] = UnfocusedEffect {
-    this.regionCount += 1
-  }
 
   // プレイ時間
   var playTick = 0L
@@ -91,20 +80,11 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
 
   // n周年記念
   var anniversary = false
-  var templateMap: mutable.Map[Int, GridTemplate] = mutable.HashMap()
   var giganticBerserk: GiganticBerserk = GiganticBerserk()
   // ハーフブロック破壊抑制用
 
   // プレイ時間の差分を計算するための変数
   private var totalPlayTick: Option[Long] = None
-
-  // region calculated
-  // TODO many properties here may be inlined and deleted
-  // グリッド式保護関連
-  private var claimUnit = ClaimUnit(0, 0, 0, 0)
-
-  def gridChunkAmount: Int =
-    (claimUnit.ahead + claimUnit.behind + 1) * (claimUnit.right + claimUnit.left + 1)
 
   def GBexp: Int = giganticBerserk.exp
 
@@ -300,80 +280,6 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
     else if (level < 88) SeichiAssist.seichiAssistConfig.getDropExplevel(8)
     else if (level < 98) SeichiAssist.seichiAssistConfig.getDropExplevel(9)
     else SeichiAssist.seichiAssistConfig.getDropExplevel(10)
-  }
-
-  def canGridExtend(direction: RelativeDirection, world: String): Boolean = {
-    val limit = SeichiAssist.seichiAssistConfig.getGridLimitPerWorld(world)
-    val chunkMap = unitMap
-
-    // チャンクを拡大すると仮定する
-    val assumedAmoont = chunkMap(direction) + this.unitPerClick
-
-    // 一応すべての拡張値を出しておく
-    val ahead = chunkMap(RelativeDirection.AHEAD)
-    val behind = chunkMap(RelativeDirection.BEHIND)
-    val right = chunkMap(RelativeDirection.RIGHT)
-    val left = chunkMap(RelativeDirection.LEFT)
-
-    // 合計チャンク再計算値
-    val assumedUnitAmount = direction match {
-      case RelativeDirection.AHEAD  => (assumedAmoont + 1 + behind) * (right + 1 + left)
-      case RelativeDirection.BEHIND => (ahead + 1 + assumedAmoont) * (right + 1 + left)
-      case RelativeDirection.RIGHT  => (ahead + 1 + behind) * (assumedAmoont + 1 + left)
-      case RelativeDirection.LEFT   => (ahead + 1 + behind) * (right + 1 + assumedAmoont)
-    }
-
-    assumedUnitAmount <= limit
-  }
-
-  def unitMap: Map[RelativeDirection, Int] = {
-    val unitMap = mutable.Map[RelativeDirection, Int]().empty
-
-    unitMap.put(RelativeDirection.AHEAD, claimUnit.ahead)
-    unitMap.put(RelativeDirection.BEHIND, claimUnit.behind)
-    unitMap.put(RelativeDirection.RIGHT, claimUnit.right)
-    unitMap.put(RelativeDirection.LEFT, claimUnit.left)
-
-    unitMap.toMap
-  }
-
-  def canGridReduce(direction: RelativeDirection): Boolean = {
-    val chunkMap = unitMap
-
-    // 減らしたと仮定する
-    val sizeAfterShrink = chunkMap(direction) - unitPerClick
-
-    sizeAfterShrink >= 0
-  }
-
-  def setUnitAmount(direction: RelativeDirection, amount: Int): Unit = {
-    this.claimUnit = direction match {
-      case RelativeDirection.AHEAD  => this.claimUnit.copy(ahead = amount)
-      case RelativeDirection.BEHIND => this.claimUnit.copy(behind = amount)
-      case RelativeDirection.RIGHT  => this.claimUnit.copy(right = amount)
-      case RelativeDirection.LEFT   => this.claimUnit.copy(left = amount)
-    }
-  }
-
-  def addUnitAmount(direction: RelativeDirection, amount: Int): Unit = {
-    direction match {
-      case RelativeDirection.AHEAD =>
-        this.claimUnit = this.claimUnit.copy(ahead = this.claimUnit.ahead + amount)
-      case RelativeDirection.BEHIND =>
-        this.claimUnit = this.claimUnit.copy(behind = this.claimUnit.behind + amount)
-      case RelativeDirection.RIGHT =>
-        this.claimUnit = this.claimUnit.copy(right = this.claimUnit.right + amount)
-      case RelativeDirection.LEFT =>
-        this.claimUnit = this.claimUnit.copy(left = this.claimUnit.left + amount)
-    }
-  }
-
-  def toggleUnitPerGrid(): Unit = {
-    this.unitPerClick = this.unitPerClick match {
-      case 1   => 10
-      case 10  => 100
-      case 100 => 1
-    }
   }
 
   /**

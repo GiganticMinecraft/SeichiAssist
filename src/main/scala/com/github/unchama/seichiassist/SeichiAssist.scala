@@ -78,6 +78,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.G
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.idletime.IdleTimeAPI
+import com.github.unchama.seichiassist.subsystems.gridregion.GridRegionAPI
 import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository
@@ -98,11 +99,11 @@ import com.github.unchama.util.{ActionStatus, ClassUtils}
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import io.sentry.Sentry
 import io.sentry.SentryLevel
-import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.entity.{Entity, Player, Projectile}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
+import org.bukkit.{Bukkit, Location}
 import org.flywaydb.core.Flyway
 import org.slf4j.Logger
 import org.slf4j.impl.JDK14LoggerFactory
@@ -491,6 +492,9 @@ class SeichiAssist extends JavaPlugin() {
   lazy val mineStackSystem: subsystems.minestack.System[IO, Player, ItemStack] =
     subsystems.minestack.System.wired[IO, SyncIO].unsafeRunSync()
 
+  private lazy val gridRegionSystem: subsystems.gridregion.System[IO, Player, Location] =
+    subsystems.gridregion.System.wired[IO, SyncIO].unsafeRunSync()
+
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
     expBottleStackSystem,
@@ -527,6 +531,7 @@ class SeichiAssist extends JavaPlugin() {
     mineStackSystem,
     consumeGachaTicketSystem,
     openirontrapdoor.System.wired,
+    gridRegionSystem,
     breakSkillTargetConfigSystem
   )
 
@@ -702,6 +707,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val gachaAPI: GachaDrawAPI[IO, Player] = gachaSystem.api
     implicit val consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player] =
       consumeGachaTicketSystem.api
+    implicit val gridRegionAPI: GridRegionAPI[IO, Player, Location] = gridRegionSystem.api
     implicit val breakSkillTargetConfigAPI: BreakSkillTargetConfigAPI[IO, Player] =
       breakSkillTargetConfigSystem.api
 
@@ -750,7 +756,6 @@ class SeichiAssist extends JavaPlugin() {
       new EntityListener(),
       new PlayerDeathEventListener(),
       new GachaItemListener(),
-      new RegionInventoryListener(),
       new WorldRegenListener(),
       new ChatInterceptor(List(globalChatInterceptionScope)),
       new MenuHandler(),

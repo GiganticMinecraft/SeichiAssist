@@ -1,11 +1,14 @@
 package com.github.unchama.util.external
 
+import com.sk89q.worldedit.BlockVector
 import com.sk89q.worldguard.LocalPlayer
+import com.sk89q.worldguard.bukkit.commands.AsyncCommandHelper
+import com.sk89q.worldguard.bukkit.commands.task.RegionAdder
 import com.sk89q.worldguard.protection.managers.RegionManager
-import com.sk89q.worldguard.protection.regions.ProtectedRegion
-import org.bukkit.Location
-import org.bukkit.World
+import com.sk89q.worldguard.protection.regions.{ProtectedCuboidRegion, ProtectedRegion}
+import com.sk89q.worldguard.protection.util.DomainInputResolver
 import org.bukkit.entity.Player
+import org.bukkit.{Location, World}
 
 import scala.jdk.CollectionConverters._
 
@@ -99,4 +102,58 @@ object WorldGuardWrapper {
     getRegionManager(location.getWorld)
       .map(_.getApplicableRegions(location).getRegions.asScala.toSet)
       .getOrElse(Set.empty)
+
+  /**
+   * `minimumPoint`と`maximumPoint`の範囲内にある保護の数を取得する
+   * @param world 調べたいワールド
+   * @param regionName 保護名
+   * @param minimumPoint 範囲の対角の1つ
+   * @param maximumPoint 範囲の対角の1つ
+   * @return 指定した範囲の保護の数を返す作用
+   */
+  def getApplicableRegionCount(
+    world: World,
+    regionName: String,
+    minimumPoint: BlockVector,
+    maximumPoint: BlockVector
+  ): Int = {
+    val region = new ProtectedCuboidRegion(regionName, minimumPoint, maximumPoint)
+    getRegionManager(world).map(_.getApplicableRegions(region).size).getOrElse(0)
+  }
+
+  /**
+   * @param regionName 保護名
+   * @param regionOwner 保護のオーナー
+   * @param world 保護をしたいワールド
+   * @param minimumPoint 保護範囲の対角の1つ
+   * @param maximumPoint 保護範囲の対角の1つ
+   * @return 保護の作成を試みることができればtrue、できなければfalse
+   *         ただし、trueでも確実に保護が作成できるとは限らない
+   */
+  def tryCreateRegion(
+    regionName: String,
+    regionOwner: Player,
+    world: World,
+    minimumPoint: BlockVector,
+    maximumPoint: BlockVector
+  ): Boolean = {
+    val region = new ProtectedCuboidRegion(regionName, minimumPoint, maximumPoint)
+
+    getRegionManager(world) match {
+      case Some(manager) =>
+        val task = new RegionAdder(plugin, manager, region)
+        task.setLocatorPolicy(DomainInputResolver.UserLocatorPolicy.UUID_ONLY)
+        task.setOwnersInput(Array(regionOwner.getName))
+        val future = plugin.getExecutorService.submit(task)
+
+        AsyncCommandHelper
+          .wrap(future, plugin, regionOwner)
+          .formatUsing(regionName)
+          .registerWithSupervisor("保護申請中")
+          .thenRespondWith("保護申請完了。保護名: '%s'", "保護作成失敗")
+        true
+      case None => false
+    }
+  }
+
 }
