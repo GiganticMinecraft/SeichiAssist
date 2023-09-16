@@ -80,7 +80,7 @@ object GridRegionMenu extends Menu {
       for {
         currentLengthChangePerClick <- gridRegionAPI.lengthChangePerClick(player)
       } yield {
-        val iconItemStack = new IconItemStackBuilder(Material.STAINED_GLASS_PANE, 1)
+        val iconItemStack = new IconItemStackBuilder(Material.GLASS_PANE)
           .title(s"${GREEN}拡張単位の変更")
           .lore(
             List(
@@ -169,9 +169,7 @@ object GridRegionMenu extends Menu {
         }
 
         Button(
-          new IconItemStackBuilder(
-            Material.STAINED_GLASS_PANE,
-            stainedGlassPaneDurability.toShort
+          new IconItemStackBuilder(Material.GLASS_PANE
           ).title(s"$DARK_GREEN${relativeDirectionString}ユニット増やす/減らす").lore(lore).build(),
           LeftClickButtonEffect(updateCurrentRegionShapeTo(expandedShape)),
           RightClickButtonEffect(updateCurrentRegionShapeTo(contractedShape))
@@ -194,7 +192,7 @@ object GridRegionMenu extends Menu {
     }
 
     val resetSettingButton: Button = {
-      val itemStack = new IconItemStackBuilder(Material.STAINED_GLASS_PANE, 4)
+      val itemStack = new IconItemStackBuilder(Material.GLASS_PANE)
         .title(s"${RED}全設定リセット")
         .lore(List(s"$RED${UNDERLINE}取り扱い注意！！"))
         .build()
@@ -228,7 +226,7 @@ object GridRegionMenu extends Menu {
           s"${GRAY}保護ユニット上限値：$RED${gridRegionAPI.regionUnitLimit(worldName).limit}"
         )
 
-        val itemStack = new IconItemStackBuilder(Material.STAINED_GLASS_PANE, 11)
+        val itemStack = new IconItemStackBuilder(Material.GLASS_PANE)
           .title(s"${DARK_GREEN}設定")
           .lore(lore)
           .build()
@@ -245,7 +243,7 @@ object GridRegionMenu extends Menu {
         canCreateRegionResult match {
           case RegionCreationResult.Success =>
             Button(
-              new IconItemStackBuilder(Material.WOOL, 11)
+              new IconItemStackBuilder(Material.LIGHT_BLUE_WOOL)
                 .title(s"${GREEN}保護作成")
                 .lore(List(s"${DARK_GREEN}保護作成可能です", s"$RED${UNDERLINE}クリックで作成"))
                 .build(),
@@ -257,14 +255,14 @@ object GridRegionMenu extends Menu {
             )
           case RegionCreationResult.WorldProhibitsRegionCreation =>
             Button(
-              new IconItemStackBuilder(Material.WOOL, 14)
+              new IconItemStackBuilder(Material.RED_WOOL)
                 .title(s"${RED}保護作成")
                 .lore(List(s"$RED${UNDERLINE}このワールドでは保護を作成できません"))
                 .build()
             )
           case RegionCreationResult.Error =>
             Button(
-              new IconItemStackBuilder(Material.WOOL, 1)
+              new IconItemStackBuilder(Material.RED_WOOL)
                 .title(s"${RED}以下の原因により保護の作成できません")
                 .lore(
                   List(
