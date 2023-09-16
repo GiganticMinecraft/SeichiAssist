@@ -121,27 +121,22 @@ object GridRegionMenu extends Menu {
     ): IO[Button] = RecomputedButton {
       for {
         yaw <- IO(player.getEyeLocation.getYaw)
+        worldName <- IO(player.getWorld.getName)
         direction = CardinalDirection.relativeToCardinalDirections(yaw)(relativeDirection)
         gridLore <- gridLore(direction, relativeDirection)
         currentShape <- gridRegionAPI.currentlySelectedShape(player)
         currentPerClickRegionUnit <- gridRegionAPI.lengthChangePerClick(player)
       } yield {
-        val worldName = player.getEyeLocation.getWorld.getName
+        val gridSizeLimit = environment.gridRegionAPI.regionUnitLimit(worldName)
         val expandedShape =
           currentShape.extendTowards(relativeDirection)(currentPerClickRegionUnit)
+        val extensionCanHappen = expandedShape.regionUnits.count <= gridSizeLimit.limit.count
         val contractedShape =
           currentShape.contractAlong(relativeDirection)(currentPerClickRegionUnit)
 
-        val limit = SeichiAssist.seichiAssistConfig.getGridLimitPerWorld(worldName)
-
-        val lore = gridLore :+ {
-          if (expandedShape.regionUnits.count <= limit)
-            s"$RED${UNDERLINE}これ以上拡張できません"
-          else if (contractedShape.regionUnits.count <= limit)
-            s"$RED${UNDERLINE}これ以上縮小できません"
-          else
-            ""
-        }
+        val lore = gridLore ++
+          Option.when(!extensionCanHappen)(s"$RED${UNDERLINE}これ以上拡張できません") ++
+          Option.when(contractedShape == currentShape)(s"$RED${UNDERLINE}これ以上縮小できません")
 
         val relativeDirectionString = relativeDirection match {
           case HorizontalAxisAlignedSubjectiveDirection.Ahead  => "前へ"
