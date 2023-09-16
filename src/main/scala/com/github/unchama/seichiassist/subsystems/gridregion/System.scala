@@ -82,10 +82,10 @@ object System {
               ContextCoercion(regionUnitPerClickSettingRepository(player).toggleUnitPerClick)
             }
 
-            override def lengthChangePerClick(player: Player): F[RegionUnits] =
+            override def lengthChangePerClick(player: Player): F[RegionUnitLength] =
               ContextCoercion(regionUnitPerClickSettingRepository(player).unitPerClick)
 
-            override def regionUnits(player: Player): F[SubjectiveRegionShape] =
+            override def currentlySelectedShape(player: Player): F[SubjectiveRegionShape] =
               ContextCoercion(regionUnitsRepository(player).regionUnits)
 
             override def saveRegionUnits(regionUnits: SubjectiveRegionShape): Kleisli[F, Player, Unit] =

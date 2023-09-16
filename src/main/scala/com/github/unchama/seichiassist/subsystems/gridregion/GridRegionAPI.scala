@@ -31,9 +31,9 @@ trait GridRegionReadAPI[F[_], Player, Location] {
   def regionUnitLimit(worldName: String): RegionUnitLimit
 
   /**
-   * @return [[Player]]の[[SubjectiveRegionShape]]を取得する作用
+   * @return [[Player]]が現在設定している[[SubjectiveRegionShape]]を取得する作用
    */
-  def regionUnits(player: Player): F[SubjectiveRegionShape]
+  def currentlySelectedShape(player: Player): F[SubjectiveRegionShape]
 
   /**
    * @return [[Player]]が[[SubjectiveRegionShape]]分だけ保護を作成できるかどうかを返す作用

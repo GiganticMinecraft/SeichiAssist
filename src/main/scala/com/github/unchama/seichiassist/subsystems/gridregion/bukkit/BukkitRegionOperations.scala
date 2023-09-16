@@ -18,10 +18,10 @@ class BukkitRegionOperations[F[_]: Sync](
                              regionUnits: SubjectiveRegionShape,
                              direction: CardinalDirection
   ): RegionSelection[Location] = {
-    val computedAheadBlockAmount = regionUnits.ahead.computeBlockAmount
-    val computedLeftBlockAmount = regionUnits.left.computeBlockAmount
-    val computedBehindBlockAmount = regionUnits.behind.computeBlockAmount
-    val computedRightBlockAmount = regionUnits.right.computeBlockAmount
+    val computedAheadBlockAmount = regionUnits.ahead.rul
+    val computedLeftBlockAmount = regionUnits.left.rul
+    val computedBehindBlockAmount = regionUnits.behind.rul
+    val computedRightBlockAmount = regionUnits.right.rul
 
     /*
      * startPosition - 北西

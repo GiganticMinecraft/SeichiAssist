@@ -105,14 +105,14 @@ object GridRegionMenu extends Menu {
       direction: CardinalDirection,
       relativeDirection: HorizontalAxisAlignedSubjectiveDirection
     ): IO[List[String]] = for {
-      currentRegionUnits <- gridRegionAPI.regionUnits(player)
+      currentRegionUnits <- gridRegionAPI.currentlySelectedShape(player)
       regionUnit = currentRegionUnits.lengthInto(relativeDirection)
     } yield List(
       s"${GREEN}左クリックで増加",
       s"${RED}右クリックで減少",
       s"$GRAY---------------",
       s"${GRAY}方向：$AQUA${direction.uiLabel}",
-      s"${GRAY}現在の指定方向のユニット数：$AQUA${regionUnit.count}$GRAY($AQUA${regionUnit.computeBlockAmount}${GRAY}ブロック)"
+      s"${GRAY}現在の指定方向のユニット数：$AQUA${regionUnit.rul}$GRAY($AQUA${regionUnit.toMeters}${GRAY}ブロック)"
     )
 
     def regionUnitExpansionButton(
@@ -123,21 +123,21 @@ object GridRegionMenu extends Menu {
         val direction = CardinalDirection.relativeToCardinalDirections(yaw)(relativeDirection)
         for {
           gridLore <- gridLore(direction, relativeDirection)
-          regionUnits <- gridRegionAPI.regionUnits(player)
+          regionUnits <- gridRegionAPI.currentlySelectedShape(player)
           currentPerClickRegionUnit <- gridRegionAPI.lengthChangePerClick(player)
         } yield {
           val worldName = player.getEyeLocation.getWorld.getName
           val expandedRegionUnits =
-            regionUnits.extendTowards(relativeDirection, currentPerClickRegionUnit)
+            regionUnits.extendTowards(relativeDirection)(currentPerClickRegionUnit)
           val contractedRegionUnits =
-            regionUnits.contractAlong(relativeDirection, currentPerClickRegionUnit)
+            regionUnits.contractAlong(relativeDirection)(currentPerClickRegionUnit)
 
           val limit = SeichiAssist.seichiAssistConfig.getGridLimitPerWorld(worldName)
 
           val lore = gridLore :+ {
-            if (expandedRegionUnits.computeTotalRegionUnits.count <= limit)
+            if (expandedRegionUnits.regionUnits.count <= limit)
               s"$RED${UNDERLINE}これ以上拡張できません"
-            else if (contractedRegionUnits.computeTotalRegionUnits.count <= limit)
+            else if (contractedRegionUnits.regionUnits.count <= limit)
               s"$RED${UNDERLINE}これ以上縮小できません"
             else
               ""
@@ -230,19 +230,19 @@ object GridRegionMenu extends Menu {
 
     val nowRegionSettingButton: IO[Button] = RecomputedButton {
       for {
-        regionUnits <- gridRegionAPI.regionUnits(player)
+        shape <- gridRegionAPI.currentlySelectedShape(player)
       } yield {
-        def createUnitInformation(regionUnit: RegionUnits): String =
-          s"$AQUA${regionUnit.count}${GRAY}ユニット($AQUA${regionUnit.computeBlockAmount}${GRAY}ブロック)"
+        def showRegionShapeDimension(length: RegionUnitLength): String =
+          s"$AQUA${length.rul}${GRAY}ユニット分($AQUA${length.toMeters}${GRAY}ブロック)"
         val worldName = player.getLocation.getWorld.getName
 
         val lore = List(
           s"${GRAY}現在の設定",
-          s"${GRAY}前方向：${createUnitInformation(regionUnits.ahead)}",
-          s"${GRAY}後ろ方向：${createUnitInformation(regionUnits.behind)}",
-          s"${GRAY}右方向：${createUnitInformation(regionUnits.right)}",
-          s"${GRAY}左方向：${createUnitInformation(regionUnits.left)}",
-          s"${GRAY}保護ユニット数：$AQUA${regionUnits.regionUnits.count}",
+          s"${GRAY}前方向：${showRegionShapeDimension(shape.ahead)}",
+          s"${GRAY}後ろ方向：${showRegionShapeDimension(shape.behind)}",
+          s"${GRAY}右方向：${showRegionShapeDimension(shape.right)}",
+          s"${GRAY}左方向：${showRegionShapeDimension(shape.left)}",
+          s"${GRAY}保護ユニット数：$AQUA${shape.regionUnits.count}",
           s"${GRAY}保護ユニット上限値：$RED${gridRegionAPI.regionUnitLimit(worldName).value}"
         )
 
@@ -257,7 +257,7 @@ object GridRegionMenu extends Menu {
 
     val createRegionButton: IO[Button] = RecomputedButton {
       for {
-        regionUnits <- gridRegionAPI.regionUnits(player)
+        regionUnits <- gridRegionAPI.currentlySelectedShape(player)
         yaw = player.getEyeLocation.getYaw
         canCreateRegionResult <- gridRegionAPI.canCreateRegion(
           player,

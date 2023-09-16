@@ -2,15 +2,8 @@ package com.github.unchama.seichiassist.subsystems.gridregion.infrastructure
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.persistence.RegionTemplatePersistence
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.regiontemplate.{
-  RegionTemplate,
-  RegionTemplateId
-}
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
-  RegionUnits,
-  SubjectiveRegionShape,
-  regiontemplate
-}
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.regiontemplate.{RegionTemplate, RegionTemplateId}
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.{RegionUnitLength, RegionUnits, SubjectiveRegionShape, regiontemplate}
 import scalikejdbc._
 
 import java.util.UUID
@@ -27,10 +20,10 @@ class JdbcRegionTemplatePersistence[F[_]: Sync] extends RegionTemplatePersistenc
         .map { rs =>
           val id = RegionTemplateId(rs.int("id"))
           val regionUnits = SubjectiveRegionShape(
-            RegionUnits(rs.int("ahead_length")),
-            RegionUnits(rs.int("right_length")),
-            RegionUnits(rs.int("behind_length")),
-            RegionUnits(rs.int("left_length"))
+            RegionUnitLength(rs.int("ahead_length")),
+            RegionUnitLength(rs.int("right_length")),
+            RegionUnitLength(rs.int("behind_length")),
+            RegionUnitLength(rs.int("left_length"))
           )
 
           regiontemplate.RegionTemplate(id, regionUnits)
@@ -49,16 +42,16 @@ class JdbcRegionTemplatePersistence[F[_]: Sync] extends RegionTemplatePersistenc
              | VALUES (
              |  ${value.templateId},
              |  ${uuid.toString},
-             |  ${value.regionUnits.ahead.count},
-             |  ${value.regionUnits.right.count},
-             |  ${value.regionUnits.behind.count},
-             |  ${value.regionUnits.left.count}
+             |  ${value.regionUnits.ahead.rul},
+             |  ${value.regionUnits.right.rul},
+             |  ${value.regionUnits.behind.rul},
+             |  ${value.regionUnits.left.rul}
              | )
              | ON DUPLICATE KEY UPDATE
-             |  ahead_length = ${value.regionUnits.ahead.count}
-             |  right_length = ${value.regionUnits.right.count}
-             |  behind_length = ${value.regionUnits.behind.count}
-             |  left_length = ${value.regionUnits.left.count}
+             |  ahead_length = ${value.regionUnits.ahead.rul}
+             |  right_length = ${value.regionUnits.right.rul}
+             |  behind_length = ${value.regionUnits.behind.rul}
+             |  left_length = ${value.regionUnits.left.rul}
            """.stripMargin.execute().apply()
       }
     }
