@@ -201,7 +201,7 @@ object GridRegionMenu extends Menu {
         .build()
 
       val leftClickButtonEffect = LeftClickButtonEffect(
-        DeferredEffect(IO(gridRegionAPI.saveRegionUnits(SubjectiveRegionShape.initial))),
+        DeferredEffect(IO(gridRegionAPI.saveRegionUnits(SubjectiveRegionShape.minimal))),
         CommandEffect("/;"),
         FocusedSoundEffect(Sound.BLOCK_ANVIL_DESTROY, 0.5f, 1.0f)
       )

@@ -6,9 +6,9 @@ import cats.effect.concurrent.Ref
 /**
  * [[SubjectiveRegionShape]] の変更を行う UI で、クリック毎に主観的領域選択をどの程度の長さ伸縮させるかの設定。
  */
-class RegionUnitPerClickSetting[F[_]: Sync] {
-
-  private val changePerClickRef: Ref[F, RegionUnitLength] = Ref.unsafe(RegionUnitLength(1))
+class RegionUnitPerClickSetting[F[_]: Sync] private (
+  private val changePerClickRef: Ref[F, RegionUnitLength]
+) {
 
   import cats.implicits._
 
@@ -29,4 +29,11 @@ class RegionUnitPerClickSetting[F[_]: Sync] {
    */
   def toggleUnitPerClick: F[Unit] = changePerClickRef.getAndUpdate(settingsCycle.apply).void
 
+}
+
+object RegionUnitPerClickSetting {
+  import cats.implicits._
+
+  def apply[F[_]: Sync]: F[RegionUnitPerClickSetting[F]] =
+    Ref.of[F, RegionUnitLength](RegionUnitLength(1)).map(new RegionUnitPerClickSetting(_))
 }

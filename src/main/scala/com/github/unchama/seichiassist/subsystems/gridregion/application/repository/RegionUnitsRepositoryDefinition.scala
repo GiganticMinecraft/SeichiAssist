@@ -10,9 +10,10 @@ object RegionUnitsRepositoryDefinition {
 
   def initialization[F[_]: Sync, Player]
     : TwoPhasedRepositoryInitialization[F, Player, RegionShapeSelectionState[F]] =
-    TwoPhasedRepositoryInitialization.withoutPrefetching[F, Player, RegionShapeSelectionState[F]] {
-      _ => Sync[F].pure(new RegionShapeSelectionState[F])
-    }
+    TwoPhasedRepositoryInitialization
+      .withoutPrefetching[F, Player, RegionShapeSelectionState[F]] { _ =>
+        RegionShapeSelectionState[F]
+      }
 
   def finalization[F[_]: Applicative, Player]
     : RepositoryFinalization[F, Player, RegionShapeSelectionState[F]] =

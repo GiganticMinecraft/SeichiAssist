@@ -12,7 +12,7 @@ object RegionUnitPerClickSettingRepositoryDefinition {
     : TwoPhasedRepositoryInitialization[F, Player, RegionUnitPerClickSetting[F]] =
     TwoPhasedRepositoryInitialization
       .withoutPrefetching[F, Player, RegionUnitPerClickSetting[F]] { _ =>
-        Sync[F].pure(new RegionUnitPerClickSetting[F])
+        RegionUnitPerClickSetting[F]
       }
 
   def finalization[F[_]: Applicative, Player]

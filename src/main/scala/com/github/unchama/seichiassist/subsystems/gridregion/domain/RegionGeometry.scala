@@ -116,7 +116,7 @@ case class SubjectiveRegionShape(
 }
 
 object SubjectiveRegionShape {
-  val initial: SubjectiveRegionShape =
+  val minimal: SubjectiveRegionShape =
     SubjectiveRegionShape(
       RegionUnitLength(0),
       RegionUnitLength(0),
