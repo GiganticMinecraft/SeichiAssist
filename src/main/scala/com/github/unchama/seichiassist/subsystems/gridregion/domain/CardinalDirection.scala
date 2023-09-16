@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gridregion.domain
 
 import com.github.unchama.generic.ListExtra
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.HorizontalAxisAlignedRelativeDirection._
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.HorizontalAxisAlignedSubjectiveDirection._
 
 /**
  *  この`yaw`は、SpigotAPIが提供している値と合わせている。
@@ -29,20 +29,15 @@ object YawRange {
 }
 
 /**
- * 水平軸上の相対的な方向を定義したenum
+ * 水平軸上の主観的な方向を定義したenum
  */
-sealed trait HorizontalAxisAlignedRelativeDirection
+sealed trait HorizontalAxisAlignedSubjectiveDirection
 
-object HorizontalAxisAlignedRelativeDirection {
-
-  case object Ahead extends HorizontalAxisAlignedRelativeDirection
-
-  case object Behind extends HorizontalAxisAlignedRelativeDirection
-
-  case object Left extends HorizontalAxisAlignedRelativeDirection
-
-  case object Right extends HorizontalAxisAlignedRelativeDirection
-
+object HorizontalAxisAlignedSubjectiveDirection {
+  case object Ahead extends HorizontalAxisAlignedSubjectiveDirection
+  case object Behind extends HorizontalAxisAlignedSubjectiveDirection
+  case object Left extends HorizontalAxisAlignedSubjectiveDirection
+  case object Right extends HorizontalAxisAlignedSubjectiveDirection
 }
 
 /**
@@ -82,12 +77,12 @@ object CardinalDirection {
   }
 
   /**
-   * @return 現在向いている方向(`yaw`)から、相対的な方向([[HorizontalAxisAlignedRelativeDirection]])と
+   * @return 現在向いている方向(`yaw`)から、相対的な方向([[HorizontalAxisAlignedSubjectiveDirection]])と
    *         紐づいている方角([[CardinalDirection]])を返す。
    */
   def relativeToCardinalDirections(
     yaw: Float
-  ): Map[HorizontalAxisAlignedRelativeDirection, CardinalDirection] = {
+  ): Map[HorizontalAxisAlignedSubjectiveDirection, CardinalDirection] = {
     val directions = List(North, East, South, West)
     val horizontalAxisAlignedRelativeDirections = List(Ahead, Right, Behind, Left)
 

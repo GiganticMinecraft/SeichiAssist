@@ -7,7 +7,7 @@ trait RegionOperations[F[_], Location, Player] {
    */
   def getSelection(
     currentLocation: Location,
-    regionUnits: RegionUnits,
+    regionUnits: SubjectiveRegionShape,
     direction: CardinalDirection
   ): RegionSelection[Location]
 
@@ -21,7 +21,7 @@ trait RegionOperations[F[_], Location, Player] {
    */
   def canCreateRegion(
     player: Player,
-    regionUnits: RegionUnits,
+    regionUnits: SubjectiveRegionShape,
     direction: CardinalDirection
   ): F[CreateRegionResult]
 

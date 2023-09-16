@@ -5,10 +5,10 @@ import cats.effect.concurrent.Ref
 
 class RegionUnitsSetting[F[_]: Sync] {
 
-  private val regionUnitsReference: Ref[F, RegionUnits] = Ref.unsafe(RegionUnits.initial)
+  private val regionUnitsReference: Ref[F, SubjectiveRegionShape] = Ref.unsafe(SubjectiveRegionShape.initial)
 
-  def regionUnits: F[RegionUnits] = regionUnitsReference.get
+  def regionUnits: F[SubjectiveRegionShape] = regionUnitsReference.get
 
-  def set(regionUnits: RegionUnits): F[Unit] = regionUnitsReference.set(regionUnits)
+  def set(regionUnits: SubjectiveRegionShape): F[Unit] = regionUnitsReference.set(regionUnits)
 
 }

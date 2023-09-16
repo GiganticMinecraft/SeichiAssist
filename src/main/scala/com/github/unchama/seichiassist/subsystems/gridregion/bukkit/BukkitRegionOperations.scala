@@ -14,9 +14,9 @@ class BukkitRegionOperations[F[_]: Sync](
 ) extends RegionOperations[F, Location, Player] {
 
   override def getSelection(
-    currentLocation: Location,
-    regionUnits: RegionUnits,
-    direction: CardinalDirection
+                             currentLocation: Location,
+                             regionUnits: SubjectiveRegionShape,
+                             direction: CardinalDirection
   ): RegionSelection[Location] = {
     val computedAheadBlockAmount = regionUnits.ahead.computeBlockAmount
     val computedLeftBlockAmount = regionUnits.left.computeBlockAmount
@@ -86,9 +86,9 @@ class BukkitRegionOperations[F[_]: Sync](
   } yield regionCreateResult
 
   override def canCreateRegion(
-    player: Player,
-    regionUnits: RegionUnits,
-    direction: CardinalDirection
+                                player: Player,
+                                regionUnits: SubjectiveRegionShape,
+                                direction: CardinalDirection
   ): F[CreateRegionResult] = {
     val selection = WorldEditWrapper.getSelection(player)
     for {

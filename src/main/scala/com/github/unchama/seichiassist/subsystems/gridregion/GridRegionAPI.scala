@@ -21,9 +21,9 @@ trait GridRegionTemplateAPI[F[_], Player] {
 trait GridRegionReadAPI[F[_], Player, Location] {
 
   /**
-   * @return 1回のクリックで増減させる[[RegionUnit]]の量を返す作用
+   * @return 1回のクリックで増減させる[[RegionUnitLength]]を返す作用
    */
-  def unitPerClick(player: Player): F[RegionUnit]
+  def lengthChangePerClick(player: Player): F[RegionUnitLength]
 
   /**
    * @return 指定された`worldName`の[[RegionUnitLimit]]
@@ -31,16 +31,16 @@ trait GridRegionReadAPI[F[_], Player, Location] {
   def regionUnitLimit(worldName: String): RegionUnitLimit
 
   /**
-   * @return [[Player]]の[[RegionUnits]]を取得する作用
+   * @return [[Player]]の[[SubjectiveRegionShape]]を取得する作用
    */
-  def regionUnits(player: Player): F[RegionUnits]
+  def regionUnits(player: Player): F[SubjectiveRegionShape]
 
   /**
-   * @return [[Player]]が[[RegionUnits]]分だけ保護を作成できるかどうかを返す作用
+   * @return [[Player]]が[[SubjectiveRegionShape]]分だけ保護を作成できるかどうかを返す作用
    */
   def canCreateRegion(
     player: Player,
-    regionUnits: RegionUnits,
+    regionUnits: SubjectiveRegionShape,
     direction: CardinalDirection
   ): F[CreateRegionResult]
 
@@ -49,7 +49,7 @@ trait GridRegionReadAPI[F[_], Player, Location] {
    */
   def regionSelection(
     player: Player,
-    regionUnits: RegionUnits,
+    regionUnits: SubjectiveRegionShape,
     direction: CardinalDirection
   ): RegionSelection[Location]
 
@@ -63,14 +63,14 @@ trait GridRegionReadAPI[F[_], Player, Location] {
 trait GridRegionWriteAPI[F[_], Player, Location] {
 
   /**
-   * @return 1回のクリックで増減させる[[RegionUnit]]の量をトグルする作用
+   * @return 1回のクリックで増減させる[[RegionUnits]]の量をトグルする作用
    */
   def toggleUnitPerClick: Kleisli[F, Player, Unit]
 
   /**
-   * @return [[Player]]の[[RegionUnits]]を上書きする作用
+   * @return [[Player]]の[[SubjectiveRegionShape]]を上書きする作用
    */
-  def saveRegionUnits(regionUnits: RegionUnits): Kleisli[F, Player, Unit]
+  def saveRegionUnits(regionUnits: SubjectiveRegionShape): Kleisli[F, Player, Unit]
 
   /**
    * @return 保護を作成する作用

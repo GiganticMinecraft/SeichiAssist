@@ -49,16 +49,16 @@ object GridRegionMenu extends Menu {
       toggleUnitPerClick <- toggleUnitPerClickButton
       nowRegionSettings <- nowRegionSettingButton
       regionUnitExpansionAhead <- regionUnitExpansionButton(
-        HorizontalAxisAlignedRelativeDirection.Ahead
+        HorizontalAxisAlignedSubjectiveDirection.Ahead
       )
       regionUnitExpansionLeft <- regionUnitExpansionButton(
-        HorizontalAxisAlignedRelativeDirection.Left
+        HorizontalAxisAlignedSubjectiveDirection.Left
       )
       regionUnitExpansionBehind <- regionUnitExpansionButton(
-        HorizontalAxisAlignedRelativeDirection.Behind
+        HorizontalAxisAlignedSubjectiveDirection.Behind
       )
       regionUnitExpansionRight <- regionUnitExpansionButton(
-        HorizontalAxisAlignedRelativeDirection.Right
+        HorizontalAxisAlignedSubjectiveDirection.Right
       )
       createRegion <- createRegionButton
     } yield MenuSlotLayout(
@@ -79,14 +79,14 @@ object GridRegionMenu extends Menu {
 
     def toggleUnitPerClickButton: IO[Button] = RecomputedButton {
       for {
-        currentRegionUnit <- gridRegionAPI.unitPerClick(player)
+        currentLengthChangePerClick <- gridRegionAPI.lengthChangePerClick(player)
       } yield {
         val iconItemStack = new IconItemStackBuilder(Material.STAINED_GLASS_PANE, 1)
           .title(s"${GREEN}拡張単位の変更")
           .lore(
             List(
               s"${GREEN}現在のユニット指定量",
-              s"$AQUA${currentRegionUnit.units}${GREEN}ユニット($AQUA${currentRegionUnit.computeBlockAmount}${GREEN}ブロック)/1クリック",
+              s"$AQUA${currentLengthChangePerClick.rul}${GREEN}ユニット($AQUA${currentLengthChangePerClick.toMeters}${GREEN}ブロック)/1クリック",
               s"$RED${UNDERLINE}クリックで変更"
             )
           )
@@ -103,20 +103,20 @@ object GridRegionMenu extends Menu {
 
     private def gridLore(
       direction: CardinalDirection,
-      relativeDirection: HorizontalAxisAlignedRelativeDirection
+      relativeDirection: HorizontalAxisAlignedSubjectiveDirection
     ): IO[List[String]] = for {
       currentRegionUnits <- gridRegionAPI.regionUnits(player)
-      regionUnit = currentRegionUnits.fromRelativeDirectionToRegionUnit(relativeDirection)
+      regionUnit = currentRegionUnits.lengthInto(relativeDirection)
     } yield List(
       s"${GREEN}左クリックで増加",
       s"${RED}右クリックで減少",
       s"$GRAY---------------",
       s"${GRAY}方向：$AQUA${direction.uiLabel}",
-      s"${GRAY}現在の指定方向のユニット数：$AQUA${regionUnit.units}$GRAY($AQUA${regionUnit.computeBlockAmount}${GRAY}ブロック)"
+      s"${GRAY}現在の指定方向のユニット数：$AQUA${regionUnit.count}$GRAY($AQUA${regionUnit.computeBlockAmount}${GRAY}ブロック)"
     )
 
     def regionUnitExpansionButton(
-      relativeDirection: HorizontalAxisAlignedRelativeDirection
+      relativeDirection: HorizontalAxisAlignedSubjectiveDirection
     ): IO[Button] =
       RecomputedButton {
         val yaw = player.getEyeLocation.getYaw
@@ -124,37 +124,37 @@ object GridRegionMenu extends Menu {
         for {
           gridLore <- gridLore(direction, relativeDirection)
           regionUnits <- gridRegionAPI.regionUnits(player)
-          currentPerClickRegionUnit <- gridRegionAPI.unitPerClick(player)
+          currentPerClickRegionUnit <- gridRegionAPI.lengthChangePerClick(player)
         } yield {
           val worldName = player.getEyeLocation.getWorld.getName
           val expandedRegionUnits =
-            regionUnits.expansionRegionUnits(relativeDirection, currentPerClickRegionUnit)
+            regionUnits.extendTowards(relativeDirection, currentPerClickRegionUnit)
           val contractedRegionUnits =
-            regionUnits.contractRegionUnits(relativeDirection, currentPerClickRegionUnit)
+            regionUnits.contractAlong(relativeDirection, currentPerClickRegionUnit)
 
           val limit = SeichiAssist.seichiAssistConfig.getGridLimitPerWorld(worldName)
 
           val lore = gridLore :+ {
-            if (expandedRegionUnits.computeTotalRegionUnits.units <= limit)
+            if (expandedRegionUnits.computeTotalRegionUnits.count <= limit)
               s"$RED${UNDERLINE}これ以上拡張できません"
-            else if (contractedRegionUnits.computeTotalRegionUnits.units <= limit)
+            else if (contractedRegionUnits.computeTotalRegionUnits.count <= limit)
               s"$RED${UNDERLINE}これ以上縮小できません"
             else
               ""
           }
 
           val relativeDirectionString = relativeDirection match {
-            case HorizontalAxisAlignedRelativeDirection.Ahead  => "前へ"
-            case HorizontalAxisAlignedRelativeDirection.Behind => "後ろへ"
-            case HorizontalAxisAlignedRelativeDirection.Left   => "左へ"
-            case HorizontalAxisAlignedRelativeDirection.Right  => "右へ"
+            case HorizontalAxisAlignedSubjectiveDirection.Ahead  => "前へ"
+            case HorizontalAxisAlignedSubjectiveDirection.Behind => "後ろへ"
+            case HorizontalAxisAlignedSubjectiveDirection.Left   => "左へ"
+            case HorizontalAxisAlignedSubjectiveDirection.Right  => "右へ"
           }
 
           val stainedGlassPaneDurability = relativeDirection match {
-            case HorizontalAxisAlignedRelativeDirection.Ahead  => 14
-            case HorizontalAxisAlignedRelativeDirection.Left   => 10
-            case HorizontalAxisAlignedRelativeDirection.Behind => 13
-            case HorizontalAxisAlignedRelativeDirection.Right  => 5
+            case HorizontalAxisAlignedSubjectiveDirection.Ahead  => 14
+            case HorizontalAxisAlignedSubjectiveDirection.Left   => 10
+            case HorizontalAxisAlignedSubjectiveDirection.Behind => 13
+            case HorizontalAxisAlignedSubjectiveDirection.Right  => 5
           }
 
           val itemStack =
@@ -220,7 +220,7 @@ object GridRegionMenu extends Menu {
         .build()
 
       val leftClickButtonEffect = LeftClickButtonEffect(
-        DeferredEffect(IO(gridRegionAPI.saveRegionUnits(RegionUnits.initial))),
+        DeferredEffect(IO(gridRegionAPI.saveRegionUnits(SubjectiveRegionShape.initial))),
         CommandEffect("/;"),
         FocusedSoundEffect(Sound.BLOCK_ANVIL_DESTROY, 0.5f, 1.0f)
       )
@@ -232,8 +232,8 @@ object GridRegionMenu extends Menu {
       for {
         regionUnits <- gridRegionAPI.regionUnits(player)
       } yield {
-        def createUnitInformation(regionUnit: RegionUnit): String =
-          s"$AQUA${regionUnit.units}${GRAY}ユニット($AQUA${regionUnit.computeBlockAmount}${GRAY}ブロック)"
+        def createUnitInformation(regionUnit: RegionUnits): String =
+          s"$AQUA${regionUnit.count}${GRAY}ユニット($AQUA${regionUnit.computeBlockAmount}${GRAY}ブロック)"
         val worldName = player.getLocation.getWorld.getName
 
         val lore = List(
@@ -242,7 +242,7 @@ object GridRegionMenu extends Menu {
           s"${GRAY}後ろ方向：${createUnitInformation(regionUnits.behind)}",
           s"${GRAY}右方向：${createUnitInformation(regionUnits.right)}",
           s"${GRAY}左方向：${createUnitInformation(regionUnits.left)}",
-          s"${GRAY}保護ユニット数：$AQUA${regionUnits.computeTotalRegionUnits.units}",
+          s"${GRAY}保護ユニット数：$AQUA${regionUnits.regionUnits.count}",
           s"${GRAY}保護ユニット上限値：$RED${gridRegionAPI.regionUnitLimit(worldName).value}"
         )
 
@@ -263,7 +263,7 @@ object GridRegionMenu extends Menu {
           player,
           regionUnits,
           CardinalDirection.relativeToCardinalDirections(yaw)(
-            HorizontalAxisAlignedRelativeDirection.Ahead
+            HorizontalAxisAlignedSubjectiveDirection.Ahead
           )
         )
       } yield {

@@ -88,10 +88,10 @@ object GridTemplateMenu extends Menu {
           case Some(regionTemplate) =>
             val lore = List(
               s"${GREEN}設定内容",
-              s"${GRAY}前方向：$AQUA${regionTemplate.regionUnits.ahead.units}${GRAY}ユニット",
-              s"${GRAY}後ろ方向：$AQUA${regionTemplate.regionUnits.behind.units}${GRAY}ユニット",
-              s"${GRAY}右方向：$AQUA${regionTemplate.regionUnits.right.units}${GRAY}ユニット",
-              s"${GRAY}左方向：$AQUA${regionTemplate.regionUnits.left.units}${GRAY}ユニット",
+              s"${GRAY}前方向：$AQUA${regionTemplate.regionUnits.ahead.count}${GRAY}ユニット",
+              s"${GRAY}後ろ方向：$AQUA${regionTemplate.regionUnits.behind.count}${GRAY}ユニット",
+              s"${GRAY}右方向：$AQUA${regionTemplate.regionUnits.right.count}${GRAY}ユニット",
+              s"${GRAY}左方向：$AQUA${regionTemplate.regionUnits.left.count}${GRAY}ユニット",
               s"${GREEN}左クリックで設定を読み込み",
               s"${RED}右クリックで現在の設定で上書き"
             )

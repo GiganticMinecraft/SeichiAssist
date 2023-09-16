@@ -7,8 +7,8 @@ import com.github.unchama.seichiassist.subsystems.gridregion.domain.regiontempla
   RegionTemplateId
 }
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
-  RegionUnit,
   RegionUnits,
+  SubjectiveRegionShape,
   regiontemplate
 }
 import scalikejdbc._
@@ -26,11 +26,11 @@ class JdbcRegionTemplatePersistence[F[_]: Sync] extends RegionTemplatePersistenc
         .stripMargin
         .map { rs =>
           val id = RegionTemplateId(rs.int("id"))
-          val regionUnits = RegionUnits(
-            RegionUnit(rs.int("ahead_length")),
-            RegionUnit(rs.int("right_length")),
-            RegionUnit(rs.int("behind_length")),
-            RegionUnit(rs.int("left_length"))
+          val regionUnits = SubjectiveRegionShape(
+            RegionUnits(rs.int("ahead_length")),
+            RegionUnits(rs.int("right_length")),
+            RegionUnits(rs.int("behind_length")),
+            RegionUnits(rs.int("left_length"))
           )
 
           regiontemplate.RegionTemplate(id, regionUnits)
@@ -49,16 +49,16 @@ class JdbcRegionTemplatePersistence[F[_]: Sync] extends RegionTemplatePersistenc
              | VALUES (
              |  ${value.templateId},
              |  ${uuid.toString},
-             |  ${value.regionUnits.ahead.units},
-             |  ${value.regionUnits.right.units},
-             |  ${value.regionUnits.behind.units},
-             |  ${value.regionUnits.left.units}
+             |  ${value.regionUnits.ahead.count},
+             |  ${value.regionUnits.right.count},
+             |  ${value.regionUnits.behind.count},
+             |  ${value.regionUnits.left.count}
              | )
              | ON DUPLICATE KEY UPDATE
-             |  ahead_length = ${value.regionUnits.ahead.units}
-             |  right_length = ${value.regionUnits.right.units}
-             |  behind_length = ${value.regionUnits.behind.units}
-             |  left_length = ${value.regionUnits.left.units}
+             |  ahead_length = ${value.regionUnits.ahead.count}
+             |  right_length = ${value.regionUnits.right.count}
+             |  behind_length = ${value.regionUnits.behind.count}
+             |  left_length = ${value.regionUnits.left.count}
            """.stripMargin.execute().apply()
       }
     }

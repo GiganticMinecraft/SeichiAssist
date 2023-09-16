@@ -82,13 +82,13 @@ object System {
               ContextCoercion(regionUnitPerClickSettingRepository(player).toggleUnitPerClick)
             }
 
-            override def unitPerClick(player: Player): F[RegionUnit] =
+            override def lengthChangePerClick(player: Player): F[RegionUnits] =
               ContextCoercion(regionUnitPerClickSettingRepository(player).unitPerClick)
 
-            override def regionUnits(player: Player): F[RegionUnits] =
+            override def regionUnits(player: Player): F[SubjectiveRegionShape] =
               ContextCoercion(regionUnitsRepository(player).regionUnits)
 
-            override def saveRegionUnits(regionUnits: RegionUnits): Kleisli[F, Player, Unit] =
+            override def saveRegionUnits(regionUnits: SubjectiveRegionShape): Kleisli[F, Player, Unit] =
               Kleisli { player =>
                 ContextCoercion(regionUnitsRepository(player).set(regionUnits))
               }
@@ -99,16 +99,16 @@ object System {
             }
 
             override def canCreateRegion(
-              player: Player,
-              regionUnits: RegionUnits,
-              direction: CardinalDirection
+                                          player: Player,
+                                          regionUnits: SubjectiveRegionShape,
+                                          direction: CardinalDirection
             ): F[CreateRegionResult] =
               ContextCoercion(regionOperations.canCreateRegion(player, regionUnits, direction))
 
             override def regionSelection(
-              player: Player,
-              regionUnits: RegionUnits,
-              direction: CardinalDirection
+                                          player: Player,
+                                          regionUnits: SubjectiveRegionShape,
+                                          direction: CardinalDirection
             ): RegionSelection[Location] =
               regionOperations.getSelection(player.getLocation, regionUnits, direction)
 
