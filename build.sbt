@@ -71,7 +71,11 @@ val providedDependencies = Seq(
 ).map(_ % "provided")
 
 val scalafixCoreDep =
-  "ch.epfl.scala" %% "scalafix-core" % _root_.scalafix.sbt.BuildInfo.scalafixVersion % ScalafixConfig
+  "ch.epfl.scala" %% "scalafix-core" % _root_
+    .scalafix
+    .sbt
+    .BuildInfo
+    .scalafixVersion % ScalafixConfig
 
 val testDependencies = Seq(
   "org.scalamock" %% "scalamock" % "5.2.0",
@@ -198,6 +202,8 @@ lazy val root = (project in file(".")).settings(
   excludeDependencies := Seq(ExclusionRule(organization = "org.bukkit", name = "bukkit")),
   unmanagedBase := baseDirectory.value / "localDependencies",
   scalacOptions ++= Seq(
+    "-Yprofile-trace",
+    "profile.trace",
     "-encoding",
     "utf8",
     "-unchecked",
@@ -210,7 +216,11 @@ lazy val root = (project in file(".")).settings(
   ),
   javacOptions ++= Seq("-encoding", "utf8"),
   assembly / assemblyShadeRules ++= Seq(
-    ShadeRule.rename("org.mariadb.jdbc.**" -> "com.github.unchama.seichiassist.relocateddependencies.org.mariadb.jdbc.@1").inAll
+    ShadeRule
+      .rename(
+        "org.mariadb.jdbc.**" -> "com.github.unchama.seichiassist.relocateddependencies.org.mariadb.jdbc.@1"
+      )
+      .inAll
   ),
   // sbt-assembly 1.0.0からはTestを明示的にタスクツリーに入れる必要がある
   // cf. https://github.com/sbt/sbt-assembly/pull/432/commits/361224a6202856bc2e572df811d0e6a1f1efda98
