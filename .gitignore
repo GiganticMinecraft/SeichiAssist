@@ -26,3 +26,6 @@ docker/spigot/serverfiles/eula.txt
 .metals
 project/.bloop/
 project/metals.sbt
+
+# scalac に -Yprofile-trace profile.trace を渡しているので、Chrome Trace file が生成される
+/profile.trace
