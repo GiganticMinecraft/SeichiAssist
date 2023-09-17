@@ -40,8 +40,7 @@ class SkullItemStackBuilder(private val owner: SkullOwnerReference)
         /**
          * 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
          */
-        // noinspection ScalaDeprecation
-        meta.setOwner(name)
+        meta.setOwningPlayer(Bukkit.getOfflinePlayer(name))
 
       /**
        * @see
