@@ -15,11 +15,15 @@ class MatchForMaterialToErrorForPerformance extends SemanticRule("MatchForMateri
       case t @ Term.Match.After_4_4_5(term, _, _) =>
         term.symbol.info match {
           case Some(info) if info.signature.toString == "Material" =>
-            val message =
-              s"""
-                |Don't use org.bukkit.Material in scrutinee of match expressions!
-                |See https://github.com/GiganticMinecraft/SeichiAssist/issues/2226 for more detail.""".stripMargin
-            Patch.lint(Diagnostic("error", message, t.pos))
+            info.signature match {
+              case ValueSignature(TypeRef(_, symbol, _)) if SymbolMatcher.normalized("org/bukkit/Material").matches(symbol) =>
+                val message =
+                  s"""
+                     |Don't use org.bukkit.Material in scrutinee of match expressions!
+                     |See https://github.com/GiganticMinecraft/SeichiAssist/issues/2226 for more detail.""".stripMargin
+                Patch.lint(Diagnostic("error", message, t.pos))
+              case _ => Patch.empty
+            }
           case _ => Patch.empty
         }
     }.asPatch
