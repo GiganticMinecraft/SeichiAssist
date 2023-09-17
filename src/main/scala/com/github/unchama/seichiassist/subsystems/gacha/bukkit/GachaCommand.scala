@@ -154,7 +154,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
           case "all" =>
             Kleisli
               .liftF(gachaTicketAPI.addToAllKnownPlayers(amount))
-              .flatMap(_ => MessageEffectF(s"${GREEN}全プレイヤーへガチャ券${amount}枚加算成功"))
+              .flatMap(_ => MessageEffectF(s"${GREEN}全プレイヤーへガチャ券${amount.value}枚加算成功"))
           case value =>
             val uuidRegex =
               "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}".r
