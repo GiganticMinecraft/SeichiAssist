@@ -122,26 +122,26 @@ object BreakUtil {
   }
 
   def isProtectedChest(player: Player, checkTarget: Block): Boolean = {
-    checkTarget.getType match {
-      case Material.CHEST | Material.TRAPPED_CHEST =>
-        if (
-          !SeichiAssist
-            .instance
-            .breakSkillTargetConfigSystem
-            .api
-            .breakSkillTargetConfig(player, BreakSkillTargetConfigKey.Chest)
-            .unsafeRunSync()
-        ) {
-          ActionBarMessageEffect(s"${RED}スキルでのチェスト破壊は無効化されています").run(player).unsafeRunSync()
-          true
-        } else if (!player.getWorld.isSeichi) {
-          ActionBarMessageEffect(s"${RED}スキルでのチェスト破壊は整地ワールドでのみ有効です").run(player).unsafeRunSync()
-          true
-        } else {
-          false
-        }
-      case _ => false
-    }
+    if (
+      checkTarget.getType == Material.CHEST || checkTarget.getType == Material.TRAPPED_CHEST
+    ) {
+      if (
+        !SeichiAssist
+          .instance
+          .breakSkillTargetConfigSystem
+          .api
+          .breakSkillTargetConfig(player, BreakSkillTargetConfigKey.Chest)
+          .unsafeRunSync()
+      ) {
+        ActionBarMessageEffect(s"${RED}スキルでのチェスト破壊は無効化されています").run(player).unsafeRunSync()
+        true
+      } else if (!player.getWorld.isSeichi) {
+        ActionBarMessageEffect(s"${RED}スキルでのチェスト破壊は整地ワールドでのみ有効です").run(player).unsafeRunSync()
+        true
+      } else {
+        false
+      }
+    } else false
   }
 
   /**
@@ -205,10 +205,10 @@ object BreakUtil {
   def totalBreakCount(materials: Seq[Material]): Long =
     materials
       .filter(MaterialSets.materialsToCountBlockBreak.contains)
-      .map {
+      .map { m =>
         // 氷塊とマグマブロックの整地量を2倍
-        case Material.PACKED_ICE | Material.MAGMA_BLOCK => 2L
-        case _                                          => 1L
+        if (m == Material.PACKED_ICE || m == Material.MAGMA_BLOCK) 2L
+        else 1L
       }
       .sum
 
@@ -237,13 +237,11 @@ object BreakUtil {
           val seq: Seq[(Location, Material)] = targetBlocks
             .toSeq
             .filter { block =>
-              block.getType match {
-                case Material.AIR =>
-                  if (SeichiAssist.DEBUG)
-                    Bukkit.getLogger.warning(s"AIRの破壊が${block.getLocation.toString}にて試行されました。")
-                  false
-                case _ => true
-              }
+              if (block.getType == Material.AIR) {
+                if (SeichiAssist.DEBUG)
+                  Bukkit.getLogger.warning(s"AIRの破壊が${block.getLocation.toString}にて試行されました。")
+                false
+              } else true
             }
             .map(block => (block.getLocation.clone(), block.getType))
 
@@ -360,11 +358,9 @@ object BreakUtil {
    *    ref: [バージョン1.12.x時の最新記事アーカイブ](https://minecraft.fandom.com/wiki/Solid_block?oldid=1132868)
    */
   private def isAffectedByGravity(material: Material): Boolean = {
-    material match {
-      case Material.BEDROCK                                          => false
-      case m if MaterialSets.fluidMaterials.contains(m) || m.isSolid => true
-      case _                                                         => false
-    }
+    if (material == Material.BEDROCK) false
+    else if (MaterialSets.fluidMaterials.contains(material)) true
+    else material.isSolid
   }
 
   /**
