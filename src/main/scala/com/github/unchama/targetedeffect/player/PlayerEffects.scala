@@ -9,10 +9,10 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 
 object PlayerEffects {
-//  val closeInventoryEffect: TargetedEffect[Player] = TargetedEffect.delay(_.closeInventory())
 
   def closeInventoryEffect(implicit onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] = {
     Kleisli { player =>
+      // インベントリを閉じる操作はサーバースレッドでなければならない(Spigot 1.18.2)
       onMainThread.runAction(SyncIO {
         player.closeInventory()
       })
