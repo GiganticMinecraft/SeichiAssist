@@ -9,7 +9,15 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 
 object PlayerEffects {
-  val closeInventoryEffect: TargetedEffect[Player] = TargetedEffect.delay(_.closeInventory())
+//  val closeInventoryEffect: TargetedEffect[Player] = TargetedEffect.delay(_.closeInventory())
+
+  def closeInventoryEffect(implicit onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] = {
+    Kleisli { player =>
+      onMainThread.runAction(SyncIO {
+        player.closeInventory()
+      })
+    }
+  }
 
   def openInventoryEffect(
     inventory: => Inventory
