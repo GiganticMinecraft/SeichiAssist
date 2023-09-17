@@ -76,187 +76,165 @@ object OnClickTitleMenu {
     view.getTitle match {
       case MenuType.HEAD.invName =>
         event.setCancelled(true)
-        mat match {
-          case Material.WATER_BUCKET =>
-            clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
+        if (mat == Material.WATER_BUCKET) {
+          clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
 
-            val id = current.getItemMeta.getDisplayName.toInt
-            val length = Nicknames
-              .getCombinedNicknameFor(id, pd.settings.nickname.id2, pd.settings.nickname.id3)
-              .getOrElse("")
-              .length
-            if (length > MAX_LENGTH) {
-              player.sendMessage(LENGTH_LIMIT_EXCEEDED)
-            } else {
-              pd.updateNickname(id1 = id)
-              player.sendMessage(
-                "前パーツ「" + Nicknames
-                  .getHeadPartFor(pd.settings.nickname.id1)
-                  .getOrElse("") + "」をセットしました。"
-              )
-            }
-
-          case Material.GRASS =>
-            // unselect
-            clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
-            pd.updateNickname(id1 = 0)
-            player.sendMessage("前パーツの選択を解除しました。")
-
-          case Material.BARRIER =>
-            clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            ioCanOpenNicknameMenu.open(NickNameMenu).apply(player).unsafeRunAsyncAndForget()
-
-          case _ if isSkull && isApplicableAsNextPageButton(current) =>
-            // 次ページ
-            clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            val uuid = player.getUniqueId
-            val menuType = MenuInventoryData.MenuType.HEAD
-            MenuInventoryData.setHeadingIndex(
-              uuid,
-              menuType,
-              MenuInventoryData.getHeadingIndex(uuid, menuType).get + PER_PAGE
+          val id = current.getItemMeta.getDisplayName.toInt
+          val length = Nicknames
+            .getCombinedNicknameFor(id, pd.settings.nickname.id2, pd.settings.nickname.id3)
+            .getOrElse("")
+            .length
+          if (length > MAX_LENGTH) {
+            player.sendMessage(LENGTH_LIMIT_EXCEEDED)
+          } else {
+            pd.updateNickname(id1 = id)
+            player.sendMessage(
+              "前パーツ「" + Nicknames
+                .getHeadPartFor(pd.settings.nickname.id1)
+                .getOrElse("") + "」をセットしました。"
             )
-            player.openInventory(MenuInventoryData.computeHeadPartCustomMenu(player))
-
-          case _ =>
+          }
+        } else if (mat == Material.GRASS) {
+          // unselect
+          clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
+          pd.updateNickname(id1 = 0)
+          player.sendMessage("前パーツの選択を解除しました。")
+        } else if (mat == Material.BARRIER) {
+          clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
+          ioCanOpenNicknameMenu.open(NickNameMenu).apply(player).unsafeRunAsyncAndForget()
+        } else if (isSkull && isApplicableAsNextPageButton(current)) {
+          // 次ページ
+          clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
+          val uuid = player.getUniqueId
+          val menuType = MenuInventoryData.MenuType.HEAD
+          MenuInventoryData.setHeadingIndex(
+            uuid,
+            menuType,
+            MenuInventoryData.getHeadingIndex(uuid, menuType).get + PER_PAGE
+          )
+          player.openInventory(MenuInventoryData.computeHeadPartCustomMenu(player))
         }
 
       case MenuType.MIDDLE.invName =>
         event.setCancelled(true)
-        mat match {
-          case Material.MILK_BUCKET =>
-            clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
 
-            val id = current.getItemMeta.getDisplayName.toInt
-            val length = Nicknames
-              .getCombinedNicknameFor(pd.settings.nickname.id1, id, pd.settings.nickname.id3)
-              .getOrElse("")
-              .length
-            if (length > MAX_LENGTH) {
-              player.sendMessage(LENGTH_LIMIT_EXCEEDED)
-            } else {
-              pd.updateNickname(id2 = id)
-              player.sendMessage(
-                "中パーツ「" + Nicknames
-                  .getMiddlePartFor(pd.settings.nickname.id2)
-                  .getOrElse("") + "」をセットしました。"
-              )
-            }
+        if (mat == Material.MILK_BUCKET) {
+          clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
 
-          case Material.GRASS =>
-            clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
-            pd.updateNickname(id2 = 0)
-            player.sendMessage("中パーツの選択を解除しました。")
-
-          case Material.BARRIER =>
-            clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            ioCanOpenNicknameMenu.open(NickNameMenu).apply(player).unsafeRunAsyncAndForget()
-
-          case _ if isSkull && isApplicableAsNextPageButton(current) =>
-            clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            val uuid = player.getUniqueId
-            val menuType = MenuInventoryData.MenuType.MIDDLE
-            MenuInventoryData.setHeadingIndex(
-              uuid,
-              menuType,
-              MenuInventoryData.getHeadingIndex(uuid, menuType).get + PER_PAGE
+          val id = current.getItemMeta.getDisplayName.toInt
+          val length = Nicknames
+            .getCombinedNicknameFor(pd.settings.nickname.id1, id, pd.settings.nickname.id3)
+            .getOrElse("")
+            .length
+          if (length > MAX_LENGTH) {
+            player.sendMessage(LENGTH_LIMIT_EXCEEDED)
+          } else {
+            pd.updateNickname(id2 = id)
+            player.sendMessage(
+              "中パーツ「" + Nicknames
+                .getMiddlePartFor(pd.settings.nickname.id2)
+                .getOrElse("") + "」をセットしました。"
             )
-            player.openInventory(MenuInventoryData.computeMiddlePartCustomMenu(player))
-
-          case _ =>
+          }
+        } else if (mat == Material.GRASS) {
+          clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
+          pd.updateNickname(id2 = 0)
+          player.sendMessage("中パーツの選択を解除しました。")
+        } else if (mat == Material.BARRIER) {
+          clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
+          ioCanOpenNicknameMenu.open(NickNameMenu).apply(player).unsafeRunAsyncAndForget()
+        } else if (isSkull && isApplicableAsNextPageButton(current)) {
+          clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
+          val uuid = player.getUniqueId
+          val menuType = MenuInventoryData.MenuType.MIDDLE
+          MenuInventoryData.setHeadingIndex(
+            uuid,
+            menuType,
+            MenuInventoryData.getHeadingIndex(uuid, menuType).get + PER_PAGE
+          )
+          player.openInventory(MenuInventoryData.computeMiddlePartCustomMenu(player))
         }
 
       case MenuType.TAIL.invName =>
         event.setCancelled(true)
-        mat match {
-          case Material.LAVA_BUCKET =>
-            clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
 
-            val id = current.getItemMeta.getDisplayName.toInt
-            val length = Nicknames
-              .getCombinedNicknameFor(pd.settings.nickname.id1, pd.settings.nickname.id2, id)
-              .getOrElse("")
-              .length
-            if (length > MAX_LENGTH) {
-              player.sendMessage(LENGTH_LIMIT_EXCEEDED)
-            } else {
-              pd.updateNickname(id3 = id)
-              player.sendMessage(
-                "後パーツ「" + Nicknames
-                  .getTailPartFor(pd.settings.nickname.id3)
-                  .getOrElse("") + "」をセットしました。"
-              )
-            }
+        if (mat == Material.LAVA_BUCKET) {
+          clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
 
-          case Material.GRASS =>
-            clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
-            pd.updateNickname(id3 = 0)
-            player.sendMessage("後パーツの選択を解除しました。")
-
-          case Material.BARRIER =>
-            clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            ioCanOpenNicknameMenu.open(NickNameMenu).apply(player).unsafeRunAsyncAndForget()
-
-          case _ if isSkull && isApplicableAsNextPageButton(current) =>
-            clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            val uuid = player.getUniqueId
-            val menuType = MenuInventoryData.MenuType.TAIL
-            MenuInventoryData.setHeadingIndex(
-              uuid,
-              menuType,
-              MenuInventoryData.getHeadingIndex(uuid, menuType).get + PER_PAGE
+          val id = current.getItemMeta.getDisplayName.toInt
+          val length = Nicknames
+            .getCombinedNicknameFor(pd.settings.nickname.id1, pd.settings.nickname.id2, id)
+            .getOrElse("")
+            .length
+          if (length > MAX_LENGTH) {
+            player.sendMessage(LENGTH_LIMIT_EXCEEDED)
+          } else {
+            pd.updateNickname(id3 = id)
+            player.sendMessage(
+              "後パーツ「" + Nicknames
+                .getTailPartFor(pd.settings.nickname.id3)
+                .getOrElse("") + "」をセットしました。"
             )
-            player.openInventory(MenuInventoryData.computeTailPartCustomMenu(player))
-
-          case _ =>
+          }
+        } else if (mat == Material.GRASS) {
+          clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
+          pd.updateNickname(id3 = 0)
+          player.sendMessage("後パーツの選択を解除しました。")
+        } else if (mat == Material.BARRIER) {
+          clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
+          ioCanOpenNicknameMenu.open(NickNameMenu).apply(player).unsafeRunAsyncAndForget()
+        } else if (isSkull && isApplicableAsNextPageButton(current)) {
+          clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
+          val uuid = player.getUniqueId
+          val menuType = MenuInventoryData.MenuType.TAIL
+          MenuInventoryData.setHeadingIndex(
+            uuid,
+            menuType,
+            MenuInventoryData.getHeadingIndex(uuid, menuType).get + PER_PAGE
+          )
+          player.openInventory(MenuInventoryData.computeTailPartCustomMenu(player))
         }
 
       case MenuType.SHOP.invName =>
         event.setCancelled(true)
-        mat match {
+        if (mat == Material.EMERALD_ORE) {
           // 実績ポイント最新化
-          case Material.EMERALD_ORE =>
-            clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
-            pd.recalculateAchievePoint()
+          clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
+          pd.recalculateAchievePoint()
+          pd.samepageflag = true
+          player.openInventory(MenuInventoryData.computePartsShopMenu(player))
+        } else if (mat == Material.BEDROCK) {
+          // 購入処理
+          clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
+
+          val num = current.getItemMeta.getDisplayName.toInt
+          val isHead = num < 9900
+          val required = if (isHead) 20 else 35
+          val getPart = if (isHead) { num => Nicknames.getHeadPartFor(num) }
+          else { num => Nicknames.getMiddlePartFor(num) }
+
+          if (pd.achievePoint.left >= required) {
+            pd.TitleFlags.addOne(num)
+            pd.consumeAchievePoint(required)
+            player.sendMessage("パーツ「" + getPart(num).getOrElse("") + "」を購入しました。")
             pd.samepageflag = true
             player.openInventory(MenuInventoryData.computePartsShopMenu(player))
-
-          // 購入処理
-          case Material.BEDROCK =>
-            clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
-
-            val num = current.getItemMeta.getDisplayName.toInt
-            val isHead = num < 9900
-            val required = if (isHead) 20 else 35
-            val getPart = if (isHead) { num => Nicknames.getHeadPartFor(num) }
-            else { num => Nicknames.getMiddlePartFor(num) }
-
-            if (pd.achievePoint.left >= required) {
-              pd.TitleFlags.addOne(num)
-              pd.consumeAchievePoint(required)
-              player.sendMessage("パーツ「" + getPart(num).getOrElse("") + "」を購入しました。")
-              pd.samepageflag = true
-              player.openInventory(MenuInventoryData.computePartsShopMenu(player))
-            } else {
-              player.sendMessage("実績ポイントが不足しています。")
-            }
-
-          case Material.BARRIER =>
-            clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            ioCanOpenNicknameMenu.open(NickNameMenu).apply(player).unsafeRunAsyncAndForget()
-
-          case _ if isSkull && isApplicableAsNextPageButton(current) =>
-            clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            val uuid = player.getUniqueId
-            val menuType = MenuInventoryData.MenuType.SHOP
-            MenuInventoryData.setHeadingIndex(
-              uuid,
-              menuType,
-              MenuInventoryData.getHeadingIndex(uuid, menuType).get + PER_PAGE
-            )
-            player.openInventory(MenuInventoryData.computePartsShopMenu(player))
-
-          case _ =>
+          } else {
+            player.sendMessage("実績ポイントが不足しています。")
+          }
+        } else if (mat == Material.BARRIER) {
+          clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
+          ioCanOpenNicknameMenu.open(NickNameMenu).apply(player).unsafeRunAsyncAndForget()
+        } else if (isSkull && isApplicableAsNextPageButton(current)) {
+          clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
+          val uuid = player.getUniqueId
+          val menuType = MenuInventoryData.MenuType.SHOP
+          MenuInventoryData.setHeadingIndex(
+            uuid,
+            menuType,
+            MenuInventoryData.getHeadingIndex(uuid, menuType).get + PER_PAGE
+          )
+          player.openInventory(MenuInventoryData.computePartsShopMenu(player))
         }
 
       // それ以外のインベントリの名前だった場合何もしない！
