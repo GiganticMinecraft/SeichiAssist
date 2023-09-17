@@ -32,7 +32,7 @@ class SkullItemStackBuilder(private val owner: SkullOwnerReference)
    */
   def this(ownerName: String) = this(SkullOwnerName(ownerName))
 
-  override def transformItemMetaOnBuild(meta: SkullMeta): Unit = {
+  override protected def transformItemMetaOnBuild(meta: SkullMeta): Unit = {
     owner match {
       case SkullOwnerUuid(uuid) =>
         meta.setOwningPlayer(Bukkit.getOfflinePlayer(uuid))
