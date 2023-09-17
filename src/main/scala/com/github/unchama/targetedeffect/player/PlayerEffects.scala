@@ -10,7 +10,9 @@ import org.bukkit.inventory.Inventory
 
 object PlayerEffects {
 
-  def closeInventoryEffect(implicit onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] = {
+  def closeInventoryEffect(
+    implicit onMainThread: OnMinecraftServerThread[IO]
+  ): TargetedEffect[Player] = {
     Kleisli { player =>
       // インベントリを閉じる操作はサーバースレッドでなければならない(Spigot 1.18.2)
       onMainThread.runAction(SyncIO {
