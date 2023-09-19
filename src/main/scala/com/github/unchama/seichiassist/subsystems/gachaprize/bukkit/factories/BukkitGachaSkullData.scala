@@ -2,14 +2,10 @@ package com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.factories
 
 import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
 import com.github.unchama.seichiassist.SkullOwners
-import com.github.unchama.seichiassist.util.ItemMetaFactory
 import org.bukkit.ChatColor._
-import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
 object BukkitGachaSkullData {
-
-  import scala.util.chaining._
 
   /**
    * ノーマルガチャ券

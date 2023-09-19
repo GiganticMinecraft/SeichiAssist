@@ -5,10 +5,9 @@ import com.github.unchama.buildassist.util.AsyncInventorySetter
 import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository
-import com.github.unchama.seichiassist.util.ItemMetaFactory
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
-import org.bukkit.inventory.meta.{ItemMeta, SkullMeta}
+import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.{Inventory, ItemStack}
 import org.bukkit.{Bukkit, Material}
 
