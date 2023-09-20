@@ -288,7 +288,7 @@ object VoteMenu extends Menu {
           LeftClickButtonEffect {
             SequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-              DeferredEffect(IO(fairySpeechAPI.togglePlaySoundOnSpeech))
+              fairySpeechAPI.togglePlaySoundOnSpeech
             )
           }
         )
