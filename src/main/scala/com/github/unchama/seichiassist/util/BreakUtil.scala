@@ -260,8 +260,9 @@ object BreakUtil {
           case _                            => None
         }
         val silverFishLocations = plainBreakResult.mapFilter {
-          case (location, _) if location.getBlock.getType == Material.INFESTED_STONE => Some(location)
-          case _                                  => None
+          case (location, _) if location.getBlock.getType == Material.INFESTED_STONE =>
+            Some(location)
+          case _ => None
         }
 
         // 纏めなければ、FAWEの干渉を受け勝手に消される危険性などがある
