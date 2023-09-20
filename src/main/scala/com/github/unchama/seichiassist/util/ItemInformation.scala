@@ -27,7 +27,11 @@ object ItemInformation {
             1.18.2ではsetOwner、getOwnerともに使用できない。
             そのため、1.18.2からはPlayerProfileにUUIDを書き込み、UUIDを利用した判定を行うことになった。
      */
-    if (!(skullMeta.hasOwner && (SkullOwnerUuid(skullMeta.getOwningPlayer.getPlayerProfile.getUniqueId) == SkullOwners.unchama || skullMeta.getOwner == "unchama"))) return false
+    if (
+      !(skullMeta.hasOwner && (SkullOwnerUuid(
+        skullMeta.getOwningPlayer.getPlayerProfile.getUniqueId
+      ) == SkullOwners.unchama || skullMeta.getOwner == "unchama"))
+    ) return false
 
     skullMeta.hasLore && skullMeta.getLore.asScala.exists(containsRightClickMessage)
   }
