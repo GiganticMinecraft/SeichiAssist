@@ -22,7 +22,8 @@ object WorldGuardWrapper {
   /**
    * [[LocalPlayer]]を返す
    */
-  private def wrapPlayer(player: Player): LocalPlayer = WorldGuardPlugin.inst().wrapPlayer(player)
+  private def wrapPlayer(player: Player): LocalPlayer =
+    WorldGuardPlugin.inst().wrapPlayer(player)
 
   def getRegionManager(world: World): RegionManager =
     worldGuard.getPlatform.getRegionContainer.get(BukkitAdapter.adapt(world))
