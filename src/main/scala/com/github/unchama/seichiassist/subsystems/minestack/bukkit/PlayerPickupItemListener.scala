@@ -54,6 +54,7 @@ class PlayerPickupItemListener[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_
         } yield ()
 
         program.toIO.unsafeRunAsyncAndForget()
+      case _ => ()
     }
   }
 
