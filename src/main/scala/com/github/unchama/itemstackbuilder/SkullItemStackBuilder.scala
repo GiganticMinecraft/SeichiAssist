@@ -34,9 +34,16 @@ class SkullItemStackBuilder(private val owner: SkullOwnerReference)
 
   override protected def transformItemMetaOnBuild(meta: SkullMeta): Unit = {
     owner match {
+      case SkullOwnerUuidWithName(uuid, name) =>
+        meta.setOwningPlayer(Bukkit.getOfflinePlayer(uuid))
+        val gameProfile = new GameProfile(uuid, name)
+
+        val profileField = meta.getClass.getDeclaredField("profile")
+        profileField.setAccessible(true)
+        profileField.set(meta, gameProfile)
       case SkullOwnerUuid(uuid) =>
         meta.setOwningPlayer(Bukkit.getOfflinePlayer(uuid))
-        val gameProfile = new GameProfile(uuid, "unchama")
+        val gameProfile = new GameProfile(uuid, null)
 
         val profileField = meta.getClass.getDeclaredField("profile")
         profileField.setAccessible(true)
