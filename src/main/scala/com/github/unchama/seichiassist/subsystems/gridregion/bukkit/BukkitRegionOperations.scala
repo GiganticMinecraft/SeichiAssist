@@ -79,8 +79,8 @@ class BukkitRegionOperations[F[_]: Sync](
     regionName = s"${player.getName}_${regionCount.value}"
     region = new ProtectedCuboidRegion(
       regionName,
-      BlockVector3.at(selection.getBlockX, 0, selection.getBlockZ),
-      BlockVector3.at(selection.getBlockX, 255, selection.getBlockZ)
+      BlockVector3.at(selection.getBlockX, -64, selection.getBlockZ),
+      BlockVector3.at(selection.getBlockX, 320, selection.getBlockZ)
     )
     regionCreateResult <- Sync[F].delay {
       wgManager.addRegion(region)
