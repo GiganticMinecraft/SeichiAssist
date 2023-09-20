@@ -1,6 +1,7 @@
 package com.github.unchama.util.external
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin
 import com.sk89q.worldguard.protection.managers.RegionManager
 import com.sk89q.worldguard.protection.regions.{ProtectedCuboidRegion, ProtectedRegion}
 import com.sk89q.worldguard.{LocalPlayer, WorldGuard}
@@ -21,8 +22,7 @@ object WorldGuardWrapper {
   /**
    * [[LocalPlayer]]を返す
    */
-  private def wrapPlayer(player: Player): LocalPlayer =
-    worldGuard.checkPlayer(BukkitAdapter.adapt(player))
+  private def wrapPlayer(player: Player): LocalPlayer = WorldGuardPlugin.inst().wrapPlayer(player)
 
   def getRegionManager(world: World): RegionManager =
     worldGuard.getPlatform.getRegionContainer.get(BukkitAdapter.adapt(world))
