@@ -337,7 +337,7 @@ class PlayerBlockBreakListener(
   }
 
   /**
-   * y5ハーフブロック破壊抑制
+   * y-58ハーフブロック破壊抑制
    *
    * @param event
    *   BlockBreakEvent
@@ -350,16 +350,16 @@ class PlayerBlockBreakListener(
     val world = p.getWorld
     // そもそも自分の保護じゃなきゃ処理かけない
     if (!WorldGuardWrapper.canBuild(p, b.getLocation)) return
-    if (b.isInstanceOf[Slab]) {
+    if (b.getBlockData.isInstanceOf[Slab]) {
       b.setType(Material.STONE_SLAB)
       val location = b.getLocation
       world.dropItemNaturally(location, new ItemStack(Material.STONE_SLAB))
     }
     if (b.getType ne Material.STONE_SLAB) return
-    if (b.getY > 5) return
-    if (b.asInstanceOf[Slab].getType != Slab.Type.BOTTOM) return
+    if (b.getY > -58) return
+    if (b.getBlockData.asInstanceOf[Slab].getType != Slab.Type.BOTTOM) return
     if (!world.isSeichi) return
     event.setCancelled(true)
-    p.sendMessage(s"${RED}Y5以下に敷かれたハーフブロックは破壊不可能です。")
+    p.sendMessage(s"${RED}Y-58以下に敷かれたハーフブロックは破壊不可能です。")
   }
 }
