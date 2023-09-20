@@ -8,11 +8,8 @@ import org.bukkit.inventory.ItemStack
 
 object MaterialSets {
 
-  private val notApplicableSeichiSkillMaterials = Set(
-    Material.WATER,
-    Material.LAVA,
-    Material.BEDROCK
-  )
+  private val notApplicableSeichiSkillMaterials =
+    Set(Material.WATER, Material.LAVA, Material.BEDROCK)
 
   // このMaterialは整地スキルに対応する
   val materials: Set[Material] = Material.values().toSet.diff(notApplicableSeichiSkillMaterials)
