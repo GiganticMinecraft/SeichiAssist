@@ -100,8 +100,7 @@ object BreakUtil {
 
       val isBlockProtectedSlab =
         checkTarget.getType == Material.STONE_SLAB &&
-          checkTarget.getY == halfBlockLayerYCoordinate &&
-          checkTarget.getData == 0.toByte
+          checkTarget.getY == halfBlockLayerYCoordinate
 
       if (isBlockProtectedSlab) return false
     }

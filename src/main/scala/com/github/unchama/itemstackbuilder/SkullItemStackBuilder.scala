@@ -36,11 +36,16 @@ class SkullItemStackBuilder(private val owner: SkullOwnerReference)
     owner match {
       case SkullOwnerUuid(uuid) =>
         meta.setOwningPlayer(Bukkit.getOfflinePlayer(uuid))
+        val gameProfile = new GameProfile(uuid, "unchama")
+
+        val profileField = meta.getClass.getDeclaredField("profile")
+        profileField.setAccessible(true)
+        profileField.set(meta, gameProfile)
       case SkullOwnerName(name) =>
         /**
          * 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
          */
-        meta.setOwningPlayer(Bukkit.getOfflinePlayer(name))
+        meta.setOwner(name)
 
       /**
        * @see

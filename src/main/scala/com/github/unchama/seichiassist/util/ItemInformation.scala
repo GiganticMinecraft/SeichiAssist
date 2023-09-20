@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.util
 
+import com.github.unchama.itemstackbuilder.SkullOwnerUuid
+import com.github.unchama.seichiassist.SkullOwners
 import org.bukkit.ChatColor.GREEN
 import org.bukkit.block.Block
 import org.bukkit.Material
@@ -19,7 +21,13 @@ object ItemInformation {
 
     val skullMeta = itemStack.getItemMeta.asInstanceOf[SkullMeta]
 
-    if (!(skullMeta.hasOwner && skullMeta.getOwningPlayer.getName == "unchama")) return false
+    /*
+      Note: skullMeta.getOwner == "unchama"という条件は、後方互換性のためのコードである。
+            1.12.2のバージョンでskullMeta.getOwnerで頭のオーナーを取得できていたが、
+            1.18.2ではsetOwner、getOwnerともに使用できない。
+            そのため、1.18.2からはPlayerProfileにUUIDを書き込み、UUIDを利用した判定を行うことになった。
+     */
+    if (!(skullMeta.hasOwner && (SkullOwnerUuid(skullMeta.getOwningPlayer.getPlayerProfile.getUniqueId) == SkullOwners.unchama || skullMeta.getOwner == "unchama"))) return false
 
     skullMeta.hasLore && skullMeta.getLore.asScala.exists(containsRightClickMessage)
   }
