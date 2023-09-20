@@ -260,7 +260,7 @@ object BreakUtil {
           case _                            => None
         }
         val silverFishLocations = plainBreakResult.mapFilter {
-          case (location, drops) if drops.isEmpty => Some(location)
+          case (location, _) if location.getBlock.getType == Material.INFESTED_STONE => Some(location)
           case _                                  => None
         }
 
