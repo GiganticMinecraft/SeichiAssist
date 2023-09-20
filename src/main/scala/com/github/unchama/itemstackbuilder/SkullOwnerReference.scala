@@ -4,6 +4,8 @@ import java.util.UUID
 
 sealed trait SkullOwnerReference
 
+case class SkullOwnerUuidWithName(uuid: UUID, name: String) extends SkullOwnerReference
+
 case class SkullOwnerUuid(uuid: UUID) extends SkullOwnerReference
 
 case class SkullOwnerName(name: String) extends SkullOwnerReference
