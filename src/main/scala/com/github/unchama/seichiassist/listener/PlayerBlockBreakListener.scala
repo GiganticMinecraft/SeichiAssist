@@ -350,10 +350,12 @@ class PlayerBlockBreakListener(
     val world = p.getWorld
     // そもそも自分の保護じゃなきゃ処理かけない
     if (!WorldGuardWrapper.canBuild(p, b.getLocation)) return
-    if (b.getBlockData.isInstanceOf[Slab]) {
-      b.setType(Material.STONE_SLAB)
-      val location = b.getLocation
-      world.dropItemNaturally(location, new ItemStack(Material.STONE_SLAB))
+    b.getBlockData match {
+      case slab: Slab if slab.getType == Slab.Type.DOUBLE =>
+        b.setType(Material.STONE_SLAB)
+        val location = b.getLocation
+        world.dropItemNaturally(location, new ItemStack(Material.STONE_SLAB))
+      case _ =>
     }
     if (b.getType ne Material.STONE_SLAB) return
     if (b.getY > -58) return
