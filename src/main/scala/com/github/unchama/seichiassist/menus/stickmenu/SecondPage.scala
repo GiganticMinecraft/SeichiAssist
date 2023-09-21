@@ -390,9 +390,9 @@ object SecondPage extends Menu {
           consumeGachaTicketAPI.consumeGachaTicketAmount(player).map { amount =>
             val lore = List(
               s"$RESET${GREEN}ガチャを一気に$YELLOW${amount.value}回${GREEN}引きます!",
-              "左クリックで一度に引く枚数を変更します",
-              "右クリックでガチャを引きます",
-              "ガチャ券は整地報酬ガチャ券のストックから直接差し引かれます"
+              s"$RESET${GRAY}左クリックで一度に引く枚数を変更します",
+              s"$RESET${GRAY}右クリックでガチャを引きます",
+              s"$RESET${DARK_GRAY}ガチャ券は整地報酬ガチャ券のストックから直接差し引かれます"
             )
             new IconItemStackBuilder(Material.PAPER)
               .title(s"$YELLOW$UNDERLINE${BOLD}ガチャ一括まとめ引き!")
