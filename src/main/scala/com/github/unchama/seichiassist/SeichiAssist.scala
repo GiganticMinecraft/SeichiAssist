@@ -758,7 +758,7 @@ class SeichiAssist extends JavaPlugin() {
       new ChatInterceptor(List(globalChatInterceptionScope)),
       new MenuHandler(),
       SpawnRegionProjectileInterceptor,
-      Y5DoubleSlabCanceller
+      YMinus59DoubleSlabCanceller
     ).concat(bungeeSemaphoreResponderSystem.listenersToBeRegistered)
       .concat {
         Seq(
