@@ -12,6 +12,8 @@ object MaterialSets {
     Set(Material.WATER, Material.LAVA, Material.BEDROCK)
 
   // このMaterialは整地スキルに対応する
+  // TODO(1.18): 1.18のコードに書き換えるときに、materialsの列挙をホワイトリスト方式からブラックリスト方式に書き換えたので、
+  //  元のコードとMaterial.values()のdiffを取って、なぜホワイトリスト方式が採用されたかを考えてみる
   val materials: Set[Material] = Material.values().toSet.diff(notApplicableSeichiSkillMaterials)
 
   // これらのマテリアルを持つブロックは破壊を整地量に計上しない
