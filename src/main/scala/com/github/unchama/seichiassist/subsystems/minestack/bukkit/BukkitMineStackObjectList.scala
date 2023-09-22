@@ -67,6 +67,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(ORES, "budding_amethyst", "芽生えたアメジスト", Material.BUDDING_AMETHYST),
     MineStackObjectByMaterial(ORES, "netherite_block", "ネザライトブロック", Material.NETHERITE_BLOCK),
     MineStackObjectByMaterial(ORES, "amethyst_shard", "アメジストの欠片", Material.AMETHYST_SHARD),
+    MineStackObjectByMaterial(ORES, "raw_copper", "銅の原石", Material.RAW_COPPER),
     MineStackObjectByMaterial(ORES, "raw_iron", "鉄の原石", Material.RAW_IRON),
     MineStackObjectByMaterial(ORES, "raw_gold", "金の原石", Material.RAW_GOLD),
     MineStackObjectByMaterial(ORES, "netherite_ingot", "ネザライトインゴット", Material.NETHERITE_INGOT),
