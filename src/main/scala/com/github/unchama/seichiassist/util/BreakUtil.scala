@@ -233,7 +233,7 @@ object BreakUtil {
       targetBlocksInformation <- PluginExecutionContexts
         .onMainThread
         .runAction(SyncIO {
-          val seq: Seq[(Location, Material)] = targetBlocks
+          val seq: Seq[(Location, Block)] = targetBlocks
             .toSeq
             .filter { block =>
               if (block.getType == Material.AIR) {
@@ -242,23 +242,21 @@ object BreakUtil {
                 false
               } else true
             }
-            .map(block => (block.getLocation.clone(), block.getType))
-
-          // ブロックをすべて[[toMaterial]]に変える
-          targetBlocks.foreach(_.setType(toMaterial))
+            .map(block => (block.getLocation.clone(), block))
 
           seq
         })
 
+
       breakResults = {
         val plainBreakResult = targetBlocksInformation.map {
-          case (location, _) =>
-            (location, location.getBlock.getDrops(miningTool).asScala)
+          case (location, block) =>
+            (location, block.getDrops(miningTool, player).asScala)
         }
         val drops = plainBreakResult.mapFilter {
-          case (_, drops) if drops.nonEmpty => Some(drops.head)
+          case (_, drops) if drops.nonEmpty => Some(drops)
           case _                            => None
-        }
+        }.flatten
         val silverFishLocations = plainBreakResult.mapFilter {
           case (location, _) if location.getBlock.getType == Material.INFESTED_STONE =>
             Some(location)
@@ -291,18 +289,23 @@ object BreakUtil {
           ).map(Option.unless(_)(itemStack))
         }
 
+      _ <- PluginExecutionContexts.onMainThread.runAction(SyncIO {
+        // ブロックをすべて[[toMaterial]]に変える
+        targetBlocks.foreach(_.setType(toMaterial))
+      })
+
       _ <- IO {
         // 壊した時の音を再生する
         if (shouldPlayBreakSound) {
           targetBlocksInformation.foreach {
-            case (location, material) =>
-              dropLocation.getWorld.playEffect(location, Effect.STEP_SOUND, material)
+            case (location, block) =>
+              dropLocation.getWorld.playEffect(location, Effect.STEP_SOUND, block)
           }
         }
       }
 
       // プレイヤーの統計を増やす
-      totalCount = totalBreakCount(targetBlocksInformation.map { case (_, m) => m })
+      totalCount = totalBreakCount(targetBlocksInformation.map { case (_, m) => m.getType })
       blockCountWeight <- blockCountWeight[IO](player.getWorld)
       expIncrease = SeichiExpAmount.ofNonNegative(totalCount * blockCountWeight)
 
