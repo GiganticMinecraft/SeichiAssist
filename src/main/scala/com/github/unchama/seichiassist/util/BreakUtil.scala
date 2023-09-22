@@ -247,7 +247,6 @@ object BreakUtil {
           seq
         })
 
-
       breakResults = {
         val plainBreakResult = targetBlocksInformation.map {
           case (location, block) =>
@@ -289,10 +288,12 @@ object BreakUtil {
           ).map(Option.unless(_)(itemStack))
         }
 
-      _ <- PluginExecutionContexts.onMainThread.runAction(SyncIO {
-        // ブロックをすべて[[toMaterial]]に変える
-        targetBlocks.foreach(_.setType(toMaterial))
-      })
+      _ <- PluginExecutionContexts
+        .onMainThread
+        .runAction(SyncIO {
+          // ブロックをすべて[[toMaterial]]に変える
+          targetBlocks.foreach(_.setType(toMaterial))
+        })
 
       _ <- IO {
         // 壊した時の音を再生する
