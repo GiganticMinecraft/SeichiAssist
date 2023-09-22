@@ -345,23 +345,21 @@ class PlayerBlockBreakListener(
   @EventHandler(priority = EventPriority.LOWEST)
   @SuppressWarnings(Array("deprecation"))
   def onPlayerBlockHalf(event: BlockBreakEvent): Unit = {
-    val p = event.getPlayer
-    val b = event.getBlock
-    val world = p.getWorld
+    val player = event.getPlayer
+    val block = event.getBlock
+    val world = player.getWorld
     // そもそも自分の保護じゃなきゃ処理かけない
-    if (!WorldGuardWrapper.canBuild(p, b.getLocation)) return
-    b.getBlockData match {
+    if (!WorldGuardWrapper.canBuild(player, block.getLocation)) return
+    block.getBlockData match {
       case slab: Slab if slab.getType == Slab.Type.DOUBLE =>
-        b.setType(Material.STONE_SLAB)
-        val location = b.getLocation
-        world.dropItemNaturally(location, new ItemStack(Material.STONE_SLAB))
+        val location = block.getLocation
+        world.dropItemNaturally(location, new ItemStack(block.getType))
       case _ =>
     }
-    if (b.getType ne Material.STONE_SLAB) return
-    if (b.getY > -58) return
-    if (b.getBlockData.asInstanceOf[Slab].getType != Slab.Type.BOTTOM) return
+    if (block.getY > -58) return
+    if (block.getBlockData.asInstanceOf[Slab].getType != Slab.Type.BOTTOM) return
     if (!world.isSeichi) return
     event.setCancelled(true)
-    p.sendMessage(s"${RED}Y-58以下に敷かれたハーフブロックは破壊不可能です。")
+    player.sendMessage(s"${RED}Y-58以下に敷かれたハーフブロックは破壊不可能です。")
   }
 }

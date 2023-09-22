@@ -23,7 +23,6 @@ object YMinus59DoubleSlabCanceller extends Listener {
   @EventHandler
   def onPlaceDoubleSlabAtYMinus59(event: BlockPlaceEvent): Unit = {
     if (!event.canBuild) return
-    if (event.getItemInHand.getType != Material.STONE_SLAB) return
     if (!event.getBlockPlaced.getWorld.isSeichi) return
     if (event.getBlockPlaced.getY != -59) return
     event.getBlockPlaced.getBlockData match {
