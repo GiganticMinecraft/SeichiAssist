@@ -58,6 +58,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(ORES, "deepslate_emerald_ore", "深層エメラルド鉱石", Material.DEEPSLATE_EMERALD_ORE),
     MineStackObjectByMaterial(ORES, "deepslate_lapis_ore", "深層ラピスラズリ鉱石", Material.DEEPSLATE_LAPIS_ORE),
     MineStackObjectByMaterial(ORES, "deepslate_diamond_ore", "深層ダイヤモンド鉱石", Material.DEEPSLATE_DIAMOND_ORE),
+    MineStackObjectByMaterial(ORES, "deepslate_copper_ore", "深層銅鉱石", Material.DEEPSLATE_COPPER_ORE),
     MineStackObjectByMaterial(ORES, "nether_gold_ore", "ネザー金鉱石", Material.NETHER_GOLD_ORE),
     MineStackObjectByMaterial(ORES, "ancient_debris", "古代の残骸", Material.ANCIENT_DEBRIS),
     MineStackObjectByMaterial(ORES, "raw_iron_block", "鉄の原石ブロック", Material.RAW_IRON_BLOCK),
