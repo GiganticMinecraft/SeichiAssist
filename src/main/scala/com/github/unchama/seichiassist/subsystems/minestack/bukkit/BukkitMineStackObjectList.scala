@@ -3,9 +3,11 @@ package com.github.unchama.seichiassist.subsystems.minestack.bukkit
 import cats.Functor
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
+import com.github.unchama.generic.ListExtra
 import com.github.unchama.minecraft.bukkit.algebra.CloneableBukkitItemStack._
 import com.github.unchama.minecraft.objects.MinecraftMaterial
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject.{
   MineStackObjectByItemStack,
   MineStackObjectByMaterial
@@ -1103,37 +1105,22 @@ class BukkitMineStackObjectList[F[_]: Sync](
   ): F[Vector[Option[MineStackObject[ItemStack]]]] = {
     for {
       gachaPrizes <- gachaPrizeAPI.gachaPrizesWhenGachaEventsIsNotHolding
-      canBeSignedAsGachaPrize = gachaPrizeAPI.canBeSignedAsGachaPrize
-      foundOptGachaPrizes = itemStacks.map { itemStack =>
-        gachaPrizes.find { gachaPrize =>
-          if (gachaPrize.signOwner) {
-            gachaPrize
-              .materializeWithOwnerSignature(player.getName)(canBeSignedAsGachaPrize)
-              .isSimilar(itemStack)
-          } else {
-            gachaPrize.itemStack.isSimilar(itemStack)
-          }
-        }
-      }
       mineStackObjects <- allMineStackObjects
     } yield {
-      foundOptGachaPrizes.zip(itemStacks).map {
-        case (gachaPrizeOpt, itemStack) =>
-          val isGachaPrize = gachaPrizeOpt.nonEmpty
-          // ItemStackのLoreはnullの可能性がある
-          val isSignedItemStack =
-            Option(itemStack.getItemMeta.getLore).exists(_.contains("所有者："))
-          if (isGachaPrize && gachaPrizeOpt.get.signOwner) {
-            mineStackObjects.find { mineStackObject =>
-              gachaPrizeOpt.get.itemStack.isSimilar(mineStackObject.itemStack)
-            }
-          } else if (isSignedItemStack) {
-            // 所有者名が違うとガチャ景品として認識しないが、違ったらそもそも見つかっていない
-            // 記名が入っていないアイテムは収納できてしまうが仕様
-            None
-          } else {
-            mineStackObjects.find(_.itemStack.isSimilar(itemStack))
-          }
+      implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
+        gachaPrizeAPI.canBeSignedAsGachaPrize
+
+      val gachaPrizeWithSignedItemStacks = gachaPrizes.map { gachaPrize =>
+        gachaPrize -> gachaPrize.materializeWithOwnerSignature(player.getName)
+      }
+
+      itemStacks.map { _itemStack =>
+        val itemStack = gachaPrizeWithSignedItemStacks
+          .find { case (_, signedItemStack) => signedItemStack.isSimilar(_itemStack) }
+          .map(_._2)
+          .getOrElse(_itemStack)
+
+        mineStackObjects.find(_.itemStack.isSimilar(itemStack))
       }
     }
   }
