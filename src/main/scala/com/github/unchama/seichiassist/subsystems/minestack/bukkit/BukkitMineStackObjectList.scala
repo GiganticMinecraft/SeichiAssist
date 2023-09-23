@@ -1097,37 +1097,44 @@ class BukkitMineStackObjectList[F[_]: Sync](
     allMineStackGroups.map(_.filter { group => categoryOf(group) == category })
   }
 
-  override def findBySignedItemStack(
-    itemStack: ItemStack,
+  override def findBySignedItemStacks(
+    itemStacks: Vector[ItemStack],
     player: Player
-  ): F[Option[MineStackObject[ItemStack]]] = for {
-    gachaPrizes <- gachaPrizeAPI.gachaPrizesWhenGachaEventsIsNotHolding
-    canBeSignedAsGachaPrize = gachaPrizeAPI.canBeSignedAsGachaPrize
-    foundGachaPrizeOpt = gachaPrizes.find { gachaPrize =>
-      if (gachaPrize.signOwner) {
-        gachaPrize
-          .materializeWithOwnerSignature(player.getName)(canBeSignedAsGachaPrize)
-          .isSimilar(itemStack)
-      } else {
-        gachaPrize.itemStack.isSimilar(itemStack)
+  ): F[Vector[Option[MineStackObject[ItemStack]]]] = {
+    for {
+      gachaPrizes <- gachaPrizeAPI.gachaPrizesWhenGachaEventsIsNotHolding
+      canBeSignedAsGachaPrize = gachaPrizeAPI.canBeSignedAsGachaPrize
+      foundOptGachaPrizes = itemStacks.map { itemStack =>
+        gachaPrizes.find { gachaPrize =>
+          if (gachaPrize.signOwner) {
+            gachaPrize
+              .materializeWithOwnerSignature(player.getName)(canBeSignedAsGachaPrize)
+              .isSimilar(itemStack)
+          } else {
+            gachaPrize.itemStack.isSimilar(itemStack)
+          }
+        }
       }
-    }
-    isGachaPrize = foundGachaPrizeOpt.nonEmpty
-    mineStackObjects <- allMineStackObjects
-  } yield {
-    // ItemStackのLoreはnullの可能性がある
-    val isSignedItemStack =
-      Option(itemStack.getItemMeta.getLore).exists(_.contains("所有者："))
-    if (isGachaPrize && foundGachaPrizeOpt.get.signOwner) {
-      mineStackObjects.find { mineStackObject =>
-        foundGachaPrizeOpt.get.itemStack.isSimilar(mineStackObject.itemStack)
+      mineStackObjects <- allMineStackObjects
+    } yield {
+      foundOptGachaPrizes.zip(itemStacks).map {
+        case (gachaPrizeOpt, itemStack) =>
+          val isGachaPrize = gachaPrizeOpt.nonEmpty
+          // ItemStackのLoreはnullの可能性がある
+          val isSignedItemStack =
+            Option(itemStack.getItemMeta.getLore).exists(_.contains("所有者："))
+          if (isGachaPrize && gachaPrizeOpt.get.signOwner) {
+            mineStackObjects.find { mineStackObject =>
+              gachaPrizeOpt.get.itemStack.isSimilar(mineStackObject.itemStack)
+            }
+          } else if (isSignedItemStack) {
+            // 所有者名が違うとガチャ景品として認識しないが、違ったらそもそも見つかっていない
+            // 記名が入っていないアイテムは収納できてしまうが仕様
+            None
+          } else {
+            mineStackObjects.find(_.itemStack.isSimilar(itemStack))
+          }
       }
-    } else if (isSignedItemStack) {
-      // 所有者名が違うとガチャ景品として認識しないが、違ったらそもそも見つかっていない
-      // 記名が入っていないアイテムは収納できてしまうが仕様
-      None
-    } else {
-      mineStackObjects.find(_.itemStack.isSimilar(itemStack))
     }
   }
 
