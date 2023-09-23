@@ -69,9 +69,10 @@ class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[
     val minestackObjectToUse =
       mineStackAPI
         .mineStackObjectList
-        .findBySignedItemStack(offHandItem, player)
+        .findBySignedItemStacks(Vector(offHandItem), player)
         .toIO
         .unsafeRunSync()
+        .head
         .filter(_ => buildAssistPlayerData.zs_minestack_flag)
 
     val replaceableMaterials = Set(
