@@ -12,7 +12,6 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
 }
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.util.InventoryOperations
-import com.github.unchama.util.bukkit.ItemStackUtil
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
