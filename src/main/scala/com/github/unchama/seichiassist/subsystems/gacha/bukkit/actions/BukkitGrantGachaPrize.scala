@@ -12,6 +12,7 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
 }
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.util.InventoryOperations
+import com.github.unchama.util.bukkit.ItemStackUtil
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -28,19 +29,12 @@ class BukkitGrantGachaPrize[F[_]: Sync: OnMinecraftServerThread](
     Kleisli { player =>
       for {
         currentAutoMineStackState <- mineStackAPI.autoMineStack(player)
-        results <- prizes.traverse { gachaPrize =>
-          val itemStack = gachaPrize.itemStack
-          whenAOrElse(currentAutoMineStackState)(
-            mineStackAPI
-              .mineStackRepository
-              .tryIntoMineStack(player, itemStack, itemStack.getAmount)
-              .map(hasBeenStoredInMineStack => gachaPrize -> hasBeenStoredInMineStack),
-            gachaPrize -> false
-          )
-        }
-      } yield results.collect {
-        case (gachaPrize, result) if !result => gachaPrize
-      }
+        itemStacks <- Sync[F].delay(prizes.map(_.itemStack))
+        results <- whenAOrElse(currentAutoMineStackState)(
+          mineStackAPI.mineStackRepository.tryIntoMineStack(player, itemStacks),
+          itemStacks
+        )
+      } yield prizes.filter(prize => results.contains(prize.itemStack))
     }
 
   override def insertIntoPlayerInventoryOrDrop(
