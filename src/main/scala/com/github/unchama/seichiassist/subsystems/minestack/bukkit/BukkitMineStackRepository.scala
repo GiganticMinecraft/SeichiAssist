@@ -66,9 +66,31 @@ class BukkitMineStackRepository[F[_]: Sync](
     )
   }
 
-  override def tryIntoMineStack(player: Player, itemStack: ItemStack, amount: Int): F[Boolean] =
+  override def tryIntoMineStack(
+    player: Player,
+    itemStack: ItemStack,
+    amount: Int
+  ): F[Boolean] = {
     for {
-      foundMineStackObject <- mineStackObjectList.findBySignedItemStack(itemStack, player)
-      _ <- foundMineStackObject.traverse(addStackedAmountOf(player, _, amount))
-    } yield foundMineStackObject.isDefined
+      foundMineStackObject <- mineStackObjectList.findBySignedItemStacks(
+        Vector(itemStack),
+        player
+      )
+      _ <- foundMineStackObject.head.traverse(addStackedAmountOf(player, _, amount))
+    } yield foundMineStackObject.head.isDefined
+  }
+
+  override def tryIntoMineStack(
+    player: Player,
+    itemStacks: Vector[ItemStack]
+  ): F[Vector[ItemStack]] = for {
+    mineStackObjects <- mineStackObjectList.findBySignedItemStacks(itemStacks, player)
+    _ <- mineStackObjects.traverse {
+      case Some(mineStackObject) =>
+        addStackedAmountOf(player, mineStackObject, mineStackObject.itemStack.getAmount)
+      case _ => Sync[F].unit
+    }
+  } yield itemStacks.diff(mineStackObjects.collect {
+    case Some(mineStackObject) => mineStackObject.itemStack
+  })
 }
