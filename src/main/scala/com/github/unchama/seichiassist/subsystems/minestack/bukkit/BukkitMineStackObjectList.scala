@@ -1110,15 +1110,12 @@ class BukkitMineStackObjectList[F[_]: Sync](
       implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
         gachaPrizeAPI.canBeSignedAsGachaPrize
 
-      val gachaPrizeWithSignedItemStacks = gachaPrizes.map { gachaPrize =>
-        gachaPrize -> gachaPrize.materializeWithOwnerSignature(player.getName)
+      val signedItemStacks = gachaPrizes.map { gachaPrize =>
+        gachaPrize.materializeWithOwnerSignature(player.getName)
       }
 
       itemStacks.map { _itemStack =>
-        val itemStack = gachaPrizeWithSignedItemStacks
-          .find { case (_, signedItemStack) => signedItemStack.isSimilar(_itemStack) }
-          .map(_._2)
-          .getOrElse(_itemStack)
+        val itemStack = signedItemStacks.find(_.isSimilar(_itemStack)).getOrElse(_itemStack)
 
         mineStackObjects.find(_.itemStack.isSimilar(itemStack))
       }
