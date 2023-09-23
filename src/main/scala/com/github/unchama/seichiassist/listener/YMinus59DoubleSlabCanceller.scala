@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist.ManagedWorld._
-import org.bukkit.Material
 import org.bukkit.block.data.`type`.Slab
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.{EventHandler, Listener}

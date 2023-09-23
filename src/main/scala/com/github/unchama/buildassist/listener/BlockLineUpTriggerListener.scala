@@ -104,8 +104,9 @@ class BlockLineUpTriggerListener[
       if (buildAssistData.line_up_minestack_flg == 1) {
         mineStackAPI
           .mineStackObjectList
-          .findBySignedItemStack(mainHandItem, player)
+          .findBySignedItemStacks(Vector(mainHandItem), player)
           .unsafeRunSync()
+          .head
       } else None
 
     val maxBlockUsage = {

@@ -59,7 +59,7 @@ class PlayerInventoryListener(
     // 石炭とラピスラズリを適切に処理するため、typeとdurabilityを持つクラスを用意
     case class ExchangeableMaterial(materialType: Material)
 
-    val requiredAmountPerTicket = Map(//todo: こうせきたりない
+    val requiredAmountPerTicket = Map( // todo: こうせきたりない
       ExchangeableMaterial(Material.COAL_ORE) -> 128,
       ExchangeableMaterial(Material.IRON_ORE) -> 64,
       ExchangeableMaterial(Material.GOLD_ORE) -> 8,
