@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.subsystems.minestack.bukkit
 import cats.Functor
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
-import com.github.unchama.generic.ListExtra
 import com.github.unchama.minecraft.bukkit.algebra.CloneableBukkitItemStack._
 import com.github.unchama.minecraft.objects.MinecraftMaterial
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
