@@ -169,7 +169,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
               }
               .flatMap {
                 case GrantResultOfGachaTicketFromAdminTeam.Success =>
-                  MessageEffectF(s"${GREEN}ガチャ券${amount}枚加算成功")
+                  MessageEffectF(s"${GREEN}ガチャ券${amount.value}枚加算成功")
                 case GrantResultOfGachaTicketFromAdminTeam.NotExists =>
                   MessageEffectF(s"${RED}プレイヤーが存在しません。")
                 case GrantResultOfGachaTicketFromAdminTeam.GrantedToMultiplePlayers =>
