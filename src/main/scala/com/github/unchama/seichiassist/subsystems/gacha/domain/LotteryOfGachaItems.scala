@@ -2,14 +2,16 @@ package com.github.unchama.seichiassist.subsystems.gacha.domain
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
-  GachaPrizeTableEntry,
   GachaPrizeId,
+  GachaPrizeTableEntry,
   GachaProbability,
   StaticGachaPrizeFactory
 }
 import com.github.unchama.generic.Cloneable
+import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaRarity.GachaRarity
 
 import scala.annotation.tailrec
+import scala.util.Random
 
 class LotteryOfGachaItems[F[_]: Sync, ItemStack: Cloneable](
   implicit staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack]
