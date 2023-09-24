@@ -63,7 +63,11 @@ object BreakUtil {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
 
     // 壊されるブロックがワールドガード範囲だった場合処理を終了
-    if (!WorldGuardWrapper.canBuild(player, checkTarget.getLocation)) {
+    if (
+      !WorldGuardWrapper.canBuild(player, checkTarget.getLocation) && ManagedWorld
+        .fromBukkitWorld(checkTarget.getWorld)
+        .forall(_.shouldMuteCoreProtect)
+    ) {
       if (playerData.settings.shouldDisplayWorldGuardLogs) {
         player.sendMessage(s"${RED}ワールドガードで保護されています。")
       }
