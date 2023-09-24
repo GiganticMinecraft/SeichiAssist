@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack
 object MaterialSets {
 
   private val notApplicableSeichiSkillMaterials =
-    Set(Material.WATER, Material.LAVA, Material.BEDROCK)
+    Set(Material.WATER, Material.LAVA, Material.AIR, Material.BEDROCK)
 
   // このMaterialは整地スキルに対応する
   // TODO(1.18): 1.18のコードに書き換えるときに、materialsの列挙をホワイトリスト方式からブラックリスト方式に書き換えたので、
