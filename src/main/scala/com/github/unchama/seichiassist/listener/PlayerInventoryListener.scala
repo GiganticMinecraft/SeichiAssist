@@ -59,8 +59,9 @@ class PlayerInventoryListener(
     // 石炭とラピスラズリを適切に処理するため、typeとdurabilityを持つクラスを用意
     case class ExchangeableMaterial(materialType: Material)
 
-    val requiredAmountPerTicket = Map( // todo: こうせきたりない
+    val requiredAmountPerTicket = Map(
       ExchangeableMaterial(Material.COAL_ORE) -> 128,
+      ExchangeableMaterial(Material.COPPER_ORE) -> 128,
       ExchangeableMaterial(Material.IRON_ORE) -> 64,
       ExchangeableMaterial(Material.GOLD_ORE) -> 8,
       ExchangeableMaterial(Material.LAPIS_ORE) -> 8,
@@ -68,10 +69,15 @@ class PlayerInventoryListener(
       ExchangeableMaterial(Material.REDSTONE_ORE) -> 32,
       ExchangeableMaterial(Material.EMERALD_ORE) -> 4,
       ExchangeableMaterial(Material.NETHER_QUARTZ_ORE) -> 16,
-      ExchangeableMaterial(Material.COAL) -> 432,
-      ExchangeableMaterial(Material.REDSTONE) -> 288,
-      ExchangeableMaterial(Material.INK_SAC) -> 64,
-      ExchangeableMaterial(Material.DIAMOND) -> 8
+      ExchangeableMaterial(Material.NETHER_GOLD_ORE) -> 32,
+      ExchangeableMaterial(Material.DEEPSLATE_COAL_ORE) -> 128,
+      ExchangeableMaterial(Material.DEEPSLATE_COPPER_ORE) -> 128,
+      ExchangeableMaterial(Material.DEEPSLATE_IRON_ORE) -> 64,
+      ExchangeableMaterial(Material.DEEPSLATE_GOLD_ORE) -> 8,
+      ExchangeableMaterial(Material.DEEPSLATE_LAPIS_ORE) -> 8,
+      ExchangeableMaterial(Material.DEEPSLATE_DIAMOND_ORE) -> 4,
+      ExchangeableMaterial(Material.DEEPSLATE_REDSTONE_ORE) -> 32,
+      ExchangeableMaterial(Material.DEEPSLATE_EMERALD_ORE) -> 4
     )
 
     val inventoryContents = inventory.getContents.filter(_ != null)
