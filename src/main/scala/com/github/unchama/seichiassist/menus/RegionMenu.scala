@@ -70,33 +70,28 @@ object RegionMenu extends Menu {
     val computeButtonToClaimRegion: IO[Button] = for {
       regionCount <- gridRegionAPI.regionCount(player)
     } yield {
-      SeichiAssist.playermap(player.getUniqueId)
-      val selection = WorldEdit
-        .getInstance()
-        .getSessionManager
-        .get(BukkitAdapter.adapt(player))
-        .getSelection(BukkitAdapter.adapt(player.getWorld))
-
+      val session = WorldEdit.getInstance().getSessionManager.get(BukkitAdapter.adapt(player))
+      val world = BukkitAdapter.adapt(player.getWorld)
+      val isSelected = session.isSelectionDefined(world)
       val playerHasPermission = player.hasPermission("worldguard.region.claim")
-      val isSelectionNull = selection == null
-      val selectionHasEnoughSpace =
-        if (!isSelectionNull)
-          selection.getLength >= 10 && selection.getWidth >= 10
-        else false
 
-      val canMakeRegion = playerHasPermission && !isSelectionNull && selectionHasEnoughSpace
+      val selectionOpt = Option.when(isSelected)(session.getSelection(world))
+      val selectionHasEnoughSpace =
+        selectionOpt.exists(selection => selection.getLength >= 10 && selection.getWidth >= 10)
+
+      val canMakeRegion = playerHasPermission && !isSelected && selectionHasEnoughSpace
 
       val iconItemStack = {
-
         val lore = {
-          if (!playerHasPermission)
+          if (!playerHasPermission) {
             Seq(s"${RED}このワールドでは", s"${RED}保護を作成できません")
-          else if (isSelectionNull)
+          } else if (!isSelected) {
             Seq(s"${RED}範囲指定されていません", s"${RED}先に木の斧で2か所クリックしてネ")
-          else if (!selectionHasEnoughSpace)
+          } else if (!selectionHasEnoughSpace) {
             Seq(s"${RED}選択された範囲が狭すぎます", s"${RED}一辺当たり最低10ブロック以上にしてネ")
-          else
+          } else {
             Seq(s"$DARK_GREEN${UNDERLINE}範囲指定されています", s"$DARK_GREEN${UNDERLINE}クリックすると保護を作成します")
+          }
         } ++ {
           if (playerHasPermission)
             Seq(
@@ -126,7 +121,7 @@ object RegionMenu extends Menu {
         action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)(_ =>
           if (!playerHasPermission)
             MessageEffect(s"${RED}このワールドでは保護を作成できません")
-          else if (isSelectionNull)
+          else if (!isSelected)
             SequentialEffect(
               MessageEffect(s"${RED}先に木の斧で範囲を指定してからこのボタンを押してください"),
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
