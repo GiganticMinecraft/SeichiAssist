@@ -80,7 +80,7 @@ object GridRegionMenu extends Menu {
       for {
         currentLengthChangePerClick <- gridRegionAPI.lengthChangePerClick(player)
       } yield {
-        val iconItemStack = new IconItemStackBuilder(Material.GLASS_PANE)
+        val iconItemStack = new IconItemStackBuilder(Material.WHITE_STAINED_GLASS_PANE)
           .title(s"${GREEN}拡張単位の変更")
           .lore(
             List(
@@ -143,6 +143,17 @@ object GridRegionMenu extends Menu {
           case HorizontalAxisAlignedSubjectiveDirection.Right  => "右へ"
         }
 
+        val material = relativeDirection match {
+          case HorizontalAxisAlignedSubjectiveDirection.Ahead =>
+            Material.RED_STAINED_GLASS_PANE
+          case HorizontalAxisAlignedSubjectiveDirection.Behind =>
+            Material.GREEN_STAINED_GLASS_PANE
+          case HorizontalAxisAlignedSubjectiveDirection.Left =>
+            Material.PURPLE_STAINED_GLASS_PANE
+          case HorizontalAxisAlignedSubjectiveDirection.Right =>
+            Material.YELLOW_STAINED_GLASS_PANE
+        }
+
         def updateCurrentRegionShapeTo(
           shape: SubjectiveRegionShape
         ): Kleisli[IO, Player, Unit] = {
@@ -162,7 +173,7 @@ object GridRegionMenu extends Menu {
         }
 
         Button(
-          new IconItemStackBuilder(Material.GLASS_PANE)
+          new IconItemStackBuilder(material)
             .title(s"$DARK_GREEN${relativeDirectionString}ユニット増やす/減らす")
             .lore(lore)
             .build(),
@@ -187,7 +198,7 @@ object GridRegionMenu extends Menu {
     }
 
     val resetSettingButton: Button = {
-      val itemStack = new IconItemStackBuilder(Material.GLASS_PANE)
+      val itemStack = new IconItemStackBuilder(Material.YELLOW_STAINED_GLASS_PANE)
         .title(s"${RED}全設定リセット")
         .lore(List(s"$RED${UNDERLINE}取り扱い注意！！"))
         .build()
@@ -221,7 +232,7 @@ object GridRegionMenu extends Menu {
           s"${GRAY}保護ユニット上限値：$RED${gridRegionAPI.regionUnitLimit(worldName).limit.count}"
         )
 
-        val itemStack = new IconItemStackBuilder(Material.GLASS_PANE)
+        val itemStack = new IconItemStackBuilder(Material.BLUE_STAINED_GLASS_PANE)
           .title(s"${DARK_GREEN}設定")
           .lore(lore)
           .build()
