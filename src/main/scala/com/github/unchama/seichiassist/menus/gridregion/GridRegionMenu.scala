@@ -143,13 +143,6 @@ object GridRegionMenu extends Menu {
           case HorizontalAxisAlignedSubjectiveDirection.Right  => "右へ"
         }
 
-        relativeDirection match {
-          case HorizontalAxisAlignedSubjectiveDirection.Ahead  => 14
-          case HorizontalAxisAlignedSubjectiveDirection.Left   => 10
-          case HorizontalAxisAlignedSubjectiveDirection.Behind => 13
-          case HorizontalAxisAlignedSubjectiveDirection.Right  => 5
-        }
-
         def updateCurrentRegionShapeTo(
           shape: SubjectiveRegionShape
         ): Kleisli[IO, Player, Unit] = {
