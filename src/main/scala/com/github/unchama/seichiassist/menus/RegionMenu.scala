@@ -102,7 +102,7 @@ object RegionMenu extends Menu {
             Seq(
               s"${GRAY}Y座標は自動で全範囲保護されます",
               s"${YELLOW}A new region has been claimed",
-              s"${YELLOW}named '${getName}_$regionCount'.",
+              s"${YELLOW}named '${getName}_${regionCount.value}'.",
               s"${GRAY}と出れば保護設定完了です",
               s"${RED}赤色で別の英文が出た場合",
               s"${GRAY}保護の設定に失敗しています",
