@@ -280,7 +280,7 @@ object FirstPage extends Menu {
       val (buttonLore, effect) = {
         val world = getWorld
 
-        if (WorldGuardWrapper.canProtectionWorld(world)) {
+        if (!WorldGuardWrapper.canProtectionWorld(world)) {
           (List(s"${GRAY}このワールドでは土地の保護は行なえません"), LeftClickButtonEffect(emptyEffect))
         } else {
           val maxRegionCount = WorldGuardWrapper.getWorldMaxRegion(world)
