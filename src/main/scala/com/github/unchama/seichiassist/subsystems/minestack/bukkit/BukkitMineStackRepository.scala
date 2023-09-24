@@ -12,6 +12,7 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
 }
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.Material
 
 class BukkitMineStackRepository[F[_]: Sync](
   implicit mineStackObjectList: MineStackObjectList[F, ItemStack, Player],
@@ -83,14 +84,22 @@ class BukkitMineStackRepository[F[_]: Sync](
   override def tryIntoMineStack(
     player: Player,
     itemStacks: Vector[ItemStack]
-  ): F[Vector[ItemStack]] = for {
-    mineStackObjects <- mineStackObjectList.findBySignedItemStacks(itemStacks, player)
-    _ <- mineStackObjects.traverse {
-      case Some(mineStackObject) =>
-        addStackedAmountOf(player, mineStackObject, mineStackObject.itemStack.getAmount)
-      case _ => Sync[F].unit
-    }
-  } yield itemStacks.diff(mineStackObjects.collect {
-    case Some(mineStackObject) => mineStackObject.itemStack
-  })
+  ): F[Vector[ItemStack]] = {
+    val expBottle = new ItemStack(Material.EXPERIENCE_BOTTLE)
+
+    for {
+      mineStackObjects <- mineStackObjectList.findBySignedItemStacks(itemStacks, player)
+      _ <- mineStackObjects.traverse {
+        case Some(mineStackObject) =>
+          addStackedAmountOf(player, mineStackObject, mineStackObject.itemStack.getAmount)
+        case _ => Sync[F].unit
+      }
+    } yield itemStacks
+      .diff(mineStackObjects.collect {
+        case Some(mineStackObject) => mineStackObject.itemStack
+      })
+      .filterNot(
+        _.isSimilar(expBottle)
+      ) // 経験値瓶はガチャ景品に登録されているアイテム数とMineStackObjectのアイテム数が違うので、diffがとれないのでこうするしかない
+  }
 }
