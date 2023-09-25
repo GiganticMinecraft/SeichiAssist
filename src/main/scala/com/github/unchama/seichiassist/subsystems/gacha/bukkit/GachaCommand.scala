@@ -238,11 +238,9 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
       }
 
     val list: ContextualExecutor =
-      ContextualExecutorBuilder.beginConfiguration.buildWithExecutionF { context =>
+      ContextualExecutorBuilder.beginConfiguration.buildWithExecutionCSEffect { context =>
         val eventName = context.args.yetToBeParsed.headOption.map(GachaEventName)
-        for {
-          gachaPrizes <- gachaPrizeAPI.allGachaPrizeList
-        } yield {
+        Kleisli.liftF(gachaPrizeAPI.allGachaPrizeList).flatMap { gachaPrizes =>
           val gachaPrizeInformation = gachaPrizes
             .filter { gachaPrize =>
               if (eventName.isEmpty) gachaPrize.nonGachaEventItem
@@ -261,7 +259,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
             .toList
 
           val totalProbability = gachaPrizes.map(_.probability.value).sum
-          MessageEffect(
+          MessageEffectF(
             List(s"${RED}アイテム番号|アイテム名|アイテム数|出現確率") ++ gachaPrizeInformation ++ List(
               s"${RED}合計確率: $totalProbability(${totalProbability * 100}%)",
               s"${RED}合計確率は100%以内に収まるようにしてください。"
