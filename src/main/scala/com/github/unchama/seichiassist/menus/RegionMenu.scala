@@ -134,7 +134,7 @@ object RegionMenu extends Menu {
           else
             SequentialEffect(
               CommandEffect("/expand vert"),
-              CommandEffect(s"rg claim ${player.getName}_$regionCount"),
+              CommandEffect(s"rg claim ${player.getName}_${regionCount.value}"),
               gridRegionAPI.createAndClaimRegionSelectedOnWorldGuard,
               CommandEffect("/sel"),
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
