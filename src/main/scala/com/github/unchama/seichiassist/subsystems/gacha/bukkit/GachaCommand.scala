@@ -31,7 +31,7 @@ import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import eu.timepit.refined.numeric.{Interval, NonNegative, Positive}
 import org.bukkit.ChatColor._
-import org.bukkit.command.TabExecutor
+import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import shapeless.HNil
@@ -215,7 +215,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
         }
 
     val add: ContextualExecutor =
-      playerCommandBuilder.thenParse(probabilityParser).buildWithExecutionF { context =>
+      playerCommandBuilder.thenParse(probabilityParser).buildWithExecutionCSEffect { context =>
         import shapeless.::
 
         val player = context.sender
@@ -223,18 +223,22 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
         val eventName = context.args.yetToBeParsed.headOption.map(GachaEventName)
         val mainHandItem = player.getInventory.getItemInMainHand
 
-        for {
-          events <- gachaPrizeAPI.createdGachaEvents
-          _ <- gachaPrizeAPI.addGachaPrize(
-            domain.GachaPrizeTableEntry(
-              mainHandItem,
-              GachaProbability(probability),
-              probability < 0.1,
-              _,
-              events.find(gachaEvent => eventName.contains(gachaEvent.eventName))
-            )
-          )
-        } yield MessageEffect(List("ガチャアイテムを追加しました！"))
+        Kleisli
+          .liftF[F, CommandSender, Unit] {
+            for {
+              events <- gachaPrizeAPI.createdGachaEvents
+              _ <- gachaPrizeAPI.addGachaPrize(
+                domain.GachaPrizeTableEntry(
+                  mainHandItem,
+                  GachaProbability(probability),
+                  probability < 0.1,
+                  _,
+                  events.find(gachaEvent => eventName.contains(gachaEvent.eventName))
+                )
+              )
+            } yield ()
+          }
+          .productR(MessageEffectF("ガチャアイテムを追加しました！"))
       }
 
     val list: ContextualExecutor =
