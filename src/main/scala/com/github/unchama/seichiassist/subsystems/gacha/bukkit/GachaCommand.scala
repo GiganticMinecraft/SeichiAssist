@@ -187,31 +187,30 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
             MessageEffect("IDは0以上の整数を指定してください。")
           )
         )
-        .buildWithExecutionF { context =>
+        .buildWithExecutionCSEffect { context =>
           import shapeless.::
           val gachaPrizeId :: shapeless.HNil = context.args.parsed
           // optional
           val ownerName = context.args.yetToBeParsed.headOption
 
-          for {
-            gachaPrize <- gachaPrizeAPI.fetch(GachaPrizeId(gachaPrizeId))
-            existsGachaPrize = gachaPrize.nonEmpty
-            _ <- Sync[F].delay {
-              gachaPrize.foreach { gachaPrize =>
-                val itemStack = ownerName match {
-                  case Some(name) => gachaPrize.materializeWithOwnerSignature(name)
-                  case None       => gachaPrize.itemStack
-                }
+          Kleisli
+            .liftF {
+              for {
+                gachaPrize <- gachaPrizeAPI.fetch(GachaPrizeId(gachaPrizeId))
+                grantEffect <- gachaPrize.traverse { gachaPrize =>
+                  val itemStack = ownerName match {
+                    case Some(name) => gachaPrize.materializeWithOwnerSignature(name)
+                    case None       => gachaPrize.itemStack
+                  }
 
-                InventoryOperations.grantItemStacksEffect(itemStack).apply(context.sender)
-              }
+                  InventoryOperations.grantItemStacksEffect(itemStack).apply(context.sender)
+                }
+              } yield grantEffect
             }
-          } yield {
-            if (existsGachaPrize)
-              MessageEffect("ガチャアイテムを付与しました。")
-            else
-              MessageEffect("指定されたIDのガチャ景品は存在しません。")
-          }
+            .flatMap {
+              case Some(_) => MessageEffectF("ガチャアイテムを付与しました。")
+              case None    => MessageEffectF("指定されたIDのガチャ景品は存在しません。")
+            }
         }
 
     val add: ContextualExecutor =
