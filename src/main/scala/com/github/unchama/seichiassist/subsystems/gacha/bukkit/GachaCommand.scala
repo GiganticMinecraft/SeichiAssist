@@ -332,25 +332,29 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
       .beginConfiguration
       .thenParse(gachaPrizeIdExistsParser)
       .thenParse(probabilityParser)
-      .buildWithExecutionF { context =>
+      .buildWithExecutionCSEffect { context =>
         import shapeless.::
         val targetId :: newProb :: HNil = context.args.parsed
-        for {
-          currentGachaPrize <- gachaPrizeAPI.fetch(targetId)
-          probabilityChange <- currentGachaPrize.traverse { gachaPrize =>
-            gachaPrizeAPI.upsertGachaPrize(
-              gachaPrize.copy(probability = GachaProbability(newProb))
-            )
-          }
-          itemStack = currentGachaPrize.map(_.itemStack)
-        } yield {
-          if (probabilityChange.nonEmpty)
-            MessageEffect(
-              s"${targetId.id}|${itemStack.get.getType.toString}/${itemStack.get.getItemMeta.getDisplayName}${RESET}の確率を$newProb(${newProb * 100}%)に変更しました。"
-            )
-          else
-            MessageEffect("指定されたIDのガチャ景品は存在しません。")
-        }
+
+        Kleisli
+          .liftF(for {
+            currentGachaPrize <- gachaPrizeAPI.fetch(targetId)
+            probabilityChange <- currentGachaPrize.traverse { gachaPrize =>
+              gachaPrizeAPI
+                .upsertGachaPrize(gachaPrize.copy(probability = GachaProbability(newProb)))
+            }
+            itemStack = currentGachaPrize.map(_.itemStack)
+          } yield {
+            if (probabilityChange.nonEmpty) {
+              MessageEffectF(
+                s"${targetId.id}|${itemStack.get.getType.toString}/${itemStack.get.getItemMeta.getDisplayName}${RESET}の確率を$newProb(${newProb * 100}%)に変更しました。"
+              )
+            } else {
+              MessageEffectF("指定されたIDのガチャ景品は存在しません。")
+            }
+          })
+          .flatten
+
       }
 
     val createEvent: ContextualExecutor =
