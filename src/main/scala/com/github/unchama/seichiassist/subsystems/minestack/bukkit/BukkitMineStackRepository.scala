@@ -77,29 +77,28 @@ class BukkitMineStackRepository[F[_]: Sync](
         Vector(itemStack),
         player
       )
-      _ <- foundMineStackObject.head.traverse(addStackedAmountOf(player, _, amount))
-    } yield foundMineStackObject.head.isDefined
+      _ <- foundMineStackObject.head.traverse {
+        case Some(mineStackObject) =>
+          addStackedAmountOf(player, mineStackObject, amount)
+        case None => Sync[F].unit
+      }
+    } yield foundMineStackObject.head._2.isDefined
   }
 
   override def tryIntoMineStack(
     player: Player,
     itemStacks: Vector[ItemStack]
-  ): F[Vector[ItemStack]] = {
-    val expBottle = new ItemStack(Material.EXPERIENCE_BOTTLE)
-
+  ): F[(Vector[ItemStack], Vector[ItemStack])] = {
     for {
       mineStackObjects <- mineStackObjectList.findBySignedItemStacks(itemStacks, player)
       _ <- mineStackObjects.traverse {
-        case Some(mineStackObject) =>
-          addStackedAmountOf(player, mineStackObject, mineStackObject.itemStack.getAmount)
+        case (itemStack, Some(mineStackObject)) =>
+          addStackedAmountOf(player, mineStackObject, itemStack.getAmount)
         case _ => Sync[F].unit
       }
-    } yield itemStacks
-      .diff(mineStackObjects.collect {
-        case Some(mineStackObject) => mineStackObject.itemStack
-      })
-      .filterNot(
-        _.isSimilar(expBottle)
-      ) // 経験値瓶はガチャ景品に登録されているアイテム数とMineStackObjectのアイテム数が違うので、diffがとれないのでこうするしかない
+    } yield mineStackObjects.partitionMap {
+      case (itemStack, Some(_)) => Right(itemStack)
+      case (itemStack, None)    => Left(itemStack)
+    }
   }
 }
