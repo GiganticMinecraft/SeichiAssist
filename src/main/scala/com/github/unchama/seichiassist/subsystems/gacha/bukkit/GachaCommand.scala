@@ -280,15 +280,15 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
           MessageEffect("IDは正の値を指定してください。")
         )
       )
-      .buildWithExecutionF { context =>
+      .buildWithExecutionCSEffect { context =>
         val gachaId = GachaPrizeId(context.args.parsed.head)
-        for {
-          didRemoveGachaPrize <- gachaPrizeAPI.removeByGachaPrizeId(gachaId)
-        } yield {
-          if (didRemoveGachaPrize)
-            MessageEffect(List("ガチャアイテムを削除しました"))
-          else
-            MessageEffect("指定されたIDのガチャ景品が存在しないため、ガチャアイテムを削除できませんでした。")
+        Kleisli.liftF(gachaPrizeAPI.removeByGachaPrizeId(gachaId)).flatMap {
+          didRemoveGachaPrize =>
+            if (didRemoveGachaPrize) {
+              MessageEffectF("ガチャアイテムを削除しました")
+            } else {
+              MessageEffectF("指定されたIDのガチャ景品が存在しないため、ガチャアイテムを削除できませんでした。")
+            }
         }
       }
 
