@@ -1101,7 +1101,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
   override def findBySignedItemStacks(
     itemStacks: Vector[ItemStack],
     player: Player
-  ): F[Vector[Option[MineStackObject[ItemStack]]]] = {
+  ): F[Vector[(ItemStack, Option[MineStackObject[ItemStack]])]] = {
     for {
       gachaPrizes <- gachaPrizeAPI.gachaPrizesWhenGachaEventsIsNotHolding
       mineStackObjects <- allMineStackObjects
@@ -1110,13 +1110,23 @@ class BukkitMineStackObjectList[F[_]: Sync](
         gachaPrizeAPI.canBeSignedAsGachaPrize
 
       val signedItemStacks = gachaPrizes.map { gachaPrize =>
-        gachaPrize.materializeWithOwnerSignature(player.getName)
+        gachaPrize.materializeWithOwnerSignature(player.getName) -> gachaPrize.itemStack
       }
 
       itemStacks.map { _itemStack =>
-        val itemStack = signedItemStacks.find(_.isSimilar(_itemStack)).getOrElse(_itemStack)
-
-        mineStackObjects.find(_.itemStack.isSimilar(itemStack))
+        signedItemStacks.find(_._1.isSimilar(_itemStack)) match {
+          case Some((_, notSignedItemStack)) =>
+            _itemStack -> mineStackObjects.find(_.itemStack.isSimilar(notSignedItemStack))
+          case None =>
+            mineStackObjects.find(_.itemStack.isSimilar(_itemStack)) match {
+              case Some(value)
+                  if value.category != GACHA_PRIZES || minestackBuiltinGachaPrizes.exists(
+                    _.swap.contains(value)
+                  ) =>
+                _itemStack -> Some(value)
+              case _ => _itemStack -> None
+            }
+        }
       }
     }
   }
