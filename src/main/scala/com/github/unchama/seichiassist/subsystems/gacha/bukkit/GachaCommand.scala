@@ -303,28 +303,29 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
             MessageEffect("数は1～64で指定してください。")
           )
         )
-        .buildWithExecutionF { context =>
+        .buildWithExecutionCSEffect { context =>
           import shapeless.::
           val targetId :: amount :: HNil = context.args.parsed
-          for {
-            currentGachaPrize <- gachaPrizeAPI.fetch(targetId)
-            oldItemStack <- currentGachaPrize.traverse { prize =>
-              gachaPrizeAPI
-                .upsertGachaPrize(
-                  prize.copy(itemStack = prize.itemStack.tap(_.setAmount(amount)))
-                )
-                .as(Some(prize.itemStack))
-            }
-          } yield {
-            oldItemStack match {
+
+          Kleisli
+            .liftF(for {
+              currentGachaPrize <- gachaPrizeAPI.fetch(targetId)
+              oldItemStack <- currentGachaPrize.traverse { prize =>
+                gachaPrizeAPI
+                  .upsertGachaPrize(
+                    prize.copy(itemStack = prize.itemStack.tap(_.setAmount(amount)))
+                  )
+                  .as(Some(prize.itemStack))
+              }
+            } yield oldItemStack)
+            .flatMap {
               case Some(itemStack) =>
-                MessageEffect(
+                MessageEffectF(
                   s"${targetId.id}|${itemStack.get.getType.toString}/${itemStack.get.getItemMeta.getDisplayName}${RESET}のアイテム数を${amount}個に変更しました。"
                 )
               case None =>
-                MessageEffect("指定されたIDのガチャ景品が存在しないため、アイテム数が変更できませんでした。")
+                MessageEffectF("指定されたIDのガチャ景品が存在しないため、アイテム数が変更できませんでした。")
             }
-          }
         }
 
     val setProbability: ContextualExecutor = ContextualExecutorBuilder
