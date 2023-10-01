@@ -71,7 +71,7 @@ class PlayerBlockBreakListener(
     if (!player.getWorld.isSeichiSkillAllowed) return
 
     // 破壊不可能ブロックの時処理を終了
-    if (!BreakUtil.canBreak(player, block)) {
+    if (!BreakUtil.canBreakWithSkill(player, block)) {
       event.setCancelled(true)
       return
     }
