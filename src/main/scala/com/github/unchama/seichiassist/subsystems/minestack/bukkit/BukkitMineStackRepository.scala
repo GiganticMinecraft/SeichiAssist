@@ -12,7 +12,6 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
 }
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import org.bukkit.Material
 
 class BukkitMineStackRepository[F[_]: Sync](
   implicit mineStackObjectList: MineStackObjectList[F, ItemStack, Player],
