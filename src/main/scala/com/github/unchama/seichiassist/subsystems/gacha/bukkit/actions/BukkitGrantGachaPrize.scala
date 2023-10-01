@@ -28,12 +28,14 @@ class BukkitGrantGachaPrize[F[_]: Sync: OnMinecraftServerThread](
     Kleisli { player =>
       for {
         currentAutoMineStackState <- mineStackAPI.autoMineStack(player)
-        itemStacks <- Sync[F].delay(prizes.map(_.itemStack))
-        results <- whenAOrElse(currentAutoMineStackState)(
+        itemStacks <- Sync[F].delay(prizes.map(_.materializeWithOwnerSignature(player.getName)))
+        intoFailedItemStacksAndSuccessItemStacks <- whenAOrElse(currentAutoMineStackState)(
           mineStackAPI.mineStackRepository.tryIntoMineStack(player, itemStacks),
-          itemStacks
+          (itemStacks, Vector.empty)
         )
-      } yield prizes.filter(prize => results.contains(prize.itemStack))
+      } yield prizes.filter { prize =>
+        intoFailedItemStacksAndSuccessItemStacks._1.exists(_.isSimilar(prize.itemStack))
+      }
     }
 
   override def insertIntoPlayerInventoryOrDrop(

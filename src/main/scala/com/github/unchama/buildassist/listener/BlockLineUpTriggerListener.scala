@@ -107,6 +107,7 @@ class BlockLineUpTriggerListener[
           .findBySignedItemStacks(Vector(mainHandItem), player)
           .unsafeRunSync()
           .head
+          ._2
       } else None
 
     val maxBlockUsage = {
