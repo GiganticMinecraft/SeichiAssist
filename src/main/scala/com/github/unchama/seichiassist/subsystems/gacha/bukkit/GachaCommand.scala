@@ -197,7 +197,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
             .liftF {
               for {
                 gachaPrize <- gachaPrizeAPI.fetch(GachaPrizeId(gachaPrizeId))
-                grantEffect <- gachaPrize.traverse { gachaPrize =>
+                _ <- gachaPrize.traverse { gachaPrize =>
                   val itemStack = ownerName match {
                     case Some(name) => gachaPrize.materializeWithOwnerSignature(name)
                     case None       => gachaPrize.itemStack
@@ -205,7 +205,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
 
                   InventoryOperations.grantItemStacksEffect(itemStack).apply(context.sender)
                 }
-              } yield grantEffect
+              } yield gachaPrize
             }
             .flatMap {
               case Some(_) => MessageEffectF("ガチャアイテムを付与しました。")
