@@ -73,6 +73,7 @@ class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[
         .toIO
         .unsafeRunSync()
         .head
+        ._2
         .filter(_ => buildAssistPlayerData.zs_minestack_flag)
 
     val replaceableMaterials = Set(
