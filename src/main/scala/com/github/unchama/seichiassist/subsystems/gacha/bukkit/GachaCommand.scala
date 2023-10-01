@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gacha.bukkit
 
 import cats.data.Kleisli
-import cats.effect.{ConcurrentEffect, Effect, Sync}
+import cats.effect.{ConcurrentEffect, Effect}
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.ParserResponse.{failWith, succeedWith}
 import com.github.unchama.contextualexecutor.builder.{
