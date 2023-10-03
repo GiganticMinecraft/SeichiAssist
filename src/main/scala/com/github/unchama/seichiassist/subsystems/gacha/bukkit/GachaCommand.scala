@@ -402,11 +402,12 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
       ContextualExecutorBuilder
         .beginConfiguration
         .thenParse(Parsers.identity)
-        .buildWithExecutionF { context =>
+        .buildWithExecutionCSEffect { context =>
           val eventName = GachaEventName(context.args.parsed.head)
-          for {
-            _ <- gachaPrizeAPI.deleteGachaEvent(eventName)
-          } yield MessageEffect(s"ガチャイベント: ${eventName.name}を削除しました。")
+
+          Kleisli.liftF(gachaPrizeAPI.deleteGachaEvent(eventName)).flatMap { _ =>
+            MessageEffectF(s"ガチャイベント: ${eventName.name}を削除しました。")
+          }
         }
 
     private def toTimeString(localDate: LocalDate): String = {
