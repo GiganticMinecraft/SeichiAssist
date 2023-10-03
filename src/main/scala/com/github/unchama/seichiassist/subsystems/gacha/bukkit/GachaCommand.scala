@@ -363,7 +363,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
         .thenParse(Parsers.identity)
         .thenParse(Parsers.identity)
         .thenParse(Parsers.identity)
-        .buildWithExecutionF { context =>
+        .buildWithExecutionCSEffect { context =>
           import shapeless.::
           val e :: startDate :: endDate :: HNil = context.args.parsed
           val eventName = GachaEventName(e)
@@ -372,27 +372,30 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
           val dateRegex = "[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])".r
 
           if (!dateRegex.matches(startDate) || !dateRegex.matches(endDate)) {
-            Effect[F].pure(MessageEffect(s"${RED}開始日/終了日はyyyy-MM-ddの形式で指定してください。"))
+            MessageEffectF(s"${RED}開始日/終了日はyyyy-MM-ddの形式で指定してください。")
           } else if (eventName.name.length > 30) {
-            Effect[F].pure(MessageEffect(s"${RED}イベント名は30字以内で指定してください。"))
+            MessageEffectF(s"${RED}イベント名は30字以内で指定してください。")
           } else {
-            for {
-              existsEvent <- gachaPrizeAPI.existsGachaEvent(eventName)
-              _ <- gachaPrizeAPI
-                .createGachaEvent(
-                  GachaEvent(
-                    eventName,
-                    LocalDate.parse(startDate, dateTimeFormatter),
-                    LocalDate.parse(endDate, dateTimeFormatter)
+            Kleisli
+              .liftF(for {
+                existsEvent <- gachaPrizeAPI.existsGachaEvent(eventName)
+                _ <- gachaPrizeAPI
+                  .createGachaEvent(
+                    GachaEvent(
+                      eventName,
+                      LocalDate.parse(startDate, dateTimeFormatter),
+                      LocalDate.parse(endDate, dateTimeFormatter)
+                    )
                   )
-                )
-                .unlessA(existsEvent)
+                  .unlessA(existsEvent)
 
-            } yield {
-              if (existsEvent) MessageEffect(s"${RED}指定された名前のイベントが既に存在します。")
-              else MessageEffect(s"${AQUA}イベントを作成しました。")
-            }
+              } yield {
+                if (existsEvent) MessageEffectF(s"${RED}指定された名前のイベントが既に存在します。")
+                else MessageEffectF(s"${AQUA}イベントを作成しました。")
+              })
+              .flatten
           }
+
         }
 
     val deleteEvent: ContextualExecutor =
