@@ -336,24 +336,22 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
         import shapeless.::
         val targetId :: newProb :: HNil = context.args.parsed
 
-        Kleisli
-          .liftF(for {
-            currentGachaPrize <- gachaPrizeAPI.fetch(targetId)
-            probabilityChange <- currentGachaPrize.traverse { gachaPrize =>
-              gachaPrizeAPI
-                .upsertGachaPrize(gachaPrize.copy(probability = GachaProbability(newProb)))
-            }
-            itemStack = currentGachaPrize.map(_.itemStack)
-          } yield {
-            if (probabilityChange.nonEmpty) {
-              MessageEffectF(
-                s"${targetId.id}|${itemStack.get.getType.toString}/${itemStack.get.getItemMeta.getDisplayName}${RESET}の確率を$newProb(${newProb * 100}%)に変更しました。"
-              )
-            } else {
-              MessageEffectF("指定されたIDのガチャ景品は存在しません。")
-            }
+        for {
+          currentGachaPrize <- Kleisli.liftF(gachaPrizeAPI.fetch(targetId))
+          probabilityChange <- Kleisli.liftF(currentGachaPrize.traverse { gachaPrize =>
+            gachaPrizeAPI
+              .upsertGachaPrize(gachaPrize.copy(probability = GachaProbability(newProb)))
           })
-          .flatten
+          itemStack = currentGachaPrize.map(_.itemStack)
+        } yield {
+          if (probabilityChange.nonEmpty) {
+            MessageEffectF(
+              s"${targetId.id}|${itemStack.get.getType.toString}/${itemStack.get.getItemMeta.getDisplayName}${RESET}の確率を$newProb(${newProb * 100}%)に変更しました。"
+            )
+          } else {
+            MessageEffectF("指定されたIDのガチャ景品は存在しません。")
+          }
+        }
 
       }
 
@@ -376,10 +374,10 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
           } else if (eventName.name.length > 30) {
             MessageEffectF(s"${RED}イベント名は30字以内で指定してください。")
           } else {
-            Kleisli
-              .liftF(for {
-                existsEvent <- gachaPrizeAPI.existsGachaEvent(eventName)
-                _ <- gachaPrizeAPI
+            for {
+              existsEvent <- Kleisli.liftF(gachaPrizeAPI.existsGachaEvent(eventName))
+              _ <- Kleisli.liftF(
+                gachaPrizeAPI
                   .createGachaEvent(
                     GachaEvent(
                       eventName,
@@ -388,13 +386,13 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
                     )
                   )
                   .unlessA(existsEvent)
+              )
 
-              } yield {
-                if (existsEvent) MessageEffectF(s"${RED}指定された名前のイベントが既に存在します。")
-                else MessageEffectF(s"${AQUA}イベントを作成しました。")
-              })
-              .flatten
-          }
+            } yield {
+              if (existsEvent) MessageEffectF(s"${RED}指定された名前のイベントが既に存在します。")
+              else MessageEffectF(s"${AQUA}イベントを作成しました。")
+            }
+          }.flatten
 
         }
 
