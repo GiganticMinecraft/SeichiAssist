@@ -336,7 +336,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
         import shapeless.::
         val targetId :: newProb :: HNil = context.args.parsed
 
-        for {
+        (for {
           currentGachaPrize <- Kleisli.liftF(gachaPrizeAPI.fetch(targetId))
           probabilityChange <- Kleisli.liftF(currentGachaPrize.traverse { gachaPrize =>
             gachaPrizeAPI
@@ -351,7 +351,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
           } else {
             MessageEffectF("指定されたIDのガチャ景品は存在しません。")
           }
-        }
+        }).flatten
 
       }
 
