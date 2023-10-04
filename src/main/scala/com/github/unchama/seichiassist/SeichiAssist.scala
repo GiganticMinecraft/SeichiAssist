@@ -403,7 +403,7 @@ class SeichiAssist extends JavaPlugin() {
     mineStackSystem.api
 
   private lazy val sharedInventorySystem: subsystems.sharedinventory.System[IO] = {
-    import PluginExecutionContexts.timer
+    import PluginExecutionContexts.{timer, onMainThread}
     subsystems.sharedinventory.System.wired[IO, IO].unsafeRunSync()
   }
 
