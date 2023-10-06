@@ -18,12 +18,13 @@ import com.github.unchama.seichiassist.domain.actions.UuidToLastSeenName
 import com.github.unchama.seichiassist.subsystems.present.domain.OperationResult.DeleteResult
 import com.github.unchama.seichiassist.subsystems.present.domain._
 import com.github.unchama.seichiassist.util.InventoryOperations
-import com.github.unchama.targetedeffect.SequentialEffect
+import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffectF}
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import eu.timepit.refined.numeric.Positive
 import org.bukkit.command.TabExecutor
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{ChatColor, Material}
 import shapeless.HNil
@@ -195,8 +196,8 @@ class PresentCommand {
                       item <- persistence.lookup(presentId)
                     } yield item)
                     .flatMap { item =>
-                      item.fold(
-                        MessageEffect[F](s"ID: ${presentId}のプレゼントは存在しません。IDをお確かめください。")
+                      item.fold[TargetedEffectF[F, Player]](
+                        MessageEffectF[F](s"ID: ${presentId}のプレゼントは存在しません。IDをお確かめください。")
                       ) { item =>
                         SequentialEffect(
                           InventoryOperations.grantItemStacksEffect[F](item),
