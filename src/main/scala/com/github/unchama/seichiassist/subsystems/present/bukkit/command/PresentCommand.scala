@@ -399,15 +399,15 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
           .thenParse(presentIdParser)
           .thenParse(presentScopeModeParser)
           .ifArgumentsMissing(help)
-          .buildWithExecutionF { context =>
+          .buildWithExecutionCSEffect { context =>
             if (context.sender.hasPermission("seichiassist.present.revoke")) {
               import shapeless.::
               val args = context.args
               val presentId :: presentScope :: HNil = args.parsed
               val isGlobal = presentScope == "all"
-              for {
-                _ <- NonServerThreadContextShift[F].shift
-                globalUUID2Name <- globalPlayerAccessor.entries
+              (for {
+                _ <- Kleisli.liftF(NonServerThreadContextShift[F].shift)
+                globalUUID2Name <- Kleisli.liftF(globalPlayerAccessor.entries)
                 // 可変長引数には対応していないので`yetToBeParsed`を使う
                 restArg = args
                   // プレイヤー名は /[A-Za-z0-9_]{,16}/であるため空白が誤って解釈されることはない
@@ -420,22 +420,23 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
                   else
                     globalUUID2Name.filter { case (_, name) => restArg.contains(name) }.keys
                 errorIfNobody =
-                  if (target.isEmpty) Some(MessageEffect("対象のプレイヤーが存在しません！")) else None
-                warning <- persistence.revoke(presentId, target.toSet)
+                  if (target.isEmpty) Some(MessageEffectF("対象のプレイヤーが存在しません！")) else None
+                warning <- Kleisli.liftF(persistence.revoke(presentId, target.toSet))
               } yield {
                 errorIfNobody.getOrElse {
                   warning
                     .map {
-                      case RevokeWarning.NoSuchPresentID => MessageEffect("そのようなプレゼントIDはありません！")
-                      case RevokeWarning.NoPlayers       => MessageEffect("対象となるプレイヤーが存在しません！")
+                      case RevokeWarning.NoSuchPresentID =>
+                        MessageEffectF("そのようなプレゼントIDはありません！")
+                      case RevokeWarning.NoPlayers => MessageEffectF("対象となるプレイヤーが存在しません！")
                     }
                     .getOrElse {
-                      MessageEffect(s"プレゼント(id: $presentId)を受け取れるプレイヤーを削除しました。")
+                      MessageEffectF(s"プレゼント(id: $presentId)を受け取れるプレイヤーを削除しました。")
                     }
                 }
-              }
+              }).flatten
             } else {
-              ConcurrentEffect[F].pure(noPermissionMessage)
+              noPermissionMessage
             }
           }
     }
