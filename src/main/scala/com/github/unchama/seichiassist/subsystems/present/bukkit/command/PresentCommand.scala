@@ -270,21 +270,21 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
           .beginConfiguration
           .thenParse(presentIdParser)
           .ifArgumentsMissing(help)
-          .buildWithExecutionF { context =>
+          .buildWithExecutionCSEffect { context =>
             {
               val presentId = context.args.parsed.head
               if (!context.sender.hasPermission("seichiassist.present.delete")) {
-                ConcurrentEffect[F].pure(noPermissionMessage)
+                noPermissionMessage[F]
               } else {
-                for {
-                  _ <- NonServerThreadContextShift[F].shift
-                  result <- persistence.delete(presentId)
+                (for {
+                  _ <- Kleisli.liftF(NonServerThreadContextShift[F].shift)
+                  result <- Kleisli.liftF(persistence.delete(presentId))
                 } yield result match {
                   case DeleteResult.Done =>
-                    MessageEffect(s"IDが${presentId}のプレゼントの消去は正常に行われました。")
+                    MessageEffectF(s"IDが${presentId}のプレゼントの消去は正常に行われました。")
                   case DeleteResult.NotFound =>
-                    MessageEffect(s"IDが${presentId}のプレゼントは存在しませんでした。")
-                }
+                    MessageEffectF(s"IDが${presentId}のプレゼントは存在しませんでした。")
+                }).flatten
               }
             }
           }
