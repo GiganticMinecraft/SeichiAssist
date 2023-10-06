@@ -149,7 +149,7 @@ object AchievementCommand {
         }.combineAll
       }
 
-      execution()
+      execution().flatMap(_.apply(sender))
     }
     .asNonBlockingTabExecutor()
 }
