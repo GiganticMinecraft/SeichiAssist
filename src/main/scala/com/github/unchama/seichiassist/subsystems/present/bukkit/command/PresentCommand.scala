@@ -325,16 +325,16 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
           .thenParse(presentIdParser)
           .thenParse(presentScopeModeParser)
           .ifArgumentsMissing(help)
-          .buildWithExecutionF { context =>
+          .buildWithExecutionCSEffect { context =>
             if (context.sender.hasPermission("seichiassist.present.grant")) {
               import shapeless.::
               val presentId :: mode :: HNil = context.args.parsed
               // Parserを通した段階でargs[0]は "player" | "all" になっているのでこれでOK
               val isGlobal = mode == "all"
-              for {
-                _ <- NonServerThreadContextShift[F].shift
+              (for {
+                _ <- Kleisli.liftF(NonServerThreadContextShift[F].shift)
                 // TODO: 以下の処理は多分共通化できるがうまい方法が思いつかない
-                globalUUID2Name <- globalPlayerAccessor.entries
+                globalUUID2Name <- Kleisli.liftF(globalPlayerAccessor.entries)
                 // 可変長引数には対応していないので`yetToBeParsed`を使う
                 restArg = context
                   .args
@@ -348,19 +348,19 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
                   else
                     globalUUID2Name.filter { case (_, name) => restArg.contains(name) }.keys
                 errorIfNobody = Option.when(target.isEmpty) {
-                  MessageEffect("対象のプレイヤーが存在しません！")
+                  MessageEffectF("対象のプレイヤーが存在しません！")
                 }
-                grantError <- persistence.grant(presentId, target.toSet)
+                grantError <- Kleisli.liftF(persistence.grant(presentId, target.toSet))
               } yield errorIfNobody.getOrElse(
                 grantError
                   .map {
                     case GrantRejectReason.NoSuchPresentID =>
-                      MessageEffect("指定されたプレゼントIDは存在しません！")
+                      MessageEffectF("指定されたプレゼントIDは存在しません！")
                   }
-                  .getOrElse(MessageEffect(s"プレゼント(id: $presentId)を受け取れるプレイヤーを追加しました。"))
-              )
+                  .getOrElse(MessageEffectF(s"プレゼント(id: $presentId)を受け取れるプレイヤーを追加しました。"))
+              )).flatten
             } else {
-              ConcurrentEffect[F].pure(noPermissionMessage)
+              noPermissionMessage[F]
             }
           }
     }
