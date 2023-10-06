@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.present.bukkit.command
 import cats.Monad
 import cats.data.Kleisli
 import cats.effect.implicits._
-import cats.effect.{ConcurrentEffect, IO}
+import cats.effect.{ConcurrentEffect, IO, Sync}
 import cats.implicits._
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.contextualexecutor.ContextualExecutor
@@ -24,7 +24,7 @@ import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect, Targ
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import eu.timepit.refined.numeric.Positive
-import org.bukkit.command.TabExecutor
+import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{ChatColor, Material}
@@ -55,7 +55,8 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
     MessageEffect("presentコマンドで対象を指定する際のモードは、playerまたはallを指定してください。")
   )
 
-  private val noPermissionMessage = MessageEffect("You don't have the permission.")
+  private def noPermissionMessage[F[_]: Sync] =
+    MessageEffectF[F]("You don't have the permission.")
 
   private object SubCommands {
     object State {
@@ -229,25 +230,23 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
       def executor[F[_]: ConcurrentEffect: NonServerThreadContextShift](
         implicit persistence: PresentPersistence[F, ItemStack]
       ): ContextualExecutor =
-        playerCommandBuilder.buildWithExecutionF { context =>
+        playerCommandBuilder.buildWithExecutionCSEffect { context =>
           val player = context.sender
           if (player.hasPermission("seichiassist.present.define")) {
             val mainHandItem = player.getInventory.getItemInMainHand
-            if (mainHandItem.getType eq Material.AIR) {
+            if (mainHandItem.getType == Material.AIR) {
               // おそらくこれは意図した動作ではないのでエラーメッセージを表示する
-              ConcurrentEffect[F].pure(
-                MessageEffect("メインハンドに何も持っていません。プレゼントを定義するためには、メインハンドに対象アイテムを持ってください。")
-              )
+              MessageEffectF[F]("メインハンドに何も持っていません。プレゼントを定義するためには、メインハンドに対象アイテムを持ってください。")
             } else {
-              for {
-                _ <- NonServerThreadContextShift[F].shift
-                presentID <- persistence.define(mainHandItem)
+              (for {
+                _ <- Kleisli.liftF(NonServerThreadContextShift[F].shift)
+                presentID <- Kleisli.liftF(persistence.define(mainHandItem))
               } yield {
-                MessageEffect(s"メインハンドに持ったアイテムをプレゼントとして定義しました。IDは${presentID}です。")
-              }
+                MessageEffectF(s"メインハンドに持ったアイテムをプレゼントとして定義しました。IDは${presentID}です。")
+              }).flatten
             }
           } else {
-            ConcurrentEffect[F].pure(noPermissionMessage)
+            noPermissionMessage[F]
           }
         }
     }
