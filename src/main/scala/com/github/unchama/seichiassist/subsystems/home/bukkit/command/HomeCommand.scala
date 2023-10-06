@@ -87,11 +87,9 @@ class HomeCommand[F[
   private def listExecutor() = {
     // locationの座標は負の無限大方向へ切り捨て(Debug画面のBlock:で表示される座標と同じ丸め方)
     def toBlockPos(pos: Double) = pos.floor.toInt
-    playerCommandBuilder.buildWithExecutionF { context =>
+    playerCommandBuilder.buildWithExecutionCSEffect { context =>
       val player = context.sender
-      val eff = for {
-        homeMap <- HomeReadAPI[F].list(player.getUniqueId)
-      } yield {
+      Kleisli.liftF(HomeReadAPI[F].list(player.getUniqueId)).flatMap { homeMap =>
         val title = s"${RED}登録ホームポイント一覧:"
         val messages = title +: homeMap.toList.sortBy(_._1.value).map {
           case (homeId, home) =>
@@ -101,9 +99,8 @@ class HomeCommand[F[
               ManagedWorld.fromName(worldName).map(_.japaneseName).getOrElse(worldName)
             f"${YELLOW}ID ${homeId.value}%2d $displayWorldName(${toBlockPos(x)}, ${toBlockPos(y)}, ${toBlockPos(z)}): $displayHomeName"
         }
-        MessageEffect(messages)
+        MessageEffectF(messages)
       }
-      eff.toIO
     }
   }
 
