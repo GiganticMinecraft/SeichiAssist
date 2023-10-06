@@ -1,18 +1,13 @@
 package com.github.unchama.seichiassist.subsystems.donate.bukkit.commands
 
-import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
+import cats.data.Kleisli
 import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
-import com.github.unchama.seichiassist.subsystems.donate.domain.{
-  DonatePersistence,
-  DonatePremiumEffectPoint,
-  Obtained,
-  PlayerName
-}
+import com.github.unchama.seichiassist.subsystems.donate.domain.{DonatePersistence, DonatePremiumEffectPoint, Obtained, PlayerName}
 import com.github.unchama.targetedeffect.UnfocusedEffect
-import com.github.unchama.targetedeffect.commandsender.MessageEffect
+import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 import shapeless.HNil
@@ -31,7 +26,7 @@ class DonationCommand[F[_]: ConcurrentEffect](
       .beginConfiguration
       .thenParse(Parsers.identity)
       .thenParse(Parsers.integer(MessageEffect(s"${RED}付与するプレミアムエフェクトポイントは整数で指定してください。")))
-      .buildWithExecutionF { context =>
+      .buildWithExecutionCSEffect { context =>
         import shapeless.::
 
         val rawName :: rawDonatePoint :: HNil = context.args.parsed
@@ -40,29 +35,31 @@ class DonationCommand[F[_]: ConcurrentEffect](
 
         val dateRegex = "[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])".r
         val dateOpt = context.args.yetToBeParsed.headOption
-        val isMatchedPattern = dateOpt.forall(date => dateRegex.matches(date))
+        val isMatchedPattern = dateOpt.forall(dateRegex.matches)
 
-        val eff = for {
-          date <- Sync[F].delay {
+        (for {
+          date <- Kleisli.liftF(Sync[F].delay {
             dateOpt match {
               case Some(date) if isMatchedPattern =>
                 val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                 LocalDate.parse(date, dateTimeFormatter)
               case _ => LocalDate.now()
             }
-          }
-          _ <- donatePersistence
-            .addDonatePremiumEffectPoint(playerName, Obtained(donatePoint, date))
-            .whenA(isMatchedPattern)
+          })
+          _ <- Kleisli.liftF(
+            donatePersistence
+              .addDonatePremiumEffectPoint(playerName, Obtained(donatePoint, date))
+              .whenA(isMatchedPattern)
+          )
         } yield {
-          if (!isMatchedPattern)
-            MessageEffect(s"${RED}購入日はyyyy-MM-ddの形式で指定してください。")
-          else
-            MessageEffect(
+          if (isMatchedPattern) {
+            MessageEffectF(
               s"$GREEN${playerName.name}に${donatePoint.value}のプレミアムエフェクトポイントを付与しました。"
             )
-        }
-        eff.toIO
+          } else {
+            MessageEffectF(s"${RED}購入日はyyyy-MM-ddの形式で指定してください。")
+          }
+        }).flatten
       }
 
   private val commandDescriptionExecutor: ContextualExecutor =
