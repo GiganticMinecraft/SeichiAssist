@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.present.bukkit.command
 
 import cats.Monad
+import cats.data.Kleisli
 import cats.effect.implicits._
 import cats.effect.{ConcurrentEffect, IO}
 import cats.implicits._
@@ -18,8 +19,8 @@ import com.github.unchama.seichiassist.domain.actions.UuidToLastSeenName
 import com.github.unchama.seichiassist.subsystems.present.domain.OperationResult.DeleteResult
 import com.github.unchama.seichiassist.subsystems.present.domain._
 import com.github.unchama.seichiassist.util.InventoryOperations
-import com.github.unchama.targetedeffect.commandsender.MessageEffect
-import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
+import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
+import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect, TargetedEffectF}
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import eu.timepit.refined.numeric.Positive
@@ -166,47 +167,47 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
        *
        * 出力: 受け取った場合は、その旨表示する。失敗した場合は、適切なエラーメッセージを表示する。
        */
-      def executor[F[_]: ConcurrentEffect: NonServerThreadContextShift](
+      def executor[F[
+        _
+      ]: ConcurrentEffect: NonServerThreadContextShift: OnMinecraftServerThread](
         implicit persistence: PresentPersistence[F, ItemStack]
       ): ContextualExecutor =
         playerCommandBuilder
           .thenParse(presentIdParser)
           .ifArgumentsMissing(help)
-          .buildWithExecutionF { context =>
+          .buildWithExecutionCSEffect { context =>
             val player = context.sender.getUniqueId
             val presentId = context.args.parsed.head
 
-            val eff: F[TargetedEffect[Player]] = for {
-              _ <- NonServerThreadContextShift[F].shift
-              states <- persistence.fetchState(player)
-              claimState = states.getOrElse(presentId, PresentClaimingState.Unavailable)
-              effect <- claimState match {
-                case PresentClaimingState.Claimed =>
-                  Monad[F].pure(MessageEffect(s"ID: ${presentId}のプレゼントはすでに受け取っています。"))
-                case PresentClaimingState.NotClaimed =>
-                  for {
-                    _ <- persistence.markAsClaimed(presentId, player)
-                    item <- persistence.lookup(presentId)
-                  } yield {
-                    // 注釈: この明示的な型変数の指定は必要
-                    // see: https://discord.com/channels/237758724121427969/565935041574731807/823495317499805776
-                    item.fold[TargetedEffect[Player]](
-                      MessageEffect(s"ID: ${presentId}のプレゼントは存在しません。IDをお確かめください。")
-                    ) { item =>
-                      SequentialEffect(
-                        InventoryOperations.grantItemStacksEffect[IO](item),
-                        MessageEffect(s"ID: ${presentId}のプレゼントを付与しました。")
-                      )
-                    }
-                  }
-                case PresentClaimingState.Unavailable =>
-                  Monad[F].pure(
-                    MessageEffect(s"ID: ${presentId}のプレゼントは存在しないか、あるいは配布対象ではありません。")
-                  )
-              }
-            } yield effect
+            (for {
+              _ <- Kleisli.liftF(NonServerThreadContextShift[F].shift)
+              states <- Kleisli.liftF(persistence.fetchState(player))
+            } yield {
+              val claimState = states.getOrElse(presentId, PresentClaimingState.Unavailable)
 
-            eff
+              claimState match {
+                case PresentClaimingState.Claimed =>
+                  MessageEffectF[F](s"ID: ${presentId}のプレゼントはすでに受け取っています。")
+                case PresentClaimingState.NotClaimed =>
+                  Kleisli
+                    .liftF(for {
+                      _ <- persistence.markAsClaimed(presentId, player)
+                      item <- persistence.lookup(presentId)
+                    } yield item)
+                    .flatMap { item =>
+                      item.fold(
+                        MessageEffect[F](s"ID: ${presentId}のプレゼントは存在しません。IDをお確かめください。")
+                      ) { item =>
+                        SequentialEffect(
+                          InventoryOperations.grantItemStacksEffect[F](item),
+                          MessageEffectF[F](s"ID: ${presentId}のプレゼントを付与しました。")
+                        )
+                      }
+                    }
+                case PresentClaimingState.Unavailable =>
+                  MessageEffectF[F](s"ID: ${presentId}のプレゼントは存在しないか、あるいは配布対象ではありません。")
+              }
+            }).flatten
           }
     }
 
