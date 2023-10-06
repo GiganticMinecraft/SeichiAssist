@@ -67,7 +67,12 @@ object WorldGuardWrapper {
   }
 
   def findByRegionName(name: String): Option[RegionManager] =
-    worldGuard.getPlatform.getRegionContainer.getLoaded.asScala.find(_.getName == name)
+    worldGuard
+      .getPlatform
+      .getRegionContainer
+      .getLoaded
+      .asScala
+      .find(_.getRegions.asScala.exists(_._1 == name))
 
   def removeByProtectedRegionRegion(world: World, region: ProtectedRegion): Unit = {
     worldGuard
