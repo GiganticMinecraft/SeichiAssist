@@ -1,9 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.present.bukkit.command
 
-import cats.Monad
 import cats.data.Kleisli
 import cats.effect.implicits._
-import cats.effect.{ConcurrentEffect, IO, Sync}
+import cats.effect.{ConcurrentEffect, Sync}
 import cats.implicits._
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.contextualexecutor.ContextualExecutor
@@ -19,17 +18,15 @@ import com.github.unchama.seichiassist.domain.actions.UuidToLastSeenName
 import com.github.unchama.seichiassist.subsystems.present.domain.OperationResult.DeleteResult
 import com.github.unchama.seichiassist.subsystems.present.domain._
 import com.github.unchama.seichiassist.util.InventoryOperations
+import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
-import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect, TargetedEffectF}
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import eu.timepit.refined.numeric.Positive
-import org.bukkit.command.{CommandSender, TabExecutor}
-import org.bukkit.entity.Player
+import org.bukkit.command.TabExecutor
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{ChatColor, Material}
 import shapeless.HNil
-import shapeless.syntax.std.tuple._
 
 /**
  * `/present` コマンドを定義する。
@@ -39,8 +36,10 @@ import shapeless.syntax.std.tuple._
  * 別に表記がない限り、この実装は以下の条件を満たす:
  *   - 存在しないプレゼントIDの指定は必ずエラーになる。
  *   - 操作が成功しなかったときは適切なメッセージを表示する。
+ *
+ * TODO: 型パラメータが関数のあちこちに散りばめられているが、classの型引数に集約できそう
  */
-class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
+class PresentCommand {
   private val presentIdParser =
     Parsers.integer(MessageEffect("presentコマンドに与えるプレゼントIDは整数である必要があります。"))
 
@@ -246,7 +245,7 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
               }).flatten
             }
           } else {
-            noPermissionMessage[F]
+            noPermissionMessage
           }
         }
     }
@@ -274,7 +273,7 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
             {
               val presentId = context.args.parsed.head
               if (!context.sender.hasPermission("seichiassist.present.delete")) {
-                noPermissionMessage[F]
+                noPermissionMessage
               } else {
                 (for {
                   _ <- Kleisli.liftF(NonServerThreadContextShift[F].shift)
@@ -360,7 +359,7 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
                   .getOrElse(MessageEffectF(s"プレゼント(id: $presentId)を受け取れるプレイヤーを追加しました。"))
               )).flatten
             } else {
-              noPermissionMessage[F]
+              noPermissionMessage
             }
           }
     }
@@ -474,7 +473,7 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
     }
   }
 
-  def executor[F[_]: ConcurrentEffect: NonServerThreadContextShift](
+  def executor[F[_]: ConcurrentEffect: NonServerThreadContextShift: OnMinecraftServerThread](
     implicit persistence: PresentPersistence[F, ItemStack],
     globalPlayerAccessor: UuidToLastSeenName[F]
   ): TabExecutor = BranchedExecutor(
