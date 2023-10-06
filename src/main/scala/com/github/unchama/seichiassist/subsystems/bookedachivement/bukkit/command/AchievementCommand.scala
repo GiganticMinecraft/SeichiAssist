@@ -75,6 +75,7 @@ object AchievementCommand {
     )
   )
 
+  // TODO: パーサーを分けるべき
   def executor[F[_]: ConcurrentEffect](
     implicit service: AchievementBookingService[F]
   ): TabExecutor = ContextualExecutorBuilder
