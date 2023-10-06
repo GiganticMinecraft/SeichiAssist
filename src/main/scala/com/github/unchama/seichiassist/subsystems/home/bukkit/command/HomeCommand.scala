@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.home.bukkit.command
 import cats.Monad
 import cats.data.Kleisli
 import cats.effect.implicits._
-import cats.effect.{ConcurrentEffect, Effect, IO, SyncEffect}
+import cats.effect.{ConcurrentEffect, IO, SyncEffect}
 import com.github.unchama.chatinterceptor.CancellationReason.Overridden
 import com.github.unchama.chatinterceptor.ChatInterceptionScope
 import com.github.unchama.concurrent.NonServerThreadContextShift
