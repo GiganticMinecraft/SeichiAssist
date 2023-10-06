@@ -10,9 +10,10 @@ import com.github.unchama.seichiassist.subsystems.present.infrastructure.JdbcBac
 import org.bukkit.command.TabExecutor
 
 object System {
-  def wired[ConcurrentContext[_]: ConcurrentEffect: NonServerThreadContextShift](
-    implicit uuidToLastSeenName: UuidToLastSeenName[ConcurrentContext],
-    ioOnMainThread: OnMinecraftServerThread[IO]
+  def wired[ConcurrentContext[
+    _
+  ]: ConcurrentEffect: NonServerThreadContextShift: OnMinecraftServerThread](
+    implicit uuidToLastSeenName: UuidToLastSeenName[ConcurrentContext]
   ): Subsystem[ConcurrentContext] = {
     implicit val repo: JdbcBackedPresentPersistence[ConcurrentContext] =
       new JdbcBackedPresentPersistence[ConcurrentContext]
