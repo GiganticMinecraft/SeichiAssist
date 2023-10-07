@@ -58,18 +58,24 @@ resolvers ++= Seq(
 
 val providedDependencies = Seq(
   "org.jetbrains" % "annotations" % "24.0.1",
-  "org.spigotmc" % "spigot-api" % "1.12.2-R0.1-SNAPSHOT",
+  "org.apache.commons" % "commons-lang3" % "3.12.0",
+  "commons-codec" % "commons-codec" % "1.16.0",
+  "org.spigotmc" % "spigot-api" % "1.18.2-R0.1-SNAPSHOT",
   // https://maven.enginehub.org/repo/com/sk89q/worldedit/worldedit-bukkit/
-  "com.sk89q.worldguard" % "worldguard-legacy" % "6.2",
-  "net.coreprotect" % "coreprotect" % "2.14.2",
-  "com.mojang" % "authlib" % "1.6.25",
+  "com.sk89q.worldguard" % "worldguard-bukkit" % "7.0.7",
+  "net.coreprotect" % "coreprotect" % "21.3",
+  "com.mojang" % "authlib" % "3.11.50",
 
   // no runtime
   "org.typelevel" %% "simulacrum" % "1.0.1"
 ).map(_ % "provided")
 
 val scalafixCoreDep =
-  "ch.epfl.scala" %% "scalafix-core" % _root_.scalafix.sbt.BuildInfo.scalafixVersion % ScalafixConfig
+  "ch.epfl.scala" %% "scalafix-core" % _root_
+    .scalafix
+    .sbt
+    .BuildInfo
+    .scalafixVersion % ScalafixConfig
 
 val testDependencies = Seq(
   "org.scalamock" %% "scalamock" % "5.2.0",
@@ -196,6 +202,8 @@ lazy val root = (project in file(".")).settings(
   excludeDependencies := Seq(ExclusionRule(organization = "org.bukkit", name = "bukkit")),
   unmanagedBase := baseDirectory.value / "localDependencies",
   scalacOptions ++= Seq(
+    "-Yprofile-trace",
+    "profile.trace",
     "-encoding",
     "utf8",
     "-unchecked",
@@ -208,7 +216,11 @@ lazy val root = (project in file(".")).settings(
   ),
   javacOptions ++= Seq("-encoding", "utf8"),
   assembly / assemblyShadeRules ++= Seq(
-    ShadeRule.rename("org.mariadb.jdbc.**" -> "com.github.unchama.seichiassist.relocateddependencies.org.mariadb.jdbc.@1").inAll
+    ShadeRule
+      .rename(
+        "org.mariadb.jdbc.**" -> "com.github.unchama.seichiassist.relocateddependencies.org.mariadb.jdbc.@1"
+      )
+      .inAll
   ),
   // sbt-assembly 1.0.0からはTestを明示的にタスクツリーに入れる必要がある
   // cf. https://github.com/sbt/sbt-assembly/pull/432/commits/361224a6202856bc2e572df811d0e6a1f1efda98
