@@ -26,12 +26,6 @@ class SkullItemStackBuilder(private val owner: SkullOwnerReference)
    */
   def this(ownerUUID: UUID) = this(SkullOwnerUuid(ownerUUID))
 
-  /**
-   * @param ownerName
-   *   [Material.PLAYER_HEAD] に表示するプレーヤーの名前
-   */
-  def this(ownerName: String) = this(SkullOwnerName(ownerName))
-
   override protected def transformItemMetaOnBuild(meta: SkullMeta): Unit = {
     owner match {
       case SkullOwnerUuidWithName(uuid, name) =>
@@ -48,11 +42,6 @@ class SkullItemStackBuilder(private val owner: SkullOwnerReference)
         val profileField = meta.getClass.getDeclaredField("profile")
         profileField.setAccessible(true)
         profileField.set(meta, gameProfile)
-      case SkullOwnerName(name) =>
-        /**
-         * 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
-         */
-        meta.setOwner(name)
 
       /**
        * @see
