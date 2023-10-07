@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
 import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.randomlyDropItemAt
 import com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki.Seizonsiki._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki.SeizonsikiItemData._
-import com.github.unchama.seichiassist.util.SendMessageEffect.sendMessageToEveryoneIgnoringPreference
+import com.github.unchama.seichiassist.util.SendMessageEffect.sendMessageToEveryoneIgnoringPreferenceIO
 import com.github.unchama.seichiassist.util.EntityDeathCause.isEntityKilledByThornsEnchant
 import de.tr7zw.nbtapi.NBTItem
 import org.bukkit.ChatColor.{DARK_GREEN, LIGHT_PURPLE, UNDERLINE}
@@ -67,7 +67,8 @@ class SeizonsikiListener[F[_], G[_]: SyncEffect](implicit manaApi: ManaWriteApi[
       player.setHealth(0)
 
       val messages = deathMessages(player.getName)
-      sendMessageToEveryoneIgnoringPreference(messages(new Random().nextInt(messages.size)))
+      sendMessageToEveryoneIgnoringPreferenceIO(messages(new Random().nextInt(messages.size)))
+        .unsafeRunAsyncAndForget()
     }
   }
 }

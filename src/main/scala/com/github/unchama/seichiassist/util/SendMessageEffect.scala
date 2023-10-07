@@ -4,21 +4,10 @@ import cats.Monad
 import cats.effect.IO
 import com.github.unchama.minecraft.actions.GetConnectedPlayers
 import com.github.unchama.minecraft.bukkit.actions.GetConnectedBukkitPlayers
-import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
-import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
 object SendMessageEffect {
-
-  import scala.jdk.CollectionConverters._
-
-  @deprecated("It's side-effectful")
-  def sendMessageToEveryoneIgnoringPreference[T](
-    content: T
-  )(implicit send: PlayerSendable[T, IO]): Unit = {
-    sendMessageToEveryoneIgnoringPreferenceIO(content).unsafeRunAsyncAndForget()
-  }
 
   def sendMessageToEveryoneIgnoringPreferenceIO[T: PlayerSendable[*, IO]](
     content: T
@@ -36,25 +25,5 @@ object SendMessageEffect {
       players <- GetConnectedPlayers[F, Player].now
       _ <- players.traverse(ev.send(_, content))
     } yield ()
-  }
-
-  @deprecated("It's side-effectful")
-  def sendMessageToEveryone[T](content: T)(implicit ev: PlayerSendable[T, IO]): Unit = {
-    import cats.implicits._
-
-    Bukkit
-      .getOnlinePlayers
-      .asScala
-      .toList
-      .traverse { player =>
-        for {
-          playerSettings <- SeichiAssist
-            .playermap(player.getUniqueId)
-            .settings
-            .getBroadcastMutingSettings
-          _ <- IO { if (!playerSettings.shouldMuteMessages) ev.send(player, content) }
-        } yield ()
-      }
-      .unsafeRunSync()
   }
 }
