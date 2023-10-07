@@ -17,7 +17,7 @@ class JdbcSeichiRankingRecordPersistence[F[_]: Sync]
   override def getAllRankingRecords: F[Vector[RankingRecord[SeichiAmountData]]] =
     Sync[F].delay {
       DB.localTx { implicit session =>
-        sql"select name, totalbreaknum from playerdata"
+        sql"select name, uuid, totalbreaknum from playerdata"
           .map { rs =>
             RankingRecord(
               rs.string("name"),
