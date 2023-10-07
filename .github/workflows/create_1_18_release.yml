@@ -1,7 +1,8 @@
 name: Create 1.18 release
 
 on:
-  push:
+  pull_request:
+    types: [opened, reopened, synchronize]
     branches:
       - 1_18
     paths:
@@ -97,17 +98,21 @@ jobs:
       - name: Build artifact
         run: ./sbt assembly
 
-      - name: Rename artifact
+      - name: Create and push a tag
+        id: tag-name
         run: |
-          mv target/build/SeichiAssist.jar target/build/SeichiAssist-for-1.18-v${{ needs.get_version.outputs.value }}.jar
+          TAG_NAME=sha-${{ needs.output-sha.outputs.sha }}:pr-${{ github.event.pull_request.number }}
+          git tag $TAG_NAME
+          git push origin $TAG_NAME
+          echo "value=$TAG_NAME" >> $GITHUB_OUTPUT
 
       - name: Create release
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: target/build/SeichiAssist-for-1.18-v${{ needs.get_version.outputs.value }}.jar
-          tag_name: "v${{ needs.get_version.outputs.value }}-for-1.18"
+          files: target/build/SeichiAssist.jar
+          tag_name: ${{ steps.tag-name.outputs.value }}
           draft: false
 
       - name: Clean build artifact for caching target folder
