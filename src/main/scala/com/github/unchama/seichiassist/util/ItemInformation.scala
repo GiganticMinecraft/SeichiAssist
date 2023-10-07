@@ -22,7 +22,7 @@ object ItemInformation {
     val skullMeta = itemStack.getItemMeta.asInstanceOf[SkullMeta]
 
     /*
-      Note: skullMeta.getOwner == "unchama"という条件は、後方互換性のためのコードである。
+      Note: skullMeta.getOwner == "unchama"という条件は、後方互換性を保つためのコードである。
             1.12.2のバージョンでskullMeta.getOwnerで頭のオーナーを取得できていたが、
             1.18.2ではsetOwner、getOwnerともに使用できない。
             そのため、1.18.2からはPlayerProfileにUUIDを書き込み、UUIDを利用した判定を行うことになった。
