@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.gacha
 
 import cats.data.Kleisli
 import cats.effect.ConcurrentEffect
-import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.minecraft.actions.{GetConnectedPlayers, OnMinecraftServerThread}
 import com.github.unchama.minecraft.bukkit.algebra.CloneableBukkitItemStack.instance
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.{
@@ -38,9 +38,11 @@ trait System[F[_], Player] extends Subsystem[F] {
 
 object System {
 
-  def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread](
+  def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread: GetConnectedPlayers[
+    *[_],
+    Player
+  ]: GachaTicketAPI](
     implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
-    gachaTicketAPI: GachaTicketAPI[F],
     mineStackAPI: MineStackAPI[F, Player, ItemStack]
   ): System[F, Player] = {
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =

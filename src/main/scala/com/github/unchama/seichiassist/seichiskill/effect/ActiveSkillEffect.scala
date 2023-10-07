@@ -22,7 +22,6 @@ import enumeratum.{Enum, EnumEntry}
 import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.entity.{Chicken, Player}
-import org.bukkit.material.Wool
 
 import scala.util.Random
 
@@ -277,13 +276,18 @@ sealed abstract class ActiveSkillPremiumEffect(
 
     this match {
       case ActiveSkillPremiumEffect.MAGIC =>
-        val colors = Array(DyeColor.RED, DyeColor.BLUE, DyeColor.YELLOW, DyeColor.GREEN)
+        val colors = Array(
+          Material.RED_WOOL,
+          Material.BLUE_WOOL,
+          Material.YELLOW_WOOL,
+          Material.GREEN_WOOL
+        )
 
         // 破壊するブロックの中心位置
         val centerBreak: Location = standard + ((breakArea.begin + breakArea.end) / 2)
 
         for {
-          randomColor <- IO { colors(Random.nextInt(colors.length)) }
+          randomWool <- IO { colors(Random.nextInt(colors.length)) }
           _ <- BreakUtil.massBreakBlock(
             player,
             breakBlocks,
@@ -293,11 +297,7 @@ sealed abstract class ActiveSkillPremiumEffect(
             Material.WHITE_WOOL
           )
           _ <- IO {
-            breakBlocks.foreach { b =>
-              val state = b.getState
-              state.getData.asInstanceOf[Wool].setColor(randomColor)
-              state.update()
-            }
+            breakBlocks.foreach(_.setType(randomWool))
           }
 
           period <- IO { if (SeichiAssist.DEBUG) 100 else 10 }
