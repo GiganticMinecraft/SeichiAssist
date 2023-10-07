@@ -15,20 +15,19 @@ import com.github.unchama.seichiassist.subsystems.breakcount.subsystems.notifica
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.util.{
   LaunchFireWorksEffect,
-  PlayerSendable,
   SendMessageEffect,
   SendSoundEffect
 }
 import org.bukkit.ChatColor.{BOLD, GOLD}
 import org.bukkit.Sound
 import org.bukkit.entity.Player
+import com.github.unchama.seichiassist.util.PlayerSendable._
 
 //FIXME ファイル名とやっていることが違うようになっているので修正するべき。
 //例えば、10億の倍数到達時の通知はLevelUp時の通知ではない
 //また、BukkitNotifyLevelUpなのにdiffの展開やいつメッセージを出すかなどを扱うべきでない。
 object BukkitNotifyLevelUp {
 
-  import PlayerSendable.forString
   import cats.implicits._
 
   def apply[F[_]: OnMinecraftServerThread: ConcurrentEffect: DiscordNotificationAPI]
@@ -44,12 +43,16 @@ object BukkitNotifyLevelUp {
             .expAmount
             .amount >= nextTenBillion
         ) {
+          // TODO: ここのSyncIOを剥がせそう
           OnMinecraftServerThread[F].runAction(SyncIO {
             val notificationMessage =
               s"${player.getName}の総整地量が${(newBreakAmount.expAmount.amount / 100000000).toInt}億に到達しました！"
-            SendMessageEffect.sendMessageToEveryoneIgnoringPreference(
-              s"$GOLD$BOLD$notificationMessage"
-            )(forString[IO])
+
+            SendMessageEffect
+              .sendMessageToEveryoneIgnoringPreferenceIO(s"$GOLD$BOLD$notificationMessage")(
+                forString[IO]
+              )
+              .unsafeRunAsyncAndForget()
             DiscordNotificationAPI[F]
               .sendPlainText(notificationMessage)
               .toIO

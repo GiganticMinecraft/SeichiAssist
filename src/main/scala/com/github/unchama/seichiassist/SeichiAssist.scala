@@ -59,6 +59,7 @@ import com.github.unchama.seichiassist.menus.{BuildMainMenu, TopLevelRouter}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems._
 import com.github.unchama.seichiassist.subsystems.anywhereender.AnywhereEnderChestAPI
+import com.github.unchama.seichiassist.subsystems.autosave.application.SystemConfiguration
 import com.github.unchama.seichiassist.subsystems.breakcount.{BreakCountAPI, BreakCountReadAPI}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.BreakSkillTargetConfigAPI
@@ -258,6 +259,9 @@ class SeichiAssist extends JavaPlugin() {
     implicit val globalNotification: DiscordNotificationAPI[IO] =
       discordNotificationSystem.globalNotification
 
+    implicit val getConnectedPlayers: GetConnectedPlayers[IO, Player] =
+      new GetConnectedBukkitPlayers[IO]
+
     subsystems.buildcount.System.wired[IO, SyncIO].unsafeRunSync()
   }
 
@@ -413,6 +417,8 @@ class SeichiAssist extends JavaPlugin() {
 
   private lazy val gachaSystem: subsystems.gacha.System[IO, Player] = {
     implicit val gachaTicketAPI: GachaTicketAPI[IO] = gachaTicketSystem.api
+    implicit val getConnectedPlayers: GetConnectedPlayers[IO, Player] =
+      new GetConnectedBukkitPlayers[IO]
 
     subsystems.gacha.System.wired[IO]
   }
@@ -831,8 +837,12 @@ class SeichiAssist extends JavaPlugin() {
       implicit val ioConcurrent: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
       implicit val sendMessages: SendMinecraftMessage[IO, Player] = new SendBukkitMessage[IO]
 
-      val dragonNightTimeProcess: IO[Nothing] =
+      val dragonNightTimeProcess: IO[Nothing] = {
+        implicit val getConnectedPlayers: GetConnectedPlayers[IO, Player] =
+          new GetConnectedBukkitPlayers[IO]
+
         subsystems.dragonnighttime.System.backgroundProcess[IO, SyncIO, Player]
+      }
 
       val halfHourRankingRoutineOption: Option[IO[Nothing]] =
         // 公共鯖(7)と建築鯖(8)なら整地量のランキングを表示する必要はない
@@ -847,9 +857,12 @@ class SeichiAssist extends JavaPlugin() {
         subsystems.seichilevelupmessage.System.backgroundProcess[IO, SyncIO, Player]
 
       val autoSaveProcess: IO[Nothing] = {
-        val configuration = seichiAssistConfig.getAutoSaveSystemConfiguration
+        implicit val configuration: SystemConfiguration =
+          seichiAssistConfig.getAutoSaveSystemConfiguration
+        implicit val getConnectedPlayers: GetConnectedPlayers[IO, Player] =
+          new GetConnectedBukkitPlayers[IO]
 
-        subsystems.autosave.System.backgroundProcess[IO, IO](configuration)
+        subsystems.autosave.System.backgroundProcess[IO]
       }
 
       val programs: List[IO[Nothing]] =
