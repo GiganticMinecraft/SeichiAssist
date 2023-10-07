@@ -9,6 +9,8 @@ import com.github.unchama.seichiassist.subsystems.ranking.domain.{
 }
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
+import java.util.UUID
+
 class JdbcSeichiRankingRecordPersistence[F[_]: Sync]
     extends RankingRecordPersistence[F, SeichiAmountData] {
 
@@ -19,6 +21,7 @@ class JdbcSeichiRankingRecordPersistence[F[_]: Sync]
           .map { rs =>
             RankingRecord(
               rs.string("name"),
+              UUID.fromString(rs.string("uuid")),
               SeichiAmountData(
                 SeichiExpAmount.ofNonNegative(rs.bigInt("totalbreaknum").longValueExact())
               )
