@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.buildcount
 
 import cats.effect.{Clock, ConcurrentEffect, SyncEffect}
-import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.datarepository.template.RepositoryDefinition
@@ -53,7 +52,7 @@ object System {
 
   def wired[F[
     _
-  ]: OnMinecraftServerThread: ConcurrentEffect: NonServerThreadContextShift: ErrorLogger: DiscordNotificationAPI, G[
+  ]: OnMinecraftServerThread: ConcurrentEffect: ErrorLogger: DiscordNotificationAPI, G[
     _
   ]: SyncEffect: ContextCoercion[*[_], F]: Clock](
     implicit configuration: Configuration
