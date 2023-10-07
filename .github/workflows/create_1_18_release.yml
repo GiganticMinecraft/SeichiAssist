@@ -2,7 +2,7 @@ name: Create 1.18 release
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize]
+    types: [opened, synchronize]
     branches:
       - 1_18
     paths:
