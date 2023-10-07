@@ -39,8 +39,8 @@ object MineStackMainMenu extends Menu {
     def iconMaterialFor(category: MineStackObjectCategory): Material = category match {
       case ORES                        => Material.DIAMOND_ORE
       case MOB_DROP                    => Material.ENDER_PEARL
-      case AGRICULTURAL                => Material.SEEDS
-      case BUILDING                    => Material.SMOOTH_BRICK
+      case AGRICULTURAL                => Material.WHEAT_SEEDS
+      case BUILDING                    => Material.STONE_BRICKS
       case REDSTONE_AND_TRANSPORTATION => Material.REDSTONE
       case GACHA_PRIZES                => Material.GOLDEN_APPLE
     }
