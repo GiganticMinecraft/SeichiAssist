@@ -2,8 +2,6 @@ name: Create 1.18 release
 
 on:
   pull_request:
-    branches:
-      - 1_18
     paths:
       - src/**
       - build.sbt
