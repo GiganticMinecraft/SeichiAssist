@@ -337,7 +337,7 @@ class PlayerBlockBreakListener(
   }
 
   /**
-   * y-58ハーフブロック破壊抑制
+   * y-59ハーフブロック破壊抑制
    *
    * @param event
    *   BlockBreakEvent
@@ -356,10 +356,10 @@ class PlayerBlockBreakListener(
         world.dropItemNaturally(location, new ItemStack(block.getType))
       case _ =>
     }
-    if (block.getY > -58) return
+    if (block.getY > -59) return
     if (block.getBlockData.asInstanceOf[Slab].getType != Slab.Type.BOTTOM) return
     if (!world.isSeichi) return
     event.setCancelled(true)
-    player.sendMessage(s"${RED}Y-58以下に敷かれたハーフブロックは破壊不可能です。")
+    player.sendMessage(s"${RED}Y-59以下に敷かれたハーフブロックは破壊不可能です。")
   }
 }
