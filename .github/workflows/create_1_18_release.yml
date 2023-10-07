@@ -105,7 +105,7 @@ jobs:
       - name: Create and push a tag
         id: tag-name
         run: |
-          TAG_NAME=sha-${{ needs.output-sha.outputs.sha }}/pr-${{ github.event.pull_request.number }}
+          TAG_NAME=pr-${{ github.event.pull_request.number }}-${{ needs.output-sha.outputs.sha }}
           git tag $TAG_NAME
           git push origin $TAG_NAME
           echo "value=$TAG_NAME" >> $GITHUB_OUTPUT
