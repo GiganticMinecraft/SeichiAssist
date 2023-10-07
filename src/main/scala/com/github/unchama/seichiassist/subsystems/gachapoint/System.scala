@@ -11,7 +11,7 @@ import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.stream.StreamExtra
-import com.github.unchama.minecraft.actions.{GetConnectedPlayers, OnMinecraftServerThread}
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.application.process.AddSeichiExpAsGachaPoint
@@ -34,9 +34,9 @@ object System {
   import cats.effect.implicits._
   import cats.implicits._
 
-  def wired[F[_]: ConcurrentEffect: Timer: GetConnectedPlayers[*[_], Player]: ErrorLogger, G[
+  def wired[F[_]: ConcurrentEffect: Timer: ErrorLogger, G[_]: SyncEffect: ContextCoercion[*[
     _
-  ]: SyncEffect: ContextCoercion[*[_], F]](
+  ], F]](
     breakCountReadAPI: BreakCountReadAPI[F, G, Player]
   )(implicit ioOnMainThread: OnMinecraftServerThread[IO]): G[System[F, G, Player]] = {
     import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
