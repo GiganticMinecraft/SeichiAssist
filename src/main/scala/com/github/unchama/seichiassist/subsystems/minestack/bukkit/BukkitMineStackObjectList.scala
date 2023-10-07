@@ -16,6 +16,8 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.PotionMeta
+import org.bukkit.potion.{PotionData, PotionType}
 
 class BukkitMineStackObjectList[F[_]: Sync](
   implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
@@ -81,6 +83,8 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(ORES, "iron_nugget", "鉄塊", Material.IRON_NUGGET),
   )
 
+  import scala.util.chaining._
+
   // モンスター+動物ドロップ
   private val minestacklistdrop: List[MineStackObjectGroup[ItemStack]] = leftElems(
     MineStackObjectByMaterial(MOB_DROP, "ender_pearl", "エンダーパール", Material.ENDER_PEARL),
@@ -91,8 +95,12 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(MOB_DROP, "bone", "骨", Material.BONE),
     MineStackObjectByMaterial(MOB_DROP, "sulphur", "火薬", Material.GUNPOWDER),
     MineStackObjectByMaterial(MOB_DROP, "arrow", "矢", Material.ARROW),
-    MineStackObjectByMaterial(MOB_DROP, "tipped_arrow", "鈍化の矢", Material.TIPPED_ARROW),
     MineStackObjectByMaterial(MOB_DROP, "spider_eye", "蜘蛛の目", Material.SPIDER_EYE),
+    MineStackObjectByItemStack(MOB_DROP, "tipped_arrow", Some("鈍化の矢"), hasNameLore = false, new ItemStack(Material.TIPPED_ARROW).tap { itemStack =>
+      val meta = itemStack.getItemMeta.asInstanceOf[PotionMeta]
+      meta.setBasePotionData(new PotionData(PotionType.SLOWNESS))
+      itemStack.setItemMeta(meta)
+    }),
     MineStackObjectByMaterial(MOB_DROP, "string", "糸", Material.STRING),
     MineStackObjectByMaterial(MOB_DROP, "name_tag", "名札", Material.NAME_TAG),
     MineStackObjectByMaterial(MOB_DROP, "lead", "リード", Material.LEAD),
