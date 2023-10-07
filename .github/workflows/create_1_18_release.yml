@@ -1,7 +1,17 @@
 name: Create 1.18 release
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - 1_18
+    paths:
+      - src/**
+      - build.sbt
+      - .scalafix.conf
+      - .scalafmt.conf
+      - project/*
+      - .github/workflows/**.yml
+      - .github/actions/**/**.yml
 
 jobs:
   get_version:
