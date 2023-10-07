@@ -354,7 +354,8 @@ class PlayerBlockBreakListener(
       case slab: Slab if slab.getType == Slab.Type.DOUBLE =>
         val location = block.getLocation
         world.dropItemNaturally(location, new ItemStack(block.getType))
-      case _ => return
+      case _: Slab =>
+      case _       => return
     }
     if (block.getY > -59) return
     if (block.getBlockData.asInstanceOf[Slab].getType != Slab.Type.BOTTOM) return
