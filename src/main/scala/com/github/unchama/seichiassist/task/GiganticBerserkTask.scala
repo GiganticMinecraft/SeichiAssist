@@ -90,8 +90,7 @@ class GiganticBerserkTask {
           DiscordNotificationAPI[F].sendPlainText(messageWithoutColor).toIO,
           IO {
             SendSoundEffect.sendEverySound(Sound.ENTITY_ENDER_DRAGON_DEATH, 1, 1.2f)
-            SendMessageEffect.sendMessageToEveryoneIgnoringPreference(messageWithColor)
-          }
+          } >> SendMessageEffect.sendMessageToEveryoneIgnoringPreferenceIO(messageWithColor)
         ).sequence
 
         program.unsafeRunAsyncAndForget()

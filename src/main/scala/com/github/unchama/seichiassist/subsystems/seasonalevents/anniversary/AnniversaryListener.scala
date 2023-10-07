@@ -109,7 +109,6 @@ class AnniversaryListener(
     val offHandItem = player.getInventory.getItemInOffHand
     if (offHandItem == null) return
 
-    offHandItem.setDurability(0)
     removeItemfromPlayerInventory(player.getInventory, item, 1)
   }
 

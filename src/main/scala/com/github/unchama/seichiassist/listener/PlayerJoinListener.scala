@@ -97,12 +97,17 @@ class PlayerJoinListener extends Listener {
     // 初見さんへの処理
     if (!player.hasPlayedBefore) {
       // 初見さんであることを全体告知
-      SendMessageEffect.sendMessageToEveryoneIgnoringPreference(
-        s"$LIGHT_PURPLE$BOLD${player.getName}さんはこのサーバーに初めてログインしました！"
-      )
-      SendMessageEffect.sendMessageToEveryoneIgnoringPreference(
-        s"${WHITE}webサイトはもう読みましたか？→$YELLOW${UNDERLINE}https://www.seichi.network/gigantic"
-      )
+      SendMessageEffect
+        .sendMessageToEveryoneIgnoringPreferenceIO(
+          s"$LIGHT_PURPLE$BOLD${player.getName}さんはこのサーバーに初めてログインしました！"
+        )
+        .unsafeRunAsyncAndForget()
+      SendMessageEffect
+        .sendMessageToEveryoneIgnoringPreferenceIO(
+          s"${WHITE}webサイトはもう読みましたか？→$YELLOW${UNDERLINE}https://www.seichi.network/gigantic"
+        )
+        .unsafeRunAsyncAndForget()
+
       SendSoundEffect.sendEverySound(Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
 
       // 同時に【はじめての方へ】ページに誘導したほうがただWebサイトに誘導するよりまだ可能性がありそう

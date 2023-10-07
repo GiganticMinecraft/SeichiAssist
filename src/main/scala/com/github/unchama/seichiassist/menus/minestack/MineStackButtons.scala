@@ -94,7 +94,7 @@ private[minestack] case class MineStackButtons(player: Player)(
             }
 
             setLore {
-              val itemDetail = List(s"$RESET$GREEN${stackedAmount.formatted("%,d")}個")
+              val itemDetail = List(s"$RESET$GREEN${stackedAmount.toString.format("%,d")}個")
               val operationDetail =
                 if (mineStackObjectGroup.isRight) {
                   List(s"$RESET${DARK_GREEN}クリックで色選択画面を開きます。")
