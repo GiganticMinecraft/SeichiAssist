@@ -26,6 +26,9 @@ object ItemInformation {
             1.12.2のバージョンでskullMeta.getOwnerで頭のオーナーを取得できていたが、
             1.18.2ではsetOwner、getOwnerともに使用できない。
             そのため、1.18.2からはPlayerProfileにUUIDを書き込み、UUIDを利用した判定を行うことになった。
+
+            1.18.2の環境で、1.12.2から持ってきたガチャ券(1.12.2の環境でItemStack化されたもの)からgetOwnerすることが
+            できなければ該当のコードを削除して良い。
      */
     if (
       !(skullMeta.hasOwner && (SkullOwnerUuid(
