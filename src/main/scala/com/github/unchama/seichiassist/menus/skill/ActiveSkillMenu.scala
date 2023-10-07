@@ -377,11 +377,11 @@ object ActiveSkillMenu extends Menu {
                                   .sendPlainText(notificationMessage)
                                   .toIO
                               ),
-                              Kleisli.liftF(IO {
-                                SendMessageEffect.sendMessageToEveryoneIgnoringPreference(
+                              Kleisli.liftF(
+                                SendMessageEffect.sendMessageToEveryoneIgnoringPreferenceIO(
                                   s"$GOLD$BOLD$notificationMessage"
                                 )
-                              }),
+                              ),
                               BroadcastSoundEffect(Sound.ENTITY_ENDER_DRAGON_DEATH, 1.0f, 1.2f)
                             )
                           )
