@@ -343,8 +343,6 @@ class SeichiAssist extends JavaPlugin() {
     import PluginExecutionContexts.{asyncShift, onMainThread, timer}
 
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-    implicit val getConnectedPlayers: GetConnectedPlayers[IO, Player] =
-      new GetConnectedBukkitPlayers[IO]
 
     subsystems.gachapoint.System.wired[IO, SyncIO](breakCountSystem.api).unsafeRunSync()
   }
