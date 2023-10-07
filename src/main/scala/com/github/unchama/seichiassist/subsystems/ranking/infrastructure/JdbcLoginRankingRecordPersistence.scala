@@ -14,7 +14,7 @@ class JdbcLoginRankingRecordPersistence[F[_]: Sync]
     extends RankingRecordPersistence[F, LoginTime] {
   override def getAllRankingRecords: F[Vector[RankingRecord[LoginTime]]] = Sync[F].delay {
     DB.readOnly { implicit session =>
-      sql"SELECT name,playtick from playerdata"
+      sql"SELECT name, uuid, playtick from playerdata"
         .map { rs =>
           RankingRecord(
             rs.string("name"),
