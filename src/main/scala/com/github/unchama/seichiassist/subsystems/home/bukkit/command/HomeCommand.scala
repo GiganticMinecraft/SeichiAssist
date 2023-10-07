@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.home.bukkit.command
 import cats.Monad
 import cats.data.Kleisli
 import cats.effect.implicits._
-import cats.effect.{ConcurrentEffect, IO, SyncEffect}
+import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.chatinterceptor.CancellationReason.Overridden
 import com.github.unchama.chatinterceptor.ChatInterceptionScope
 import com.github.unchama.concurrent.NonServerThreadContextShift
@@ -33,7 +33,7 @@ class HomeCommand[F[
   _
 ]: OnMinecraftServerThread: ConcurrentEffect: NonServerThreadContextShift: HomeAPI, G[
   _
-]: SyncEffect: ContextCoercion[*[_], F]](
+]: ContextCoercion[*[_], F]](
   implicit scope: ChatInterceptionScope,
   breakCountReadAPI: BreakCountReadAPI[F, G, Player],
   buildCountReadAPI: BuildCountAPI[F, G, Player]
