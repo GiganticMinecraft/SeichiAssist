@@ -41,4 +41,7 @@ object SkullOwners {
     UUID.fromString("bd482739-767c-45dc-a1f8-c33c40530952"),
     "MHF_Villager"
   )
+
+  val MHF_TNT: SkullOwnerReference =
+    SkullOwnerUuidWithName(UUID.fromString("d43af93c-c330-4a3d-bab8-ee74234a011a"), "MHF_TNT")
 }
