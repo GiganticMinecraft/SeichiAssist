@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.itemmigration
 
-import cats.effect.{ConcurrentEffect, ContextShift, IO, Sync, SyncEffect, SyncIO}
+import cats.effect.{ConcurrentEffect, IO, Sync, SyncEffect, SyncIO}
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
@@ -31,7 +31,7 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_]: ConcurrentEffect: ContextShift, G[_]: SyncEffect: ContextCoercion[*[_], F]](
+  def wired[F[_]: ConcurrentEffect, G[_]: SyncEffect: ContextCoercion[*[_], F]](
     implicit logger: Logger
   ): G[System[F]] = for {
     migrations <- Sync[G].delay {

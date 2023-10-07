@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.task
 
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
-import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
@@ -15,9 +14,7 @@ import org.bukkit.entity.Player
 import scala.util.Random
 
 class GiganticBerserkTask {
-  def PlayerKillEnemy[F[
-    _
-  ]: ConcurrentEffect: NonServerThreadContextShift: DiscordNotificationAPI](
+  def PlayerKillEnemy[F[_]: ConcurrentEffect: DiscordNotificationAPI](
     p: Player
   )(implicit manaApi: ManaApi[IO, SyncIO, Player]): Unit = {
     val player = p

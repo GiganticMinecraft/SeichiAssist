@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.menus.skill
 import cats.data.Kleisli
 import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
-import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.effect.concurrent.TryableFiber
 import com.github.unchama.itemstackbuilder.{
   AbstractItemStackBuilder,
@@ -282,9 +281,7 @@ object ActiveSkillMenu extends Menu {
       }
     }
 
-    def seichiSkillButton[F[
-      _
-    ]: ConcurrentEffect: NonServerThreadContextShift: DiscordNotificationAPI](
+    def seichiSkillButton[F[_]: ConcurrentEffect: DiscordNotificationAPI](
       state: SkillSelectionState,
       skill: SeichiSkill
     )(implicit environment: Environment): Button = {

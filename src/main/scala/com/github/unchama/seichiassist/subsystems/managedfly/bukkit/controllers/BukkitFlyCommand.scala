@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.managedfly.bukkit.controllers
 
 import cats.data.Kleisli
-import cats.effect.{ConcurrentEffect, IO, SyncEffect, SyncIO, Timer}
+import cats.effect.{ConcurrentEffect, IO, SyncEffect, SyncIO}
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
@@ -54,7 +54,7 @@ object BukkitFlyCommand {
   import cats.effect.implicits._
   import cats.implicits._
 
-  private def startEndlessCommand[F[_]: ConcurrentEffect: Timer, G[_]: SyncEffect](
+  private def startEndlessCommand[F[_]: ConcurrentEffect, G[_]: SyncEffect](
     implicit
     sessionReferenceRepository: KeyedDataRepository[Player, ActiveSessionReference[F, G]],
     factory: ActiveSessionFactory[F, Player]
@@ -67,7 +67,7 @@ object BukkitFlyCommand {
       } yield TargetedEffect.emptyEffect
     }
 
-  private def addCommand[F[_]: ConcurrentEffect: Timer, G[_]: SyncEffect](
+  private def addCommand[F[_]: ConcurrentEffect, G[_]: SyncEffect](
     implicit
     sessionReferenceRepository: KeyedDataRepository[Player, ActiveSessionReference[F, G]],
     factory: ActiveSessionFactory[F, Player]
@@ -107,7 +107,7 @@ object BukkitFlyCommand {
       }
     }
 
-  def executor[F[_]: ConcurrentEffect: Timer, G[_]: SyncEffect](
+  def executor[F[_]: ConcurrentEffect, G[_]: SyncEffect](
     implicit
     sessionReferenceRepository: KeyedDataRepository[Player, ActiveSessionReference[F, G]],
     factory: ActiveSessionFactory[F, Player]
