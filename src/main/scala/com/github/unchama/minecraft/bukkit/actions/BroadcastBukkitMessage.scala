@@ -1,10 +1,10 @@
 package com.github.unchama.minecraft.bukkit.actions
 
-import cats.effect.{Sync, SyncIO}
+import cats.effect.SyncIO
 import com.github.unchama.minecraft.actions.{BroadcastMinecraftMessage, OnMinecraftServerThread}
 import org.bukkit.Bukkit
 
-class BroadcastBukkitMessage[F[_]: Sync: OnMinecraftServerThread]
+class BroadcastBukkitMessage[F[_]: OnMinecraftServerThread]
     extends BroadcastMinecraftMessage[F] {
 
   import scala.jdk.CollectionConverters._
@@ -19,7 +19,7 @@ class BroadcastBukkitMessage[F[_]: Sync: OnMinecraftServerThread]
 
 object BroadcastBukkitMessage {
 
-  def apply[F[_]: Sync: OnMinecraftServerThread]: BroadcastMinecraftMessage[F] =
+  def apply[F[_]: OnMinecraftServerThread]: BroadcastMinecraftMessage[F] =
     new BroadcastBukkitMessage[F]
 
 }
