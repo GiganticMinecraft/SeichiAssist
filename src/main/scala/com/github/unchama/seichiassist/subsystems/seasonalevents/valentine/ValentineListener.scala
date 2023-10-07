@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valen
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineCookieEffectsHandler._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineItemData._
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
-import com.github.unchama.seichiassist.util.SendMessageEffect.sendMessageToEveryoneIgnoringPreference
+import com.github.unchama.seichiassist.util.SendMessageEffect.sendMessageToEveryoneIgnoringPreferenceIO
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
@@ -139,7 +139,8 @@ class ValentineListener[F[_]: ConcurrentEffect: NonServerThreadContextShift](
         player.getName,
         new NBTItem(item).getString(NBTTagConstants.producerNameTag)
       )
-      sendMessageToEveryoneIgnoringPreference(messages(new Random().nextInt(messages.size)))
+      sendMessageToEveryoneIgnoringPreferenceIO(messages(new Random().nextInt(messages.size)))
+        .unsafeRunAsyncAndForget()
     }
     player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0f, 1.2f)
   }
