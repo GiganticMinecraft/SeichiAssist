@@ -8,7 +8,7 @@ import com.github.unchama.fs2.workaround.fs3.Fs3Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.ratelimiting.RateLimiter
-import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.minecraft.actions.{GetConnectedPlayers, OnMinecraftServerThread}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.{
   ClassifyPlayerWorld,
@@ -55,7 +55,8 @@ object System {
   ]: OnMinecraftServerThread: ConcurrentEffect: ErrorLogger: DiscordNotificationAPI, G[
     _
   ]: SyncEffect: ContextCoercion[*[_], F]: Clock](
-    implicit configuration: Configuration
+    implicit configuration: Configuration,
+    getConnectedPlayers: GetConnectedPlayers[F, Player]
   ): F[System[F, G]] = {
     implicit val expMultiplier: BuildExpMultiplier = configuration.multipliers
     implicit val persistence: JdbcBuildAmountDataPersistence[G] =
