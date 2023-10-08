@@ -10,13 +10,13 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMain
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
-import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectWithColorVariants
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectWithKindVariants
 import eu.timepit.refined.auto._
 import org.bukkit.ChatColor.{BOLD, DARK_BLUE}
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-object MineStackSelectItemColorMenu {
+object MineStackSelectItemKindMenu {
 
   class Environment(
     implicit val canOpenCategorizedMineStackMenu: CanOpen[IO, CategorizedMineStackMenu],
@@ -26,22 +26,22 @@ object MineStackSelectItemColorMenu {
 
 }
 
-case class MineStackSelectItemColorMenu(
-  group: MineStackObjectWithColorVariants[ItemStack],
+case class MineStackSelectItemKindMenu(
+  group: MineStackObjectWithKindVariants[ItemStack],
   oldPage: Int
 ) extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
 
-  override type Environment = MineStackSelectItemColorMenu.Environment
+  override type Environment = MineStackSelectItemKindMenu.Environment
   override val frame: MenuFrame =
-    MenuFrame(6.chestRows, s"$DARK_BLUE${BOLD}MineStack(アイテム色選択)")
+    MenuFrame(6.chestRows, s"$DARK_BLUE${BOLD}MineStack(アイテム種類選択)")
 
   override def computeMenuLayout(
     player: Player
   )(implicit environment: Environment): IO[MenuSlotLayout] = {
     import environment._
-    val buttonMapping = (List(group.representative) ++ group.coloredVariants).zipWithIndex.map {
+    val buttonMapping = (List(group.representative) ++ group.kindVariants).zipWithIndex.map {
       case (inListMineStackObj, index) =>
         index -> MineStackButtons(player).getMineStackObjectButtonOf(inListMineStackObj)
     } ++ List(
