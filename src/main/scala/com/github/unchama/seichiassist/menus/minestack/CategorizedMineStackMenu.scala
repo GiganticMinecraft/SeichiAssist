@@ -145,6 +145,8 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
           .++(categorizedItemSection)
           .++(autoMineStackToggleButtonSection)
 
+      println(s"combinedLayout: $combinedLayout")
+
       MenuSlotLayout(combinedLayout: _*)
     }
   }
