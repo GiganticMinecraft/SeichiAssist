@@ -22,7 +22,7 @@ object CategorizedMineStackMenu {
   class Environment(
     implicit val ioCanOpenMineStackMainMenu: IO CanOpen MineStackMainMenu.type,
     val ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu,
-    val ioCanOpenSelectItemColorMenu: IO CanOpen MineStackSelectItemColorMenu,
+    val ioCanOpenSelectItemColorMenu: IO CanOpen MineStackSelectItemKindMenu,
     val onMainThread: OnMinecraftServerThread[IO],
     val mineStackAPI: MineStackAPI[IO, Player, ItemStack],
     implicit val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player]
