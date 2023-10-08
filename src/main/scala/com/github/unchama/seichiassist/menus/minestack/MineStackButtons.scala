@@ -12,7 +12,7 @@ import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
   MineStackObject,
   MineStackObjectGroup,
-  MineStackObjectWithColorVariants
+  MineStackObjectWithKindVariants
 }
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -38,7 +38,7 @@ private[minestack] case class MineStackButtons(player: Player)(
     mineStackObjectGroup match {
       case Left(mineStackObject) =>
         mineStackObject
-      case Right(MineStackObjectWithColorVariants(representative, _)) =>
+      case Right(MineStackObjectWithKindVariants(representative, _)) =>
         representative
     }
   }
@@ -69,7 +69,7 @@ private[minestack] case class MineStackButtons(player: Player)(
     val mineStackObject = mineStackObjectGroup match {
       case Left(mineStackObject) =>
         mineStackObject
-      case Right(MineStackObjectWithColorVariants(representative, _)) =>
+      case Right(MineStackObjectWithKindVariants(representative, _)) =>
         representative
     }
 
@@ -96,7 +96,7 @@ private[minestack] case class MineStackButtons(player: Player)(
             setLore {
               val operationDetail =
                 if (mineStackObjectGroup.isRight) {
-                  List(s"$RESET${DARK_GREEN}クリックで色選択画面を開きます。")
+                  List(s"$RESET${DARK_GREEN}クリックで種類選択画面を開きます。")
                 } else {
                   List(
                     s"$RESET$GREEN${stackedAmount.toString.format("%,d")}個",
@@ -120,7 +120,7 @@ private[minestack] case class MineStackButtons(player: Player)(
     oldPage: Int
   )(
     implicit onMainThread: OnMinecraftServerThread[IO],
-    canOpenCategorizedMineStackMenu: IO CanOpen MineStackSelectItemColorMenu
+    canOpenCategorizedMineStackMenu: IO CanOpen MineStackSelectItemKindMenu
   ): IO[Button] = RecomputedButton {
     for {
       itemStack <- getMineStackObjectIconItemStack(mineStackObjectGroup)
@@ -152,7 +152,7 @@ private[minestack] case class MineStackButtons(player: Player)(
     oldPage: Int
   )(
     implicit onMainThread: OnMinecraftServerThread[IO],
-    canOpenMineStackSelectItemColorMenu: IO CanOpen MineStackSelectItemColorMenu
+    canOpenMineStackSelectItemColorMenu: IO CanOpen MineStackSelectItemKindMenu
   ): Kleisli[IO, Player, Unit] = {
     mineStackObjectGroup match {
       case Left(mineStackObject) =>
@@ -168,7 +168,7 @@ private[minestack] case class MineStackButtons(player: Player)(
         )
       case Right(mineStackObjectWithColorVariants) =>
         canOpenMineStackSelectItemColorMenu.open(
-          MineStackSelectItemColorMenu(mineStackObjectWithColorVariants, oldPage)
+          MineStackSelectItemKindMenu(mineStackObjectWithColorVariants, oldPage)
         )
     }
   }
