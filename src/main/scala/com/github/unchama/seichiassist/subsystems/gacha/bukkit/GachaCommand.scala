@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gacha.bukkit
 
 import cats.data.Kleisli
-import cats.effect.{ConcurrentEffect, Effect, Sync}
+import cats.effect.ConcurrentEffect
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.ParserResponse.{failWith, succeedWith}
 import com.github.unchama.contextualexecutor.builder.{
@@ -31,7 +31,7 @@ import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import eu.timepit.refined.numeric.{Interval, NonNegative, Positive}
 import org.bukkit.ChatColor._
-import org.bukkit.command.TabExecutor
+import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import shapeless.HNil
@@ -154,7 +154,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
           case "all" =>
             Kleisli
               .liftF(gachaTicketAPI.addToAllKnownPlayers(amount))
-              .flatMap(_ => MessageEffectF(s"${GREEN}全プレイヤーへガチャ券${amount}枚加算成功"))
+              .flatMap(_ => MessageEffectF(s"${GREEN}全プレイヤーへガチャ券${amount.value}枚加算成功"))
           case value =>
             val uuidRegex =
               "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}".r
@@ -187,35 +187,34 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
             MessageEffect("IDは0以上の整数を指定してください。")
           )
         )
-        .buildWithExecutionF { context =>
+        .buildWithExecutionCSEffect { context =>
           import shapeless.::
           val gachaPrizeId :: shapeless.HNil = context.args.parsed
           // optional
           val ownerName = context.args.yetToBeParsed.headOption
 
-          for {
-            gachaPrize <- gachaPrizeAPI.fetch(GachaPrizeId(gachaPrizeId))
-            existsGachaPrize = gachaPrize.nonEmpty
-            _ <- Sync[F].delay {
-              gachaPrize.foreach { gachaPrize =>
-                val itemStack = ownerName match {
-                  case Some(name) => gachaPrize.materializeWithOwnerSignature(name)
-                  case None       => gachaPrize.itemStack
-                }
+          Kleisli
+            .liftF {
+              for {
+                gachaPrize <- gachaPrizeAPI.fetch(GachaPrizeId(gachaPrizeId))
+                _ <- gachaPrize.traverse { gachaPrize =>
+                  val itemStack = ownerName match {
+                    case Some(name) => gachaPrize.materializeWithOwnerSignature(name)
+                    case None       => gachaPrize.itemStack
+                  }
 
-                InventoryOperations.grantItemStacksEffect(itemStack).apply(context.sender)
-              }
+                  InventoryOperations.grantItemStacksEffect(itemStack).apply(context.sender)
+                }
+              } yield gachaPrize
             }
-          } yield {
-            if (existsGachaPrize)
-              MessageEffect("ガチャアイテムを付与しました。")
-            else
-              MessageEffect("指定されたIDのガチャ景品は存在しません。")
-          }
+            .flatMap {
+              case Some(_) => MessageEffectF("ガチャアイテムを付与しました。")
+              case None    => MessageEffectF("指定されたIDのガチャ景品は存在しません。")
+            }
         }
 
     val add: ContextualExecutor =
-      playerCommandBuilder.thenParse(probabilityParser).buildWithExecutionF { context =>
+      playerCommandBuilder.thenParse(probabilityParser).buildWithExecutionCSEffect { context =>
         import shapeless.::
 
         val player = context.sender
@@ -223,26 +222,28 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
         val eventName = context.args.yetToBeParsed.headOption.map(GachaEventName)
         val mainHandItem = player.getInventory.getItemInMainHand
 
-        for {
-          events <- gachaPrizeAPI.createdGachaEvents
-          _ <- gachaPrizeAPI.addGachaPrize(
-            domain.GachaPrizeTableEntry(
-              mainHandItem,
-              GachaProbability(probability),
-              probability < 0.1,
-              _,
-              events.find(gachaEvent => eventName.contains(gachaEvent.eventName))
-            )
-          )
-        } yield MessageEffect(List("ガチャアイテムを追加しました！"))
+        Kleisli
+          .liftF[F, CommandSender, Unit] {
+            for {
+              events <- gachaPrizeAPI.createdGachaEvents
+              _ <- gachaPrizeAPI.addGachaPrize(
+                domain.GachaPrizeTableEntry(
+                  mainHandItem,
+                  GachaProbability(probability),
+                  probability < 0.1,
+                  _,
+                  events.find(gachaEvent => eventName.contains(gachaEvent.eventName))
+                )
+              )
+            } yield ()
+          }
+          .productR(MessageEffectF("ガチャアイテムを追加しました！"))
       }
 
     val list: ContextualExecutor =
-      ContextualExecutorBuilder.beginConfiguration.buildWithExecutionF { context =>
+      ContextualExecutorBuilder.beginConfiguration.buildWithExecutionCSEffect { context =>
         val eventName = context.args.yetToBeParsed.headOption.map(GachaEventName)
-        for {
-          gachaPrizes <- gachaPrizeAPI.allGachaPrizeList
-        } yield {
+        Kleisli.liftF(gachaPrizeAPI.allGachaPrizeList).flatMap { gachaPrizes =>
           val gachaPrizeInformation = gachaPrizes
             .filter { gachaPrize =>
               if (eventName.isEmpty) gachaPrize.nonGachaEventItem
@@ -261,7 +262,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
             .toList
 
           val totalProbability = gachaPrizes.map(_.probability.value).sum
-          MessageEffect(
+          MessageEffectF(
             List(s"${RED}アイテム番号|アイテム名|アイテム数|出現確率") ++ gachaPrizeInformation ++ List(
               s"${RED}合計確率: $totalProbability(${totalProbability * 100}%)",
               s"${RED}合計確率は100%以内に収まるようにしてください。"
@@ -279,15 +280,15 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
           MessageEffect("IDは正の値を指定してください。")
         )
       )
-      .buildWithExecutionF { context =>
+      .buildWithExecutionCSEffect { context =>
         val gachaId = GachaPrizeId(context.args.parsed.head)
-        for {
-          didRemoveGachaPrize <- gachaPrizeAPI.removeByGachaPrizeId(gachaId)
-        } yield {
-          if (didRemoveGachaPrize)
-            MessageEffect(List("ガチャアイテムを削除しました"))
-          else
-            MessageEffect("指定されたIDのガチャ景品が存在しないため、ガチャアイテムを削除できませんでした。")
+        Kleisli.liftF(gachaPrizeAPI.removeByGachaPrizeId(gachaId)).flatMap {
+          didRemoveGachaPrize =>
+            if (didRemoveGachaPrize) {
+              MessageEffectF("ガチャアイテムを削除しました")
+            } else {
+              MessageEffectF("指定されたIDのガチャ景品が存在しないため、ガチャアイテムを削除できませんでした。")
+            }
         }
       }
 
@@ -302,53 +303,56 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
             MessageEffect("数は1～64で指定してください。")
           )
         )
-        .buildWithExecutionF { context =>
+        .buildWithExecutionCSEffect { context =>
           import shapeless.::
           val targetId :: amount :: HNil = context.args.parsed
-          for {
-            currentGachaPrize <- gachaPrizeAPI.fetch(targetId)
-            oldItemStack <- currentGachaPrize.traverse { prize =>
-              gachaPrizeAPI
-                .upsertGachaPrize(
-                  prize.copy(itemStack = prize.itemStack.tap(_.setAmount(amount)))
-                )
-                .as(Some(prize.itemStack))
-            }
-          } yield {
-            oldItemStack match {
+
+          Kleisli
+            .liftF(for {
+              currentGachaPrize <- gachaPrizeAPI.fetch(targetId)
+              oldItemStack <- currentGachaPrize.traverse { prize =>
+                gachaPrizeAPI
+                  .upsertGachaPrize(
+                    prize.copy(itemStack = prize.itemStack.tap(_.setAmount(amount)))
+                  )
+                  .as(Some(prize.itemStack))
+              }
+            } yield oldItemStack)
+            .flatMap {
               case Some(itemStack) =>
-                MessageEffect(
+                MessageEffectF(
                   s"${targetId.id}|${itemStack.get.getType.toString}/${itemStack.get.getItemMeta.getDisplayName}${RESET}のアイテム数を${amount}個に変更しました。"
                 )
               case None =>
-                MessageEffect("指定されたIDのガチャ景品が存在しないため、アイテム数が変更できませんでした。")
+                MessageEffectF("指定されたIDのガチャ景品が存在しないため、アイテム数が変更できませんでした。")
             }
-          }
         }
 
     val setProbability: ContextualExecutor = ContextualExecutorBuilder
       .beginConfiguration
       .thenParse(gachaPrizeIdExistsParser)
       .thenParse(probabilityParser)
-      .buildWithExecutionF { context =>
+      .buildWithExecutionCSEffect { context =>
         import shapeless.::
         val targetId :: newProb :: HNil = context.args.parsed
-        for {
-          currentGachaPrize <- gachaPrizeAPI.fetch(targetId)
-          probabilityChange <- currentGachaPrize.traverse { gachaPrize =>
-            gachaPrizeAPI.upsertGachaPrize(
-              gachaPrize.copy(probability = GachaProbability(newProb))
-            )
-          }
+
+        (for {
+          currentGachaPrize <- Kleisli.liftF(gachaPrizeAPI.fetch(targetId))
+          probabilityChange <- Kleisli.liftF(currentGachaPrize.traverse { gachaPrize =>
+            gachaPrizeAPI
+              .upsertGachaPrize(gachaPrize.copy(probability = GachaProbability(newProb)))
+          })
           itemStack = currentGachaPrize.map(_.itemStack)
         } yield {
-          if (probabilityChange.nonEmpty)
-            MessageEffect(
+          if (probabilityChange.nonEmpty) {
+            MessageEffectF(
               s"${targetId.id}|${itemStack.get.getType.toString}/${itemStack.get.getItemMeta.getDisplayName}${RESET}の確率を$newProb(${newProb * 100}%)に変更しました。"
             )
-          else
-            MessageEffect("指定されたIDのガチャ景品は存在しません。")
-        }
+          } else {
+            MessageEffectF("指定されたIDのガチャ景品は存在しません。")
+          }
+        }).flatten
+
       }
 
     val createEvent: ContextualExecutor =
@@ -357,7 +361,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
         .thenParse(Parsers.identity)
         .thenParse(Parsers.identity)
         .thenParse(Parsers.identity)
-        .buildWithExecutionF { context =>
+        .buildWithExecutionCSEffect { context =>
           import shapeless.::
           val e :: startDate :: endDate :: HNil = context.args.parsed
           val eventName = GachaEventName(e)
@@ -366,38 +370,42 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
           val dateRegex = "[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])".r
 
           if (!dateRegex.matches(startDate) || !dateRegex.matches(endDate)) {
-            Effect[F].pure(MessageEffect(s"${RED}開始日/終了日はyyyy-MM-ddの形式で指定してください。"))
+            MessageEffectF(s"${RED}開始日/終了日はyyyy-MM-ddの形式で指定してください。")
           } else if (eventName.name.length > 30) {
-            Effect[F].pure(MessageEffect(s"${RED}イベント名は30字以内で指定してください。"))
+            MessageEffectF(s"${RED}イベント名は30字以内で指定してください。")
           } else {
             for {
-              existsEvent <- gachaPrizeAPI.existsGachaEvent(eventName)
-              _ <- gachaPrizeAPI
-                .createGachaEvent(
-                  GachaEvent(
-                    eventName,
-                    LocalDate.parse(startDate, dateTimeFormatter),
-                    LocalDate.parse(endDate, dateTimeFormatter)
+              existsEvent <- Kleisli.liftF(gachaPrizeAPI.existsGachaEvent(eventName))
+              _ <- Kleisli.liftF(
+                gachaPrizeAPI
+                  .createGachaEvent(
+                    GachaEvent(
+                      eventName,
+                      LocalDate.parse(startDate, dateTimeFormatter),
+                      LocalDate.parse(endDate, dateTimeFormatter)
+                    )
                   )
-                )
-                .unlessA(existsEvent)
+                  .unlessA(existsEvent)
+              )
 
             } yield {
-              if (existsEvent) MessageEffect(s"${RED}指定された名前のイベントが既に存在します。")
-              else MessageEffect(s"${AQUA}イベントを作成しました。")
+              if (existsEvent) MessageEffectF(s"${RED}指定された名前のイベントが既に存在します。")
+              else MessageEffectF(s"${AQUA}イベントを作成しました。")
             }
-          }
+          }.flatten
+
         }
 
     val deleteEvent: ContextualExecutor =
       ContextualExecutorBuilder
         .beginConfiguration
         .thenParse(Parsers.identity)
-        .buildWithExecutionF { context =>
+        .buildWithExecutionCSEffect { context =>
           val eventName = GachaEventName(context.args.parsed.head)
-          for {
-            _ <- gachaPrizeAPI.deleteGachaEvent(eventName)
-          } yield MessageEffect(s"ガチャイベント: ${eventName.name}を削除しました。")
+
+          Kleisli.liftF(gachaPrizeAPI.deleteGachaEvent(eventName)).flatMap { _ =>
+            MessageEffectF(s"ガチャイベント: ${eventName.name}を削除しました。")
+          }
         }
 
     private def toTimeString(localDate: LocalDate): String = {
@@ -406,14 +414,13 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
     }
 
     val eventList: ContextualExecutor =
-      ContextualExecutorBuilder.beginConfiguration.buildWithExecutionF { _ =>
-        for {
-          events <- gachaPrizeAPI.createdGachaEvents
-        } yield {
+      ContextualExecutorBuilder.beginConfiguration.buildWithExecutionCSEffect { _ =>
+        Kleisli.liftF(gachaPrizeAPI.createdGachaEvents).flatMap { events =>
           val messages = "イベント名 | 開始日 | 終了日" +: events.map { event =>
             s"${event.eventName.name} | ${toTimeString(event.startDate)} | ${toTimeString(event.endDate)}"
           }
-          MessageEffect(messages.toList)
+
+          MessageEffectF(messages.toList)
         }
       }
   }
