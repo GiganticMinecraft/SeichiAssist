@@ -2,18 +2,18 @@
 
 ## 開発を始めるために必要なもの
 - [IntelliJ IDEA](https://www.jetbrains.com/idea/) などの統合開発環境
-- [JDK 8](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot)
+- [AdoptOpenJDK 17](https://adoptium.net/temurin/releases/?version=17)
 - [sbt 1.9](https://www.scala-sbt.org/1.x/docs/Setup.html)
 - [Scala 2.13](https://www.scala-lang.org/download/)
-- Spigot 1.12.2
+- Spigot 1.18.2
 - Docker
 - GitHubのアカウント
 - Git
 
 ### 準備
 #### Java Development Kit
-最初に、Java Development Kit (JDK) 8をインストールする必要があります。
-[AdoptOpenJDK 1.8](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot) のインストールを推奨します。
+最初に、Java Development Kit (JDK) 17をインストールする必要があります。
+[AdoptOpenJDK 17](https://adoptium.net/temurin/releases/?version=17) のインストールを推奨します。
 
 #### 統合開発環境
 次に、[IntelliJ IDEA](https://www.jetbrains.com/idea/)などの統合開発環境を導入します。
@@ -152,6 +152,10 @@ IntelliJ IDEAの設定でフォーマットに `scalafmt` を使う
 #### 手元でデバッグ
 SeichiAssistは手元でデバッグできる環境を整えています。環境を立ち上げるためには、Dockerが必要です。
 
+/pluginsディレクトリに対してjarファイル配置すると、そのjarファイルとSeichiAssistを同時に起動した場合の動作を確認することができます。
+整地鯖で利用しているプラグインはGiganticMinecraftのメンバーのみ[MinIOからダウンロード](https://minio-console.onp-k8s.admin.seichi.click/browser/seichi-plugins/ZGViLTEtMTYtNS8=)することができます。
+接続情報などの詳しい情報は、Discordで聞いてください。
+
 ##### Dockerを立ち上げる
 
 Linux環境では、`./prepare-docker.sh`、Windowsでは`prepare-docker.bat`を実行することで
@@ -167,7 +171,7 @@ Linux環境では、`./prepare-docker.sh`、Windowsでは`prepare-docker.bat`を
 
 サーバーやDB等を停止する場合、 `docker compose down` を実行してください。
 
-なお、SeichiAssistがJDK 8以外でコンパイルされた場合は、実行時にエラーとなります。必ずJDKのバージョンを揃えるようにしてください。
+なお、SeichiAssistがJava 17未満でコンパイルされた場合は、実行時にエラーとなります。必ずJDKのバージョンを揃えるようにしてください。
 
 
 ##### デバッグ用環境への接続

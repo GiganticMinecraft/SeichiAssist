@@ -210,10 +210,8 @@ object Fs3Topic {
           def close: F[Unit] = {
             Bracket[F, Throwable].uncancelable {
               signalClosure.complete(()).flatMap { _ =>
-                state
-                  .get
-                  .flatMap { case (subs, _) => foreach(subs)(_.close.void) }
-                  .as(Fs3Topic.rightUnit)
+                state.get.flatMap { case (subs, _) => foreach(subs)(_.close.void) }
+//                  .as(Fs3Topic.rightUnit)
               }
             }
           }
