@@ -244,12 +244,13 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
       ContextualExecutorBuilder.beginConfiguration.buildWithExecutionCSEffect { context =>
         val eventName = context.args.yetToBeParsed.headOption.map(GachaEventName)
         Kleisli.liftF(gachaPrizeAPI.allGachaPrizeList).flatMap { gachaPrizes =>
-          val gachaPrizeInformation = gachaPrizes
-            .filter { gachaPrize =>
-              if (eventName.isEmpty) gachaPrize.nonGachaEventItem
-              else
-                gachaPrize.gachaEvent.map(_.eventName) == eventName
-            }
+          val eventGachaPrizes = gachaPrizes.filter { gachaPrize =>
+            if (eventName.isEmpty) gachaPrize.nonGachaEventItem
+            else
+              gachaPrize.gachaEvent.map(_.eventName) == eventName
+          }
+
+          val gachaPrizeInformation = eventGachaPrizes
             .sortBy(_.id.id)
             .map { gachaPrize =>
               val itemStack = gachaPrize.itemStack
@@ -261,7 +262,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
             }
             .toList
 
-          val totalProbability = gachaPrizes.map(_.probability.value).sum
+          val totalProbability = eventGachaPrizes.map(_.probability.value).sum
           MessageEffectF(
             List(s"${RED}アイテム番号|アイテム名|アイテム数|出現確率") ++ gachaPrizeInformation ++ List(
               s"${RED}合計確率: $totalProbability(${totalProbability * 100}%)",
