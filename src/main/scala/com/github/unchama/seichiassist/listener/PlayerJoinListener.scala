@@ -109,7 +109,7 @@ class PlayerJoinListener extends Listener {
       // https://github.com/GiganticMinecraft/SeichiAssist/issues/1939
       player.sendTitle(
         s"${YELLOW}ようこそ! ギガンティック☆整地鯖へ!",
-        s"${LIGHT_PURPLE}まず初めに公式サイト【はじめての方へ】ページを確認してください",
+        s"${LIGHT_PURPLE}まず初めに${BOLD}${UNDERLINE}公式サイト【はじめての方へ】ページ${LIGHT_PURPLE}を確認してください",
         10,
         20 * 10, // タイトルの表示時間は10秒
         10
