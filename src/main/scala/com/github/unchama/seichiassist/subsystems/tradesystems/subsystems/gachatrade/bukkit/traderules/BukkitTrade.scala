@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.traderules
 
-import com.github.unchama.generic.ListExtra
 import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.factories.BukkitGachaSkullData
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaRarity.GachaRarity
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaRarity.GachaRarity._
@@ -44,7 +43,7 @@ class BukkitTrade(owner: String, gachaPrizeTable: Vector[GachaPrizeTableEntry[It
     }
 
     val (nonTradable, tradable) =
-      ListExtra.partitionWith(contents) { itemStack =>
+      contents.partitionMap { itemStack =>
         if (bigList.exists(_.isSimilar(itemStack)))
           Right(BigOrRegular.Big -> itemStack.getAmount)
         else if (regularList.exists(_.isSimilar(itemStack)))
