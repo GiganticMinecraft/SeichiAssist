@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.task
 
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
-import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
@@ -15,9 +14,7 @@ import org.bukkit.entity.Player
 import scala.util.Random
 
 class GiganticBerserkTask {
-  def PlayerKillEnemy[F[
-    _
-  ]: ConcurrentEffect: NonServerThreadContextShift: DiscordNotificationAPI](
+  def PlayerKillEnemy[F[_]: ConcurrentEffect: DiscordNotificationAPI](
     p: Player
   )(implicit manaApi: ManaApi[IO, SyncIO, Player]): Unit = {
     val player = p
@@ -35,7 +32,7 @@ class GiganticBerserkTask {
 
     // 確率でマナを回復させる
     val d = Math.random
-    if (d < playerdata.giganticBerserk.manaRegenerationProbability) {
+    if (d < playerdata.giganticBerserk.manaRegenerationProbability()) {
       if (playerdata.giganticBerserk.reachedLimit()) {
         manaApi.manaAmount(p).restoreCompletely.unsafeRunSync()
         player.sendMessage(
@@ -92,9 +89,8 @@ class GiganticBerserkTask {
         val program = List(
           DiscordNotificationAPI[F].sendPlainText(messageWithoutColor).toIO,
           IO {
-            SendSoundEffect.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 1.2f)
-            SendMessageEffect.sendMessageToEveryoneIgnoringPreference(messageWithColor)
-          }
+            SendSoundEffect.sendEverySound(Sound.ENTITY_ENDER_DRAGON_DEATH, 1, 1.2f)
+          } >> SendMessageEffect.sendMessageToEveryoneIgnoringPreferenceIO(messageWithColor)
         ).sequence
 
         program.unsafeRunAsyncAndForget()

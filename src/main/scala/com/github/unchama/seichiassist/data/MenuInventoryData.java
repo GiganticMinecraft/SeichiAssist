@@ -450,8 +450,14 @@ public final class MenuInventoryData {
         final Inventory inventory = getEmptyInventory(6, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "スキルを進化させますか?");
         {
             // 色
-            final byte[] table = {12, 15, 4, 0, 3};
-            final ItemStack itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, table[playerdata.giganticBerserk().stage()]);
+            final Material[] table = {
+                Material.ORANGE_STAINED_GLASS_PANE,
+                Material.BLACK_STAINED_GLASS_PANE,
+                Material.YELLOW_STAINED_GLASS_PANE,
+                Material.WHITE_STAINED_GLASS_PANE,
+                Material.LIGHT_BLUE_STAINED_GLASS_PANE
+            };
+            final ItemStack itemstack = new ItemStack(table[playerdata.giganticBerserk().stage()], 1);
             final ItemMeta itemmeta = itemstack.getItemMeta();
             itemmeta.setDisplayName(" ");
             itemstack.setItemMeta(itemmeta);
@@ -495,10 +501,16 @@ public final class MenuInventoryData {
         if (isError(p, playerdata, "GiganticBerserk進化後画面")) return null;
         final Inventory inventory = getEmptyInventory(6, ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "スキルを進化させました");
         {
-            final byte[] table = {12, 15, 4, 0, 3, 12};
-            final byte b = table[playerdata.giganticBerserk().stage()];
+            final Material[] table = {
+                Material.BROWN_STAINED_GLASS_PANE,
+                Material.BLACK_STAINED_GLASS_PANE,
+                Material.YELLOW_STAINED_GLASS_PANE,
+                Material.WHITE_STAINED_GLASS_PANE,
+                Material.LIGHT_BLUE_STAINED_GLASS_PANE,
+                Material.BROWN_STAINED_GLASS_PANE
+            };
 
-            final ItemStack itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, b);
+            final ItemStack itemstack = new ItemStack(table[playerdata.giganticBerserk().stage()], 1);
 
             final ItemMeta itemmeta = itemstack.getItemMeta();
             if (playerdata.giganticBerserk().stage() >= 4) {
@@ -570,7 +582,7 @@ public final class MenuInventoryData {
     }
 
     private static ItemStack buildPlayerSkull(final String name, final List<String> lore, final String owner, final Consumer<? super SkullMeta> modify) {
-        final ItemStack ret = new ItemStack(Material.SKULL_ITEM, 1, PLAYER_SKULL);
+        final ItemStack ret = new ItemStack(Material.PLAYER_HEAD, 1, PLAYER_SKULL);
         final SkullMeta sm = ItemMetaFactory.SKULL.getValue();
         if (name != null) {
             sm.setDisplayName(name);
