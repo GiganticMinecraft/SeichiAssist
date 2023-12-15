@@ -9,15 +9,13 @@ import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.chatratelimiter.application.ChatRateLimitRepositoryDefinition
 import com.github.unchama.seichiassist.subsystems.chatratelimiter.bukkit.listeners.RateLimitCheckListener
 import com.github.unchama.seichiassist.subsystems.chatratelimiter.domain.ObtainChatPermission
-import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 
 object System {
-  def wired[F[_]: ConcurrentEffect: ErrorLogger, G[_]: SyncEffect: ContextCoercion[
-    *[_],
-    F
-  ]: Timer](implicit breakCountAPI: BreakCountReadAPI[F, G, Player]): F[Subsystem[F]] = {
+  def wired[F[_]: ConcurrentEffect, G[_]: SyncEffect: ContextCoercion[*[_], F]: Timer](
+    implicit breakCountAPI: BreakCountReadAPI[F, G, Player]
+  ): F[Subsystem[F]] = {
     val repository = ChatRateLimitRepositoryDefinition.inSyncContext[G, Player]
 
     for {

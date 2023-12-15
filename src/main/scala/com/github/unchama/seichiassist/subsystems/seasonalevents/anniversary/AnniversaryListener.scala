@@ -91,7 +91,7 @@ class AnniversaryListener(
     // Y座標を下に動かして（木の上方から）オークの木の頂点を探し、そのブロックを置き換える
     (10 to 0 by -1)
       .map(placedBlock.getRelative(0, _, 0))
-      .find(block => block.getType == Material.LOG || block.getType == Material.LEAVES)
+      .find(block => block.getType == Material.OAK_LOG || block.getType == Material.OAK_LEAVES)
       .foreach(replaceBlockOnTreeTop(_, event.getPlayer.getName))
   }
 
@@ -109,7 +109,6 @@ class AnniversaryListener(
     val offHandItem = player.getInventory.getItemInOffHand
     if (offHandItem == null) return
 
-    offHandItem.setDurability(0)
     removeItemfromPlayerInventory(player.getInventory, item, 1)
   }
 

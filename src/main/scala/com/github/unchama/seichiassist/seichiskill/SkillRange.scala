@@ -41,24 +41,22 @@ object AssaultSkillRange {
   }
 
   case class Water(effectChunkSize: XYZTuple) extends AssaultSkillRange {
-    override val blockMaterialConversion: Material => Material = {
-      case Material.WATER => Material.ICE
-      case x              => x
+    override val blockMaterialConversion: Material => Material = { m =>
+      if (m == Material.WATER) Material.ICE else m
     }
   }
 
   case class Lava(effectChunkSize: XYZTuple) extends AssaultSkillRange {
-    override val blockMaterialConversion: Material => Material = {
-      case Material.LAVA => Material.MAGMA
-      case x             => x
+    override val blockMaterialConversion: Material => Material = { m =>
+      if (m == Material.LAVA) Material.MAGMA_BLOCK else m
     }
   }
 
   case class Liquid(effectChunkSize: XYZTuple) extends AssaultSkillRange {
-    override val blockMaterialConversion: Material => Material = {
-      case Material.WATER => Material.ICE
-      case Material.LAVA  => Material.MAGMA
-      case x              => x
+    override val blockMaterialConversion: Material => Material = { m =>
+      if (m == Material.WATER) Material.ICE
+      else if (m == Material.LAVA) Material.MAGMA_BLOCK
+      else m
     }
   }
 
