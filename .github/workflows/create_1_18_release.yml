@@ -12,26 +12,9 @@ on:
       - .github/actions/**/**.yml
 
 jobs:
-  output-sha:
-    name: 最終コミットのSHA値を取得する
-    runs-on: ubuntu-20.04
-    outputs:
-      sha: ${{ steps.output-sha.outputs.sha }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Outputs the value
-        id: output-sha
-        run: |
-          VALUE=$(git log --format='%h' -n 1)
-          echo "sha=$VALUE" >> $GITHUB_OUTPUT
-        shell: bash
-
   create_release:
     runs-on: ubuntu-20.04
     container: ghcr.io/giganticminecraft/seichiassist-builder-v2:424c09f
-    needs:
-      - output-sha
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -105,7 +88,7 @@ jobs:
       - name: Create and push a tag
         id: tag-name
         run: |
-          TAG_NAME=pr-${{ github.event.pull_request.number }}-${{ needs.output-sha.outputs.sha }}
+          TAG_NAME=pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
           git tag $TAG_NAME
           git push origin $TAG_NAME
           echo "value=$TAG_NAME" >> $GITHUB_OUTPUT
