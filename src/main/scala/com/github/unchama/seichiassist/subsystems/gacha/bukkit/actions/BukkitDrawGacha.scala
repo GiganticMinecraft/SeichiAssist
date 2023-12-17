@@ -87,7 +87,7 @@ class BukkitDrawGacha[
                   0.5f,
                   2f
                 )
-              } >> sendMessageToEveryoneIgnoringPreferenceM[String, F](
+              } >> sendMessageToEveryone[String, F](
                 s"$GOLD${player.getName}がガチャでGigantic☆大当たり！"
               )
             case GachaRarity.Big =>
