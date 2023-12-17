@@ -9,10 +9,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.application.actions.{
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{GrantState, LotteryOfGachaItems}
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaRarity._
-import com.github.unchama.seichiassist.util.SendMessageEffect.{
-  sendMessageToEveryone,
-  sendMessageToEveryoneIgnoringPreferenceM
-}
+import com.github.unchama.seichiassist.util.SendMessageEffect.sendMessageToEveryone
 import com.github.unchama.seichiassist.util._
 import net.md_5.bungee.api.chat.hover.content.Text
 import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
