@@ -209,7 +209,7 @@ object ActiveSkillMenu extends Menu {
             case SeichiSkill.LavaCondensation =>
               new IconItemStackBuilder(Material.NETHERRACK)
             case SeichiSkill.MoerakiBoulders =>
-              new IconItemStackBuilder(Material.NETHER_BRICK)
+              new IconItemStackBuilder(Material.NETHER_BRICKS)
             case SeichiSkill.Eldfell =>
               new IconItemStackBuilder(Material.MAGMA_BLOCK)
             case SeichiSkill.VenderBlizzard =>
