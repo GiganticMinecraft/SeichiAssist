@@ -1,15 +1,12 @@
 package com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions
 
-import cats.effect.Sync
+import cats.effect.{LiftIO, Sync}
 import com.github.unchama.minecraft.actions.{GetConnectedPlayers, OnMinecraftServerThread}
-import com.github.unchama.seichiassist.subsystems.gacha.application.actions.{
-  DrawGacha,
-  GrantGachaPrize
-}
+import com.github.unchama.seichiassist.subsystems.gacha.application.actions.{DrawGacha, GrantGachaPrize}
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{GrantState, LotteryOfGachaItems}
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaRarity._
-import com.github.unchama.seichiassist.util.SendMessageEffect.sendMessageToEveryoneIgnoringPreferenceM
+import com.github.unchama.seichiassist.util.SendMessageEffect.{sendMessageToEveryone, sendMessageToEveryoneIgnoringPreferenceM}
 import com.github.unchama.seichiassist.util._
 import net.md_5.bungee.api.chat.hover.content.Text
 import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
@@ -18,7 +15,7 @@ import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-class BukkitDrawGacha[F[_]: Sync: OnMinecraftServerThread: GetConnectedPlayers[*[_], Player]](
+class BukkitDrawGacha[F[_]: LiftIO: Sync: OnMinecraftServerThread: GetConnectedPlayers[*[_], Player]](
   implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
   lotteryOfGachaItems: LotteryOfGachaItems[F, ItemStack],
   grantGachaPrize: GrantGachaPrize[F, ItemStack, Player]
@@ -76,7 +73,7 @@ class BukkitDrawGacha[F[_]: Sync: OnMinecraftServerThread: GetConnectedPlayers[*
               Sync[F].delay {
                 player.sendMessage(s"${RED}おめでとう！！！！！Gigantic☆大当たり！$additionalMessage")
                 player.spigot().sendMessage(message)
-              } >> sendMessageToEveryoneIgnoringPreferenceM[TextComponent, F](message) >> Sync[
+              } >> sendMessageToEveryone[TextComponent, F](message) >> Sync[
                 F
               ].delay {
                 SendSoundEffect.sendEverySoundWithoutIgnore(
