@@ -154,7 +154,7 @@ object ActiveSkillMenu extends Menu {
         case skill: ActiveSkill =>
           skill match {
             case SeichiSkill.DualBreak =>
-              new IconItemStackBuilder(Material.GRASS)
+              new IconItemStackBuilder(Material.GRASS_BLOCK)
             case SeichiSkill.TrialBreak =>
               new IconItemStackBuilder(Material.STONE)
             case SeichiSkill.Explosion =>
