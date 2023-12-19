@@ -133,7 +133,8 @@ class PlayerJoinListener extends Listener {
         "この棒を持って右クリックもしくは左クリックするとメニューが開きます。",
         "メニューからはいろんな機能が使えます。試してみよう。",
         "この棒をなくしても /stick コマンドを実行すると再入手できます。",
-        "ヒント: もしサーバー内で迷子になったら /spawn コマンドを実行することでいつでも戻れます。"
+        """ヒント: もしサーバー内で迷子になったら /spawn
+          | コマンドを実行することでいつでも戻れます。""".stripMargin
       )
       val stick = new ItemStack(Material.STICK, 1).tap { itemStack =>
         import itemStack._
