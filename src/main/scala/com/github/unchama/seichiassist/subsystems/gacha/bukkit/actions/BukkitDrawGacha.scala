@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions
 
-import cats.effect.{IO, Sync}
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
+import cats.effect.{LiftIO, Sync}
+import com.github.unchama.minecraft.actions.{GetConnectedPlayers, OnMinecraftServerThread}
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.{
   DrawGacha,
   GrantGachaPrize
@@ -11,24 +11,28 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaRarity._
 import com.github.unchama.seichiassist.util.SendMessageEffect.sendMessageToEveryone
 import com.github.unchama.seichiassist.util._
+import net.md_5.bungee.api.chat.hover.content.Text
 import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-class BukkitDrawGacha[F[_]: Sync](
+class BukkitDrawGacha[
+  F[_]: LiftIO: Sync: OnMinecraftServerThread: GetConnectedPlayers[*[_], Player]
+](
   implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
   lotteryOfGachaItems: LotteryOfGachaItems[F, ItemStack],
   grantGachaPrize: GrantGachaPrize[F, ItemStack, Player]
 ) extends DrawGacha[F, Player] {
 
-  import PlayerSendable._
   import cats.implicits._
 
   import scala.jdk.CollectionConverters._
 
   override def draw(player: Player, count: Int): F[Unit] = {
+    implicitly[PlayerSendable[TextComponent, F]]
+
     for {
       currentGachaPrizes <- gachaPrizeAPI.listOfNow
       gachaPrizes <- lotteryOfGachaItems.runLottery(count, currentGachaPrizes)
@@ -49,7 +53,7 @@ class BukkitDrawGacha[F[_]: Sync](
               val localizedEnchantmentList =
                 prizeItem.getItemMeta.getEnchants.asScala.toSeq.map {
                   case (enchantment, level) =>
-                    s"$GRAY${EnchantNameToJapanese.getEnchantName(enchantment.getName, level)}"
+                    s"$GRAY${EnchantNameToJapanese.getEnchantName(enchantment.getKey.toString, level)}"
                 }
 
               import scala.util.chaining._
@@ -62,13 +66,11 @@ class BukkitDrawGacha[F[_]: Sync](
                   setHoverEvent {
                     new HoverEvent(
                       HoverEvent.Action.SHOW_TEXT,
-                      Array(
-                        new TextComponent(
-                          s" ${prizeItem.getItemMeta.getDisplayName}\n" +
-                            ListFormatters.getDescFormat(localizedEnchantmentList.toList) +
-                            ListFormatters
-                              .getDescFormat(prizeItem.getItemMeta.getLore.asScala.toList)
-                        )
+                      new Text(
+                        s" ${prizeItem.getItemMeta.getDisplayName}\n" +
+                          ListFormatters.getDescFormat(localizedEnchantmentList.toList) +
+                          ListFormatters
+                            .getDescFormat(prizeItem.getItemMeta.getLore.asScala.toList)
                       )
                     )
                   }
@@ -76,16 +78,15 @@ class BukkitDrawGacha[F[_]: Sync](
               Sync[F].delay {
                 player.sendMessage(s"${RED}おめでとう！！！！！Gigantic☆大当たり！$additionalMessage")
                 player.spigot().sendMessage(message)
-                sendMessageToEveryone(s"$GOLD${player.getName}がガチャでGigantic☆大当たり！")(
-                  forString[IO]
-                )
-                sendMessageToEveryone(message)(forTextComponent[IO])
+              } >> sendMessageToEveryone[TextComponent, F](message) >> Sync[F].delay {
                 SendSoundEffect.sendEverySoundWithoutIgnore(
-                  Sound.ENTITY_ENDERDRAGON_DEATH,
+                  Sound.ENTITY_ENDER_DRAGON_DEATH,
                   0.5f,
                   2f
                 )
-              }
+              } >> sendMessageToEveryone[String, F](
+                s"$GOLD${player.getName}がガチャでGigantic☆大当たり！"
+              )
             case GachaRarity.Big =>
               Sync[F].delay {
                 player.playSound(player.getLocation, Sound.ENTITY_WITHER_SPAWN, 0.8f, 1f)
