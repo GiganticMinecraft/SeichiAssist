@@ -129,15 +129,16 @@ class PlayerJoinListener extends Listener {
       val inv = player.getInventory
       // 初見プレイヤー向けの Lore (説明文) を設定
       // /stick で入手できる木の棒は、簡略化された説明文にしておく。
-      val stickLore = List("""この棒を持って右クリックもしくは
-                             |左クリックするとメニューが開きます。
-                             |メニューからはいろんな機能が使えます。
-                             |試してみよう。
-                             |
-                             |この棒をなくしても /stick コマンドを
-                             |実行すると再入手できます。
-                             |ヒント: もしサーバー内で迷子になったら /spawn
-                             | コマンドを実行することでいつでも戻れます。""".stripMargin)
+      val stickLore = List(
+        "この棒を持って右クリックもしくは",
+        "左クリックするとメニューが開きます。",
+        "試してみよう。",
+        "",
+        "この棒をなくしても /stick コマンドを",
+        "実行すると再入手できます。",
+        "ヒント: もしサーバー内で迷子になったら /spawn",
+        "コマンドを実行することでいつでも戻れます。"
+      )
       val stick = new ItemStack(Material.STICK, 1).tap { itemStack =>
         import itemStack._
         val meta = getItemMeta
