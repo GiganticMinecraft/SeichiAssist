@@ -43,7 +43,7 @@ object System {
         override def togglePlaySoundOnSpeech: Kleisli[F, Player, Unit] = Kleisli { player =>
           for {
             fairyPlaySound <- playSoundOnSpeech(player.getUniqueId)
-            _ <- persistence.setPlaySoundOnSpeech(player.getUniqueId, fairyPlaySound)
+            _ <- persistence.setPlaySoundOnSpeech(player.getUniqueId, !fairyPlaySound)
           } yield ()
         }
 
