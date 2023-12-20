@@ -55,6 +55,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(ORES, "emerald", "エメラルド", Material.EMERALD),
     MineStackObjectByMaterial(ORES, "emerald_block", "エメラルドブロック", Material.EMERALD_BLOCK),
     MineStackObjectByMaterial(ORES, "copper_ore", "銅鉱石", Material.COPPER_ORE),
+    MineStackObjectByMaterial(ORES, "copper_ingot", "銅インゴット", Material.COPPER_INGOT),
     MineStackObjectByMaterial(ORES, "deepslate_coal_ore", "深層石炭鉱石", Material.DEEPSLATE_COAL_ORE),
     MineStackObjectByMaterial(ORES, "deepslate_iron_ore", "深層鉄鉱石", Material.DEEPSLATE_IRON_ORE),
     MineStackObjectByMaterial(ORES, "deepslate_gold_ore", "深層金鉱石", Material.DEEPSLATE_GOLD_ORE),
@@ -65,6 +66,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(ORES, "deepslate_copper_ore", "深層銅鉱石", Material.DEEPSLATE_COPPER_ORE),
     MineStackObjectByMaterial(ORES, "nether_gold_ore", "ネザー金鉱石", Material.NETHER_GOLD_ORE),
     MineStackObjectByMaterial(ORES, "ancient_debris", "古代の残骸", Material.ANCIENT_DEBRIS),
+    MineStackObjectByMaterial(ORES, "raw_copper_block", "銅の原石ブロック", Material.RAW_COPPER_BLOCK),
     MineStackObjectByMaterial(ORES, "raw_iron_block", "鉄の原石ブロック", Material.RAW_IRON_BLOCK),
     MineStackObjectByMaterial(ORES, "raw_gold_block", "金の原石ブロック", Material.RAW_GOLD_BLOCK),
     MineStackObjectByMaterial(ORES, "amethyst_block", "アメジストブロック", Material.AMETHYST_BLOCK),
@@ -81,6 +83,13 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(ORES, "large_amethyst_bud", "大きなアメジストの芽", Material.LARGE_AMETHYST_BUD),
     MineStackObjectByMaterial(ORES, "amethyst_cluster", "アメジストの塊", Material.AMETHYST_CLUSTER),
     MineStackObjectByMaterial(ORES, "iron_nugget", "鉄塊", Material.IRON_NUGGET),
+    MineStackObjectByMaterial(ORES, "exposed_copper", "風化した銅", Material.EXPOSED_COPPER),
+    MineStackObjectByMaterial(ORES, "weathered_copper", "錆びた銅", Material.WEATHERED_COPPER),
+    MineStackObjectByMaterial(ORES, "oxidized_copper", "酸化した銅", Material.OXIDIZED_COPPER),
+    MineStackObjectByMaterial(ORES, "cut_copper", "切り込み入りの銅", Material.CUT_COPPER),
+    MineStackObjectByMaterial(ORES, "exposed_cut_copper", "風化した切り込み入りの銅", Material.EXPOSED_CUT_COPPER),
+    MineStackObjectByMaterial(ORES, "weathered_cut_copper", "錆びた切り込み入りの銅", Material.WEATHERED_CUT_COPPER),
+    MineStackObjectByMaterial(ORES, "oxidized_cut_copper", "酸化した切り込み入りの銅", Material.OXIDIZED_CUT_COPPER),
   )
 
   import scala.util.chaining._
