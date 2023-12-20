@@ -261,7 +261,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(AGRICULTURAL, "cookie", "クッキー", Material.COOKIE),
     MineStackObjectByMaterial(AGRICULTURAL, "dried_kelp", "乾燥した昆布", Material.DRIED_KELP),
     MineStackObjectByMaterial(AGRICULTURAL, "glistering_melon_slice", "きらめくスイカの薄切り", Material.GLISTERING_MELON_SLICE),
-    MineStackObjectByMaterial(BUILDING, "pumpkin_pie", "パンプキンパイ", Material.PUMPKIN_PIE),
+    MineStackObjectByMaterial(AGRICULTURAL, "pumpkin_pie", "パンプキンパイ", Material.PUMPKIN_PIE),
   )
 
   // 建築系ブロック
