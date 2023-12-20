@@ -39,7 +39,7 @@ class MebiusLevelUpTrialListener(
 
     if (newMebiusProperty != oldMebiusProperty) {
       player.getInventory.setHelmet {
-        BukkitMebiusItemStackCodec.materialize(newMebiusProperty, damageValue = 0)
+        BukkitMebiusItemStackCodec.materialize(newMebiusProperty)
       }
 
       import cats.implicits._
