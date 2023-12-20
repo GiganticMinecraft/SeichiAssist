@@ -39,7 +39,7 @@ object MenuInventoryData {
     AsyncInventorySetter.setItemAsync(inventory, 27, itemstack)
 
     // 直列設置設定
-    itemstack = new ItemStack(Material.OAK_WOOD, 1)
+    itemstack = new ItemStack(Material.OAK_PLANKS, 1)
     itemmeta.setDisplayName(
       s"$YELLOW$UNDERLINE${BOLD}直列設置 ：${BuildAssist.line_up_str(playerdata.line_up_flg)}"
     )
