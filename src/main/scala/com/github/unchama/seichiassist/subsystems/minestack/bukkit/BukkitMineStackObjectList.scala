@@ -364,7 +364,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(BUILDING, "calcite", "方解石", Material.CALCITE),
     MineStackObjectByMaterial(BUILDING, "tuff", "凝灰岩", Material.TUFF),
     MineStackObjectByMaterial(BUILDING, "dripstone_block", "鍾乳石ブロック", Material.DRIPSTONE_BLOCK),
-    MineStackObjectByMaterial(BUILDING, "grass_block", "草ブロック", Material.GRASS_BLOCK),
+    MineStackObjectByMaterial(BUILDING, "grass_block", "草", Material.GRASS),
     MineStackObjectByMaterial(BUILDING, "rooted_dirt", "根付いた土", Material.ROOTED_DIRT),
     MineStackObjectByMaterial(BUILDING, "crimson_nylium", "真紅のナイリウム", Material.CRIMSON_NYLIUM),
     MineStackObjectByMaterial(BUILDING, "warped_nylium", "歪んだナイリウム", Material.WARPED_NYLIUM),
