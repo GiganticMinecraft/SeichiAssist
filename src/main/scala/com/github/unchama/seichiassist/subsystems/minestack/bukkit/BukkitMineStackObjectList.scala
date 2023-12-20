@@ -261,6 +261,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(AGRICULTURAL, "cookie", "クッキー", Material.COOKIE),
     MineStackObjectByMaterial(AGRICULTURAL, "dried_kelp", "乾燥した昆布", Material.DRIED_KELP),
     MineStackObjectByMaterial(AGRICULTURAL, "glistering_melon_slice", "きらめくスイカの薄切り", Material.GLISTERING_MELON_SLICE),
+    MineStackObjectByMaterial(BUILDING, "pumpkin_pie", "パンプキンパイ", Material.PUMPKIN_PIE),
   )
 
   // 建築系ブロック
@@ -464,7 +465,6 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(BUILDING, "respawn_anchor", "リスポーンアンカー", Material.RESPAWN_ANCHOR),
     MineStackObjectByMaterial(BUILDING, "pointed_dripstone", "鍾乳石", Material.POINTED_DRIPSTONE),
     MineStackObjectByMaterial(BUILDING, "warped_fungus_on_a_stick", "歪んだキノコ付きの棒", Material.WARPED_FUNGUS_ON_A_STICK),
-    MineStackObjectByMaterial(BUILDING, "jigsaw", "ジグソーブロック", Material.JIGSAW),
     MineStackObjectByMaterial(BUILDING, "powder_snow_bucket", "粉雪入りバケツ", Material.POWDER_SNOW_BUCKET),
     MineStackObjectByMaterial(BUILDING, "glow_ink_sac", "輝くイカスミ", Material.GLOW_INK_SAC),
     MineStackObjectByMaterial(BUILDING, "filled_map", "地図", Material.FILLED_MAP),
@@ -472,10 +472,8 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(BUILDING, "writable_book", "本と羽根ペン", Material.WRITABLE_BOOK),
     MineStackObjectByMaterial(BUILDING, "written_book", "記入済みの本", Material.WRITTEN_BOOK),
     MineStackObjectByMaterial(BUILDING, "glow_item_frame", "輝く額縁", Material.GLOW_ITEM_FRAME),
-    MineStackObjectByMaterial(BUILDING, "pumpkin_pie", "パンプキンパイ", Material.PUMPKIN_PIE),
     MineStackObjectByMaterial(BUILDING, "firework_star", "花火の星", Material.FIREWORK_STAR),
     MineStackObjectByMaterial(BUILDING, "leather_horse_armor", "革の馬鎧", Material.LEATHER_HORSE_ARMOR),
-    MineStackObjectByMaterial(BUILDING, "knowledge_book", "知恵の本", Material.KNOWLEDGE_BOOK),
   ) ++ rightElems(
     MineStackObjectWithKindVariants(
       MineStackObjectByMaterial(BUILDING, "log", "オークの原木", Material.OAK_LOG),
