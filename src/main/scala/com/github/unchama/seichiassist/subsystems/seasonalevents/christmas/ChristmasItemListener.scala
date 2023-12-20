@@ -13,7 +13,7 @@ import com.github.unchama.seichiassist.util.InventoryOperations.{
   isPlayerInventoryFull,
   removeItemfromPlayerInventory
 }
-import de.tr7zw.itemnbtapi.NBTItem
+import de.tr7zw.nbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.entity.EntityType._
 import org.bukkit.entity.{EntityType, LivingEntity, Player}
@@ -57,7 +57,7 @@ class ChristmasItemListener[F[_], G[_]: SyncEffect](instance: JavaPlugin)(
 
     val rand = new Random().nextDouble()
     val potionEffectType = if (rand > 0.5) PotionEffectType.LUCK else PotionEffectType.UNLUCK
-    player.addPotionEffect(new PotionEffect(potionEffectType, 20 * 30, 0), true)
+    player.addPotionEffect(new PotionEffect(potionEffectType, 20 * 30, 0))
 
     removeItemfromPlayerInventory(player.getInventory, item, 1)
 
@@ -74,7 +74,7 @@ class ChristmasItemListener[F[_], G[_]: SyncEffect](instance: JavaPlugin)(
 
     val rand = new Random().nextDouble()
     val potionEffectType = if (rand > 0.5) PotionEffectType.SPEED else PotionEffectType.SLOW
-    event.getPlayer.addPotionEffect(new PotionEffect(potionEffectType, 20 * 30, 0), true)
+    event.getPlayer.addPotionEffect(new PotionEffect(potionEffectType, 20 * 30, 0))
   }
 
   @EventHandler
@@ -117,7 +117,7 @@ class ChristmasItemListener[F[_], G[_]: SyncEffect](instance: JavaPlugin)(
       GUARDIAN,
       HUSK,
       MAGMA_CUBE,
-      PIG_ZOMBIE,
+      ZOMBIFIED_PIGLIN,
       SHULKER,
       SILVERFISH,
       SKELETON,
@@ -186,7 +186,7 @@ class ChristmasItemListener[F[_], G[_]: SyncEffect](instance: JavaPlugin)(
         addItem(player, christmasSock)
         player.sendMessage(s"$AQUA「靴下」を見つけたよ！")
       }
-      player.playSound(player.getLocation, Sound.BLOCK_NOTE_HARP, 3.0f, 1.0f)
+      player.playSound(player.getLocation, Sound.BLOCK_NOTE_BLOCK_HARP, 3.0f, 1.0f)
     }
   }
 
