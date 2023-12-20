@@ -300,7 +300,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(BUILDING, "andesite", "安山岩", Material.ANDESITE),
     MineStackObjectByMaterial(BUILDING, "polished_andesite", "磨かれた安山岩", Material.POLISHED_ANDESITE),
     MineStackObjectByMaterial(BUILDING, "dirt", "土", Material.DIRT),
-    MineStackObjectByMaterial(BUILDING, "grass", "草ブロック", Material.GRASS),
+    MineStackObjectByMaterial(BUILDING, "grass", "草ブロック", Material.GRASS_BLOCK),
     MineStackObjectByMaterial(BUILDING, "gravel", "砂利", Material.GRAVEL),
     MineStackObjectByMaterial(BUILDING, "flint", "火打石", Material.FLINT),
     MineStackObjectByMaterial(BUILDING, "flint_and_steel", "火打石と打ち金", Material.FLINT_AND_STEEL),
