@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.subsystems.breakcount.domain.level
 
 import cats.kernel.{LowerBounded, PartialOrder}
 import com.github.unchama.generic.algebra.typeclasses.OrderedMonus
-import com.ibm.icu.text.DecimalFormat
 
 import scala.math.BigDecimal.RoundingMode
 
@@ -18,7 +17,7 @@ case class SeichiExpAmount private (amount: BigDecimal) extends AnyVal {
 
   def subtract(a: SeichiExpAmount): SeichiExpAmount = mapAmount(_ - a.amount)
 
-  def formatted: String = new DecimalFormat("#,###").format(amount)
+  def formatted: String = String.format("%,d", amount.longValue)
 }
 
 object SeichiExpAmount {
