@@ -207,7 +207,7 @@ private case class ButtonComputations(player: Player)(
       IO {
         val openerData = BuildAssist.instance.temporaryData(getUniqueId)
 
-        val iconItemStack = new IconItemStackBuilder(Material.OAK_WOOD)
+        val iconItemStack = new IconItemStackBuilder(Material.OAK_PLANKS)
           .title(s"$YELLOW${EMPHASIZE}直列設置: ${BuildAssist.line_up_str(openerData.line_up_flg)}")
           .lore(
             s"$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
