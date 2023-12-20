@@ -99,7 +99,7 @@ private[minestack] case class MineStackButtons(player: Player)(
                   List(s"$RESET${DARK_GREEN}クリックで種類選択画面を開きます。")
                 } else {
                   List(
-                    s"$RESET$GREEN${stackedAmount.toString.format("%,d")}個",
+                    s"$RESET$GREEN${String.format("%,d", stackedAmount)}個",
                     s"$RESET$DARK_RED${UNDERLINE}左クリックで1スタック取り出し",
                     s"$RESET$DARK_AQUA${UNDERLINE}右クリックで1個取り出し"
                   )
