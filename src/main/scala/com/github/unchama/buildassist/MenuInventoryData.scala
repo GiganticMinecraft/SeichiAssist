@@ -2,7 +2,7 @@ package com.github.unchama.buildassist
 
 import cats.effect.SyncIO
 import com.github.unchama.buildassist.util.AsyncInventorySetter
-import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
+import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository
 import org.bukkit.ChatColor._
@@ -38,19 +38,18 @@ object MenuInventoryData {
       .build()
     AsyncInventorySetter.setItemAsync(inventory, 27, itemstack)
 
-    // 直列設置設定
-    itemstack = new ItemStack(Material.OAK_PLANKS, 1)
-    itemmeta.setDisplayName(
-      s"$YELLOW$UNDERLINE${BOLD}直列設置 ：${BuildAssist.line_up_str(playerdata.line_up_flg)}"
-    )
-    lore = List(
-      s"$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
-      s"$RESET${GRAY}左クリックすると向いてる方向に並べて設置します。",
-      s"$RESET${GRAY}建築Lv${BuildAssist.config.getblocklineuplevel}以上で利用可能",
-      s"$RESET${GRAY}クリックで切り替え"
-    )
-    itemmeta.setLore(lore.asJava)
-    itemstack.setItemMeta(itemmeta)
+    itemstack = new IconItemStackBuilder(Material.OAK_PLANKS)
+      .title(
+        s"$YELLOW$UNDERLINE${BOLD}直列設置 ：${BuildAssist.line_up_str(playerdata.line_up_flg)}"
+      )
+      .lore(
+        s"$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
+        s"$RESET${GRAY}左クリックすると向いてる方向に並べて設置します。",
+        s"$RESET${GRAY}建築Lv${BuildAssist.config.getblocklineuplevel}以上で利用可能",
+        s"$RESET${GRAY}クリックで切り替え"
+      )
+      .build()
+
     inventory.setItem(0, itemstack)
 
     // 直列設置ハーフブロック設定
