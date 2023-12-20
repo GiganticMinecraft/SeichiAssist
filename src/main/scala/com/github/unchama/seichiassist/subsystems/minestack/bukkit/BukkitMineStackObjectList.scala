@@ -369,6 +369,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(BUILDING, "warped_nylium", "歪んだナイリウム", Material.WARPED_NYLIUM),
     MineStackObjectByMaterial(BUILDING, "crimson_stem", "真紅の幹", Material.CRIMSON_STEM),
     MineStackObjectByMaterial(BUILDING, "warped_stem", "歪んだ幹", Material.WARPED_STEM),
+    MineStackObjectByMaterial(BUILDING, "warped_wart_block", "歪んだウォートブロック", Material.WARPED_WART_BLOCK),
     MineStackObjectByMaterial(BUILDING, "stripped_crimson_stem", "表皮を剥いだ真紅の幹", Material.STRIPPED_CRIMSON_STEM),
     MineStackObjectByMaterial(BUILDING, "stripped_warped_stem", "表皮を剥いだ歪んだ幹", Material.STRIPPED_WARPED_STEM),
     MineStackObjectByMaterial(BUILDING, "stripped_crimson_hyphae", "表皮を剥いだ真紅の菌糸", Material.STRIPPED_CRIMSON_HYPHAE),
