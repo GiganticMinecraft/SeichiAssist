@@ -20,7 +20,7 @@ object HatCommand {
           TargetedEffect.delay[IO, Player] { p =>
             // swapすることでアイテムの過不足を防ぐ
             p.getInventory.setHelmet(mainHandItem)
-            p.getInventory.setItemInOffHand(currentHeadItem)
+            p.getInventory.setItemInMainHand(currentHeadItem)
           },
           MessageEffect("メインハンドに持っていたアイテムを頭にかぶりました。")
         )
