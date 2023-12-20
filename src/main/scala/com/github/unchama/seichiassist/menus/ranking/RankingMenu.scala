@@ -160,7 +160,7 @@ case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) 
   private def rankingSection(ranking: Ranking[R]): Seq[(Int, Button)] = {
     def entry(position: Int, record: RankingRecord[R]): Button = {
       Button(
-        new SkullItemStackBuilder(record.playerName)
+        new SkullItemStackBuilder(record.uuid)
           .title(s"$YELLOW$BOLD${position}位:$WHITE${record.playerName}")
           .lore(template.recordDataLore(record.value))
           .build()
