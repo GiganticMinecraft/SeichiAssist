@@ -78,7 +78,7 @@ class BukkitDrawGacha[
               Sync[F].delay {
                 player.sendMessage(s"${RED}おめでとう！！！！！Gigantic☆大当たり！$additionalMessage")
                 player.spigot().sendMessage(message)
-              } >> sendMessageToEveryone[TextComponent, F](message) >> Sync[F].delay {
+              } >> Sync[F].delay {
                 SendSoundEffect.sendEverySoundWithoutIgnore(
                   Sound.ENTITY_ENDER_DRAGON_DEATH,
                   0.5f,
