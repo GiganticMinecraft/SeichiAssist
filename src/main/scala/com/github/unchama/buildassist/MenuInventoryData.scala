@@ -32,7 +32,7 @@ object MenuInventoryData {
     var lore = List(s"$RESET$DARK_RED${UNDERLINE}クリックで移動")
 
     // ホームを開く
-    new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft)
+    itemstack = new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft)
       .title(s"$YELLOW$UNDERLINE${BOLD}ホームへ")
       .lore(lore)
       .build()
