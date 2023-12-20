@@ -1015,11 +1015,9 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "target", "的", Material.TARGET),
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "lightning_rod", "避雷針", Material.LIGHTNING_ROD),
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "sculk_sensor", "スカルクセンサー", Material.SCULK_SENSOR),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "bundle", "バンドル", Material.BUNDLE),
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "clock", "時計", Material.CLOCK),
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "spyglass", "望遠鏡", Material.SPYGLASS),
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "firework_rocket", "ロケット花火", Material.FIREWORK_ROCKET),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "redstone_wire", "レッドストーンワイヤー", Material.REDSTONE_WIRE),
   ) ++ rightElems(
     MineStackObjectWithKindVariants(
       MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"wood_button","木のボタン",Material.OAK_BUTTON),
