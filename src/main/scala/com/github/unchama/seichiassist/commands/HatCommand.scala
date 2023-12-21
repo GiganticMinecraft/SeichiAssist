@@ -18,7 +18,7 @@ object HatCommand {
       val currentHeadItem = player.getInventory.getHelmet
 
       IO {
-        if (mainHandItem.getType == Material.AIR) {
+        if (mainHandItem.getType != Material.AIR) {
           SequentialEffect(
             TargetedEffect.delay[IO, Player] { p =>
               // swapすることでアイテムの過不足を防ぐ
