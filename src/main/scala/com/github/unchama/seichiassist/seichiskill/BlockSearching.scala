@@ -38,17 +38,17 @@ object BlockSearching {
       case XYZTuple(x, y, z) =>
         val targetBlock = referencePoint.getRelative(x, y, z)
 
-        if (BreakUtil.canBreakWithSkill(player, targetBlock, lockedBlocks))
-          targetBlock.getType match {
-            case Material.STATIONARY_LAVA | Material.LAVA =>
-              lavaBlocks.add(targetBlock)
-            case Material.STATIONARY_WATER | Material.WATER =>
-              waterBlocks.add(targetBlock)
-            case _ =>
-              MaterialSets
-                .refineBlock(targetBlock, MaterialSets.materials)
-                .foreach(b => solidBlocks.add(b))
+        if (BreakUtil.canBreakWithSkill(player, targetBlock, lockedBlocks)) {
+          if (targetBlock.getType == Material.LAVA) {
+            lavaBlocks.add(targetBlock)
+          } else if (targetBlock.getType == Material.WATER) {
+            waterBlocks.add(targetBlock)
+          } else {
+            MaterialSets
+              .refineBlock(targetBlock, MaterialSets.materials)
+              .foreach(b => solidBlocks.add(b))
           }
+        }
     }
 
     Result(solidBlocks.toList, waterBlocks.toList, lavaBlocks.toList)
@@ -63,10 +63,7 @@ object BlockSearching {
     targetBlock =>
       val blockMaterials = Set(referenceBlock.getType, targetBlock.getType)
 
-      val identifications = List(
-        Set(Material.DIRT, Material.GRASS),
-        Set(Material.REDSTONE_ORE, Material.GLOWING_REDSTONE_ORE)
-      )
+      val identifications = List(Set(Material.DIRT, Material.GRASS), Set(Material.REDSTONE_ORE))
 
       // マテリアルが同一視により等しくなるかどうか
       blockMaterials.size == 1 || identifications.exists(blockMaterials.subsetOf)
