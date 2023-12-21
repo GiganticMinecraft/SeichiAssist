@@ -425,7 +425,6 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(BUILDING, "glow_lichen", "ヒカリゴケ", Material.GLOW_LICHEN),
     MineStackObjectByMaterial(BUILDING, "cracked_nether_bricks", "ひび割れたネザーレンガ", Material.CRACKED_NETHER_BRICKS),
     MineStackObjectByMaterial(BUILDING, "chiseled_nether_bricks", "模様入りのネザーレンガ", Material.CHISELED_NETHER_BRICKS),
-    MineStackObjectByMaterial(BUILDING, "warped_stairs", "歪んだ階段", Material.WARPED_STAIRS),
     MineStackObjectByMaterial(BUILDING, "quartz_bricks", "クォーツレンガ", Material.QUARTZ_BRICKS),
     MineStackObjectByMaterial(BUILDING, "cut_red_sandstone", "研がれた赤い砂岩", Material.CUT_RED_SANDSTONE),
     MineStackObjectByMaterial(BUILDING, "turtle_egg", "カメの卵", Material.TURTLE_EGG),
@@ -626,6 +625,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
         MineStackObjectByMaterial(BUILDING, "blackstone_stairs", "ブラックストーンの階段", Material.BLACKSTONE_STAIRS),
         MineStackObjectByMaterial(BUILDING, "polished_blackstone_stairs", "磨かれたブラックストーンの階段", Material.POLISHED_BLACKSTONE_STAIRS),
         MineStackObjectByMaterial(BUILDING, "polished_blackstone_brick_stairs", "磨かれたブラックストーンレンガの階段", Material.POLISHED_BLACKSTONE_BRICK_STAIRS),
+        MineStackObjectByMaterial(BUILDING, "warped_stairs", "歪んだ階段", Material.WARPED_STAIRS),
       )
     ),
     MineStackObjectWithKindVariants(
