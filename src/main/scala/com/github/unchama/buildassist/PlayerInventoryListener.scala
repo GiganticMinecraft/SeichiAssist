@@ -78,7 +78,7 @@ class PlayerInventoryListener(
           ),
           "BuildMainMenuを開く"
         )
-      } else if (itemstackcurrent.getType == Material.OAK_WOOD) {
+      } else if (itemstackcurrent.getType == Material.OAK_PLANKS) {
         // 直列設置設定
         if (playerLevel < BuildAssist.config.getblocklineuplevel) {
           player.sendMessage(RED.toString + "建築Lvが足りません")
