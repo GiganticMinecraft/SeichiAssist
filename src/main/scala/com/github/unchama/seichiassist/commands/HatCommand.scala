@@ -5,6 +5,7 @@ import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTempla
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
+import org.bukkit.Material
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 
@@ -17,7 +18,7 @@ object HatCommand {
       val currentHeadItem = player.getInventory.getHelmet
 
       IO {
-        if (mainHandItem != null) {
+        if (mainHandItem.getType == Material.AIR) {
           SequentialEffect(
             TargetedEffect.delay[IO, Player] { p =>
               // swapすることでアイテムの過不足を防ぐ
