@@ -73,7 +73,7 @@ object ExpBarSynchronizationRepositoryTemplate {
       } yield (bossBar, fiberPromise)
     }
 
-  def finalization[G[_]: Sync, F[_]: ConcurrentEffect: ContextCoercion[G, *[_]], Player]
+  def finalization[G[_]: Sync, F[_]: ConcurrentEffect, Player]
     : RepositoryFinalization[G, Player, RepositoryValueType[F, Player]] =
     RepositoryFinalization.withoutAnyPersistence {
       case (_, (_, fiberPromise)) =>
