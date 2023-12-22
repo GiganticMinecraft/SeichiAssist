@@ -292,6 +292,10 @@ object BreakUtil {
           ).map(Option.unless(_)(itemStack))
         }
 
+      // NOTE: SpigotのBlockはLocationを保存しているため、Blockを置き換える前にMaterialとして
+      //  保存しておかないとすべてMaterial.AIRとして取得されてしまう
+      breakMaterials = targetBlocksInformation.map { case (_, block) => block.getType }
+
       _ <- PluginExecutionContexts
         .onMainThread
         .runAction(SyncIO {
@@ -310,7 +314,7 @@ object BreakUtil {
       }
 
       // プレイヤーの統計を増やす
-      totalCount = totalBreakCount(targetBlocksInformation.map { case (_, m) => m.getType })
+      totalCount = totalBreakCount(breakMaterials)
       blockCountWeight <- blockCountWeight[IO](player.getWorld)
       expIncrease = SeichiExpAmount.ofNonNegative(totalCount * blockCountWeight)
 
