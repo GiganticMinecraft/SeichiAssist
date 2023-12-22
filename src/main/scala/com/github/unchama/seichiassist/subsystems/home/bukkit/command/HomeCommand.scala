@@ -1,8 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.home.bukkit.command
 
 import cats.Monad
+import cats.data.Kleisli
 import cats.effect.implicits._
-import cats.effect.{ConcurrentEffect, Effect, IO, SyncEffect}
+import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.chatinterceptor.CancellationReason.Overridden
 import com.github.unchama.chatinterceptor.ChatInterceptionScope
 import com.github.unchama.concurrent.NonServerThreadContextShift
@@ -32,7 +33,7 @@ class HomeCommand[F[
   _
 ]: OnMinecraftServerThread: ConcurrentEffect: NonServerThreadContextShift: HomeAPI, G[
   _
-]: SyncEffect: ContextCoercion[*[_], F]](
+]: ContextCoercion[*[_], F]](
   implicit scope: ChatInterceptionScope,
   breakCountReadAPI: BreakCountReadAPI[F, G, Player],
   buildCountReadAPI: BuildCountAPI[F, G, Player]
@@ -86,11 +87,9 @@ class HomeCommand[F[
   private def listExecutor() = {
     // locationの座標は負の無限大方向へ切り捨て(Debug画面のBlock:で表示される座標と同じ丸め方)
     def toBlockPos(pos: Double) = pos.floor.toInt
-    playerCommandBuilder.buildWithExecutionF { context =>
+    playerCommandBuilder.buildWithExecutionCSEffect { context =>
       val player = context.sender
-      val eff = for {
-        homeMap <- HomeReadAPI[F].list(player.getUniqueId)
-      } yield {
+      Kleisli.liftF(HomeReadAPI[F].list(player.getUniqueId)).flatMap { homeMap =>
         val title = s"${RED}登録ホームポイント一覧:"
         val messages = title +: homeMap.toList.sortBy(_._1.value).map {
           case (homeId, home) =>
@@ -100,9 +99,8 @@ class HomeCommand[F[
               ManagedWorld.fromName(worldName).map(_.japaneseName).getOrElse(worldName)
             f"${YELLOW}ID ${homeId.value}%2d $displayWorldName(${toBlockPos(x)}, ${toBlockPos(y)}, ${toBlockPos(z)}): $displayHomeName"
         }
-        MessageEffect(messages)
+        MessageEffectF(messages)
       }
-      eff.toIO
     }
   }
 
@@ -129,35 +127,36 @@ class HomeCommand[F[
     }
 
   private def warpExecutor =
-    argsAndSenderConfiguredBuilder.buildWithExecutionF { context =>
+    argsAndSenderConfiguredBuilder.buildWithExecutionCSEffect { context =>
       val homeId = HomeId(context.args.parsed.head)
       val player = context.sender
 
       val eff = for {
-        maxAvailableHomeCount <- Home.maxAvailableHomeCountF(player)
-        isHomeAvailable = maxAvailableHomeCount >= homeId.value
-        _ <- NonServerThreadContextShift[F].shift
-        homeLocation <- HomeReadAPI[F].get(player.getUniqueId, homeId)
+        maxAvailableHomeCount <- Kleisli.liftF(Home.maxAvailableHomeCountF(player))
+        _ <- Kleisli.liftF(NonServerThreadContextShift[F].shift)
+        homeLocation <- Kleisli.liftF(HomeReadAPI[F].get(player.getUniqueId, homeId))
       } yield {
+        val isHomeAvailable = maxAvailableHomeCount >= homeId.value
+
         if (isHomeAvailable)
-          homeLocation.fold(MessageEffect(s"ホームポイント${homeId}が設定されてません"))(home => {
+          homeLocation.fold(MessageEffectF[F](s"ホームポイント${homeId}が設定されてません")) { home =>
             val location = home.location
             LocationCodec
               .toBukkitLocation(location)
               .fold(
-                MessageEffect(
+                MessageEffectF[F](
                   List(s"${RED}ホームポイントへのワープに失敗しました", s"${RED}登録先のワールドが削除された可能性があります")
                 )
               )(bukkitLocation =>
-                TeleportEffect.to[F](bukkitLocation).mapK(Effect.toIOK[F]) >>
-                  MessageEffect(s"ホームポイント${homeId}にワープしました")
+                TeleportEffect.to[F](bukkitLocation) >>
+                  MessageEffectF[F](s"ホームポイント${homeId}にワープしました")
               )
-          })
+          }
         else
-          MessageEffect(s"ホームポイント${homeId}は現在のレベルでは使用できません")
+          MessageEffectF[F](s"ホームポイント${homeId}は現在のレベルでは使用できません")
       }
 
-      eff.toIO
+      eff.flatten
     }
 
   def setHomeExecutor(): ContextualExecutor =
