@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1.6
 FROM ghcr.io/giganticminecraft/chunk-search-rs:sha-f1943b1 as chunk-search-provider
 FROM ghcr.io/giganticminecraft/seichiassist-runner-v2:486225f
+FROM mikefarah/yq:4.40.5 as yq
 
 FROM itzg/minecraft-server:java17-jdk
 
@@ -10,7 +11,6 @@ RUN apt-get update && apt-get install -y nkf \
     && rm -rf /var/lib/apt/lists/*
 
 #yqをインストール
-FROM mikefarah/yq:4.40.5 as yq
 COPY --from=yq /usr/bin/yq /usr/bin/yq
 
 # chunk-search-rsをインストール
