@@ -10,4 +10,8 @@ class CoreProtectWrapper(val backbone: CoreProtectAPI) {
     backbone.logRemoval(who.getName, where.getLocation, where.getType, where.getBlockData)
   }
 
+  def isNotEditedBlock(where: Block): Boolean = {
+    backbone.blockLookup(where, Int.MaxValue).isEmpty
+  }
+
 }
