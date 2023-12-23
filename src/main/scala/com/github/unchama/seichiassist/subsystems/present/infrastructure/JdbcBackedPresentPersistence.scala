@@ -22,7 +22,7 @@ class JdbcBackedPresentPersistence[F[_]: Sync] extends PresentPersistence[F, Ite
     DB.localTx { implicit session =>
       // プレゼントのIDはauto_incrementなので明示的に指定しなくて良い
       sql"""INSERT INTO present (itemstack) VALUES ($stackAsBlob)"""
-        .updateAndReturnGeneratedKey
+        .updateAndReturnGeneratedKey()
         .apply()
     }
   }
