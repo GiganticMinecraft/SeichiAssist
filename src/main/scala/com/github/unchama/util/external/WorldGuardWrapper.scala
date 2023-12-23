@@ -2,6 +2,7 @@ package com.github.unchama.util.external
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin
+import com.sk89q.worldguard.protection.flags.Flags
 import com.sk89q.worldguard.protection.managers.RegionManager
 import com.sk89q.worldguard.protection.regions.{ProtectedCuboidRegion, ProtectedRegion}
 import com.sk89q.worldguard.{LocalPlayer, WorldGuard}
@@ -49,21 +50,12 @@ object WorldGuardWrapper {
       .toList
   }
 
-  def isNotOverlapping(world: World, region: ProtectedCuboidRegion): Boolean = {
-    val regions = worldGuard
+  def canBuild(p: Player, loc: Location): Boolean = {
+    worldGuard
       .getPlatform
       .getRegionContainer
-      .get(BukkitAdapter.adapt(world))
-      .getRegions
-      .values()
-    region.getIntersectingRegions(regions).size() <= 0
-  }
-
-  def canBuild(p: Player, loc: Location): Boolean = {
-    getRegion(loc).exists { region =>
-      val player = wrapPlayer(p)
-      region.isOwner(player) || region.isMember(player)
-    }
+      .createQuery()
+      .testState(BukkitAdapter.adapt(loc), wrapPlayer(p), Flags.BUILD)
   }
 
   def findByRegionName(name: String): Option[RegionManager] =
