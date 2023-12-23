@@ -1,8 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.seichilevelupgift.bukkit
 
 import cats.data.Kleisli
-import cats.effect.Sync
-import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.data.ItemData
 import com.github.unchama.seichiassist.subsystems.gacha.GachaDrawAPI
@@ -17,9 +15,7 @@ import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksE
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-class BukkitGrantLevelUpGift[F[_]: Sync: OnMinecraftServerThread, G[_]: ContextCoercion[*[
-  _
-], F]](
+class BukkitGrantLevelUpGift[F[_]: OnMinecraftServerThread, G[_]](
   implicit gachaPointApi: GachaPointApi[F, G, Player],
   gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
   gachaDrawAPI: GachaDrawAPI[F, Player]
@@ -43,7 +39,7 @@ class BukkitGrantLevelUpGift[F[_]: Sync: OnMinecraftServerThread, G[_]: ContextC
 
 object BukkitGrantLevelUpGift {
 
-  implicit def apply[F[_]: Sync: OnMinecraftServerThread, G[_]: ContextCoercion[*[_], F]](
+  implicit def apply[F[_]: OnMinecraftServerThread, G[_]](
     implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
     gachaPointApi: GachaPointApi[F, G, Player],
     gachaDrawAPI: GachaDrawAPI[F, Player]
