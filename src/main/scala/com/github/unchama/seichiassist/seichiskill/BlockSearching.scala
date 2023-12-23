@@ -5,8 +5,10 @@ import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
 import com.github.unchama.seichiassist.data.XYZTuple
 import com.github.unchama.seichiassist.util.BreakUtil
+import com.github.unchama.util.external.ExternalPlugins
 import org.bukkit.Material
 import org.bukkit.block.Block
+import org.bukkit.block.data.Waterlogged
 import org.bukkit.entity.Player
 
 import scala.collection.{Set, mutable}
@@ -41,7 +43,15 @@ object BlockSearching {
         if (BreakUtil.canBreakWithSkill(player, targetBlock, lockedBlocks)) {
           if (targetBlock.getType == Material.LAVA) {
             lavaBlocks.add(targetBlock)
-          } else if (targetBlock.getType == Material.WATER) {
+          } else if (
+            targetBlock.getType == Material.WATER || (targetBlock
+              .getBlockData
+              .isInstanceOf[Waterlogged] && ExternalPlugins
+              .getCoreProtectWrapper
+              .isNotEditedBlock(targetBlock) && targetBlock
+              .asInstanceOf[Waterlogged]
+              .isWaterlogged)
+          ) {
             waterBlocks.add(targetBlock)
           } else {
             MaterialSets
