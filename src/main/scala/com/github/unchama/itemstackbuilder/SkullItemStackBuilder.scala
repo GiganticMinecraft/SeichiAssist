@@ -33,17 +33,6 @@ class SkullItemStackBuilder(private val owner: SkullOwnerReference)
         meta.setOwningPlayer(Bukkit.getOfflinePlayer(uuid))
         val gameProfile = new GameProfile(uuid, name)
 
-        val textureUrl =
-          s"http://textures.minecraft.net/texture/${uuid.toString.replaceAll("-", "")}"
-
-        val encodedData = Base64.encodeBase64(
-          String.format("{textures:{SKIN:{url:\"%s\"}}}", textureUrl).getBytes
-        )
-
-        gameProfile
-          .getProperties
-          .put("textures", new Property("textures", new String(encodedData)))
-
         val profileField = meta.getClass.getDeclaredField("profile")
         profileField.setAccessible(true)
         profileField.set(meta, gameProfile)
