@@ -22,8 +22,9 @@ import com.github.unchama.util.external.{ExternalPlugins, WorldGuardWrapper}
 import org.bukkit.ChatColor._
 import org.bukkit.World.Environment
 import org.bukkit._
-import org.bukkit.block.Block
+import org.bukkit.block.{Block, Container}
 import org.bukkit.entity.{Entity, EntityType, Player}
+import org.bukkit.inventory.ItemStack
 
 import java.util.Random
 import java.util.stream.IntStream
@@ -237,7 +238,7 @@ object BreakUtil {
       targetBlocksInformation <- PluginExecutionContexts
         .onMainThread
         .runAction(SyncIO {
-          val seq: Seq[(Location, Block)] = targetBlocks
+          val seq: Seq[(Location, Block, Vector[ItemStack])] = targetBlocks
             .toSeq
             .filter { block =>
               if (block.getType == Material.AIR) {
@@ -246,15 +247,24 @@ object BreakUtil {
                 false
               } else true
             }
-            .map(block => (block.getLocation.clone(), block))
+            .map { block =>
+              val containerItemStacks = block.getState match {
+                case container: Container =>
+                  container.getInventory.getContents.toVector
+                case _ =>
+                  Vector.empty
+              }
+
+              (block.getLocation.clone(), block, containerItemStacks)
+            }
 
           seq
         })
 
       breakResults = {
         val plainBreakResult = targetBlocksInformation.map {
-          case (location, block) =>
-            (location, block.getDrops(miningTool, player).asScala)
+          case (location, block, containerItemStacks) =>
+            (location, block.getDrops(miningTool, player).asScala ++ containerItemStacks)
         }
         val drops = plainBreakResult.mapFilter {
           case (_, drops) if drops.nonEmpty => Some(drops)
@@ -268,7 +278,7 @@ object BreakUtil {
 
         // 纏めなければ、FAWEの干渉を受け勝手に消される危険性などがある
         // また、後々ドロップする可能性もあるため早めに纏めておいて損はない
-        (ItemStackUtil.amalgamate(drops), silverFishLocations)
+        (ItemStackUtil.amalgamate(drops.filterNot(_ == null)), silverFishLocations)
       }
 
       currentAutoMineStackState <- SeichiAssist
@@ -294,7 +304,7 @@ object BreakUtil {
 
       // NOTE: SpigotのBlockはLocationを保存しているため、Blockを置き換える前にMaterialとして
       //  保存しておかないとすべてMaterial.AIRとして取得されてしまう
-      breakMaterials = targetBlocksInformation.map { case (_, block) => block.getType }
+      breakMaterials = targetBlocksInformation.map { case (_, block, _) => block.getType }
 
       _ <- PluginExecutionContexts
         .onMainThread
@@ -307,7 +317,7 @@ object BreakUtil {
         // 壊した時の音を再生する
         if (shouldPlayBreakSound) {
           targetBlocksInformation.foreach {
-            case (location, block) =>
+            case (location, block, _) =>
               dropLocation.getWorld.playEffect(location, Effect.STEP_SOUND, block)
           }
         }
