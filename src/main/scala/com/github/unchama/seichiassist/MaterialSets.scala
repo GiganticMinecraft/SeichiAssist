@@ -50,7 +50,10 @@ object MaterialSets {
     Material.IRON_SHOVEL,
     Material.GOLDEN_PICKAXE,
     Material.GOLDEN_AXE,
-    Material.GOLDEN_SHOVEL
+    Material.GOLDEN_SHOVEL,
+    Material.NETHERITE_PICKAXE,
+    Material.NETHERITE_AXE,
+    Material.NETHERITE_SHOVEL
   ) ++ breakTestToolMaterials
 
   val cancelledMaterials: Set[Material] = Set(
