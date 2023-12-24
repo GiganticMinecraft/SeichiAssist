@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.util
 import cats.Monad
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.generic.ApplicativeExtra.whenAOrElse
-import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
@@ -19,18 +18,18 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.Seichi
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain.BreakSkillTargetConfigKey
 import com.github.unchama.targetedeffect.player.ActionBarMessageEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
-import com.github.unchama.util.external.ExternalPlugins
+import com.github.unchama.util.external.{ExternalPlugins, WorldGuardWrapper}
 import org.bukkit.ChatColor._
 import org.bukkit.World.Environment
 import org.bukkit._
-import org.bukkit.block.Block
+import org.bukkit.block.{Block, Container}
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.{Entity, EntityType, Player}
 import org.bukkit.inventory.ItemStack
-import org.bukkit.material.Dye
 
 import java.util.Random
 import java.util.stream.IntStream
+import scala.jdk.CollectionConverters._
 
 object BreakUtil {
 
@@ -66,7 +65,11 @@ object BreakUtil {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
 
     // 壊されるブロックがワールドガード範囲だった場合処理を終了
-    if (!ExternalPlugins.getWorldGuard.canBuild(player, checkTarget.getLocation)) {
+    if (
+      !WorldGuardWrapper.canBuild(player, checkTarget.getLocation) && ManagedWorld
+        .fromBukkitWorld(checkTarget.getWorld)
+        .forall(_.shouldMuteCoreProtect)
+    ) {
       if (playerData.settings.shouldDisplayWorldGuardLogs) {
         player.sendMessage(s"${RED}ワールドガードで保護されています。")
       }
@@ -102,9 +105,8 @@ object BreakUtil {
       }
 
       val isBlockProtectedSlab =
-        checkTarget.getType == Material.STEP &&
-          checkTarget.getY == halfBlockLayerYCoordinate &&
-          checkTarget.getData == 0.toByte
+        checkTarget.getType == Material.STONE_SLAB &&
+          checkTarget.getY == halfBlockLayerYCoordinate
 
       if (isBlockProtectedSlab) return false
     }
@@ -125,26 +127,26 @@ object BreakUtil {
   }
 
   def isProtectedChest(player: Player, checkTarget: Block): Boolean = {
-    checkTarget.getType match {
-      case Material.CHEST | Material.TRAPPED_CHEST =>
-        if (
-          !SeichiAssist
-            .instance
-            .breakSkillTargetConfigSystem
-            .api
-            .breakSkillTargetConfig(player, BreakSkillTargetConfigKey.Chest)
-            .unsafeRunSync()
-        ) {
-          ActionBarMessageEffect(s"${RED}スキルでのチェスト破壊は無効化されています").run(player).unsafeRunSync()
-          true
-        } else if (!player.getWorld.isSeichi) {
-          ActionBarMessageEffect(s"${RED}スキルでのチェスト破壊は整地ワールドでのみ有効です").run(player).unsafeRunSync()
-          true
-        } else {
-          false
-        }
-      case _ => false
-    }
+    if (
+      checkTarget.getType == Material.CHEST || checkTarget.getType == Material.TRAPPED_CHEST
+    ) {
+      if (
+        !SeichiAssist
+          .instance
+          .breakSkillTargetConfigSystem
+          .api
+          .breakSkillTargetConfig(player, BreakSkillTargetConfigKey.Chest)
+          .unsafeRunSync()
+      ) {
+        ActionBarMessageEffect(s"${RED}スキルでのチェスト破壊は無効化されています").run(player).unsafeRunSync()
+        true
+      } else if (!player.getWorld.isSeichi) {
+        ActionBarMessageEffect(s"${RED}スキルでのチェスト破壊は整地ワールドでのみ有効です").run(player).unsafeRunSync()
+        true
+      } else {
+        false
+      }
+    } else false
   }
 
   /**
@@ -157,9 +159,8 @@ object BreakUtil {
     val materialType = targetBlock.getType
     val isNotQuartzBlockAndQuartzStairs =
       materialType != Material.QUARTZ_BLOCK && materialType != Material.QUARTZ_STAIRS
-    // NOTE: targetBlock#getDataが7は下つきハーフブロック、15は上つきハーフブロック
     val isNotQuartzSlab =
-      materialType != Material.STEP || (targetBlock.getData != 7.toByte && targetBlock.getData != 15.toByte)
+      materialType != Material.QUARTZ_SLAB
     val isNotMadeFromQuartz = isNotQuartzBlockAndQuartzStairs && isNotQuartzSlab
     if (isNotMadeFromQuartz) {
       return true
@@ -183,214 +184,6 @@ object BreakUtil {
     val world = ManagedWorld.fromName(name).getOrElse(return false)
 
     world.shouldMuteCoreProtect
-  }
-
-  // ブロックを破壊する処理、ドロップも含む、統計増加も含む
-  def breakBlock(
-    player: Player,
-    targetBlock: BlockBreakableBySkill,
-    dropLocation: Location,
-    tool: BreakTool,
-    shouldPlayBreakSound: Boolean
-  )(implicit effectEnvironment: EffectEnvironment): Unit =
-    effectEnvironment.unsafeRunEffectAsync(
-      "単一ブロックを破壊する",
-      massBreakBlock(player, Set(targetBlock), dropLocation, tool, shouldPlayBreakSound)
-    )
-
-  sealed trait BlockBreakResult
-
-  object BlockBreakResult {
-
-    case class ItemDrop(itemStack: ItemStack) extends BlockBreakResult
-
-    case class SpawnSilverFish(location: Location) extends BlockBreakResult
-
-  }
-
-  /**
-   * ブロックをツールで破壊した時のドロップを計算する
-   *
-   * Bukkit/Spigotが提供するBlock.getDropsは信頼できる値を返さない。 本来はNMSのメソッドを呼ぶのが確実らしいが、一時的な実装として使用している。 参考:
-   * https://www.spigotmc.org/threads/getdrops-on-crops-not-functioning-as-expected.167751/#post-1779788
-   */
-  def dropItemOnTool(
-    tool: BreakTool
-  )(blockInformation: (Location, Material, Byte)): Option[BlockBreakResult] = {
-    val fortuneLevel = tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS)
-
-    val (blockLocation, blockMaterial, blockData) = blockInformation
-
-    blockMaterial match {
-      case Material.GRASS_PATH | Material.SOIL =>
-        return Some(BlockBreakResult.ItemDrop(new ItemStack(Material.DIRT)))
-      case Material.MOB_SPAWNER | Material.ENDER_PORTAL_FRAME | Material.ENDER_PORTAL =>
-        return None
-      case _ =>
-    }
-
-    val rand = Math.random()
-    val bonus = Math.max(1, rand * (fortuneLevel + 2)).toInt
-
-    val blockDataLeast4Bits = (blockData & 0x0f).toByte
-    val b_tree = (blockData & 0x03).toByte
-
-    val silkTouch = tool.getEnchantmentLevel(Enchantment.SILK_TOUCH)
-
-    if (silkTouch > 0) {
-      // シルクタッチの処理
-      Some {
-        BlockBreakResult.ItemDrop {
-          blockMaterial match {
-            case Material.GLOWING_REDSTONE_ORE =>
-              new ItemStack(Material.REDSTONE_ORE)
-            case Material.LOG | Material.LOG_2 | Material.LEAVES | Material.LEAVES_2 =>
-              new ItemStack(blockMaterial, 1, b_tree.toShort)
-            case Material.MONSTER_EGGS =>
-              new ItemStack(Material.STONE)
-            case Material.WOOD_STEP | Material.STEP | Material.STONE_SLAB2 |
-                Material.PURPUR_SLAB if (blockDataLeast4Bits & 8) != 0 =>
-              // 上付きハーフブロックのmissing texture化を防ぐ
-              new ItemStack(blockMaterial, 1, (blockDataLeast4Bits & 7).toShort)
-            case Material.QUARTZ_BLOCK if (blockData >= 2 && blockData <= 4) =>
-              // 柱状クォーツブロックのmissing texture化を防ぐ
-              new ItemStack(blockMaterial, 1, 2.toShort)
-            case _ =>
-              new ItemStack(blockMaterial, 1, blockDataLeast4Bits.toShort)
-          }
-        }
-      }
-    } else if (fortuneLevel > 0 && MaterialSets.fortuneMaterials.contains(blockMaterial)) {
-      // 幸運の処理
-      Some {
-        BlockBreakResult.ItemDrop {
-          blockMaterial match {
-            case Material.COAL_ORE =>
-              new ItemStack(Material.COAL, bonus)
-            case Material.DIAMOND_ORE =>
-              new ItemStack(Material.DIAMOND, bonus)
-            case Material.EMERALD_ORE =>
-              new ItemStack(Material.EMERALD, bonus)
-            case Material.QUARTZ_ORE =>
-              new ItemStack(Material.QUARTZ, bonus)
-            // レッドストーン鉱石, グロウストーン, スイカブロック, シーランタン, ラピスラズリ鉱石は、
-            // ドロップアイテムの個数を求める計算が通常の鉱石の扱いと異なるため、特別な処理が必要である。
-            case Material.REDSTONE_ORE | Material.GLOWING_REDSTONE_ORE =>
-              val withBonus = (rand * (fortuneLevel + 2) + 4).toInt
-              new ItemStack(Material.REDSTONE, withBonus)
-            case Material.LAPIS_ORE =>
-              val dye = new Dye()
-              dye.setColor(DyeColor.BLUE)
-              // 幸運エンチャントなしで掘った時のアイテムが得られる個数(4~9)に、幸運ボーナスを掛ける
-              val withBonus = (rand * 6 + 4).toInt * bonus
-              dye.toItemStack(withBonus)
-            // グロウストーンは幸運エンチャントがついていると高確率でより多くのダストをドロップする
-            // しかし、最大でも4個までしかドロップしない
-            case Material.GLOWSTONE =>
-              val withBonus = (rand * (fortuneLevel + 3) + 2).toInt
-              val amount = if (withBonus > 4) 4 else withBonus
-              new ItemStack(Material.GLOWSTONE_DUST, amount)
-            // 同様に、メロンブロックは幸運エンチャントがついている場合、９個までしかドロップしない
-            case Material.MELON_BLOCK =>
-              val withBonus = (rand * (fortuneLevel + 5) + 3).toInt
-              val amount = if (withBonus > 9) 9 else withBonus
-              new ItemStack(Material.MELON, amount)
-            case Material.SEA_LANTERN =>
-              val withBonus = (rand * (fortuneLevel + 2) + 2).toInt
-              val amount = if (withBonus > 5) 5 else withBonus
-              new ItemStack(Material.PRISMARINE_CRYSTALS, amount)
-            case _ =>
-              // unreachable
-              new ItemStack(blockMaterial, bonus)
-          }
-        }
-      }
-    } else {
-      // シルク幸運なしの処理
-      blockMaterial match {
-        case Material.COAL_ORE =>
-          Some(BlockBreakResult.ItemDrop(new ItemStack(Material.COAL)))
-        case Material.DIAMOND_ORE =>
-          Some(BlockBreakResult.ItemDrop(new ItemStack(Material.DIAMOND)))
-        case Material.LAPIS_ORE =>
-          val dye = new Dye()
-          dye.setColor(DyeColor.BLUE)
-          Some(BlockBreakResult.ItemDrop(dye.toItemStack((rand * 6 + 4).toInt)))
-        case Material.EMERALD_ORE =>
-          Some(BlockBreakResult.ItemDrop(new ItemStack(Material.EMERALD)))
-        case Material.REDSTONE_ORE | Material.GLOWING_REDSTONE_ORE =>
-          Some(
-            BlockBreakResult.ItemDrop(new ItemStack(Material.REDSTONE, ((rand * 2) + 4).toInt))
-          )
-        case Material.QUARTZ_ORE =>
-          Some(BlockBreakResult.ItemDrop(new ItemStack(Material.QUARTZ)))
-        // グロウストーンは、2から4個のグロウストーンダストをドロップする
-        case Material.GLOWSTONE =>
-          Some(
-            BlockBreakResult
-              .ItemDrop(new ItemStack(Material.GLOWSTONE_DUST, (rand * 3 + 2).toInt))
-          )
-        // スイカブロックは、3から7個のスイカをドロップする
-        case Material.MELON_BLOCK =>
-          Some(BlockBreakResult.ItemDrop(new ItemStack(Material.MELON, (rand * 5 + 3).toInt)))
-        // シーランタンは、2から3個のプリズマリンクリスタルをドロップする
-        case Material.SEA_LANTERN =>
-          Some(
-            BlockBreakResult
-              .ItemDrop(new ItemStack(Material.PRISMARINE_CRYSTALS, (rand * 2 + 2).toInt))
-          )
-        case Material.STONE =>
-          Some {
-            BlockBreakResult.ItemDrop {
-              if (blockData.toInt == 0x00) {
-                // 焼き石の処理
-                new ItemStack(Material.COBBLESTONE)
-              } else {
-                // 他の石の処理
-                new ItemStack(blockMaterial, 1, blockDataLeast4Bits.toShort)
-              }
-            }
-          }
-        case Material.GRASS =>
-          Some(BlockBreakResult.ItemDrop(new ItemStack(Material.DIRT)))
-        case Material.GRAVEL =>
-          val p = fortuneLevel match {
-            case 1 => 0.14
-            case 2 => 0.25
-            case 3 => 1.00
-            case _ => 0.1
-          }
-          val dropMaterial = if (p > rand) Material.FLINT else Material.GRAVEL
-
-          Some(BlockBreakResult.ItemDrop(new ItemStack(dropMaterial, bonus)))
-        case Material.LEAVES | Material.LEAVES_2 =>
-          None
-        case Material.CLAY =>
-          Some(BlockBreakResult.ItemDrop(new ItemStack(Material.CLAY_BALL, 4)))
-        case Material.MONSTER_EGGS =>
-          Some(BlockBreakResult.SpawnSilverFish(blockLocation))
-        case Material.LOG | Material.LOG_2 =>
-          Some(BlockBreakResult.ItemDrop(new ItemStack(blockMaterial, 1, b_tree.toShort)))
-        case Material.WOOD_STEP | Material.STEP | Material.STONE_SLAB2 | Material.PURPUR_SLAB
-            if (blockDataLeast4Bits & 8) != 0 =>
-          // 上付きハーフブロックをそのままドロップするとmissing textureとして描画されるため、下付きの扱いとする
-          Some(
-            BlockBreakResult
-              .ItemDrop(new ItemStack(blockMaterial, 1, (blockDataLeast4Bits & 7).toShort))
-          )
-        case Material.QUARTZ_BLOCK if (blockData >= 2 && blockData <= 4) =>
-          // 柱状クォーツブロックのmissing texture化を防ぐ (柱状クォーツのData valueは2, 3, 4のいずれか)
-          Some(BlockBreakResult.ItemDrop(new ItemStack(blockMaterial, 1, 2.toShort)))
-        case Material.BOOKSHELF =>
-          // 本棚を破壊すると、本が3つドロップする
-          Some(BlockBreakResult.ItemDrop(new ItemStack(Material.BOOK, 3)))
-        case _ =>
-          Some(
-            BlockBreakResult
-              .ItemDrop(new ItemStack(blockMaterial, 1, blockDataLeast4Bits.toShort))
-          )
-      }
-    }
   }
 
   /**
@@ -417,10 +210,10 @@ object BreakUtil {
   def totalBreakCount(materials: Seq[Material]): Long =
     materials
       .filter(MaterialSets.materialsToCountBlockBreak.contains)
-      .map {
+      .map { m =>
         // 氷塊とマグマブロックの整地量を2倍
-        case Material.PACKED_ICE | Material.MAGMA => 2L
-        case _                                    => 1L
+        if (m == Material.PACKED_ICE || m == Material.MAGMA_BLOCK) 2L
+        else 1L
       }
       .sum
 
@@ -446,39 +239,49 @@ object BreakUtil {
       targetBlocksInformation <- PluginExecutionContexts
         .onMainThread
         .runAction(SyncIO {
-          val seq: Seq[(Location, Material, Byte)] = targetBlocks
+          val seq: Seq[(Location, Block, Vector[ItemStack])] = targetBlocks
             .toSeq
             .filter { block =>
-              block.getType match {
-                case Material.AIR =>
-                  if (SeichiAssist.DEBUG)
-                    Bukkit.getLogger.warning(s"AIRの破壊が${block.getLocation.toString}にて試行されました。")
-                  false
-                case _ => true
-              }
+              if (block.getType == Material.AIR) {
+                if (SeichiAssist.DEBUG)
+                  Bukkit.getLogger.warning(s"AIRの破壊が${block.getLocation.toString}にて試行されました。")
+                false
+              } else true
             }
-            .map(block => (block.getLocation.clone(), block.getType, block.getData))
+            .map { block =>
+              val containerItemStacks = block.getState match {
+                case container: Container =>
+                  container.getInventory.getContents.toVector
+                case _ =>
+                  Vector.empty
+              }
 
-          // ブロックをすべて[[toMaterial]]に変える
-          targetBlocks.foreach(_.setType(toMaterial))
+              (block.getLocation.clone(), block, containerItemStacks)
+            }
 
           seq
         })
 
       breakResults = {
-        val plainBreakResult = targetBlocksInformation.flatMap(dropItemOnTool(miningTool))
-        val drops = plainBreakResult.mapFilter {
-          case BlockBreakResult.ItemDrop(itemStack) => Some(itemStack)
-          case BlockBreakResult.SpawnSilverFish(_)  => None
+        val plainBreakResult = targetBlocksInformation.map {
+          case (location, block, containerItemStacks) =>
+            (location, block.getDrops(miningTool, player).asScala ++ containerItemStacks)
         }
+        val drops = plainBreakResult.mapFilter {
+          case (_, drops) if drops.nonEmpty => Some(drops)
+          case _                            => None
+        }.flatten
         val silverFishLocations = plainBreakResult.mapFilter {
-          case BlockBreakResult.ItemDrop(_)               => None
-          case BlockBreakResult.SpawnSilverFish(location) => Some(location)
+          case (location, _)
+              if location.getBlock.getType == Material.INFESTED_STONE && !miningTool
+                .containsEnchantment(Enchantment.SILK_TOUCH) =>
+            Some(location)
+          case _ => None
         }
 
         // 纏めなければ、FAWEの干渉を受け勝手に消される危険性などがある
         // また、後々ドロップする可能性もあるため早めに纏めておいて損はない
-        (ItemStackUtil.amalgamate(drops), silverFishLocations)
+        (ItemStackUtil.amalgamate(drops.filterNot(_ == null)), silverFishLocations)
       }
 
       currentAutoMineStackState <- SeichiAssist
@@ -502,18 +305,29 @@ object BreakUtil {
           ).map(Option.unless(_)(itemStack))
         }
 
+      // NOTE: SpigotのBlockはLocationを保存しているため、Blockを置き換える前にMaterialとして
+      //  保存しておかないとすべてMaterial.AIRとして取得されてしまう
+      breakMaterials = targetBlocksInformation.map { case (_, block, _) => block.getType }
+
+      _ <- PluginExecutionContexts
+        .onMainThread
+        .runAction(SyncIO {
+          // ブロックをすべて[[toMaterial]]に変える
+          targetBlocks.foreach(_.setType(toMaterial))
+        })
+
       _ <- IO {
         // 壊した時の音を再生する
         if (shouldPlayBreakSound) {
           targetBlocksInformation.foreach {
-            case (location, material, _) =>
-              dropLocation.getWorld.playEffect(location, Effect.STEP_SOUND, material)
+            case (location, block, _) =>
+              dropLocation.getWorld.playEffect(location, Effect.STEP_SOUND, block)
           }
         }
       }
 
       // プレイヤーの統計を増やす
-      totalCount = totalBreakCount(targetBlocksInformation.map { case (_, m, _) => m })
+      totalCount = totalBreakCount(breakMaterials)
       blockCountWeight <- blockCountWeight[IO](player.getWorld)
       expIncrease = SeichiExpAmount.ofNonNegative(totalCount * blockCountWeight)
 
@@ -569,11 +383,9 @@ object BreakUtil {
    *    ref: [バージョン1.12.x時の最新記事アーカイブ](https://minecraft.fandom.com/wiki/Solid_block?oldid=1132868)
    */
   private def isAffectedByGravity(material: Material): Boolean = {
-    material match {
-      case Material.BEDROCK                                          => false
-      case m if MaterialSets.fluidMaterials.contains(m) || m.isSolid => true
-      case _                                                         => false
-    }
+    if (material == Material.BEDROCK) false
+    else if (MaterialSets.fluidMaterials.contains(material)) true
+    else material.isSolid
   }
 
   /**
