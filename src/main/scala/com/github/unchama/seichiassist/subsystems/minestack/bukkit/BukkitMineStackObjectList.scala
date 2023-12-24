@@ -105,7 +105,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(MOB_DROP, "bone", "骨", Material.BONE),
     MineStackObjectByMaterial(MOB_DROP, "sulphur", "火薬", Material.GUNPOWDER),
     MineStackObjectByMaterial(MOB_DROP, "arrow", "矢", Material.ARROW),
-    MineStackObjectByMaterial(MOB_DROP, "spider_eye", "蜘蛛の目", Material.SPIDER_EYE),
+    MineStackObjectByMaterial(MOB_DROP, "spider_eye", "クモの目", Material.SPIDER_EYE),
     MineStackObjectByItemStack(MOB_DROP, "tipped_arrow", Some("鈍化の矢"), hasNameLore = false, new ItemStack(Material.TIPPED_ARROW).tap { itemStack =>
       val meta = itemStack.getItemMeta.asInstanceOf[PotionMeta]
       meta.setBasePotionData(new PotionData(PotionType.SLOWNESS))
@@ -198,8 +198,8 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(AGRICULTURAL, "sugar_cane", "サトウキビ", Material.SUGAR_CANE),
     MineStackObjectByMaterial(AGRICULTURAL, "pumpkin", "カボチャ", Material.PUMPKIN),
     MineStackObjectByMaterial(AGRICULTURAL, "ink_sack3", "カカオ豆", Material.COCOA_BEANS),
-    MineStackObjectByMaterial(AGRICULTURAL, "huge_mushroom_1", "キノコ", Material.BROWN_MUSHROOM),
-    MineStackObjectByMaterial(AGRICULTURAL, "huge_mushroom_2", "キノコ", Material.RED_MUSHROOM),
+    MineStackObjectByMaterial(AGRICULTURAL, "huge_mushroom_1", "赤色のキノコ", Material.BROWN_MUSHROOM),
+    MineStackObjectByMaterial(AGRICULTURAL, "huge_mushroom_2", "茶色のキノコ", Material.RED_MUSHROOM),
     MineStackObjectByMaterial(AGRICULTURAL, "melon", "スイカの薄切り", Material.MELON_SLICE),
     MineStackObjectByMaterial(AGRICULTURAL, "melon_block", "スイカ", Material.MELON),
     MineStackObjectByMaterial(AGRICULTURAL, "sapling", "オークの苗木", Material.OAK_SAPLING),
@@ -231,8 +231,8 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(AGRICULTURAL, "cooked_beaf", "ステーキ", Material.COOKED_BEEF),
     MineStackObjectByMaterial(AGRICULTURAL, "rabbit", "生の兎肉", Material.RABBIT),
     MineStackObjectByMaterial(AGRICULTURAL, "cooked_rabbit", "焼き兎肉", Material.COOKED_RABBIT),
-    MineStackObjectByMaterial(AGRICULTURAL, "raw_fish0", "生魚", Material.COD),
-    MineStackObjectByMaterial(AGRICULTURAL, "cooked_fish0", "焼き魚", Material.COOKED_COD),
+    MineStackObjectByMaterial(AGRICULTURAL, "raw_fish0", "生鱈", Material.COD),
+    MineStackObjectByMaterial(AGRICULTURAL, "cooked_fish0", "焼き鱈", Material.COOKED_COD),
     MineStackObjectByMaterial(AGRICULTURAL, "raw_fish1", "生鮭", Material.SALMON),
     MineStackObjectByMaterial(AGRICULTURAL, "cooked_fish1", "焼き鮭", Material.COOKED_SALMON),
     MineStackObjectByMaterial(AGRICULTURAL, "raw_fish2", "クマノミ", Material.TROPICAL_FISH),
@@ -289,8 +289,8 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(BUILDING, "brick_item", "レンガ", Material.BRICK),
     MineStackObjectByMaterial(BUILDING, "brick", "レンガ(ブロック)", Material.BRICKS),
     MineStackObjectByMaterial(BUILDING, "quartz_block", "ネザー水晶ブロック", Material.QUARTZ_BLOCK),
-    MineStackObjectByMaterial(BUILDING, "quartz_block1", "模様入りネザー水晶ブロック", Material.CHISELED_QUARTZ_BLOCK),
-    MineStackObjectByMaterial(BUILDING, "quartz_block2", "柱状ネザー水晶ブロック", Material.QUARTZ_PILLAR),
+    MineStackObjectByMaterial(BUILDING, "quartz_block1", "模様入りのクォーツブロック", Material.CHISELED_QUARTZ_BLOCK),
+    MineStackObjectByMaterial(BUILDING, "quartz_block2", "クォーツの柱", Material.QUARTZ_PILLAR),
     MineStackObjectByMaterial(BUILDING, "netherrack", "ネザーラック", Material.NETHERRACK),
     MineStackObjectByMaterial(BUILDING, "nether_brick_item", "ネザーレンガ", Material.NETHER_BRICK),
     MineStackObjectByMaterial(BUILDING, "nether_brick", "ネザーレンガ(ブロック)", Material.NETHER_BRICKS),
@@ -353,7 +353,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(BUILDING, "item_frame", "額縁", Material.ITEM_FRAME),
     MineStackObjectByMaterial(BUILDING, "painting", "絵画", Material.PAINTING),
     MineStackObjectByMaterial(BUILDING, "beacon", "ビーコン", Material.BEACON),
-    MineStackObjectByMaterial(BUILDING, "armor_stand", "アーマースタンド", Material.ARMOR_STAND),
+    MineStackObjectByMaterial(BUILDING, "armor_stand", "防具立て", Material.ARMOR_STAND),
     MineStackObjectByMaterial(BUILDING, "end_crystal", "エンドクリスタル", Material.END_CRYSTAL),
     MineStackObjectByMaterial(BUILDING, "enchanting_table", "エンチャントテーブル", Material.ENCHANTING_TABLE),
     MineStackObjectByMaterial(BUILDING, "jukebox", "ジュークボックス", Material.JUKEBOX),
@@ -479,7 +479,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectWithKindVariants(
       MineStackObjectByMaterial(BUILDING, "log", "オークの原木", Material.OAK_LOG),
       List(
-        MineStackObjectByMaterial(BUILDING, "log1", "マツの原木", Material.SPRUCE_LOG),
+        MineStackObjectByMaterial(BUILDING, "log1", "トウヒの原木", Material.SPRUCE_LOG),
         MineStackObjectByMaterial(BUILDING, "log2", "シラカバの原木", Material.BIRCH_LOG),
         MineStackObjectByMaterial(BUILDING, "log3", "ジャングルの原木", Material.JUNGLE_LOG),
         MineStackObjectByMaterial(BUILDING, "log_2", "アカシアの原木", Material.ACACIA_LOG),
@@ -509,7 +509,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectWithKindVariants(
       MineStackObjectByMaterial(BUILDING, "wood", "オークの木材", Material.OAK_WOOD),
       List(
-        MineStackObjectByMaterial(BUILDING, "wood_1", "マツの木材", Material.SPRUCE_WOOD),
+        MineStackObjectByMaterial(BUILDING, "wood_1", "トウヒの木材", Material.SPRUCE_WOOD),
         MineStackObjectByMaterial(BUILDING, "wood_2", "シラカバの木材", Material.BIRCH_WOOD),
         MineStackObjectByMaterial(BUILDING, "wood_3", "ジャングルの木材", Material.JUNGLE_WOOD),
         MineStackObjectByMaterial(BUILDING, "wood_4", "アカシアの木材", Material.ACACIA_WOOD),
@@ -531,7 +531,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectWithKindVariants(
       MineStackObjectByMaterial(BUILDING, "wood_step0", "オークの木材ハーフブロック", Material.OAK_SLAB),
       List(
-        MineStackObjectByMaterial(BUILDING, "wood_step1", "マツの木材ハーフブロック", Material.SPRUCE_SLAB),
+        MineStackObjectByMaterial(BUILDING, "wood_step1", "トウヒの木材ハーフブロック", Material.SPRUCE_SLAB),
         MineStackObjectByMaterial(BUILDING, "wood_step2", "シラカバの木材ハーフブロック", Material.BIRCH_SLAB),
         MineStackObjectByMaterial(BUILDING, "wood_step3", "ジャングルの木材ハーフブロック", Material.JUNGLE_SLAB),
         MineStackObjectByMaterial(BUILDING, "wood_step4", "アカシアの木材ハーフブロック", Material.ACACIA_SLAB),
@@ -542,7 +542,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
         MineStackObjectByMaterial(BUILDING, "step1", "砂岩ハーフブロック", Material.SANDSTONE_SLAB),
         MineStackObjectByMaterial(BUILDING, "stone_slab20", "赤い砂岩ハーフブロック", Material.RED_SANDSTONE_SLAB),
         MineStackObjectByMaterial(BUILDING, "step4", "レンガハーフブロック", Material.BRICK_SLAB),
-        MineStackObjectByMaterial(BUILDING, "step7", "ネザー水晶ハーフブロック", Material.QUARTZ_SLAB),
+        MineStackObjectByMaterial(BUILDING, "step7", "クォーツのハーフブロック", Material.QUARTZ_SLAB),
         MineStackObjectByMaterial(BUILDING, "step6", "ネザーレンガハーフブロック", Material.NETHER_BRICK_SLAB),
         MineStackObjectByMaterial(BUILDING, "purpur_slab", "プルプァハーフブロック", Material.PURPUR_SLAB),
         MineStackObjectByMaterial(BUILDING, "waxed_cut_copper_slab", "錆止めされた切り込み入りの銅のハーフブロック", Material.WAXED_CUT_COPPER_SLAB),
@@ -654,7 +654,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectWithKindVariants(
       MineStackObjectByMaterial(BUILDING, "fence", "オークのフェンス", Material.OAK_FENCE),
       List(
-        MineStackObjectByMaterial(BUILDING, "spruce_fence", "マツのフェンス", Material.SPRUCE_FENCE),
+        MineStackObjectByMaterial(BUILDING, "spruce_fence", "トウヒのフェンス", Material.SPRUCE_FENCE),
         MineStackObjectByMaterial(BUILDING, "birch_fence", "シラカバのフェンス", Material.BIRCH_FENCE),
         MineStackObjectByMaterial(BUILDING, "jungle_fence", "ジャングルのフェンス", Material.JUNGLE_FENCE),
         MineStackObjectByMaterial(BUILDING, "acacia_fence", "アカシアのフェンス", Material.ACACIA_FENCE),
@@ -936,7 +936,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
       )
     ),
     MineStackObjectWithKindVariants(
-      MineStackObjectByMaterial(BUILDING, "glass_panel", "板ガラス", Material.GLASS_PANE),
+      MineStackObjectByMaterial(BUILDING, "glass_panel", "ガラス板", Material.GLASS_PANE),
       List(
           MineStackObjectByMaterial(BUILDING,"glass_panel_0","白色の色付きガラス板",Material.WHITE_STAINED_GLASS_PANE),
           MineStackObjectByMaterial(BUILDING,"glass_panel_1","橙色の色付きガラス板",Material.ORANGE_STAINED_GLASS_PANE),
@@ -982,7 +982,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
 
   // レッドストーン系ブロック
   private val minestacklistrs: List[MineStackObjectGroup[ItemStack]] = leftElems(
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"redstone","レッドストーン",Material.REDSTONE),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"redstone","レッドストーンダスト",Material.REDSTONE),
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"redstone_block","レッドストーンブロック",Material.REDSTONE_BLOCK),
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "lever", "レバー", Material.LEVER),
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"redstone_torch_on","レッドストーントーチ",Material.REDSTONE_TORCH),
@@ -1002,7 +1002,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"powered_rail","パワードレール",Material.POWERED_RAIL),
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"detector_rail","ディテクターレール",Material.DETECTOR_RAIL),
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"activator_rail","アクティベーターレール",Material.ACTIVATOR_RAIL),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "saddle", "サドル", Material.SADDLE),
+    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "saddle", "鞍", Material.SADDLE),
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "minecart", "トロッコ", Material.MINECART),
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"chest_minecart","チェスト付きトロッコ",Material.CHEST_MINECART),
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"furnace_minecart","かまど付きトロッコ",Material.FURNACE_MINECART),
@@ -1036,7 +1036,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectWithKindVariants(
       MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"wood_door","オークのドア",Material.OAK_DOOR),
       List(
-        MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"spruce_door_item","マツのドア",Material.SPRUCE_DOOR),
+        MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"spruce_door_item","トウヒのドア",Material.SPRUCE_DOOR),
         MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"birch_door_item","シラカバのドア",Material.BIRCH_DOOR),
         MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"jungle_door_item","ジャングルのドア",Material.JUNGLE_DOOR),
         MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"acacia_door_item","アカシアのドア",Material.ACACIA_DOOR),
@@ -1090,7 +1090,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectWithKindVariants(
       MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "boat", "オークのボート", Material.OAK_BOAT),
       List(
-        MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"spruce_boat","マツのボート",Material.SPRUCE_BOAT),
+        MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"spruce_boat","トウヒのボート",Material.SPRUCE_BOAT),
         MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"birch_boat","シラカバのボート",Material.BIRCH_BOAT),
         MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"jungle_boat","ジャングルのボート",Material.JUNGLE_BOAT),
         MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"acacia_boat","アカシアのボート",Material.ACACIA_BOAT),
