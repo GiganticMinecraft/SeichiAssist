@@ -23,6 +23,7 @@ import org.bukkit.ChatColor._
 import org.bukkit.World.Environment
 import org.bukkit._
 import org.bukkit.block.{Block, Container}
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.{Entity, EntityType, Player}
 import org.bukkit.inventory.ItemStack
 
@@ -271,7 +272,9 @@ object BreakUtil {
           case _                            => None
         }.flatten
         val silverFishLocations = plainBreakResult.mapFilter {
-          case (location, _) if location.getBlock.getType == Material.INFESTED_STONE =>
+          case (location, _)
+              if location.getBlock.getType == Material.INFESTED_STONE && !miningTool
+                .containsEnchantment(Enchantment.SILK_TOUCH) =>
             Some(location)
           case _ => None
         }
