@@ -294,7 +294,7 @@ sealed abstract class ActiveSkillPremiumEffect(
             standard,
             tool,
             shouldPlayBreakSound = false,
-            Material.WHITE_WOOL
+            randomWool
           )
           _ <- IO {
             breakBlocks.foreach(_.setType(randomWool))
