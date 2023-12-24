@@ -127,10 +127,12 @@ sealed abstract class ActiveSkillNormalEffect(
             tool,
             isSkillDualBreakOrTrialBreak
           )
-          _ <- IO {
-            explosionLocations.foreach(coordinates =>
-              world.createExplosion(coordinates.toLocation(world), 0f, false)
-            )
+          _ <- ioOnMainThread.runAction {
+            SyncIO {
+              explosionLocations.foreach(coordinates =>
+                world.createExplosion(coordinates.toLocation(world), 0f, false)
+              )
+            }
           }
         } yield ()
 
