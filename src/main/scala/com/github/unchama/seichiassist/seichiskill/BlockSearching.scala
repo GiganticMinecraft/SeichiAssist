@@ -39,12 +39,19 @@ object BlockSearching {
     relativeVectors.collect {
       case XYZTuple(x, y, z) =>
         val targetBlock = referencePoint.getRelative(x, y, z)
+        val waterloggedMaterials = Set(
+          Material.WATER,
+          Material.BUBBLE_COLUMN,
+          Material.TALL_SEAGRASS,
+          Material.SEAGRASS,
+          Material.KELP
+        )
 
         if (BreakUtil.canBreakWithSkill(player, targetBlock, lockedBlocks)) {
           if (targetBlock.getType == Material.LAVA) {
             lavaBlocks.add(targetBlock)
           } else if (
-            targetBlock.getType == Material.WATER || targetBlock.getType == Material.BUBBLE_COLUMN || targetBlock.getType == Material.TALL_SEAGRASS || targetBlock.getType == Material.SEAGRASS || (targetBlock
+            waterloggedMaterials.contains(targetBlock.getType) || (targetBlock
               .getBlockData
               .isInstanceOf[Waterlogged] && ExternalPlugins
               .getCoreProtectWrapper
