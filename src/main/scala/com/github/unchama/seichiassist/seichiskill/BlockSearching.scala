@@ -44,7 +44,7 @@ object BlockSearching {
           if (targetBlock.getType == Material.LAVA) {
             lavaBlocks.add(targetBlock)
           } else if (
-            targetBlock.getType == Material.WATER || (targetBlock
+            targetBlock.getType == Material.WATER || targetBlock.getType == Material.BUBBLE_COLUMN || targetBlock.getType == Material.TALL_SEAGRASS || targetBlock.getType == Material.SEAGRASS || (targetBlock
               .getBlockData
               .isInstanceOf[Waterlogged] && ExternalPlugins
               .getCoreProtectWrapper
