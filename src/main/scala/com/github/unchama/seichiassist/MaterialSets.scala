@@ -7,151 +7,24 @@ import org.bukkit.block.Block
 import org.bukkit.inventory.ItemStack
 
 object MaterialSets {
-  val fortuneMaterials: Set[Material] = Set(
-    Material.COAL_ORE,
-    Material.DIAMOND_ORE,
-    Material.LAPIS_ORE,
-    Material.EMERALD_ORE,
-    Material.REDSTONE_ORE,
-    Material.GLOWING_REDSTONE_ORE,
-    Material.QUARTZ_ORE,
-    Material.MELON_BLOCK,
-    Material.SEA_LANTERN
-  )
+
+  private val notApplicableSeichiSkillMaterials =
+    Set(Material.WATER, Material.LAVA, Material.AIR, Material.BEDROCK)
 
   // このMaterialは整地スキルに対応する
-  val materials: Set[Material] = Set(
-    Material.STONE,
-    Material.NETHERRACK,
-    Material.NETHER_BRICK,
-    Material.DIRT,
-    Material.GRAVEL,
-    Material.LOG,
-    Material.LOG_2,
-    Material.GRASS,
-    Material.IRON_ORE,
-    Material.GOLD_ORE,
-    Material.SAND,
-    Material.SANDSTONE,
-    Material.RED_SANDSTONE,
-    Material.END_BRICKS,
-    Material.ENDER_STONE,
-    Material.ICE,
-    Material.PACKED_ICE,
-    Material.OBSIDIAN,
-    Material.MAGMA,
-    Material.SOUL_SAND,
-    Material.LEAVES,
-    Material.LEAVES_2,
-    Material.CLAY,
-    Material.STAINED_CLAY,
-    Material.COBBLESTONE,
-    Material.MOSSY_COBBLESTONE,
-    Material.HARD_CLAY,
-    Material.MONSTER_EGGS,
-    Material.WEB,
-    Material.WOOD,
-    Material.FENCE,
-    Material.DARK_OAK_FENCE,
-    Material.RAILS,
-    Material.MYCEL,
-    Material.SNOW_BLOCK,
-    Material.HUGE_MUSHROOM_1,
-    Material.HUGE_MUSHROOM_2,
-    Material.BONE_BLOCK,
-    Material.PURPUR_BLOCK,
-    Material.PURPUR_PILLAR,
-    Material.SEA_LANTERN,
-    Material.PRISMARINE,
-    Material.SMOOTH_BRICK,
-    Material.GLOWSTONE,
-    Material.STAINED_GLASS,
-    Material.STAINED_GLASS_PANE,
-    Material.THIN_GLASS,
-    Material.GLASS,
-    Material.WOOD_STAIRS,
-    Material.BIRCH_WOOD_STAIRS,
-    Material.SPRUCE_WOOD_STAIRS,
-    Material.ACACIA_STAIRS,
-    Material.DARK_OAK_STAIRS,
-    Material.BIRCH_FENCE,
-    Material.SPRUCE_FENCE,
-    Material.ACACIA_FENCE,
-    Material.FENCE_GATE,
-    Material.BIRCH_FENCE_GATE,
-    Material.SPRUCE_FENCE_GATE,
-    Material.ACACIA_FENCE_GATE,
-    Material.DARK_OAK_FENCE_GATE,
-    Material.COBBLESTONE_STAIRS,
-    Material.SANDSTONE_STAIRS,
-    Material.BRICK_STAIRS,
-    Material.QUARTZ_STAIRS,
-    Material.BOOKSHELF,
-    Material.IRON_FENCE,
-    Material.ICE,
-    Material.WOOL,
-    Material.GOLD_BLOCK,
-    Material.END_ROD,
-    Material.PUMPKIN,
-    Material.MELON_BLOCK,
-    Material.STONE_SLAB2,
-    Material.SPONGE,
-    Material.SOIL,
-    Material.GRASS_PATH,
-    Material.MOB_SPAWNER,
-    Material.WORKBENCH,
-    Material.FURNACE,
-    Material.QUARTZ_BLOCK,
-    Material.CHEST,
-    Material.TRAPPED_CHEST,
-    Material.NETHER_FENCE,
-    Material.NETHER_BRICK_STAIRS,
-    Material.CAULDRON,
-    Material.END_ROD,
-    Material.PURPUR_STAIRS,
-    Material.END_BRICKS,
-    Material.PURPUR_SLAB,
-    Material.ENDER_CHEST,
-    Material.PURPUR_SLAB,
-    Material.STEP,
-    Material.DOUBLE_STEP,
-    Material.ENDER_PORTAL_FRAME,
-    Material.ENDER_PORTAL,
-    Material.VINE,
-    // #913
-    Material.BED_BLOCK,
-    Material.TRAP_DOOR,
-    Material.IRON_TRAPDOOR,
-    Material.CARPET,
-    Material.IRON_DOOR_BLOCK,
-    // 木のドアはそれぞれMaterialが別れている
-    Material.WOODEN_DOOR,
-    Material.ACACIA_DOOR,
-    Material.BIRCH_DOOR,
-    Material.DARK_OAK_DOOR,
-    Material.JUNGLE_DOOR,
-    Material.SPRUCE_DOOR,
-    Material.SMOOTH_STAIRS,
-    Material.BREWING_STAND,
-    Material.WOOD_STEP,
-    Material.TNT,
-    // #1027,#1159
-    Material.WOOD_STEP,
-    Material.WOOD_DOUBLE_STEP,
-    Material.DISPENSER,
-    Material.PISTON_STICKY_BASE,
-    Material.WEB
-  ) ++ fortuneMaterials
+  // TODO(1.18): 1.18のコードに書き換えるときに、materialsの列挙をホワイトリスト方式からブラックリスト方式に書き換えたので、
+  //  元のコードとMaterial.values()のdiffを取って、なぜホワイトリスト方式が採用されたかを考えてみる
+  val materials: Set[Material] = Material.values().toSet.diff(notApplicableSeichiSkillMaterials)
 
   // これらのマテリアルを持つブロックは破壊を整地量に計上しない
   val exclude: Set[Material] = Set(
-    Material.GRASS_PATH,
-    Material.SOIL,
-    Material.MOB_SPAWNER,
+    Material.DIRT_PATH,
+    Material.FARMLAND,
+    Material.SPAWNER,
     Material.CAULDRON,
     Material.ENDER_CHEST,
-    Material.ENDER_PORTAL_FRAME,
-    Material.ENDER_PORTAL
+    Material.END_PORTAL_FRAME,
+    Material.END_PORTAL
   )
 
   val materialsToCountBlockBreak: Set[Material] = materials -- exclude
@@ -164,20 +37,23 @@ object MaterialSets {
    * 例えば石をシャベルで掘った時にも、ツールのエンチャントを保ったままダイヤツルハシで掘ったものとして計算し、 結果得られるスタック数が最大のものが結果として採用される。
    */
   val breakTestToolMaterials: Seq[Material] =
-    Seq(Material.DIAMOND_PICKAXE, Material.DIAMOND_AXE, Material.DIAMOND_SPADE)
+    Seq(Material.DIAMOND_PICKAXE, Material.DIAMOND_AXE, Material.DIAMOND_SHOVEL)
 
   val breakToolMaterials: Set[Material] = Set(
-    Material.WOOD_PICKAXE,
-    Material.WOOD_SPADE,
+    Material.WOODEN_PICKAXE,
+    Material.WOODEN_SHOVEL,
     Material.STONE_PICKAXE,
     Material.STONE_AXE,
-    Material.STONE_SPADE,
+    Material.STONE_SHOVEL,
     Material.IRON_PICKAXE,
     Material.IRON_AXE,
-    Material.IRON_SPADE,
-    Material.GOLD_PICKAXE,
-    Material.GOLD_AXE,
-    Material.GOLD_SPADE
+    Material.IRON_SHOVEL,
+    Material.GOLDEN_PICKAXE,
+    Material.GOLDEN_AXE,
+    Material.GOLDEN_SHOVEL,
+    Material.NETHERITE_PICKAXE,
+    Material.NETHERITE_AXE,
+    Material.NETHERITE_SHOVEL
   ) ++ breakTestToolMaterials
 
   val cancelledMaterials: Set[Material] = Set(
@@ -189,10 +65,15 @@ object MaterialSets {
     Material.BEACON,
     Material.BIRCH_DOOR,
     Material.BIRCH_FENCE_GATE,
-    Material.BIRCH_WOOD_STAIRS,
-    Material.BOAT,
+    Material.BIRCH_STAIRS,
+    Material.BIRCH_BOAT,
+    Material.OAK_BOAT,
+    Material.ACACIA_BOAT,
+    Material.JUNGLE_BOAT,
+    Material.DARK_OAK_BOAT,
+    Material.SPRUCE_BOAT,
     Material.FURNACE,
-    Material.WORKBENCH,
+    Material.CRAFTING_TABLE,
     Material.HOPPER,
     Material.MINECART
   )
@@ -200,7 +81,19 @@ object MaterialSets {
   val transparentMaterials: Set[Material] = Set(Material.BEDROCK, Material.AIR)
 
   val gravityMaterials: Set[Material] =
-    Set(Material.LOG, Material.LOG_2, Material.LEAVES, Material.LEAVES_2)
+    Set(
+      Material.ACACIA_LOG,
+      Material.BIRCH_LOG,
+      Material.DARK_OAK_LOG,
+      Material.JUNGLE_LOG,
+      Material.OAK_LOG,
+      Material.OAK_LEAVES,
+      Material.BIRCH_LEAVES,
+      Material.JUNGLE_LEAVES,
+      Material.ACACIA_LEAVES,
+      Material.DARK_OAK_LEAVES,
+      Material.SPRUCE_LEAVES
+    )
 
   val fluidMaterials: Set[Material] =
     Set(Material.WATER, Material.LAVA)
