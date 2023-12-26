@@ -345,6 +345,7 @@ object BreakUtil {
           // アイテムドロップは非同期スレッドで行ってはならない
           itemsToBeDropped
             .flatten
+            .filterNot(_.getType == Material.AIR)
             .foreach(dropLocation.getWorld.dropItemNaturally(dropLocation, _))
           breakResults._2.foreach { location =>
             location.getWorld.spawnEntity(location, EntityType.SILVERFISH)
