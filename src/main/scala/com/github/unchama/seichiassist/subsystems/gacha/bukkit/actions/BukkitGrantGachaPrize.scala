@@ -34,7 +34,9 @@ class BukkitGrantGachaPrize[F[_]: Sync: OnMinecraftServerThread](
           (itemStacks, Vector.empty)
         )
       } yield prizes.filter { prize =>
-        intoFailedItemStacksAndSuccessItemStacks._1.exists(_.isSimilar(prize.itemStack))
+        intoFailedItemStacksAndSuccessItemStacks
+          ._1
+          .exists(_.isSimilar(prize.materializeWithOwnerSignature(player.getName)))
       }
     }
 
