@@ -114,13 +114,13 @@ class PlayerBlockBreakListener(
         return
       )
 
+    if (!selectedSkill.range.isInstanceOf[MultiArea] || skillState.usageMode == Disabled) return
+
     // 破壊不可能ブロックの時処理を終了
     if (!BreakUtil.canBreakWithSkill(player, block)) {
       event.setCancelled(true)
       return
     }
-
-    if (!selectedSkill.range.isInstanceOf[MultiArea] || skillState.usageMode == Disabled) return
 
     event.setCancelled(true)
 
