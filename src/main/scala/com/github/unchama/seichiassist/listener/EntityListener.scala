@@ -85,13 +85,14 @@ class EntityListener(
     )
       return
 
-    runArrowSkillOfHitBlock(player, block, tool)
+    runArrowSkillOfHitBlock(player, block, tool, projectile)
   }
 
   private def runArrowSkillOfHitBlock(
     player: Player,
     hitBlock: BlockBreakableBySkill,
-    tool: BreakTool
+    tool: BreakTool,
+    projectile: Projectile
   ): Unit = {
     val playerData = playermap(player.getUniqueId)
 
@@ -174,6 +175,8 @@ class EntityListener(
 
     // 元ブロックの真ん中の位置
     val centerOfBlock = hitBlock.getLocation.add(0.5, 0.5, 0.5)
+
+    projectile.remove()
 
     effectEnvironment.unsafeRunEffectAsync(
       "破壊エフェクトを再生する",
