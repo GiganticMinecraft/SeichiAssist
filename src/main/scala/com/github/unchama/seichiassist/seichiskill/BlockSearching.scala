@@ -56,6 +56,7 @@ object BlockSearching {
               .isInstanceOf[Waterlogged] && ExternalPlugins
               .getCoreProtectWrapper
               .isNotEditedBlock(targetBlock) && targetBlock
+              .getBlockData
               .asInstanceOf[Waterlogged]
               .isWaterlogged)
           ) {
