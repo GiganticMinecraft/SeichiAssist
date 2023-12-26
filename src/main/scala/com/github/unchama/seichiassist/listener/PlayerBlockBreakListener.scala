@@ -72,12 +72,6 @@ class PlayerBlockBreakListener(
 
     if (!player.getWorld.isSeichiSkillAllowed) return
 
-    // 破壊不可能ブロックの時処理を終了
-    if (!BreakUtil.canBreakWithSkill(player, block)) {
-      event.setCancelled(true)
-      return
-    }
-
     // 実際に使用するツール
     val tool: BreakTool = MaterialSets
       .refineItemStack(player.getInventory.getItemInMainHand, MaterialSets.breakToolMaterials)
@@ -119,6 +113,12 @@ class PlayerBlockBreakListener(
       .getOrElse(
         return
       )
+
+    // 破壊不可能ブロックの時処理を終了
+    if (!BreakUtil.canBreakWithSkill(player, block)) {
+      event.setCancelled(true)
+      return
+    }
 
     if (!selectedSkill.range.isInstanceOf[MultiArea] || skillState.usageMode == Disabled) return
 
