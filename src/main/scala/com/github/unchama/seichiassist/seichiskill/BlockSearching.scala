@@ -44,7 +44,8 @@ object BlockSearching {
           Material.BUBBLE_COLUMN,
           Material.TALL_SEAGRASS,
           Material.SEAGRASS,
-          Material.KELP
+          Material.KELP,
+          Material.KELP_PLANT
         )
 
         if (BreakUtil.canBreakWithSkill(player, targetBlock, lockedBlocks)) {
