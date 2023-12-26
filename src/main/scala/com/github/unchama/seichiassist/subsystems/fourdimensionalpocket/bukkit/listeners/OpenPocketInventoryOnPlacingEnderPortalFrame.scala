@@ -22,7 +22,7 @@ class OpenPocketInventoryOnPlacingEnderPortalFrame[F[_]: Effect](
     val action = event.getAction
     val hand = event.getHand
 
-    if (event.getMaterial != Material.ENDER_PORTAL_FRAME) {
+    if (event.getMaterial != Material.END_PORTAL_FRAME) {
       return
     }
 

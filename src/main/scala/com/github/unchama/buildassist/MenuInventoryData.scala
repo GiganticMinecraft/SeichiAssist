@@ -2,11 +2,12 @@ package com.github.unchama.buildassist
 
 import cats.effect.SyncIO
 import com.github.unchama.buildassist.util.AsyncInventorySetter
+import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
+import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository
-import com.github.unchama.seichiassist.util.ItemMetaFactory
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
-import org.bukkit.inventory.meta.{ItemMeta, SkullMeta}
+import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.{Inventory, ItemStack}
 import org.bukkit.{Bukkit, Material}
 
@@ -26,41 +27,34 @@ object MenuInventoryData {
     val playerdata = BuildAssist.instance.temporaryData(uuid)
 
     val inventory = Bukkit.getServer.createInventory(null, 4 * 9, s"$DARK_PURPLE$BOLD「直列設置」設定")
-    var itemstack = new ItemStack(Material.SKULL_ITEM, 1)
-    var itemmeta: ItemMeta = Bukkit.getItemFactory.getItemMeta(Material.WOOD)
-    val skullmeta: SkullMeta = ItemMetaFactory.SKULL.getValue
+    var itemstack = new ItemStack(Material.PLAYER_HEAD, 11)
+    var itemmeta: ItemMeta = itemstack.getItemMeta
     var lore = List(s"$RESET$DARK_RED${UNDERLINE}クリックで移動")
 
     // ホームを開く
-    itemstack.setDurability(3.toShort)
-    skullmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}ホームへ")
-    skullmeta.setLore(lore.asJava)
-
-    /**
-     * 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
-     */
-    skullmeta.setOwner("MHF_ArrowLeft")
-    itemstack.setItemMeta(skullmeta)
+    itemstack = new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft)
+      .title(s"$YELLOW$UNDERLINE${BOLD}ホームへ")
+      .lore(lore)
+      .build()
     AsyncInventorySetter.setItemAsync(inventory, 27, itemstack)
 
-    // 直列設置設定
-    itemstack = new ItemStack(Material.WOOD, 1)
-    itemmeta.setDisplayName(
-      s"$YELLOW$UNDERLINE${BOLD}直列設置 ：${BuildAssist.line_up_str(playerdata.line_up_flg)}"
-    )
-    lore = List(
-      s"$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
-      s"$RESET${GRAY}左クリックすると向いてる方向に並べて設置します。",
-      s"$RESET${GRAY}建築Lv${BuildAssist.config.getblocklineuplevel}以上で利用可能",
-      s"$RESET${GRAY}クリックで切り替え"
-    )
-    itemmeta.setLore(lore.asJava)
-    itemstack.setItemMeta(itemmeta)
+    itemstack = new IconItemStackBuilder(Material.OAK_PLANKS)
+      .title(
+        s"$YELLOW$UNDERLINE${BOLD}直列設置 ：${BuildAssist.line_up_str(playerdata.line_up_flg)}"
+      )
+      .lore(
+        s"$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
+        s"$RESET${GRAY}左クリックすると向いてる方向に並べて設置します。",
+        s"$RESET${GRAY}建築Lv${BuildAssist.config.getblocklineuplevel}以上で利用可能",
+        s"$RESET${GRAY}クリックで切り替え"
+      )
+      .build()
+
     inventory.setItem(0, itemstack)
 
     // 直列設置ハーフブロック設定
-    itemstack = new ItemStack(Material.STEP, 1)
-    itemmeta = Bukkit.getItemFactory.getItemMeta(Material.STEP)
+    itemstack = new ItemStack(Material.STONE_SLAB, 1)
+    itemmeta = itemstack.getItemMeta
     itemmeta.setDisplayName(
       s"$YELLOW$UNDERLINE${BOLD}ハーフブロック設定 ：${BuildAssist.line_up_step_str(playerdata.line_up_step_flg)}"
     )
