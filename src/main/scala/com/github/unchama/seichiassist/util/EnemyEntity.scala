@@ -16,6 +16,9 @@ import org.bukkit.entity.EntityType.{
   HUSK,
   MAGMA_CUBE,
   PIGLIN,
+  PIGLIN_BRUTE,
+  PILLAGER,
+  RAVAGER,
   SHULKER,
   SILVERFISH,
   SKELETON,
@@ -26,6 +29,7 @@ import org.bukkit.entity.EntityType.{
   VINDICATOR,
   WITCH,
   WITHER_SKELETON,
+  ZOGLIN,
   ZOMBIE,
   ZOMBIE_VILLAGER,
   ZOMBIFIED_PIGLIN
@@ -59,6 +63,10 @@ object EnemyEntity {
     ZOMBIE_VILLAGER,
     PIGLIN,
     HOGLIN,
-    DROWNED
+    DROWNED,
+    PIGLIN_BRUTE,
+    PILLAGER,
+    RAVAGER,
+    ZOGLIN
   ).contains(entityType)
 }
