@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.autosave.bukkit.instances
 
-import cats.effect.{Sync, SyncIO}
+import cats.effect.SyncIO
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.autosave.application.CanSaveWorlds
 import org.bukkit.{Bukkit, World}
@@ -10,7 +10,7 @@ import scala.annotation.tailrec
 
 object SyncCanSaveBukkitWorlds {
 
-  def apply[F[_]: Sync: OnMinecraftServerThread]: CanSaveWorlds[F] = new CanSaveWorlds[F] {
+  def apply[F[_]: OnMinecraftServerThread]: CanSaveWorlds[F] = new CanSaveWorlds[F] {
     val save: SyncIO[Unit] = SyncIO {
       def saveWorld(world: World): Unit = {
         // WARNを防ぐためMinecraftサーバーデフォルトの自動セーブは無効化
