@@ -497,6 +497,9 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val gridRegionSystem: subsystems.gridregion.System[IO, Player, Location] =
     subsystems.gridregion.System.wired[IO, SyncIO].unsafeRunSync()
 
+  private lazy val joinAndQuitMessenger: Subsystem[IO] =
+    subsystems.joinandquitmessenger.System.wired[IO]
+
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
     expBottleStackSystem,
@@ -534,7 +537,8 @@ class SeichiAssist extends JavaPlugin() {
     consumeGachaTicketSystem,
     openirontrapdoor.System.wired,
     gridRegionSystem,
-    breakSkillTargetConfigSystem
+    breakSkillTargetConfigSystem,
+    joinAndQuitMessenger
   )
 
   private lazy val buildAssist: BuildAssist = {
