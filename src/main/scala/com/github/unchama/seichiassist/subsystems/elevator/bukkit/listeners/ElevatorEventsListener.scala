@@ -42,6 +42,8 @@ class ElevatorEventsListener[F[_]: ConcurrentEffect](
     val player = e.getPlayer
     val currentLocation = player.getLocation
 
+    if (!player.isSneaking) return
+
     val teleportEffect = for {
       currentLocationIsTeleportTarget <- findTeleportLocation.isTeleportTargetLocation(
         currentLocation
