@@ -19,6 +19,8 @@ class ElevatorEventsListener[F[_]: ConcurrentEffect](
     val player = e.getPlayer
     val currentLocation = player.getLocation
 
+    if (player.isFlying || e.getFrom.getY >= e.getTo.getY) return
+
     val teleportEffect = for {
       currentLocationIsTeleportTarget <- findTeleportLocation.isTeleportTargetLocation(
         currentLocation
