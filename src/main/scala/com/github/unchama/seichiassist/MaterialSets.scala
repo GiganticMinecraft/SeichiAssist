@@ -115,7 +115,6 @@ object MaterialSets {
       Material.COPPER_BLOCK,
       Material.DIAMOND_BLOCK,
       Material.NETHERITE_BLOCK,
-      Material.FURNACE,
       Material.FLOWER_POT,
       Material.ANVIL,
       Material.BEACON,
@@ -199,6 +198,7 @@ object MaterialSets {
     Material.JUNGLE_BOAT,
     Material.DARK_OAK_BOAT,
     Material.SPRUCE_BOAT,
+    Material.FURNACE,
     Material.CRAFTING_TABLE,
     Material.HOPPER,
     Material.MINECART
