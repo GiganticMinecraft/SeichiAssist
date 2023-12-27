@@ -130,7 +130,9 @@ sealed abstract class ActiveSkillNormalEffect(
           _ <- ioOnMainThread.runAction {
             SyncIO {
               explosionLocations.foreach(coordinates =>
-                world.createExplosion(coordinates.toLocation(world), 0f, false)
+                println(
+                  s"runExplosionResult: ${world.createExplosion(coordinates.toLocation(world), 0f, false)}"
+                )
               )
             }
           }
