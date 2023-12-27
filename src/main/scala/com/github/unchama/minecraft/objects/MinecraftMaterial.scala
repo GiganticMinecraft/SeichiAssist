@@ -5,6 +5,6 @@ package com.github.unchama.minecraft.objects
  */
 trait MinecraftMaterial[Material, ItemStack] {
 
-  def toItemStack(material: Material, durability: Short): ItemStack
+  def toItemStack(material: Material): ItemStack
 
 }
