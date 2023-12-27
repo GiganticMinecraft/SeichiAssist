@@ -32,7 +32,7 @@ class BukkitFindTeleportLocation[F[_]: Sync] extends FindTeleportLocation[F, Loc
   }
 
   override def findLowerLocation(currentLocation: Location): F[Option[Location]] = {
-    (currentLocation.getY.toInt + 1 until currentLocation.getWorld.getMinHeight by -1)
+    (currentLocation.getY.toInt - 1 until currentLocation.getWorld.getMinHeight by -1)
       .toVector
       .map { y =>
         val location = currentLocation.clone()
