@@ -500,6 +500,8 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val joinAndQuitMessenger: Subsystem[IO] =
     subsystems.joinandquitmessenger.System.wired[IO]
 
+  private lazy val elevatorSystem: Subsystem[IO] = subsystems.elevator.System.wired[IO]
+
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
     expBottleStackSystem,
@@ -538,7 +540,8 @@ class SeichiAssist extends JavaPlugin() {
     openirontrapdoor.System.wired,
     gridRegionSystem,
     breakSkillTargetConfigSystem,
-    joinAndQuitMessenger
+    joinAndQuitMessenger,
+    elevatorSystem
   )
 
   private lazy val buildAssist: BuildAssist = {
