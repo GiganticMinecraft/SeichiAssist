@@ -26,6 +26,6 @@ object MessageEffectF {
     TargetedEffect.delay(_.sendMessage(string))
 
   def apply[F[_]: Sync](stringList: List[String]): Kleisli[F, CommandSender, Unit] =
-    TargetedEffect.delay(_.sendMessage(stringList.toArray))
+    TargetedEffect.delay(_.sendMessage(stringList.mkString("\n")))
 
 }
