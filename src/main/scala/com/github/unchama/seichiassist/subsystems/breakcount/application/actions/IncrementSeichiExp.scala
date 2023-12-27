@@ -5,7 +5,6 @@ import cats.effect.concurrent.Ref
 import cats.effect.{Effect, Sync}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.fs2.workaround.fs3.Fs3Topic
-import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
@@ -27,9 +26,7 @@ object IncrementSeichiExp {
   /**
    * 与えられたデータレポジトリと更新を流すトピックを用いてプレーヤーの整地量を増加させるような 代数を作成する。
    */
-  def using[F[_]: Sync: ClassifyPlayerWorld[*[_], Player], G[_]: Effect: ContextCoercion[F, *[
-    _
-  ]], Player](
+  def using[F[_]: Sync: ClassifyPlayerWorld[*[_], Player], G[_]: Effect, Player](
     dataRepository: KeyedDataRepository[Player, Ref[F, SeichiAmountData]],
     dataTopic: Fs3Topic[G, Option[(Player, SeichiAmountData)]]
   ): IncrementSeichiExp[F, Player] =
