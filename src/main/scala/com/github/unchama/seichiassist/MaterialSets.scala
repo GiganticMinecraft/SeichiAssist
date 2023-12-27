@@ -58,6 +58,7 @@ object MaterialSets {
       Material.ACTIVATOR_RAIL,
       Material.DETECTOR_RAIL,
       Material.REDSTONE,
+      Material.REDSTONE_WIRE,
       Material.TRIPWIRE_HOOK,
       Material.OAK_WALL_SIGN,
       Material.SPRUCE_WALL_SIGN,
@@ -106,17 +107,6 @@ object MaterialSets {
       Material.DARK_OAK_SAPLING,
       Material.DEAD_BUSH,
       Material.SEA_PICKLE,
-      Material.DANDELION,
-      Material.POPPY,
-      Material.BLUE_ORCHID,
-      Material.ALLIUM,
-      Material.AZURE_BLUET,
-      Material.RED_TULIP,
-      Material.RED_TULIP,
-      Material.ORANGE_TULIP,
-      Material.WHITE_TULIP,
-      Material.PINK_TULIP,
-      Material.OXEYE_DAISY,
       Material.CORNFLOWER,
       Material.LILY_OF_THE_VALLEY,
       Material.WITHER_ROSE,
@@ -140,7 +130,12 @@ object MaterialSets {
       Material.HOPPER,
       Material.DAYLIGHT_DETECTOR,
       Material.OBSERVER,
-      Material.CAKE
+      Material.CAKE,
+      Material.NOTE_BLOCK,
+      Material.REDSTONE_LAMP,
+      Material.EMERALD_BLOCK,
+      Material.COAL_BLOCK,
+      Material.LAPIS_BLOCK
     )
 
   // このMaterialは整地スキルに対応する
@@ -204,7 +199,6 @@ object MaterialSets {
     Material.JUNGLE_BOAT,
     Material.DARK_OAK_BOAT,
     Material.SPRUCE_BOAT,
-    Material.FURNACE,
     Material.CRAFTING_TABLE,
     Material.HOPPER,
     Material.MINECART
