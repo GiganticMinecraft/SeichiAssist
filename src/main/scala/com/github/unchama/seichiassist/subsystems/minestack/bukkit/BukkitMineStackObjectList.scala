@@ -454,7 +454,6 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(BUILDING, "soul_campfire", "魂の焚き火", Material.SOUL_CAMPFIRE),
     MineStackObjectByMaterial(BUILDING, "shroomlight", "シュルームライト", Material.SHROOMLIGHT),
     MineStackObjectByMaterial(BUILDING, "honeycomb", "ハニカム", Material.HONEYCOMB),
-    MineStackObjectByMaterial(BUILDING, "bee_nest", "ミツバチの巣", Material.BEE_NEST),
     MineStackObjectByMaterial(BUILDING, "beehive", "養蜂箱", Material.BEEHIVE),
     MineStackObjectByMaterial(BUILDING, "honey_bottle", "ハチミツ入りの瓶", Material.HONEY_BOTTLE),
     MineStackObjectByMaterial(BUILDING, "honeycomb_block", "ハニカムブロック", Material.HONEYCOMB_BLOCK),
