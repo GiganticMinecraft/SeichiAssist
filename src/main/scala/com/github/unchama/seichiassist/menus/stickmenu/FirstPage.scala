@@ -404,10 +404,10 @@ object FirstPage extends Menu {
           environment.enderChestAccessApi.openEnderChestOrNotifyInsufficientLevel.flatMap {
             case Right(_) =>
               // 開くのに成功した場合の音
-              FocusedSoundEffect(Sound.BLOCK_GRASS_PLACE, 1.0f, 0.1f)
+              FocusedSoundEffect(Sound.BLOCK_ENDER_CHEST_OPEN, 1.0f, 1.0f)
             case Left(_) =>
               // 開くのに失敗した場合の音
-              FocusedSoundEffect(Sound.BLOCK_ENDER_CHEST_OPEN, 1.0f, 1.0f)
+              FocusedSoundEffect(Sound.BLOCK_GRASS_PLACE, 1.0f, 0.1f)
           }
         )
       )
