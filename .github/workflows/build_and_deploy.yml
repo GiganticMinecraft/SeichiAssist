@@ -126,7 +126,7 @@ jobs:
 
   output-sha:
     name: 最終コミットのSHA値を取得する
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     outputs:
       sha: ${{ steps.output-sha.outputs.sha }}
     steps:
