@@ -52,7 +52,7 @@ class PersistedItemsMigrationVersionRepository[F[_]](implicit dbSession: DBSessi
         sql"""
         select version_string from seichiassist.item_migration_on_database
       """.map { rs => rs.string("version_string") }
-          .list
+          .list()
           .apply()
           .flatMap(ItemMigrationVersionNumber.fromString)
           .toSet
