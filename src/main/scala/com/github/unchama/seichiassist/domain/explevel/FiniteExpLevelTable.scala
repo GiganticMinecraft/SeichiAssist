@@ -22,6 +22,7 @@ class FiniteExpLevelTable[L: PositiveInt, ExpAmount: Order: LowerBounded](
       internalTable.sliding(2).forall {
         case Seq(x1, x2) =>
           x1 <= x2
+        case _ => false
       }
     },
     "internalTable must be sorted"
