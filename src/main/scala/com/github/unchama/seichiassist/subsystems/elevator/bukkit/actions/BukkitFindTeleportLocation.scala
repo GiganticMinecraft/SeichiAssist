@@ -14,7 +14,11 @@ class BukkitFindTeleportLocation[F[_]: Sync] extends FindTeleportLocation[F, Loc
       .getBlock
       .getType == Material.IRON_BLOCK && targetLocation
       .getBlock
-      .getType == Material.HEAVY_WEIGHTED_PRESSURE_PLATE
+      .getType == Material.HEAVY_WEIGHTED_PRESSURE_PLATE && targetLocation
+      .clone()
+      .add(0, 1, 0)
+      .getBlock
+      .getType == Material.AIR
   }
 
   import cats.implicits._
