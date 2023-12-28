@@ -8,6 +8,8 @@ import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.Bui
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.util.external.WorldGuardWrapper
 import org.bukkit.ChatColor.RED
+import org.bukkit.block.data.BlockData
+import org.bukkit.block.data.`type`.Leaves
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
@@ -138,6 +140,15 @@ class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[
               }
 
               targetSurfaceBlock.setType(offHandItem.getType)
+
+              val block = targetSurfaceLocation.getBlock
+
+              block.getBlockData match {
+                case leavesData: Leaves =>
+                  leavesData.setPersistent(true)
+                  block.setBlockData(leavesData)
+                case _ =>
+              }
 
               placementCount += 1
             }
