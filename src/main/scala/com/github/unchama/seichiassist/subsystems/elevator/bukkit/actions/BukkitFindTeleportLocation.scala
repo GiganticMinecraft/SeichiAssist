@@ -7,6 +7,17 @@ import org.bukkit.Material
 
 class BukkitFindTeleportLocation[F[_]: Sync] extends FindTeleportLocation[F, Location] {
 
+  override def currentLocationTeleportFromAsCorrectIs(currentLocation: Location): F[Boolean] =
+    Sync[F].delay {
+      currentLocation
+        .clone()
+        .add(0, -1, 0)
+        .getBlock
+        .getType == Material.IRON_BLOCK && currentLocation
+        .getBlock
+        .getType == Material.HEAVY_WEIGHTED_PRESSURE_PLATE
+    }
+
   override def isTeleportTargetLocation(targetLocation: Location): F[Boolean] = Sync[F].delay {
     targetLocation
       .clone()
@@ -46,4 +57,5 @@ class BukkitFindTeleportLocation[F[_]: Sync] extends FindTeleportLocation[F, Loc
       }
       .findM(isTeleportTargetLocation)
   }
+
 }

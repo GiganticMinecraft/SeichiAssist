@@ -22,13 +22,11 @@ class ElevatorEventsListener[F[_]: ConcurrentEffect](
     if (player.isFlying || e.getFrom.getY >= e.getTo.getY) return
 
     val teleportEffect = for {
-      currentLocationIsTeleportTarget <- findTeleportLocation.isTeleportTargetLocation(
-        currentLocation
-      )
-      teleportTargetLocation <- ApplicativeExtra.whenAOrElse(currentLocationIsTeleportTarget)(
-        findTeleportLocation.findUpperLocation(currentLocation),
-        None
-      )
+      currentLocationIsCorrectTeleportLocation <- findTeleportLocation
+        .currentLocationTeleportFromAsCorrectIs(currentLocation)
+      teleportTargetLocation <- ApplicativeExtra.whenAOrElse(
+        currentLocationIsCorrectTeleportLocation
+      )(findTeleportLocation.findUpperLocation(currentLocation), None)
       _ <- teleportTargetLocation.traverse { location =>
         Sync[F].delay(player.teleport(location))
       }
@@ -45,13 +43,11 @@ class ElevatorEventsListener[F[_]: ConcurrentEffect](
     if (!player.isSneaking) return
 
     val teleportEffect = for {
-      currentLocationIsTeleportTarget <- findTeleportLocation.isTeleportTargetLocation(
-        currentLocation
-      )
-      teleportTargetLocation <- ApplicativeExtra.whenAOrElse(currentLocationIsTeleportTarget)(
-        findTeleportLocation.findLowerLocation(currentLocation),
-        None
-      )
+      currentLocationIsCorrectTeleportLocation <- findTeleportLocation
+        .currentLocationTeleportFromAsCorrectIs(currentLocation)
+      teleportTargetLocation <- ApplicativeExtra.whenAOrElse(
+        currentLocationIsCorrectTeleportLocation
+      )(findTeleportLocation.findLowerLocation(currentLocation), None)
       _ <- teleportTargetLocation.traverse { location =>
         Sync[F].delay(player.teleport(location))
       }
