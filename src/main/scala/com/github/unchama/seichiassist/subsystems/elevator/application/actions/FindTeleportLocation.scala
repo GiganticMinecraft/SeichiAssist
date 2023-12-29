@@ -3,6 +3,11 @@ package com.github.unchama.seichiassist.subsystems.elevator.application.actions
 trait FindTeleportLocation[F[_], Location] {
 
   /**
+   * @return `currentLocation`がテレポート元として正しいかどうかを判定する作用
+   */
+  def currentLocationTeleportFromAsCorrectIs(currentLocation: Location): F[Boolean]
+
+  /**
    * @return `targetLocation`がテレポート先として正しいかどうかを判定する作用
    */
   def isTeleportTargetLocation(targetLocation: Location): F[Boolean]
