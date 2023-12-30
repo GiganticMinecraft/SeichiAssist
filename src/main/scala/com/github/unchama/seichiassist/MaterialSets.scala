@@ -166,6 +166,7 @@ object MaterialSets {
     Seq(Material.DIAMOND_PICKAXE, Material.DIAMOND_AXE, Material.DIAMOND_SHOVEL)
 
   val breakToolMaterials: Set[Material] = Set(
+    Material.WOODEN_AXE,
     Material.WOODEN_PICKAXE,
     Material.WOODEN_SHOVEL,
     Material.STONE_PICKAXE,
