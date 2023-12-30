@@ -500,7 +500,11 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val joinAndQuitMessenger: Subsystem[IO] =
     subsystems.joinandquitmessenger.System.wired[IO]
 
-  private lazy val elevatorSystem: Subsystem[IO] = subsystems.elevator.System.wired[IO]
+  private lazy val elevatorSystem: Subsystem[IO] = {
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+
+    subsystems.elevator.System.wired[IO]
+  }
 
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
