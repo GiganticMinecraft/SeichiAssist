@@ -8,7 +8,7 @@ object ItemStackUtil {
    * `stacks` に含まれるアイテムスタックをできるだけマージしたような新たな `Seq` を返す
    */
   def amalgamate(stacks: Seq[ItemStack]): Seq[ItemStack] = {
-    val originals = stacks.map(_.clone())
+    val originals = stacks.filterNot(_ == null).map(_.clone())
 
     val result = scala.collection.mutable.ArrayBuffer.empty[ItemStack]
 
