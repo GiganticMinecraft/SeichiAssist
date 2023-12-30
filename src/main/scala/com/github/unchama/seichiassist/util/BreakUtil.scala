@@ -265,8 +265,6 @@ object BreakUtil {
       breakResults = {
         val plainBreakResult = targetBlocksInformation.map {
           case (location, block, containerItemStacks) =>
-            block.isPreferredTool()
-
             (location, block.getDrops(miningTool, player).asScala ++ containerItemStacks)
         }
         val drops = plainBreakResult.mapFilter {
