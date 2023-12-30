@@ -265,7 +265,9 @@ object BreakUtil {
       breakResults = {
         val plainBreakResult = targetBlocksInformation.map {
           case (location, block, containerItemStacks) =>
-            (location, block.getDrops(miningTool, player).asScala ++ containerItemStacks)
+            val clonedTool = miningTool.clone()
+            clonedTool.setType(Material.NETHERITE_PICKAXE)
+            (location, block.getDrops(clonedTool, player).asScala ++ containerItemStacks)
         }
         val drops = plainBreakResult.mapFilter {
           case (_, drops) if drops.nonEmpty => Some(drops)
