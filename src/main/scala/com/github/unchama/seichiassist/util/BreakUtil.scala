@@ -265,6 +265,8 @@ object BreakUtil {
       breakResults = {
         val plainBreakResult = targetBlocksInformation.map {
           case (location, block, containerItemStacks) =>
+            block.isPreferredTool()
+
             (location, block.getDrops(miningTool, player).asScala ++ containerItemStacks)
         }
         val drops = plainBreakResult.mapFilter {
@@ -281,7 +283,7 @@ object BreakUtil {
 
         // 纏めなければ、FAWEの干渉を受け勝手に消される危険性などがある
         // また、後々ドロップする可能性もあるため早めに纏めておいて損はない
-        (ItemStackUtil.amalgamate(drops.filterNot(_ == null)), silverFishLocations)
+        (ItemStackUtil.amalgamate(drops), silverFishLocations)
       }
 
       currentAutoMineStackState <- SeichiAssist
