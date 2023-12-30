@@ -2,17 +2,18 @@ package com.github.unchama.seichiassist.subsystems.elevator.bukkit.listeners
 
 import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.generic.ApplicativeExtra
-import org.bukkit.Location
-import org.bukkit.event.{EventHandler, Listener}
-import org.bukkit.event.player.{PlayerMoveEvent, PlayerToggleSneakEvent}
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.subsystems.elevator.application.actions.FindTeleportLocation
+import org.bukkit.Location
+import org.bukkit.event.player.{PlayerMoveEvent, PlayerToggleSneakEvent}
+import org.bukkit.event.{EventHandler, Listener}
 
 class ElevatorEventsListener[F[_]: ConcurrentEffect](
-  implicit findTeleportLocation: FindTeleportLocation[F, Location]
+  implicit findTeleportLocation: FindTeleportLocation[F, Location],
+  effectEnvironment: EffectEnvironment
 ) extends Listener {
 
   import cats.implicits._
-  import cats.effect.implicits._
 
   @EventHandler
   def onJump(e: PlayerMoveEvent): Unit = {
@@ -32,7 +33,7 @@ class ElevatorEventsListener[F[_]: ConcurrentEffect](
       }
     } yield ()
 
-    teleportEffect.toIO.unsafeRunSync()
+    effectEnvironment.unsafeRunEffectAsync("エレベータの上昇処理を行う", teleportEffect)
   }
 
   @EventHandler
@@ -53,7 +54,7 @@ class ElevatorEventsListener[F[_]: ConcurrentEffect](
       }
     } yield ()
 
-    teleportEffect.toIO.unsafeRunSync()
+    effectEnvironment.unsafeRunEffectAsync("エレベータの降下処理を行う", teleportEffect)
   }
 
 }
