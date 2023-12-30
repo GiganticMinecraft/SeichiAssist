@@ -50,6 +50,8 @@ class PlayerBlockBreakListener(
   def onPlayerActiveSkillEvent(event: BlockBreakEvent): Unit = {
     val player = event.getPlayer
 
+    if (!player.getWorld.isSeichiSkillAllowed) return
+
     val block = MaterialSets
       .refineBlock(event.getBlock, MaterialSets.materials)
       .getOrElse(
@@ -69,8 +71,6 @@ class PlayerBlockBreakListener(
       event.setCancelled(true)
       return
     }
-
-    if (!player.getWorld.isSeichiSkillAllowed) return
 
     // 実際に使用するツール
     val tool: BreakTool = MaterialSets
