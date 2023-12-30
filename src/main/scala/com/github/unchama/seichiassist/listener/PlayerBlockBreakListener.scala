@@ -93,8 +93,6 @@ class PlayerBlockBreakListener(
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     val skillState = playerData.skillState.get.unsafeRunSync()
 
-    if (!player.getWorld.isSeichiSkillAllowed) return
-
     // クールダウンタイム中は処理を終了
     if (!activeSkillAvailability(player).get.unsafeRunSync()) {
       // SEを再生
