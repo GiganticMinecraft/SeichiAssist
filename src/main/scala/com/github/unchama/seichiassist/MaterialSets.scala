@@ -162,8 +162,8 @@ object MaterialSets {
    *
    * 例えば石をシャベルで掘った時にも、ツールのエンチャントを保ったままダイヤツルハシで掘ったものとして計算し、 結果得られるスタック数が最大のものが結果として採用される。
    */
-  val breakTestToolMaterials: Seq[Material] =
-    Seq(Material.DIAMOND_PICKAXE, Material.DIAMOND_AXE, Material.DIAMOND_SHOVEL)
+  private val breakTestToolMaterials: Set[Material] =
+    Set(Material.DIAMOND_PICKAXE, Material.DIAMOND_AXE, Material.DIAMOND_SHOVEL)
 
   val breakToolMaterials: Set[Material] = Set(
     Material.WOODEN_AXE,
