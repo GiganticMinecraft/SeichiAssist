@@ -82,8 +82,9 @@ jobs:
             touch -t "$timestamp" $proto
           done
 
+      # sbt-assembly 2以降からディレクトリを作ってくれなくなった
       - name: Build artifact
-        run: ./sbt assembly
+        run: mkdir -p target/build && ./sbt assembly
 
       - name: Create and push a tag
         id: tag-name
