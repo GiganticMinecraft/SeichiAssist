@@ -148,6 +148,8 @@ assembly / assemblyExcludedJars := {
 // protocol配下とルートのLICENSEが衝突してCIが落ちる
 // cf. https://github.com/sbt/sbt-assembly/issues/141
 assembly / assemblyMergeStrategy := {
+  // cf. https://qiita.com/yokra9/items/1e72646623f962ce02ee と ChatGPTに聞いた
+  case PathList("META-INF", "versions", "9", "module-info.class") => MergeStrategy.discard
   case PathList(ps @ _*) if ps.last endsWith "LICENSE" => MergeStrategy.rename
   case PathList("org", "apache", "commons", "logging", xs @ _*) =>
     MergeStrategy.last
