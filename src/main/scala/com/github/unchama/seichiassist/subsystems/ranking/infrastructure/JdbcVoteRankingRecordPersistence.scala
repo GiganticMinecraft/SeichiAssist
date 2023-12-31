@@ -23,7 +23,6 @@ class JdbcVoteRankingRecordPersistence[F[_]: Sync]
           )
         }
         .list()
-        .apply()
         .toVector
     }
   }
