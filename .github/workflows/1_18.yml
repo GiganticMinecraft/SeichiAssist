@@ -93,7 +93,7 @@ jobs:
         run: ./sbt "scalafix --check"
 
       - name: Test and build artifact
-        run: ./sbt assembly
+        run: mkdir -p target/build && ./sbt assembly
 
       - name: Clean build artifact for caching target folder
         run: rm -r target/build
