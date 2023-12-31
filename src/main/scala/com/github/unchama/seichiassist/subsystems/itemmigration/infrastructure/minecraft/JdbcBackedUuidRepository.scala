@@ -32,7 +32,6 @@ object JdbcBackedUuidRepository {
           (rs.string("name").toLowerCase, UUID.fromString(rs.string("uuid")))
         }
         .list()
-        .apply()
         .toMap
     }
 

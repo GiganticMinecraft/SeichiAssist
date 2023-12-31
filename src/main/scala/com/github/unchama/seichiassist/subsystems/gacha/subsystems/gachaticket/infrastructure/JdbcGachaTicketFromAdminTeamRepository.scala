@@ -26,7 +26,6 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
       DB.localTx { implicit session =>
         sql"update playerdata set numofsorryforbug = numofsorryforbug + ${amount.value}"
           .execute()
-          .apply()
       }
     }
   }
@@ -43,7 +42,6 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
         val affectedRows =
           sql"UPDATE playerdata SET numofsorryforbug = numofsorryforbug + ${amount.value} WHERE name = ${playerName.name}"
             .update()
-            .apply()
 
         getReceiptResult(affectedRows)
       }
@@ -62,7 +60,6 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
         val affectedRows =
           sql"UPDATE playerdata SET numofsorryforbug = numofsorryforbug + ${amount.value} WHERE uuid = ${uuid.toString}"
             .update()
-            .apply()
 
         getReceiptResult(affectedRows)
       }
@@ -76,7 +73,6 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
           sql"SELECT numofsorryforbug FROM playerdata WHERE uuid = ${uuid.toString} FOR UPDATE"
             .map(_.int("numofsorryforbug"))
             .toList()
-            .apply()
             .headOption
             .getOrElse(0)
 
@@ -87,7 +83,6 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
         if (updatedAmount >= 0) {
           sql"UPDATE playerdata SET numofsorryforbug = numofsorryforbug - $receiveAmount WHERE uuid = ${uuid.toString}"
             .execute()
-            .apply()
         }
 
         GachaTicketAmount(receiveAmount)

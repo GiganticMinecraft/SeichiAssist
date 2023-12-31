@@ -34,7 +34,6 @@ class PlayerItemsMigrationVersionRepository[F[_]](serverId: String)(implicit F: 
             where server_id = $serverId and player_uuid = ${target.player.getUniqueId.toString}
         """.map { rs => rs.string("version_string") }
             .list()
-            .apply()
             .flatMap(ItemMigrationVersionNumber.fromString)
             .toSet
 
