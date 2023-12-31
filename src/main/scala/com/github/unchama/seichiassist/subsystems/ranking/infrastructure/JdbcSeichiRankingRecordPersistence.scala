@@ -28,7 +28,6 @@ class JdbcSeichiRankingRecordPersistence[F[_]: Sync]
             )
           }
           .list()
-          .apply()
           .toVector
       }
     }

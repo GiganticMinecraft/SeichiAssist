@@ -29,7 +29,6 @@ class JdbcMineStackObjectPersistence[F[_]: Sync, ItemStack, Player](
             }
           }
           .toList()
-          .apply()
           .filterNot(_.isEmpty)
           .map(_.get)
       }
