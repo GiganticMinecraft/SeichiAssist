@@ -107,7 +107,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.{Bukkit, Location}
 import org.flywaydb.core.Flyway
 import org.slf4j.Logger
-import org.slf4j.jul.JDK14LoggerFactory
+import org.slf4j.impl.JDK14LoggerFactory
 
 import java.util.UUID
 import java.util.logging.LogManager
