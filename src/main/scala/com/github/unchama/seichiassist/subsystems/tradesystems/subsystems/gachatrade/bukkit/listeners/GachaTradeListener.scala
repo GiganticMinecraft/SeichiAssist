@@ -39,7 +39,7 @@ class GachaTradeListener[F[_]: ConcurrentEffect, G[_]](rule: GachaTradeRule[Item
     // インベントリサイズが6列でない時終了
     if (inventory.row != 6) return
 
-    if (inventory.getTitle != s"$LIGHT_PURPLE${BOLD}交換したい景品を入れてください") return
+    if (event.getView.getTitle != s"$LIGHT_PURPLE${BOLD}交換したい景品を入れてください") return
 
     // 交換後の情報
     val tradedInformation =
