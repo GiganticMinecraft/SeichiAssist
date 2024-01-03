@@ -21,7 +21,7 @@ import com.github.unchama.util.effect.BukkitResources
 import com.github.unchama.util.external.WorldGuardWrapper
 import org.bukkit.ChatColor.RED
 import org.bukkit._
-import org.bukkit.block.Block
+import org.bukkit.block.{Block, Container}
 import org.bukkit.block.data.`type`.Slab
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
@@ -310,9 +310,19 @@ class PlayerBlockBreakListener(
 
     val program = for {
       currentAutoMineStackState <- mineStackAPI.autoMineStack(player)
-      drops <- IO(
+      block <- IO(event.getBlock)
+      containerItemStacks <- IO {
+        block.getState match {
+          case container: Container =>
+            container.getInventory.getContents.toVector
+          case _ =>
+            Vector.empty
+        }
+      }
+      blockDrops <- IO(
         event.getBlock.getDrops(player.getInventory.getItemInMainHand).asScala.toVector
       )
+      drops = containerItemStacks ++ blockDrops
       intoFailedItemStacksAndSuccessItemStacks <- whenAOrElse(currentAutoMineStackState)(
         mineStackAPI.mineStackRepository.tryIntoMineStack(player, drops),
         (drops, Vector.empty)
