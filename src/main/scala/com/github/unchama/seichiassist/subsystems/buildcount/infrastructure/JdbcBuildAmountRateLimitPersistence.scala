@@ -24,7 +24,6 @@ class JdbcBuildAmountRateLimitPersistence[SyncContext[_]](
             BuildAmountRateLimiterSnapshot(exp, ldt)
           }
           .first()
-          .apply()
       }
     }
 
@@ -38,7 +37,7 @@ class JdbcBuildAmountRateLimitPersistence[SyncContext[_]](
              |  on duplicate key update
              |    available_permission = ${value.amount.toPlainString},
              |    record_date = ${value.recordTime}
-             |""".stripMargin.update().apply()
+             |""".stripMargin.update()
       }
     }
 }
