@@ -2,8 +2,8 @@ package com.github.unchama.seichiassist.subsystems.gacha.domain
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
-  GachaPrizeTableEntry,
   GachaPrizeId,
+  GachaPrizeTableEntry,
   GachaProbability,
   StaticGachaPrizeFactory
 }
