@@ -6,20 +6,18 @@ import com.github.unchama.seichiassist.subsystems.discordnotification.infrastruc
   DefaultDiscordNotificationSender,
   WebhookDiscordNotificationSender
 }
-import io.chrisdavenport.log4cats.Logger
 
 trait System[F[_]] extends Subsystem[F] {
   implicit val globalNotification: DiscordNotificationAPI[F]
 }
 
 object System {
-  def wired[F[_]: Sync: ContextShift: Logger: LiftIO](
-    configuration: SystemConfiguration
-  ): System[F] = new System[F] {
-    implicit override val globalNotification: DiscordNotificationAPI[F] = {
-      WebhookDiscordNotificationSender
-        .tryCreate(configuration.webhookUrl)
-        .getOrElse(new DefaultDiscordNotificationSender)
+  def wired[F[_]: Sync: ContextShift: LiftIO](configuration: SystemConfiguration): System[F] =
+    new System[F] {
+      implicit override val globalNotification: DiscordNotificationAPI[F] = {
+        WebhookDiscordNotificationSender
+          .tryCreate(configuration.webhookUrl)
+          .getOrElse(new DefaultDiscordNotificationSender)
+      }
     }
-  }
 }
