@@ -23,7 +23,6 @@ class JdbcBackedPresentPersistence[F[_]: Sync] extends PresentPersistence[F, Ite
       // プレゼントのIDはauto_incrementなので明示的に指定しなくて良い
       sql"""INSERT INTO present (itemstack) VALUES ($stackAsBlob)"""
         .updateAndReturnGeneratedKey()
-        .apply()
     }
   }
 
@@ -36,10 +35,10 @@ class JdbcBackedPresentPersistence[F[_]: Sync] extends PresentPersistence[F, Ite
   override def delete(presentId: PresentID): F[DeleteResult] = Sync[F].delay {
     DB.localTx { implicit session =>
       // 制約をかけているのでpresent_stateの方から先に消さないと整合性エラーを吐く
-      sql"""DELETE FROM present_state WHERE present_id = $presentId""".execute().apply()
+      sql"""DELETE FROM present_state WHERE present_id = $presentId""".execute()
 
       val deletedRows =
-        sql"""DELETE FROM present WHERE present_id = $presentId""".update().apply()
+        sql"""DELETE FROM present WHERE present_id = $presentId""".update()
 
       if (deletedRows == 1) DeleteResult.Done else DeleteResult.NotFound
     }
@@ -50,22 +49,21 @@ class JdbcBackedPresentPersistence[F[_]: Sync] extends PresentPersistence[F, Ite
     val program = for {
       exists <- Sync[F].delay {
         DB.readOnly { implicit session =>
-          sql"""SELECT present_id FROM present""".map(x => x.long("present_id")).list().apply()
+          sql"""SELECT present_id FROM present""".map(x => x.long("present_id")).list()
         }.contains(presentID)
       }
     } yield {
       if (exists) {
         Sync[F].delay {
-          import scala.collection.Seq.iterableFactory
 
           val initialValues = players.map { uuid => Seq(presentID, uuid.toString, false) }.toSeq
 
-          DB.localTx { implicit session =>
+          DB.localTx { _ =>
             // upsert - これによってfilterなしで整合性違反を起こすことはなくなる
             sql"""
                   INSERT INTO present_state VALUES (?, ?, ?)
                   ON DUPLICATE KEY UPDATE present_id=present_id, uuid=uuid
-                 """.batch(initialValues: _*).apply()
+                 """.batch(initialValues: _*)
           }
 
           // 型推論
@@ -93,7 +91,6 @@ class JdbcBackedPresentPersistence[F[_]: Sync] extends PresentPersistence[F, Ite
           // https://discord.com/channels/237758724121427969/565935041574731807/824107651985834004
           sql"""DELETE FROM present_state WHERE present_id = $presentID AND uuid IN ($scopeAsSQL)"""
             .update()
-            .apply()
         }
 
         Option.when(deleteCount == 0) { RevokeWarning.NoSuchPresentID }
@@ -105,7 +102,6 @@ class JdbcBackedPresentPersistence[F[_]: Sync] extends PresentPersistence[F, Ite
     DB.localTx { implicit session =>
       sql"""UPDATE present_state SET claimed = TRUE WHERE uuid = ${player.toString} AND present_id = $presentId"""
         .update()
-        .apply()
     }
   }
 
@@ -114,7 +110,6 @@ class JdbcBackedPresentPersistence[F[_]: Sync] extends PresentPersistence[F, Ite
       sql"""SELECT present_id, itemstack FROM present"""
         .map { rs => (rs.long("present_id"), unwrapItemStack(rs)) }
         .list()
-        .apply()
         .toMap
     }
   }
@@ -141,7 +136,7 @@ class JdbcBackedPresentPersistence[F[_]: Sync] extends PresentPersistence[F, Ite
                |FROM present_state
                |WHERE uuid = ${player.toString} AND present_id IN ($idSliceWithPagination)
                |ORDER BY present_id
-        """.stripMargin.map(wrapResultForState).toList().apply()
+        """.stripMargin.map(wrapResultForState).toList()
         }
 
         Right(
@@ -167,7 +162,6 @@ class JdbcBackedPresentPersistence[F[_]: Sync] extends PresentPersistence[F, Ite
         sql"""SELECT present_id, claimed FROM present_state WHERE uuid = ${player.toString}"""
           .map(wrapResultForState)
           .list()
-          .apply()
       }
 
       MapExtra.fillOnBaseSet(
@@ -183,7 +177,6 @@ class JdbcBackedPresentPersistence[F[_]: Sync] extends PresentPersistence[F, Ite
       sql"""SELECT itemstack FROM present WHERE present_id = $presentID"""
         .map(unwrapItemStack)
         .first()
-        .apply()
     }
   }
 
@@ -197,7 +190,6 @@ class JdbcBackedPresentPersistence[F[_]: Sync] extends PresentPersistence[F, Ite
         sql"""SELECT present_id FROM present ORDER BY present_id LIMIT ${perPage.value} OFFSET $offset"""
           .map { _.long("present_id") }
           .toList()
-          .apply()
           .toSet
       }
     }
@@ -218,7 +210,7 @@ class JdbcBackedPresentPersistence[F[_]: Sync] extends PresentPersistence[F, Ite
 
   private def computeValidPresentCount: F[Long] = Sync[F].delay {
     DB.readOnly { implicit session =>
-      sql"""SELECT COUNT(*) AS c FROM present""".map(_.long("c")).first().apply().get // safe
+      sql"""SELECT COUNT(*) AS c FROM present""".map(_.long("c")).first().get // safe
     }
   }
 }

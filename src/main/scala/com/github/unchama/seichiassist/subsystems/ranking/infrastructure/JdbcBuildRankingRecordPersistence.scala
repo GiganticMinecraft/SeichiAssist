@@ -25,7 +25,6 @@ class JdbcBuildRankingRecordPersistence[F[_]: Sync]
           )
         }
         .list()
-        .apply()
         .toVector
     }
   }
