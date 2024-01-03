@@ -307,33 +307,30 @@ class PlayerBlockBreakListener(
         .map(multiplier => BreakUtil.totalBreakCount(Seq(block.getType)) * multiplier)
         .unsafeRunSync()
     }
+
+    val program = for {
+      currentAutoMineStackState <- mineStackAPI.autoMineStack(player)
+      drops <- IO(
+        event.getBlock.getDrops(player.getInventory.getItemInMainHand).asScala.toVector
+      )
+      intoFailedItemStacksAndSuccessItemStacks <- whenAOrElse(currentAutoMineStackState)(
+        mineStackAPI.mineStackRepository.tryIntoMineStack(player, drops),
+        (drops, Vector.empty)
+      )
+      _ <- IO(event.setDropItems(false))
+      _ <- IO {
+        intoFailedItemStacksAndSuccessItemStacks._1.foreach { itemStack =>
+          player.getWorld.dropItemNaturally(player.getLocation, itemStack)
+        }
+      }
+    } yield ()
+
     effectEnvironment.unsafeRunEffectAsync(
       "通常破壊されたブロックを整地量に計上する",
       SeichiAssist.instance.breakCountSystem.api.incrementSeichiExp.of(player, amount).toIO
     )
 
-    val program = for {
-      currentAutoMineStackState <- mineStackAPI.autoMineStack(player)
-      isSucceedTryIntoMineStack <- whenAOrElse(currentAutoMineStackState)(
-        event
-          .getBlock
-          .getDrops(player.getInventory.getItemInMainHand)
-          .asScala
-          .toList
-          .traverse { itemStack =>
-            mineStackAPI
-              .mineStackRepository
-              .tryIntoMineStack(player, itemStack, itemStack.getAmount)
-          }
-          .map(_.forall(_ == true)),
-        false
-      )
-    } yield {
-      if (isSucceedTryIntoMineStack) event.setDropItems(false)
-      else ()
-    }
-    program.unsafeRunSync()
-
+    effectEnvironment.unsafeRunEffectAsync("破壊されたアイテムをMineStackに入れるかドロップする", program)
   }
 
   /**
