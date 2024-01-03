@@ -17,6 +17,7 @@ import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.util.BreakUtil
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.effect.BukkitResources
 import com.github.unchama.util.external.WorldGuardWrapper
 import org.bukkit.ChatColor.RED
@@ -309,7 +310,7 @@ class PlayerBlockBreakListener(
     }
 
     val program = for {
-      currentAutoMineStackState <- mineStackAPI.autoMineStack(player)
+      _ <- IO(event.setDropItems(false))
       block <- IO(event.getBlock)
       containerItemStacks <- IO {
         block.getState match {
@@ -322,12 +323,12 @@ class PlayerBlockBreakListener(
       blockDrops <- IO(
         event.getBlock.getDrops(player.getInventory.getItemInMainHand).asScala.toVector
       )
-      drops = containerItemStacks ++ blockDrops
+      drops = ItemStackUtil.amalgamate(containerItemStacks ++ blockDrops).toVector
+      currentAutoMineStackState <- mineStackAPI.autoMineStack(player)
       intoFailedItemStacksAndSuccessItemStacks <- whenAOrElse(currentAutoMineStackState)(
         mineStackAPI.mineStackRepository.tryIntoMineStack(player, drops),
         (drops, Vector.empty)
       )
-      _ <- IO(event.setDropItems(false))
       _ <- IO {
         intoFailedItemStacksAndSuccessItemStacks._1.foreach { itemStack =>
           player.getWorld.dropItemNaturally(player.getLocation, itemStack)
