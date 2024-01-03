@@ -6,7 +6,7 @@ import org.bukkit.inventory.meta.PotionMeta
 import org.bukkit.potion.{PotionData, PotionType}
 
 class TippedArrowIconItemStackBuilder(val potionData: PotionData)
-    extends AbstractItemStackBuilder[PotionMeta](Material.TIPPED_ARROW, 0) {
+    extends AbstractItemStackBuilder[PotionMeta](Material.TIPPED_ARROW) {
 
   def this(potionType: PotionType) = this(new PotionData(potionType))
 
