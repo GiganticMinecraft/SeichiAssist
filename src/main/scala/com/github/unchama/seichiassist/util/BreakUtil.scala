@@ -250,7 +250,10 @@ object BreakUtil {
             }
             .map { block =>
               val containerItemStacks = block.getState match {
-                case container: Container =>
+                case container: Container if container.getInventory.getSize == 54 =>
+                  // ラージチェスト
+                  container.getInventory.getContents.toVector.drop(27)
+                case container: Container if container.getType != Material.SHULKER_BOX =>
                   container.getInventory.getContents.toVector
                 case _ =>
                   Vector.empty
