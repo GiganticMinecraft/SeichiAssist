@@ -173,13 +173,7 @@ object AssaultRoutine {
         (foundWaters ++ foundLavas).foreach(_.setType(Material.AIR))
         DefaultEffectEnvironment.unsafeRunEffectAsync(
           "ブロックを大量破壊する",
-          BreakUtil.massBreakBlock(
-            player,
-            foundBlocks,
-            player.getLocation,
-            toolToBeUsed,
-            shouldPlayBreakSound = false
-          )
+          BreakUtil.massBreakBlock(player, foundBlocks, toolToBeUsed)
         )
       } else {
         if (shouldRemoveOrCondenseWater) foundWaters.foreach(_.setType(Material.PACKED_ICE))

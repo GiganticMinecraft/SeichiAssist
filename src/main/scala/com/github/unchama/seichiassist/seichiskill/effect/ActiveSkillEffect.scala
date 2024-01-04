@@ -57,14 +57,7 @@ object ActiveSkillEffect {
       breakArea: AxisAlignedCuboid,
       standard: Location
     )(implicit ioOnMainThread: OnMinecraftServerThread[IO]): IO[Unit] =
-      BreakUtil.massBreakBlock(
-        player,
-        breakBlocks,
-        player.getLocation,
-        tool,
-        shouldPlayBreakSound = false,
-        Material.AIR
-      )
+      BreakUtil.massBreakBlock(player, breakBlocks, tool)
   }
 }
 
@@ -120,13 +113,7 @@ sealed abstract class ActiveSkillNormalEffect(
               .map(XYZTuple.of(standard) + _)
               .filter(PositionSearching.containsOneOfPositionsAround(_, 1, blockPositions))
           }
-          _ <- BreakUtil.massBreakBlock(
-            player,
-            breakBlocks,
-            standard,
-            tool,
-            isSkillDualBreakOrTrialBreak
-          )
+          _ <- BreakUtil.massBreakBlock(player, breakBlocks, tool)
           _ <- ioOnMainThread.runAction {
             SyncIO {
               explosionLocations.foreach(coordinates =>
@@ -139,14 +126,10 @@ sealed abstract class ActiveSkillNormalEffect(
       case Blizzard =>
         for {
           _ <-
-            BreakUtil.massBreakBlock(
-              player,
-              breakBlocks,
-              standard,
-              tool,
-              shouldPlayBreakSound = false,
-              Material.PACKED_ICE
-            )
+            BreakUtil.massBreakBlock(player, breakBlocks, tool)
+          _ <- ioOnMainThread.runAction(
+            SyncIO(breakBlocks.foreach(_.setType(Material.PACKED_ICE)))
+          )
           _ <- IO.sleep(10.ticks)
           _ <- ioOnMainThread.runAction(SyncIO {
             breakBlocks
@@ -197,13 +180,7 @@ sealed abstract class ActiveSkillNormalEffect(
           // [0.8, 1.2)
           vol <- IO { new Random().nextFloat() * 0.4f + 0.8f }
           _ <- FocusedSoundEffect(Sound.ENTITY_WITHER_BREAK_BLOCK, 1.0f, vol).run(player)
-          _ <- BreakUtil.massBreakBlock(
-            player,
-            breakBlocks,
-            standard,
-            tool,
-            isSkillDualBreakOrTrialBreak
-          )
+          _ <- BreakUtil.massBreakBlock(player, breakBlocks, tool)
         } yield ()
     }
   }
@@ -290,17 +267,10 @@ sealed abstract class ActiveSkillPremiumEffect(
 
         for {
           randomWool <- IO { colors(Random.nextInt(colors.length)) }
-          _ <- BreakUtil.massBreakBlock(
-            player,
-            breakBlocks,
-            standard,
-            tool,
-            shouldPlayBreakSound = false,
-            randomWool
-          )
-          _ <- IO {
+          _ <- BreakUtil.massBreakBlock(player, breakBlocks, tool)
+          _ <- ioOnMainThread.runAction(SyncIO {
             breakBlocks.foreach(_.setType(randomWool))
-          }
+          })
 
           period <- IO { if (SeichiAssist.DEBUG) 100 else 10 }
           _ <- IO.sleep(period.ticks)
@@ -328,6 +298,10 @@ sealed abstract class ActiveSkillPremiumEffect(
               b.getWorld.spawnParticle(Particle.NOTE, b.getLocation.add(0.5, 0.5, 0.5), 1)
             }
           }
+
+          _ <- ioOnMainThread.runAction(SyncIO {
+            breakBlocks.foreach(_.setType(Material.AIR))
+          })
         } yield ()
     }
   }

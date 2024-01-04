@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.util
 
 import cats.Monad
 import cats.effect.{IO, SyncIO}
-import com.github.unchama.generic.ApplicativeExtra.whenAOrElse
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
@@ -17,19 +16,14 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.CardinalDire
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain.BreakSkillTargetConfigKey
 import com.github.unchama.targetedeffect.player.ActionBarMessageEffect
-import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.{ExternalPlugins, WorldGuardWrapper}
 import org.bukkit.ChatColor._
-import org.bukkit.World.Environment
 import org.bukkit._
-import org.bukkit.block.{Block, Container}
-import org.bukkit.enchantments.Enchantment
-import org.bukkit.entity.{Entity, EntityType, Player}
-import org.bukkit.inventory.ItemStack
+import org.bukkit.block.Block
+import org.bukkit.entity.{Entity, Player}
 
 import java.util.Random
 import java.util.stream.IntStream
-import scala.jdk.CollectionConverters._
 
 object BreakUtil {
 
@@ -227,109 +221,29 @@ object BreakUtil {
   def massBreakBlock(
     player: Player,
     targetBlocks: Iterable[BlockBreakableBySkill],
-    dropLocation: Location,
-    miningTool: BreakTool,
-    shouldPlayBreakSound: Boolean,
-    toMaterial: Material = Material.AIR
+    miningTool: BreakTool
   ): IO[Unit] = {
-    import cats.implicits._
-
     for {
-      // 非同期実行ではワールドに触れないので必要な情報をすべて抜く
-      targetBlocksInformation <- PluginExecutionContexts
-        .onMainThread
-        .runAction(SyncIO {
-          val seq: Seq[(Location, Block, Vector[ItemStack])] = targetBlocks
-            .toSeq
-            .filter { block =>
-              if (block.getType == Material.AIR) {
-                if (SeichiAssist.DEBUG)
-                  Bukkit.getLogger.warning(s"AIRの破壊が${block.getLocation.toString}にて試行されました。")
-                false
-              } else true
-            }
-            .map { block =>
-              val containerItemStacks = block.getState match {
-                case container: Container =>
-                  container.getInventory.getContents.toVector
-                case _ =>
-                  Vector.empty
-              }
+      totalCount <- IO.pure(
+        totalBreakCount(targetBlocks.map(_.getType).filterNot(_ == Material.AIR).toSeq)
+      )
 
-              (block.getLocation.clone(), block, containerItemStacks)
-            }
+      tool <- IO {
+        val clonedTool = miningTool.clone()
+        clonedTool.setType(Material.NETHERITE_PICKAXE)
 
-          seq
-        })
-
-      breakResults = {
-        val plainBreakResult = targetBlocksInformation.map {
-          case (location, block, containerItemStacks) =>
-            val clonedTool = miningTool.clone()
-            clonedTool.setType(Material.NETHERITE_PICKAXE)
-            (location, block.getDrops(clonedTool, player).asScala ++ containerItemStacks)
-        }
-        val drops = plainBreakResult.mapFilter {
-          case (_, drops) if drops.nonEmpty => Some(drops)
-          case _                            => None
-        }.flatten
-        val silverFishLocations = plainBreakResult.mapFilter {
-          case (location, _)
-              if location.getBlock.getType == Material.INFESTED_STONE && !miningTool
-                .containsEnchantment(Enchantment.SILK_TOUCH) =>
-            Some(location)
-          case _ => None
-        }
-
-        // 纏めなければ、FAWEの干渉を受け勝手に消される危険性などがある
-        // また、後々ドロップする可能性もあるため早めに纏めておいて損はない
-        (ItemStackUtil.amalgamate(drops), silverFishLocations)
+        clonedTool
       }
-
-      currentAutoMineStackState <- SeichiAssist
-        .instance
-        .mineStackSystem
-        .api
-        .autoMineStack(player)
-
-      itemsToBeDropped <-
-        // アイテムのマインスタック自動格納を試みる
-        // 格納できなかったらドロップするアイテムとしてリストに入れる
-        breakResults._1.toList.traverse { itemStack =>
-          whenAOrElse(currentAutoMineStackState)(
-            SeichiAssist
-              .instance
-              .mineStackSystem
-              .api
-              .mineStackRepository
-              .tryIntoMineStack(player, itemStack, itemStack.getAmount),
-            false
-          ).map(Option.unless(_)(itemStack))
-        }
-
-      // NOTE: SpigotのBlockはLocationを保存しているため、Blockを置き換える前にMaterialとして
-      //  保存しておかないとすべてMaterial.AIRとして取得されてしまう
-      breakMaterials = targetBlocksInformation.map { case (_, block, _) => block.getType }
 
       _ <- PluginExecutionContexts
         .onMainThread
         .runAction(SyncIO {
-          // ブロックをすべて[[toMaterial]]に変える
-          targetBlocks.foreach(_.setType(toMaterial))
+          targetBlocks.filterNot { block =>
+            block.getType == Material.AIR || block.breakNaturally(tool)
+          }
         })
 
-      _ <- IO {
-        // 壊した時の音を再生する
-        if (shouldPlayBreakSound) {
-          targetBlocksInformation.foreach {
-            case (location, block, _) =>
-              dropLocation.getWorld.playEffect(location, Effect.STEP_SOUND, block)
-          }
-        }
-      }
-
       // プレイヤーの統計を増やす
-      totalCount = totalBreakCount(breakMaterials)
       blockCountWeight <- blockCountWeight[IO](player.getWorld)
       expIncrease = SeichiExpAmount.ofNonNegative(totalCount * blockCountWeight)
 
@@ -340,19 +254,6 @@ object BreakUtil {
         .incrementSeichiExp
         .of(player, expIncrease)
         .toIO
-
-      _ <- PluginExecutionContexts
-        .onMainThread
-        .runAction(SyncIO {
-          // アイテムドロップは非同期スレッドで行ってはならない
-          itemsToBeDropped
-            .flatten
-            .filterNot(_.getType == Material.AIR)
-            .foreach(dropLocation.getWorld.dropItemNaturally(dropLocation, _))
-          breakResults._2.foreach { location =>
-            location.getWorld.spawnEntity(location, EntityType.SILVERFISH)
-          }
-        })
     } yield ()
   }
 
