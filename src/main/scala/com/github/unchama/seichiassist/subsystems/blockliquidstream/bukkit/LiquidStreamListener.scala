@@ -2,13 +2,13 @@ package com.github.unchama.seichiassist.subsystems.blockliquidstream.bukkit
 
 import org.bukkit.block.data.Waterlogged
 import org.bukkit.event.block.BlockFromToEvent
-import org.bukkit.event.{EventHandler, Listener}
+import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import org.bukkit.block.Block
 import com.github.unchama.seichiassist.ManagedWorld._
 
 class LiquidStreamListener extends Listener {
 
-  @EventHandler
+  @EventHandler(priority = EventPriority.HIGHEST)
   def onBlockMove(event: BlockFromToEvent): Unit = {
     event.setCancelled(isLiquidStream(event.getBlock))
   }
