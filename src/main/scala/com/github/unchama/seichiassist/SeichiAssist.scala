@@ -506,6 +506,9 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.elevator.System.wired[IO]
   }
 
+  private lazy val blockLiquidStreamSystem: Subsystem[IO] =
+    subsystems.blockliquidstream.System.wired[IO]
+
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
     expBottleStackSystem,
@@ -545,7 +548,8 @@ class SeichiAssist extends JavaPlugin() {
     gridRegionSystem,
     breakSkillTargetConfigSystem,
     joinAndQuitMessenger,
-    elevatorSystem
+    elevatorSystem,
+    blockLiquidStreamSystem
   )
 
   private lazy val buildAssist: BuildAssist = {
