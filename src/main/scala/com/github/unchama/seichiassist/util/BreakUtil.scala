@@ -20,7 +20,6 @@ import com.github.unchama.targetedeffect.player.ActionBarMessageEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.{ExternalPlugins, WorldGuardWrapper}
 import org.bukkit.ChatColor._
-import org.bukkit.World.Environment
 import org.bukkit._
 import org.bukkit.block.{Block, Container}
 import org.bukkit.enchantments.Enchantment
