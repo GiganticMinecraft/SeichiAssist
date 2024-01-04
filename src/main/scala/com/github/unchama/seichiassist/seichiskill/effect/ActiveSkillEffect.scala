@@ -22,7 +22,6 @@ import enumeratum.{Enum, EnumEntry}
 import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.entity.{Chicken, Player}
-import org.bukkit.material.Wool
 
 import scala.util.Random
 
@@ -58,14 +57,7 @@ object ActiveSkillEffect {
       breakArea: AxisAlignedCuboid,
       standard: Location
     )(implicit ioOnMainThread: OnMinecraftServerThread[IO]): IO[Unit] =
-      BreakUtil.massBreakBlock(
-        player,
-        breakBlocks,
-        player.getLocation,
-        tool,
-        shouldPlayBreakSound = false,
-        Material.AIR
-      )
+      BreakUtil.massBreakBlock(player, breakBlocks, tool)
   }
 }
 
@@ -121,31 +113,23 @@ sealed abstract class ActiveSkillNormalEffect(
               .map(XYZTuple.of(standard) + _)
               .filter(PositionSearching.containsOneOfPositionsAround(_, 1, blockPositions))
           }
-          _ <- BreakUtil.massBreakBlock(
-            player,
-            breakBlocks,
-            standard,
-            tool,
-            isSkillDualBreakOrTrialBreak
-          )
-          _ <- IO {
-            explosionLocations.foreach(coordinates =>
-              world.createExplosion(coordinates.toLocation(world), 0f, false)
-            )
+          _ <- BreakUtil.massBreakBlock(player, breakBlocks, tool)
+          _ <- ioOnMainThread.runAction {
+            SyncIO {
+              explosionLocations.foreach(coordinates =>
+                world.createExplosion(coordinates.toLocation(world), 0f, false)
+              )
+            }
           }
         } yield ()
 
       case Blizzard =>
         for {
           _ <-
-            BreakUtil.massBreakBlock(
-              player,
-              breakBlocks,
-              standard,
-              tool,
-              shouldPlayBreakSound = false,
-              Material.PACKED_ICE
-            )
+            BreakUtil.massBreakBlock(player, breakBlocks, tool)
+          _ <- ioOnMainThread.runAction(
+            SyncIO(breakBlocks.foreach(_.setType(Material.PACKED_ICE)))
+          )
           _ <- IO.sleep(10.ticks)
           _ <- ioOnMainThread.runAction(SyncIO {
             breakBlocks
@@ -196,13 +180,7 @@ sealed abstract class ActiveSkillNormalEffect(
           // [0.8, 1.2)
           vol <- IO { new Random().nextFloat() * 0.4f + 0.8f }
           _ <- FocusedSoundEffect(Sound.ENTITY_WITHER_BREAK_BLOCK, 1.0f, vol).run(player)
-          _ <- BreakUtil.massBreakBlock(
-            player,
-            breakBlocks,
-            standard,
-            tool,
-            isSkillDualBreakOrTrialBreak
-          )
+          _ <- BreakUtil.massBreakBlock(player, breakBlocks, tool)
         } yield ()
     }
   }
@@ -248,7 +226,7 @@ object ActiveSkillNormalEffect extends Enum[ActiveSkillNormalEffect] {
         s"${DARK_RED}メテオ",
         "隕石を落とす",
         100,
-        Material.FIREBALL
+        Material.FIRE_CHARGE
       )
 
 }
@@ -277,28 +255,22 @@ sealed abstract class ActiveSkillPremiumEffect(
 
     this match {
       case ActiveSkillPremiumEffect.MAGIC =>
-        val colors = Array(DyeColor.RED, DyeColor.BLUE, DyeColor.YELLOW, DyeColor.GREEN)
+        val colors = Array(
+          Material.RED_WOOL,
+          Material.BLUE_WOOL,
+          Material.YELLOW_WOOL,
+          Material.GREEN_WOOL
+        )
 
         // 破壊するブロックの中心位置
         val centerBreak: Location = standard + ((breakArea.begin + breakArea.end) / 2)
 
         for {
-          randomColor <- IO { colors(Random.nextInt(colors.length)) }
-          _ <- BreakUtil.massBreakBlock(
-            player,
-            breakBlocks,
-            standard,
-            tool,
-            shouldPlayBreakSound = false,
-            Material.WOOL
-          )
-          _ <- IO {
-            breakBlocks.foreach { b =>
-              val state = b.getState
-              state.getData.asInstanceOf[Wool].setColor(randomColor)
-              state.update()
-            }
-          }
+          randomWool <- IO { colors(Random.nextInt(colors.length)) }
+          _ <- BreakUtil.massBreakBlock(player, breakBlocks, tool)
+          _ <- ioOnMainThread.runAction(SyncIO {
+            breakBlocks.foreach(_.setType(randomWool))
+          })
 
           period <- IO { if (SeichiAssist.DEBUG) 100 else 10 }
           _ <- IO.sleep(period.ticks)
@@ -326,6 +298,10 @@ sealed abstract class ActiveSkillPremiumEffect(
               b.getWorld.spawnParticle(Particle.NOTE, b.getLocation.add(0.5, 0.5, 0.5), 1)
             }
           }
+
+          _ <- ioOnMainThread.runAction(SyncIO {
+            breakBlocks.foreach(_.setType(Material.AIR))
+          })
         } yield ()
     }
   }
@@ -351,7 +327,7 @@ case object ActiveSkillPremiumEffect extends Enum[ActiveSkillPremiumEffect] {
         s"$RED$UNDERLINE${BOLD}マジック",
         "鶏が出る手品",
         10,
-        Material.RED_ROSE
+        Material.POPPY
       )
 
 }

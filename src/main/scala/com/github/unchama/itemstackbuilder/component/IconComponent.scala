@@ -13,7 +13,7 @@ import scala.jdk.javaapi.CollectionConverters.asJava
  *
  * Created by karayuu on 2019/04/09
  */
-class IconComponent(val material: Material, private val durability: Short = 0.toShort) {
+class IconComponent(val material: Material) {
   var title: String = Bukkit.getItemFactory.getItemMeta(material).ifNotNull(_.getDisplayName)
   var lore: List[String] = Nil
 
@@ -24,7 +24,7 @@ class IconComponent(val material: Material, private val durability: Short = 0.to
 
   var itemFlagSet: Set[ItemFlag] = Set()
 
-  def itemStack(): ItemStack = new ItemStack(material, amount, durability)
+  def itemStack(): ItemStack = new ItemStack(material, amount)
 
   def itemMeta(): ItemMeta = {
     val meta = Bukkit.getItemFactory.getItemMeta(material)
