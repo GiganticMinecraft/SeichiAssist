@@ -1,5 +1,5 @@
 call rd /s /q target\build
-
+mkdir target\build
 call sbt assembly || goto :onerror
 
 if "%1" == "update-gachadata" (
