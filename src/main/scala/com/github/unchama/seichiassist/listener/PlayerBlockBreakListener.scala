@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.listener
 
 import cats.effect.{Fiber, IO, SyncIO}
-import com.github.unchama.generic.ApplicativeExtra.whenAOrElse
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.ManagedWorld._
@@ -13,16 +12,14 @@ import com.github.unchama.seichiassist.seichiskill.{BlockSearching, BreakArea}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
-import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.util.BreakUtil
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.effect.BukkitResources
 import com.github.unchama.util.external.WorldGuardWrapper
 import org.bukkit.ChatColor.RED
 import org.bukkit._
-import org.bukkit.block.{Block, Container}
+import org.bukkit.block.Block
 import org.bukkit.block.data.`type`.Slab
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
@@ -32,14 +29,12 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.Damageable
 
 import scala.collection.mutable.ArrayBuffer
-import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.util.control.Breaks
 
 class PlayerBlockBreakListener(
   implicit effectEnvironment: EffectEnvironment,
   ioOnMainThread: OnMinecraftServerThread[IO],
-  manaApi: ManaApi[IO, SyncIO, Player],
-  mineStackAPI: MineStackAPI[IO, Player, ItemStack]
+  manaApi: ManaApi[IO, SyncIO, Player]
 ) extends Listener {
   private val plugin = SeichiAssist.instance
 
@@ -79,8 +74,6 @@ class PlayerBlockBreakListener(
       .getOrElse(
         return
       )
-
-    println(tool)
 
     // 耐久値がマイナスかつ耐久無限ツールでない時処理を終了
     if (
@@ -309,39 +302,10 @@ class PlayerBlockBreakListener(
         .unsafeRunSync()
     }
 
-    val program = for {
-      _ <- IO(event.setDropItems(false))
-      block <- IO(event.getBlock)
-      containerItemStacks <- IO {
-        block.getState match {
-          case container: Container =>
-            container.getInventory.getContents.toVector
-          case _ =>
-            Vector.empty
-        }
-      }
-      blockDrops <- IO(
-        event.getBlock.getDrops(player.getInventory.getItemInMainHand).asScala.toVector
-      )
-      drops = ItemStackUtil.amalgamate(containerItemStacks ++ blockDrops).toVector
-      currentAutoMineStackState <- mineStackAPI.autoMineStack(player)
-      intoFailedItemStacksAndSuccessItemStacks <- whenAOrElse(currentAutoMineStackState)(
-        mineStackAPI.mineStackRepository.tryIntoMineStack(player, drops),
-        (drops, Vector.empty)
-      )
-      _ <- IO {
-        intoFailedItemStacksAndSuccessItemStacks._1.foreach { itemStack =>
-          player.getWorld.dropItemNaturally(player.getLocation, itemStack)
-        }
-      }
-    } yield ()
-
     effectEnvironment.unsafeRunEffectAsync(
       "通常破壊されたブロックを整地量に計上する",
       SeichiAssist.instance.breakCountSystem.api.incrementSeichiExp.of(player, amount).toIO
     )
-
-    effectEnvironment.unsafeRunEffectAsync("破壊されたアイテムをMineStackに入れるかドロップする", program)
   }
 
   /**

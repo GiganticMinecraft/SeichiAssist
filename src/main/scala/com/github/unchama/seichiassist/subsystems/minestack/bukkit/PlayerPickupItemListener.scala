@@ -12,10 +12,14 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.{
 }
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
+import org.bukkit.event.block.BlockDropItemEvent
 import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{GameMode, Sound}
+import com.github.unchama.util.bukkit.ItemStackUtil
+
+import scala.jdk.CollectionConverters._
 
 class PlayerPickupItemListener[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
   implicit mineStackSettingRepository: PlayerDataRepository[MineStackSettings[G, Player]],
@@ -56,6 +60,31 @@ class PlayerPickupItemListener[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_
         program.toIO.unsafeRunAsyncAndForget()
       case _ => ()
     }
+  }
+
+  @EventHandler
+  def onDropItem(event: BlockDropItemEvent): Unit = {
+    val itemStacks =
+      ItemStackUtil.amalgamate(event.getItems.asScala.map(_.getItemStack).toSeq).toVector
+    val player = event.getPlayer
+
+    val program = for {
+      currentAutoMineStackState <- ContextCoercion(
+        mineStackSettingRepository(player).isAutoCollectionTurnedOn
+      )
+      intoSucceedItemStacksAndFailedItemStacks <- whenAOrElse(currentAutoMineStackState)(
+        mineStackRepository.tryIntoMineStack(player, itemStacks),
+        (itemStacks, Vector.empty)
+      )
+      _ <- Sync[F].delay {
+        event.setCancelled(true)
+        intoSucceedItemStacksAndFailedItemStacks._1.foreach { itemStack =>
+          player.getWorld.dropItemNaturally(player.getLocation, itemStack)
+        }
+      }
+    } yield ()
+
+    program.toIO.unsafeRunAsyncAndForget()
   }
 
 }

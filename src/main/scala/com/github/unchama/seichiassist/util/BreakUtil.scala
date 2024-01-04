@@ -239,7 +239,7 @@ object BreakUtil {
         .onMainThread
         .runAction(SyncIO {
           targetBlocks.filterNot { block =>
-            block.getType == Material.AIR || block.breakNaturally(tool)
+            block.getType == Material.AIR || player.breakBlock(block)
           }
         })
 
