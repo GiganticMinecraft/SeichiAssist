@@ -1020,7 +1020,6 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"iron_horse_armor","鉄の馬鎧",Material.IRON_HORSE_ARMOR),
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"golden_horse_armor","金の馬鎧",Material.GOLDEN_HORSE_ARMOR),
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"diamond_horse_armor","ダイヤの馬鎧",Material.DIAMOND_HORSE_ARMOR),
-    MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "observer", "オブザーバー", Material.OBSERVER),
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "lectern", "書見台", Material.LECTERN),
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "target", "的", Material.TARGET),
     MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "lightning_rod", "避雷針", Material.LIGHTNING_ROD),
