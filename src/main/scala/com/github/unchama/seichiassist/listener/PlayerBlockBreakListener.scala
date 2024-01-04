@@ -80,8 +80,6 @@ class PlayerBlockBreakListener(
         return
       )
 
-    println(tool)
-
     // 耐久値がマイナスかつ耐久無限ツールでない時処理を終了
     if (
       tool.getItemMeta.asInstanceOf[Damageable].getDamage > tool
