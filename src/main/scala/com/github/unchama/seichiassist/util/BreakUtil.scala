@@ -485,7 +485,7 @@ object BreakUtil {
     /**
      * 最大ループ数
      */
-    val maxY = if (player.getWorld.getEnvironment == Environment.NETHER) 121 else 255
+    val maxY = player.getWorld.getMaxHeight
     val maxOffsetY = maxY - blockRelativeHeight
 
     // NOTE: `1 until 0`など、`x > y`が満たされる`x until y`はイテレーションが行われない
