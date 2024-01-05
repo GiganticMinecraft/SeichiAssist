@@ -24,7 +24,6 @@ import org.bukkit._
 import org.bukkit.block.{Block, Container}
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.{Entity, EntityType, Player}
-import org.bukkit.inventory.ItemStack
 
 import java.util.Random
 import java.util.stream.IntStream
@@ -238,39 +237,28 @@ object BreakUtil {
       targetBlocksInformation <- PluginExecutionContexts
         .onMainThread
         .runAction(SyncIO {
-          val seq: Seq[(Location, Block, Vector[ItemStack])] = targetBlocks
+          val seq: Seq[(Location, Block)] = targetBlocks
             .toSeq
-            .filter { block =>
-              if (block.getType == Material.AIR) {
-                if (SeichiAssist.DEBUG)
-                  Bukkit.getLogger.warning(s"AIRの破壊が${block.getLocation.toString}にて試行されました。")
-                false
-              } else true
-            }
-            .map { block =>
-              val containerItemStacks = block.getState match {
-                case container: Container if container.getInventory.getSize == 54 =>
-                  // ラージチェスト
-                  container.getInventory.getContents.toVector.drop(27)
-                case container: Container if container.getType != Material.SHULKER_BOX =>
-                  container.getInventory.getContents.toVector
-                case _ =>
-                  Vector.empty
-              }
-
-              (block.getLocation.clone(), block, containerItemStacks)
-            }
+            .filterNot(_.getType == Material.AIR)
+            .map(block => (block.getLocation.clone(), block))
 
           seq
         })
 
+      notContainerBlocks <- PluginExecutionContexts
+        .onMainThread
+        .runAction(SyncIO {
+          targetBlocksInformation.filterNot(_._2.getState.isInstanceOf[Container])
+        })
+
       breakResults = {
-        val plainBreakResult = targetBlocksInformation.map {
-          case (location, block, containerItemStacks) =>
-            val clonedTool = miningTool.clone()
-            clonedTool.setType(Material.NETHERITE_PICKAXE)
-            (location, block.getDrops(clonedTool, player).asScala ++ containerItemStacks)
-        }
+        val plainBreakResult =
+          notContainerBlocks.filterNot(_._2.getState.isInstanceOf[Container]).map {
+            case (location, block) =>
+              val clonedTool = miningTool.clone()
+              clonedTool.setType(Material.NETHERITE_PICKAXE)
+              (location, block.getDrops(clonedTool, player).asScala)
+          }
         val drops = plainBreakResult.mapFilter {
           case (_, drops) if drops.nonEmpty => Some(drops)
           case _                            => None
@@ -311,12 +299,13 @@ object BreakUtil {
 
       // NOTE: SpigotのBlockはLocationを保存しているため、Blockを置き換える前にMaterialとして
       //  保存しておかないとすべてMaterial.AIRとして取得されてしまう
-      breakMaterials = targetBlocksInformation.map { case (_, block, _) => block.getType }
+      breakMaterials = targetBlocksInformation.map { case (_, block) => block.getType }
 
       _ <- PluginExecutionContexts
         .onMainThread
         .runAction(SyncIO {
           // ブロックをすべて[[toMaterial]]に変える
+          targetBlocks.filter(_.getState.isInstanceOf[Container]).foreach(_.breakNaturally())
           targetBlocks.foreach(_.setType(toMaterial))
         })
 
@@ -324,7 +313,7 @@ object BreakUtil {
         // 壊した時の音を再生する
         if (shouldPlayBreakSound) {
           targetBlocksInformation.foreach {
-            case (location, block, _) =>
+            case (location, block) =>
               dropLocation.getWorld.playEffect(location, Effect.STEP_SOUND, block)
           }
         }
