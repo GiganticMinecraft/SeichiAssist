@@ -34,7 +34,6 @@ import org.bukkit.inventory.meta.Damageable
 import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.util.control.Breaks
-import scala.concurrent.duration._
 
 class PlayerBlockBreakListener(
   implicit effectEnvironment: EffectEnvironment,
