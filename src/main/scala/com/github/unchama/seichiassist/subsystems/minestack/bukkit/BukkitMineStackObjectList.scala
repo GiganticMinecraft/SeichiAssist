@@ -1075,7 +1075,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
         MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "dark_oak_pressure_plate", "ダークオークの感圧板", Material.DARK_OAK_PRESSURE_PLATE),
         MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "crimson_pressure_plate", "真紅の感圧板", Material.CRIMSON_PRESSURE_PLATE),
         MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "warped_pressure_plate", "歪んだ感圧板", Material.WARPED_PRESSURE_PLATE),
-        MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"gold_plate","軽量用感圧板 ",Material.LIGHT_WEIGHTED_PRESSURE_PLATE),
+        MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"gold_plate","軽量用感圧板",Material.LIGHT_WEIGHTED_PRESSURE_PLATE),
         MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"iron_plate","重量用感圧板",Material.HEAVY_WEIGHTED_PRESSURE_PLATE),
       )
     ),
