@@ -287,6 +287,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(AGRICULTURAL, "glow_lichen", "ヒカリゴケ", Material.GLOW_LICHEN),
     MineStackObjectByMaterial(AGRICULTURAL, "sweet_berries", "スイートベリー", Material.SWEET_BERRIES),
     MineStackObjectByMaterial(AGRICULTURAL, "glow_berries", "グロウベリー", Material.GLOW_BERRIES),
+    MineStackObjectByMaterial(AGRICULTURAL, "hanging_roots", "垂れ根", Material.HANGING_ROOTS),
   )
 
   // 建築系ブロック
@@ -394,7 +395,6 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(BUILDING, "cut_sandstone", "研がれた砂岩", Material.CUT_SANDSTONE),
     MineStackObjectByMaterial(BUILDING, "moss_carpet", "苔のカーペット", Material.MOSS_CARPET),
     MineStackObjectByMaterial(BUILDING, "moss_block", "苔ブロック", Material.MOSS_BLOCK),
-    MineStackObjectByMaterial(BUILDING, "hanging_roots", "垂れ根", Material.HANGING_ROOTS),
     MineStackObjectByMaterial(BUILDING, "smooth_quartz", "滑らかなクォーツブロック", Material.SMOOTH_QUARTZ),
     MineStackObjectByMaterial(BUILDING, "smooth_stone", "滑らかな石", Material.SMOOTH_STONE),
     MineStackObjectByMaterial(BUILDING, "soul_soil", "ソウルソイル", Material.SOUL_SOIL),
@@ -1075,8 +1075,8 @@ class BukkitMineStackObjectList[F[_]: Sync](
         MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "dark_oak_pressure_plate", "ダークオークの感圧板", Material.DARK_OAK_PRESSURE_PLATE),
         MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "crimson_pressure_plate", "真紅の感圧板", Material.CRIMSON_PRESSURE_PLATE),
         MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION, "warped_pressure_plate", "歪んだ感圧板", Material.WARPED_PRESSURE_PLATE),
-        MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"gold_plate","重量感圧板 (軽) ",Material.LIGHT_WEIGHTED_PRESSURE_PLATE),
-        MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"iron_plate","重量感圧板 (重) ",Material.HEAVY_WEIGHTED_PRESSURE_PLATE),
+        MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"gold_plate","軽量用感圧板 ",Material.LIGHT_WEIGHTED_PRESSURE_PLATE),
+        MineStackObjectByMaterial(REDSTONE_AND_TRANSPORTATION,"iron_plate","重量用感圧板",Material.HEAVY_WEIGHTED_PRESSURE_PLATE),
       )
     ),
     MineStackObjectWithKindVariants(
