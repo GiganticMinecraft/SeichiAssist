@@ -214,7 +214,7 @@ object AchievementConditions {
             import scala.util.chaining._
 
             stack != null &&
-            stack.getType == Material.SKULL_ITEM &&
+            stack.getType == Material.PLAYER_HEAD &&
             stack
               .getItemMeta
               .asInstanceOf[SkullMeta]
