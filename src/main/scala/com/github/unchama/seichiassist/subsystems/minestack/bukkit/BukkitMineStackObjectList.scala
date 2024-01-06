@@ -499,8 +499,8 @@ class BukkitMineStackObjectList[F[_]: Sync](
         MineStackObjectByMaterial(BUILDING, "wood_3", "ジャングルの木", Material.JUNGLE_WOOD),
         MineStackObjectByMaterial(BUILDING, "wood_4", "アカシアの木", Material.ACACIA_WOOD),
         MineStackObjectByMaterial(BUILDING, "wood_5", "ダークオークの木", Material.DARK_OAK_WOOD),
-        MineStackObjectByMaterial(AGRICULTURAL, "crimson_hyphae", "真紅の菌糸", Material.CRIMSON_HYPHAE),
-        MineStackObjectByMaterial(AGRICULTURAL, "warped_hyphae", "歪んだ菌糸", Material.WARPED_HYPHAE),
+        MineStackObjectByMaterial(BUILDING, "crimson_hyphae", "真紅の菌糸", Material.CRIMSON_HYPHAE),
+        MineStackObjectByMaterial(BUILDING, "warped_hyphae", "歪んだ菌糸", Material.WARPED_HYPHAE),
       )
     ),
     MineStackObjectWithKindVariants(
