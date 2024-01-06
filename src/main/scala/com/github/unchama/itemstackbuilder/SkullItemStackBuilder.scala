@@ -6,6 +6,7 @@ import org.apache.commons.codec.binary.Base64
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.{Bukkit, Material}
 
+import java.net.URI
 import java.util.UUID
 
 /**
@@ -31,22 +32,12 @@ class SkullItemStackBuilder(private val owner: SkullOwnerReference)
     owner match {
       case SkullOwnerUuidWithName(uuid, name) =>
         meta.setOwningPlayer(Bukkit.getOfflinePlayer(uuid))
-        val gameProfile = new GameProfile(uuid, name)
-
-        val profileField = meta.getClass.getDeclaredField("profile")
-        profileField.setAccessible(true)
-        profileField.set(meta, gameProfile)
-
         val textureUrl =
           s"http://textures.minecraft.net/texture/${uuid.toString.replaceAll("-", "")}"
 
-        val encodedData = Base64.encodeBase64(
-          String.format("{textures:{SKIN:{url:\"%s\"}}}", textureUrl).getBytes
-        )
-
-        gameProfile
-          .getProperties
-          .put("textures", new Property("textures", new String(encodedData)))
+        val profile = Bukkit.createPlayerProfile(uuid, name)
+        profile.getTextures.setSkin(URI.create(textureUrl).toURL)
+        meta.setOwnerProfile(profile)
       case SkullOwnerUuid(uuid) =>
         meta.setOwningPlayer(Bukkit.getOfflinePlayer(uuid))
         val gameProfile = new GameProfile(uuid, null)
