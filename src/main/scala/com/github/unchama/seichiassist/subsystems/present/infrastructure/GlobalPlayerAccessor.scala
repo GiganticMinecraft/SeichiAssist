@@ -20,7 +20,6 @@ class GlobalPlayerAccessor[F[_]: Sync] extends UuidToLastSeenName[F] {
       sql"""SELECT name, uuid from seichiassist.playerdata"""
         .map { rs => (UUID.fromString(rs.string("uuid")), rs.string("name")) }
         .list()
-        .apply()
         .toMap
     }
   }

@@ -86,7 +86,7 @@ jobs:
           java-version: '8'
 
       - name: build artifacts
-        run: sbt assembly
+        run: mkdir -p target/build && sbt assembly
 
       - name: Create release
         id: create_release
