@@ -12,6 +12,13 @@ import java.net.{HttpURLConnection, URI, URL}
 import java.nio.charset.StandardCharsets
 import java.util.UUID
 
+/**
+ * [[SkullOwnerReference]]はなるべく[[SkullOwnerUuidWithNameWithTextureUrl]]で指定されているべきである。
+ * なぜなら、UUIDのみで指定が行われるとmojangのサーバーに問い合わせを行ってテクスチャを設定するためのURLを問い合わせるため、
+ * サーバー負荷が高いものとなる。
+ *
+ * TODO: できればUUIDからテクスチャURLを毎回問い合わせたくないので、キャッシュしたい
+ */
 class SkullItemStackBuilder(private val owner: SkullOwnerReference)
     extends AbstractItemStackBuilder[SkullMeta](Material.PLAYER_HEAD) {
 
@@ -46,54 +53,46 @@ class SkullItemStackBuilder(private val owner: SkullOwnerReference)
 
   import io.circe.parser._
 
+  private def textureUrl(name: String): Option[String] = {
+    for {
+      profile <- getHttpRequest(s"https://api.mojang.com/users/profiles/minecraft/$name")
+      id <- parse(profile).toOption.flatMap(_.hcursor.get[String]("id").toOption)
+      playerData <- getHttpRequest(
+        s"https://sessionserver.mojang.com/session/minecraft/profile/$id"
+      )
+      base64TextureProperties <- parse(playerData)
+        .toOption
+        .flatMap(
+          _.hcursor
+            .downField("properties")
+            .values
+            .flatMap(_.head.hcursor.get[String]("value").toOption)
+        )
+      url <- parse(
+        new String(Base64.decodeBase64(base64TextureProperties), StandardCharsets.UTF_8)
+      ).toOption
+        .flatMap(_.hcursor.downField("textures").downField("SKIN").get[String]("url").toOption)
+    } yield url
+  }
+
   override protected def transformItemMetaOnBuild(meta: SkullMeta): Unit = {
     owner match {
-      case SkullOwnerUuidWithName(uuid, name) =>
+      case SkullOwnerUuid(uuid) =>
         meta.setOwningPlayer(Bukkit.getOfflinePlayer(uuid))
+        val name = Bukkit.getOfflinePlayer(uuid).getName
 
-        val textureUrl = for {
-          profile <- getHttpRequest(s"https://api.mojang.com/users/profiles/minecraft/$name")
-          id <- parse(profile).toOption.flatMap(_.hcursor.get[String]("id").toOption)
-          playerData <- getHttpRequest(
-            s"https://sessionserver.mojang.com/session/minecraft/profile/$id"
-          )
-          base64TextureProperties <- parse(playerData)
-            .toOption
-            .flatMap(
-              _.hcursor
-                .downField("properties")
-                .values
-                .flatMap(_.head.hcursor.get[String]("value").toOption)
-            )
-          url <- parse(
-            new String(Base64.decodeBase64(base64TextureProperties), StandardCharsets.UTF_8)
-          ).toOption
-            .flatMap(
-              _.hcursor.downField("textures").downField("SKIN").get[String]("url").toOption
-            )
-        } yield url
-
-        textureUrl match {
+        textureUrl(name) match {
           case Some(url) =>
             val playerProfile = Bukkit.createPlayerProfile(uuid, name)
             playerProfile.getTextures.setSkin(URI.create(url).toURL)
             meta.setOwnerProfile(playerProfile)
           case None =>
         }
-      case SkullOwnerUuid(uuid) =>
-        meta.setOwningPlayer(Bukkit.getOfflinePlayer(uuid))
-        val gameProfile = new GameProfile(uuid, null)
 
-        val textureUrl =
-          s"http://textures.minecraft.net/texture/${uuid.toString.replaceAll("-", "")}"
-
-        val encodedData = Base64.encodeBase64(
-          String.format("{textures:{SKIN:{url:\"%s\"}}}", textureUrl).getBytes
-        )
-
-        gameProfile
-          .getProperties
-          .put("textures", new Property("textures", new String(encodedData)))
+      case SkullOwnerUuidWithNameWithTextureUrl(uuid, name, url) =>
+        val playerProfile = Bukkit.createPlayerProfile(uuid, name)
+        playerProfile.getTextures.setSkin(URI.create(url).toURL)
+        meta.setOwnerProfile(playerProfile)
 
       /**
        * @see
