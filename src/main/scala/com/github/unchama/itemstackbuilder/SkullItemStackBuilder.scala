@@ -12,20 +12,10 @@ import java.net.{HttpURLConnection, URI, URL}
 import java.nio.charset.StandardCharsets
 import java.util.UUID
 
-/**
- * Created by karayuu on 2019/04/09
- */
 class SkullItemStackBuilder(private val owner: SkullOwnerReference)
     extends AbstractItemStackBuilder[SkullMeta](Material.PLAYER_HEAD) {
 
   /**
-   * プレーヤーがサーバーに参加したことのない場合に 頭のスキンを読み込むことができないため、そのようなケースが想定されるされる箇所では
-   * プレーヤー名を[[String]]として取るコンストラクタを使用せよ。
-   *
-   * それ以外の場合はこのコンストラクタを使うようにせよ。 Bukkitは`Persistent storage of users should be by UUID`と記している。
-   *
-   * @see
-   *   SkullMeta.setOwner
    * @param ownerUUID
    *   [Material.PLAYER_HEAD] に表示するプレーヤーのUUID
    */
