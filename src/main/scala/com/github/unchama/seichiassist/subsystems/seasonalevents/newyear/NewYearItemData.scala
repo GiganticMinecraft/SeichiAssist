@@ -76,7 +76,6 @@ object NewYearItemData {
     itemStack
   }
 
-  // https://minecraft-heads.com/custom-heads/food-drinks/413-bowl-of-noodles
   private val soba = SkullOwnerTextureValue(
     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjY4MzRiNWIyNTQyNmRlNjM1MzhlYzgyY2E4ZmJlY2ZjYmIzZTY4MmQ4MDYzNjQzZDJlNjdhNzYyMWJkIn19fQ=="
   )
