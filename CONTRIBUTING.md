@@ -22,7 +22,7 @@
 
 ダウンロードは [こちら](https://www.jetbrains.com/idea/download/) から
 
-> **Note**
+> [!NOTE]
 >
 > 学生の場合は、[学生ライセンス](https://www.jetbrains.com/community/education/#students)を申請することで Ultimate Edition を無料で利用できます。
 
@@ -51,7 +51,7 @@ GitHubにアカウントを[登録](https://github.com/join)します。
 
 #### 上級者向け：ローカルにJavaとかsbtを入れたくない場合
 
-> **Warning**
+> [!WARNING]
 >
 > 自分が何をしているのかわかっていないのであれば、この手順を飛ばしてください。
 
@@ -74,8 +74,8 @@ $ docker compose up --build -d
 
 ### SeichiAssistを自分のGitHubアカウントにコピーする
 
-> **Warning**
-> 
+> [!WARNING]
+>
 > この手順は [GiganticMinecraft][gm-gh-organization] のメンバーである場合は行う必要はありません。
 > よくわからない場合は、この注意書きを無視して先へ進んでください。
 >
@@ -102,8 +102,8 @@ SeichiAssistは、Gitというバージョンを管理するシステムを使�
 
 #### protocol以下のファイルを入手
 
-> **Warning**
-> 
+> [!WARNING]
+>
 > ・この手順はコマンドラインから直接クローンした場合の手順になります。
 >
 > ・この手順を行うのは、一回だけです。二回目以降は、この手順を行う必要はありません。
