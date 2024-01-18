@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear
   EVENT_YEAR,
   NEW_YEAR_EVE
 }
-import de.tr7zw.itemnbtapi.NBTItem
+import de.tr7zw.nbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.{ItemFlag, ItemStack}
@@ -43,7 +43,7 @@ object NewYearItemData {
       .tap { item =>
         import item._
         setByte(NBTTagConstants.typeIdTag, 1.toByte)
-        setObject(NBTTagConstants.expiryDateTag, END_DATE)
+        setLong(NBTTagConstants.expiryDateTag, END_DATE.toEpochDay)
       }
       .pipe(_.getItem)
   }
@@ -76,7 +76,6 @@ object NewYearItemData {
     itemStack
   }
 
-  // https://minecraft-heads.com/custom-heads/food-drinks/413-bowl-of-noodles
   private val soba = SkullOwnerTextureValue(
     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjY4MzRiNWIyNTQyNmRlNjM1MzhlYzgyY2E4ZmJlY2ZjYmIzZTY4MmQ4MDYzNjQzZDJlNjdhNzYyMWJkIn19fQ=="
   )

@@ -164,7 +164,7 @@ object BukkitRepositoryControls {
   private def backupProcess[F[_]: Sync, Key, R](
     finalization: RepositoryFinalization[F, Key, R]
   )(dataMap: TrieMap[Key, R]): F[Unit] = {
-    Sync[F].suspend {
+    Sync[F].defer {
       dataMap.toList.traverse(finalization.persistPair.tupled).as(())
     }
   }
