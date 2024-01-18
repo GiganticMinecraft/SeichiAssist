@@ -253,7 +253,7 @@ object BreakUtil {
 
       breakResults = {
         val plainBreakResult =
-          notContainerBlocks.filterNot(_._2.getState.isInstanceOf[Container]).map {
+          notContainerBlocks.map {
             case (location, block) =>
               val clonedTool = miningTool.clone()
               clonedTool.setType(Material.NETHERITE_PICKAXE)
