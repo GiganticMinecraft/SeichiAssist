@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki
 
 import com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki.Seizonsiki.END_DATE
-import de.tr7zw.itemnbtapi.NBTItem
+import de.tr7zw.nbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{Bukkit, Material}
@@ -36,7 +36,7 @@ object SeizonsikiItemData {
       .tap { item =>
         import item._
         setByte(NBTTagConstants.typeIdTag, 1.toByte)
-        setObject(NBTTagConstants.expiryDateTag, END_DATE)
+        setLong(NBTTagConstants.expiryDateTag, END_DATE.toEpochDay)
       }
       .pipe(_.getItem)
   }
