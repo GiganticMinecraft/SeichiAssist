@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.canceldamagebyfallingblocks.bukkit.listeners
 
-import org.bukkit.entity.{EntityType, Player}
+import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
 import org.bukkit.event.{EventHandler, Listener}
