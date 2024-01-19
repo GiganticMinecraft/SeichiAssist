@@ -21,25 +21,24 @@ class PersistedItemsMigrationVersionRepository[F[_]](implicit dbSession: DBSessi
     Resource.makeCase(F.delay {
       // トランザクション開始がここになる
       // https://dev.mysql.com/doc/refman/5.6/ja/lock-tables-and-transactions.html
-      sql"set autocommit=0".update().apply()
+      sql"set autocommit=0".update()
 
       // ロックを取得するときは利用するテーブルすべてをロックしなければならない
       sql"lock tables seichiassist.item_migration_on_database write, seichiassist.playerdata write"
         .update()
-        .apply()
 
       // このリソースを使用する際にはロックが取れているというのを保証すればよいため、リソースの実体は無くて良い
       ()
     }) {
       case (_, ExitCase.Completed) =>
         F.delay {
-          sql"commit".update().apply()
-          sql"unlock tables".update().apply()
+          sql"commit".update()
+          sql"unlock tables".update()
         }
       case _ =>
         F.delay {
-          sql"rollback".update().apply()
-          sql"unlock tables".update().apply()
+          sql"rollback".update()
+          sql"unlock tables".update()
         }
     }
   }
@@ -52,8 +51,7 @@ class PersistedItemsMigrationVersionRepository[F[_]](implicit dbSession: DBSessi
         sql"""
         select version_string from seichiassist.item_migration_on_database
       """.map { rs => rs.string("version_string") }
-          .list
-          .apply()
+          .list()
           .flatMap(ItemMigrationVersionNumber.fromString)
           .toSet
       }
