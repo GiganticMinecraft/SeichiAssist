@@ -509,6 +509,9 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val blockLiquidStreamSystem: Subsystem[IO] =
     subsystems.blockliquidstream.System.wired[IO]
 
+  private lazy val cancelDamageByFallingBlocksSystem: Subsystem[IO] =
+    subsystems.canceldamagebyfallingblocks.System.wired[IO]
+
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
     expBottleStackSystem,
@@ -549,7 +552,8 @@ class SeichiAssist extends JavaPlugin() {
     breakSkillTargetConfigSystem,
     joinAndQuitMessenger,
     elevatorSystem,
-    blockLiquidStreamSystem
+    blockLiquidStreamSystem,
+    cancelDamageByFallingBlocksSystem
   )
 
   private lazy val buildAssist: BuildAssist = {
