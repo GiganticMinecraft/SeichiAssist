@@ -22,7 +22,7 @@ jobs:
           submodules: 'recursive'
 
       - name: Prepare build dependencies cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-build-dependencies
           cache-version: v-5
@@ -46,7 +46,7 @@ jobs:
 
       - name: Prepare build cache
         if: github.ref != 'refs/heads/master'
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-build
           cache-version: v-5
