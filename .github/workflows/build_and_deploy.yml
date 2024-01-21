@@ -5,7 +5,6 @@ on:
     branches:
       - develop
       - master
-
   pull_request:
     branches:
       - develop
@@ -15,7 +14,7 @@ jobs:
     env:
       BUILD_ENVIRONMENT_IS_CI_OR_LOCAL: "CI"
     runs-on: ubuntu-22.04
-    container: ghcr.io/giganticminecraft/seichiassist-builder:1a64049
+    container: ghcr.io/giganticminecraft/seichiassist-builder-v2:5357f57
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,7 +22,7 @@ jobs:
           submodules: 'recursive'
 
       - name: Prepare build dependencies cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-build-dependencies
           cache-version: v-5
@@ -47,7 +46,7 @@ jobs:
 
       - name: Prepare build cache
         if: github.ref != 'refs/heads/master'
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-build
           cache-version: v-5
@@ -68,6 +67,8 @@ jobs:
       - name: Restore localDependencies' timestamps
         # 参考: https://qiita.com/tomlla/items/219cea9dd071c8a9e147
         run: |
+          git config --global --add safe.directory /__w/SeichiAssist/SeichiAssist
+          
           for jar in localDependencies/*.jar; do
             timestamp=`git log -1 --pretty=format:'%cd' --date=format:'%Y%m%d%H%M.%S' $jar`
             touch -t "$timestamp" $jar
@@ -102,7 +103,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Test and build artifact
-        run: sbt assembly
+        run: mkdir -p target/build && sbt assembly
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -125,7 +126,7 @@ jobs:
 
   output-sha:
     name: 最終コミットのSHA値を取得する
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       sha: ${{ steps.output-sha.outputs.sha }}
     steps:
@@ -140,7 +141,7 @@ jobs:
 
   create_prerelease:
     name: GitHub ReleasesにPreReleaseを作成する
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: github.ref == 'refs/heads/develop'
     needs:
       - build_test_and_upload
