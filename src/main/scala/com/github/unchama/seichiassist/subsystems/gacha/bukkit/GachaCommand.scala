@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gacha.bukkit
 
 import cats.data.Kleisli
-import cats.effect.ConcurrentEffect
+import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.ParserResponse.{failWith, succeedWith}
 import com.github.unchama.contextualexecutor.builder.{
@@ -77,7 +77,9 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
         s"$RED/gacha delete-event <イベント名>",
         "イベントを削除します。(間違ってイベントを作成した時以外は使わないでください。)",
         s"$RED/gacha list-event",
-        "イベントの一覧を表示します。"
+        "イベントの一覧を表示します。",
+        s"$RED/gacha replace-prize <ID>",
+        "指定したIDのガチャ景品を手元のアイテムに置き換えます"
       )
     )
   )
@@ -95,7 +97,8 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
         "setprob" -> setProbability,
         "create-event" -> createEvent,
         "delete-event" -> deleteEvent,
-        "list-event" -> eventList
+        "list-event" -> eventList,
+        "replace-prize" -> replaceGachaPrize
       ),
       whenBranchNotFound = Some(printDescriptionExecutor),
       whenArgInsufficient = Some(printDescriptionExecutor)
@@ -423,6 +426,25 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
 
           MessageEffectF(messages.toList)
         }
+      }
+
+    val replaceGachaPrize: ContextualExecutor =
+      playerCommandBuilder.thenParse(gachaPrizeIdExistsParser).buildWithExecutionCSEffect {
+        context =>
+          import shapeless.::
+          val targetId :: HNil = context.args.parsed
+
+          Kleisli
+            .liftF[F, CommandSender, Unit] {
+              for {
+                gachaPrize <- gachaPrizeAPI.fetch(targetId)
+                mainHandItem <- Sync[F].delay(context.sender.getInventory.getItemInMainHand)
+                _ <- gachaPrize.traverse { prize =>
+                  gachaPrizeAPI.upsertGachaPrize(prize.copy(itemStack = mainHandItem))
+                }
+              } yield ()
+            }
+            .productR(MessageEffectF("ガチャ景品を置き換えました。"))
       }
   }
 
