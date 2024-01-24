@@ -11,7 +11,7 @@ object PlayerDamageByBlockEvents extends Listener {
   @EventHandler
   def onDamage(e: EntityDamageEvent): Unit = {
     e.getEntity match {
-      // 整地ワールドでは落下ダメージを無効化する
+      // 整地ワールドではブロックの落下ダメージを無効化する
       case player: Player
           if e.getCause == DamageCause.FALLING_BLOCK && player.getWorld.isSeichi =>
         e.setDamage(0.0)
