@@ -14,7 +14,7 @@ on:
 jobs:
   create_release:
     runs-on: ubuntu-20.04
-    container: ghcr.io/giganticminecraft/seichiassist-builder-v2:424c09f
+    container: ghcr.io/giganticminecraft/seichiassist-builder-v2:1df7cf5
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
