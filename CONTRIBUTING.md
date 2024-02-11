@@ -63,7 +63,7 @@ GitHubにアカウントを[登録](https://github.com/join)します。
 
 ```bash
 $ rm -rf target/build # 再ビルドしたいなら既存のターゲットは削除
-$ docker run --rm -it -v `pwd`:/app ghcr.io/giganticminecraft/seichiassist-builder:1a64049 sh -c "cd /app && sbt assembly"
+$ docker run --rm -it -v `pwd`:/app ghcr.io/giganticminecraft/seichiassist-builder-v2:1df7cf5 sh -c "cd /app && sbt assembly"
 $ sudo chown -R `whoami` target/build # docker上でsbtを実行するとrootになってしまうため権限を変える
 $ cp -n docker/spigot/eula.txt docker/spigot/serverfiles/eula.txt || true
 $ docker compose up --build -d
