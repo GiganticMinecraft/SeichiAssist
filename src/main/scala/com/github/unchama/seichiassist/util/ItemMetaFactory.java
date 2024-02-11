@@ -9,5 +9,5 @@ import org.bukkit.inventory.meta.SkullMeta;
 @SuppressWarnings("UtilityClassCanBeEnum")
 public final class ItemMetaFactory {
     private static final ItemFactory FACTORY = Bukkit.getItemFactory();
-    public static final ValueHolder<SkullMeta> SKULL = new ValueHolder<>((SkullMeta) FACTORY.getItemMeta(Material.SKULL_ITEM), SkullMeta::clone);
+    public static final ValueHolder<SkullMeta> SKULL = new ValueHolder<>((SkullMeta) FACTORY.getItemMeta(Material.PLAYER_HEAD), SkullMeta::clone);
 }

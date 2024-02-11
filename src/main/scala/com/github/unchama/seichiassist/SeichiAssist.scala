@@ -59,6 +59,7 @@ import com.github.unchama.seichiassist.menus.{BuildMainMenu, TopLevelRouter}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems._
 import com.github.unchama.seichiassist.subsystems.anywhereender.AnywhereEnderChestAPI
+import com.github.unchama.seichiassist.subsystems.autosave.application.SystemConfiguration
 import com.github.unchama.seichiassist.subsystems.breakcount.{BreakCountAPI, BreakCountReadAPI}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.BreakSkillTargetConfigAPI
@@ -221,7 +222,6 @@ class SeichiAssist extends JavaPlugin() {
 
   private lazy val itemMigrationSystem: subsystems.itemmigration.System[IO] = {
     import PluginExecutionContexts.asyncShift
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
     subsystems.itemmigration.System.wired[IO, SyncIO].unsafeRunSync()
   }
@@ -258,6 +258,9 @@ class SeichiAssist extends JavaPlugin() {
 
     implicit val globalNotification: DiscordNotificationAPI[IO] =
       discordNotificationSystem.globalNotification
+
+    implicit val getConnectedPlayers: GetConnectedPlayers[IO, Player] =
+      new GetConnectedBukkitPlayers[IO]
 
     subsystems.buildcount.System.wired[IO, SyncIO].unsafeRunSync()
   }
@@ -344,8 +347,6 @@ class SeichiAssist extends JavaPlugin() {
     import PluginExecutionContexts.{asyncShift, onMainThread, timer}
 
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-    implicit val getConnectedPlayers: GetConnectedPlayers[IO, Player] =
-      new GetConnectedBukkitPlayers[IO]
 
     subsystems.gachapoint.System.wired[IO, SyncIO](breakCountSystem.api).unsafeRunSync()
   }
@@ -385,7 +386,6 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val presentSystem: Subsystem[IO] = {
     import PluginExecutionContexts.{asyncShift, onMainThread}
 
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val uuidToLastSeenName: UuidToLastSeenName[IO] = new GlobalPlayerAccessor[IO]
     subsystems.present.System.wired
@@ -405,7 +405,7 @@ class SeichiAssist extends JavaPlugin() {
     mineStackSystem.api
 
   private lazy val sharedInventorySystem: subsystems.sharedinventory.System[IO] = {
-    import PluginExecutionContexts.timer
+    import PluginExecutionContexts.{timer, onMainThread}
     subsystems.sharedinventory.System.wired[IO, IO].unsafeRunSync()
   }
 
@@ -417,6 +417,8 @@ class SeichiAssist extends JavaPlugin() {
 
   private lazy val gachaSystem: subsystems.gacha.System[IO, Player] = {
     implicit val gachaTicketAPI: GachaTicketAPI[IO] = gachaTicketSystem.api
+    implicit val getConnectedPlayers: GetConnectedPlayers[IO, Player] =
+      new GetConnectedBukkitPlayers[IO]
 
     subsystems.gacha.System.wired[IO]
   }
@@ -495,6 +497,21 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val gridRegionSystem: subsystems.gridregion.System[IO, Player, Location] =
     subsystems.gridregion.System.wired[IO, SyncIO].unsafeRunSync()
 
+  private lazy val joinAndQuitMessenger: Subsystem[IO] =
+    subsystems.joinandquitmessenger.System.wired[IO]
+
+  private lazy val elevatorSystem: Subsystem[IO] = {
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+
+    subsystems.elevator.System.wired[IO]
+  }
+
+  private lazy val blockLiquidStreamSystem: Subsystem[IO] =
+    subsystems.blockliquidstream.System.wired[IO]
+
+  private lazy val cancelDamageByFallingBlocksSystem: Subsystem[IO] =
+    subsystems.canceldamagebyfallingblocks.System.wired[IO]
+
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
     expBottleStackSystem,
@@ -532,7 +549,11 @@ class SeichiAssist extends JavaPlugin() {
     consumeGachaTicketSystem,
     openirontrapdoor.System.wired,
     gridRegionSystem,
-    breakSkillTargetConfigSystem
+    breakSkillTargetConfigSystem,
+    joinAndQuitMessenger,
+    elevatorSystem,
+    blockLiquidStreamSystem,
+    cancelDamageByFallingBlocksSystem
   )
 
   private lazy val buildAssist: BuildAssist = {
@@ -602,8 +623,8 @@ class SeichiAssist extends JavaPlugin() {
     // BungeeCordとのI/O
     Bukkit
       .getMessenger
-      .registerIncomingPluginChannel(this, "SeichiAssistBungee", new BungeeReceiver(this))
-    Bukkit.getMessenger.registerOutgoingPluginChannel(this, "SeichiAssistBungee")
+      .registerIncomingPluginChannel(this, "BungeeCord", new BungeeReceiver(this))
+    Bukkit.getMessenger.registerOutgoingPluginChannel(this, "BungeeCord")
 
     // コンフィグ系の設定は全てConfig.javaに移動
     SeichiAssist.seichiAssistConfig = Config.loadFrom(this)
@@ -760,7 +781,7 @@ class SeichiAssist extends JavaPlugin() {
       new ChatInterceptor(List(globalChatInterceptionScope)),
       new MenuHandler(),
       SpawnRegionProjectileInterceptor,
-      Y5DoubleSlabCanceller
+      YMinus59DoubleSlabCanceller
     ).concat(bungeeSemaphoreResponderSystem.listenersToBeRegistered)
       .concat {
         Seq(
@@ -835,8 +856,12 @@ class SeichiAssist extends JavaPlugin() {
       implicit val ioConcurrent: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
       implicit val sendMessages: SendMinecraftMessage[IO, Player] = new SendBukkitMessage[IO]
 
-      val dragonNightTimeProcess: IO[Nothing] =
+      val dragonNightTimeProcess: IO[Nothing] = {
+        implicit val getConnectedPlayers: GetConnectedPlayers[IO, Player] =
+          new GetConnectedBukkitPlayers[IO]
+
         subsystems.dragonnighttime.System.backgroundProcess[IO, SyncIO, Player]
+      }
 
       val halfHourRankingRoutineOption: Option[IO[Nothing]] =
         // 公共鯖(7)と建築鯖(8)なら整地量のランキングを表示する必要はない
@@ -851,9 +876,12 @@ class SeichiAssist extends JavaPlugin() {
         subsystems.seichilevelupmessage.System.backgroundProcess[IO, SyncIO, Player]
 
       val autoSaveProcess: IO[Nothing] = {
-        val configuration = seichiAssistConfig.getAutoSaveSystemConfiguration
+        implicit val configuration: SystemConfiguration =
+          seichiAssistConfig.getAutoSaveSystemConfiguration
+        implicit val getConnectedPlayers: GetConnectedPlayers[IO, Player] =
+          new GetConnectedBukkitPlayers[IO]
 
-        subsystems.autosave.System.backgroundProcess[IO, IO](configuration)
+        subsystems.autosave.System.backgroundProcess[IO]
       }
 
       val programs: List[IO[Nothing]] =
