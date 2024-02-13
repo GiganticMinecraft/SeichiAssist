@@ -7,7 +7,7 @@ object WorldChunkSaving {
   import scala.jdk.CollectionConverters._
 
   private object Reflection {
-    private val nmsPackage_1_18_R2 = "net.minecraft.server.v1_18_R2"
+    private val nmsPackage_1_18_R2 = "net.minecraft.server.v1_18_R1"
     private val craftBukkitPackage_1_18_R2 = "org.bukkit.craftbukkit.v1_18_R2"
 
     object FileIOThread {
