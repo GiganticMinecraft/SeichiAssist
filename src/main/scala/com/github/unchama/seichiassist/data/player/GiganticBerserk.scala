@@ -25,12 +25,12 @@ case class GiganticBerserk(
 
   def materialOnUI(): Material = {
     stage match {
-      case 0 => Material.WOOD_SWORD
+      case 0 => Material.WOODEN_SWORD
       case 1 => Material.STONE_SWORD
-      case 2 => Material.GOLD_SWORD
+      case 2 => Material.GOLDEN_SWORD
       case 3 => Material.IRON_SWORD
       case 4 => Material.DIAMOND_SWORD
-      case 5 => Material.WOOD_SWORD
+      case 5 => Material.WOODEN_SWORD
       case _ => throw new RuntimeException("This branch should not be reached")
     }
   }
