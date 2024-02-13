@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec
 import com.github.unchama.seichiassist.subsystems.mebius.domain.property._
 import com.github.unchama.seichiassist.subsystems.mebius.domain.resources.MebiusTalks
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemData
-import de.tr7zw.itemnbtapi.NBTItem
+import de.tr7zw.nbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -119,19 +119,19 @@ object BukkitMebiusItemStackCodec {
    *
    * を満足する。
    */
-  def materialize(property: MebiusProperty, damageValue: Short): ItemStack = {
+  def materialize(property: MebiusProperty): ItemStack = {
     val material = property.forcedMaterial match {
       case MebiusForcedMaterial.None =>
         BukkitMebiusAppearanceMaterialCodec.appearanceMaterialAt(property.level)
       case MebiusForcedMaterial.Leather => Material.LEATHER_HELMET // 革のヘルメット
       case MebiusForcedMaterial.Iron    => Material.IRON_HELMET // 鉄のヘルメット
       case MebiusForcedMaterial.Chain   => Material.CHAINMAIL_HELMET // チェーンのヘルメット
-      case MebiusForcedMaterial.Gold    => Material.GOLD_HELMET // 金のヘルメット
+      case MebiusForcedMaterial.Gold    => Material.GOLDEN_HELMET // 金のヘルメット
     }
 
     import scala.util.chaining._
 
-    val item = new ItemStack(material, 1, damageValue)
+    val item = new ItemStack(material, 1)
 
     item.setItemMeta {
       item.getItemMeta.tap { meta =>
