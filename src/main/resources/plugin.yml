@@ -2,7 +2,9 @@ name: @name@
 main: com.github.unchama.seichiassist.SeichiAssist
 version: @version@
 
-softdepend: [WorldGuard, CoreProtect]
+api-version: 1.18
+
+softdepend: [WorldGuard, CoreProtect, NBTAPI, Multiverse-Core, RegenWorld]
 
 loadbefore:
   # ワールドマイグレーション時にこれらプラグインのタスクがworldへの参照を持ちデータのGCが行われなくなる
