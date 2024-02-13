@@ -7,12 +7,12 @@ object WorldChunkSaving {
   import scala.jdk.CollectionConverters._
 
   private object Reflection {
-    private val nmsPackage_1_18_R1 = "net.minecraft.server.v1_18_R1"
-    private val craftBukkitPackage_1_18_R1 = "org.bukkit.craftbukkit.v1_18_R1"
+    private val nmsPackage_1_18_R2 = "net.minecraft.server.v1_18_R2"
+    private val craftBukkitPackage_1_18_R2 = "org.bukkit.craftbukkit.v1_18_R2"
 
     object FileIOThread {
       private[Reflection] lazy val clazz: Class[_] =
-        Class.forName(s"$nmsPackage_1_18_R1.FileIOThread")
+        Class.forName(s"$nmsPackage_1_18_R2.FileIOThread")
 
       // public static FileIOThread method()
       lazy val getInstance: () => AnyRef = {
@@ -32,7 +32,7 @@ object WorldChunkSaving {
 
     object Entity {
       private[Reflection] lazy val clazz: Class[_] =
-        Class.forName(s"$nmsPackage_1_18_R1.Entity")
+        Class.forName(s"$nmsPackage_1_18_R2.Entity")
 
       // public int field
       lazy val chunkX: AnyRef => Int = {
@@ -56,7 +56,7 @@ object WorldChunkSaving {
     }
 
     object Chunk {
-      private[Reflection] lazy val clazz: Class[_] = Class.forName(s"$nmsPackage_1_18_R1.Chunk")
+      private[Reflection] lazy val clazz: Class[_] = Class.forName(s"$nmsPackage_1_18_R2.Chunk")
 
       // public void method(Entity)
       lazy val untrackEntity: AnyRef => AnyRef => Unit = {
@@ -66,7 +66,7 @@ object WorldChunkSaving {
     }
 
     object World {
-      private[Reflection] lazy val clazz: Class[_] = Class.forName(s"$nmsPackage_1_18_R1.World")
+      private[Reflection] lazy val clazz: Class[_] = Class.forName(s"$nmsPackage_1_18_R2.World")
 
       // public final List<Entity> field
       lazy val entityList: AnyRef => java.util.List[_ <: AnyRef] = {
@@ -121,7 +121,7 @@ object WorldChunkSaving {
 
     object CraftWorld {
       private[Reflection] lazy val clazz: Class[_] =
-        Class.forName(s"$craftBukkitPackage_1_18_R1.CraftWorld")
+        Class.forName(s"$craftBukkitPackage_1_18_R2.CraftWorld")
 
       // public final nms.WorldServer (<: nms.World)
       // originally
