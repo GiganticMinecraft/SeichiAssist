@@ -143,7 +143,7 @@ object WorldLevelData {
   private final val progressLogInterval = 1000
   private final val reloadWorldInterval = 10000
 
-  def convertChunkWise[F[_]](
+  private def convertChunkWise[F[_]](
     originalWorld: World,
     targetChunks: Seq[(Int, Int)],
     conversion: ItemStack => ItemStack
