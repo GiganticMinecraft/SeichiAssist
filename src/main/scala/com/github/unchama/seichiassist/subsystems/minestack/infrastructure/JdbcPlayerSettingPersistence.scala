@@ -13,24 +13,19 @@ class JdbcPlayerSettingPersistence[F[_]: Sync] extends PlayerSettingPersistence[
       sql"SELECT minestackflag FROM playerdata WHERE uuid = ${uuid.toString}"
         .map(_.boolean("minestackflag"))
         .single()
-        .apply()
         .getOrElse(false)
     }
   }
 
   override def turnOnAutoMineStack(uuid: UUID): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      sql"UPDATE playerdata SET minestackflag = true WHERE uuid = ${uuid.toString}"
-        .execute()
-        .apply()
+      sql"UPDATE playerdata SET minestackflag = true WHERE uuid = ${uuid.toString}".execute()
     }
   }
 
   override def turnOffAutoMineStack(uuid: UUID): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      sql"UPDATE playerdata SET minestackflag = false WHERE uuid = ${uuid.toString}"
-        .execute()
-        .apply()
+      sql"UPDATE playerdata SET minestackflag = false WHERE uuid = ${uuid.toString}".execute()
     }
   }
 }

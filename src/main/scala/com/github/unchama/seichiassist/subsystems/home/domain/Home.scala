@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.home.domain
 
-import cats.effect.{ConcurrentEffect, SyncEffect}
+import cats.effect.ConcurrentEffect
 import cats.implicits._
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
@@ -30,10 +30,9 @@ object Home {
   /**
    * プレイヤーの現在レベル（整地レベル、建築レベル）で利用可能なホームポイント数を取得する作用
    */
-  def maxAvailableHomeCountF[F[_]: ConcurrentEffect, G[_]: SyncEffect: ContextCoercion[
-    *[_],
-    F
-  ], Player](player: Player)(
+  def maxAvailableHomeCountF[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F], Player](
+    player: Player
+  )(
     implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player],
     buildCountReadAPI: BuildCountAPI[F, G, Player]
   ): F[Int] = {
