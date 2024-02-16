@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.halloween
 
 import com.github.unchama.seichiassist.util.EnchantNameToJapanese
-import de.tr7zw.itemnbtapi.NBTItem
+import de.tr7zw.nbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Color.fromRGB
 import org.bukkit.enchantments.Enchantment
@@ -82,7 +82,7 @@ object HalloweenItemData {
       val year = Calendar.getInstance().get(Calendar.YEAR)
       val enchDescription = enchantments.map {
         case (ench, lvl) =>
-          s"$RESET$GRAY${EnchantNameToJapanese.getEnchantName(ench.getName, lvl)}"
+          s"$RESET$GRAY${EnchantNameToJapanese.getEnchantName(ench.getKey.toString, lvl)}"
       }.toList
       val lore = List(
         "",
