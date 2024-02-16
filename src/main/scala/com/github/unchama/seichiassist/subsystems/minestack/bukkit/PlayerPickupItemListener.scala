@@ -33,6 +33,8 @@ class PlayerPickupItemListener[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_
         val item = event.getItem
         val itemStack = item.getItemStack
 
+        println(s"pick: ${itemStack.toString}")
+
         val program = for {
           currentAutoMineStackState <- ContextCoercion(
             mineStackSettingRepository(player).isAutoCollectionTurnedOn
