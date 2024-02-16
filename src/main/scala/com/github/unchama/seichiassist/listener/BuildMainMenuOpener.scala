@@ -21,18 +21,15 @@ class BuildMainMenuOpener(
   @EventHandler
   def onPlayerLeftClickWithStick(event: PlayerInteractEvent): Unit = {
     val player = event.getPlayer
+    val action = event.getAction
 
-    event.getAction match {
-      case Action.LEFT_CLICK_AIR | Action.LEFT_CLICK_BLOCK =>
-      case _                                               => return
-    }
+    if (action != Action.LEFT_CLICK_AIR && action != Action.LEFT_CLICK_BLOCK) return
 
-    {
-      val hasStickOnMainHand = player.getInventory.getItemInMainHand.getType == Material.STICK
-      val actionWasOnMainHand = event.getHand == EquipmentSlot.HAND
+    val hasNotStickOnMainHand =
+      player.getInventory.getItemInMainHand.getType != Material.STICK
+    val actionWasNotOnMainHand = event.getHand != EquipmentSlot.HAND
 
-      if (!hasStickOnMainHand || !actionWasOnMainHand) return
-    }
+    if (hasNotStickOnMainHand || actionWasNotOnMainHand) return
 
     effectEnvironment.unsafeRunAsyncTargetedEffect(player)(
       SequentialEffect(
