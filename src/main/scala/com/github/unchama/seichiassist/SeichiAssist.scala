@@ -691,7 +691,7 @@ class SeichiAssist extends JavaPlugin() {
       )
     }
 
-    //TODO: 後でもどす
+    // TODO: 後でもどす
 //    itemMigrationSystem.entryPoints.runDatabaseMigration[SyncIO].unsafeRunSync()
 //    itemMigrationSystem.entryPoints.runWorldMigration.unsafeRunSync()
 
