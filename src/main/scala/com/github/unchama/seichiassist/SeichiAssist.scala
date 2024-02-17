@@ -512,6 +512,12 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val cancelDamageByFallingBlocksSystem: Subsystem[IO] =
     subsystems.canceldamagebyfallingblocks.System.wired[IO]
 
+  private lazy val playerHeadSkinSystem: subsystems.playerheadskin.System[IO, Player] = {
+    import PluginExecutionContexts.asyncShift
+
+    subsystems.playerheadskin.System.wired[IO, SyncIO].unsafeRunSync()
+  }
+
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
     expBottleStackSystem,
@@ -553,7 +559,8 @@ class SeichiAssist extends JavaPlugin() {
     joinAndQuitMessenger,
     elevatorSystem,
     blockLiquidStreamSystem,
-    cancelDamageByFallingBlocksSystem
+    cancelDamageByFallingBlocksSystem,
+    playerHeadSkinSystem
   )
 
   private lazy val buildAssist: BuildAssist = {
