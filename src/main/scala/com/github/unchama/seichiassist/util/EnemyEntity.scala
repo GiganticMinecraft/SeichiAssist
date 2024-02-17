@@ -5,15 +5,20 @@ import org.bukkit.entity.EntityType.{
   BLAZE,
   CAVE_SPIDER,
   CREEPER,
+  DROWNED,
   ELDER_GUARDIAN,
   ENDERMAN,
   ENDERMITE,
   EVOKER,
   GHAST,
   GUARDIAN,
+  HOGLIN,
   HUSK,
   MAGMA_CUBE,
-  PIG_ZOMBIE,
+  PIGLIN,
+  PIGLIN_BRUTE,
+  PILLAGER,
+  RAVAGER,
   SHULKER,
   SILVERFISH,
   SKELETON,
@@ -24,8 +29,10 @@ import org.bukkit.entity.EntityType.{
   VINDICATOR,
   WITCH,
   WITHER_SKELETON,
+  ZOGLIN,
   ZOMBIE,
-  ZOMBIE_VILLAGER
+  ZOMBIE_VILLAGER,
+  ZOMBIFIED_PIGLIN
 }
 
 object EnemyEntity {
@@ -41,7 +48,7 @@ object EnemyEntity {
     GUARDIAN,
     HUSK,
     MAGMA_CUBE,
-    PIG_ZOMBIE,
+    ZOMBIFIED_PIGLIN,
     SHULKER,
     SILVERFISH,
     SKELETON,
@@ -53,6 +60,13 @@ object EnemyEntity {
     WITCH,
     WITHER_SKELETON,
     ZOMBIE,
-    ZOMBIE_VILLAGER
+    ZOMBIE_VILLAGER,
+    PIGLIN,
+    HOGLIN,
+    DROWNED,
+    PIGLIN_BRUTE,
+    PILLAGER,
+    RAVAGER,
+    ZOGLIN
   ).contains(entityType)
 }
