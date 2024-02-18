@@ -1,17 +1,14 @@
 package com.github.unchama.seichiassist.subsystems.vote.bukkit.actions
 
-import cats.effect.{Sync, SyncEffect}
+import cats.effect.{IO, Sync, SyncEffect}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.data.ItemData
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.factories.BukkitGachaSkullData
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.vote.application.actions.ReceiveVoteBenefits
-import com.github.unchama.seichiassist.subsystems.vote.domain.{
-  EffectPoint,
-  ReceivedVoteCount,
-  VotePersistence
-}
+import com.github.unchama.seichiassist.subsystems.vote.domain.{EffectPoint, ReceivedVoteCount, VotePersistence}
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
 import org.bukkit.entity.Player
 
@@ -19,7 +16,8 @@ class BukkitReceiveVoteBenefits[F[_]: OnMinecraftServerThread: Sync, G[
   _
 ]: SyncEffect: ContextCoercion[*[_], F]](
   implicit votePersistence: VotePersistence[F],
-  breakCountAPI: BreakCountAPI[F, G, Player]
+  breakCountAPI: BreakCountAPI[F, G, Player],
+  playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
 ) extends ReceiveVoteBenefits[F, Player] {
 
   import cats.implicits._

@@ -11,6 +11,7 @@ import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.B
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.{DefaultEffectEnvironment, subsystems}
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -26,7 +27,8 @@ class BuildAssist(plugin: Plugin)(
   buildCountAPI: subsystems.buildcount.BuildCountAPI[IO, SyncIO, Player],
   manaApi: ManaApi[IO, SyncIO, Player],
   mineStackAPI: MineStackAPI[IO, Player, ItemStack],
-  ioConcurrentEffect: ConcurrentEffect[IO]
+  ioConcurrentEffect: ConcurrentEffect[IO],
+  playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
 ) {
 
   // TODO この辺のフィールドを整理する

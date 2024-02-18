@@ -7,6 +7,7 @@ import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.targetedeffect._
 import com.github.unchama.targetedeffect.player.PlayerEffects._
 import org.bukkit.ChatColor._
@@ -71,7 +72,10 @@ object ServerSwitchMenu extends Menu {
   import com.github.unchama.menuinventory.syntax._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 
-  class Environment(implicit val ioCanOpenStickMenu: IO CanOpen FirstPage.type)
+  class Environment(
+    implicit val ioCanOpenStickMenu: IO CanOpen FirstPage.type,
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+  )
 
   /**
    * メニューのサイズとタイトルに関する情報

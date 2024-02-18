@@ -12,24 +12,12 @@ import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlot
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairyAppleConsumeStrategy.{
-  Consume,
-  LessConsume,
-  NoConsume,
-  Permissible
-}
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairySummonRequestError.{
-  AlreadyFairySummoned,
-  NotEnoughEffectPoint,
-  NotEnoughSeichiLevel
-}
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
-  FairyAppleConsumeStrategy,
-  FairyLore,
-  FairySummonCost
-}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairyAppleConsumeStrategy.{Consume, LessConsume, NoConsume, Permissible}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairySummonRequestError.{AlreadyFairySummoned, NotEnoughEffectPoint, NotEnoughSeichiLevel}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{FairyAppleConsumeStrategy, FairyLore, FairySummonCost}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.FairySpeechAPI
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -46,7 +34,8 @@ object VoteMenu extends Menu {
     implicit val voteAPI: VoteAPI[IO, Player],
     val fairyAPI: FairyAPI[IO, SyncIO, Player],
     val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
-    val fairySpeechAPI: FairySpeechAPI[IO, Player]
+    val fairySpeechAPI: FairySpeechAPI[IO, Player],
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   /**
