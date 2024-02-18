@@ -6,7 +6,13 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
-import com.github.unchama.menuinventory.{ChestSlotRef, LayoutPreparationContext, Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.menuinventory.{
+  ChestSlotRef,
+  LayoutPreparationContext,
+  Menu,
+  MenuFrame,
+  MenuSlotLayout
+}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import com.github.unchama.seichiassist.achievement.Nicknames
