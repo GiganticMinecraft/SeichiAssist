@@ -9,17 +9,12 @@ import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlot
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementCategory._
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementGroup._
-import com.github.unchama.seichiassist.achievement.hierarchy.{
-  AchievementCategory,
-  AchievementGroup
-}
+import com.github.unchama.seichiassist.achievement.hierarchy.{AchievementCategory, AchievementGroup}
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
-import com.github.unchama.seichiassist.menus.achievement.AchievementCategoryMenu.{
-  buttonFor,
-  groupsLayoutFor
-}
+import com.github.unchama.seichiassist.menus.achievement.AchievementCategoryMenu.{buttonFor, groupsLayoutFor}
 import com.github.unchama.seichiassist.menus.achievement.group.AchievementGroupMenu
 import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import org.bukkit.ChatColor._
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -80,7 +75,8 @@ object AchievementCategoryMenu {
 
   class Environment(
     implicit val ioCanOpenAchievementMainMenu: IO CanOpen AchievementMenu.type,
-    val ioCanOpenAchievementGroupMenu: IO CanOpen AchievementGroupMenu
+    val ioCanOpenAchievementGroupMenu: IO CanOpen AchievementGroupMenu,
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
 }

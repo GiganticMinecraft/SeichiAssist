@@ -87,6 +87,7 @@ import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaReadApi}
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.bukkit.MineStackCommand
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.present.infrastructure.GlobalPlayerAccessor
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
@@ -294,6 +295,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
     implicit val gtToSiinaAPI: GtToSiinaAPI[ItemStack] = gtToSiinaSystem.api
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player] = playerHeadSkinSystem.api
 
     subsystems.seasonalevents.System.wired[IO, SyncIO, IO](this)
   }
@@ -347,6 +349,7 @@ class SeichiAssist extends JavaPlugin() {
     import PluginExecutionContexts.{asyncShift, onMainThread, timer}
 
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player] = playerHeadSkinSystem.api
 
     subsystems.gachapoint.System.wired[IO, SyncIO](breakCountSystem.api).unsafeRunSync()
   }
@@ -437,6 +440,8 @@ class SeichiAssist extends JavaPlugin() {
 
   private lazy val gachaTradeSystem: Subsystem[IO] = {
     implicit val gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player] = playerHeadSkinSystem.api
+
     subsystems.tradesystems.subsystems.gachatrade.System.wired[IO, SyncIO]
   }
 
@@ -462,6 +467,7 @@ class SeichiAssist extends JavaPlugin() {
   // TODO: これはprivateであるべきだが、Achievementシステムが再実装されるまでやむを得ずpublicにする
   lazy val voteSystem: subsystems.vote.System[IO, Player] = {
     implicit val breakCountAPI: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player] = playerHeadSkinSystem.api
 
     subsystems.vote.System.wired[IO, SyncIO]
   }
@@ -567,6 +573,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val flyApi: ManagedFlyApi[SyncIO, Player] = managedFlySystem.api
     implicit val buildCountAPI: BuildCountAPI[IO, SyncIO, Player] = buildCountSystem.api
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player] = playerHeadSkinSystem.api
 
     new BuildAssist(this)
   }
@@ -739,6 +746,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val gridRegionAPI: GridRegionAPI[IO, Player, Location] = gridRegionSystem.api
     implicit val breakSkillTargetConfigAPI: BreakSkillTargetConfigAPI[IO, Player] =
       breakSkillTargetConfigSystem.api
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player] = playerHeadSkinSystem.api
 
     val menuRouter = TopLevelRouter.apply
     import SeichiAssist.Scopes.globalChatInterceptionScope

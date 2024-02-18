@@ -12,6 +12,7 @@ import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.targetedeffect.{DeferredEffect, TargetedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -25,7 +26,8 @@ object CategorizedMineStackMenu {
     val ioCanOpenSelectItemColorMenu: IO CanOpen MineStackSelectItemKindMenu,
     val onMainThread: OnMinecraftServerThread[IO],
     val mineStackAPI: MineStackAPI[IO, Player, ItemStack],
-    implicit val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player]
+    implicit val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
 }
@@ -52,7 +54,8 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
   )
 
   private def mineStackMainMenuButtonSection(
-    implicit ioCanOpenMineStackMainMenu: IO CanOpen MineStackMainMenu.type
+    implicit ioCanOpenMineStackMainMenu: IO CanOpen MineStackMainMenu.type,
+    playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   ): Seq[(Int, Button)] =
     Seq(
       ChestSlotRef(5, 0) -> CommonButtons.transferButton(
