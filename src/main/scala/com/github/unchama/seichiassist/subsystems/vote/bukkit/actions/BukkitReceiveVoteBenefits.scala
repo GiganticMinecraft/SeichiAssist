@@ -8,7 +8,11 @@ import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.factories.BukkitGachaSkullData
 import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.vote.application.actions.ReceiveVoteBenefits
-import com.github.unchama.seichiassist.subsystems.vote.domain.{EffectPoint, ReceivedVoteCount, VotePersistence}
+import com.github.unchama.seichiassist.subsystems.vote.domain.{
+  EffectPoint,
+  ReceivedVoteCount,
+  VotePersistence
+}
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
 import org.bukkit.entity.Player
 

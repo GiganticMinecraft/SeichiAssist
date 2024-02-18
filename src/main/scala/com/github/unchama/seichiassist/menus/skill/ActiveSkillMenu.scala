@@ -4,7 +4,12 @@ import cats.data.Kleisli
 import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
 import com.github.unchama.generic.effect.concurrent.TryableFiber
-import com.github.unchama.itemstackbuilder.{AbstractItemStackBuilder, IconItemStackBuilder, SkullItemStackBuilder, TippedArrowIconItemStackBuilder}
+import com.github.unchama.itemstackbuilder.{
+  AbstractItemStackBuilder,
+  IconItemStackBuilder,
+  SkullItemStackBuilder,
+  TippedArrowIconItemStackBuilder
+}
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{ButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, ReloadingButton}

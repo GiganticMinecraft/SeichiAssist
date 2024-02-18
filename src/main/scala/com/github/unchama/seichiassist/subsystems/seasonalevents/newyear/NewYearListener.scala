@@ -11,7 +11,12 @@ import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinA
 import com.github.unchama.seichiassist.subsystems.seasonalevents.domain.LastQuitPersistenceRepository
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYearItemData._
-import com.github.unchama.seichiassist.util.InventoryOperations.{addItem, dropItem, grantItemStacksEffect, isPlayerInventoryFull}
+import com.github.unchama.seichiassist.util.InventoryOperations.{
+  addItem,
+  dropItem,
+  grantItemStacksEffect,
+  isPlayerInventoryFull
+}
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
