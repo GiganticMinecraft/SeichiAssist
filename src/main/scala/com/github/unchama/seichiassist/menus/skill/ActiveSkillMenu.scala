@@ -4,12 +4,7 @@ import cats.data.Kleisli
 import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
 import com.github.unchama.generic.effect.concurrent.TryableFiber
-import com.github.unchama.itemstackbuilder.{
-  AbstractItemStackBuilder,
-  IconItemStackBuilder,
-  SkullItemStackBuilder,
-  TippedArrowIconItemStackBuilder
-}
+import com.github.unchama.itemstackbuilder.{AbstractItemStackBuilder, IconItemStackBuilder, SkullItemStackBuilder, TippedArrowIconItemStackBuilder}
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{ButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, ReloadingButton}
@@ -27,6 +22,7 @@ import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.util.SendMessageEffect
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
@@ -60,7 +56,8 @@ object ActiveSkillMenu extends Menu {
     val ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
     val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
     val ioOnMainThread: OnMinecraftServerThread[IO],
-    val globalNotification: DiscordNotificationAPI[IO]
+    val globalNotification: DiscordNotificationAPI[IO],
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整地スキル選択")
