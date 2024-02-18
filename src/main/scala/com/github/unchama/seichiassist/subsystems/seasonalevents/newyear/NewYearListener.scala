@@ -7,15 +7,11 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.seasonalevents.domain.LastQuitPersistenceRepository
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYearItemData._
-import com.github.unchama.seichiassist.util.InventoryOperations.{
-  addItem,
-  dropItem,
-  grantItemStacksEffect,
-  isPlayerInventoryFull
-}
+import com.github.unchama.seichiassist.util.InventoryOperations.{addItem, dropItem, grantItemStacksEffect, isPlayerInventoryFull}
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -35,7 +31,8 @@ class NewYearListener[F[_]: ConcurrentEffect: NonServerThreadContextShift, G[_]:
   implicit effectEnvironment: EffectEnvironment,
   repository: LastQuitPersistenceRepository[F, UUID],
   manaApi: ManaWriteApi[G, Player],
-  ioOnMainThread: OnMinecraftServerThread[IO]
+  ioOnMainThread: OnMinecraftServerThread[IO],
+  playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
 ) extends Listener {
 
   import cats.implicits._

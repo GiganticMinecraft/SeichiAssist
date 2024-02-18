@@ -6,40 +6,27 @@ import com.github.unchama.buildassist.{BuildAssist, MenuInventoryData}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory.router.CanOpen
-import com.github.unchama.menuinventory.slot.button.action.{
-  ClickEventFilter,
-  FilteredButtonEffect
-}
+import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.BuildMainMenu.EMPHASIZE
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
-import com.github.unchama.seichiassist.subsystems.managedfly.domain.{
-  Flying,
-  NotFlying,
-  RemainingFlyDuration
-}
+import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, RemainingFlyDuration}
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
-import com.github.unchama.targetedeffect.player.PlayerEffects.{
-  closeInventoryEffect,
-  openInventoryEffect
-}
+import com.github.unchama.targetedeffect.player.PlayerEffects.{closeInventoryEffect, openInventoryEffect}
 import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
-import com.github.unchama.targetedeffect.{
-  ComputedEffect,
-  DeferredEffect,
-  SequentialEffect,
-  UnfocusedEffect
-}
+import com.github.unchama.targetedeffect.{ComputedEffect, DeferredEffect, SequentialEffect, UnfocusedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.{Material, Sound}
 
 private case class ButtonComputations(player: Player)(
-  implicit ioOnMainThread: OnMinecraftServerThread[IO]
+  implicit ioOnMainThread: OnMinecraftServerThread[IO],
+  playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
 ) {
 
   import BuildMainMenu._
@@ -398,7 +385,8 @@ object BuildMainMenu extends Menu {
     implicit val flyApi: ManagedFlyApi[SyncIO, Player],
     val ioOnMainThread: OnMinecraftServerThread[IO],
     val canOpenBlockPlacementSkillMenu: CanOpen[IO, BlockPlacementSkillMenu.type],
-    val canOpenMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu]
+    val canOpenMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu],
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   val EMPHASIZE = s"$UNDERLINE$BOLD"
