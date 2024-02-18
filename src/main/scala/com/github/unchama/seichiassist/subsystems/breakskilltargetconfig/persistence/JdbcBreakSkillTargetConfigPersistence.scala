@@ -22,7 +22,6 @@ class JdbcBreakSkillTargetConfigPersistence[F[_]: Sync]
           }
         }
         .toList()
-        .apply()
         .flatten
         .toMap
     }
