@@ -1,10 +1,11 @@
 package com.github.unchama.buildassist
 
-import cats.effect.SyncIO
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.buildassist.util.AsyncInventorySetter
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.meta.ItemMeta
@@ -18,7 +19,9 @@ object MenuInventoryData {
   JdbcBackedUuidRepository.initializeStaticInstance[SyncIO].unsafeRunSync().apply[SyncIO]
 
   // ブロックを並べる設定メニュー
-  def getBlockLineUpData(p: Player): Inventory = {
+  def getBlockLineUpData(
+    p: Player
+  )(implicit playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]): Inventory = {
     // プレイヤーを取得
     val player = p.getPlayer
     // UUID取得
