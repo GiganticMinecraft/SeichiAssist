@@ -11,13 +11,6 @@ import org.bukkit.{Bukkit, Material}
 import java.net.URI
 import java.util.UUID
 
-/**
- * [[SkullOwnerReference]]はなるべく[[SkullOwnerUuidWithNameWithTextureUrl]]で指定されているべきである。
- * なぜなら、UUIDのみで指定が行われるとmojangのサーバーに問い合わせを行ってテクスチャを設定するためのURLを問い合わせるため、
- * サーバー負荷が高いものとなる。
- *
- * TODO: できればUUIDからテクスチャURLを毎回問い合わせたくないので、キャッシュしたい
- */
 class SkullItemStackBuilder(private val owner: SkullOwnerReference)(
   implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
 ) extends AbstractItemStackBuilder[SkullMeta](Material.PLAYER_HEAD) {
