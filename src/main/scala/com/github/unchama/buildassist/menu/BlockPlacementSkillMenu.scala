@@ -10,6 +10,7 @@ import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.BuildMainMenu
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{
@@ -31,7 +32,10 @@ object BlockPlacementSkillMenu extends Menu {
   }
   import menuinventory.syntax._
 
-  class Environment(implicit val canOpenMainMenu: CanOpen[IO, BuildMainMenu.type])
+  class Environment(
+    implicit val canOpenMainMenu: CanOpen[IO, BuildMainMenu.type],
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+  )
 
   override val frame: MenuFrame =
     MenuFrame(4.chestRows, s"$DARK_PURPLE$BOLD「範囲設置スキル」設定画面")
@@ -55,6 +59,7 @@ object BlockPlacementSkillMenu extends Menu {
 
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
     import player._
+    import environment._
 
     private def computeCurrentSkillAreaInt(range: Int): Int = (range - 1) / 2
     private val maxRange = 15

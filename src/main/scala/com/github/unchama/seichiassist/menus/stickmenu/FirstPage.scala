@@ -44,6 +44,7 @@ import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.ranking.api.RankingProvider
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.ManagedWorld._
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners, util}
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
@@ -94,7 +95,8 @@ object FirstPage extends Menu {
     val ioCanOpenVoteMenu: IO CanOpen VoteMenu.type,
     val enderChestAccessApi: AnywhereEnderChestAPI[IO],
     val gachaTicketAPI: GachaTicketAPI[IO],
-    val voteAPI: VoteAPI[IO, Player]
+    val voteAPI: VoteAPI[IO, Player],
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   override val frame: MenuFrame =
@@ -165,6 +167,7 @@ object FirstPage extends Menu {
   private case class ButtonComputations(player: Player)(implicit environment: Environment) {
 
     import player._
+    import environment._
 
     val computeStatsButton: IO[Button] = RecomputedButton {
       val openerData = SeichiAssist.playermap(getUniqueId)
@@ -615,7 +618,10 @@ object FirstPage extends Menu {
       )
     }
 
-    def secondPageButton(implicit ioCanOpenSecondPage: IO CanOpen SecondPage.type): Button =
+    def secondPageButton(
+      implicit ioCanOpenSecondPage: IO CanOpen SecondPage.type,
+      playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    ): Button =
       CommonButtons.transferButton(
         new SkullItemStackBuilder(SkullOwners.MHF_ArrowRight),
         "2ページ目へ",

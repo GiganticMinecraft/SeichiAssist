@@ -48,6 +48,7 @@ import com.github.unchama.seichiassist.subsystems.gridregion.GridRegionAPI
 import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.ranking.api.AssortedRankingApi
 import com.github.unchama.seichiassist.subsystems.ranking.domain.values.{LoginTime, VoteCount}
 import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
@@ -102,7 +103,8 @@ object TopLevelRouter {
     consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player],
     fairySpeechAPI: FairySpeechAPI[IO, Player],
     gridRegionAPI: GridRegionAPI[IO, Player, Location],
-    breakSkillTargetConfigAPI: BreakSkillTargetConfigAPI[IO, Player]
+    breakSkillTargetConfigAPI: BreakSkillTargetConfigAPI[IO, Player],
+    playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   ): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     import assortedRankingApi._
 
