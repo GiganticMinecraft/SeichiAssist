@@ -17,6 +17,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.generic.MapExtra
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 
 object MineStackSelectItemKindMenu {
 
@@ -24,7 +25,8 @@ object MineStackSelectItemKindMenu {
     implicit val canOpenCategorizedMineStackMenu: CanOpen[IO, CategorizedMineStackMenu],
     implicit val canOpenSelectItemKindMenu: CanOpen[IO, MineStackSelectItemKindMenu],
     implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack],
-    implicit val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player]
+    implicit val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
 }

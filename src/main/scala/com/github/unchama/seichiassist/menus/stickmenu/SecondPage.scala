@@ -22,6 +22,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.GachaDrawAPI
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket.ConsumeGachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.GachaPoint
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData.anniversaryPlayerHead
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas
@@ -62,7 +63,8 @@ object SecondPage extends Menu {
     val sharedInventoryAPI: SharedInventoryAPI[IO, Player],
     val gachaDrawAPI: GachaDrawAPI[IO, Player],
     val gachaPointAPI: GachaPointApi[IO, SyncIO, Player],
-    val consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player]
+    val consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player],
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   override val frame: MenuFrame =
@@ -105,7 +107,8 @@ object SecondPage extends Menu {
   }
 
   private case class ButtonComputations(player: Player)(
-    implicit sharedInventoryAPI: SharedInventoryAPI[IO, Player]
+    implicit sharedInventoryAPI: SharedInventoryAPI[IO, Player],
+    playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   ) {
 
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
