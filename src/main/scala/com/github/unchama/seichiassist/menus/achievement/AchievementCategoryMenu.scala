@@ -9,9 +9,15 @@ import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlot
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementCategory._
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementGroup._
-import com.github.unchama.seichiassist.achievement.hierarchy.{AchievementCategory, AchievementGroup}
+import com.github.unchama.seichiassist.achievement.hierarchy.{
+  AchievementCategory,
+  AchievementGroup
+}
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
-import com.github.unchama.seichiassist.menus.achievement.AchievementCategoryMenu.{buttonFor, groupsLayoutFor}
+import com.github.unchama.seichiassist.menus.achievement.AchievementCategoryMenu.{
+  buttonFor,
+  groupsLayoutFor
+}
 import com.github.unchama.seichiassist.menus.achievement.group.AchievementGroupMenu
 import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
 import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
