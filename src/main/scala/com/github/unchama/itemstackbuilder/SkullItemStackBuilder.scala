@@ -26,13 +26,10 @@ class SkullItemStackBuilder(private val owner: SkullOwnerReference)(
     owner match {
       case SkullOwnerUuid(uuid) =>
         meta.setOwningPlayer(Bukkit.getOfflinePlayer(uuid))
-        val name = Bukkit.getOfflinePlayer(uuid).getName
 
-        playerHeadSkinAPI
-          .playerHeadSkinUrl(Bukkit.getOfflinePlayer(uuid).getPlayer)
-          .unsafeRunSync() match {
+        playerHeadSkinAPI.playerHeadSkinUrlByUUID(uuid).unsafeRunSync() match {
           case Some(url) =>
-            val playerProfile = Bukkit.createPlayerProfile(uuid, name)
+            val playerProfile = Bukkit.createPlayerProfile(uuid)
             playerProfile.getTextures.setSkin(URI.create(url.url).toURL)
             meta.setOwnerProfile(playerProfile)
           case None =>
