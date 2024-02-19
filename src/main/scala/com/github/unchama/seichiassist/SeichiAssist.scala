@@ -521,7 +521,7 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val playerHeadSkinSystem: subsystems.playerheadskin.System[IO, Player] = {
     import PluginExecutionContexts.asyncShift
 
-    subsystems.playerheadskin.System.wired[IO, SyncIO].unsafeRunSync()
+    subsystems.playerheadskin.System.wired[IO]
   }
 
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(

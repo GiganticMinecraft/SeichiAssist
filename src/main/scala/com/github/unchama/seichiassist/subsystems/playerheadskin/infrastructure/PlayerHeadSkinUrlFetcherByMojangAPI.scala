@@ -74,6 +74,6 @@ class PlayerHeadSkinUrlFetcherByMojangAPI[F[_]: Sync] extends PlayerHeadSkinUrlF
 
   override def fetchHeadSkinUrl(playerName: String): F[Option[HeadSkinUrl]] = for {
     textureUrl <- textureUrl(playerName)
-  } yield textureUrl.map(HeadSkinUrl)
+  } yield textureUrl.map(url => HeadSkinUrl(playerName, url))
 
 }
