@@ -86,8 +86,6 @@ object WorldLevelData {
   )(implicit F: Sync[F], logger: Logger): F[Unit] = F.delay {
     val chunk = world.getChunkAt(chunkCoordinate._1, chunkCoordinate._2)
 
-    chunk.load()
-
     chunk.getTileEntities.foreach {
       case containerState: Container =>
         MigrationHelper.convertEachStackIn(containerState.getInventory)(conversion)
@@ -104,6 +102,8 @@ object WorldLevelData {
       case _ =>
     }
 
+    logger.info(s"isForceLoaded: ${chunk.isForceLoaded}")
+    chunk.setForceLoaded(false)
     // メモリ解放を促す
     if (!world.unloadChunk(chunk)) {
       logger.warn(s"チャンク(${chunk.getX}, ${chunk.getZ})はアンロードされませんでした。")
