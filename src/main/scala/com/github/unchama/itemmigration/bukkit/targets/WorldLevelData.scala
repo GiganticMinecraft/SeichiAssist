@@ -168,10 +168,18 @@ object WorldLevelData {
          *
          * OutOfMemoryErrorが観測された際には、プロファイラで残留しているワールドのインスタンスを確認し、
          * GC Rootからの参照パスを特定することを推奨する。
+         *
+         *
+         * 2024/02/20 追記: flushEntityRemovalQueueが短期的なメモリ確保に寄与するとあるが、
+         * 1.12.2から1.18.2にアップデートする際に、この処理内で使われている「EntityRemovalQueue」
+         * というものが1.18.2で存在しているかが不明であること(調べても存在が明らかではなかった)と、
+         * ドキュメントとコードを読む限りパフォーマンス以外の影響がないと思われることから無効化した。
+         * しかしながら、本当に他の影響が出ないかがまだ不鮮明なためコメントアウトにとどめているが、
+         * 本当に影響がないと確認されれば削除して良い。
          */
         chunkConversionEffects
           .atEvery(chunkSaverQueueFlushInterval)(_ =>
-            flushEntityRemovalQueue(worldRef) >> queueChunkSaverFlush
+            /*flushEntityRemovalQueue(worldRef) >>*/ queueChunkSaverFlush
           )
           .atEvery(progressLogInterval)(index =>
             logProgress(index, chunkConversionEffects.size)(worldRef)
