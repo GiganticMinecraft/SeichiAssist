@@ -102,10 +102,8 @@ object WorldLevelData {
       case _ =>
     }
 
-    logger.info(s"isForceLoaded: ${chunk.isForceLoaded}")
-    chunk.setForceLoaded(false)
     // メモリ解放を促す
-    if (!world.unloadChunk(chunk)) {
+    if (!world.unloadChunkRequest(chunk.getX, chunk.getZ)) {
       logger.warn(s"チャンク(${chunk.getX}, ${chunk.getZ})はアンロードされませんでした。")
     }
   }
