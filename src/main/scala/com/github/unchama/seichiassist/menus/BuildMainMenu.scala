@@ -21,6 +21,7 @@ import com.github.unchama.seichiassist.subsystems.managedfly.domain.{
   NotFlying,
   RemainingFlyDuration
 }
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects.{
   closeInventoryEffect,
@@ -39,7 +40,8 @@ import org.bukkit.inventory.ItemFlag
 import org.bukkit.{Material, Sound}
 
 private case class ButtonComputations(player: Player)(
-  implicit ioOnMainThread: OnMinecraftServerThread[IO]
+  implicit ioOnMainThread: OnMinecraftServerThread[IO],
+  playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
 ) {
 
   import BuildMainMenu._
@@ -207,7 +209,7 @@ private case class ButtonComputations(player: Player)(
       IO {
         val openerData = BuildAssist.instance.temporaryData(getUniqueId)
 
-        val iconItemStack = new IconItemStackBuilder(Material.WOOD)
+        val iconItemStack = new IconItemStackBuilder(Material.OAK_PLANKS)
           .title(s"$YELLOW${EMPHASIZE}直列設置: ${BuildAssist.line_up_str(openerData.line_up_flg)}")
           .lore(
             s"$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
@@ -279,7 +281,7 @@ private case class ButtonComputations(player: Player)(
   def computeButtonToOpenMenuToCraftItemsWhereMineStack(
     implicit canOpenMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu]
   ): IO[Button] = IO {
-    val iconItemStackBuilder = new IconItemStackBuilder(Material.WORKBENCH)
+    val iconItemStackBuilder = new IconItemStackBuilder(Material.CRAFTING_TABLE)
       .title(s"$YELLOW${EMPHASIZE}MineStackブロック一括クラフト画面へ")
       .lore(s"$RESET$DARK_RED${UNDERLINE}クリックで移動")
       .build()
@@ -398,7 +400,8 @@ object BuildMainMenu extends Menu {
     implicit val flyApi: ManagedFlyApi[SyncIO, Player],
     val ioOnMainThread: OnMinecraftServerThread[IO],
     val canOpenBlockPlacementSkillMenu: CanOpen[IO, BlockPlacementSkillMenu.type],
-    val canOpenMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu]
+    val canOpenMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu],
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   val EMPHASIZE = s"$UNDERLINE$BOLD"

@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.menus.skill
 import cats.data.Kleisli
 import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
-import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.effect.concurrent.TryableFiber
 import com.github.unchama.itemstackbuilder.{
   AbstractItemStackBuilder,
@@ -28,6 +27,7 @@ import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.util.SendMessageEffect
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
@@ -61,7 +61,8 @@ object ActiveSkillMenu extends Menu {
     val ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
     val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
     val ioOnMainThread: OnMinecraftServerThread[IO],
-    val globalNotification: DiscordNotificationAPI[IO]
+    val globalNotification: DiscordNotificationAPI[IO],
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整地スキル選択")
@@ -155,7 +156,7 @@ object ActiveSkillMenu extends Menu {
         case skill: ActiveSkill =>
           skill match {
             case SeichiSkill.DualBreak =>
-              new IconItemStackBuilder(Material.GRASS)
+              new IconItemStackBuilder(Material.GRASS_BLOCK)
             case SeichiSkill.TrialBreak =>
               new IconItemStackBuilder(Material.STONE)
             case SeichiSkill.Explosion =>
@@ -178,11 +179,11 @@ object ActiveSkillMenu extends Menu {
             case SeichiSkill.Thunderstorm =>
               new IconItemStackBuilder(Material.MINECART)
             case SeichiSkill.StarlightBreaker =>
-              new IconItemStackBuilder(Material.STORAGE_MINECART)
+              new IconItemStackBuilder(Material.CHEST_MINECART)
             case SeichiSkill.EarthDivide =>
-              new IconItemStackBuilder(Material.POWERED_MINECART)
+              new IconItemStackBuilder(Material.FURNACE_MINECART)
             case SeichiSkill.HeavenGaeBolg =>
-              new IconItemStackBuilder(Material.EXPLOSIVE_MINECART)
+              new IconItemStackBuilder(Material.TNT_MINECART)
             case SeichiSkill.Decision =>
               new IconItemStackBuilder(Material.HOPPER_MINECART)
 
@@ -210,9 +211,9 @@ object ActiveSkillMenu extends Menu {
             case SeichiSkill.LavaCondensation =>
               new IconItemStackBuilder(Material.NETHERRACK)
             case SeichiSkill.MoerakiBoulders =>
-              new IconItemStackBuilder(Material.NETHER_BRICK)
+              new IconItemStackBuilder(Material.NETHER_BRICKS)
             case SeichiSkill.Eldfell =>
-              new IconItemStackBuilder(Material.MAGMA)
+              new IconItemStackBuilder(Material.MAGMA_BLOCK)
             case SeichiSkill.VenderBlizzard =>
               new IconItemStackBuilder(Material.NETHER_STAR)
             case SeichiSkill.AssaultArmor =>
@@ -282,9 +283,7 @@ object ActiveSkillMenu extends Menu {
       }
     }
 
-    def seichiSkillButton[F[
-      _
-    ]: ConcurrentEffect: NonServerThreadContextShift: DiscordNotificationAPI](
+    def seichiSkillButton[F[_]: ConcurrentEffect: DiscordNotificationAPI](
       state: SkillSelectionState,
       skill: SeichiSkill
     )(implicit environment: Environment): Button = {
@@ -380,12 +379,12 @@ object ActiveSkillMenu extends Menu {
                                   .sendPlainText(notificationMessage)
                                   .toIO
                               ),
-                              Kleisli.liftF(IO {
-                                SendMessageEffect.sendMessageToEveryoneIgnoringPreference(
+                              Kleisli.liftF(
+                                SendMessageEffect.sendMessageToEveryoneIgnoringPreferenceIO(
                                   s"$GOLD$BOLD$notificationMessage"
                                 )
-                              }),
-                              BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
+                              ),
+                              BroadcastSoundEffect(Sound.ENTITY_ENDER_DRAGON_DEATH, 1.0f, 1.2f)
                             )
                           )
                         } else (unlockedState, emptyEffect)
