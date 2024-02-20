@@ -12,6 +12,7 @@ import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlot
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairyAppleConsumeStrategy.{
@@ -46,7 +47,8 @@ object VoteMenu extends Menu {
     implicit val voteAPI: VoteAPI[IO, Player],
     val fairyAPI: FairyAPI[IO, SyncIO, Player],
     val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
-    val fairySpeechAPI: FairySpeechAPI[IO, Player]
+    val fairySpeechAPI: FairySpeechAPI[IO, Player],
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   /**
@@ -149,7 +151,7 @@ object VoteMenu extends Menu {
     }
 
     val showVoteURLButton: Button = Button(
-      new IconItemStackBuilder(Material.BOOK_AND_QUILL)
+      new IconItemStackBuilder(Material.WRITABLE_BOOK)
         .title(s"$YELLOW$UNDERLINE${BOLD}投票ページにアクセス")
         .lore(
           List(
@@ -181,7 +183,7 @@ object VoteMenu extends Menu {
         fairySummonCost <- fairyAPI.fairySummonCost(player)
       } yield {
         Button(
-          new IconItemStackBuilder(Material.WATCH)
+          new IconItemStackBuilder(Material.CLOCK)
             .title(s"$AQUA$UNDERLINE${BOLD}マナ妖精 時間設定")
             .lore(
               List(
@@ -288,7 +290,7 @@ object VoteMenu extends Menu {
           LeftClickButtonEffect {
             SequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-              DeferredEffect(IO(fairySpeechAPI.togglePlaySoundOnSpeech))
+              fairySpeechAPI.togglePlaySoundOnSpeech
             )
           }
         )

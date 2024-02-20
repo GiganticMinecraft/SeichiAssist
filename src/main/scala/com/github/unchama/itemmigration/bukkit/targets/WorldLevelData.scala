@@ -86,6 +86,8 @@ object WorldLevelData {
   )(implicit F: Sync[F], logger: Logger): F[Unit] = F.delay {
     val chunk = world.getChunkAt(chunkCoordinate._1, chunkCoordinate._2)
 
+    chunk.load()
+
     chunk.getTileEntities.foreach {
       case containerState: Container =>
         MigrationHelper.convertEachStackIn(containerState.getInventory)(conversion)
@@ -109,7 +111,7 @@ object WorldLevelData {
   }
 
   private def queueChunkSaverFlush[F[_]](implicit F: Concurrent[F], logger: Logger) = {
-    import com.github.unchama.util.nms.v1_12_2.world.WorldChunkSaving
+    import com.github.unchama.util.nms.v1_18_2.world.WorldChunkSaving
 
     F.delay {
       logger.info("チャンクの保存キューの処理を要求します…")
@@ -120,12 +122,6 @@ object WorldLevelData {
         }
       }
       .as(())
-  }
-
-  private def flushEntityRemovalQueue[F[_]: Sync](worldRef: Ref[F, World]): F[Unit] = {
-    import com.github.unchama.util.nms.v1_12_2.world.WorldChunkSaving
-
-    worldRef.get >>= WorldChunkSaving.flushEntityRemovalQueue[F]
   }
 
   private def logProgress[F[_]](chunkIndex: Int, totalChunks: Int)(
@@ -143,7 +139,7 @@ object WorldLevelData {
   private final val progressLogInterval = 1000
   private final val reloadWorldInterval = 10000
 
-  def convertChunkWise[F[_]](
+  private def convertChunkWise[F[_]](
     originalWorld: World,
     targetChunks: Seq[(Int, Int)],
     conversion: ItemStack => ItemStack
@@ -168,10 +164,18 @@ object WorldLevelData {
          *
          * OutOfMemoryErrorが観測された際には、プロファイラで残留しているワールドのインスタンスを確認し、
          * GC Rootからの参照パスを特定することを推奨する。
+         *
+         *
+         * 2024/02/20 追記: flushEntityRemovalQueueが短期的なメモリ確保に寄与するとあるが、
+         * 1.12.2から1.18.2にアップデートする際に、この処理内で使われている「EntityRemovalQueue」
+         * というものが1.18.2で存在しているかが不明であること(調べても存在が明らかではなかった)と、
+         * ドキュメントとコードを読む限りパフォーマンス以外の影響がないと思われることから無効化した。
+         * しかしながら、本当に他の影響が出ないかがまだ不鮮明なためコメントアウトにとどめているが、
+         * 本当に影響がないと確認されれば削除して良い。
          */
         chunkConversionEffects
           .atEvery(chunkSaverQueueFlushInterval)(_ =>
-            flushEntityRemovalQueue(worldRef) >> queueChunkSaverFlush
+            /*flushEntityRemovalQueue(worldRef) >>*/ queueChunkSaverFlush
           )
           .atEvery(progressLogInterval)(index =>
             logProgress(index, chunkConversionEffects.size)(worldRef)

@@ -116,7 +116,7 @@ class PlayerClickListener(
     val equipmentSlot = event.getHand
 
     val currentItem = player.getInventory.getItemInMainHand.getType
-    if (currentItem == Material.STICK || currentItem == Material.SKULL_ITEM) return
+    if (currentItem == Material.STICK || currentItem == Material.PLAYER_HEAD) return
 
     val playerData = playerMap(player.getUniqueId)
     val playerLevel = SeichiAssist
@@ -242,7 +242,7 @@ class PlayerClickListener(
 
     val targetBlock = e.getClickedBlock
     // 頭じゃない場合無視
-    if (targetBlock.getType != Material.SKULL) {
+    if (targetBlock.getType != Material.PLAYER_HEAD) {
       return
     }
 

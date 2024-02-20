@@ -4,6 +4,7 @@ import cats.effect.{IO, LiftIO}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.factories.BukkitGachaSkullData
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.GrantGachaTicketToAPlayer
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
@@ -14,7 +15,8 @@ import org.bukkit.Sound
 import org.bukkit.entity.Player
 
 case class GrantBukkitGachaTicketToAPlayer[F[_]: LiftIO](player: Player)(
-  implicit ioOnMainThread: OnMinecraftServerThread[IO]
+  implicit ioOnMainThread: OnMinecraftServerThread[IO],
+  playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
 ) extends GrantGachaTicketToAPlayer[F] {
 
   override def give(count: Int): F[Unit] = {
