@@ -4,6 +4,7 @@ import cats.effect.IO
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary.{
   ANNIVERSARY_COUNT,
   blogArticleUrl,
@@ -21,7 +22,7 @@ import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.block.{Block, Chest}
-import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.{LivingEntity, Player}
 import org.bukkit.event.block.{Action, BlockBreakEvent, BlockPlaceEvent}
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.{PlayerInteractEvent, PlayerJoinEvent}
@@ -35,7 +36,8 @@ import scala.util.Random
 class AnniversaryListener(
   implicit effectEnvironment: EffectEnvironment,
   ioOnMainThread: OnMinecraftServerThread[IO],
-  gtToSiinaAPI: GtToSiinaAPI[ItemStack]
+  gtToSiinaAPI: GtToSiinaAPI[ItemStack],
+  playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
 ) extends Listener {
 
   @EventHandler
@@ -91,7 +93,7 @@ class AnniversaryListener(
     // Y座標を下に動かして（木の上方から）オークの木の頂点を探し、そのブロックを置き換える
     (10 to 0 by -1)
       .map(placedBlock.getRelative(0, _, 0))
-      .find(block => block.getType == Material.LOG || block.getType == Material.LEAVES)
+      .find(block => block.getType == Material.OAK_LOG || block.getType == Material.OAK_LEAVES)
       .foreach(replaceBlockOnTreeTop(_, event.getPlayer.getName))
   }
 
@@ -109,7 +111,6 @@ class AnniversaryListener(
     val offHandItem = player.getInventory.getItemInOffHand
     if (offHandItem == null) return
 
-    offHandItem.setDurability(0)
     removeItemfromPlayerInventory(player.getInventory, item, 1)
   }
 
