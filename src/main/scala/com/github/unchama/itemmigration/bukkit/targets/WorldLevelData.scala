@@ -86,6 +86,8 @@ object WorldLevelData {
   )(implicit F: Sync[F], logger: Logger): F[Unit] = F.delay {
     val chunk = world.getChunkAt(chunkCoordinate._1, chunkCoordinate._2)
 
+    chunk.load()
+
     chunk.getTileEntities.foreach {
       case containerState: Container =>
         MigrationHelper.convertEachStackIn(containerState.getInventory)(conversion)
@@ -120,12 +122,6 @@ object WorldLevelData {
         }
       }
       .as(())
-  }
-
-  private def flushEntityRemovalQueue[F[_]: Sync](worldRef: Ref[F, World]): F[Unit] = {
-    import com.github.unchama.util.nms.v1_18_2.world.WorldChunkSaving
-
-    worldRef.get >>= WorldChunkSaving.flushEntityRemovalQueue[F]
   }
 
   private def logProgress[F[_]](chunkIndex: Int, totalChunks: Int)(
