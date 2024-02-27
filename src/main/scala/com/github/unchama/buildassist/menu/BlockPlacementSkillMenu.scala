@@ -7,8 +7,10 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.BuildMainMenu
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{
@@ -30,7 +32,10 @@ object BlockPlacementSkillMenu extends Menu {
   }
   import menuinventory.syntax._
 
-  class Environment(implicit val canOpenMainMenu: CanOpen[IO, BuildMainMenu.type])
+  class Environment(
+    implicit val canOpenMainMenu: CanOpen[IO, BuildMainMenu.type],
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+  )
 
   override val frame: MenuFrame =
     MenuFrame(4.chestRows, s"$DARK_PURPLE$BOLD「範囲設置スキル」設定画面")
@@ -54,6 +59,7 @@ object BlockPlacementSkillMenu extends Menu {
 
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
     import player._
+    import environment._
 
     private def computeCurrentSkillAreaInt(range: Int): Int = (range - 1) / 2
     private val maxRange = 15
@@ -115,7 +121,7 @@ object BlockPlacementSkillMenu extends Menu {
       val playerData = BuildAssist.instance.temporaryData(getUniqueId)
       val currentRange = playerData.computeCurrentSkillRange()
 
-      val iconItemStack = new SkullItemStackBuilder("MHF_ArrowUp")
+      val iconItemStack = new SkullItemStackBuilder(SkullOwners.MHF_ArrowUp)
         .title(s"$RED$UNDERLINE${BOLD}範囲設定を最大値に変更")
         .lore(
           s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange",
@@ -142,7 +148,7 @@ object BlockPlacementSkillMenu extends Menu {
       val currentRange = playerData.computeCurrentSkillRange()
       val changedRange = 11
 
-      val iconItemStack = new SkullItemStackBuilder("MHF_ArrowUp")
+      val iconItemStack = new SkullItemStackBuilder(SkullOwners.MHF_ArrowUp)
         .title(s"$RED$UNDERLINE${BOLD}範囲設定を$changedRange×${changedRange}に変更")
         .lore(
           s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange",
@@ -169,7 +175,7 @@ object BlockPlacementSkillMenu extends Menu {
       val currentRange = playerData.computeCurrentSkillRange()
       val changedRange = currentRange + 2
 
-      val iconItemStack = new SkullItemStackBuilder("MHF_ArrowUp")
+      val iconItemStack = new SkullItemStackBuilder(SkullOwners.MHF_ArrowUp)
         .title(s"$YELLOW$UNDERLINE${BOLD}範囲設定を一段階大きくする")
         .lore {
           List(s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange").concat(
@@ -208,7 +214,7 @@ object BlockPlacementSkillMenu extends Menu {
       val currentRange = playerData.computeCurrentSkillRange()
       val changedRange = 5
 
-      val iconItemStack = new SkullItemStackBuilder("MHF_TNT")
+      val iconItemStack = new SkullItemStackBuilder(SkullOwners.MHF_TNT)
         .title(s"$RED$UNDERLINE${BOLD}範囲設定を初期値に変更")
         .lore(
           s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange",
@@ -235,7 +241,7 @@ object BlockPlacementSkillMenu extends Menu {
       val currentRange = playerData.computeCurrentSkillRange()
       val changedRange = currentRange - 2
 
-      val iconItemStack = new SkullItemStackBuilder("MHF_ArrowDown")
+      val iconItemStack = new SkullItemStackBuilder(SkullOwners.MHF_ArrowDown)
         .title(s"$YELLOW$UNDERLINE${BOLD}範囲設定を一段階小さくする")
         .lore(
           List(s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange")
@@ -272,7 +278,7 @@ object BlockPlacementSkillMenu extends Menu {
       val playerData = BuildAssist.instance.temporaryData(getUniqueId)
       val currentRange = playerData.computeCurrentSkillRange()
 
-      val iconItemStack = new SkullItemStackBuilder("MHF_ArrowDown")
+      val iconItemStack = new SkullItemStackBuilder(SkullOwners.MHF_ArrowDown)
         .title(s"$RED$UNDERLINE${BOLD}範囲設定を最小値に変更")
         .lore(
           s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange",
