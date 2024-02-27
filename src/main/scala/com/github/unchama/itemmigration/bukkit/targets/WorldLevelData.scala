@@ -6,7 +6,6 @@ import cats.effect.{Concurrent, Sync}
 import com.github.unchama.itemmigration.bukkit.util.MigrationHelper
 import com.github.unchama.itemmigration.domain.{ItemMigrationTarget, ItemStackConversion}
 import com.github.unchama.util.MillisecondTimer
-import com.github.unchama.util.external.ExternalPlugins
 import org.bukkit.block.Container
 import org.bukkit.entity.{Item, ItemFrame}
 import org.bukkit.inventory.{InventoryHolder, ItemStack}
@@ -74,8 +73,7 @@ object WorldLevelData {
         logger.info(s"${world.getName}を再読み込みします…")
 
         val creator = WorldCreator.name(world.getName).copy(world)
-        val mvWorldManager = ExternalPlugins.getMultiverseCore.getMVWorldManager
-        if (!mvWorldManager.unloadWorld(world.getName)) {
+        if (!Bukkit.unloadWorld(world, true)) {
           logger.warn(s"${world.getName}はアンロードされませんでした。")
         }
         Bukkit.createWorld(creator)
