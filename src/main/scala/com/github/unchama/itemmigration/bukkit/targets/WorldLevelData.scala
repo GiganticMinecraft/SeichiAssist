@@ -74,6 +74,7 @@ object WorldLevelData {
 
         val creator = WorldCreator.name(world.getName).copy(world)
         if (!Bukkit.unloadWorld(world, true)) {
+          // NOTE: Bukkitにデフォルトとして設定されているワールド(初期値world)はアンロードに失敗する
           logger.warn(s"${world.getName}はアンロードされませんでした。")
         }
         Bukkit.createWorld(creator)
