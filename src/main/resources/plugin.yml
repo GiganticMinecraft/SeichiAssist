@@ -10,8 +10,6 @@ loadbefore:
   # ワールドマイグレーション時にこれらプラグインのタスクがworldへの参照を持ちデータのGCが行われなくなる
   - Shopkeepers
   - WeatherRestrictions
-  - Multiverse-Portals
-  - CustomEnchantments
 
 default-permission-message: &denied You don't have permission. (<permission>) Please report this if you think this is an error.
 commands:
