@@ -29,11 +29,11 @@ class WorldLevelItemsMigrationVersionRepository[F[_]](serverId: String)(implicit
     _ =>
       F.delay {
         DB.localTx { implicit session =>
+          println(s"serverId: $serverId")
           sql"""
           select version_string from seichiassist.item_migration_in_server_world_levels where server_id = $serverId
         """.map { rs => rs.string("version_string") }
-            .list
-            .apply()
+            .list()
             .flatMap(ItemMigrationVersionNumber.fromString)
             .toSet
         }

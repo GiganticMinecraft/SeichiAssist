@@ -20,6 +20,7 @@ import com.github.unchama.seichiassist.menus.achievement.AchievementCategoryMenu
 }
 import com.github.unchama.seichiassist.menus.achievement.group.AchievementGroupMenu
 import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import org.bukkit.ChatColor._
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -37,12 +38,12 @@ object AchievementCategoryMenu {
         ChestSlotRef(1, 5) -> (BrokenBlockRanking, Material.DIAMOND_PICKAXE)
       )
     case Building =>
-      Map(ChestSlotRef(1, 4) -> (PlacedBlockAmount, Material.BIRCH_WOOD_STAIRS))
+      Map(ChestSlotRef(1, 4) -> (PlacedBlockAmount, Material.BIRCH_STAIRS))
     case Login =>
       Map(
         ChestSlotRef(1, 1) -> (PlayTime, Material.COMPASS),
         ChestSlotRef(1, 3) -> (TotalLogins, Material.BOOK),
-        ChestSlotRef(1, 5) -> (ConsecutiveLogins, Material.BOOK_AND_QUILL),
+        ChestSlotRef(1, 5) -> (ConsecutiveLogins, Material.WRITABLE_BOOK),
         ChestSlotRef(1, 7) -> (Anniversaries, Material.NETHER_STAR)
       )
     case Challenges =>
@@ -53,8 +54,8 @@ object AchievementCategoryMenu {
     case Specials =>
       Map(
         ChestSlotRef(1, 2) -> (OfficialEvent, Material.BLAZE_POWDER),
-        ChestSlotRef(1, 4) -> (VoteCounts, Material.YELLOW_FLOWER),
-        ChestSlotRef(1, 6) -> (Secrets, Material.DIAMOND_BARDING)
+        ChestSlotRef(1, 4) -> (VoteCounts, Material.DANDELION),
+        ChestSlotRef(1, 6) -> (Secrets, Material.DIAMOND_HORSE_ARMOR)
       )
   }
 
@@ -80,7 +81,8 @@ object AchievementCategoryMenu {
 
   class Environment(
     implicit val ioCanOpenAchievementMainMenu: IO CanOpen AchievementMenu.type,
-    val ioCanOpenAchievementGroupMenu: IO CanOpen AchievementGroupMenu
+    val ioCanOpenAchievementGroupMenu: IO CanOpen AchievementGroupMenu,
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
 }

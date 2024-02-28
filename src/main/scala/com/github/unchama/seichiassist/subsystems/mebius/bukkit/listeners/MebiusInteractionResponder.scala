@@ -21,6 +21,7 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.entity.{EntityDamageByEntityEvent, EntityDeathEvent}
 import org.bukkit.event.player.PlayerItemBreakEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
+import org.bukkit.inventory.meta.Damageable
 
 class MebiusInteractionResponder(
   implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]],
@@ -40,32 +41,37 @@ class MebiusInteractionResponder(
 
         val speechService = serviceRepository(player)
 
-        val messageProgram = if (helmet.getDurability >= helmet.getType.getMaxDurability - 10) {
-          MebiusMessages.onDamageBreaking.pickOne[SyncIO].flatMap { message =>
-            // 耐久閾値を超えていたら破損警告
-            speechService.tryMakingSpeech(
-              mebiusProperty,
-              MebiusSpeech(
-                message.interpolate(mebiusProperty.ownerNickname),
-                MebiusSpeechStrength.Medium
-              )
-            )
-          }
-        } else
-          event.getDamager match {
-            case monster: Monster =>
-              // モンスターからダメージを受けた場合の対モンスターメッセージ
-              MebiusMessages.onDamageWarnEnemy.pickOne[SyncIO].flatMap { message =>
-                speechService.tryMakingSpeech(
-                  mebiusProperty,
-                  MebiusSpeech(
-                    message.interpolate(mebiusProperty.ownerNickname, monster.getName),
-                    MebiusSpeechStrength.Medium
-                  )
+        val messageProgram =
+          if (
+            helmet.getItemMeta.asInstanceOf[Damageable].getDamage >= helmet
+              .getType
+              .getMaxDurability - 10
+          ) {
+            MebiusMessages.onDamageBreaking.pickOne[SyncIO].flatMap { message =>
+              // 耐久閾値を超えていたら破損警告
+              speechService.tryMakingSpeech(
+                mebiusProperty,
+                MebiusSpeech(
+                  message.interpolate(mebiusProperty.ownerNickname),
+                  MebiusSpeechStrength.Medium
                 )
-              }
-            case _ => SyncIO.unit
-          }
+              )
+            }
+          } else
+            event.getDamager match {
+              case monster: Monster =>
+                // モンスターからダメージを受けた場合の対モンスターメッセージ
+                MebiusMessages.onDamageWarnEnemy.pickOne[SyncIO].flatMap { message =>
+                  speechService.tryMakingSpeech(
+                    mebiusProperty,
+                    MebiusSpeech(
+                      message.interpolate(mebiusProperty.ownerNickname, monster.getName),
+                      MebiusSpeechStrength.Medium
+                    )
+                  )
+                }
+              case _ => SyncIO.unit
+            }
 
         messageProgram.unsafeRunSync()
       case _ =>
@@ -98,7 +104,7 @@ class MebiusInteractionResponder(
               MessageEffect(
                 s"${BukkitMebiusItemStackCodec.displayNameOfMaterializedItem(property)}${RESET}が旅立ちました。"
               ),
-              FocusedSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 0.1f)
+              FocusedSoundEffect(Sound.ENTITY_ENDER_DRAGON_DEATH, 1.0f, 0.1f)
             ).run(player)
           }
         )
