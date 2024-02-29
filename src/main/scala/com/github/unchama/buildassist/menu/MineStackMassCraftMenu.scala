@@ -13,6 +13,7 @@ import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.{BuildMainMenu, ColorScheme, CommonButtons}
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
@@ -40,7 +41,8 @@ object MineStackMassCraftMenu {
   class Environment(
     implicit val canOpenBuildMainMenu: CanOpen[IO, BuildMainMenu.type],
     val canOpenItself: CanOpen[IO, MineStackMassCraftMenu],
-    val mineStackAPI: MineStackAPI[IO, Player, ItemStack]
+    val mineStackAPI: MineStackAPI[IO, Player, ItemStack],
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   case class MassCraftRecipe(
