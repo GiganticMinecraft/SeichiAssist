@@ -170,10 +170,12 @@ object AnniversaryItemData {
       .pipe(_.getItem)
   }
 
-  def isAnniversaryShovel(item: ItemStack): Boolean =
+  def isAnniversaryShovel(item: ItemStack): Boolean = {
+    println(s"tag: ${new NBTItem(item).getByte(NBTTagConstants.typeIdTag)}")
     item != null && item.getType == DIAMOND_SHOVEL && {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 3
     }
+  }
 
   // endregion
 
