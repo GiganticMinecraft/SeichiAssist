@@ -1,13 +1,16 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary
 
+import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerTextureValue}
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary.ANNIVERSARY_COUNT
 import com.github.unchama.seichiassist.util.EnchantNameToJapanese
-import de.tr7zw.itemnbtapi.NBTItem
+import de.tr7zw.nbtapi.NBTItem
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.Material._
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.entity.Player
 import org.bukkit.inventory.meta.BookMeta.Generation
 import org.bukkit.inventory.meta.{BookMeta, ItemMeta, SkullMeta}
 import org.bukkit.inventory.{ItemFlag, ItemStack}
@@ -22,10 +25,11 @@ object AnniversaryItemData {
   private val mineChan = SkullOwnerTextureValue(
     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDhmNTQ0OGI0ZDg4ZTQwYjE0YzgyOGM2ZjFiNTliMzg1NDVkZGE5MzNlNzNkZmYzZjY5NWU2ZmI0Mjc4MSJ9fX0="
   )
-  val mineHead: ItemStack = new SkullItemStackBuilder(mineChan)
-    .title("まいんちゃん")
-    .lore("", s"${YELLOW}ギガンティック☆整地鯖${ANNIVERSARY_COUNT}周年記念だよ！")
-    .build()
+  def mineHead(implicit playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]): ItemStack =
+    new SkullItemStackBuilder(mineChan)
+      .title("まいんちゃん")
+      .lore("", s"${YELLOW}ギガンティック☆整地鯖${ANNIVERSARY_COUNT}周年記念だよ！")
+      .build()
 
   // endregion
 
@@ -36,13 +40,13 @@ object AnniversaryItemData {
       .map(lore => s"$RESET$GRAY$lore")
       .asJava
 
-    val itemMeta = Bukkit.getItemFactory.getItemMeta(SAPLING).tap { meta =>
+    val itemMeta = Bukkit.getItemFactory.getItemMeta(OAK_SAPLING).tap { meta =>
       import meta._
       setDisplayName(s"$GOLD${BOLD}「気になる木」の苗")
       setLore(loreList)
     }
 
-    val itemStack = new ItemStack(SAPLING, 1)
+    val itemStack = new ItemStack(OAK_SAPLING, 1)
     itemStack.setItemMeta(itemMeta)
 
     new NBTItem(itemStack)
@@ -64,25 +68,29 @@ object AnniversaryItemData {
     COAL_BLOCK,
     DIAMOND_BLOCK,
     DRAGON_EGG,
-    FENCE,
+    OAK_FENCE,
+    JUNGLE_FENCE,
+    ACACIA_FENCE,
+    BIRCH_FENCE,
+    DARK_OAK_FENCE,
     FLOWER_POT,
     GLOWSTONE,
     GOLD_BLOCK,
     GRASS,
     ICE,
     IRON_BLOCK,
-    MELON_BLOCK,
+    MELON,
     NETHER_BRICK,
     QUARTZ_BLOCK,
     SAND,
     SPONGE,
-    WORKBENCH
+    CRAFTING_TABLE
   )
 
   val strangeSaplingSiinaRate = 0.0008
 
   def isStrangeSapling(item: ItemStack): Boolean =
-    item != null && item.getType == SAPLING && {
+    item != null && item.getType == OAK_SAPLING && {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 1
     }
 
@@ -135,14 +143,15 @@ object AnniversaryItemData {
 
     val loreList = {
       val enchDescription = enchantments.map {
-        case (ench, lvl) => s"$GRAY${EnchantNameToJapanese.getEnchantName(ench.getName, lvl)}"
+        case (ench, lvl) =>
+          s"$GRAY${EnchantNameToJapanese.getEnchantName(ench.getKey.getKey, lvl)}"
       }.toList
       val lore = List("", "特殊なエンチャントが付与されています").map(lore => s"$YELLOW$lore")
 
       enchDescription ::: lore
     }.map(lore => s"$RESET$lore").asJava
 
-    val itemMeta = Bukkit.getItemFactory.getItemMeta(DIAMOND_SPADE).tap { meta =>
+    val itemMeta = Bukkit.getItemFactory.getItemMeta(DIAMOND_SHOVEL).tap { meta =>
       import meta._
       setDisplayName(s"$GOLD${BOLD}SCARLET")
       setLore(loreList)
@@ -150,7 +159,7 @@ object AnniversaryItemData {
       enchantments.foreach { case (ench, lvl) => addEnchant(ench, lvl, true) }
     }
 
-    val itemStack = new ItemStack(DIAMOND_SPADE, 1)
+    val itemStack = new ItemStack(DIAMOND_SHOVEL, 1)
     itemStack.setItemMeta(itemMeta)
 
     new NBTItem(itemStack)
@@ -161,10 +170,12 @@ object AnniversaryItemData {
       .pipe(_.getItem)
   }
 
-  def isAnniversaryShovel(item: ItemStack): Boolean =
-    item != null && item.getType == DIAMOND_SPADE && {
+  def isAnniversaryShovel(item: ItemStack): Boolean = {
+    println(s"tag: ${new NBTItem(item).getByte(NBTTagConstants.typeIdTag)}")
+    item != null && item.getType == DIAMOND_SHOVEL && {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 3
     }
+  }
 
   // endregion
 
