@@ -44,13 +44,13 @@ class BukkitMebiusSpeechGateway(player: Player)(implicit timer: Timer[IO])
     val effect = strength match {
       case MebiusSpeechStrength.Medium =>
         playSoundsInSequence(
-          RepeatedEffect(3)(FocusedSoundEffect(Sound.BLOCK_NOTE_HARP, 2.0f, 1.0f)),
-          RepeatedEffect(3)(FocusedSoundEffect(Sound.BLOCK_NOTE_HARP, 2.0f, 1.5f))
+          RepeatedEffect(3)(FocusedSoundEffect(Sound.BLOCK_NOTE_BLOCK_HARP, 2.0f, 1.0f)),
+          RepeatedEffect(3)(FocusedSoundEffect(Sound.BLOCK_NOTE_BLOCK_HARP, 2.0f, 1.5f))
         )
       case MebiusSpeechStrength.Loud =>
         playSoundsInSequence(
-          RepeatedEffect(5)(FocusedSoundEffect(Sound.BLOCK_NOTE_HARP, 2.0f, 1.5f)),
-          RepeatedEffect(5)(FocusedSoundEffect(Sound.BLOCK_NOTE_HARP, 2.0f, 2.0f))
+          RepeatedEffect(5)(FocusedSoundEffect(Sound.BLOCK_NOTE_BLOCK_HARP, 2.0f, 1.5f)),
+          RepeatedEffect(5)(FocusedSoundEffect(Sound.BLOCK_NOTE_BLOCK_HARP, 2.0f, 2.0f))
         )
     }
 
