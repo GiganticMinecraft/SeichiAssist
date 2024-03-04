@@ -21,7 +21,6 @@ class JdbcGachaPointPersistence[F[_]: Sync] extends GachaPointPersistence[F] {
       sql"select gachapoint from playerdata where uuid = ${key.toString}"
         .map { rs => decode(rs.bigInt("gachapoint")) }
         .headOption()
-        .apply()
     }
   }
 
@@ -29,7 +28,6 @@ class JdbcGachaPointPersistence[F[_]: Sync] extends GachaPointPersistence[F] {
     DB.localTx { implicit session =>
       sql"update playerdata set gachapoint = ${encode(value)} where uuid = ${key.toString}"
         .update()
-        .apply()
     }
   }
 }
