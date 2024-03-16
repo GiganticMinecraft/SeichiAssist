@@ -78,12 +78,12 @@ jobs:
       - uses: actions/checkout@master
         with:
           # これがないとchunk_searchで引っかかってリリースのjarアップロードに失敗する
-          submodules: 'recursive'
+          submodules: "recursive"
 
       - uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '8'
+          distribution: "temurin"
+          java-version: "17"
 
       - name: build artifacts
         run: mkdir -p target/build && sbt assembly
