@@ -14,6 +14,7 @@ import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.nicknames.NickNameMenu
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
@@ -31,7 +32,8 @@ object AchievementMenu extends Menu {
     val ioCanOpenCategoryMenu: IO CanOpen AchievementCategoryMenu,
     val ioOnMainThread: OnMinecraftServerThread[IO],
     val voteAPI: VoteAPI[IO, Player],
-    val ioCanOpenNickNameMenu: IO CanOpen NickNameMenu.type
+    val ioCanOpenNickNameMenu: IO CanOpen NickNameMenu.type,
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$DARK_PURPLE${BOLD}実績・二つ名システム")
@@ -40,11 +42,11 @@ object AchievementMenu extends Menu {
 
   val categoryLayout: Map[Int, AchievementCategoryRepr] =
     Map(
-      ChestSlotRef(1, 1) -> (BrokenBlock, Material.GOLD_PICKAXE),
+      ChestSlotRef(1, 1) -> (BrokenBlock, Material.GOLDEN_PICKAXE),
       ChestSlotRef(1, 3) -> (Building, Material.GLASS),
       ChestSlotRef(1, 5) -> (Login, Material.COMPASS),
       ChestSlotRef(1, 7) -> (Challenges, Material.BLAZE_POWDER),
-      ChestSlotRef(2, 4) -> (Specials, Material.EYE_OF_ENDER)
+      ChestSlotRef(2, 4) -> (Specials, Material.ENDER_EYE)
     )
 
   def buttonFor(
@@ -88,7 +90,7 @@ object AchievementMenu extends Menu {
       categoryLayout.view.mapValues(category => buttonFor(category)).toMap
 
     val toggleTitleToPlayerLevelButton = Button(
-      new IconItemStackBuilder(Material.REDSTONE_TORCH_ON)
+      new IconItemStackBuilder(Material.REDSTONE_TORCH)
         .title(ColorScheme.navigation("整地Lvを表示"))
         .lore(
           List(
