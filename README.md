@@ -20,10 +20,12 @@
 
 慣れている開発者向け：
 1. 自分のGitHubアカウントへ[fork](https://github.com/GiganticMinecraft/SeichiAssist/fork)
-2. `git clone https://github.com/${YOUR_GITHUB_ID}/SeichiAssist`
+2. `git clone --recursive https://github.com/${YOUR_GITHUB_ID}/SeichiAssist`
 3. `cd SeichiAssist`
 4. `git checkout -b ${YOUR_BRANCH_NAME} develop`
-5. `git commit -am "feat: 〇〇を実装"` (コンベンショナルコミットを推奨。本文は英語または日本語を推奨)
+5. `git commit -am "feat: 〇〇を実装"`
+    * コミットメッセージは[コンベンショナルコミット](https://www.conventionalcommits.org/ja/v1.0.0/)を推奨
+    * 言語は英語または日本語を推奨
 6. `git push`
 7. GiganticMinecraftのレポジトリに向かってPull Requestを作成
 8. CIとコードレビューを待つ
