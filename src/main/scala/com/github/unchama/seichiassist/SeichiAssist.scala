@@ -648,7 +648,7 @@ class SeichiAssist extends JavaPlugin() {
     if (!serverId.startsWith("local-")) {
       Sentry.init { options =>
         options.setDsn(
-          "https://7f241763b17c49db982ea29ad64b0264@sentry.onp.admin.seichi.click/2"
+          "https://66a9eb71bd1663f76df971d0b632b855@sentry.onp.admin.seichi.click/2"
         )
         // パフォーマンスモニタリングに使うトレースサンプルの送信割合
         // tracesSampleRateを1.0にすると全てのイベントが送られるため、送りすぎないように調整する必要がある
