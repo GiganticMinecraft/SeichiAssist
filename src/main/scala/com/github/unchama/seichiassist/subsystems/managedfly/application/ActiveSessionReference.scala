@@ -8,9 +8,7 @@ import com.github.unchama.seichiassist.subsystems.managedfly.domain.{NotFlying, 
 /**
  * プレーヤーの飛行セッションの参照
  */
-class ActiveSessionReference[AsyncContext[_]: ConcurrentEffect, SyncContext[
-  _
-]: Sync: ContextCoercion[*[_], AsyncContext]](
+class ActiveSessionReference[AsyncContext[_]: ConcurrentEffect, SyncContext[_]: Sync](
   private val sessionMutexRef: Mutex[AsyncContext, SyncContext, Option[
     ActiveSession[AsyncContext, SyncContext]
   ]]

@@ -9,7 +9,7 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.halloween.Hallo
   isHalloweenHoe,
   isHalloweenPotion
 }
-import com.github.unchama.util.external.WorldGuardWrapper.isRegionMember
+import com.github.unchama.util.external.WorldGuardWrapper
 import org.bukkit.ChatColor.{DARK_GREEN, LIGHT_PURPLE, UNDERLINE}
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -40,7 +40,7 @@ object HalloweenItemListener extends Listener {
       // 10分
       event
         .getPlayer
-        .addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 20 * 60 * 10, 0), true)
+        .addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 20 * 60 * 10, 0))
     }
   }
 
@@ -62,17 +62,19 @@ object HalloweenItemListener extends Listener {
     val player = event.getPlayer
     // まず、Playerが自分でクリックしたブロックについて判定する
     if (!canBeReplacedWithSoil(player, clickedBlock)) return
-    clickedBlock.setType(Material.SOIL)
+    clickedBlock.setType(Material.FARMLAND)
 
     // 次にクリックされたブロックから半径4ブロック以内のブロックについて判定する
     for (relX <- -4 to 4; relZ <- -4 to 4) {
       val block = clickedBlock.getRelative(relX, 0, relZ)
-      if (block != null && canBeReplacedWithSoil(player, block)) block.setType(Material.SOIL)
+      if (block != null && canBeReplacedWithSoil(player, block))
+        block.setType(Material.FARMLAND)
     }
   }
 
   private def canBeReplacedWithSoil(player: Player, block: Block) = {
-    (block.getType == Material.DIRT || block.getType == Material.GRASS) && isRegionMember(
+    (block.getType == Material.FARMLAND || block.getType == Material.GRASS_BLOCK || block
+      .getType() == Material.DIRT) && WorldGuardWrapper.isRegionMember(
       player,
       block.getLocation
     )

@@ -24,7 +24,6 @@ class JdbcBuildAmountDataPersistence[F[_]](implicit F: Sync[F])
             BuildAmountData(exp)
           }
           .first()
-          .apply()
       }
     }
 
@@ -34,7 +33,6 @@ class JdbcBuildAmountDataPersistence[F[_]](implicit F: Sync[F])
         sql"update playerdata set build_count = ${value.expAmount.amount} where uuid = ${key.toString}"
           .stripMargin
           .update()
-          .apply()
       }
     }
 
