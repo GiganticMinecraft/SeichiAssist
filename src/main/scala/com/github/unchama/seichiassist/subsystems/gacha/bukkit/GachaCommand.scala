@@ -377,26 +377,27 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
             MessageEffectF(s"${RED}開始日/終了日はyyyy-MM-ddの形式で指定してください。")
           } else if (eventName.name.length > 30) {
             MessageEffectF(s"${RED}イベント名は30字以内で指定してください。")
-          } else {
-            for {
-              existsEvent <- Kleisli.liftF(gachaPrizeAPI.existsGachaEvent(eventName))
-              _ <- Kleisli.liftF(
-                gachaPrizeAPI
-                  .createGachaEvent(
-                    GachaEvent(
-                      eventName,
-                      LocalDate.parse(startDate, dateTimeFormatter),
-                      LocalDate.parse(endDate, dateTimeFormatter)
+          } else
+            {
+              for {
+                existsEvent <- Kleisli.liftF(gachaPrizeAPI.existsGachaEvent(eventName))
+                _ <- Kleisli.liftF(
+                  gachaPrizeAPI
+                    .createGachaEvent(
+                      GachaEvent(
+                        eventName,
+                        LocalDate.parse(startDate, dateTimeFormatter),
+                        LocalDate.parse(endDate, dateTimeFormatter)
+                      )
                     )
-                  )
-                  .unlessA(existsEvent)
-              )
+                    .unlessA(existsEvent)
+                )
 
-            } yield {
-              if (existsEvent) MessageEffectF(s"${RED}指定された名前のイベントが既に存在します。")
-              else MessageEffectF(s"${AQUA}イベントを作成しました。")
-            }
-          }.flatten
+              } yield {
+                if (existsEvent) MessageEffectF(s"${RED}指定された名前のイベントが既に存在します。")
+                else MessageEffectF(s"${AQUA}イベントを作成しました。")
+              }
+            }.flatten
 
         }
 
