@@ -26,7 +26,6 @@ class JdbcBookedAchievementPersistenceRepository[F[_]](implicit SyncContext: Syn
               | values (${key.toString}, $achievementId, ${operation.toString})"""
           .stripMargin
           .update()
-          .apply()
       }
     }
   }
@@ -49,7 +48,6 @@ class JdbcBookedAchievementPersistenceRepository[F[_]](implicit SyncContext: Syn
             )
           }
           .toList()
-          .apply()
       }
     }
   }
@@ -64,7 +62,6 @@ class JdbcBookedAchievementPersistenceRepository[F[_]](implicit SyncContext: Syn
               | where player_uuid = ${key.toString} and completed_at is null"""
           .stripMargin
           .update()
-          .apply()
       }
     }
   }
@@ -79,7 +76,6 @@ class JdbcBookedAchievementPersistenceRepository[F[_]](implicit SyncContext: Syn
           sql"select (uuid) from playerdata where name = $playerName"
             .map { rs => rs.string("uuid") }
             .toList()
-            .apply()
             .head
         )
       }
