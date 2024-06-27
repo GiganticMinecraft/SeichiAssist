@@ -100,7 +100,7 @@ val dependenciesToEmbed = Seq(
   // effect system
   "org.typelevel" %% "cats-core" % "2.10.0",
   "org.typelevel" %% "cats-effect" % "2.5.5",
-  "co.fs2" %% "fs2-core" % "2.5.11",
+  "co.fs2" %% "fs2-core" % "2.5.12",
 
   // algebra
   "io.chrisdavenport" %% "log4cats-core" % "1.1.1",
@@ -113,7 +113,7 @@ val dependenciesToEmbed = Seq(
   "com.typesafe.scala-logging" % "scala-logging-slf4j_2.10" % "2.1.2",
 
   // type-safety utils
-  "eu.timepit" %% "refined" % "0.11.1",
+  "eu.timepit" %% "refined" % "0.11.2",
   "com.beachape" %% "enumeratum" % "1.7.4",
 
   // protobuf
