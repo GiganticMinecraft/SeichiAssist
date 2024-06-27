@@ -19,6 +19,7 @@ import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -33,7 +34,8 @@ object NickNameMenu extends Menu {
     implicit val ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type,
     implicit val layoutPreparationContext: LayoutPreparationContext,
     implicit val onMinecraftServerThread: OnMinecraftServerThread[IO],
-    implicit val voteAPI: VoteAPI[IO, Player]
+    implicit val voteAPI: VoteAPI[IO, Player],
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$DARK_PURPLE${BOLD}二つ名組み合わせシステム")
