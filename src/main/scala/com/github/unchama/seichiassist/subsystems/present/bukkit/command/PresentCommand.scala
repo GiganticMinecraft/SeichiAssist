@@ -168,11 +168,9 @@ class PresentCommand {
        *
        * 出力: 受け取った場合は、その旨表示する。失敗した場合は、適切なエラーメッセージを表示する。
        */
-      def executor[F[
-        _
-      ]: ConcurrentEffect: NonServerThreadContextShift: OnMinecraftServerThread](
-        implicit persistence: PresentPersistence[F, ItemStack]
-      ): ContextualExecutor =
+      def executor[
+        F[_]: ConcurrentEffect: NonServerThreadContextShift: OnMinecraftServerThread
+      ](implicit persistence: PresentPersistence[F, ItemStack]): ContextualExecutor =
         playerCommandBuilder
           .thenParse(presentIdParser)
           .ifArgumentsMissing(help)
