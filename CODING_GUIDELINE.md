@@ -3,7 +3,7 @@
 ## \[Scala\] nullを使わない
 Scalaのファイルにおいては、`null`を使用する代わりに`Option`を使用してください。
 
-Java (特に、Bukkit/Spigot API) から入ってきた値が`null`になる可能性がある場合は、その呼び出しを早いうちに[`Option(...)`](https://www.scala-lang.org/api/2.13.4/scala/Option$.html#apply[A](x:A):Option[A])で囲い、`Option`にすることが推奨されます。この呼び出しで、引数が`null`だった場合は`None`に、そうでなかった場合は`Some(...)`になります。
+Java (特に、Bukkit/Spigot API) から入ってきた値が`null`になる可能性がある場合は、その呼び出しを早いうちに[`Option(...)`](https://www.scala-lang.org/api/2.13.14/scala/Option$.html#apply[A](x:A):Option[A])で囲い、`Option`にすることが推奨されます。この呼び出しで、引数が`null`だった場合は`None`に、そうでなかった場合は`Some(...)`になります。
 
 ## \[Scala\] 例外を使わない
 例外の代わりに`Either`を使用してください。`Either`を使用すると低コストで合成を行うことができるためです。
