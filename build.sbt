@@ -79,7 +79,7 @@ val scalafixCoreDep =
 
 val testDependencies = Seq(
   "org.scalamock" %% "scalamock" % "5.2.0",
-  "org.scalatest" %% "scalatest" % "3.2.18",
+  "org.scalatest" %% "scalatest" % "3.2.19",
   "org.scalatestplus" %% "scalacheck-1-14" % "3.2.2.0",
   // テスト用のTestSchedulerを使うため
   "io.monix" %% "monix" % "3.4.1"
@@ -98,7 +98,7 @@ val dependenciesToEmbed = Seq(
   "com.github.etaty" %% "rediscala" % "1.9.0",
 
   // effect system
-  "org.typelevel" %% "cats-core" % "2.10.0",
+  "org.typelevel" %% "cats-core" % "2.12.0",
   "org.typelevel" %% "cats-effect" % "2.5.5",
   "co.fs2" %% "fs2-core" % "2.5.12",
 
