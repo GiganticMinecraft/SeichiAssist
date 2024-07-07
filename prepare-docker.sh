@@ -6,7 +6,7 @@ build_image() {
   rm -r target/build || true
 
   ## ソースコードからSeichiAssist.jarをビルド
-  ./sbt assembly
+  mkdir -p target/build && ./sbt assembly
 
   ## dockerイメージのビルド
   docker compose build -m 2g
