@@ -9,6 +9,8 @@ import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.ColorScheme.{clickResultDescription, navigation}
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
+import org.bukkit.entity.Player
 
 /**
  * メニューUIに頻繁に現れるような[Button]を生成する、または定数として持っているオブジェクト.
@@ -33,7 +35,10 @@ object CommonButtons {
       )
     )
 
-  def openStickMenu(implicit canOpenStickMenu: CanOpen[IO, FirstPage.type]): Button = {
+  def openStickMenu(
+    implicit canOpenStickMenu: CanOpen[IO, FirstPage.type],
+    playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+  ): Button = {
     transferButton(
       new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
       "木の棒メニューホームへ",

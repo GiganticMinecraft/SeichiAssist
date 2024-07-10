@@ -5,7 +5,7 @@ import java.io._
 
 // region 全プロジェクト共通のメタデータ
 
-ThisBuild / scalaVersion := "2.13.12"
+ThisBuild / scalaVersion := "2.13.14"
 // ThisBuild / version はGitHub Actionsによって取得/自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
 ThisBuild / version := "88"
@@ -23,7 +23,7 @@ ThisBuild / scalafixScalaBinaryVersion :=
 // region 雑多な設定
 
 // kind-projector 構文を使いたいため
-addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.2" cross CrossVersion.full)
+addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.3" cross CrossVersion.full)
 
 // CIビルドで詳細なログを確認するため
 ThisBuild / logLevel := {
@@ -58,22 +58,28 @@ resolvers ++= Seq(
 
 val providedDependencies = Seq(
   "org.jetbrains" % "annotations" % "24.1.0",
-  "org.spigotmc" % "spigot-api" % "1.12.2-R0.1-SNAPSHOT",
+  "org.apache.commons" % "commons-lang3" % "3.12.0",
+  "commons-codec" % "commons-codec" % "1.16.0",
+  "org.spigotmc" % "spigot-api" % "1.18.2-R0.1-SNAPSHOT",
   // https://maven.enginehub.org/repo/com/sk89q/worldedit/worldedit-bukkit/
-  "com.sk89q.worldguard" % "worldguard-legacy" % "6.2",
-  "net.coreprotect" % "coreprotect" % "2.14.2",
-  "com.mojang" % "authlib" % "1.6.25",
+  "com.sk89q.worldguard" % "worldguard-bukkit" % "7.0.7",
+  "net.coreprotect" % "coreprotect" % "21.3",
+  "com.mojang" % "authlib" % "6.0.52",
 
   // no runtime
   "org.typelevel" %% "simulacrum" % "1.0.1"
 ).map(_ % "provided")
 
 val scalafixCoreDep =
-  "ch.epfl.scala" %% "scalafix-core" % _root_.scalafix.sbt.BuildInfo.scalafixVersion % ScalafixConfig
+  "ch.epfl.scala" %% "scalafix-core" % _root_
+    .scalafix
+    .sbt
+    .BuildInfo
+    .scalafixVersion % ScalafixConfig
 
 val testDependencies = Seq(
   "org.scalamock" %% "scalamock" % "5.2.0",
-  "org.scalatest" %% "scalatest" % "3.2.17",
+  "org.scalatest" %% "scalatest" % "3.2.19",
   "org.scalatestplus" %% "scalacheck-1-14" % "3.2.2.0",
   // テスト用のTestSchedulerを使うため
   "io.monix" %% "monix" % "3.4.1"
@@ -83,17 +89,18 @@ val dependenciesToEmbed = Seq(
   "org.scala-lang.modules" %% "scala-collection-contrib" % "0.3.0",
 
   // DB
-  "org.mariadb.jdbc" % "mariadb-java-client" % "3.3.1",
-  "org.flywaydb" % "flyway-core" % "5.2.4",
-  "org.scalikejdbc" %% "scalikejdbc" % "3.5.0",
+  "org.mariadb.jdbc" % "mariadb-java-client" % "3.4.0",
+  "org.flywaydb" % "flyway-core" % "10.2.0",
+  "org.flywaydb" % "flyway-mysql" % "10.2.0",
+  "org.scalikejdbc" %% "scalikejdbc" % "4.1.0",
 
   // redis
   "com.github.etaty" %% "rediscala" % "1.9.0",
 
   // effect system
-  "org.typelevel" %% "cats-core" % "2.10.0",
+  "org.typelevel" %% "cats-core" % "2.12.0",
   "org.typelevel" %% "cats-effect" % "2.5.5",
-  "co.fs2" %% "fs2-core" % "2.5.11",
+  "co.fs2" %% "fs2-core" % "2.5.12",
 
   // algebra
   "io.chrisdavenport" %% "log4cats-core" % "1.1.1",
@@ -106,7 +113,7 @@ val dependenciesToEmbed = Seq(
   "com.typesafe.scala-logging" % "scala-logging-slf4j_2.10" % "2.1.2",
 
   // type-safety utils
-  "eu.timepit" %% "refined" % "0.11.0",
+  "eu.timepit" %% "refined" % "0.11.2",
   "com.beachape" %% "enumeratum" % "1.7.4",
 
   // protobuf
@@ -141,6 +148,8 @@ assembly / assemblyExcludedJars := {
 // protocol配下とルートのLICENSEが衝突してCIが落ちる
 // cf. https://github.com/sbt/sbt-assembly/issues/141
 assembly / assemblyMergeStrategy := {
+  // cf. https://qiita.com/yokra9/items/1e72646623f962ce02ee と ChatGPTに聞いた
+  case PathList("META-INF", "versions", "9", "module-info.class") => MergeStrategy.discard
   case PathList(ps @ _*) if ps.last endsWith "LICENSE" => MergeStrategy.rename
   case PathList("org", "apache", "commons", "logging", xs @ _*) =>
     MergeStrategy.last
@@ -196,6 +205,8 @@ lazy val root = (project in file(".")).settings(
   excludeDependencies := Seq(ExclusionRule(organization = "org.bukkit", name = "bukkit")),
   unmanagedBase := baseDirectory.value / "localDependencies",
   scalacOptions ++= Seq(
+    "-Yprofile-trace",
+    "profile.trace",
     "-encoding",
     "utf8",
     "-unchecked",
@@ -208,7 +219,11 @@ lazy val root = (project in file(".")).settings(
   ),
   javacOptions ++= Seq("-encoding", "utf8"),
   assembly / assemblyShadeRules ++= Seq(
-    ShadeRule.rename("org.mariadb.jdbc.**" -> "com.github.unchama.seichiassist.relocateddependencies.org.mariadb.jdbc.@1").inAll
+    ShadeRule
+      .rename(
+        "org.mariadb.jdbc.**" -> "com.github.unchama.seichiassist.relocateddependencies.org.mariadb.jdbc.@1"
+      )
+      .inAll
   ),
   // sbt-assembly 1.0.0からはTestを明示的にタスクツリーに入れる必要がある
   // cf. https://github.com/sbt/sbt-assembly/pull/432/commits/361224a6202856bc2e572df811d0e6a1f1efda98
