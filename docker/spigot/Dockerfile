@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.6
+# syntax=docker/dockerfile:1.9
 FROM ghcr.io/giganticminecraft/chunk-search-rs:sha-598517c as chunk-search-provider
 FROM ghcr.io/giganticminecraft/seichiassist-runner:ba2aa54
 
