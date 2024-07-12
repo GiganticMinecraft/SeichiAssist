@@ -49,7 +49,7 @@ class PlayerInventoryListener(
     // インベントリサイズが54でない時終了
     if (inventory.row != 6) return
 
-    if (inventory.getTitle != s"$LIGHT_PURPLE${BOLD}交換したい鉱石を入れてください") return
+    if (event.getView.getTitle != s"$LIGHT_PURPLE${BOLD}交換したい鉱石を入れてください") return
 
     /*
      * step1 for文でinventory内の対象商品の個数を計算
@@ -57,36 +57,40 @@ class PlayerInventoryListener(
      */
 
     // 石炭とラピスラズリを適切に処理するため、typeとdurabilityを持つクラスを用意
-    case class ExchangeableMaterial(materialType: Material, durability: Short)
+    case class ExchangeableMaterial(materialType: Material)
 
     val requiredAmountPerTicket = Map(
-      ExchangeableMaterial(Material.COAL_ORE, 0) -> 128,
-      ExchangeableMaterial(Material.IRON_ORE, 0) -> 64,
-      ExchangeableMaterial(Material.GOLD_ORE, 0) -> 8,
-      ExchangeableMaterial(Material.LAPIS_ORE, 0) -> 8,
-      ExchangeableMaterial(Material.DIAMOND_ORE, 0) -> 4,
-      ExchangeableMaterial(Material.REDSTONE_ORE, 0) -> 32,
-      ExchangeableMaterial(Material.EMERALD_ORE, 0) -> 4,
-      ExchangeableMaterial(Material.QUARTZ_ORE, 0) -> 16,
-      ExchangeableMaterial(Material.COAL, 0) -> 432,
-      ExchangeableMaterial(Material.REDSTONE, 0) -> 288,
-      ExchangeableMaterial(Material.INK_SACK, 4) -> 64,
-      ExchangeableMaterial(Material.DIAMOND, 0) -> 8
+      ExchangeableMaterial(Material.COAL_ORE) -> 128,
+      ExchangeableMaterial(Material.COPPER_ORE) -> 128,
+      ExchangeableMaterial(Material.IRON_ORE) -> 64,
+      ExchangeableMaterial(Material.GOLD_ORE) -> 8,
+      ExchangeableMaterial(Material.LAPIS_ORE) -> 8,
+      ExchangeableMaterial(Material.DIAMOND_ORE) -> 4,
+      ExchangeableMaterial(Material.REDSTONE_ORE) -> 32,
+      ExchangeableMaterial(Material.EMERALD_ORE) -> 4,
+      ExchangeableMaterial(Material.NETHER_QUARTZ_ORE) -> 16,
+      ExchangeableMaterial(Material.NETHER_GOLD_ORE) -> 32,
+      ExchangeableMaterial(Material.DEEPSLATE_COAL_ORE) -> 128,
+      ExchangeableMaterial(Material.DEEPSLATE_COPPER_ORE) -> 128,
+      ExchangeableMaterial(Material.DEEPSLATE_IRON_ORE) -> 64,
+      ExchangeableMaterial(Material.DEEPSLATE_GOLD_ORE) -> 8,
+      ExchangeableMaterial(Material.DEEPSLATE_LAPIS_ORE) -> 8,
+      ExchangeableMaterial(Material.DEEPSLATE_DIAMOND_ORE) -> 4,
+      ExchangeableMaterial(Material.DEEPSLATE_REDSTONE_ORE) -> 32,
+      ExchangeableMaterial(Material.DEEPSLATE_EMERALD_ORE) -> 4
     )
 
     val inventoryContents = inventory.getContents.filter(_ != null)
 
     val (itemsToExchange, rejectedItems) =
       inventoryContents.partition { stack =>
-        requiredAmountPerTicket.contains(
-          ExchangeableMaterial(stack.getType, stack.getDurability)
-        )
+        requiredAmountPerTicket.contains(ExchangeableMaterial(stack.getType))
       }
 
-    val exchangingAmount = itemsToExchange
-      .groupBy(stacks => ExchangeableMaterial(stacks.getType, stacks.getDurability))
-      .toList
-      .map { case (key, stacks) => key -> stacks.map(_.getAmount).sum }
+    val exchangingAmount =
+      itemsToExchange.groupBy(stacks => ExchangeableMaterial(stacks.getType)).toList.map {
+        case (key, stacks) => key -> stacks.map(_.getAmount).sum
+      }
 
     val ticketAmount = exchangingAmount.map {
       case (exchangeableMaterial, amount) =>
@@ -139,13 +143,7 @@ class PlayerInventoryListener(
           case (exchangedMaterial, exchangedAmount) =>
             val returningAmount = exchangedAmount % requiredAmountPerTicket(exchangedMaterial)
             if (returningAmount != 0)
-              Some(
-                new ItemStack(
-                  exchangedMaterial.materialType,
-                  returningAmount,
-                  exchangedMaterial.durability
-                )
-              )
+              Some(new ItemStack(exchangedMaterial.materialType, returningAmount))
             else
               None
         }
@@ -186,15 +184,15 @@ class PlayerInventoryListener(
     val uuid = player.getUniqueId
     val playerdata = playerMap(uuid)
 
-    if (topinventory.getTitle == DARK_PURPLE.toString + "" + BOLD + "スキルを進化させますか?") {
+    if (view.getTitle == DARK_PURPLE.toString + "" + BOLD + "スキルを進化させますか?") {
       event.setCancelled(true)
       if (itemstackcurrent.getType == Material.NETHER_STAR) {
         playerdata.giganticBerserk = GiganticBerserk(0, 0, playerdata.giganticBerserk.stage + 1)
         player.playSound(player.getLocation, Sound.BLOCK_END_GATEWAY_SPAWN, 1f, 0.5f)
-        player.playSound(player.getLocation, Sound.ENTITY_ENDERDRAGON_AMBIENT, 1f, 0.8f)
+        player.playSound(player.getLocation, Sound.ENTITY_ENDER_DRAGON_AMBIENT, 1f, 0.8f)
         player.openInventory(MenuInventoryData.getGiganticBerserkAfterEvolutionMenu(player))
       }
-    } else if (topinventory.getTitle == LIGHT_PURPLE.toString + "" + BOLD + "スキルを進化させました") {
+    } else if (view.getTitle == LIGHT_PURPLE.toString + "" + BOLD + "スキルを進化させました") {
       event.setCancelled(true)
     }
 
