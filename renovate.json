@@ -4,5 +4,6 @@
     "config:base"
   ],
   "timezone": "Asia/Tokyo",
-  "reviewers": ["kory33","Lucky3028","rito528"]
+  "reviewers": ["kory33","Lucky3028","rito528"],
+  "baseBranches": ["1_18"]
 }
