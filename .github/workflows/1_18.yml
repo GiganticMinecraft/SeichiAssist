@@ -1,0 +1,99 @@
+name: 1.18 build check
+
+on:
+  push:
+    branches:
+      - 1_18
+    paths:
+      - src/**
+      - build.sbt
+      - .scalafix.conf
+      - .scalafmt.conf
+      - project/*
+      - .github/workflows/**.yml
+      - .github/actions/**/**.yml
+
+jobs:
+  build_check:
+    env:
+      BUILD_ENVIRONMENT_IS_CI_OR_LOCAL: "CI"
+    runs-on: ubuntu-20.04
+    container: ghcr.io/giganticminecraft/seichiassist-builder-v2:1df7cf5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+
+      - name: Prepare build dependencies cache
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-build-dependencies
+          cache-version: v-5
+        with:
+          # sbt等は$HOMEではなくユーザーディレクトリを見ているようで、
+          # GH Actionsでの ~ は /github/home/ に展開されるにもかかわらず
+          # 実際のキャッシュは /root/ 以下に配備される。
+          #
+          # /root/.ivy/cache, /root/.sbt - sbt関連のキャッシュ
+          # /root/.m2 - ビルドログを観察した感じprotoc等はここを利用する
+          # /root/.cache - cousierがscalasbt等をキャッシュするのに使っている
+          path: |
+            /root/.ivy2/cache
+            /root/.sbt
+            /root/.m2
+            /root/.cache
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-${{ github.ref }}-${{ hashFiles('**/build.sbt') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-${{ github.ref }}-
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-
+
+      - name: Prepare build cache
+        if: github.ref != 'refs/heads/master'
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-build
+          cache-version: v-5
+        with:
+          path: |
+            target
+            project/target
+            project/project/target
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-${{ github.ref }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-${{ github.ref }}-
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-
+
+      # CIでのcheckoutはファイルのタイムスタンプをチェックアウト時刻に設定するため、
+      # そのままビルドするとlocalDependenciesにあるjarに変更が行われたと見なされ
+      # 不要なインクリメンタルコンパイルが走る
+      # タイムスタンプをコミット時刻に設定することでこれが回避できる
+      - name: Restore localDependencies' timestamps
+        # 参考: https://qiita.com/tomlla/items/219cea9dd071c8a9e147
+        run: |
+          git config --global --add safe.directory /__w/SeichiAssist/SeichiAssist
+          for jar in localDependencies/*.jar; do
+            timestamp=`git log -1 --pretty=format:'%cd' --date=format:'%Y%m%d%H%M.%S' $jar`
+            touch -t "$timestamp" $jar
+          done
+
+      # scalapbは.protoの再コンパイルの必要性を判定する際にタイムスタンプを見ているから、コミット時刻に合わせる
+      - name: Restore protocol timestamps
+        ## 参考: https://qiita.com/tomlla/items/219cea9dd071c8a9e147
+        run: |
+          for proto in protocol/*.proto; do
+            timestamp=`git log -1 --pretty=format:'%cd' --date=format:'%Y%m%d%H%M.%S' $proto`
+            touch -t "$timestamp" $proto
+          done
+
+      - name: Check format with Scalafmt
+        run: ./sbt scalafmtCheckAll
+
+      - name: Check lint with Scalafix on push
+        run: ./sbt "scalafix --check"
+
+      - name: Test and build artifact
+        run: mkdir -p target/build && ./sbt assembly
+
+      - name: Clean build artifact for caching target folder
+        run: rm -r target/build
