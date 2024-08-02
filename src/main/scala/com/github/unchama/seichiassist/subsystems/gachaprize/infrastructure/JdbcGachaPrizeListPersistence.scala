@@ -48,7 +48,6 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
               .merge
           }
           .toList()
-          .apply()
           .toVector
       }
     }
@@ -61,7 +60,6 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
           sql"SELECT id FROM gacha_events WHERE event_name = ${gachaEvent.eventName.name}"
             .map(_.int("id"))
             .single()
-            .apply()
         }
 
         val serializedItemStack = serializeAndDeserialize.serialize(gachaPrize.itemStack)
@@ -76,13 +74,13 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
              | ON DUPLICATE KEY UPDATE
              |   probability = ${gachaPrize.probability.value},
              |   itemstack = $serializedItemStack
-         """.stripMargin.execute().apply()
+         """.stripMargin.execute()
       }
     }
 
   override def removeGachaPrize(gachaPrizeId: GachaPrizeId): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      sql"DELETE FROM gachadata WHERE id = ${gachaPrizeId.id}".execute().apply()
+      sql"DELETE FROM gachadata WHERE id = ${gachaPrizeId.id}".execute()
     }
   }
 
@@ -93,7 +91,7 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync, ItemStack: Cloneable](
       sql"""INSERT INTO gachadata (probability, itemstack, event_id)
            | (SELECT probability, itemstack, (SELECT id FROM gacha_events WHERE event_name = $eventName) FROM gachadata
            | WHERE event_id IS NULL)
-         """.stripMargin.execute().apply()
+         """.stripMargin.execute()
     }
   }
 
