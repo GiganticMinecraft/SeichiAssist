@@ -259,9 +259,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
               val itemStack = gachaPrize.itemStack
               val probability = gachaPrize.probability.value
 
-              s"${gachaPrize.id.id}|${itemStack.getType.toString}/${itemStack
-                  .getItemMeta
-                  .getDisplayName}$RESET|${itemStack.getAmount}|$probability(${probability * 100}%)"
+              s"${gachaPrize.id.id}|${itemStack.getType.toString}/${itemStack.getItemMeta.getDisplayName}$RESET|${itemStack.getAmount}|$probability(${probability * 100}%)"
             }
             .toList
 
