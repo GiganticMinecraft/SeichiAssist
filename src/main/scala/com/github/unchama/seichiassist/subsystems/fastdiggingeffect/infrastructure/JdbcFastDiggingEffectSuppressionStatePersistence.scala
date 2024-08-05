@@ -45,7 +45,6 @@ class JdbcFastDiggingEffectSuppressionStatePersistence[F[_]: Sync]
       sql"select effectflag from playerdata where uuid = ${key.toString}"
         .map { rs => intToSuppressionState(rs.int("effectflag")) }
         .headOption()
-        .apply()
     }
   }
 
@@ -54,9 +53,7 @@ class JdbcFastDiggingEffectSuppressionStatePersistence[F[_]: Sync]
       DB.localTx { implicit session =>
         val encoded = suppressionStateToInt(value)
 
-        sql"update playerdata set effectflag = $encoded where uuid = ${key.toString}"
-          .update()
-          .apply()
+        sql"update playerdata set effectflag = $encoded where uuid = ${key.toString}".update()
       }
     }
 
