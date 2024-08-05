@@ -170,8 +170,9 @@ case class HomeMenuButtonComputations(player: Player)(
         val commandInfo =
           List(s"$DARK_RED${UNDERLINE}クリックで名称変更", s"${DARK_GRAY}command->[/home name $homeId]")
 
-        val coordinates = List(s"$GRAY$worldName x:${Math.floor(location.x)} y:${Math
-            .floor(location.y)} z:${Math.floor(location.z)}")
+        val coordinates = List(
+          s"$GRAY$worldName x:${Math.floor(location.x)} y:${Math.floor(location.y)} z:${Math.floor(location.z)}"
+        )
         nameStatus ++ commandInfo ++ coordinates
       })
       Button(
