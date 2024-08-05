@@ -14,6 +14,7 @@ import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
 import com.github.unchama.seichiassist.subsystems.home.domain.{Home, HomeId}
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.{ManagedWorld, SkullOwners}
 import com.github.unchama.targetedeffect._
 import com.github.unchama.targetedeffect.player.PlayerEffects._
@@ -31,7 +32,8 @@ object HomeMenu {
     implicit val ioCanOpenHome: IO CanOpen HomeMenu,
     val ioCanOpenHomeRemoveConfirmationMenu: IO CanOpen HomeRemoveConfirmationMenu,
     implicit val homeReadAPI: HomeReadAPI[IO],
-    implicit val asyncShift: NonServerThreadContextShift[IO]
+    implicit val asyncShift: NonServerThreadContextShift[IO],
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
 }
@@ -200,7 +202,7 @@ case class HomeMenuButtonComputations(player: Player)(
       homeOpt <- homeReadAPI.get(player.getUniqueId, homeId)
     } yield {
       Button(
-        new IconItemStackBuilder(Material.BED)
+        new IconItemStackBuilder(Material.WHITE_BED)
           .title(s"$YELLOW$UNDERLINE${BOLD}ホームポイント${homeNumber}を設定")
           .lore(
             List(
@@ -231,7 +233,7 @@ case class HomeMenuButtonComputations(player: Player)(
       homeOpt <- homeReadAPI.get(player.getUniqueId, homeId)
     } yield {
       Button(
-        new IconItemStackBuilder(Material.WOOL, 14)
+        new IconItemStackBuilder(Material.WHITE_WOOL)
           .title(s"$RED$UNDERLINE${BOLD}ホームポイント${homeNumber}を削除")
           .lore(
             List(
@@ -242,7 +244,7 @@ case class HomeMenuButtonComputations(player: Player)(
           )
           .build(),
         LeftClickButtonEffect {
-          FocusedSoundEffect(Sound.BLOCK_ENDERCHEST_CLOSE, 1f, 0.1f)
+          FocusedSoundEffect(Sound.BLOCK_ENDER_CHEST_CLOSE, 1f, 0.1f)
           SequentialEffect(
             environment
               .ioCanOpenHomeRemoveConfirmationMenu
@@ -272,7 +274,7 @@ case class HomeChangeConfirmationMenu(changeHomeNumber: Int, homeName: String = 
 
   val changeButton: Button =
     Button(
-      new IconItemStackBuilder(Material.WOOL, durability = 5).title(s"${GREEN}変更する").build(),
+      new IconItemStackBuilder(Material.LIME_WOOL).title(s"${GREEN}変更する").build(),
       LeftClickButtonEffect {
         SequentialEffect(
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
@@ -284,7 +286,7 @@ case class HomeChangeConfirmationMenu(changeHomeNumber: Int, homeName: String = 
 
   def cancelButton(implicit environment: Environment): Button =
     Button(
-      new IconItemStackBuilder(Material.WOOL, durability = 14).title(s"${RED}変更しない").build(),
+      new IconItemStackBuilder(Material.RED_WOOL).title(s"${RED}変更しない").build(),
       LeftClickButtonEffect {
         FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         environment.ioCanOpenHomeMenu.open(new HomeMenu)
@@ -324,7 +326,7 @@ case class HomeRemoveConfirmationMenu(removeHomeNumber: Int, homeName: String = 
 
   val removeButton: Button =
     Button(
-      new IconItemStackBuilder(Material.WOOL, durability = 5).title(s"${GREEN}削除する").build(),
+      new IconItemStackBuilder(Material.LIME_WOOL).title(s"${GREEN}削除する").build(),
       LeftClickButtonEffect {
         SequentialEffect(
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
@@ -336,7 +338,7 @@ case class HomeRemoveConfirmationMenu(removeHomeNumber: Int, homeName: String = 
 
   def cancelButton(implicit environment: Environment): Button =
     Button(
-      new IconItemStackBuilder(Material.WOOL, durability = 14).title(s"${RED}変更しない").build(),
+      new IconItemStackBuilder(Material.RED_WOOL).title(s"${RED}変更しない").build(),
       LeftClickButtonEffect {
         FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         environment.ioCanOpenHomeMenu.open(new HomeMenu)
