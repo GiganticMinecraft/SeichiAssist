@@ -13,10 +13,9 @@ class JdbcLastQuitPersistenceRepository[F[_]](implicit SyncContext: Sync[F])
     SyncContext.delay {
       DB.localTx { implicit session =>
         sql"select lastquit from playerdata where uuid = {uuid}"
-          .bindByName(Symbol("uuid") -> key.toString)
+          .bindByName("uuid" -> key.toString)
           .map(_.timestampOpt("lastquit").map(_.toLocalDateTime))
           .single()
-          .apply()
           .flatten
       }
     }
