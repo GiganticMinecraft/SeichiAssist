@@ -119,7 +119,7 @@ object AsymmetricTryableDeferred {
     implicit F: Concurrent[F]
   ) extends AsymmetricTryableDeferred[F, A] {
     def get: F[A] =
-      F.suspend {
+      F.defer {
         ref.get match {
           case State.Set(a) =>
             F.pure(a)
@@ -168,7 +168,7 @@ object AsymmetricTryableDeferred {
     }
 
     def complete(a: A): F[Unit] =
-      F.suspend(unsafeComplete(a))
+      F.defer(unsafeComplete(a))
 
     @tailrec
     private def unsafeComplete(a: A): F[Unit] =

@@ -1,0 +1,18 @@
+name: publish stable build
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  publish_build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Publish stable build
+        env:
+          SEICHIASSIST_DOWNLOADER_TOKEN: ${{ secrets.SEICHIASSIST_DOWNLOADER_TOKEN }}
+        run: |
+          curl -s -X 'POST' 'http://localhost/publish/stable' \
+          -H 'accept: */*' \
+          -H 'Authorization: Bearer $SEICHIASSIST_DOWNLOADER_TOKEN'
