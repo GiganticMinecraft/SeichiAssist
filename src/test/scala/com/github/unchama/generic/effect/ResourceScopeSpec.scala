@@ -138,7 +138,7 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
           useTracked(firstResourceScope, NumberedObject(0), finalizer) { o =>
             // noinspection ZeroIndexToHead
             runImpureFunction(o) >>
-              blockerList(0).await >>
+              blockerList(0).await() >>
               IO.never
           }.start
         _ <- blockerList(1).await()
@@ -253,7 +253,7 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
           useTrackedForSome(firstResourceScope, NumberedObject(0), finalizer) { o =>
             // noinspection ZeroIndexToHead
             runImpureFunction(o) >>
-              blockerList(0).await >>
+              blockerList(0).await() >>
               IO.never
           }.start
         _ <- blockerList(1).await()
