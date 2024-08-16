@@ -44,6 +44,7 @@ import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.ranking.api.RankingProvider
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.ManagedWorld._
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners, util}
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
@@ -94,7 +95,8 @@ object FirstPage extends Menu {
     val ioCanOpenVoteMenu: IO CanOpen VoteMenu.type,
     val enderChestAccessApi: AnywhereEnderChestAPI[IO],
     val gachaTicketAPI: GachaTicketAPI[IO],
-    val voteAPI: VoteAPI[IO, Player]
+    val voteAPI: VoteAPI[IO, Player],
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   override val frame: MenuFrame =
@@ -165,6 +167,7 @@ object FirstPage extends Menu {
   private case class ButtonComputations(player: Player)(implicit environment: Environment) {
 
     import player._
+    import environment._
 
     val computeStatsButton: IO[Button] = RecomputedButton {
       val openerData = SeichiAssist.playermap(getUniqueId)
@@ -279,14 +282,13 @@ object FirstPage extends Menu {
     val computeRegionMenuButton: IO[Button] = IO {
       val (buttonLore, effect) = {
         val world = getWorld
-        val regionManager = WorldGuardWrapper.getRegionManager(world)
 
-        if (regionManager.isEmpty) {
+        if (!WorldGuardWrapper.canProtectionWorld(world)) {
           (List(s"${GRAY}このワールドでは土地の保護は行なえません"), LeftClickButtonEffect(emptyEffect))
         } else {
-          val maxRegionCount = WorldGuardWrapper.getMaxRegionCount(player, world)
+          val maxRegionCount = WorldGuardWrapper.getWorldMaxRegion(world)
           val currentPlayerRegionCount =
-            WorldGuardWrapper.getRegionCountOfPlayer(player, world)
+            WorldGuardWrapper.getMaxRegion(player, world)
 
           (
             List(
@@ -370,7 +372,7 @@ object FirstPage extends Menu {
             s"$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
           )
 
-          new IconItemStackBuilder(Material.ENDER_PORTAL_FRAME)
+          new IconItemStackBuilder(Material.END_PORTAL_FRAME)
             .title(s"$YELLOW$UNDERLINE${BOLD}4次元ポケットを開く")
             .lore(loreHeading ++ loreAnnotation)
             .build()
@@ -405,10 +407,10 @@ object FirstPage extends Menu {
           environment.enderChestAccessApi.openEnderChestOrNotifyInsufficientLevel.flatMap {
             case Right(_) =>
               // 開くのに成功した場合の音
-              FocusedSoundEffect(Sound.BLOCK_GRASS_PLACE, 1.0f, 0.1f)
+              FocusedSoundEffect(Sound.BLOCK_ENDER_CHEST_OPEN, 1.0f, 1.0f)
             case Left(_) =>
               // 開くのに失敗した場合の音
-              FocusedSoundEffect(Sound.BLOCK_ENDERCHEST_OPEN, 1.0f, 1.0f)
+              FocusedSoundEffect(Sound.BLOCK_GRASS_PLACE, 1.0f, 0.1f)
           }
         )
       )
@@ -616,7 +618,10 @@ object FirstPage extends Menu {
       )
     }
 
-    def secondPageButton(implicit ioCanOpenSecondPage: IO CanOpen SecondPage.type): Button =
+    def secondPageButton(
+      implicit ioCanOpenSecondPage: IO CanOpen SecondPage.type,
+      playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    ): Button =
       CommonButtons.transferButton(
         new SkullItemStackBuilder(SkullOwners.MHF_ArrowRight),
         "2ページ目へ",
@@ -657,7 +662,7 @@ object FirstPage extends Menu {
 
     def homePointMenuButton(implicit ioCanOpenHomeMenu: IO CanOpen HomeMenu): Button = {
       val iconItemStack =
-        new IconItemStackBuilder(Material.BED)
+        new IconItemStackBuilder(Material.WHITE_BED)
           .title(s"$YELLOW$UNDERLINE${BOLD}ホームメニューを開く")
           .lore(List(s"$RESET${GRAY}ホームポイントに関するメニュー", s"$RESET$DARK_RED${UNDERLINE}クリックで開く"))
           .build()
@@ -673,7 +678,7 @@ object FirstPage extends Menu {
 
     val fastCraftButton: Button = {
       val iconItemStack =
-        new IconItemStackBuilder(Material.WORKBENCH)
+        new IconItemStackBuilder(Material.CRAFTING_TABLE)
           .title(s"$YELLOW$UNDERLINE${BOLD}FastCraft機能")
           .lore(
             List(
