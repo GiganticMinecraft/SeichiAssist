@@ -617,27 +617,27 @@ object MineStackMassCraftMenu {
       // 原木->木材
       List(
         ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
-          MassCraftRecipe(NonEmptyList.of(("oak_log", 1)), NonEmptyList.of(("oak_planks", 4))),
+          MassCraftRecipe(NonEmptyList.of(("log", 1)), NonEmptyList.of(("oak_planks", 4))),
           oneToThousand,
           3
         ),
         ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
-          MassCraftRecipe(NonEmptyList.of(("spruce_log", 1)), NonEmptyList.of(("spruce_planks", 4))),
+          MassCraftRecipe(NonEmptyList.of(("log1", 1)), NonEmptyList.of(("spruce_planks", 4))),
           oneToThousand,
           3
         ),
         ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
-          MassCraftRecipe(NonEmptyList.of(("birch_log", 1)), NonEmptyList.of(("birch_planks", 4))),
+          MassCraftRecipe(NonEmptyList.of(("log2", 1)), NonEmptyList.of(("birch_planks", 4))),
           oneToThousand,
           3
         ),
         ChestSlotRef(3, 0) -> MassCraftRecipeBlock(
-          MassCraftRecipe(NonEmptyList.of(("jungle_log", 1)), NonEmptyList.of(("jungle_planks", 4))),
+          MassCraftRecipe(NonEmptyList.of(("log3", 1)), NonEmptyList.of(("jungle_planks", 4))),
           oneToThousand,
           3
         ),
         ChestSlotRef(4, 0) -> MassCraftRecipeBlock(
-          MassCraftRecipe(NonEmptyList.of(("acacia_log", 1)), NonEmptyList.of(("acacia_planks", 4))),
+          MassCraftRecipe(NonEmptyList.of(("log4", 1)), NonEmptyList.of(("acacia_planks", 4))),
           oneToThousand,
           3
         ),
@@ -787,7 +787,7 @@ object MineStackMassCraftMenu {
           3
         ),
         ChestSlotRef(4, 0) -> MassCraftRecipeBlock(
-          MassCraftRecipe(NonEmptyList.of(("smooth_brick0", 6)), NonEmptyList.of(("stone_brick_stairs", 4))),
+          MassCraftRecipe(NonEmptyList.of(("smooth_brick0", 6)), NonEmptyList.of(("smooth_stairs", 4))),
           oneToThousand,
           3
         )
