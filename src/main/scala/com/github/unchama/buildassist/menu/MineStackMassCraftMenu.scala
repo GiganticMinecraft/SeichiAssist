@@ -637,12 +637,12 @@ object MineStackMassCraftMenu {
           3
         ),
         ChestSlotRef(4, 0) -> MassCraftRecipeBlock(
-          MassCraftRecipe(NonEmptyList.of(("log4", 1)), NonEmptyList.of(("acacia_planks", 4))),
+          MassCraftRecipe(NonEmptyList.of(("log_2", 1)), NonEmptyList.of(("acacia_planks", 4))),
           oneToThousand,
           3
         ),
         ChestSlotRef(0, 5) -> MassCraftRecipeBlock(
-          MassCraftRecipe(NonEmptyList.of(("dark_oak_log", 1)), NonEmptyList.of(("dark_oak_planks", 4))),
+          MassCraftRecipe(NonEmptyList.of(("log_21", 1)), NonEmptyList.of(("dark_oak_planks", 4))),
           oneToThousand,
           3
         )
