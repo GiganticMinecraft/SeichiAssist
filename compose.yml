@@ -21,9 +21,9 @@ services:
       - "25566:25565"
       - "7091:7091"
     environment:
-      - VERSION=1.12.2
+      - VERSION=1.18.2
       - EULA=TRUE
-      - TYPE=SPIGOT
+      - TYPE=PAPER
       - ONLINE_MODE=FALSE
       - ENABLE_JMX=true
       - JMX_PORT=7091
@@ -51,9 +51,9 @@ services:
       - "25567:25565"
       - "7092:7091"
     environment:
-      - VERSION=1.12.2
+      - VERSION=1.18.2
       - EULA=TRUE
-      - TYPE=SPIGOT
+      - TYPE=PAPER
       - ONLINE_MODE=FALSE
       - ENABLE_JMX=true
       - JMX_PORT=7091
@@ -70,7 +70,7 @@ services:
       - redis
     stdin_open: true
   bungeecord:
-    image: itzg/bungeecord:java8
+    image: itzg/bungeecord:java17
     ports:
       - "25565:25577"
     volumes:
