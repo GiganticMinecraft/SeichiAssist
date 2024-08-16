@@ -698,6 +698,72 @@ object MineStackMassCraftMenu {
           3
         )
       ),
+      //木材階段
+      List(
+        ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("wood", 6)), NonEmptyList.of(("oak_stairs", 4))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("wood_1", 6)), NonEmptyList.of(("spruce_stairs", 4))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("wood_2", 6)), NonEmptyList.of(("birch_stairs", 4))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(3, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("wood_3", 6)), NonEmptyList.of(("jungle_stairs", 4))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(4, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("wood_4", 6)), NonEmptyList.of(("acacia_stairs", 4))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(0, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("wood_5", 6)), NonEmptyList.of(("dark_oak_stairs", 4))),
+          oneToThousand,
+          3
+        )
+      ),
+      //石材階段
+      List(
+        ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("stone", 6)), NonEmptyList.of(("stone_stairs", 4))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("granit", 6)), NonEmptyList.of(("granit_stairs", 4))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("diorite", 6)), NonEmptyList.of(("diorite_stairs", 4))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(3, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("andesite", 6)), NonEmptyList.of(("andesite_stairs", 4))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(4, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("smooth_brick0", 6)), NonEmptyList.of(("stone_brick_stairs", 4))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(0, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("wood_5", 6)), NonEmptyList.of(("dark_oak_stairs", 4))),
+          oneToThousand,
+          3
+        )
+      )
     )
   }
 }
