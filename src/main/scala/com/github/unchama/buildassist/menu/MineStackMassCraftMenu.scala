@@ -757,9 +757,25 @@ object MineStackMassCraftMenu {
           MassCraftRecipe(NonEmptyList.of(("smooth_brick0", 6)), NonEmptyList.of(("stone_brick_stairs", 4))),
           oneToThousand,
           3
+        )
+      ),
+      //砂岩系
+      List(
+        ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("sandstone", 3)), NonEmptyList.of(("step1", 6))),
+          oneToThousand,
+          3
         ),
-        ChestSlotRef(0, 5) -> MassCraftRecipeBlock(
-          MassCraftRecipe(NonEmptyList.of(("wood_5", 6)), NonEmptyList.of(("dark_oak_stairs", 4))),
+        ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("sandstone", 6)), NonEmptyList.of(("standstone_stairs", 4))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+          NonEmptyList.of(("sandstone", 1),("coal", 1)),
+          NonEmptyList.of(("sandstone1", 1))),
           oneToThousand,
           3
         )
