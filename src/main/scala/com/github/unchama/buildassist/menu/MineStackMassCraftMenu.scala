@@ -614,6 +614,39 @@ object MineStackMassCraftMenu {
           3
         )
       ),
+      // 原木->木材
+      List(
+        ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("oak_log", 1)), NonEmptyList.of(("oak_planks", 4))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("spruce_log", 1)), NonEmptyList.of(("spruce_planks", 4))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("birch_log", 1)), NonEmptyList.of(("birch_planks", 4))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(3, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("jungle_log", 1)), NonEmptyList.of(("jungle_planks", 4))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(4, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("acacia_log", 1)), NonEmptyList.of(("acacia_planks", 4))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(0, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("dark_oak_log", 1)), NonEmptyList.of(("dark_oak_planks", 4))),
+          oneToThousand,
+          3
+        )
+      ),
       // 木材フェンス
       List(
         ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
