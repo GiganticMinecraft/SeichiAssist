@@ -604,9 +604,17 @@ object MineStackMassCraftMenu {
           ),
           oneToThousand,
           3
+        ),
+        ChestSlotRef(4, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("ice", 8), ("bucket", 1)),
+            NonEmptyList.of(("water_bucket", 1))
+          ),
+          oneToThousand,
+          3
         )
       ),
-      // フェンス
+      // 木材フェンス
       List(
         ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
           MassCraftRecipe(
@@ -689,7 +697,7 @@ object MineStackMassCraftMenu {
           oneToThousand,
           3
         )
-      )
+      ),
     )
   }
 }
