@@ -767,12 +767,12 @@ object MineStackMassCraftMenu {
       //石材階段
       List(
         ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
-          MassCraftRecipe(NonEmptyList.of(("stone", 6)), NonEmptyList.of(("stone_stairs", 4))),
+          MassCraftRecipe(NonEmptyList.of(("cobblestone", 6)), NonEmptyList.of(("stone_stairs", 4))),
           oneToThousand,
           3
         ),
         ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
-          MassCraftRecipe(NonEmptyList.of(("granit", 6)), NonEmptyList.of(("granit_stairs", 4))),
+          MassCraftRecipe(NonEmptyList.of(("granite", 6)), NonEmptyList.of(("granite_stairs", 4))),
           oneToThousand,
           3
         ),
@@ -807,8 +807,9 @@ object MineStackMassCraftMenu {
         ),
         ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
           MassCraftRecipe(
-          NonEmptyList.of(("sandstone", 1),("coal", 1)),
-          NonEmptyList.of(("sandstone1", 1))),
+            NonEmptyList.of(("sandstone", 1),("coal", 1)),
+            NonEmptyList.of(("sandstone1", 1))
+          ),
           oneToThousand,
           3
         )
