@@ -792,12 +792,12 @@ object MineStackMassCraftMenu {
           3
         ),
         ChestSlotRef(0, 5) -> MassCraftRecipeBlock(
-          MassCraftRecipe(NonEmptyList.of(("smooth_brick0", 3)), NonEmptyList.of(("dark_oak_stairs", 4))),
+          MassCraftRecipe(NonEmptyList.of(("smooth_brick0", 3)), NonEmptyList.of(("step5", 4))),
           oneToThousand,
           3
         )
       ),
-      //石材階段
+      // 石材階段
       List(
         ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
           MassCraftRecipe(NonEmptyList.of(("cobblestone", 6)), NonEmptyList.of(("stone_stairs", 4))),
@@ -825,11 +825,11 @@ object MineStackMassCraftMenu {
           3
         )
       ),
-      //砂岩系
+      // 砂岩系
       List(
         ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
           MassCraftRecipe(
-            NonEmptyList.of(("sandstone", 3)), NonEmptyList.of(("step1", 6))),
+          NonEmptyList.of(("sandstone", 3)), NonEmptyList.of(("step1", 6))),
           oneToThousand,
           3
         ),
@@ -843,7 +843,305 @@ object MineStackMassCraftMenu {
           oneToThousand,
           3
         )
-      )
+      ),
+      // レッドストーン系(1)
+      List(
+        ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("stone", 2)), NonEmptyList.of(("stone_plate", 1))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("cobblestone", 1), ("stick", 1)), 
+            NonEmptyList.of(("lever", 1))
+          ),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("oak_planks", 2)), NonEmptyList.of(("wood_plate", 1))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(3, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("oak_planks", 6)), NonEmptyList.of(("trap_door", 2))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(4, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("oak_planks", 8), ("redstone", 1)),
+            NonEmptyList.of(("note_block", 1))
+          ),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(0, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("stone", 1)), NonEmptyList.of(("stone_button", 1))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(1, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("redstone", 1), ("stick", 1)), 
+            NonEmptyList.of(("redstone_torch_on", 1))
+          ),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(2, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("redstone", 4), ("glowstone", 1)), 
+            NonEmptyList.of(("redstone_lamp_off", 1))
+          ),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(3, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(
+              ("iron_ingot", 1), ("stick", 1), 
+              ("oak_planks", 1)
+            ), 
+            NonEmptyList.of(("tripwire_hook", 2))
+          ),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(4, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("oak_planks", 8), ("diamond", 1)),
+            NonEmptyList.of(("jukebox", 1))
+          ),
+          oneToThousand,
+          3
+        ),
+      ),
+      // レッドストーン系(2)
+      List(
+        ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("cobblestone", 7), ("redstone", 1)),
+            NonEmptyList.of(("dropper", 1))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(
+              ("oak_planks", 3), ("cobblestone", 4),
+              ("iron_ingot", 1), ("redstone", 1)
+              ), 
+            NonEmptyList.of(("piston_base", 1))
+          ),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("chest", 1), ("tripwire_hook", 1)), 
+            NonEmptyList.of(("trapped_chest", 1))
+            ),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(3, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("iron_ingot", 6)), NonEmptyList.of(("iron_door", 3))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(4, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("oak_planks", 8), ("redstone", 1)),
+            NonEmptyList.of(("note_block", 1))
+          ),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(0, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("iron_ingot", 4)),NonEmptyList.of(("iron_trapdoor", 1))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(1, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("chest", 1), ("iron_ingot", 5)),
+            NonEmptyList.of(("hopper", 1))
+          ),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(2, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("slime_ball", 1), ("piston_base", 1)), 
+            NonEmptyList.of(("piston_sticky_base", 1))
+          ),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(3, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("sand", 4), ("sulphur", 5)), 
+            NonEmptyList.of(("tnt", 1))
+          ),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(4, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(
+              ("glass", 3), ("quartz", 3),
+              ("wood_step0", 3)
+            ),
+            NonEmptyList.of(("daylight_detector", 1))
+          ),
+          oneToThousand,
+          3
+        ),
+      ),
+      // レッドストーン系(3)
+      List(
+        ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(
+              ("gold_ingot", 6), ("stick", 1),
+              ("redstone", 1)
+            ),
+            NonEmptyList.of(("powered_rail", 6))
+          ),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(
+              ("iron_ingot", 6), ("stone_plate", 4),
+              ("redstone", 1)
+              ), 
+            NonEmptyList.of(("detector_rail", 6))
+          ),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(
+              ("iron_ingot", 6), ("stick", 2),
+              ("redstone_torch_on", 1)
+            ), 
+            NonEmptyList.of(("activator_rail", 6))
+            ),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(3, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(
+              ("redstone_torch_on", 2),("redstone", 1),
+              ("stone", 3)
+            ), 
+            NonEmptyList.of(("diode", 1))
+            ),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(4, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(
+              ("redstone_torch_on", 3),("quartz", 1),
+              ("stone", 3)
+            ), 
+            NonEmptyList.of(("redstone_comparator", 1))
+          ),
+          oneToThousand,
+          3
+        ),
+      ),
+      // 木材フェンスゲート
+      List(
+        ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("oak_planks", 2), ("stick", 4)),
+            NonEmptyList.of(("fence_gate", 1))
+          ),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("spruce_planks", 2), ("stick", 4)),
+            NonEmptyList.of(("spruce_fence_gate", 1))
+          ),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("birch_planks", 2), ("stick", 4)),
+            NonEmptyList.of(("birch_fence_gate", 1))
+          ),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(3, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("jungle_planks", 2), ("stick", 4)),
+            NonEmptyList.of(("jungle_fence_gate", 1))
+          ),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(4, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("acacia_planks", 2), ("stick", 4)),
+            NonEmptyList.of(("acacia_fence_gate", 1))
+          ),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(0, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("dark_oak_planks", 2), ("stick", 4)),
+            NonEmptyList.of(("dark_oak_fence_gate", 1))
+          ),
+          oneToThousand,
+          3
+        ),
+      ),
+      // 木材ドア
+      List(
+        ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("oak_planks", 6)), NonEmptyList.of(("wood_door", 3))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("spruce_planks", 6)), NonEmptyList.of(("spruce_door_item", 3))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("birch_planks", 6)), NonEmptyList.of(("birch_door_item", 3))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(3, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("jungle_planks", 6)), NonEmptyList.of(("jungle_door_item", 3))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(4, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("acacia_planks", 6)), NonEmptyList.of(("acacia_door_item", 3))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(0, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("dark_oak_planks", 6)),NonEmptyList.of(("dark_oak_door_item", 3))),
+          oneToThousand,
+          3
+        ),
+      ),
     )
   }
 }
