@@ -617,32 +617,32 @@ object MineStackMassCraftMenu {
       // 原木->木材
       List(
         ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
-          MassCraftRecipe(NonEmptyList.of(("log", 1)), NonEmptyList.of(("oak_planks", 4))),
+          MassCraftRecipe(NonEmptyList.of(("log", 4)), NonEmptyList.of(("oak_planks", 16))),
           oneToThousand,
           3
         ),
         ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
-          MassCraftRecipe(NonEmptyList.of(("log1", 1)), NonEmptyList.of(("spruce_planks", 4))),
+          MassCraftRecipe(NonEmptyList.of(("log1", 4)), NonEmptyList.of(("spruce_planks", 16))),
           oneToThousand,
           3
         ),
         ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
-          MassCraftRecipe(NonEmptyList.of(("log2", 1)), NonEmptyList.of(("birch_planks", 4))),
+          MassCraftRecipe(NonEmptyList.of(("log2", 4)), NonEmptyList.of(("birch_planks", 16))),
           oneToThousand,
           3
         ),
         ChestSlotRef(3, 0) -> MassCraftRecipeBlock(
-          MassCraftRecipe(NonEmptyList.of(("log3", 1)), NonEmptyList.of(("jungle_planks", 4))),
+          MassCraftRecipe(NonEmptyList.of(("log3", 4)), NonEmptyList.of(("jungle_planks", 16))),
           oneToThousand,
           3
         ),
         ChestSlotRef(4, 0) -> MassCraftRecipeBlock(
-          MassCraftRecipe(NonEmptyList.of(("log_2", 1)), NonEmptyList.of(("acacia_planks", 4))),
+          MassCraftRecipe(NonEmptyList.of(("log_2", 4)), NonEmptyList.of(("acacia_planks", 16))),
           oneToThousand,
           3
         ),
         ChestSlotRef(0, 5) -> MassCraftRecipeBlock(
-          MassCraftRecipe(NonEmptyList.of(("log_21", 1)), NonEmptyList.of(("dark_oak_planks", 4))),
+          MassCraftRecipe(NonEmptyList.of(("log_21", 4)), NonEmptyList.of(("dark_oak_planks", 16))),
           oneToThousand,
           3
         )
@@ -806,10 +806,7 @@ object MineStackMassCraftMenu {
           3
         ),
         ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
-          MassCraftRecipe(
-            NonEmptyList.of(("sandstone", 1),("coal", 1)),
-            NonEmptyList.of(("sandstone1", 1))
-          ),
+          MassCraftRecipe(NonEmptyList.of(("sandstone", 4)), NonEmptyList.of(("sandstone1", 4))),
           oneToThousand,
           3
         )
