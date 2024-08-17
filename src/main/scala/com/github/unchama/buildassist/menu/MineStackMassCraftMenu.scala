@@ -952,19 +952,11 @@ object MineStackMassCraftMenu {
           3
         ),
         ChestSlotRef(4, 0) -> MassCraftRecipeBlock(
-          MassCraftRecipe(
-            NonEmptyList.of(("oak_planks", 8), ("redstone", 1)),
-            NonEmptyList.of(("note_block", 1))
-          ),
-          oneToThousand,
-          3
-        ),
-        ChestSlotRef(0, 5) -> MassCraftRecipeBlock(
           MassCraftRecipe(NonEmptyList.of(("iron_ingot", 4)),NonEmptyList.of(("iron_trapdoor", 1))),
           oneToThousand,
           3
         ),
-        ChestSlotRef(1, 5) -> MassCraftRecipeBlock(
+        ChestSlotRef(0, 5) -> MassCraftRecipeBlock(
           MassCraftRecipe(
             NonEmptyList.of(("chest", 1), ("iron_ingot", 5)),
             NonEmptyList.of(("hopper", 1))
@@ -972,7 +964,7 @@ object MineStackMassCraftMenu {
           oneToThousand,
           3
         ),
-        ChestSlotRef(2, 5) -> MassCraftRecipeBlock(
+        ChestSlotRef(1, 5) -> MassCraftRecipeBlock(
           MassCraftRecipe(
             NonEmptyList.of(("slime_ball", 1), ("piston_base", 1)), 
             NonEmptyList.of(("piston_sticky_base", 1))
@@ -980,7 +972,7 @@ object MineStackMassCraftMenu {
           oneToThousand,
           3
         ),
-        ChestSlotRef(3, 5) -> MassCraftRecipeBlock(
+        ChestSlotRef(2, 5) -> MassCraftRecipeBlock(
           MassCraftRecipe(
             NonEmptyList.of(("sand", 4), ("sulphur", 5)), 
             NonEmptyList.of(("tnt", 1))
@@ -988,7 +980,7 @@ object MineStackMassCraftMenu {
           oneToThousand,
           3
         ),
-        ChestSlotRef(4, 5) -> MassCraftRecipeBlock(
+        ChestSlotRef(3, 5) -> MassCraftRecipeBlock(
           MassCraftRecipe(
             NonEmptyList.of(
               ("glass", 3), ("quartz", 3),
