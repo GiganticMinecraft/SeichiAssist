@@ -764,6 +764,39 @@ object MineStackMassCraftMenu {
           3
         )
       ),
+      // 石材ハーフ
+      List(
+        ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("cobblestone", 3)), NonEmptyList.of(("step3", 6))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("stone", 3)), NonEmptyList.of(("step0", 6))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("granite", 3)), NonEmptyList.of(("granite_slab", 6))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(3, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("diorite", 3)), NonEmptyList.of(("diorite_slab", 6))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(4, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("andesite", 3)), NonEmptyList.of(("andesite_slab", 6))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(0, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("smooth_brick0", 3)), NonEmptyList.of(("dark_oak_stairs", 4))),
+          oneToThousand,
+          3
+        )
+      ),
       //石材階段
       List(
         ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
