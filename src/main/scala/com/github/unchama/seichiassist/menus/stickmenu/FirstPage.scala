@@ -539,7 +539,7 @@ object FirstPage extends Menu {
             val requiredToNextTicket =
               s"$RESET${AQUA}次のガチャ券まで:${point.amountUntilNextGachaTicket.amount}ブロック"
             val recvGachaTicketDetail =
-              s"$RESET${GRAY}左クリックで最大9st、右クリックで最大OneStackBatchのガチャ券を受け取ります"
+              s"$RESET${GRAY}左クリックで最大9st、右クリックで最大1stのガチャ券を受け取ります"
 
             List(gachaTicketStatus, requiredToNextTicket, recvGachaTicketDetail)
           }
