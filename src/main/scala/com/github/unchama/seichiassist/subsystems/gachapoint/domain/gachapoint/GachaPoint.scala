@@ -27,6 +27,15 @@ case class GachaPoint(exp: SeichiExpAmount) {
     GachaPoint.Usage(remaining, ticketCount)
   }
 
+  lazy val useInRightClickBatch: GachaPoint.Usage = {
+    val ticketCount = availableTickets.min(GachaPoint.batchSizeRight).toInt
+
+    val expToUse = GachaPoint.perGachaTicket.exp.amount * ticketCount
+    val remaining = GachaPoint.ofNonNegative(exp.amount - expToUse)
+
+    GachaPoint.Usage(remaining, ticketCount)
+  }
+
   /**
    * 次にガチャ券を利用できるようになるまでに必要な整地経験値量
    */
@@ -60,9 +69,14 @@ object GachaPoint {
   }
 
   /**
-   * ガチャ券へのポイント交換にて一度に得られるガチャ券の上限
+   * ガチャ券へのポイント交換にて一度に得られるガチャ券の上限(左クリック用)
    */
   final val batchSize = 9 * 64
+  
+  /**
+   * ガチャ券へのポイント交換にて一度に得られるガチャ券の上限(右クリック用)
+   */
+  final val batchSizeRight = 64
 
   /**
    * ガチャポイントの初期値

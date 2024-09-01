@@ -18,6 +18,11 @@ trait GachaPointApi[F[_], G[_], Player] {
   val receiveBatch: Kleisli[F, Player, Unit]
 
   /**
+   * プレーヤーのガチャポイントをガチャ券に変換して一括で受け取る作用。（右クリック用）
+   */
+  val receiveRightClickBatch: Kleisli[F, Player, Unit]
+
+  /**
    * プレーヤーのガチャポイントを増やす作用。
    */
   def addGachaPoint(point: GachaPoint): Kleisli[F, Player, Unit]
