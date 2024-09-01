@@ -90,6 +90,13 @@ object System {
               .as(())
           }
 
+          override val receiveRightClickBatch: Kleisli[F, Player, Unit] = Kleisli { player =>
+            gachaPointRepositoryControlsRepository
+              .lift(player)
+              .traverse { value => value.semaphore.tryRightClickBatchTransaction }
+              .as(())
+          }
+
           override def addGachaPoint(point: GachaPoint): Kleisli[F, Player, Unit] =
             Kleisli { player: Player =>
               ContextCoercion(

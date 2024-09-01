@@ -27,6 +27,12 @@ class BatchUsageSemaphore[F[_]: FlatMap, G[_]: ContextCoercion[*[_], F]](
       }.flatTap(grantAction.give)
     }(BatchUsageSemaphore.usageInterval)
 
+  def tryRightClickBatchTransaction: F[Unit] =
+    recoveringSemaphore.tryUse {
+      ContextCoercion {
+        gachaPointRef.modify { point => point.useInRightClickBatch.asTuple }
+      }.flatTap(grantAction.give)
+    }(BatchUsageSemaphore.usageInterval)
 }
 
 object BatchUsageSemaphore {
