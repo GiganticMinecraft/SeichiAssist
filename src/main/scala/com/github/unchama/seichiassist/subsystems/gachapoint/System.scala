@@ -93,7 +93,7 @@ object System {
           override val receiveOneStackBatch: Kleisli[F, Player, Unit] = Kleisli { player =>
             gachaPointRepositoryControlsRepository
               .lift(player)
-              .traverse { value => value.semaphore.tryOneStackBatchTransaction }
+              .traverse { _.semaphore.tryOneStackBatchTransaction }
               .as(())
           }
 
