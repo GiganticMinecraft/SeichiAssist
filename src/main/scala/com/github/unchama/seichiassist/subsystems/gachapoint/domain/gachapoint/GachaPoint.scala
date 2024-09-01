@@ -5,7 +5,7 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.Seichi
 /**
  * ガチャポイントとはプレーヤーが持つ「消費可能な整地経験量」である。
  *
- * プレーヤーは576個(= 64 * 9スタック)のバッチにてガチャポイントをガチャ券に交換できる。
+ * プレーヤーは576個(= 64 * 9スタック)のバッチもしくは、64個(1スタック)のバッチにてガチャポイントをガチャ券に交換できる。
  */
 case class GachaPoint(exp: SeichiExpAmount) {
 
@@ -16,7 +16,7 @@ case class GachaPoint(exp: SeichiExpAmount) {
     (exp.amount /% GachaPoint.perGachaTicket.exp.amount)._1.toBigInt
 
   /**
-   * ガチャポイントをバッチでガチャ券に変換した際のポイントの変化を計算する。
+   * ガチャポイントを576個(= 64 * 9スタック)のバッチでガチャ券に変換した際のポイントの変化を計算する。
    */
   lazy val useInBatch: GachaPoint.Usage = {
     val ticketCount = availableTickets.min(GachaPoint.batchSize).toInt
@@ -27,8 +27,11 @@ case class GachaPoint(exp: SeichiExpAmount) {
     GachaPoint.Usage(remaining, ticketCount)
   }
 
-  lazy val useInRightClickBatch: GachaPoint.Usage = {
-    val ticketCount = availableTickets.min(GachaPoint.batchSizeRight).toInt
+  /**
+   * ガチャポイントを64個(1スタック)のバッチでガチャ券に変換した際のポイントの変化を計算する。
+   */
+  lazy val useInOneStackBatch: GachaPoint.Usage = {
+    val ticketCount = availableTickets.min(GachaPoint.batchSizeOneStack).toInt
 
     val expToUse = GachaPoint.perGachaTicket.exp.amount * ticketCount
     val remaining = GachaPoint.ofNonNegative(exp.amount - expToUse)
@@ -74,9 +77,9 @@ object GachaPoint {
   final val batchSize = 9 * 64
   
   /**
-   * ガチャ券へのポイント交換にて一度に得られるガチャ券の上限(右クリック用)
+   * ガチャ券へのポイント交換にて一度に得られるガチャ券の上限
    */
-  final val batchSizeRight = 64
+  final val batchSizeOneStack = 64
 
   /**
    * ガチャポイントの初期値

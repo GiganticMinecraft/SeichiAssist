@@ -90,10 +90,10 @@ object System {
               .as(())
           }
 
-          override val receiveRightClickBatch: Kleisli[F, Player, Unit] = Kleisli { player =>
+          override val receiveOneStackBatch: Kleisli[F, Player, Unit] = Kleisli { player =>
             gachaPointRepositoryControlsRepository
               .lift(player)
-              .traverse { value => value.semaphore.tryRightClickBatchTransaction }
+              .traverse { value => value.semaphore.tryOneStackBatchTransaction }
               .as(())
           }
 
