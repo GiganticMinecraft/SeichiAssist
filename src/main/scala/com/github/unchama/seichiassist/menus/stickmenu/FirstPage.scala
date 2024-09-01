@@ -8,7 +8,8 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{
   ClickEventFilter,
   FilteredButtonEffect,
-  LeftClickButtonEffect
+  LeftClickButtonEffect,
+  RightClickButtonEffect
 }
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.seichiassist.data.descrptions.PlayerStatsLoreGenerator
@@ -522,6 +523,9 @@ object FirstPage extends Menu {
       val effect: FilteredButtonEffect = LeftClickButtonEffect(
         environment.gachaPointApi.receiveBatch
       )
+      val rightEffect: FilteredButtonEffect = RightClickButtonEffect(
+        environment.gachaPointApi.receiveRightClickBatch
+      )
 
       val computeItemStack: IO[ItemStack] =
         environment.gachaPointApi.gachaPoint(player).read.toIO.map { point =>
@@ -545,7 +549,7 @@ object FirstPage extends Menu {
         }
 
       val computeButton: IO[Button] = computeItemStack.map { itemStack =>
-        Button(itemStack, effect)
+        Button(itemStack, effect, rightEffect)
       }
 
       RecomputedButton(computeButton)
