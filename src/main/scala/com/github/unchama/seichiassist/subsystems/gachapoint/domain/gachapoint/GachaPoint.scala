@@ -18,8 +18,8 @@ case class GachaPoint(exp: SeichiExpAmount) {
   /**
    * ガチャポイントを576個(= 64 * 9スタック)のバッチでガチャ券に変換した際のポイントの変化を計算する。
    */
-  lazy val useInBatch: GachaPoint.Usage = {
-    val ticketCount = availableTickets.min(GachaPoint.batchSize).toInt
+  lazy val useInLargeBatch: GachaPoint.Usage = {
+    val ticketCount = availableTickets.min(GachaPoint.largeBatchSize).toInt
 
     val expToUse = GachaPoint.perGachaTicket.exp.amount * ticketCount
     val remaining = GachaPoint.ofNonNegative(exp.amount - expToUse)
@@ -28,10 +28,10 @@ case class GachaPoint(exp: SeichiExpAmount) {
   }
 
   /**
-   * ガチャポイントを64個(1スタック)のバッチでガチャ券に変換した際のポイントの変化を計算する。
+   * ガチャポイントを64個(= 64 * 1スタック)のバッチでガチャ券に変換した際のポイントの変化を計算する。
    */
-  lazy val useInOneStackBatch: GachaPoint.Usage = {
-    val ticketCount = availableTickets.min(GachaPoint.batchSizeOneStack).toInt
+  lazy val useInSmallBatch: GachaPoint.Usage = {
+    val ticketCount = availableTickets.min(GachaPoint.smallBatchSize).toInt
 
     val expToUse = GachaPoint.perGachaTicket.exp.amount * ticketCount
     val remaining = GachaPoint.ofNonNegative(exp.amount - expToUse)
@@ -66,7 +66,7 @@ object GachaPoint {
    *   変換にて得られるガチャ券の総数
    */
   case class Usage(remainingGachaPoint: GachaPoint, gachaTicketCount: Int) {
-    require(gachaTicketCount <= GachaPoint.batchSize, "usage must not exceed batch size")
+    require(gachaTicketCount <= GachaPoint.largeBatchSize, "usage must not exceed batch size")
 
     def asTuple: (GachaPoint, Int) = (remainingGachaPoint, gachaTicketCount)
   }
@@ -74,12 +74,12 @@ object GachaPoint {
   /**
    * ガチャ券へのポイント交換にて一度に得られるガチャ券の上限
    */
-  final val batchSize = 9 * 64
+  final val largeBatchSize = 9 * 64
   
   /**
    * ガチャ券へのポイント交換にて一度に得られるガチャ券の上限
    */
-  final val batchSizeOneStack = 64
+  final val smallBatchSize = 64
 
   /**
    * ガチャポイントの初期値

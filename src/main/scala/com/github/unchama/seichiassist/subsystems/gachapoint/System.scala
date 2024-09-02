@@ -83,18 +83,18 @@ object System {
               ReadOnlyRef.fromRef(value.pointRef)
             )
 
-          override val receiveBatch: Kleisli[F, Player, Unit] = Kleisli { player =>
+          override val receiveLargeBatch: Kleisli[F, Player, Unit] = Kleisli { player =>
             gachaPointRepositoryControlsRepository
               .lift(player)
-              .traverse { value => value.semaphore.tryBatchTransaction }
+              .traverse { value => value.semaphore.tryLargeBatchTransaction }
               .as(())
           }
 
-          override val receiveOneStackBatch: Kleisli[F, Player, Unit] = Kleisli { player =>
+          override val receiveSmallBatch: Kleisli[F, Player, Unit] = Kleisli { player =>
             gachaPointRepositoryControlsRepository
               .lift(player)
-              .traverse { _.semaphore.tryOneStackBatchTransaction }
-              .as(())
+              .traverse { _.semaphore.trySmallBatchTransaction }
+              .void
           }
 
           override def addGachaPoint(point: GachaPoint): Kleisli[F, Player, Unit] =

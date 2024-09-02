@@ -521,10 +521,10 @@ object FirstPage extends Menu {
 
     val computeGachaTicketButton: IO[Button] = {
       val effect: FilteredButtonEffect = LeftClickButtonEffect(
-        environment.gachaPointApi.receiveBatch
+        environment.gachaPointApi.receiveLargeBatch
       )
       val rightEffect: FilteredButtonEffect = RightClickButtonEffect(
-        environment.gachaPointApi.receiveOneStackBatch
+        environment.gachaPointApi.receiveSmallBatch
       )
 
       val computeItemStack: IO[ItemStack] =
@@ -538,10 +538,10 @@ object FirstPage extends Menu {
 
             val requiredToNextTicket =
               s"$RESET${AQUA}次のガチャ券まで:${point.amountUntilNextGachaTicket.amount}ブロック"
-            val recvGachaTicketDetail =
+            val recvGachaTicketDescription =
               s"$RESET${GRAY}左クリックで最大9st、右クリックで最大1stのガチャ券を受け取ります"
 
-            List(gachaTicketStatus, requiredToNextTicket, recvGachaTicketDetail)
+            List(gachaTicketStatus, requiredToNextTicket, recvGachaTicketDescription)
           }
 
           new SkullItemStackBuilder(SkullOwners.unchama)
