@@ -52,6 +52,10 @@ case class GachaPoint(exp: SeichiExpAmount) {
   def subtract(point: GachaPoint): GachaPoint = GachaPoint(exp.subtract(point.exp))
 }
 
+case class BatchSize(value: Int) {
+    require(value > 0, "batch size must be positive")
+}
+
 object GachaPoint {
 
   def ofNonNegative(x: BigDecimal): GachaPoint = GachaPoint(SeichiExpAmount.ofNonNegative(x))
@@ -67,10 +71,6 @@ object GachaPoint {
     require(gachaTicketCount <= GachaPoint.maxBatchSize.value, "usage must not exceed max batch size")
 
     def asTuple: (GachaPoint, Int) = (remainingGachaPoint, gachaTicketCount)
-  }
-
-  case class BatchSize(value: Int) {
-    require(value > 0, "batch size must be positive")
   }
 
   /**
@@ -110,3 +110,4 @@ object GachaPoint {
     ofNonNegative(perGachaTicketPoint * gachaTicketAmount)
 
 }
+
