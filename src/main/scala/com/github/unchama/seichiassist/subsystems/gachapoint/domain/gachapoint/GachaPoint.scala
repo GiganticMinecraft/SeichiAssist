@@ -69,8 +69,8 @@ object GachaPoint {
     def asTuple: (GachaPoint, Int) = (remainingGachaPoint, gachaTicketCount)
   }
 
-  case class BatchSize(size: Int) {
-    require(size > 0, "batch size must be positive")
+  case class BatchSize(value: Int) {
+    require(value > 0, "batch size must be positive")
   }
 
   /**
