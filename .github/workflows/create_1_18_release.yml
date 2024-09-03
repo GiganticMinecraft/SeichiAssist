@@ -88,6 +88,8 @@ jobs:
 
       - name: Create and push a tag
         id: tag-name
+        # GiganticMinecraftにあるSeichiAssistリポジトリのブランチからのPRのみ実行
+        if: ${{ github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name }}
         run: |
           TAG_NAME=pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
           git tag $TAG_NAME
@@ -96,6 +98,8 @@ jobs:
 
       - name: Create release
         uses: softprops/action-gh-release@v1
+        # GiganticMinecraftにあるSeichiAssistリポジトリのブランチからのPRのみ実行
+        if: ${{ github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
