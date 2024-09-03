@@ -86,8 +86,8 @@ object System {
           override val receiveLargeBatch: Kleisli[F, Player, Unit] = Kleisli { player =>
             gachaPointRepositoryControlsRepository
               .lift(player)
-              .traverse { value => value.semaphore.tryLargeBatchTransaction }
-              .as(())
+              .traverse { _.semaphore.tryLargeBatchTransaction }
+              .void
           }
 
           override val receiveSmallBatch: Kleisli[F, Player, Unit] = Kleisli { player =>
