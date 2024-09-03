@@ -520,10 +520,10 @@ object FirstPage extends Menu {
     }
 
     val computeGachaTicketButton: IO[Button] = {
-      val effect: FilteredButtonEffect = LeftClickButtonEffect(
+      val leftClickEffect: FilteredButtonEffect = LeftClickButtonEffect(
         environment.gachaPointApi.receiveLargeBatch
       )
-      val rightEffect: FilteredButtonEffect = RightClickButtonEffect(
+      val rightClickEffect: FilteredButtonEffect = RightClickButtonEffect(
         environment.gachaPointApi.receiveSmallBatch
       )
 
@@ -551,7 +551,7 @@ object FirstPage extends Menu {
         }
 
       val computeButton: IO[Button] = computeItemStack.map { itemStack =>
-        Button(itemStack, effect, rightEffect)
+        Button(itemStack, leftClickEffect, rightClickEffect)
       }
 
       RecomputedButton(computeButton)
