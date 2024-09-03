@@ -18,15 +18,24 @@ class BatchUsageSemaphore[F[_]: FlatMap, G[_]: ContextCoercion[*[_], F]](
   import cats.implicits._
 
   /**
-   * バッチでのガチャポイント変換を行い、 [[BatchUsageSemaphore.usageInterval]]の間使用不可にする作用。
+   * 576個(= 64 * 9スタック)のバッチでガチャポイント変換を行い、 [[BatchUsageSemaphore.usageInterval]]の間使用不可にする作用。
    */
-  def tryBatchTransaction: F[Unit] =
+  def tryLargeBatchTransaction: F[Unit] =
     recoveringSemaphore.tryUse {
       ContextCoercion {
-        gachaPointRef.modify { point => point.useInBatch.asTuple }
+        gachaPointRef.modify { _.useInLargeBatch.asTuple }
       }.flatTap(grantAction.give)
     }(BatchUsageSemaphore.usageInterval)
-
+  
+  /**
+   * 64個(= 64 * 1スタック)のバッチでガチャポイント変換を行い、 [[BatchUsageSemaphore.usageInterval]]の間使用不可にする作用。
+   */
+  def trySmallBatchTransaction: F[Unit] =
+    recoveringSemaphore.tryUse {
+      ContextCoercion {
+        gachaPointRef.modify { _.useInSmallBatch.asTuple }
+      }.flatTap(grantAction.give)
+    }(BatchUsageSemaphore.usageInterval)
 }
 
 object BatchUsageSemaphore {

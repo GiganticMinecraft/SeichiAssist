@@ -8,7 +8,8 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{
   ClickEventFilter,
   FilteredButtonEffect,
-  LeftClickButtonEffect
+  LeftClickButtonEffect,
+  RightClickButtonEffect
 }
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.seichiassist.data.descrptions.PlayerStatsLoreGenerator
@@ -519,8 +520,11 @@ object FirstPage extends Menu {
     }
 
     val computeGachaTicketButton: IO[Button] = {
-      val effect: FilteredButtonEffect = LeftClickButtonEffect(
-        environment.gachaPointApi.receiveBatch
+      val leftClickEffect: FilteredButtonEffect = LeftClickButtonEffect(
+        environment.gachaPointApi.receiveLargeBatch
+      )
+      val rightClickEffect: FilteredButtonEffect = RightClickButtonEffect(
+        environment.gachaPointApi.receiveSmallBatch
       )
 
       val computeItemStack: IO[ItemStack] =
@@ -534,8 +538,10 @@ object FirstPage extends Menu {
 
             val requiredToNextTicket =
               s"$RESET${AQUA}次のガチャ券まで:${point.amountUntilNextGachaTicket.amount}ブロック"
+            val receiveGachaTicketDescription =
+              s"$RESET${GRAY}左クリックで最大9st、右クリックで最大1stのガチャ券を受け取ります"
 
-            List(gachaTicketStatus, requiredToNextTicket)
+            List(gachaTicketStatus, requiredToNextTicket, receiveGachaTicketDescription)
           }
 
           new SkullItemStackBuilder(SkullOwners.unchama)
@@ -545,7 +551,7 @@ object FirstPage extends Menu {
         }
 
       val computeButton: IO[Button] = computeItemStack.map { itemStack =>
-        Button(itemStack, effect)
+        Button(itemStack, leftClickEffect, rightClickEffect)
       }
 
       RecomputedButton(computeButton)
