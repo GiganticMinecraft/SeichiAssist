@@ -82,6 +82,11 @@ object GachaPoint {
   final val smallBatchSize = 64
 
   /**
+   * ガチャ券へのポイント交換にて一度に得られるガチャ券の上限
+   */
+  final val maxBatchSize = largeBatchSize
+  
+  /**
    * ガチャポイントの初期値
    */
   final val initial: GachaPoint = GachaPoint.ofNonNegative(0)
