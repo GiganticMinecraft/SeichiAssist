@@ -69,15 +69,19 @@ object GachaPoint {
     def asTuple: (GachaPoint, Int) = (remainingGachaPoint, gachaTicketCount)
   }
 
+  case class BatchSize(size: Int) {
+    require(size > 0, "batch size must be positive")
+  }
+
   /**
    * ガチャ券を576個(= 64 * 9スタック)のバッチでガチャポイントに変換する際のバッチサイズ
    */
-  final val largeBatchSize = 9 * 64
+  final val largeBatchSize = BatchSize(9 * 64)
   
   /**
    * ガチャ券を64個(= 64 * 1スタック)のバッチでガチャポイントに変換する際のバッチサイズ
    */
-  final val smallBatchSize = 64
+  final val smallBatchSize = BatchSize(64)
 
   /**
    * ガチャ券へのポイント交換にて一度に得られるガチャ券の上限
