@@ -46,7 +46,7 @@ class ExpBottleStackUsageController[F[_]: Effect, G[_]: SyncEffect](
     if (
       player.isSneaking
       && playerInventory.getItemInMainHand != null
-      && playerInventory.getItemInMainHand.getType == Material.EXP_BOTTLE
+      && playerInventory.getItemInMainHand.getType == Material.EXPERIENCE_BOTTLE
       && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)
     ) {
 
