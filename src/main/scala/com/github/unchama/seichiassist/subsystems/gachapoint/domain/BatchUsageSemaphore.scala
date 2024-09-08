@@ -26,7 +26,7 @@ class BatchUsageSemaphore[F[_]: FlatMap, G[_]: ContextCoercion[*[_], F]](
         gachaPointRef.modify { _.useInLargeBatch.asTuple }
       }.flatTap(grantAction.give)
     }(BatchUsageSemaphore.usageInterval)
-  
+
   /**
    * 64個(= 64 * 1スタック)のバッチでガチャポイント変換を行い、 [[BatchUsageSemaphore.usageInterval]]の間使用不可にする作用。
    */
