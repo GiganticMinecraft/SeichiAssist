@@ -53,7 +53,7 @@ case class GachaPoint(exp: SeichiExpAmount) {
 }
 
 case class BatchSize(value: Int) {
-    require(value > 0, "batch size must be positive")
+  require(value > 0, "batch size must be positive")
 }
 
 object GachaPoint {
@@ -68,7 +68,10 @@ object GachaPoint {
    *   変換にて得られるガチャ券の総数
    */
   case class Usage(remainingGachaPoint: GachaPoint, gachaTicketCount: Int) {
-    require(gachaTicketCount <= GachaPoint.maxBatchSize.value, "usage must not exceed max batch size")
+    require(
+      gachaTicketCount <= GachaPoint.maxBatchSize.value,
+      "usage must not exceed max batch size"
+    )
 
     def asTuple: (GachaPoint, Int) = (remainingGachaPoint, gachaTicketCount)
   }
@@ -77,7 +80,7 @@ object GachaPoint {
    * ガチャ券を576個(= 64 * 9スタック)のバッチでガチャポイントに変換する際のバッチサイズ
    */
   final val largeBatchSize = BatchSize(9 * 64)
-  
+
   /**
    * ガチャ券を64個(= 64 * 1スタック)のバッチでガチャポイントに変換する際のバッチサイズ
    */
@@ -110,4 +113,3 @@ object GachaPoint {
     ofNonNegative(perGachaTicketPoint * gachaTicketAmount)
 
 }
-
