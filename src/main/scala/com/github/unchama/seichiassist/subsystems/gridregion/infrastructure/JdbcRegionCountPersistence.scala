@@ -13,7 +13,6 @@ class JdbcRegionCountPersistence[F[_]: Sync] extends RegionCountPersistence[F] {
     DB.localTx { implicit session =>
       sql"UPDATE playerdata SET rgnum = ${regionCount.value} WHERE uuid = ${uuid.toString}"
         .execute()
-        .apply()
     }
   }
 
@@ -22,7 +21,6 @@ class JdbcRegionCountPersistence[F[_]: Sync] extends RegionCountPersistence[F] {
       sql"SELECT rgnum FROM playerdata WHERE uuid = ${uuid.toString}"
         .map(_.int("rgnum"))
         .single()
-        .apply()
         .map(num => RegionCount(num))
     }
   }

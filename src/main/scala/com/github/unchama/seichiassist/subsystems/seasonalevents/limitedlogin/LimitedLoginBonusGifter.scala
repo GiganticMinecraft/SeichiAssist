@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin
 import cats.effect.IO
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.factories.BukkitGachaSkullData
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin.LimitedLoginEvent.{
   START_DATE,
   isInEvent
@@ -22,8 +23,10 @@ import org.bukkit.inventory.ItemStack
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class LimitedLoginBonusGifter(implicit ioOnMainThread: OnMinecraftServerThread[IO])
-    extends Listener {
+class LimitedLoginBonusGifter(
+  implicit ioOnMainThread: OnMinecraftServerThread[IO],
+  playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+) extends Listener {
   @EventHandler
   def onPlayerJoin(event: PlayerJoinEvent): Unit = {
     if (!isInEvent) return

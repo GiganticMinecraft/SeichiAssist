@@ -83,6 +83,8 @@ case object ManagedWorld extends Enum[ManagedWorld] {
 
     def isSeichi: Boolean = asManagedWorld().exists(_.isSeichi)
 
+    def isNotSeichi: Boolean = !isSeichi
+
     def shouldTrackBuildBlock: Boolean = asManagedWorld().exists(_.shouldTrackBuildBlock)
 
     def isSeichiSkillAllowed: Boolean = asManagedWorld().exists(_.isSeichiSkillAllowed)
