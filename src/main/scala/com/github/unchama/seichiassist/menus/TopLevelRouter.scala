@@ -15,7 +15,7 @@ import com.github.unchama.seichiassist.menus.home.{ConfirmationMenuEnvironment, 
 import com.github.unchama.seichiassist.menus.minestack.{
   CategorizedMineStackMenu,
   MineStackMainMenu,
-  MineStackSelectItemColorMenu
+  MineStackSelectItemKindMenu
 }
 import com.github.unchama.seichiassist.menus.nicknames.NickNameMenu
 import com.github.unchama.seichiassist.menus.ranking.{RankingMenu, RankingRootMenu}
@@ -48,6 +48,7 @@ import com.github.unchama.seichiassist.subsystems.gridregion.GridRegionAPI
 import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.ranking.api.AssortedRankingApi
 import com.github.unchama.seichiassist.subsystems.ranking.domain.values.{LoginTime, VoteCount}
 import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
@@ -102,7 +103,8 @@ object TopLevelRouter {
     consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player],
     fairySpeechAPI: FairySpeechAPI[IO, Player],
     gridRegionAPI: GridRegionAPI[IO, Player, Location],
-    breakSkillTargetConfigAPI: BreakSkillTargetConfigAPI[IO, Player]
+    breakSkillTargetConfigAPI: BreakSkillTargetConfigAPI[IO, Player],
+    playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   ): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     import assortedRankingApi._
 
@@ -134,9 +136,8 @@ object TopLevelRouter {
       new AchievementGroupMenu.Environment
     implicit lazy val passiveSkillMenuEnv: PassiveSkillMenu.Environment =
       new PassiveSkillMenu.Environment
-    implicit lazy val mineStackSelectItemColorMenuEnv
-      : MineStackSelectItemColorMenu.Environment =
-      new MineStackSelectItemColorMenu.Environment
+    implicit lazy val mineStackSelectItemColorMenuEnv: MineStackSelectItemKindMenu.Environment =
+      new MineStackSelectItemKindMenu.Environment
 
     implicit lazy val seichiRankingMenuEnv: RankingMenu[SeichiAmountData]#Environment =
       new RankingMenu.Environment
@@ -163,7 +164,7 @@ object TopLevelRouter {
 
     implicit lazy val ioCanOpenNickNameMenu: IO CanOpen NickNameMenu.type = _.open
 
-    implicit lazy val ioCanOpenSelectItemColorMenu: IO CanOpen MineStackSelectItemColorMenu =
+    implicit lazy val ioCanOpenSelectItemColorMenu: IO CanOpen MineStackSelectItemKindMenu =
       _.open
     implicit lazy val ioCanOpenAchievementGroupMenu: IO CanOpen AchievementGroupMenu = _.open
     implicit lazy val ioCanOpenHomeConfirmationMenu
