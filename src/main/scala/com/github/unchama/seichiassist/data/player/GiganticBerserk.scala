@@ -44,4 +44,16 @@ case class GiganticBerserk(
     val current = stage * 10 + level
     LevelThresholds.giganticBerserkLevelList(current)
   }
+
+  /**
+   * 現在の `level` と `stage` において、倒した敵の総数(= `toatlExp`)を返します。
+   * 
+   * @return
+   *   倒した敵の総数(= `totalExp`)
+   */
+  def totalExpToCurrentLevel(exp: Int ): Int = {
+    val total = (stage * 10 + level) - 1
+    LevelThresholds.giganticBerserkLevelList.take(total).sum + exp
+  }
+  
 }
