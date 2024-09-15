@@ -181,7 +181,14 @@ class PlayerBlockBreakListener(
             .tryAcquire(manaToConsumeOnThisChunk)
             .unsafeRunSync() match {
             case Some(value) => reservedMana.addOne(value)
-            case None        => b.break()
+            case None        => 
+              // マナを消費しきっていたら処理を終了する
+              if (BreakUtil.isBreakBlockManaFullyConsumed(player)) 
+              {
+                event.setCancelled(true)
+                return
+              }
+              b.break()
           }
 
           // 減る耐久値の計算(溶岩及び水を破壊するとブロック１０個分の耐久値減少判定を行う)
