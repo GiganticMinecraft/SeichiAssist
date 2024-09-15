@@ -13,6 +13,8 @@ import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.BreakSkillTargetConfigAPI
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain.BreakSkillTargetConfigKey
+import com.github.unchama.seichiassist.subsystems.breakskilltriggerconfig.BreakSkillTriggerConfigAPI
+import com.github.unchama.seichiassist.subsystems.breakskilltriggerconfig.domain.BreakSkillTriggerConfigKey
 import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.targetedeffect._
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -34,6 +36,7 @@ object PassiveSkillMenu extends Menu {
   class Environment(
     implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player],
     implicit val breakSkillTargetConfigAPI: BreakSkillTargetConfigAPI[IO, Player],
+    implicit val breakSkillTriggerConfigAPI: BreakSkillTriggerConfigAPI[IO, Player],
     val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
     implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
