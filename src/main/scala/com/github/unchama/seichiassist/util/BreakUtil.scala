@@ -16,7 +16,6 @@ import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.{Active,
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.CardinalDirection
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain.BreakSkillTargetConfigKey
-import com.github.unchama.seichiassist.subsystems.breakskilltriggerconfig.domain.BreakSkillTriggerConfigKey
 import com.github.unchama.targetedeffect.player.ActionBarMessageEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.{ExternalPlugins, WorldGuardWrapper}
@@ -173,27 +172,6 @@ object BreakUtil {
     }
 
     canBreakBlockMadeFromQuartz
-  }
-
-  /**
-   * ブロック破壊時、「マナ切れ」かどうか判定する。
-   * @param player マナ切れブロック破壊停止設定を取得するプレイヤー
-   */
-  def isBreakBlockManaFullyConsumed(
-    player: Player, 
-    ): Boolean = {
-
-    val isBreakBlockManaFullyConsumed = SeichiAssist
-      .instance
-      .breakSkillTriggerConfigSystem
-      .api
-      .breakSkillTriggerConfig(player, BreakSkillTriggerConfigKey.ManaFullyConsumed)
-      .unsafeRunSync()
-    
-      if(isBreakBlockManaFullyConsumed){
-        ActionBarMessageEffect(s"${RED}マナ切れでブロック破壊を止めるスキルは有効化されています").run(player).unsafeRunSync()
-      }
-      isBreakBlockManaFullyConsumed
   }
 
   private def equalsIgnoreNameCaseWorld(name: String): Boolean = {
