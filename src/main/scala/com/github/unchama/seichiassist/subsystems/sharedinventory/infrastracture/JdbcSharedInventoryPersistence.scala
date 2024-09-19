@@ -17,9 +17,7 @@ class JdbcSharedInventoryPersistence[F[_]: Sync] extends SharedInventoryPersiste
    */
   override def clear(targetUuid: UUID): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      sql"UPDATE playerdata SET shareinv = NULL WHERE uuid = ${targetUuid.toString}"
-        .execute()
-        .apply()
+      sql"UPDATE playerdata SET shareinv = NULL WHERE uuid = ${targetUuid.toString}".execute()
     }
   }
 
@@ -32,7 +30,6 @@ class JdbcSharedInventoryPersistence[F[_]: Sync] extends SharedInventoryPersiste
         sql"SELECT shareinv FROM playerdata WHERE uuid = ${targetUuid.toString}"
           .map(rs => rs.string("shareinv"))
           .single()
-          .apply()
 
       serializedInventoryOpt.map(serializedInventory =>
         InventoryContents.ofNonEmpty(
@@ -56,7 +53,6 @@ class JdbcSharedInventoryPersistence[F[_]: Sync] extends SharedInventoryPersiste
           ItemListSerialization.serializeToBase64(inventoryContents.inventoryContents.asJava)
         sql"UPDATE playerdata SET shareinv = $serializedInventory WHERE uuid = ${targetUuid.toString}"
           .execute()
-          .apply()
       }
     }
 }
