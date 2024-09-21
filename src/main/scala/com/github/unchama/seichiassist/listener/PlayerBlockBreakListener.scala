@@ -107,9 +107,10 @@ class PlayerBlockBreakListener(
       .getOrElse(
         return
       )
+      
     if (!selectedSkill.range.isInstanceOf[MultiArea] || skillState.usageMode == Disabled) return
 
-    // マナを消費しきっていたら処理を終了
+    
     val playerLocY = player.getLocation.getBlockY - 1
     val skillArea = BreakArea(selectedSkill, skillState.usageMode)
     val breakAreaList = skillArea.makeBreakArea(player).unsafeRunSync()
@@ -123,7 +124,7 @@ class PlayerBlockBreakListener(
 
     import com.github.unchama.seichiassist.data.syntax._
     breakAreaList.foreach { breakArea =>
-      val BlockSearching.Result(breakBlocks, waterBlocks, lavaBlocks) =
+      val BlockSearching.Result(breakBlocks, _, _) =
         BlockSearching
           .searchForBlocksBreakableWithSkill(player, breakArea.gridPoints(), block)
           .unsafeRunSync()
@@ -137,36 +138,30 @@ class PlayerBlockBreakListener(
               .getBlockY > playerLocY || targetBlock == block
           )
 
-// このチャンクで消費されるマナ計算
-  val manaToConsumeOnThisChunk = ManaAmount {
-    (gravity + 1) * selectedSkill.manaCost * (breakBlocks.size + 1).toDouble / totalBreakRangeVolume
-  }
-  // 消費マナが不足している場合は処理を終了
-  manaApi
-  .manaAmount(player)
-  .skillUsageAmount(manaToConsumeOnThisChunk)
-  .unsafeRunSync() match {
-    case Some(value) => event.setCancelled(false)
-    case None =>
-      if (BreakSkillTriggerSettings.isBreakBlockManaFullyConsumed(player)) {
-        event.setCancelled(true)
-        return
-      }
-  }
-}
+          // このチャンクで消費されるマナ計算
+          val manaToConsumeOnThisChunk = ManaAmount {
+            (gravity + 1) * selectedSkill.manaCost * (breakBlocks.size + 1).toDouble / totalBreakRangeVolume
+          }
+          // 消費マナが不足している場合は処理を終了
+          manaApi
+          .manaAmount(player)
+          .skillUsageAmount(manaToConsumeOnThisChunk)
+          .unsafeRunSync() match {
+            case Some(_) =>
+            case None =>
+              if (BreakSkillTriggerSettings.isBreakBlockManaFullyConsumed(player)) {
+                event.setCancelled(true)
+                return
+              }
+          }
+    }
 
     // 追加マナ獲得
     manaApi
       .manaAmount(player)
       .restoreAbsolute(ManaAmount(BreakUtil.calcManaDrop(player)))
       .unsafeRunSync()
-/*
-    val selectedSkill = skillState
-      .activeSkill
-      .getOrElse(
-        return
-      )
-*/
+
     if (!selectedSkill.range.isInstanceOf[MultiArea] || skillState.usageMode == Disabled) return
 
     // 破壊不可能ブロックの時処理を終了
@@ -235,7 +230,7 @@ class PlayerBlockBreakListener(
             .tryAcquire(manaToConsumeOnThisChunk)
             .unsafeRunSync() match {
             case Some(value) => reservedMana.addOne(value)
-              b.break()
+            case None        => b.break()
           }
 
           // 減る耐久値の計算(溶岩及び水を破壊するとブロック１０個分の耐久値減少判定を行う)
