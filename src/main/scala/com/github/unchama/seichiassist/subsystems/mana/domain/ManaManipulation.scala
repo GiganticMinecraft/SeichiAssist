@@ -28,6 +28,11 @@ trait ManaManipulation[F[_]] {
    */
   def tryAcquire(amount: ManaAmount): F[Option[ManaAmount]]
 
+  /**
+   * スキル発動分のマナが足りない場合は `None` を返す作用。
+   */
+  def skillUsageAmount(amount: ManaAmount): F[Option[ManaAmount]]
+
 }
 
 object ManaManipulation {
@@ -49,6 +54,16 @@ object ManaManipulation {
           ref.modify { original =>
             original.tryUse(amount)(multiplier) match {
               case Some(reduced) => (reduced, Some(amount))
+              case None          => (original, None)
+            }
+          }
+        }
+      }
+      override def skillUsageAmount(amount: ManaAmount): F[Option[ManaAmount]] = {
+        dragonNightTimeMultiplierRef.get.flatMap { multiplier =>
+          ref.modify { original =>
+            original.tryConsume(amount)(multiplier) match {
+              case Some(reduced) => (reduced,Some(amount))
               case None          => (original, None)
             }
           }

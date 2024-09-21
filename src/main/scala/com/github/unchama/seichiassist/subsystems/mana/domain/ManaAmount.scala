@@ -12,6 +12,11 @@ case class ManaAmount(value: Double) {
     Option.when(resultingAmount >= 0.0)(ManaAmount(resultingAmount))
   }
 
+  def tryConsume(amount: ManaAmount)(manaMultiplier: ManaMultiplier): Option[ManaAmount] = {
+    val resultingAmount = value
+    Option.when(resultingAmount >= amount.multiply(manaMultiplier.value).value)(ManaAmount(resultingAmount))
+  }
+
   def multiply(rate: Double): ManaAmount = {
     require(rate >= 0.0, "マナ量乗算の倍率は非負である必要があります")
     ManaAmount(rate * value)
