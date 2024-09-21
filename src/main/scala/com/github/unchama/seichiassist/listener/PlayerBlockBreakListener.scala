@@ -145,14 +145,12 @@ class PlayerBlockBreakListener(
           // 消費マナが不足している場合は処理を終了
           manaApi
           .manaAmount(player)
-          .skillUsageAmount(manaToConsumeOnThisChunk)
+          .canAcquire(manaToConsumeOnThisChunk)
           .unsafeRunSync() match {
-            case Some(_) =>
-            case None =>
-              if (BreakSkillTriggerSettings.isBreakBlockManaFullyConsumed(player)) {
-                event.setCancelled(true)
-                return
-              }
+            case false if isBreakBlockManaFullyConsumed(player) => 
+              event.setCancelled(true) 
+              return
+            case _ => 
           }
     }
 
