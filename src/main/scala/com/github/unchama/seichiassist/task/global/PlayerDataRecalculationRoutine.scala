@@ -59,7 +59,7 @@ object PlayerDataRecalculationRoutine {
               val achievementIds = unlockTargets.map(_._1)
               playerData.TitleFlags.addAll(achievementIds)
               unlockTargets.foreach { case(achievementId, displayGroupName) =>
-                player.sendMessage(s"実績No$achievementId[$displayGroupName]が解除されました！おめでとうございます！")
+                player.sendMessage(s"[$displayGroupName]実績No$achievementIdが解除されました！おめでとうございます！")
               }
             }
           )

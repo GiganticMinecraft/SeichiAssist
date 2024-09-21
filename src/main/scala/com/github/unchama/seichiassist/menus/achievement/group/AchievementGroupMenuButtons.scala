@@ -129,7 +129,7 @@ object AchievementGroupMenuButtons {
                                 case Some(name) => name
                                 case None       => "未実装"
                               }
-                              player.sendMessage(s"実績No${achievement.id}[${displayGroupName}]を解除しました！おめでとうございます！")
+                              player.sendMessage(s"[${displayGroupName}]実績No${achievement.id}を解除しました！おめでとうございます！")
                             }
                             else {
                               MessageEffect(s"${RED}実績No${achievement.id}は条件を満たしていません。")(player)
