@@ -422,4 +422,25 @@ class PlayerBlockBreakListener(
     event.setCancelled(true)
     player.sendMessage(s"${RED}Y-59以下に敷かれたハーフブロックは破壊不可能です。")
   }
+  
+  /**
+   * ブロック破壊時、「マナ切れブロック破壊停止設定」を取得する。
+   * @param player マナ切れブロック破壊停止設定を取得するプレイヤー
+   */
+  def isBreakBlockManaFullyConsumed(
+    player: Player, 
+    ): Boolean = {
+
+    val isBreakBlockManaFullyConsumed = SeichiAssist
+      .instance
+      .breakSkillTriggerConfigSystem
+      .api
+      .breakSkillTriggerConfig(player, BreakSkillTriggerConfigKey.ManaFullyConsumed)
+      .unsafeRunSync()
+    
+      if(isBreakBlockManaFullyConsumed){
+        ActionBarMessageEffect(s"${RED}マナ切れでブロック破壊を止めるスキルは有効化されています").run(player).unsafeRunSync()
+      }
+      isBreakBlockManaFullyConsumed
+  }
 }
