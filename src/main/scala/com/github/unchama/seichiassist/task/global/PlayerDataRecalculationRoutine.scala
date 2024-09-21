@@ -5,6 +5,7 @@ import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.SeichiAchievement
+import com.github.unchama.seichiassist.achievement.hierarchy.AchievementGroup
 import org.bukkit.Bukkit
 
 import scala.concurrent.duration.FiniteDuration
@@ -48,13 +49,18 @@ object PlayerDataRecalculationRoutine {
           .toList
           .sequence
           .map(_.flatMap {
-            case (achievementId, true) => Some(achievementId)
+            case (achievementId, true) => 
+              val displayGroupName = AchievementGroup.getGroupNameByEntryId(achievementId).getOrElse("未実装")
+              Some((achievementId, displayGroupName))
             case _                     => None
           })
           .flatMap(unlockTargets =>
             IO {
-              playerData.TitleFlags.addAll(unlockTargets)
-              unlockTargets.map("実績No" + _ + "が解除されました！おめでとうございます！").foreach(player.sendMessage)
+              val achievementIds = unlockTargets.map(_._1)
+              playerData.TitleFlags.addAll(achievementIds)
+              unlockTargets.foreach { case(achievementId, displayGroupName) =>
+                player.sendMessage(s"実績No$achievementId[$displayGroupName]が解除されました！おめでとうございます！")
+              }
             }
           )
           .unsafeRunSync()

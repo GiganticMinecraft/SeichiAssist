@@ -19,6 +19,7 @@ import com.github.unchama.seichiassist.achievement.{
   NicknameMapping,
   SeichiAchievement
 }
+import com.github.unchama.seichiassist.achievement.hierarchy.AchievementGroup
 import com.github.unchama.seichiassist.menus.ColorScheme
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -124,7 +125,11 @@ object AchievementGroupMenuButtons {
                                 .playermap(player.getUniqueId)
                                 .TitleFlags
                                 .addOne(achievement.id)
-                              player.sendMessage(s"実績No${achievement.id}を解除しました！おめでとうございます！")
+                              val displayGroupName = AchievementGroup.getGroupNameByEntryId(achievement.id) match{
+                                case Some(name) => name
+                                case None       => "未実装"
+                              }
+                              player.sendMessage(s"実績No${achievement.id}[${displayGroupName}]を解除しました！おめでとうございます！")
                             }
                             else {
                               MessageEffect(s"${RED}実績No${achievement.id}は条件を満たしていません。")(player)
