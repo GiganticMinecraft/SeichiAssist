@@ -128,7 +128,8 @@ class PlayerBlockBreakListener(
       breakLength.x * breakLength.y * breakLength.z * skillArea.breakNum
     }
     // ブロック探索結果
-    val blockSearchResult: AxisAlignedCuboid => (List[BlockBreakableBySkill], List[Block], List[Block]) = {
+    val blockSearchResult
+      : AxisAlignedCuboid => (List[BlockBreakableBySkill], List[Block], List[Block]) = {
       breakArea: AxisAlignedCuboid =>
         val BlockSearching.Result(breakBlocks, waterBlocks, lavaBlocks) =
           BlockSearching

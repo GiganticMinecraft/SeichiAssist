@@ -14,7 +14,9 @@ case class ManaAmount(value: Double) {
 
   def tryConsume(amount: ManaAmount)(manaMultiplier: ManaMultiplier): Option[ManaAmount] = {
     val resultingAmount = value
-    Option.when(resultingAmount >= amount.multiply(manaMultiplier.value).value)(ManaAmount(resultingAmount))
+    Option.when(resultingAmount >= amount.multiply(manaMultiplier.value).value)(
+      ManaAmount(resultingAmount)
+    )
   }
 
   def multiply(rate: Double): ManaAmount = {
