@@ -30,7 +30,8 @@ object System {
         BreakSkillTriggerConfigRepositoryDefinition.withContext[G, Player]
       )
     } yield {
-      val breakSkillTriggerConfigRepository = breakSkillTriggerConfigRepositoryControls.repository
+      val breakSkillTriggerConfigRepository =
+        breakSkillTriggerConfigRepositoryControls.repository
 
       new System[F, Player] {
         override val api: BreakSkillTriggerConfigAPI[F, Player] =

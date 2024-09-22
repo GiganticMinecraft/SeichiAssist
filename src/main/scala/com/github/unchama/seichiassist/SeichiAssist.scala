@@ -496,7 +496,8 @@ class SeichiAssist extends JavaPlugin() {
   lazy val breakSkillTargetConfigSystem: subsystems.breakskilltargetconfig.System[IO, Player] =
     subsystems.breakskilltargetconfig.System.wired[IO, SyncIO].unsafeRunSync()
 
-  lazy val breakSkillTriggerConfigSystem: subsystems.breakskilltriggerconfig.System[IO, Player] =
+  lazy val breakSkillTriggerConfigSystem
+    : subsystems.breakskilltriggerconfig.System[IO, Player] =
     subsystems.breakskilltriggerconfig.System.wired[IO, SyncIO].unsafeRunSync()
 
   /* TODO: mineStackSystemは本来privateであるべきだが、mineStackにアイテムを格納するAPIが現状の
