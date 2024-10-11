@@ -6,6 +6,8 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.Inspectors.forAll
 import org.scalatest.wordspec.AnyWordSpec
 
+import scala.annotation.nowarn
+
 /**
  * Created by karayuu on 2020/10/07
  */
@@ -40,6 +42,7 @@ class ManagedWorldSpec extends AnyWordSpec with MockFactory {
     "return the appropriate truth-value" in {
       forAll(blockLineUpSkillEnableMap) {
         case (worldName, value) =>
+          @nowarn
           val world = mock[World]
           (world.getName _).expects().returning(worldName)
           assert(world.isBlockLineUpSkillEnabled == value)
@@ -51,6 +54,7 @@ class ManagedWorldSpec extends AnyWordSpec with MockFactory {
     "return the appropriate truth-value" in {
       forAll(inTrackedWorldMap) {
         case (worldName, value) =>
+          @nowarn
           val world = mock[World]
           (world.getName _).expects().returning(worldName)
           assert(world.shouldTrackBuildBlock == value)
