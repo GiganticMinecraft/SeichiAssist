@@ -29,7 +29,7 @@ trait ManaManipulation[F[_]] {
   def tryAcquire(amount: ManaAmount): F[Option[ManaAmount]]
 
   /**
-   * `amount` だけマナを消費することができれば `true`、消費できなければ `false` を返す作用
+   * `amount` だけマナを消費することが可能ならば `true`、そうでないなら `false` を返す作用
    */
   def canAcquire(amount: ManaAmount): F[Boolean]
 
