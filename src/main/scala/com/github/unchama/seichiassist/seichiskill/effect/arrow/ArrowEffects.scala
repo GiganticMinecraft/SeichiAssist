@@ -7,6 +7,7 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.effect.BukkitResources
+import org.bukkit.entity.AbstractArrow.PickupStatus
 import org.bukkit.entity._
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.PotionMeta
@@ -28,9 +29,10 @@ object ArrowEffects {
   def normalArrowEffect(
     implicit mainThread: OnMinecraftServerThread[IO]
   ): TargetedEffect[Player] =
-    arrowEffect[Arrow](
+    arrowEffect[AbstractArrow](
       ProjectileSpawnConfiguration(1.0, (0.0, 1.6, 0.0)),
-      Some(Sound.ENTITY_ARROW_SHOOT)
+      Some(Sound.ENTITY_ARROW_SHOOT),
+      _.setPickupStatus(PickupStatus.DISALLOWED)
     )
 
   def singleArrowBlizzardEffect(
@@ -65,10 +67,13 @@ object ArrowEffects {
   def singleArrowMeteoEffect(
     implicit mainThread: OnMinecraftServerThread[IO]
   ): TargetedEffect[Player] =
-    arrowEffect[Arrow](
+    arrowEffect[AbstractArrow](
       ProjectileSpawnConfiguration(1.0, (0.0, 1.6, 0.0)),
       Some(Sound.ENTITY_ARROW_SHOOT),
-      _.setGlowing(true)
+      { arrow =>
+        arrow.setGlowing(true)
+        arrow.setPickupStatus(PickupStatus.DISALLOWED)
+      }
     )
 
   def singleArrowExplosionEffect(

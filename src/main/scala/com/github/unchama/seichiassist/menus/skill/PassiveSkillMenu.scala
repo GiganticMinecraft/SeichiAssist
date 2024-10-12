@@ -13,6 +13,7 @@ import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.BreakSkillTargetConfigAPI
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain.BreakSkillTargetConfigKey
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.targetedeffect._
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -33,7 +34,8 @@ object PassiveSkillMenu extends Menu {
   class Environment(
     implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player],
     implicit val breakSkillTargetConfigAPI: BreakSkillTargetConfigAPI[IO, Player],
-    val ioCanOpenFirstPage: IO CanOpen FirstPage.type
+    val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   /**
@@ -260,7 +262,8 @@ object PassiveSkillMenu extends Menu {
             } else {
               List(
                 s"${GRAY}MOBの魂を${openerData.giganticBerserk.requiredExpToNextLevel()}回吸収すると更なる力が得られる",
-                s"$GRAY${openerData.giganticBerserk.exp}/${openerData.giganticBerserk.requiredExpToNextLevel()}"
+                s"$GRAY${openerData.giganticBerserk.exp}/${openerData.giganticBerserk.requiredExpToNextLevel()}",
+                s"${GRAY}MOB討伐総数:${openerData.giganticBerserk.totalNumberOfKilledEnemies}"
               )
             }
             val probability = 100 * openerData.giganticBerserk.manaRegenerationProbability()
