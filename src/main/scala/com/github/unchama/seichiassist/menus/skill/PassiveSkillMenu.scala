@@ -262,7 +262,8 @@ object PassiveSkillMenu extends Menu {
             } else {
               List(
                 s"${GRAY}MOBの魂を${openerData.giganticBerserk.requiredExpToNextLevel()}回吸収すると更なる力が得られる",
-                s"$GRAY${openerData.giganticBerserk.exp}/${openerData.giganticBerserk.requiredExpToNextLevel()}"
+                s"$GRAY${openerData.giganticBerserk.exp}/${openerData.giganticBerserk.requiredExpToNextLevel()}",
+                s"${GRAY}MOB討伐総数:${openerData.giganticBerserk.totalNumberOfKilledEnemies}"
               )
             }
             val probability = 100 * openerData.giganticBerserk.manaRegenerationProbability()
