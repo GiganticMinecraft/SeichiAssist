@@ -43,7 +43,7 @@ object AchievementGroup {
     (9001 to 9047, Anniversaries)
   )
   private val entryIdToGroup: Map[Int, AchievementGroup] = 
-    achievementIdRangeToGroupList.flatMap{
+    achievementIdRangeToGroupNameList.flatMap{
       case (range, group) => range.map(id => id -> group)
     }.toMap
 
