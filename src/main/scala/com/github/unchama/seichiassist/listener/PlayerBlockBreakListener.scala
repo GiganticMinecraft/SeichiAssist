@@ -8,7 +8,6 @@ import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.{AxisAlignedCuboid}
-import com.github.unchama.seichiassist.data.syntax._
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange.MultiArea
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.seichiskill.{BlockSearching, BreakArea}
@@ -113,24 +112,24 @@ class PlayerBlockBreakListener(
       )
     if (!selectedSkill.range.isInstanceOf[MultiArea] || skillState.usageMode == Disabled) return
 
-    // プレイヤーのY座標
-    val playerLocY = player.getLocation.getBlockY - 1
-    // スキル破壊範囲
-    val skillArea = BreakArea(selectedSkill, skillState.usageMode)
-    // 破壊エリアリスト
-    val breakAreaList = skillArea.makeBreakArea(player).unsafeRunSync()
-    // 複数種類ブロック同時破壊設定
-    val isMultiTypeBreakingSkillEnabled =
-      BreakUtil.performsMultipleIDBlockBreakWhenUsingSkills(player).unsafeRunSync()
-    // 破壊範囲のブロック計算
-    val totalBreakRangeVolume = {
-      val breakLength = skillArea.breakLength
-      breakLength.x * breakLength.y * breakLength.z * skillArea.breakNum
-    }
-    // ブロック探索結果
-    val blockSearchResult
-      : AxisAlignedCuboid => (List[BlockBreakableBySkill], List[Block], List[Block]) = {
-      breakArea: AxisAlignedCuboid =>
+    // 消費するマナが不足しているか判定
+    {
+      // プレイヤーのY座標
+      val playerLocY = player.getLocation.getBlockY - 1
+      // スキル破壊範囲
+      val skillArea = BreakArea(selectedSkill, skillState.usageMode)
+      // 破壊エリアリスト
+      val breakAreaList = skillArea.makeBreakArea(player).unsafeRunSync()
+      // 複数種類ブロック同時破壊設定
+      val isMultiTypeBreakingSkillEnabled =
+        BreakUtil.performsMultipleIDBlockBreakWhenUsingSkills(player).unsafeRunSync()
+      // 破壊範囲のブロック計算
+      val totalBreakRangeVolume = {
+        val breakLength = skillArea.breakLength
+        breakLength.x * breakLength.y * breakLength.z * skillArea.breakNum
+      }
+      breakAreaList.foreach { breakArea =>
+        import com.github.unchama.seichiassist.data.syntax._
         val BlockSearching.Result(breakBlocks, waterBlocks, lavaBlocks) =
           BlockSearching
             .searchForBlocksBreakableWithSkill(player, breakArea.gridPoints(), block)
@@ -144,22 +143,18 @@ class PlayerBlockBreakListener(
                 .getLocation
                 .getBlockY > playerLocY || targetBlock == block
             )
-        (breakBlocks, waterBlocks, lavaBlocks)
-    }
 
-    // 消費マナが不足しているか判定
-    breakAreaList.foreach { breakArea =>
-      val (breakBlocks, _, _) = blockSearchResult(breakArea)
-      // 破壊範囲で消費されるマナ計算
-      val manaToConsumeOnBreakArea = ManaAmount {
-        (gravity + 1) * selectedSkill.manaCost * (breakBlocks.size + 1).toDouble / totalBreakRangeVolume
-      }
-      // 消費マナが不足している場合は処理を終了
-      manaApi.manaAmount(player).canAcquire(manaToConsumeOnBreakArea).unsafeRunSync() match {
-        case false if isBreakBlockManaFullyConsumed(player) =>
-          event.setCancelled(true)
-          return
-        case _ =>
+        // 破壊範囲で消費されるマナ計算
+        val manaToConsumeOnBreakArea = ManaAmount {
+          (gravity + 1) * selectedSkill.manaCost * (breakBlocks.size + 1).toDouble / totalBreakRangeVolume
+        }
+        // 消費マナが不足している場合は処理を終了
+        manaApi.manaAmount(player).canAcquire(manaToConsumeOnBreakArea).unsafeRunSync() match {
+          case false if isBreakBlockManaFullyConsumed(player).unsafeRunSync() =>
+            event.setCancelled(true)
+            return
+          case _ =>
+        }
       }
     }
 
@@ -179,6 +174,20 @@ class PlayerBlockBreakListener(
 
     // ブロック破壊時に行う処理
     {
+      // プレイヤーのY座標
+      val playerLocY = player.getLocation.getBlockY - 1
+      // スキル破壊範囲
+      val skillArea = BreakArea(selectedSkill, skillState.usageMode)
+      // 破壊エリアリスト
+      val breakAreaList = skillArea.makeBreakArea(player).unsafeRunSync()
+      // 複数種類ブロック同時破壊設定
+      val isMultiTypeBreakingSkillEnabled =
+        BreakUtil.performsMultipleIDBlockBreakWhenUsingSkills(player).unsafeRunSync()
+      // 破壊範囲のブロック計算
+      val totalBreakRangeVolume = {
+        val breakLength = skillArea.breakLength
+        breakLength.x * breakLength.y * breakLength.z * skillArea.breakNum
+      }
       // エフェクト用に壊されるブロック全てのリストデータ
       val multiBreakList = new ArrayBuffer[Set[BlockBreakableBySkill]]
       // 壊される溶岩の全てのリストデータ
@@ -195,7 +204,21 @@ class PlayerBlockBreakListener(
       val b = new Breaks
       b.breakable {
         breakAreaList.foreach { breakArea =>
-          val (breakBlocks, waterBlocks, lavaBlocks) = blockSearchResult(breakArea)
+          import com.github.unchama.seichiassist.data.syntax._
+
+          val BlockSearching.Result(breakBlocks, waterBlocks, lavaBlocks) =
+            BlockSearching
+              .searchForBlocksBreakableWithSkill(player, breakArea.gridPoints(), block)
+              .unsafeRunSync()
+              .filterSolids(targetBlock =>
+                isMultiTypeBreakingSkillEnabled || BlockSearching
+                  .multiTypeBreakingFilterPredicate(block)(targetBlock)
+              )
+              .filterAll(targetBlock =>
+                player.isSneaking || targetBlock
+                  .getLocation
+                  .getBlockY > playerLocY || targetBlock == block
+              )
           // このチャンクで消費されるマナ
           val manaToConsumeOnThisChunk = ManaAmount {
             (gravity + 1) * selectedSkill.manaCost * (breakBlocks.size + 1).toDouble / totalBreakRangeVolume
