@@ -29,7 +29,7 @@ object AchievementGroup {
 
   case object Secrets extends AchievementGroup("極秘任務", Specials)
 
-  val achievementGroupRanges = List(
+  private val achievementIdRangeToGroupNameList = List(
     (1001 to 1012, BrokenBlockRanking),
     (2001 to 2014, PlacedBlockAmount),
     (3001 to 3019, BrokenBlockAmount),
@@ -42,8 +42,8 @@ object AchievementGroup {
     (8001 to 8003, Secrets),
     (9001 to 9047, Anniversaries)
   )
-  val entryIdToGroup: Map[Int, AchievementGroup] = 
-    achievementGroupRanges.flatMap{
+  private val entryIdToGroup: Map[Int, AchievementGroup] = 
+    achievementIdRangeToGroupList.flatMap{
       case (range, group) => range.map(id => id -> group)
     }.toMap
 
