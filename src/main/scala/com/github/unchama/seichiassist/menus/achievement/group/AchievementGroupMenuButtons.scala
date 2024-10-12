@@ -125,11 +125,14 @@ object AchievementGroupMenuButtons {
                                 .playermap(player.getUniqueId)
                                 .TitleFlags
                                 .addOne(achievement.id)
-                              val displayGroupName = AchievementGroup.getGroupNameByEntryId(achievement.id) match{
-                                case Some(name) => name
-                                case None       => "未実装"
-                              }
-                              player.sendMessage(s"[${displayGroupName}]実績No${achievement.id}を解除しました！おめでとうございます！")
+                              val displayGroupName =
+                                AchievementGroup.getGroupNameByEntryId(achievement.id) match {
+                                  case Some(name) => name
+                                  case None       => "未実装"
+                                }
+                              player.sendMessage(
+                                s"[${displayGroupName}]実績No${achievement.id}を解除しました！おめでとうございます！"
+                              )
                             }
                             else {
                               MessageEffect(s"${RED}実績No${achievement.id}は条件を満たしていません。")(player)
