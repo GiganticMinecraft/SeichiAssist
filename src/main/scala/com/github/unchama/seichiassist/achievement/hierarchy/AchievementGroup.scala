@@ -47,6 +47,9 @@ object AchievementGroup {
       case (range, group) => range.map(id => id -> group)
     }.toMap
 
+  /**
+   * @return 実績IDから実績IDが属する実績グループ名を取得する作用
+   */
   def getGroupNameByEntryId(entryId: Int): Option[String] = {
     entryIdToGroup.get(entryId).map(_.name)
   }
