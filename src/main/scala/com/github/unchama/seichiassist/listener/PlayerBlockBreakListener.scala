@@ -405,18 +405,16 @@ class PlayerBlockBreakListener(
    * マナ切れブロック破壊設定が `true` になっている場合、プレイヤーに破壊抑制メッセージを送信する。
    * @param player マナ切れブロック破壊停止設定を取得するプレイヤー
    */
-  def isBreakBlockManaFullyConsumed(player: Player): Boolean = {
-
-    val isBreakBlockManaFullyConsumed = SeichiAssist
-      .instance
-      .breakSkillTriggerConfigSystem
-      .api
-      .breakSkillTriggerConfig(player, BreakSkillTriggerConfigKey.ManaFullyConsumed)
-      .unsafeRunSync()
-
-    if (isBreakBlockManaFullyConsumed) {
-      ActionBarMessageEffect(s"${RED}マナ切れでブロック破壊を止めるスキルは有効化されています").run(player).unsafeRunSync()
-    }
-    isBreakBlockManaFullyConsumed
+  def isBreakBlockManaFullyConsumed(player: Player): IO[Boolean] = {
+    for {
+      isBreakBlockManaFullyConsumed <- SeichiAssist
+        .instance
+        .breakSkillTriggerConfigSystem
+        .api
+        .breakSkillTriggerConfig(player, BreakSkillTriggerConfigKey.ManaFullyConsumed)
+      _ <- ActionBarMessageEffect(s"${RED}マナ切れでブロック破壊を止めるスキルは有効化されています")
+        .run(player)
+        .whenA(isBreakBlockManaFullyConsumed)
+    } yield isBreakBlockManaFullyConsumed
   }
 }
