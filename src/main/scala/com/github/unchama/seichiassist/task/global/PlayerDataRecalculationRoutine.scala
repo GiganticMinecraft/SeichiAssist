@@ -49,17 +49,21 @@ object PlayerDataRecalculationRoutine {
           .toList
           .sequence
           .map(_.flatMap {
-            case (achievementId, true) => 
-              val displayGroupName = AchievementGroup.getGroupNameByEntryId(achievementId).getOrElse("未実装")
+            case (achievementId, true) =>
+              val displayGroupName =
+                AchievementGroup.getGroupNameByEntryId(achievementId).getOrElse("未実装")
               Some((achievementId, displayGroupName))
-            case _                     => None
+            case _ => None
           })
           .flatMap(unlockTargets =>
             IO {
               val achievementIds = unlockTargets.map(_._1)
               playerData.TitleFlags.addAll(achievementIds)
-              unlockTargets.foreach { case(achievementId, displayGroupName) =>
-                player.sendMessage(s"[${displayGroupName}]実績No${achievementId}が解除されました！おめでとうございます！")
+              unlockTargets.foreach {
+                case (achievementId, displayGroupName) =>
+                  player.sendMessage(
+                    s"[${displayGroupName}]実績No${achievementId}が解除されました！おめでとうございます！"
+                  )
               }
             }
           )
