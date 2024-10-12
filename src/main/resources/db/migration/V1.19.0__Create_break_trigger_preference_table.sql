@@ -1,9 +1,7 @@
 USE seichiassist;
 
-CREATE TABLE player_break_trigger_preference(
+CREATE TABLE player_break_suppression_preference(
     uuid CHAR(36) NOT NULL,
-    trigger_category ENUM('ManaFullyConsumed') NOT NULL,
-    do_not_break BOOL NOT NULL DEFAULT FALSE,
-    PRIMARY KEY(uuid, trigger_category),
-    INDEX index_player_break_trigger_preference_on_uuid (uuid)
+    do_break_suppression_due_to_mana BOOL NOT NULL DEFAULT FALSE,
+    FOREIGN KEY fk_player_break_suppression_preference_uuid REFERENCES playerdata(uuid)
 );
