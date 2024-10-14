@@ -47,8 +47,7 @@ object AchievementGroup {
    * @return 実績IDから実績IDが属する実績グループ名を取得する
    */
   def getGroupNameByEntryId(entryId: Int): Option[String] = {
-    achievementIdRangeToGroupNameList
-    .collectFirst {
+    achievementIdRangeToGroupNameList.collectFirst {
       case (range, group) if range contains entryId => group.name
     }
   }
