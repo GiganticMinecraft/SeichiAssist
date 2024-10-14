@@ -42,15 +42,14 @@ object AchievementGroup {
     (8001 to 8003, Secrets),
     (9001 to 9047, Anniversaries)
   )
-  private val entryIdToGroup: Map[Int, AchievementGroup] =
-    achievementIdRangeToGroupNameList.flatMap {
-      case (range, group) => range.map(id => id -> group)
-    }.toMap
 
   /**
-   * @return 実績IDから実績IDが属する実績グループ名を取得する作用
+   * @return 実績IDから実績IDが属する実績グループ名を取得する
    */
   def getGroupNameByEntryId(entryId: Int): Option[String] = {
-    entryIdToGroup.get(entryId).map(_.name)
+    achievementIdRangeToGroupNameList
+    .collectFirst {
+      case (range, group) if range contains entryId => group.name
+    }
   }
 }
