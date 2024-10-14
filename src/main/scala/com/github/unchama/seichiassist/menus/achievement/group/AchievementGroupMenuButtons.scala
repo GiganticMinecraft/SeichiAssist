@@ -126,10 +126,9 @@ object AchievementGroupMenuButtons {
                                 .TitleFlags
                                 .addOne(achievement.id)
                               val displayGroupName =
-                                AchievementGroup.getGroupNameByEntryId(achievement.id) match {
-                                  case Some(name) => name
-                                  case None       => "未実装"
-                                }
+                                AchievementGroup
+                                  .getGroupNameByEntryId(achievement.id)
+                                  .getOrElse("未実装")
                               player.sendMessage(
                                 s"[${displayGroupName}]実績No${achievement.id}を解除しました！おめでとうございます！"
                               )
