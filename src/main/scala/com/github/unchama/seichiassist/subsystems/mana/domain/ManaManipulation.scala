@@ -28,6 +28,11 @@ trait ManaManipulation[F[_]] {
    */
   def tryAcquire(amount: ManaAmount): F[Option[ManaAmount]]
 
+  /**
+   * `amount` だけマナを消費することが可能ならば `true`、そうでないなら `false` を返す作用
+   */
+  def canAcquire(amount: ManaAmount): F[Boolean]
+
 }
 
 object ManaManipulation {
@@ -50,6 +55,16 @@ object ManaManipulation {
             original.tryUse(amount)(multiplier) match {
               case Some(reduced) => (reduced, Some(amount))
               case None          => (original, None)
+            }
+          }
+        }
+      }
+      override def canAcquire(amount: ManaAmount): F[Boolean] = {
+        dragonNightTimeMultiplierRef.get.flatMap { multiplier =>
+          ref.modify { original =>
+            original.tryConsume(amount)(multiplier) match {
+              case Some(reduced) => (reduced, true)
+              case None          => (original, false)
             }
           }
         }
