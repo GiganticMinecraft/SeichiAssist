@@ -9,23 +9,25 @@ import com.github.unchama.seichiassist.subsystems.ranking.domain.{
 }
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
+import java.util.UUID
+
 class JdbcSeichiRankingRecordPersistence[F[_]: Sync]
     extends RankingRecordPersistence[F, SeichiAmountData] {
 
   override def getAllRankingRecords: F[Vector[RankingRecord[SeichiAmountData]]] =
     Sync[F].delay {
       DB.localTx { implicit session =>
-        sql"select name, totalbreaknum from playerdata"
+        sql"select name, uuid, totalbreaknum from playerdata"
           .map { rs =>
             RankingRecord(
               rs.string("name"),
+              UUID.fromString(rs.string("uuid")),
               SeichiAmountData(
                 SeichiExpAmount.ofNonNegative(rs.bigInt("totalbreaknum").longValueExact())
               )
             )
           }
           .list()
-          .apply()
           .toVector
       }
     }
