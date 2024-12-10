@@ -21,7 +21,7 @@ object PlayerSendable {
   implicit def forStringArray[F[_]: OnMinecraftServerThread]
     : PlayerSendable[Array[String], F] = { (player, content) =>
     OnMinecraftServerThread[F].runAction(SyncIO {
-      player.sendMessage(content)
+      player.sendMessage(content.mkString("\n"))
     })
   }
 
