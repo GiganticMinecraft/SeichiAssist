@@ -19,5 +19,6 @@ object BreakSuppressionPreference {
   /**
    * [[BreakSuppressionPreference]]の初期値
    */
-  val initial: BreakSuppressionPreference = BreakSuppressionPreference(doBreakSuppression = false)
+  val initial: BreakSuppressionPreference =
+    BreakSuppressionPreference(doBreakSuppression = false)
 }

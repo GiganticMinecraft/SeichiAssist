@@ -13,8 +13,8 @@ import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.BreakSkillTargetConfigAPI
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain.BreakSkillTargetConfigKey
-import com.github.unchama.seichiassist.subsystems.breakskilltriggerconfig.BreakSkillTriggerConfigAPI
-import com.github.unchama.seichiassist.subsystems.breakskilltriggerconfig.domain.BreakSkillTriggerConfigKey
+import com.github.unchama.seichiassist.subsystems.breaksuppressionpreference.BreakSuppressionPreferenceAPI
+import com.github.unchama.seichiassist.subsystems.breaksuppressionpreference.domain.BreakSuppressionPreference
 import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.targetedeffect._
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -36,7 +36,7 @@ object PassiveSkillMenu extends Menu {
   class Environment(
     implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player],
     implicit val breakSkillTargetConfigAPI: BreakSkillTargetConfigAPI[IO, Player],
-    implicit val breakSkillTriggerConfigAPI: BreakSkillTriggerConfigAPI[IO, Player],
+    implicit val breakSuppressionPreferenceAPI: BreakSuppressionPreferenceAPI[IO, Player],
     val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
     implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
@@ -236,8 +236,8 @@ object PassiveSkillMenu extends Menu {
     })
 
     val computeToggleManaFullyConsumedBreakStopButton: IO[Button] = RecomputedButton(for {
-      originalBreakStopConfig <- breakSkillTriggerConfigAPI
-        .breakSkillTriggerConfig(player, BreakSkillTriggerConfigKey.ManaFullyConsumed)
+      originalBreakStopConfig <- breakSuppressionPreferenceAPI.isBreakSuppressionEnabled(player)
+
     } yield {
       val baseLore = List(s"${YELLOW}マナ切れでブロック破壊を止めるスキル")
       val statusLore = if (originalBreakStopConfig) {
@@ -257,9 +257,7 @@ object PassiveSkillMenu extends Menu {
           .build(),
         LeftClickButtonEffect {
           SequentialEffect(
-            breakSkillTriggerConfigAPI.toggleBreakSkillTriggerConfig(
-              BreakSkillTriggerConfigKey.ManaFullyConsumed
-            ),
+            breakSuppressionPreferenceAPI.toggleBreakSuppression,
             DeferredEffect(IO {
               if (!originalBreakStopConfig) {
                 SequentialEffect(

@@ -4,4 +4,5 @@ import com.github.unchama.generic.RefDict
 
 import java.util.UUID
 
-trait BreakSuppressionPreferenceConfigPersistence[F[_]] extends RefDict[F, UUID, BreakSuppressionPreference]
+trait BreakSuppressionPreferencePersistence[F[_]]
+    extends RefDict[F, UUID, BreakSuppressionPreference]
