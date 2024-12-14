@@ -60,14 +60,10 @@ object ManaManipulation {
         }
       }
       override def canAcquire(amount: ManaAmount): F[Boolean] = {
-        dragonNightTimeMultiplierRef.get.flatMap { multiplier =>
-          ref.modify { original =>
-            original.tryConsume(amount)(multiplier) match {
-              case Some(reduced) => (reduced, true)
-              case None          => (original, false)
-            }
-          }
-        }
+        for {
+          multiplier <- dragonNightTimeMultiplierRef.get
+          original <- ref.get
+        } yield original.tryUse(amount)(multiplier).isDefined
       }
     }
 
