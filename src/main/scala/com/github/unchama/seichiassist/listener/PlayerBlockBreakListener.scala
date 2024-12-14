@@ -12,7 +12,6 @@ import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange.MultiArea
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.seichiskill.{BlockSearching, BreakArea}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
-import com.github.unchama.seichiassist.subsystems.breakskilltriggerconfig.domain.BreakSkillTriggerConfigKey
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
@@ -430,14 +429,14 @@ class PlayerBlockBreakListener(
    */
   def isBreakBlockManaFullyConsumed(player: Player): IO[Boolean] = {
     for {
-      isBreakBlockManaFullyConsumed <- SeichiAssist
+      breakSuppressionPreference <- SeichiAssist
         .instance
-        .breakSkillTriggerConfigSystem
+        .breakSuppressionPreferenceSystem
         .api
-        .breakSkillTriggerConfig(player, BreakSkillTriggerConfigKey.ManaFullyConsumed)
+        .isBreakSuppressionEnabled(player)
       _ <- ActionBarMessageEffect(s"${RED}マナ切れでブロック破壊を止めるスキルは有効化されています")
         .run(player)
-        .whenA(isBreakBlockManaFullyConsumed)
-    } yield isBreakBlockManaFullyConsumed
+        .whenA(breakSuppressionPreference)
+    } yield breakSuppressionPreference
   }
 }

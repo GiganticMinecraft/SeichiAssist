@@ -37,7 +37,7 @@ object System {
       new System[F, Player] {
         override val api: BreakSuppressionPreferenceAPI[F, Player] =
           new BreakSuppressionPreferenceAPI[F, Player] {
-            override def toggleBreakSuppressionPreference: Kleisli[F, Player, Unit] =
+            override def toggleBreakSuppression: Kleisli[F, Player, Unit] =
               Kleisli { player =>
                 ContextCoercion(
                   breakSuppressionPreferenceRepository(player).update(pref =>
@@ -46,7 +46,7 @@ object System {
                 )
               }
 
-            override def getBreakSuppressionPreference(player: Player): F[Boolean] =
+            override def isBreakSuppressionEnabled(player: Player): F[Boolean] =
               ContextCoercion(
                 breakSuppressionPreferenceRepository(player).get.map(_.doBreakSuppression)
               )
