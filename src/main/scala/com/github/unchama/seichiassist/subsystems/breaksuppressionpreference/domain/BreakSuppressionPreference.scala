@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.breakskilltriggerconfig.domain
+package com.github.unchama.seichiassist.subsystems.breaksuppressionpreference.domain
 
 case class BreakSuppressionPreference(doBreakSuppression: Boolean) {
 
