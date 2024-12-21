@@ -40,9 +40,8 @@ object System {
             override def toggleBreakSuppression: Kleisli[F, Player, Unit] =
               Kleisli { player =>
                 ContextCoercion(
-                  breakSuppressionPreferenceRepository(player).update(pref =>
-                    pref.copy(doBreakSuppression = !pref.doBreakSuppression)
-                  )
+                  breakSuppressionPreferenceRepository(player)
+                    .update(_.toggleBreakSuppression())
                 )
               }
 
