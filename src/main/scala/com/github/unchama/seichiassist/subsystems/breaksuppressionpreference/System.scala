@@ -6,10 +6,7 @@ import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breaksuppressionpreference.application.repository.BreakSuppressionPreferenceRepositoryDefinition
-import com.github.unchama.seichiassist.subsystems.breaksuppressionpreference.domain.{
-  BreakSuppressionPreference,
-  BreakSuppressionPreferencePersistence
-}
+import com.github.unchama.seichiassist.subsystems.breaksuppressionpreference.domain.BreakSuppressionPreferencePersistence
 import com.github.unchama.seichiassist.subsystems.breaksuppressionpreference.persistence.JdbcBreakSuppressionPreferencePersistence
 import org.bukkit.entity.Player
 
