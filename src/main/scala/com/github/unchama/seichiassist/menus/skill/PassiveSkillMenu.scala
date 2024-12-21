@@ -236,11 +236,13 @@ object PassiveSkillMenu extends Menu {
     })
 
     val computeToggleManaFullyConsumedBreakStopButton: IO[Button] = RecomputedButton(for {
-      originalBreakStopConfig <- breakSuppressionPreferenceAPI.isBreakSuppressionEnabled(player)
+      isBreakSuppressionEnabled <- breakSuppressionPreferenceAPI.isBreakSuppressionEnabled(
+        player
+      )
 
     } yield {
       val baseLore = List(s"${YELLOW}マナ切れでブロック破壊を止めるスキル")
-      val statusLore = if (originalBreakStopConfig) {
+      val statusLore = if (isBreakSuppressionEnabled) {
         List(s"${GREEN}ON (マナが切れるとブロック破壊を止めます。)", s"${DARK_RED}クリックでOFF")
       } else {
         List(s"${RED}OFF (マナが切れてもブロック破壊を続けます。)", s"${DARK_GREEN}クリックでON")
@@ -249,7 +251,7 @@ object PassiveSkillMenu extends Menu {
       Button(
         new IconItemStackBuilder(Material.LAPIS_LAZULI)
           .tap { builder =>
-            if (originalBreakStopConfig)
+            if (isBreakSuppressionEnabled)
               builder.enchanted()
           }
           .title(s"$WHITE$UNDERLINE${BOLD}マナ切れでブロック破壊を止めるスキル切り替え")
@@ -259,15 +261,15 @@ object PassiveSkillMenu extends Menu {
           SequentialEffect(
             breakSuppressionPreferenceAPI.toggleBreakSuppression,
             DeferredEffect(IO {
-              if (!originalBreakStopConfig) {
-                SequentialEffect(
-                  MessageEffect(s"${GREEN}マナが切れたらブロック破壊を止めるスキルを有効化しました。"),
-                  FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-                )
-              } else {
+              if (!isBreakSuppressionEnabled) {
                 SequentialEffect(
                   MessageEffect(s"${RED}マナが切れたらブロック破壊を止めるスキルを無効化しました。"),
                   FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
+                )
+              } else {
+                SequentialEffect(
+                  MessageEffect(s"${GREEN}マナが切れたらブロック破壊を止めるスキルを有効化しました。"),
+                  FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
                 )
               }
             })
