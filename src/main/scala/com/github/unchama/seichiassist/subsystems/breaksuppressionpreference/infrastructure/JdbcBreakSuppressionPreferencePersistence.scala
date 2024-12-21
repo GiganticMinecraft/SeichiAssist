@@ -13,13 +13,12 @@ class JdbcBreakSuppressionPreferencePersistence[F[_]: Sync]
     extends BreakSuppressionPreferencePersistence[F] {
 
   override def read(key: UUID): F[Option[BreakSuppressionPreference]] = Sync[F].delay {
-    val doBreakSuppression = DB.readOnly { implicit session =>
+    DB.readOnly { implicit session =>
       sql"SELECT do_break_suppression_due_to_mana FROM player_break_suppression_preference WHERE uuid = ${key.toString}"
-        .map(rs => rs.boolean("do_break_suppression_due_to_mana"))
+        .map(_.boolean("do_break_suppression_due_to_mana"))
         .single()
+        .map(BreakSuppressionPreference)
     }
-
-    doBreakSuppression.map(BreakSuppressionPreference)
   }
 
   override def write(key: UUID, value: BreakSuppressionPreference): F[Unit] = Sync[F].delay {
