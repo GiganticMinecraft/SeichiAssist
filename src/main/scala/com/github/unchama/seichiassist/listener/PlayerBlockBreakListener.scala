@@ -427,7 +427,7 @@ class PlayerBlockBreakListener(
    * マナ切れブロック破壊設定が `true` になっている場合、プレイヤーに破壊抑制メッセージを送信する。
    * @param player マナ切れブロック破壊停止設定を取得するプレイヤー
    */
-  def isBreakBlockManaFullyConsumed(player: Player): IO[Boolean] = {
+  private def isBreakBlockManaFullyConsumed(player: Player): IO[Boolean] = {
     for {
       breakSuppressionPreference <- SeichiAssist
         .instance
