@@ -14,7 +14,6 @@ import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.BreakSkillTargetConfigAPI
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain.BreakSkillTargetConfigKey
 import com.github.unchama.seichiassist.subsystems.breaksuppressionpreference.BreakSuppressionPreferenceAPI
-import com.github.unchama.seichiassist.subsystems.breaksuppressionpreference.domain.BreakSuppressionPreference
 import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.targetedeffect._
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
