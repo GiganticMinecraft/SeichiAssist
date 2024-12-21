@@ -31,6 +31,7 @@ import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.BreakSkillTargetConfigAPI
+import com.github.unchama.seichiassist.subsystems.breaksuppressionpreference.BreakSuppressionPreferenceAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.donate.DonatePremiumPointAPI
@@ -104,6 +105,7 @@ object TopLevelRouter {
     fairySpeechAPI: FairySpeechAPI[IO, Player],
     gridRegionAPI: GridRegionAPI[IO, Player, Location],
     breakSkillTargetConfigAPI: BreakSkillTargetConfigAPI[IO, Player],
+    breakSuppressionPreferenceAPI: BreakSuppressionPreferenceAPI[IO, Player],
     playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   ): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     import assortedRankingApi._

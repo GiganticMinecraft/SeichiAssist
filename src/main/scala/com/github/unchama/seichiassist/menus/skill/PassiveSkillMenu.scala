@@ -13,6 +13,7 @@ import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.BreakSkillTargetConfigAPI
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain.BreakSkillTargetConfigKey
+import com.github.unchama.seichiassist.subsystems.breaksuppressionpreference.BreakSuppressionPreferenceAPI
 import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.targetedeffect._
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -34,6 +35,7 @@ object PassiveSkillMenu extends Menu {
   class Environment(
     implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player],
     implicit val breakSkillTargetConfigAPI: BreakSkillTargetConfigAPI[IO, Player],
+    implicit val breakSuppressionPreferenceAPI: BreakSuppressionPreferenceAPI[IO, Player],
     val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
     implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
@@ -62,6 +64,7 @@ object PassiveSkillMenu extends Menu {
     val dynamicPartComputation = List(
       ChestSlotRef(0, 0) -> computeToggleMultipleBlockTypeDestructionButton,
       ChestSlotRef(0, 1) -> computeToggleChestBreakButton,
+      ChestSlotRef(0, 2) -> computeToggleManaFullyConsumedBreakStopButton,
       ChestSlotRef(1, 0) -> computeGiganticBerserkButton,
       ChestSlotRef(1, 1) -> computeToggleNetherQuartzBlockButton
     ).traverse(_.sequence)
@@ -223,6 +226,49 @@ object PassiveSkillMenu extends Menu {
                 SequentialEffect(
                   MessageEffect(s"${RED}スキルでのネザー水晶類ブロック破壊を無効化しました。"),
                   FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
+                )
+              }
+            })
+          )
+        }
+      )
+    })
+
+    val computeToggleManaFullyConsumedBreakStopButton: IO[Button] = RecomputedButton(for {
+      isBreakSuppressionEnabled <- breakSuppressionPreferenceAPI.isBreakSuppressionEnabled(
+        player
+      )
+
+    } yield {
+      val baseLore = List(s"${YELLOW}マナ切れでブロック破壊を止めるスキル")
+      val statusLore = if (isBreakSuppressionEnabled) {
+        List(s"${GREEN}ON (マナが切れるとブロック破壊を止めます。)", s"${DARK_RED}クリックでOFF")
+      } else {
+        List(s"${RED}OFF (マナが切れてもブロック破壊を続けます。)", s"${DARK_GREEN}クリックでON")
+      }
+
+      Button(
+        new IconItemStackBuilder(Material.LAPIS_LAZULI)
+          .tap { builder =>
+            if (isBreakSuppressionEnabled)
+              builder.enchanted()
+          }
+          .title(s"$WHITE$UNDERLINE${BOLD}マナ切れでブロック破壊を止めるスキル切り替え")
+          .lore(baseLore ++ statusLore)
+          .build(),
+        LeftClickButtonEffect {
+          SequentialEffect(
+            breakSuppressionPreferenceAPI.toggleBreakSuppression,
+            DeferredEffect(IO {
+              if (isBreakSuppressionEnabled) {
+                SequentialEffect(
+                  MessageEffect(s"${RED}マナが切れたらブロック破壊を止めるスキルを無効化しました。"),
+                  FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
+                )
+              } else {
+                SequentialEffect(
+                  MessageEffect(s"${GREEN}マナが切れたらブロック破壊を止めるスキルを有効化しました。"),
+                  FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
                 )
               }
             })

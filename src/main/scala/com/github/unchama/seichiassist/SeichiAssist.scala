@@ -63,6 +63,7 @@ import com.github.unchama.seichiassist.subsystems.autosave.application.SystemCon
 import com.github.unchama.seichiassist.subsystems.breakcount.{BreakCountAPI, BreakCountReadAPI}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.BreakSkillTargetConfigAPI
+import com.github.unchama.seichiassist.subsystems.breaksuppressionpreference.BreakSuppressionPreferenceAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.donate.DonatePremiumPointAPI
@@ -495,6 +496,10 @@ class SeichiAssist extends JavaPlugin() {
   lazy val breakSkillTargetConfigSystem: subsystems.breakskilltargetconfig.System[IO, Player] =
     subsystems.breakskilltargetconfig.System.wired[IO, SyncIO].unsafeRunSync()
 
+  lazy val breakSuppressionPreferenceSystem
+    : subsystems.breaksuppressionpreference.System[IO, Player] =
+    subsystems.breaksuppressionpreference.System.wired[IO, SyncIO].unsafeRunSync()
+
   /* TODO: mineStackSystemは本来privateであるべきだが、mineStackにアイテムを格納するAPIが現状の
       BreakUtilの実装から呼び出されている都合上やむを得ずpublicになっている。*/
   lazy val mineStackSystem: subsystems.minestack.System[IO, Player, ItemStack] =
@@ -562,6 +567,7 @@ class SeichiAssist extends JavaPlugin() {
     openirontrapdoor.System.wired,
     gridRegionSystem,
     breakSkillTargetConfigSystem,
+    breakSuppressionPreferenceSystem,
     joinAndQuitMessenger,
     elevatorSystem,
     blockLiquidStreamSystem,
@@ -746,6 +752,8 @@ class SeichiAssist extends JavaPlugin() {
     implicit val gridRegionAPI: GridRegionAPI[IO, Player, Location] = gridRegionSystem.api
     implicit val breakSkillTargetConfigAPI: BreakSkillTargetConfigAPI[IO, Player] =
       breakSkillTargetConfigSystem.api
+    implicit val breakSuppressionPreferenceAPI: BreakSuppressionPreferenceAPI[IO, Player] =
+      breakSuppressionPreferenceSystem.api
     implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player] = playerHeadSkinSystem.api
 
     val menuRouter = TopLevelRouter.apply
