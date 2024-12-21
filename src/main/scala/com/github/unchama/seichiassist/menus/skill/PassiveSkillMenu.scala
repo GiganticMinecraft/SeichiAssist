@@ -260,7 +260,7 @@ object PassiveSkillMenu extends Menu {
           SequentialEffect(
             breakSuppressionPreferenceAPI.toggleBreakSuppression,
             DeferredEffect(IO {
-              if (!isBreakSuppressionEnabled) {
+              if (isBreakSuppressionEnabled) {
                 SequentialEffect(
                   MessageEffect(s"${RED}マナが切れたらブロック破壊を止めるスキルを無効化しました。"),
                   FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
