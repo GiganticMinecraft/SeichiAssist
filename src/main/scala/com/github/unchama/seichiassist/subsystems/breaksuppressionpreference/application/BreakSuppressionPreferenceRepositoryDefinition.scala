@@ -16,7 +16,7 @@ object BreakSuppressionPreferenceRepositoryDefinition {
   ): RepositoryDefinition[F, Player, Ref[F, BreakSuppressionPreference]] =
     RefDictBackedRepositoryDefinition
       .usingUuidRefDict[F, Player, BreakSuppressionPreference](persistence)(
-        BreakSuppressionPreference(doBreakSuppression = false)
+        BreakSuppressionPreference.initial
       )
       .toRefRepository
 
