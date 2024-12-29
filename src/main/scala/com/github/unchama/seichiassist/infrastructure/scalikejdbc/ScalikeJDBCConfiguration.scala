@@ -18,7 +18,7 @@ object ScalikeJDBCConfiguration {
     singleLineMode = true,
     printUnprocessedStackTrace = false,
     stackTraceDepth = 15,
-    logLevel = Symbol("debug"),
+    logLevel = "debug",
     warningEnabled = false
   )
 
