@@ -13,6 +13,7 @@ import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.subsystems.donate.DonatePremiumPointAPI
 import com.github.unchama.seichiassist.subsystems.donate.domain.{Obtained, Used}
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import net.md_5.bungee.api.ChatColor._
 import org.bukkit.ChatColor.{GOLD, GREEN, RESET}
 import org.bukkit.Material
@@ -23,7 +24,8 @@ object PremiumPointTransactionHistoryMenu {
   class Environment(
     implicit val ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
     val ioCanOpenTransactionHistoryMenu: IO CanOpen PremiumPointTransactionHistoryMenu,
-    val donateAPI: DonatePremiumPointAPI[IO]
+    val donateAPI: DonatePremiumPointAPI[IO],
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
 }
@@ -37,13 +39,16 @@ case class PremiumPointTransactionHistoryMenu(pageNumber: Int) extends Menu {
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$BLUE${BOLD}プレミアムエフェクト購入履歴")
 
   def buttonToTransferTo(pageNumber: Int, skullOwnerReference: SkullOwnerReference)(
-    implicit ioCanOpenTransactionHistoryMenu: IO CanOpen PremiumPointTransactionHistoryMenu
-  ): Button =
+    implicit environment: Environment
+  ): Button = {
+    import environment._
+
     CommonButtons.transferButton(
       new SkullItemStackBuilder(skullOwnerReference),
       s"${pageNumber}ページ目へ",
       PremiumPointTransactionHistoryMenu(pageNumber)
     )
+  }
 
   def computeDynamicParts(player: Player)(
     implicit environment: PremiumPointTransactionHistoryMenu.Environment
