@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.traderules
 
-import com.github.unchama.generic.ListExtra
+import cats.effect.IO
 import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.factories.BukkitGachaSkullData
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaRarity.GachaRarity
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaRarity.GachaRarity._
@@ -8,11 +8,13 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
   CanBeSignedAsGachaPrize,
   GachaPrizeTableEntry
 }
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.tradesystems.domain.{
   TradeResult,
   TradeRule,
   TradeSuccessResult
 }
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 sealed trait BigOrRegular
@@ -26,7 +28,8 @@ object BigOrRegular {
 }
 
 class BukkitTrade(owner: String, gachaPrizeTable: Vector[GachaPrizeTableEntry[ItemStack]])(
-  implicit canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
+  implicit canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack],
+  playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
 ) extends TradeRule[ItemStack, (BigOrRegular, Int)] {
 
   /**
@@ -44,7 +47,7 @@ class BukkitTrade(owner: String, gachaPrizeTable: Vector[GachaPrizeTableEntry[It
     }
 
     val (nonTradable, tradable) =
-      ListExtra.partitionWith(contents) { itemStack =>
+      contents.partitionMap { itemStack =>
         if (bigList.exists(_.isSimilar(itemStack)))
           Right(BigOrRegular.Big -> itemStack.getAmount)
         else if (regularList.exists(_.isSimilar(itemStack)))

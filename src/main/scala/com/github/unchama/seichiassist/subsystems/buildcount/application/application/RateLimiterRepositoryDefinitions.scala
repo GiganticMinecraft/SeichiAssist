@@ -59,8 +59,7 @@ object RateLimiterRepositoryDefinitions {
   }
 
   def finalization[F[_]: Sync: JavaTime, Player: HasUuid](
-    implicit config: Configuration,
-    persistence: BuildAmountRateLimitPersistence[F]
+    implicit persistence: BuildAmountRateLimitPersistence[F]
   ): RepositoryFinalization[F, Player, RateLimiter[F, BuildExpAmount]] =
     RepositoryFinalization.withoutAnyFinalization {
       case (p, rateLimiter) =>

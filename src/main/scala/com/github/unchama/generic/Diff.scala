@@ -7,7 +7,7 @@ import cats.Eq
  *
  * [[A]] に関連付いた [[Eq]] インスタンスによって [[left]] と [[right]] が等価でないと判定されることが保証される。
  */
-case class Diff[A: Eq] private (left: A, right: A)
+case class Diff[A] private (left: A, right: A)
 
 object Diff {
 
