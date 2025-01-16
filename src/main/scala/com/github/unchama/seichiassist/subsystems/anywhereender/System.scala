@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.anywhereender
 
-import cats.Functor
 import cats.data.Kleisli
 import cats.effect.{Effect, IO, LiftIO}
 import com.github.unchama.generic.ContextCoercion
@@ -25,9 +24,7 @@ object System {
   import ContextCoercion._
   import cats.implicits._
 
-  def wired[F[_]: BreakCountReadAPI[IO, *[_], Player]: Functor: ContextCoercion[*[_], G], G[
-    _
-  ]: Effect](
+  def wired[F[_]: BreakCountReadAPI[IO, *[_], Player]: ContextCoercion[*[_], G], G[_]: Effect](
     configuration: SystemConfiguration
   )(implicit onMainThread: OnMinecraftServerThread[IO]): System[G] = new System[G] {
 

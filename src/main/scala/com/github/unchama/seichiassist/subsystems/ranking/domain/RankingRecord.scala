@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.ranking.domain
 
-case class RankingRecord[V](playerName: String, value: V)
+import java.util.UUID
+
+case class RankingRecord[V](playerName: String, uuid: UUID, value: V)
 
 case class RankingRecordWithPosition[V](record: RankingRecord[V], positionInRanking: Int)
