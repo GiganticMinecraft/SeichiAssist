@@ -17,13 +17,13 @@ class JdbcGachaEventPersistence[F[_]: Sync] extends GachaEventPersistence[F] {
         sql"""INSERT INTO gacha_events 
              | (event_name, event_start_time, event_end_time) VALUES 
              | (${gachaEvent.eventName.name}, ${gachaEvent.startDate}, ${gachaEvent.endDate})
-           """.stripMargin.execute().apply()
+           """.stripMargin.execute()
       }
     }
 
   override def deleteGachaEvent(eventName: GachaEventName): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      sql"DELETE FROM gacha_events WHERE event_name = ${eventName.name}".execute().apply()
+      sql"DELETE FROM gacha_events WHERE event_name = ${eventName.name}".execute()
     }
   }
 
@@ -38,7 +38,6 @@ class JdbcGachaEventPersistence[F[_]: Sync] extends GachaEventPersistence[F] {
           )
         }
         .toList()
-        .apply()
         .toVector
     }
   }
