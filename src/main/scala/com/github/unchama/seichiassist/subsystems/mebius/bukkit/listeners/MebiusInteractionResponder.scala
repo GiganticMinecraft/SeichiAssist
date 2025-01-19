@@ -35,9 +35,7 @@ class MebiusInteractionResponder(
         val helmet = player.getInventory.getHelmet
         val mebiusProperty = BukkitMebiusItemStackCodec
           .decodePropertyOfOwnedMebius(player)(helmet)
-          .getOrElse(
-            return
-          )
+          .getOrElse(return)
 
         val speechService = serviceRepository(player)
 
@@ -125,9 +123,7 @@ class MebiusInteractionResponder(
     val mebiusProperty =
       BukkitMebiusItemStackCodec
         .decodePropertyOfOwnedMebius(player)(player.getInventory.getHelmet)
-        .getOrElse(
-          return
-        )
+        .getOrElse(return)
 
     val speechService = serviceRepository(player)
 
@@ -155,9 +151,7 @@ class MebiusInteractionResponder(
     val mebiusProperty =
       BukkitMebiusItemStackCodec
         .decodePropertyOfOwnedMebius(player)(player.getInventory.getHelmet)
-        .getOrElse(
-          return
-        )
+        .getOrElse(return)
 
     val speechService = serviceRepository(player)
 

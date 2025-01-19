@@ -84,8 +84,9 @@ case class PremiumPointTransactionHistoryMenu(pageNumber: Int) extends Menu {
                     .build()
                 case Used(amount, date, forPurchaseOf) =>
                   {
-                    new IconItemStackBuilder(forPurchaseOf.materialOnUI)
-                      .title(s"$RESET${YELLOW}購入エフェクト：${forPurchaseOf.nameOnUI}")
+                    new IconItemStackBuilder(forPurchaseOf.materialOnUI).title(
+                      s"$RESET${YELLOW}購入エフェクト：${forPurchaseOf.nameOnUI}"
+                    )
                   }.lore(
                     s"$RESET${GOLD}プレミアムエフェクトポイント： -${amount.value}",
                     s"$RESET${GOLD}日時：$date"

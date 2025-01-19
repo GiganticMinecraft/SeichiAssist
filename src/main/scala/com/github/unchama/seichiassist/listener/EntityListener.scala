@@ -53,9 +53,7 @@ class EntityListener(
             .getBlockAt(projectile.getLocation.add(projectile.getVelocity.normalize)),
           MaterialSets.materials
         )
-        .getOrElse(
-          return
-        )
+        .getOrElse(return)
 
     // 整地ワールドでは重力値によるキャンセル判定を行う(スキル判定より先に判定させること)
     if (BreakUtil.getGravity(player, block, isAssault = false) > 3) {
@@ -73,9 +71,7 @@ class EntityListener(
     // 実際に使用するツール
     val tool = MaterialSets
       .refineItemStack(player.getInventory.getItemInMainHand, MaterialSets.breakToolMaterials)
-      .getOrElse(
-        return
-      )
+      .getOrElse(return)
 
     // 耐久値がマイナスかつ耐久無限ツールでない時処理を終了
     if (
@@ -97,11 +93,7 @@ class EntityListener(
     val playerData = playermap(player.getUniqueId)
 
     val skillState = playerData.skillState.get.unsafeRunSync()
-    val selectedSkill = skillState
-      .activeSkill
-      .getOrElse(
-        return
-      )
+    val selectedSkill = skillState.activeSkill.getOrElse(return)
     val activeSkillArea = BreakArea(selectedSkill, skillState.usageMode)
 
     val breakArea = activeSkillArea.makeBreakArea(player).unsafeRunSync().head
