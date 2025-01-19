@@ -15,7 +15,8 @@ import com.github.unchama.seichiassist.menus.gridregion.GridRegionMenu
 import com.github.unchama.seichiassist.subsystems.gridregion.GridRegionAPI
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
-import com.github.unchama.util.external.ExternalPlugins
+import com.sk89q.worldedit.WorldEdit
+import com.sk89q.worldedit.bukkit.BukkitAdapter
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryType
@@ -69,34 +70,34 @@ object RegionMenu extends Menu {
     val computeButtonToClaimRegion: IO[Button] = for {
       regionCount <- gridRegionAPI.regionCount(player)
     } yield {
-      val selection = ExternalPlugins.getWorldEdit.getSelection(player)
-
+      val session = WorldEdit.getInstance().getSessionManager.get(BukkitAdapter.adapt(player))
+      val world = BukkitAdapter.adapt(player.getWorld)
+      val isSelected = session.isSelectionDefined(world)
       val playerHasPermission = player.hasPermission("worldguard.region.claim")
-      val isSelectionNull = selection == null
-      val selectionHasEnoughSpace =
-        if (!isSelectionNull)
-          selection.getLength >= 10 && selection.getWidth >= 10
-        else false
 
-      val canMakeRegion = playerHasPermission && !isSelectionNull && selectionHasEnoughSpace
+      val selectionOpt = Option.when(isSelected)(session.getSelection(world))
+      val selectionHasEnoughSpace =
+        selectionOpt.exists(selection => selection.getLength >= 10 && selection.getWidth >= 10)
+
+      val canMakeRegion = playerHasPermission && !isSelected && selectionHasEnoughSpace
 
       val iconItemStack = {
-
         val lore = {
-          if (!playerHasPermission)
+          if (!playerHasPermission) {
             Seq(s"${RED}このワールドでは", s"${RED}保護を作成できません")
-          else if (isSelectionNull)
+          } else if (!isSelected) {
             Seq(s"${RED}範囲指定されていません", s"${RED}先に木の斧で2か所クリックしてネ")
-          else if (!selectionHasEnoughSpace)
+          } else if (!selectionHasEnoughSpace) {
             Seq(s"${RED}選択された範囲が狭すぎます", s"${RED}一辺当たり最低10ブロック以上にしてネ")
-          else
+          } else {
             Seq(s"$DARK_GREEN${UNDERLINE}範囲指定されています", s"$DARK_GREEN${UNDERLINE}クリックすると保護を作成します")
+          }
         } ++ {
           if (playerHasPermission)
             Seq(
               s"${GRAY}Y座標は自動で全範囲保護されます",
               s"${YELLOW}A new region has been claimed",
-              s"${YELLOW}named '${getName}_$regionCount'.",
+              s"${YELLOW}named '${getName}_${regionCount.value}'.",
               s"${GRAY}と出れば保護設定完了です",
               s"${RED}赤色で別の英文が出た場合",
               s"${GRAY}保護の設定に失敗しています",
@@ -108,7 +109,7 @@ object RegionMenu extends Menu {
         }
 
         import scala.util.chaining._
-        new IconItemStackBuilder(Material.GOLD_AXE)
+        new IconItemStackBuilder(Material.GOLDEN_AXE)
           .tap { b => if (canMakeRegion) b.enchanted() }
           .title(s"$YELLOW$UNDERLINE${BOLD}保護の作成")
           .lore(lore.toList)
@@ -120,7 +121,7 @@ object RegionMenu extends Menu {
         action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)(_ =>
           if (!playerHasPermission)
             MessageEffect(s"${RED}このワールドでは保護を作成できません")
-          else if (isSelectionNull)
+          else if (!isSelected)
             SequentialEffect(
               MessageEffect(s"${RED}先に木の斧で範囲を指定してからこのボタンを押してください"),
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
@@ -133,7 +134,7 @@ object RegionMenu extends Menu {
           else
             SequentialEffect(
               CommandEffect("/expand vert"),
-              CommandEffect(s"rg claim ${player.getName}_$regionCount"),
+              CommandEffect(s"rg claim ${player.getName}_${regionCount.value}"),
               gridRegionAPI.createAndClaimRegionSelectedOnWorldGuard,
               CommandEffect("/sel"),
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
@@ -153,7 +154,7 @@ object RegionMenu extends Menu {
         s"$GREEN④メニューの${YELLOW}金の斧${GREEN}をクリック"
       )
 
-      val iconItemStack = new IconItemStackBuilder(Material.WOOD_AXE)
+      val iconItemStack = new IconItemStackBuilder(Material.WOODEN_AXE)
         .title(s"$YELLOW$UNDERLINE${BOLD}保護設定用の木の斧を召喚")
         .lore(
           wandUsage ++ List(
