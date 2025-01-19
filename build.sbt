@@ -86,7 +86,7 @@ val testDependencies = Seq(
 ).map(_ % "test")
 
 val dependenciesToEmbed = Seq(
-  "org.scala-lang.modules" %% "scala-collection-contrib" % "0.3.0",
+  "org.scala-lang.modules" %% "scala-collection-contrib" % "0.4.0",
 
   // DB
   "org.mariadb.jdbc" % "mariadb-java-client" % "3.5.1",
