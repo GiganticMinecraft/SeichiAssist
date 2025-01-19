@@ -23,7 +23,6 @@ class JdbcSeichiAmountDataPersistence[F[_]](implicit F: Sync[F])
             )
           }
           .first()
-          .apply()
       }
     }
 
@@ -32,7 +31,6 @@ class JdbcSeichiAmountDataPersistence[F[_]](implicit F: Sync[F])
       DB.localTx { implicit session =>
         sql"update playerdata set totalbreaknum = ${value.expAmount.amount} where uuid = ${key.toString}"
           .update()
-          .apply()
       }
     }
 
