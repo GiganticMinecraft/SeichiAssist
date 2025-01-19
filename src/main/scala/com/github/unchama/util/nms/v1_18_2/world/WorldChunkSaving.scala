@@ -166,8 +166,10 @@ object WorldChunkSaving {
         val entityChunkZ = Entity.chunkZ(entity)
 
         if (
-          Entity.loadedToAChunk(entity) && World
-            .isChunkLoaded(nmsWorldServer)(entityChunkX, entityChunkZ)
+          Entity.loadedToAChunk(entity) && World.isChunkLoaded(nmsWorldServer)(
+            entityChunkX,
+            entityChunkZ
+          )
         ) {
           val chunk = World.getChunkAtCoordinate(nmsWorldServer)(entityChunkX, entityChunkZ)
 
