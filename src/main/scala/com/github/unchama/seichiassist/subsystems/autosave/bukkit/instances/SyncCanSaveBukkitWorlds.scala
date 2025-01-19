@@ -15,15 +15,11 @@ object SyncCanSaveBukkitWorlds {
       def saveWorld(world: World): Unit = {
         // WARNを防ぐためMinecraftサーバーデフォルトの自動セーブは無効化
         val server = getFieldAsAccessibleField(Bukkit.getServer.getClass, "console")
-          .getOrElse(
-            return
-          )
+          .getOrElse(return)
           .get(Bukkit.getServer)
 
         getFieldAsAccessibleField(server.getClass, "autosavePeriod")
-          .getOrElse(
-            return
-          )
+          .getOrElse(return)
           .set(server, 0)
 
         world.save()

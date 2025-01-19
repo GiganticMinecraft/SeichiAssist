@@ -30,11 +30,7 @@ object OnClickTitleMenu {
     import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 
     // 外枠のクリック処理なら終了
-    event
-      .getClickedInventory
-      .ifNull(
-        return
-      )
+    event.getClickedInventory.ifNull(return)
 
     // インベントリを開けたのがプレイヤーではない時終了
     val view = event.getView
@@ -45,11 +41,7 @@ object OnClickTitleMenu {
     }
 
     // インベントリが存在しない時終了
-    val topInventory = view
-      .getTopInventory
-      .ifNull(
-        return
-      )
+    val topInventory = view.getTopInventory.ifNull(return)
 
     import com.github.unchama.util.InventoryUtil._
 
@@ -57,11 +49,7 @@ object OnClickTitleMenu {
     if (topInventory.row != 4) {
       return
     }
-    val current = event
-      .getCurrentItem
-      .ifNull(
-        return
-      )
+    val current = event.getCurrentItem.ifNull(return)
 
     val player = he.asInstanceOf[Player]
     val pd = SeichiAssist.playermap(player.getUniqueId)
