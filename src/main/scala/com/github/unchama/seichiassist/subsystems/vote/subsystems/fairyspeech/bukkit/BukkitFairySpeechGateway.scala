@@ -24,11 +24,11 @@ class BukkitFairySpeechGateway[F[_]: Sync: Timer](player: Player)
   import cats.implicits._
 
   override def playSpeechSound: F[Unit] = for {
-    _ <- FocusedSoundEffectF(Sound.BLOCK_NOTE_PLING, 2.0f, 1.0f).run(player)
+    _ <- FocusedSoundEffectF(Sound.BLOCK_NOTE_BLOCK_PLING, 2.0f, 1.0f).run(player)
     _ <- Timer[F].sleep(100.millis)
-    _ <- FocusedSoundEffectF(Sound.BLOCK_NOTE_PLING, 2.0f, 1.5f).run(player)
+    _ <- FocusedSoundEffectF(Sound.BLOCK_NOTE_BLOCK_PLING, 2.0f, 1.5f).run(player)
     _ <- Timer[F].sleep(100.millis)
-    _ <- FocusedSoundEffectF(Sound.BLOCK_NOTE_PLING, 2.0f, 2.0f).run(player)
+    _ <- FocusedSoundEffectF(Sound.BLOCK_NOTE_BLOCK_PLING, 2.0f, 2.0f).run(player)
   } yield {}
 
 }

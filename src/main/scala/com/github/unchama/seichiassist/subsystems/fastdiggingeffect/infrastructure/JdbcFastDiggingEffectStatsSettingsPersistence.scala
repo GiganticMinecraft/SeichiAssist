@@ -33,7 +33,6 @@ class JdbcFastDiggingEffectStatsSettingsPersistence[F[_]: Sync]
       sql"select messageflag from playerdata where uuid = ${key.toString}"
         .map { rs => booleanToSettings(rs.boolean("messageflag")) }
         .headOption()
-        .apply()
     }
   }
 
@@ -42,9 +41,7 @@ class JdbcFastDiggingEffectStatsSettingsPersistence[F[_]: Sync]
       DB.localTx { implicit session =>
         val encoded = settingsToBoolean(value)
 
-        sql"update playerdata set messageflag = $encoded where uuid = ${key.toString}"
-          .update()
-          .apply()
+        sql"update playerdata set messageflag = $encoded where uuid = ${key.toString}".update()
       }
     }
 }
