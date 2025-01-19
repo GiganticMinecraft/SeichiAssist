@@ -54,11 +54,8 @@ class PlayerBlockBreakListener(
 
     if (!player.getWorld.isSeichiSkillAllowed) return
 
-    val block = MaterialSets
-      .refineBlock(event.getBlock, MaterialSets.materials)
-      .getOrElse(
-        return
-      )
+    val block =
+      MaterialSets.refineBlock(event.getBlock, MaterialSets.materials).getOrElse(return)
 
     // 重力値によるキャンセル判定(スキル判定より先に判定させること)
     val gravity = BreakUtil.getGravity(player, block, isAssault = false)
@@ -77,9 +74,7 @@ class PlayerBlockBreakListener(
     // 実際に使用するツール
     val tool: BreakTool = MaterialSets
       .refineItemStack(player.getInventory.getItemInMainHand, MaterialSets.breakToolMaterials)
-      .getOrElse(
-        return
-      )
+      .getOrElse(return)
 
     // 耐久値がマイナスかつ耐久無限ツールでない時処理を終了
     if (
@@ -103,11 +98,7 @@ class PlayerBlockBreakListener(
     }
 
     // 選択したスキル
-    val selectedSkill = skillState
-      .activeSkill
-      .getOrElse(
-        return
-      )
+    val selectedSkill = skillState.activeSkill.getOrElse(return)
     if (!selectedSkill.range.isInstanceOf[MultiArea] || skillState.usageMode == Disabled) return
 
     // 消費するマナが不足しているか判定

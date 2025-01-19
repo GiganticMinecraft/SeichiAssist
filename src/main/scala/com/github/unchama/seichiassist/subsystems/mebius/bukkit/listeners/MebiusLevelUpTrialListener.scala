@@ -31,9 +31,7 @@ class MebiusLevelUpTrialListener(
     val oldMebiusProperty =
       BukkitMebiusItemStackCodec
         .decodePropertyOfOwnedMebius(player)(player.getInventory.getHelmet)
-        .getOrElse(
-          return
-        )
+        .getOrElse(return)
 
     val newMebiusProperty = oldMebiusProperty.tryUpgradeByOneLevel[SyncIO].unsafeRunSync()
 
