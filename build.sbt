@@ -149,8 +149,10 @@ assembly / assemblyMergeStrategy := {
   // cf. https://qiita.com/yokra9/items/1e72646623f962ce02ee と ChatGPTに聞いた
   case PathList("META-INF", "versions", "9", "module-info.class") => MergeStrategy.discard
   case PathList(ps @ _*) if ps.last endsWith "LICENSE" => MergeStrategy.rename
-  case PathList("org", "apache", "commons", "logging", xs @ _*) =>
-    MergeStrategy.last
+  case PathList("org", "apache", "commons", "logging", xs @ _*) => MergeStrategy.last
+  case PathList("plugin.yml") => MergeStrategy.first
+  case PathList("config.yml") => MergeStrategy.first
+  case PathList("defaults", "config.yml") => MergeStrategy.first
   case otherFile =>
     val oldStrategy = (assembly / assemblyMergeStrategy).value
     oldStrategy(otherFile)
