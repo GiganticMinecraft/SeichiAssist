@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.mebius.bukkit.listeners
 
-import cats.effect.{Effect, IO, SyncIO, Timer}
+import cats.effect.{IO, SyncIO, Timer}
 import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
@@ -16,7 +16,7 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.FiniteDuration
 
-class MebiusPlayerJoinGreeter[F[_]: Effect](
+class MebiusPlayerJoinGreeter[F[_]](
   implicit effectEnvironment: EffectEnvironment,
   speechServiceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]],
   timer: Timer[IO]
