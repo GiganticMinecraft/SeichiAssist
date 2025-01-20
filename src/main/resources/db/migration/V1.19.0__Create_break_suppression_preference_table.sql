@@ -1,6 +1,6 @@
 USE seichiassist;
 
-CREATE TABLE player_break_suppression_preference(
+CREATE TABLE IF NOT EXISTS player_break_suppression_preference(
     uuid CHAR(36) NOT NULL,
     do_break_suppression_due_to_mana BOOL NOT NULL DEFAULT FALSE,
     PRIMARY KEY (uuid),
