@@ -54,15 +54,14 @@ object MineStackObject {
     category: MineStackObjectCategory,
     mineStackObjectName: String,
     japaneseName: String,
-    material: Material,
-    durability: Short
+    material: Material
   )(
     implicit minecraftMaterial: MinecraftMaterial[Material, ItemStack]
   ): MineStackObject[ItemStack] = {
     MineStackObject(
       mineStackObjectName,
       Some(japaneseName),
-      minecraftMaterial.toItemStack(material, durability),
+      minecraftMaterial.toItemStack(material),
       hasNameLore = false,
       category
     )
