@@ -15,18 +15,17 @@ object FiberAdjoinedRepositoryDefinition {
   def extending[G[_]: Sync, F[_]: ConcurrentEffect, Player, R](
     definition: RepositoryDefinition.Phased[G, Player, R]
   ): definition.Self[R FiberAdjoined F] =
-    definition.flatXmapWithIntermediateEffects(r =>
-      Deferred.in[G, F, Fiber[F, Nothing]].map(r -> _)
-    ) {
-      case (r, _) =>
-        Monad[G].pure(r)
-    } {
-      case (r, fiber) =>
-        // 終了時にファイバーの開始を待ち、開始されたものをすぐにcancelする
-        EffectExtra
-          .runAsyncAndForget[F, G, Unit] {
-            fiber.get.flatMap(_.cancel)
-          }
-          .as(r)
-    }
+    definition
+      .flatXmapWithIntermediateEffects(r => Deferred.in[G, F, Fiber[F, Nothing]].map(r -> _)) {
+        case (r, _) =>
+          Monad[G].pure(r)
+      } {
+        case (r, fiber) =>
+          // 終了時にファイバーの開始を待ち、開始されたものをすぐにcancelする
+          EffectExtra
+            .runAsyncAndForget[F, G, Unit] {
+              fiber.get.flatMap(_.cancel)
+            }
+            .as(r)
+      }
 }
