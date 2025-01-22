@@ -35,5 +35,7 @@ public class PlayerDeathEventListener implements Listener {
                 p.sendMessage(msg);
             }
         }
+
+        event.setDeathMessage(null);
     }
 }
