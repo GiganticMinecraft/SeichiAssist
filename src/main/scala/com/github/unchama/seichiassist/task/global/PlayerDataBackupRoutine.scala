@@ -27,8 +27,10 @@ object PlayerDataBackupRoutine {
         import scala.jdk.CollectionConverters._
 
         for {
+          _ <- SendMessageEffect.sendMessageToEveryoneIgnoringPreferenceIO(
+            s"${AQUA}プレイヤーデータセーブ中…"
+          )
           _ <- IO {
-            SendMessageEffect.sendMessageToEveryoneIgnoringPreference(s"${AQUA}プレイヤーデータセーブ中…")
             Bukkit.getLogger.info(s"${AQUA}プレイヤーデータセーブ中…")
           }
           players <- IO {
@@ -38,8 +40,10 @@ object PlayerDataBackupRoutine {
             PlayerDataSaveTask
               .savePlayerData[IO](player, SeichiAssist.playermap(player.getUniqueId))
           }
+          _ <- SendMessageEffect.sendMessageToEveryoneIgnoringPreferenceIO(
+            s"${AQUA}プレイヤーデータセーブ完了"
+          )
           _ <- IO {
-            SendMessageEffect.sendMessageToEveryoneIgnoringPreference(s"${AQUA}プレイヤーデータセーブ完了")
             Bukkit.getLogger.info(s"${AQUA}プレイヤーデータセーブ完了")
           }
         } yield ()
