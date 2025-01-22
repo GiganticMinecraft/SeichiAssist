@@ -36,7 +36,6 @@ object V1_1_0_AddUnbreakableToNarutoRemake {
 
     itemStack.clone().tap { clone =>
       import clone._
-      setDurability(0.toShort)
       setItemMeta {
         getItemMeta.tap { itemMeta =>
           import itemMeta._
