@@ -14,7 +14,7 @@ object StickCommand {
   val executor: TabExecutor = playerCommandBuilder
     .buildWithExecutionF { context =>
       // 初見プレイヤー用とは別に簡潔な説明
-      val stickLore = List("棒を持って右クリックもしくは左クリックでメニューを開きます。", "各メニューの詳細は公式サイトで確認できます。")
+      val stickLore = List("棒を持って右クリックもしくは", "左クリックでメニューを開きます。", "各メニューの詳細は公式サイトで確認できます。")
       val stickItemStack = new ItemStack(Material.STICK, 1).tap { itemStack =>
         import itemStack._
         val meta = getItemMeta
