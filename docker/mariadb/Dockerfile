@@ -1,5 +1,5 @@
-# syntax=docker/dockerfile:1.9
-FROM mariadb:10.11.6
+# syntax=docker/dockerfile:1.13
+FROM mariadb:10.11.10
 
 WORKDIR /docker-entrypoint-initdb.d
 

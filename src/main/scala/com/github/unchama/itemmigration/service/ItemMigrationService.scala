@@ -20,8 +20,10 @@ case class ItemMigrationService[F[_], -T <: ItemMigrationTarget[F]](
       for {
         appliedVersions <- persistence.getVersionsAppliedTo(target)(lock)
         migrationsToApply = migrations.yetToBeApplied(appliedVersions)
-        _ <- logger
-          .logMigrationVersionsToBeApplied(migrationsToApply.migrations.map(_.version), target)
+        _ <- logger.logMigrationVersionsToBeApplied(
+          migrationsToApply.migrations.map(_.version),
+          target
+        )
         _ <-
           if (migrationsToApply.isEmpty) F.unit
           else target.runMigration(migrationsToApply.toSingleConversion)
