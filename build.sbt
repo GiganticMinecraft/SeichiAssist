@@ -93,7 +93,7 @@ val dependenciesToEmbed = Seq(
   "org.scalikejdbc" %% "scalikejdbc" % "4.3.2",
 
   // redis
-  "com.github.etaty" %% "rediscala" % "1.9.0",
+  "io.github.rediscala" %% "rediscala" % "1.17.0",
 
   // effect system
   "org.typelevel" %% "cats-core" % "2.13.0",
