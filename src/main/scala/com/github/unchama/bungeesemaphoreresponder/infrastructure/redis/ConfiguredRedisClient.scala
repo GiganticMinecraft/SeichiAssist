@@ -1,6 +1,6 @@
 package com.github.unchama.bungeesemaphoreresponder.infrastructure.redis
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 import com.github.unchama.bungeesemaphoreresponder.Configuration
 import redis.RedisClient
 
