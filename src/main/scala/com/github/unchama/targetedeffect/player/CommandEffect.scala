@@ -18,3 +18,12 @@ object CommandEffect {
       })
     }
 }
+
+object CommandEffectF {
+  def apply[F[_]: OnMinecraftServerThread](string: String): Kleisli[F, Player, Unit] =
+    Kleisli { player =>
+      OnMinecraftServerThread[F].runAction(SyncIO {
+        player.chat(s"/$string")
+      })
+    }
+}
