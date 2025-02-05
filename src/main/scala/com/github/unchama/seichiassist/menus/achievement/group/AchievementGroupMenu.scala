@@ -13,6 +13,7 @@ import com.github.unchama.seichiassist.achievement.hierarchy.AchievementGroup._
 import com.github.unchama.seichiassist.menus.achievement.AchievementCategoryMenu
 import com.github.unchama.seichiassist.menus.achievement.group.AchievementGroupMenu.sequentialEntriesIn
 import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.entity.Player
 
@@ -20,7 +21,8 @@ object AchievementGroupMenu {
 
   class Environment(
     implicit val ioCanOpenGroupMenu: IO CanOpen AchievementGroupMenu,
-    val ioCanOpenCategoryMenu: IO CanOpen AchievementCategoryMenu
+    val ioCanOpenCategoryMenu: IO CanOpen AchievementCategoryMenu,
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   val sequentialEntriesIn: AchievementGroup => List[GroupMenuEntry] = CachedFunction {

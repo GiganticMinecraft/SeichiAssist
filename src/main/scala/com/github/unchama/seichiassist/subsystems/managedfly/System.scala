@@ -16,10 +16,12 @@ import com.github.unchama.seichiassist.subsystems.managedfly.application._
 import com.github.unchama.seichiassist.subsystems.managedfly.application.repository.ActiveSessionReferenceRepositoryDefinition
 import com.github.unchama.seichiassist.subsystems.managedfly.bukkit.BukkitPlayerFlyStatusManipulation
 import com.github.unchama.seichiassist.subsystems.managedfly.bukkit.controllers.BukkitFlyCommand
+import com.github.unchama.seichiassist.subsystems.managedfly.bukkit.listeners.BukkitPlayerStatusChangeListener
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.PlayerFlyStatus
 import com.github.unchama.seichiassist.subsystems.managedfly.infrastructure.JdbcFlyDurationPersistenceRepository
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
+import org.bukkit.event.Listener
 
 /**
  * NOTE: このサブシステム(managedfly)は本来BuildAssist側に属するが、
@@ -74,6 +76,9 @@ object System {
           override val managedRepositoryControls
             : Seq[BukkitRepositoryControls[AsyncContext, _]] =
             Seq(controls.coerceFinalizationContextTo[AsyncContext])
+
+          override val listeners: Seq[Listener] =
+            Seq(new BukkitPlayerStatusChangeListener[AsyncContext, SyncContext])
 
           override val commands: Map[String, TabExecutor] =
             Map("fly" -> BukkitFlyCommand.executor[AsyncContext, SyncContext])
