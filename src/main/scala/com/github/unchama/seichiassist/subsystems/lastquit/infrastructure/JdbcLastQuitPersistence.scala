@@ -13,9 +13,7 @@ class JdbcLastQuitPersistence[F[_]: Sync] extends LastQuitPersistence[F] {
 
   override def updateLastQuitNow(uuid: UUID): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      sql"UPDATE playerdata SET lastquit = NOW() WHERE uuid = ${uuid.toString}"
-        .execute()
-        .apply()
+      sql"UPDATE playerdata SET lastquit = NOW() WHERE uuid = ${uuid.toString}".execute()
     }
   }
 
@@ -26,7 +24,6 @@ class JdbcLastQuitPersistence[F[_]: Sync] extends LastQuitPersistence[F] {
           sql"SELECT lastquit FROM playerdata WHERE uuid = ${uuid.toString}"
             .map(_.localDateTime("lastquit"))
             .toList()
-            .apply()
             .headOption
         lastQuitDateTime.map(LastQuitDateTime)
       }
