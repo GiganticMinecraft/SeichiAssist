@@ -7,6 +7,7 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.menus.BuildMainMenu
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -19,7 +20,8 @@ object BuildAssistMenuRouter {
     implicit flyApi: ManagedFlyApi[SyncIO, Player],
     mineStackAPI: MineStackAPI[IO, Player, ItemStack],
     layoutPreparationContext: LayoutPreparationContext,
-    onMainThread: OnMinecraftServerThread[IO]
+    onMainThread: OnMinecraftServerThread[IO],
+    playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   ): BuildAssistMenuRouter[IO] = new BuildAssistMenuRouter[IO] {
     implicit lazy val blockPlacementSkillMenuEnvironment: BlockPlacementSkillMenu.Environment =
       new BlockPlacementSkillMenu.Environment
