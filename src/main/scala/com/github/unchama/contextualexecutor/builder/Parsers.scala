@@ -93,6 +93,6 @@ object Parsers {
     } catch {
       case _: DateTimeParseException =>
         Left(failureMessage)
-      case e => throw e
+      case e: Throwable => throw e
     }
 }
