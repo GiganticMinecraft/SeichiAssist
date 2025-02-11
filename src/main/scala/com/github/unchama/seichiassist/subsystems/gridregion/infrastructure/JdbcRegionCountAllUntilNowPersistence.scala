@@ -7,7 +7,8 @@ import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID
 
-class JdbcRegionCountAllUntilNowPersistence[F[_]: Sync] extends RegionCountAllUntilNowPersistence[F] {
+class JdbcRegionCountAllUntilNowPersistence[F[_]: Sync]
+    extends RegionCountAllUntilNowPersistence[F] {
 
   override def write(uuid: UUID, regionCount: RegionCount): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
