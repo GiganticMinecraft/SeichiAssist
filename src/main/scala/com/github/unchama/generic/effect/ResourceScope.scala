@@ -213,6 +213,7 @@ object ResourceScope {
       resource: Resource[OptionF, R]
     )(use: R => OptionF[A]): OptionF[A] = {
       for {
+
         /**
          * Refを作成し、それを `resourceSlot` に格納する試行をする。 試行が成功して初めてリソースの確保を行ってから、確保したリソースでRefを埋める。
          */
