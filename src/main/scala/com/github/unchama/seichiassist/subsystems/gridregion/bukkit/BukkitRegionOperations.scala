@@ -8,6 +8,8 @@ import com.github.unchama.seichiassist.subsystems.gridregion.domain.CardinalDire
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.HorizontalAxisAlignedSubjectiveDirection.Ahead
 import com.github.unchama.seichiassist.subsystems.gridregion.domain._
 import com.github.unchama.util.external.{WorldEditWrapper, WorldGuardWrapper}
+import com.sk89q.worldedit.math.BlockVector3
+import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
@@ -72,21 +74,16 @@ class BukkitRegionOperations[F[_]: Sync](
 
   override def tryCreatingSelectedWorldGuardRegion(player: Player): F[Unit] = for {
     regionCount <- regionCountRepository(player).get
+    wgManager = WorldGuardWrapper.getRegionManager(player.getWorld)
+    selection = WorldEditWrapper.getSelection(player)
+    regionName = s"${player.getName}_${regionCount.value}"
+    region = new ProtectedCuboidRegion(
+      regionName,
+      BlockVector3.at(selection.getBlockX, -64, selection.getBlockZ),
+      BlockVector3.at(selection.getBlockX, 320, selection.getBlockZ)
+    )
     regionCreateResult <- Sync[F].delay {
-      WorldEditWrapper
-        .getSelection(player)
-        .map { selection =>
-          val regionName = s"${player.getName}_${regionCount.value}"
-
-          WorldGuardWrapper.tryCreateRegion(
-            regionName,
-            player,
-            player.getWorld,
-            selection.getNativeMinimumPoint.toBlockVector,
-            selection.getNativeMaximumPoint.toBlockVector
-          )
-        }
-        .getOrElse(())
+      wgManager.addRegion(region)
     }
     _ <- regionCountRepository(player).update(_.increment)
   } yield regionCreateResult
@@ -95,35 +92,25 @@ class BukkitRegionOperations[F[_]: Sync](
     player: Player,
     shape: SubjectiveRegionShape
   ): F[RegionCreationResult] = {
-    val selection = WorldEditWrapper.getSelection(player)
     for {
-      regionCount <- regionCountRepository(player).get
       world <- Sync[F].delay(player.getWorld)
       wgManager = WorldGuardWrapper.getRegionManager(world)
       result <-
         if (!SeichiAssist.seichiAssistConfig.isGridProtectionEnabled(world)) {
           Sync[F].pure(RegionCreationResult.WorldProhibitsRegionCreation)
-        } else if (selection.isEmpty || wgManager.isEmpty) {
-          Sync[F].pure(RegionCreationResult.Error)
         } else {
           Sync[F].delay {
-            val regions = WorldGuardWrapper.getApplicableRegionCount(
-              world,
-              s"${player.getName}_${regionCount.value}",
-              selection.get.getNativeMinimumPoint.toBlockVector,
-              selection.get.getNativeMaximumPoint.toBlockVector
-            )
-            if (regions != 0) {
-              RegionCreationResult.Error
-            } else {
-              val maxRegionCount = WorldGuardWrapper.getMaxRegionCount(player, world)
-              val regionCountPerPlayer = WorldGuardWrapper.getRegionCountOfPlayer(player, world)
+            val selection = WorldEditWrapper.getSelection(player)
+            val applicableRegions = wgManager.getApplicableRegions(selection)
 
-              if (maxRegionCount >= 0 && regionCountPerPlayer >= maxRegionCount) {
-                RegionCreationResult.Error
-              } else {
-                RegionCreationResult.Success
-              }
+            val maxRegionCountPerWorld = WorldGuardWrapper.getWorldMaxRegion(world)
+            val regionCountPerPlayer = WorldGuardWrapper.getNumberOfRegions(player, world)
+            if (
+              regionCountPerPlayer < maxRegionCountPerWorld && applicableRegions.size() == 0
+            ) {
+              RegionCreationResult.Success
+            } else {
+              RegionCreationResult.Error
             }
           }
         }
