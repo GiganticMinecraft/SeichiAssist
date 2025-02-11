@@ -92,7 +92,6 @@ class BukkitRegionOperations[F[_]: Sync](
     player: Player,
     shape: SubjectiveRegionShape
   ): F[RegionCreationResult] = {
-    val selection = WorldEditWrapper.getSelection(player)
     for {
       regionCount <- regionCountRepository(player).get
       world <- Sync[F].delay(player.getWorld)
@@ -104,14 +103,17 @@ class BukkitRegionOperations[F[_]: Sync](
           Sync[F].pure(RegionCreationResult.Error)
         } else {
           Sync[F].delay {
-            wgManager.getApplicableRegions(selection)
-            val maxRegionCount = WorldGuardWrapper.getWorldMaxRegion(world)
-            val regionCountPerPlayer = WorldGuardWrapper.getNumberOfRegions(player, world)
+            val selection = WorldEditWrapper.getSelection(player)
+            val applicableRegions = wgManager.getApplicableRegions(selection)
 
-            if (maxRegionCount >= 0 && regionCountPerPlayer >= maxRegionCount) {
-              RegionCreationResult.Error
-            } else {
+            val maxRegionCountPerWorld = WorldGuardWrapper.getWorldMaxRegion(world)
+            val regionCountPerPlayer = WorldGuardWrapper.getNumberOfRegions(player, world)
+            if (
+              regionCountPerPlayer < maxRegionCountPerWorld && applicableRegions.size() == 0
+            ) {
               RegionCreationResult.Success
+            } else {
+              RegionCreationResult.Error
             }
           }
         }
