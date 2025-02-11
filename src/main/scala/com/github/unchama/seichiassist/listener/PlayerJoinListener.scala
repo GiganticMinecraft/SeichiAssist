@@ -220,6 +220,21 @@ class PlayerJoinListener extends Listener {
       }
     }
 
+    // Note: このメッセージを変更することはほぼないのでハードコードにしておくが，もし変える可能性があるのであれば Config で管理できるようにすべきかも
+    player.sendMessage(
+      s"＊--------------＊",
+      s"${RED}このサーバーでは「ギガンティック☆整地鯖」のルールが適用されます",
+      s"$RED${UNDERLINE}サーバ接続時点でルールを読み同意したものとみなします",
+      s"${RED}不安な人はルールを再確認しよう",
+      s"${WHITE}ルール:${YELLOW}https://www.seichi.network/rule",
+      s"${WHITE}公式サイト:${YELLOW}https://www.seichi.network/gigantic",
+      s"${WHITE}公式Discord: ${YELLOW}https://discord.gg/GcJtgsCj3W",
+      s"${WHITE}サーバマップ:${YELLOW}https://www.seichi.network/map",
+      s"${WHITE}サーバテクスチャ手動ダウンロード:${YELLOW}https://github.com/GiganticMinecraft/OriginalResourcePack/releases/latest",
+      s"${WHITE}ランキング: ${YELLOW}hhttps://seichi.conarin.com/ranking",
+      s"＊--------------＊"
+    )
+
     // 整地専用サーバーの場合は上級者向けのサーバーである旨を通知
     if (SeichiAssist.seichiAssistConfig.getServerNum == 5)
       player.sendTitle(
