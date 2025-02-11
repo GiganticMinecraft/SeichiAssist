@@ -105,6 +105,8 @@ class BukkitRegionOperations[F[_]: Sync](
           Sync[F].delay {
             val selection = WorldEditWrapper.getSelection(player)
             val applicableRegions = wgManager.getApplicableRegions(selection)
+            println(s"ApplicableRegions: ${applicableRegions.getRegions}")
+            println(s"ApplicableRegionsSize: ${applicableRegions.size()}")
 
             val maxRegionCountPerWorld = WorldGuardWrapper.getWorldMaxRegion(world)
             val regionCountPerPlayer = WorldGuardWrapper.getNumberOfRegions(player, world)
