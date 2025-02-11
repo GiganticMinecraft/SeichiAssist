@@ -46,7 +46,6 @@ class SeichiAssistPersistedItems[F[_]](implicit dBSession: DBSession, F: Sync[F]
     val triples = sql"select uuid, shareinv, inventory from seichiassist.playerdata"
       .map { rs => (rs.string("uuid"), rs.stringOpt("shareinv"), rs.stringOpt("inventory")) }
       .list()
-      .apply()
 
     val batchParam: Seq[Seq[String]] = triples.map {
       case (uuid, shareinv, inventory) =>
