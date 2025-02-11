@@ -96,6 +96,8 @@ class BukkitRegionOperations[F[_]: Sync](
       regionCount <- regionCountRepository(player).get
       world <- Sync[F].delay(player.getWorld)
       wgManager = WorldGuardWrapper.getRegionManager(world)
+      _ = println(s"regionCount: ${regionCount.value}")
+      _ = println(s"worldMaxRegion: ${WorldGuardWrapper.getWorldMaxRegion(player.getWorld)}")
       result <-
         if (!SeichiAssist.seichiAssistConfig.isGridProtectionEnabled(world)) {
           Sync[F].pure(RegionCreationResult.WorldProhibitsRegionCreation)
