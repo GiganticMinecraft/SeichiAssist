@@ -289,7 +289,7 @@ object FirstPage extends Menu {
         } else {
           val maxRegionCount = WorldGuardWrapper.getWorldMaxRegion(world)
           val currentPlayerRegionCount =
-            WorldGuardWrapper.getMaxRegion(player, world)
+            WorldGuardWrapper.getNumberOfRegions(player, world)
 
           (
             List(
