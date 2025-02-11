@@ -6,12 +6,12 @@ import com.github.unchama.datarepository.definitions.RefDictBackedRepositoryDefi
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.minecraft.algebra.HasUuid
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.RegionCount
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.persistence.RegionCountPersistence
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.persistence.RegionCountAllUntilNowPersistence
 
-object RegionCountRepositoryDefinition {
+object RegionCountAllUntilNowRepositoryDefinition {
 
   def withContext[F[_]: Sync, Player: HasUuid](
-    implicit persistence: RegionCountPersistence[F]
+    implicit persistence: RegionCountAllUntilNowPersistence[F]
   ): RepositoryDefinition[F, Player, Ref[F, RegionCount]] =
     RefDictBackedRepositoryDefinition
       .usingUuidRefDict[F, Player, RegionCount](persistence)(RegionCount(0))

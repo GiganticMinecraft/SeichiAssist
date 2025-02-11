@@ -14,7 +14,7 @@ import org.bukkit.Location
 import org.bukkit.entity.Player
 
 class BukkitRegionOperations[F[_]: Sync](
-  implicit regionCountRepository: KeyedDataRepository[Player, Ref[F, RegionCount]]
+  implicit regionCountAllUntilNowRepository: KeyedDataRepository[Player, Ref[F, RegionCount]]
 ) extends RegionOperations[F, Location, Player] {
   override def getSelectionCorners(
     currentLocation: Location,
@@ -73,7 +73,7 @@ class BukkitRegionOperations[F[_]: Sync](
   import cats.implicits._
 
   override def tryCreatingSelectedWorldGuardRegion(player: Player): F[Unit] = for {
-    regionCount <- regionCountRepository(player).get
+    regionCount <- regionCountAllUntilNowRepository(player).get
     wgManager = WorldGuardWrapper.getRegionManager(player.getWorld)
     selection = WorldEditWrapper.getSelection(player)
     regionName = s"${player.getName}_${regionCount.value}"
@@ -85,7 +85,7 @@ class BukkitRegionOperations[F[_]: Sync](
     regionCreateResult <- Sync[F].delay {
       wgManager.addRegion(region)
     }
-    _ <- regionCountRepository(player).update(_.increment)
+    _ <- regionCountAllUntilNowRepository(player).update(_.increment)
   } yield regionCreateResult
 
   override def canCreateRegion(
