@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.managedfly.bukkit
 
 import cats.data.Kleisli
-import cats.effect.{Concurrent, Sync, SyncIO, Timer}
+import cats.effect.{Concurrent, Sync, SyncIO}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.idletime.IdleTimeAPI
 import com.github.unchama.seichiassist.subsystems.managedfly.application._
@@ -10,9 +10,7 @@ import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import org.bukkit.ChatColor.{GRAY, GREEN, RED}
 import org.bukkit.entity.Player
 
-class BukkitPlayerFlyStatusManipulation[AsyncContext[
-  _
-]: Timer: Concurrent: OnMinecraftServerThread](
+class BukkitPlayerFlyStatusManipulation[AsyncContext[_]: Concurrent: OnMinecraftServerThread](
   implicit configuration: SystemConfiguration,
   idleTimeAPI: IdleTimeAPI[AsyncContext, Player]
 ) extends PlayerFlyStatusManipulation[Kleisli[AsyncContext, Player, *]] {
@@ -92,7 +90,7 @@ class BukkitPlayerFlyStatusManipulation[AsyncContext[
   private val sendMessages: List[String] => Kleisli[AsyncContext, Player, Unit] = { messages =>
     Kleisli { player =>
       Sync[AsyncContext].delay {
-        player.sendMessage(messages.toArray)
+        player.sendMessage(messages.mkString("\n"))
       }
     }
   }
