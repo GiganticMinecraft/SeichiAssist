@@ -74,9 +74,9 @@ class JdbcHomePersistence[F[_]: Sync: NonServerThreadContextShift] extends HomeP
     NonServerThreadContextShift[F].shift >> Sync[F].delay {
       DB.localTx { implicit session =>
         // NOTE 2022/04/16: 何故かDB上のIDは1少ない。つまり、ID 1のホームはDB上ではid=0である。
-        sql"""delete from seichiassist.home 
-             |  where server_id = $serverId 
-             |  and player_uuid = ${ownerUuid.toString} 
+        sql"""delete from seichiassist.home
+             |  where server_id = $serverId
+             |  and player_uuid = ${ownerUuid.toString}
              |  and id = ${id.value - 1}""".stripMargin.execute()
       }
     }
