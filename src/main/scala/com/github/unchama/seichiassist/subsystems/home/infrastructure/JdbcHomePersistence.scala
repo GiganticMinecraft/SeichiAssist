@@ -36,7 +36,7 @@ class JdbcHomePersistence[F[_]: Sync: NonServerThreadContextShift] extends HomeP
              |      location_z = $z,
              |      pitch = $pitch,
              |      yaw = $yaw,
-             |      world_name = $worldName""".stripMargin.update().apply()
+             |      world_name = $worldName""".stripMargin.update()
       }
     }
 
@@ -67,7 +67,6 @@ class JdbcHomePersistence[F[_]: Sync: NonServerThreadContextShift] extends HomeP
           )
           .stripMargin
           .list()
-          .apply()
       }.toMap
     }
 
@@ -75,10 +74,10 @@ class JdbcHomePersistence[F[_]: Sync: NonServerThreadContextShift] extends HomeP
     NonServerThreadContextShift[F].shift >> Sync[F].delay {
       DB.localTx { implicit session =>
         // NOTE 2022/04/16: 何故かDB上のIDは1少ない。つまり、ID 1のホームはDB上ではid=0である。
-        sql"""delete from seichiassist.home 
-             |  where server_id = $serverId 
-             |  and player_uuid = ${ownerUuid.toString} 
-             |  and id = ${id.value - 1}""".stripMargin.execute().apply()
+        sql"""delete from seichiassist.home
+             |  where server_id = $serverId
+             |  and player_uuid = ${ownerUuid.toString}
+             |  and id = ${id.value - 1}""".stripMargin.execute()
       }
     }
   }
