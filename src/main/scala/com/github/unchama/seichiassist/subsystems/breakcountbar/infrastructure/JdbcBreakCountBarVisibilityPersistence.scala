@@ -24,7 +24,6 @@ class JdbcBreakCountBarVisibilityPersistence[F[_]](implicit F: Sync[F])
             }
           }
           .first()
-          .apply()
       }
     }
 
@@ -33,7 +32,6 @@ class JdbcBreakCountBarVisibilityPersistence[F[_]](implicit F: Sync[F])
       DB.localTx { implicit session =>
         sql"update playerdata set expvisible = ${value == BreakCountBarVisibility.Shown} where uuid = ${key.toString}"
           .update()
-          .apply()
       }
     }
 
