@@ -572,7 +572,8 @@ class SeichiAssist extends JavaPlugin() {
     elevatorSystem,
     blockLiquidStreamSystem,
     cancelDamageByFallingBlocksSystem,
-    playerHeadSkinSystem
+    playerHeadSkinSystem,
+    disablegrowth.System.wired,
   )
 
   private lazy val buildAssist: BuildAssist = {
