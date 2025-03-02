@@ -90,10 +90,11 @@ object AsymmetricSignallingRef {
     override val valuesAwait: Resource[F, Stream[F, A]] =
       changeTopic.subscribeAwait(topicQueueSize).flatMap { subscription =>
         Resource
-          .liftF {
+          .eval {
             state.get.map { currentValue =>
-              subscription
-                .through(ReorderingPipe.withInitialToken[F, A](currentValue.nextStamp))
+              subscription.through(
+                ReorderingPipe.withInitialToken[F, A](currentValue.nextStamp)
+              )
             }
           }
           .mapK(GToF)
