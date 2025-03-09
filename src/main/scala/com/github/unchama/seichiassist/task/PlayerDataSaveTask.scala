@@ -166,19 +166,20 @@ object PlayerDataSaveTask {
           .delay {
             println(s"$RED${playerdata.name}のプレイヤーデータ保存失敗")
           }
-          .as(Right(ActionStatus.Fail))
-      } else
+          .as(Right(()))
+      } else {
         commitUpdate.flatMap { result =>
           if (result == ActionStatus.Ok) {
             Sync[F]
               .delay {
                 println(s"$GREEN${player.getName}のプレイヤーデータ保存完了")
               }
-              .as(Right(ActionStatus.Ok))
+              .as(Right(()))
           } else {
             Monad[F].pure(Left(remaining - 1))
           }
         }
+      }
     }
   }
 }
