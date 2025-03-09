@@ -34,10 +34,10 @@
 
 set -o pipefail
 
-declare -r sbt_release_version="1.10.6"
-declare -r sbt_unreleased_version="1.10.6"
+declare -r sbt_release_version="1.10.10"
+declare -r sbt_unreleased_version="1.10.10"
 
-declare -r latest_213="2.13.15"
+declare -r latest_213="2.13.16"
 declare -r latest_212="2.12.20"
 declare -r latest_211="2.11.12"
 declare -r latest_210="2.10.7"
@@ -519,7 +519,7 @@ process_args() {
       -J*)          addJava "${1:2}" && shift ;;
       -S*)          addScalac "${1:2}" && shift ;;
 
-      new)          sbt_new=true && : ${sbt_explicit_version:=$sbt_release_version} && addResidual "$1" && shift ;;
+      new)          sbt_new=true && : "${sbt_explicit_version:=$sbt_release_version}" && addResidual "$1" && shift ;;
 
       *)            addResidual "$1" && shift ;;
     esac
