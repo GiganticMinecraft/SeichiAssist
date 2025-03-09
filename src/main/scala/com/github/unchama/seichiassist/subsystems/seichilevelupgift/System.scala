@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.seichilevelupgift
 
 import cats.effect.Async
-import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.minecraft.actions.{OnMinecraftServerThread, SendMinecraftMessage}
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
@@ -17,9 +16,7 @@ import org.bukkit.inventory.ItemStack
 
 object System {
 
-  def backGroundProcess[F[_]: OnMinecraftServerThread: ErrorLogger: Async, G[
-    _
-  ]: ContextCoercion[*[_], F]](
+  def backGroundProcess[F[_]: OnMinecraftServerThread: ErrorLogger: Async, G[_]](
     implicit breakCountReadApi: BreakCountReadAPI[F, G, Player],
     send: SendMinecraftMessage[F, Player],
     gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
