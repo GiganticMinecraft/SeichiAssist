@@ -17,7 +17,7 @@ class JdbcBreakSuppressionPreferencePersistence[F[_]: Sync]
       sql"SELECT do_break_suppression_due_to_mana FROM player_break_suppression_preference WHERE uuid = ${key.toString}"
         .map(_.boolean("do_break_suppression_due_to_mana"))
         .single()
-        .map(BreakSuppressionPreference)
+        .map(BreakSuppressionPreference.apply)
     }
   }
 
@@ -25,9 +25,9 @@ class JdbcBreakSuppressionPreferencePersistence[F[_]: Sync]
     DB.localTx { implicit session =>
       val uuid = key.toString
       sql"""INSERT INTO player_break_suppression_preference  (uuid, do_break_suppression_due_to_mana)
-           | VALUES ($uuid, ${value.doBreakSuppression})
-           | ON DUPLICATE KEY UPDATE
-           | do_break_suppression_due_to_mana  = VALUES(do_break_suppression_due_to_mana)
+          | VALUES ($uuid, ${value.doBreakSuppression})
+          | ON DUPLICATE KEY UPDATE
+          | do_break_suppression_due_to_mana  = VALUES(do_break_suppression_due_to_mana)
       """.stripMargin.update()
     }
   }
