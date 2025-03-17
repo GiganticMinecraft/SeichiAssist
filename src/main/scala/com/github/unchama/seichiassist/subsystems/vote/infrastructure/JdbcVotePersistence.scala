@@ -13,10 +13,10 @@ class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
 
   override def createPlayerData(uuid: UUID): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      sql"""INSERT IGNORE INTO vote 
+      sql"""INSERT IGNORE INTO vote
            | (uuid, vote_number, chain_vote_number, effect_point, given_effect_point, last_vote)
            | VALUES
-           | (${uuid.toString}, 0, 0, 0, 0, NULL)""".stripMargin.execute().apply()
+           | (${uuid.toString}, 0, 0, 0, 0, NULL)""".stripMargin.execute()
     }
   }
 
@@ -24,7 +24,6 @@ class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
     DB.localTx { implicit session =>
       sql"UPDATE vote SET vote_number = vote_number + 1 WHERE uuid = (SELECT uuid FROM playerdata WHERE uuid = ${uuid.toString})"
         .execute()
-        .apply()
     }
   }
 
@@ -33,7 +32,6 @@ class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
       val votePoint = sql"SELECT vote_number FROM vote WHERE uuid = ${uuid.toString}"
         .map(_.int("vote_number"))
         .single()
-        .apply()
         .get
       VoteCount(votePoint)
     }
@@ -45,16 +43,15 @@ class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
         NOTE: 最終投票日時より(連続投票許容幅 - 1)した日時よりも
           小さかった場合に連続投票を0に戻します。
        */
-      sql"""UPDATE vote SET chain_vote_number = 
+      sql"""UPDATE vote SET chain_vote_number =
            | CASE WHEN DATEDIFF(last_vote, NOW()) <= ${-consecutiveVoteStreakDaysThreshold - 1}
-           | THEN 0 
-           | ELSE chain_vote_number + 1 
+           | THEN 0
+           | ELSE chain_vote_number + 1
            | END,
            | last_vote = NOW()
            | WHERE uuid = (SELECT uuid FROM playerdata WHERE uuid = ${uuid.toString})"""
         .stripMargin
         .execute()
-        .apply()
     }
   }
 
@@ -65,7 +62,6 @@ class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
           sql"SELECT chain_vote_number FROM vote WHERE uuid = ${uuid.toString}"
             .map(_.int("chain_vote_number"))
             .single()
-            .apply()
             .get
         ChainVoteDayNumber(chainVoteDays)
       }
@@ -76,7 +72,6 @@ class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
       DB.localTx { implicit session =>
         sql"UPDATE vote SET effect_point = effect_point + ${effectPoint.value} WHERE uuid = ${uuid.toString}"
           .execute()
-          .apply()
       }
     }
 
@@ -85,7 +80,6 @@ class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
       DB.localTx { implicit session =>
         sql"UPDATE vote SET effect_point = effect_point - ${effectPoint.value} WHERE uuid = ${uuid.toString}"
           .execute()
-          .apply()
       }
     }
 
@@ -94,7 +88,6 @@ class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
       val effectPoints = sql"SELECT effect_point FROM vote WHERE uuid = ${uuid.toString}"
         .map(_.int("effect_point"))
         .single()
-        .apply()
         .get
       EffectPoint(effectPoints)
     }
@@ -104,7 +97,6 @@ class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
     DB.localTx { implicit session =>
       sql"UPDATE vote SET given_effect_point = given_effect_point + ${benefit.value} WHERE uuid = ${uuid.toString}"
         .execute()
-        .apply()
     }
   }
 
@@ -113,7 +105,6 @@ class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
       val benefits = sql"SELECT given_effect_point FROM vote WHERE uuid = ${uuid.toString}"
         .map(_.int("given_effect_point"))
         .single()
-        .apply()
         .get
       ReceivedVoteCount(benefits)
     }

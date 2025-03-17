@@ -19,6 +19,7 @@ import com.github.unchama.seichiassist.seichiskill.effect.{
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.domain.EffectPoint
 import com.github.unchama.seichiassist.subsystems.donate.DonatePremiumPointAPI
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -39,7 +40,8 @@ object ActiveSkillEffectMenu extends Menu {
     val ioCanOpenTransactionHistoryMenu: IO CanOpen PremiumPointTransactionHistoryMenu,
     val ioOnMainThread: OnMinecraftServerThread[IO],
     val voteAPI: VoteAPI[IO, Player],
-    val donateAPI: DonatePremiumPointAPI[IO]
+    val donateAPI: DonatePremiumPointAPI[IO],
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}整地スキルエフェクト選択")
@@ -237,7 +239,8 @@ object ActiveSkillEffectMenu extends Menu {
       )
 
     def goBackToSkillMenuButton(
-      implicit ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type
+      implicit ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type,
+      playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
     ): Button =
       CommonButtons.transferButton(
         new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
