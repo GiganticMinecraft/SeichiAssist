@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.subsystems.discordnotification.infrastru
 
 import cats.effect.{ContextShift, Sync}
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
-import io.chrisdavenport.log4cats.Logger
 
 import java.io.IOException
 import java.net.{HttpURLConnection, MalformedURLException, URL}
@@ -24,14 +23,14 @@ class WebhookDiscordNotificationSender[F[_]: Sync: ContextShift] private (webhoo
         import io.circe.generic.auto._
         import io.circe.syntax._
         val markdownSafeMessage = message
-          .replaceAllLiterally("\\", "\\\\")
-          .replaceAllLiterally("_", "\\_")
-          .replaceAllLiterally("*", "\\*")
-          .replaceAllLiterally("`", "\\`")
-          .replaceAllLiterally("|", "\\|")
-          .replaceAllLiterally("@", "\\@")
-          .replaceAllLiterally("~", "\\~")
-          .replaceAllLiterally(":", "\\:")
+          .replace("\\", "\\\\")
+          .replace("_", "\\_")
+          .replace("*", "\\*")
+          .replace("`", "\\`")
+          .replace("|", "\\|")
+          .replace("@", "\\@")
+          .replace("~", "\\~")
+          .replace(":", "\\:")
 
         val json =
           WebhookDiscordNotificationSender.PlainMessage(markdownSafeMessage).asJson.noSpaces
@@ -76,7 +75,7 @@ object WebhookDiscordNotificationSender {
    * @return
    *   初期化に成功した場合はSome、初期化中に特定の例外が送出された場合はNone。マスクされない例外が送出されたときは、再送出する。
    */
-  def tryCreate[F[_]: Sync: ContextShift: Logger](
+  def tryCreate[F[_]: Sync: ContextShift](
     webhookURL: String
   ): Option[WebhookDiscordNotificationSender[F]] = {
     try {
