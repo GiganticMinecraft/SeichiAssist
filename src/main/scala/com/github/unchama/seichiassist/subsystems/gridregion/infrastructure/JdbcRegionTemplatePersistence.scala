@@ -33,7 +33,6 @@ class JdbcRegionTemplatePersistence[F[_]: Sync] extends RegionTemplatePersistenc
           RegionTemplate(id, regionUnits)
         }
         .toList()
-        .apply()
         .toVector
     }
   }
@@ -56,7 +55,7 @@ class JdbcRegionTemplatePersistence[F[_]: Sync] extends RegionTemplatePersistenc
              |  right_length = ${value.shape.right.rul}
              |  behind_length = ${value.shape.behind.rul}
              |  left_length = ${value.shape.left.rul}
-           """.stripMargin.execute().apply()
+           """.stripMargin.execute()
       }
     }
 
