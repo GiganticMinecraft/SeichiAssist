@@ -31,7 +31,6 @@ class JdbcLastSeenNameToUuid[F[_]: Sync]
         val foundUuid = sql"SELECT uuid FROM playerdata WHERE name = $playerName"
           .map(rs => UUID.fromString(rs.string("uuid")))
           .toList()
-          .apply()
 
         if (foundUuid.isEmpty) Left(LastSeenNameToUuidError.NotFound)
         else if (foundUuid.length >= 2) Left(LastSeenNameToUuidError.MultipleFound)
