@@ -1,12 +1,12 @@
 package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.bukkit.actions
 
-import cats.effect.{Sync, SyncIO}
+import cats.effect.SyncIO
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.actions.GrantFastDiggingEffect
 import org.bukkit.entity.Player
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
-class GrantBukkitFastDiggingEffect[F[_]: Sync: OnMinecraftServerThread]
+class GrantBukkitFastDiggingEffect[F[_]: OnMinecraftServerThread]
     extends GrantFastDiggingEffect[F, Player] {
 
   override def forTwoSeconds(player: Player)(amount: Int): F[Unit] = {

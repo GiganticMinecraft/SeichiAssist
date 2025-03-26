@@ -46,8 +46,10 @@ object PeriodicMebiusSpeechRoutine {
           )
 
           messageCandidates.pickOne[SyncIO].flatMap { message =>
-            service
-              .tryMakingSpeech(property, MebiusSpeech(message, MebiusSpeechStrength.Medium))
+            service.tryMakingSpeech(
+              property,
+              MebiusSpeech(message, MebiusSpeechStrength.Medium)
+            )
           }
         }
         .getOrElse(SyncIO.unit)

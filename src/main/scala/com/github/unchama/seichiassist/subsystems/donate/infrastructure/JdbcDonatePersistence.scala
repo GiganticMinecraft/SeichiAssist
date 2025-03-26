@@ -21,12 +21,12 @@ class JdbcDonatePersistence[F[_]: Sync] extends DonatePersistence[F] {
     obtainedPremiumEffectPoint: Obtained
   ): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      sql"""INSERT INTO donate_purchase_history 
+      sql"""INSERT INTO donate_purchase_history
            | (uuid, get_points, timestamp)
-           | VALUES 
+           | VALUES
            | ((SELECT uuid FROM playerdata WHERE name = ${playerName.name}),
            | ${obtainedPremiumEffectPoint.effectPoint.value},
-           | ${obtainedPremiumEffectPoint.purchaseDate})""".stripMargin.execute().apply()
+           | ${obtainedPremiumEffectPoint.purchaseDate})""".stripMargin.execute()
     }
   }
 
@@ -38,7 +38,6 @@ class JdbcDonatePersistence[F[_]: Sync] extends DonatePersistence[F] {
       DB.localTx { implicit session =>
         sql"INSERT INTO donate_usage_history (uuid, effect_name, use_points) VALUES (${uuid.toString}, ${effect.entryName}, ${effect.usePoint})"
           .execute()
-          .apply()
       }
     }
 
@@ -49,9 +48,9 @@ class JdbcDonatePersistence[F[_]: Sync] extends DonatePersistence[F] {
           sql"""SELECT (
                | SELECT COALESCE(SUM(get_points), 0) AS sum_get_points FROM donate_purchase_history
                | WHERE uuid = ${uuid.toString}) - (
-               | SELECT COALESCE(SUM(use_points), 0) AS sum_use_points FROM donate_usage_history 
+               | SELECT COALESCE(SUM(use_points), 0) AS sum_use_points FROM donate_usage_history
                | WHERE uuid = ${uuid.toString}) AS currentPremiumEffectPoints
-             """.stripMargin.map(_.int("currentPremiumEffectPoints")).single().apply()
+             """.stripMargin.map(_.int("currentPremiumEffectPoints")).single()
         DonatePremiumEffectPoint(premiumEffectPointsOpt.get)
       }
     }
@@ -65,8 +64,7 @@ class JdbcDonatePersistence[F[_]: Sync] extends DonatePersistence[F] {
           .map(rs =>
             Obtained(DonatePremiumEffectPoint(rs.int("get_points")), rs.localDate("timestamp"))
           )
-          .list
-          .apply()
+          .list()
           .toVector
       }
     }
@@ -83,8 +81,7 @@ class JdbcDonatePersistence[F[_]: Sync] extends DonatePersistence[F] {
             ActiveSkillPremiumEffect.withName(rs.string("effect_name"))
           )
         )
-        .list
-        .apply()
+        .list()
         .toVector
     }
   }
