@@ -578,7 +578,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
         MineStackObjectByMaterial(BUILDING, "jungle_stairs", "ジャングルの階段", Material.JUNGLE_STAIRS),
         MineStackObjectByMaterial(BUILDING, "acacia_stairs", "アカシアの階段", Material.ACACIA_STAIRS),
         MineStackObjectByMaterial(BUILDING, "dark_oak_stairs", "ダークオークの階段", Material.DARK_OAK_STAIRS),
-        MineStackObjectByMaterial(BUILDING, "stone_stairs", "丸石の階段", Material.COBBLESTONE_STAIRS),
+        MineStackObjectByMaterial(BUILDING, "cobblestone_stairs", "丸石の階段", Material.COBBLESTONE_STAIRS),
         MineStackObjectByMaterial(BUILDING, "smooth_stairs", "石レンガの階段", Material.STONE_BRICK_STAIRS),
         MineStackObjectByMaterial(BUILDING, "standstone_stairs", "砂岩の階段", Material.SANDSTONE_STAIRS),
         MineStackObjectByMaterial(BUILDING, "red_sandstone_stairs", "赤い砂岩の階段", Material.RED_SANDSTONE_STAIRS),
