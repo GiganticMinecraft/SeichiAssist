@@ -18,7 +18,6 @@ class JdbcBukkitPocketInventoryPersistence[F[_]: Sync]
       sql"select inventory from playerdata where uuid = ${key.toString}"
         .map { rs => BukkitSerialization.fromBase64forPocket(rs.string("inventory")) }
         .headOption()
-        .apply()
     }
   }
 
@@ -26,9 +25,7 @@ class JdbcBukkitPocketInventoryPersistence[F[_]: Sync]
     DB.localTx { implicit session =>
       val encoded = BukkitSerialization.toBase64(value)
 
-      sql"update playerdata set inventory = $encoded where uuid = ${key.toString}"
-        .update()
-        .apply()
+      sql"update playerdata set inventory = $encoded where uuid = ${key.toString}".update()
     }
   }
 
