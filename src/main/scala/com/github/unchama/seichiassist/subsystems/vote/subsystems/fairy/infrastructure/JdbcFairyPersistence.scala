@@ -68,7 +68,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   override def updateIsFairyUsing(player: UUID, isFairyUsing: Boolean): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
-        sql"""UPDATE vote_fairy 
+        sql"""UPDATE vote_fairy
              | SET is_fairy_using = $isFairyUsing WHERE uuid = ${player.toString}"""
           .stripMargin
           .execute()
@@ -150,7 +150,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
       DB.readOnly { implicit session =>
         sql"""SELECT vote_fairy.uuid AS uuid, name, given_apple_amount,
              | RANK() OVER(ORDER BY given_apple_amount DESC) AS rank
-             | FROM vote_fairy 
+             | FROM vote_fairy
              | INNER JOIN playerdata
              | ON (playerdata.uuid = vote_fairy.uuid)
              | ORDER BY rank"""

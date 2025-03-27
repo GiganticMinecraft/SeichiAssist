@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.infrastructure.redisbungee
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 import cats.effect.{ContextShift, Effect, IO}
 import com.github.unchama.seichiassist.domain.actions.GetNetworkConnectionCount
 import com.github.unchama.seichiassist.domain.configuration.RedisBungeeRedisConfiguration

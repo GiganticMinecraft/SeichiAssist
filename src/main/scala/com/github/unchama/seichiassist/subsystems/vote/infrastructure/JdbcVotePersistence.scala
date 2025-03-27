@@ -13,7 +13,7 @@ class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
 
   override def createPlayerData(uuid: UUID): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      sql"""INSERT IGNORE INTO vote 
+      sql"""INSERT IGNORE INTO vote
            | (uuid, vote_number, chain_vote_number, effect_point, given_effect_point, last_vote)
            | VALUES
            | (${uuid.toString}, 0, 0, 0, 0, NULL)""".stripMargin.execute()
@@ -43,10 +43,10 @@ class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
         NOTE: 最終投票日時より(連続投票許容幅 - 1)した日時よりも
           小さかった場合に連続投票を0に戻します。
        */
-      sql"""UPDATE vote SET chain_vote_number = 
+      sql"""UPDATE vote SET chain_vote_number =
            | CASE WHEN DATEDIFF(last_vote, NOW()) <= ${-consecutiveVoteStreakDaysThreshold - 1}
-           | THEN 0 
-           | ELSE chain_vote_number + 1 
+           | THEN 0
+           | ELSE chain_vote_number + 1
            | END,
            | last_vote = NOW()
            | WHERE uuid = (SELECT uuid FROM playerdata WHERE uuid = ${uuid.toString})"""

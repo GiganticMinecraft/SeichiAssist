@@ -13,7 +13,7 @@ on:
 
 jobs:
   create_release:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     container: ghcr.io/giganticminecraft/seichiassist-builder-v2:1df7cf5
     steps:
       - name: Checkout repository
@@ -88,6 +88,8 @@ jobs:
 
       - name: Create and push a tag
         id: tag-name
+        # GiganticMinecraftにあるSeichiAssistリポジトリのブランチからのPRのみ実行
+        if: ${{ github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name }}
         run: |
           TAG_NAME=pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
           git tag $TAG_NAME
@@ -96,6 +98,8 @@ jobs:
 
       - name: Create release
         uses: softprops/action-gh-release@v1
+        # GiganticMinecraftにあるSeichiAssistリポジトリのブランチからのPRのみ実行
+        if: ${{ github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:

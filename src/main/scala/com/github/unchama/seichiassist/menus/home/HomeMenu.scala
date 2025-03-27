@@ -234,7 +234,7 @@ case class HomeMenuButtonComputations(player: Player)(
       homeOpt <- homeReadAPI.get(player.getUniqueId, homeId)
     } yield {
       Button(
-        new IconItemStackBuilder(Material.WHITE_WOOL)
+        new IconItemStackBuilder(Material.RED_WOOL)
           .title(s"$RED$UNDERLINE${BOLD}ホームポイント${homeNumber}を削除")
           .lore(
             List(

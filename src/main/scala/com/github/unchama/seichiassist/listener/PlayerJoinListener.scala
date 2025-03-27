@@ -220,6 +220,21 @@ class PlayerJoinListener extends Listener {
       }
     }
 
+    // Note: このメッセージを変更することはほぼないのでハードコードにしておくが，もし変える可能性があるのであれば Config で管理できるようにすべきかも
+    player.sendMessage(
+      s"＊--------------＊",
+      s"${RED}このサーバーでは「ギガンティック☆整地鯖」のルールが適用されます",
+      s"$RED${UNDERLINE}サーバ接続時点でルールを読み同意したものとみなします",
+      s"${RED}不安な人はルールを再確認しよう",
+      s"${WHITE}ルール:${YELLOW}https://www.seichi.network/rule",
+      s"${WHITE}公式サイト:${YELLOW}https://www.seichi.network/gigantic",
+      s"${WHITE}公式Discord: ${YELLOW}https://discord.gg/GcJtgsCj3W",
+      s"${WHITE}サーバマップ:${YELLOW}https://www.seichi.network/map",
+      s"${WHITE}サーバテクスチャ手動ダウンロード:${YELLOW}https://github.com/GiganticMinecraft/OriginalResourcePack/releases/latest",
+      s"${WHITE}ランキング: ${YELLOW}hhttps://seichi.conarin.com/ranking",
+      s"＊--------------＊"
+    )
+
     // 整地専用サーバーの場合は上級者向けのサーバーである旨を通知
     if (SeichiAssist.seichiAssistConfig.getServerNum == 5)
       player.sendTitle(
@@ -229,19 +244,6 @@ class PlayerJoinListener extends Listener {
         70,
         20
       )
-
-    // エデンサーバーへ入場する際に警告を行う
-    // TODO: エデンサーバーの不具合が解消されたら削除すること
-    if (SeichiAssist.seichiAssistConfig.getServerNum == 2) {
-      player.sendMessage(
-        s"${RED}${BOLD}${UNDERLINE}【ご注意ください】${RESET}",
-        s"${YELLOW}${BOLD}エデンサーバーは現在、管理者の意図しないタイミングでシャットダウン（いわゆる「鯖落ち」）が起こることがあります。",
-        s"${YELLOW}${BOLD}もし鯖落ちによりアイテムの消失等が発生しても、補償はできかねます。",
-        s"${YELLOW}${BOLD}当サーバーは以上の内容をご理解の上ご利用ください。",
-        s"${YELLOW}${BOLD}不安な場合はアルカディアサーバーやヴァルハラサーバーのご利用をおすすめいたします。",
-        s"${YELLOW}${BOLD}ご迷惑をおかけいたしまして申し訳ございません。。"
-      )
-    }
   }
 
   // プレイヤーがワールドを移動したとき

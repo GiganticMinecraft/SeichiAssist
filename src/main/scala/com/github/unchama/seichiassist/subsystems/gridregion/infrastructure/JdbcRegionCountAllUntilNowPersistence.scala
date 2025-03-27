@@ -2,12 +2,13 @@ package com.github.unchama.seichiassist.subsystems.gridregion.infrastructure
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.RegionCount
-import com.github.unchama.seichiassist.subsystems.gridregion.domain.persistence.RegionCountPersistence
+import com.github.unchama.seichiassist.subsystems.gridregion.domain.persistence.RegionCountAllUntilNowPersistence
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID
 
-class JdbcRegionCountPersistence[F[_]: Sync] extends RegionCountPersistence[F] {
+class JdbcRegionCountAllUntilNowPersistence[F[_]: Sync]
+    extends RegionCountAllUntilNowPersistence[F] {
 
   override def write(uuid: UUID, regionCount: RegionCount): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>

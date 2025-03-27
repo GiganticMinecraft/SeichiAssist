@@ -14,7 +14,7 @@ import org.bukkit.Location
 import org.bukkit.entity.Player
 
 class BukkitRegionOperations[F[_]: Sync](
-  implicit regionCountRepository: KeyedDataRepository[Player, Ref[F, RegionCount]]
+  implicit regionCountAllUntilNowRepository: KeyedDataRepository[Player, Ref[F, RegionCount]]
 ) extends RegionOperations[F, Location, Player] {
   override def getSelectionCorners(
     currentLocation: Location,
@@ -73,7 +73,7 @@ class BukkitRegionOperations[F[_]: Sync](
   import cats.implicits._
 
   override def tryCreatingSelectedWorldGuardRegion(player: Player): F[Unit] = for {
-    regionCount <- regionCountRepository(player).get
+    regionCount <- regionCountAllUntilNowRepository(player).get
     wgManager = WorldGuardWrapper.getRegionManager(player.getWorld)
     selection = WorldEditWrapper.getSelection(player)
     regionName = s"${player.getName}_${regionCount.value}"
@@ -85,33 +85,32 @@ class BukkitRegionOperations[F[_]: Sync](
     regionCreateResult <- Sync[F].delay {
       wgManager.addRegion(region)
     }
-    _ <- regionCountRepository(player).update(_.increment)
+    _ <- regionCountAllUntilNowRepository(player).update(_.increment)
   } yield regionCreateResult
 
   override def canCreateRegion(
     player: Player,
     shape: SubjectiveRegionShape
   ): F[RegionCreationResult] = {
-    val selection = WorldEditWrapper.getSelection(player)
     for {
-      regionCount <- regionCountRepository(player).get
       world <- Sync[F].delay(player.getWorld)
       wgManager = WorldGuardWrapper.getRegionManager(world)
       result <-
         if (!SeichiAssist.seichiAssistConfig.isGridProtectionEnabled(world)) {
           Sync[F].pure(RegionCreationResult.WorldProhibitsRegionCreation)
-        } else if (regionCount.value >= WorldGuardWrapper.getWorldMaxRegion(player.getWorld)) {
-          Sync[F].pure(RegionCreationResult.Error)
         } else {
           Sync[F].delay {
-            wgManager.getApplicableRegions(selection)
-            val maxRegionCount = WorldGuardWrapper.getWorldMaxRegion(world)
-            val regionCountPerPlayer = WorldGuardWrapper.getNumberOfRegions(player, world)
+            val selection = WorldEditWrapper.getSelection(player)
+            val applicableRegions = wgManager.getApplicableRegions(selection)
 
-            if (maxRegionCount >= 0 && regionCountPerPlayer >= maxRegionCount) {
-              RegionCreationResult.Error
-            } else {
+            val maxRegionCountPerWorld = WorldGuardWrapper.getWorldMaxRegion(world)
+            val regionCountPerPlayer = WorldGuardWrapper.getNumberOfRegions(player, world)
+            if (
+              regionCountPerPlayer < maxRegionCountPerWorld && applicableRegions.size() == 0
+            ) {
               RegionCreationResult.Success
+            } else {
+              RegionCreationResult.Error
             }
           }
         }

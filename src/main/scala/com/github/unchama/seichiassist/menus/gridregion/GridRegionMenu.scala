@@ -164,7 +164,7 @@ object GridRegionMenu extends Menu {
 
           SequentialEffect(
             gridRegionAPI.updateCurrentRegionShapeSettings(shape),
-            CommandEffect("/;"),
+            CommandEffect("/desel"),
             CommandEffect(s"/pos1 ${startPosition.getX.toInt},0,${startPosition.getZ.toInt}"),
             CommandEffect(s"/pos2 ${endPosition.getX.toInt},0,${endPosition.getZ.toInt}"),
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
@@ -207,7 +207,7 @@ object GridRegionMenu extends Menu {
         DeferredEffect(
           IO(gridRegionAPI.updateCurrentRegionShapeSettings(SubjectiveRegionShape.minimal))
         ),
-        CommandEffect("/;"),
+        CommandEffect("/desel"),
         FocusedSoundEffect(Sound.BLOCK_ANVIL_DESTROY, 0.5f, 1.0f)
       )
 
