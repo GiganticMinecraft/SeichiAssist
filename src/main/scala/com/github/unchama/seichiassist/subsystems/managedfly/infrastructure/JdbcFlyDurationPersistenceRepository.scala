@@ -23,7 +23,7 @@ class JdbcFlyDurationPersistenceRepository[SyncContext[_]](
         sql"""
         insert into fly_status_cache values (${key.toString}, $serializedDuration)
           on duplicate key update remaining_fly_minutes = $serializedDuration
-      """.stripMargin.update().apply()
+      """.stripMargin.update()
       }
     }
 
@@ -33,7 +33,7 @@ class JdbcFlyDurationPersistenceRepository[SyncContext[_]](
         sql"""
         select remaining_fly_minutes from fly_status_cache
           where player_uuid = ${key.toString}
-      """.map { rs => rs.int("remaining_fly_minutes") }.headOption().apply().map {
+      """.map { rs => rs.int("remaining_fly_minutes") }.headOption().map {
           case 0          => None
           case -1         => Some(RemainingFlyDuration.Infinity)
           case n if n > 0 => Some(RemainingFlyDuration.PositiveMinutes.fromPositive(n))
