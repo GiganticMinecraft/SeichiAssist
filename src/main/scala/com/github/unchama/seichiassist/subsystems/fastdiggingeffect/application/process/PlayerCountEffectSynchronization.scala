@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application
 
 import cats.effect.{ConcurrentEffect, Timer}
 import com.github.unchama.minecraft.actions.GetConnectedPlayers
-import com.github.unchama.minecraft.algebra.HasUuid
 import com.github.unchama.seichiassist.domain.actions.GetNetworkConnectionCount
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.FastDiggingEffectApi
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
@@ -21,7 +20,7 @@ object PlayerCountEffectSynchronization {
   def using[F[_]: ConcurrentEffect: Timer: GetConnectedPlayers[
     *[_],
     Player
-  ]: GetNetworkConnectionCount, Player: HasUuid](
+  ]: GetNetworkConnectionCount, Player](
     implicit configuration: Configuration,
     api: FastDiggingEffectApi[F, Player]
   ): fs2.Stream[F, Unit] = {
