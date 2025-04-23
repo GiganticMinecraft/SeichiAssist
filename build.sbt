@@ -119,7 +119,7 @@ val dependenciesToEmbed = Seq(
 
   // JSON
   "io.circe" %% "circe-core" % "0.14.12",
-  "io.circe" %% "circe-generic" % "0.14.12",
+  "io.circe" %% "circe-generic" % "0.14.13",
   "io.circe" %% "circe-parser" % "0.14.13",
 
   // ajd4jp
