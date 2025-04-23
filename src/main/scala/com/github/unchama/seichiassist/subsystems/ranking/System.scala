@@ -12,6 +12,8 @@ import com.github.unchama.seichiassist.subsystems.ranking.domain.values.{LoginTi
 import com.github.unchama.seichiassist.subsystems.ranking.infrastructure._
 import io.chrisdavenport.log4cats.ErrorLogger
 
+import scala.concurrent.duration.DurationInt
+
 object System {
 
   import cats.implicits._
@@ -19,16 +21,20 @@ object System {
   def wired[F[_]: Timer: Concurrent: ErrorLogger, H[_]]: F[AssortedRankingApi[F]] =
     for {
       seichiRanking <- GenericRefreshingRankingCache.withPersistence(
-        new JdbcSeichiRankingRecordPersistence[F]
+        new JdbcSeichiRankingRecordPersistence[F],
+        30.seconds
       )
       buildRanking <- GenericRefreshingRankingCache.withPersistence(
-        new JdbcBuildRankingRecordPersistence[F]
+        new JdbcBuildRankingRecordPersistence[F],
+        30.seconds
       )
       loginRanking <- GenericRefreshingRankingCache.withPersistence(
-        new JdbcLoginRankingRecordPersistence[F]
+        new JdbcLoginRankingRecordPersistence[F],
+        1.hours
       )
       voteRanking <- GenericRefreshingRankingCache.withPersistence(
-        new JdbcVoteRankingRecordPersistence[F]
+        new JdbcVoteRankingRecordPersistence[F],
+        1.hours
       )
     } yield {
       new AssortedRankingApi[F] {
