@@ -278,20 +278,19 @@ object BreakUtil {
         .api
         .autoMineStack(player)
 
+      // アイテムのマインスタック自動格納を試みる
+      // 格納できなかったらドロップするアイテムとしてリストに入れる
       itemsToBeDropped <-
-        // アイテムのマインスタック自動格納を試みる
-        // 格納できなかったらドロップするアイテムとしてリストに入れる
-        breakResults._1.toList.traverse { itemStack =>
-          whenAOrElse(currentAutoMineStackState)(
-            SeichiAssist
-              .instance
-              .mineStackSystem
-              .api
-              .mineStackRepository
-              .tryIntoMineStack(player, itemStack, itemStack.getAmount),
-            false
-          ).map(Option.unless(_)(itemStack))
-        }
+        whenAOrElse(currentAutoMineStackState)(
+          SeichiAssist
+            .instance
+            .mineStackSystem
+            .api
+            .mineStackRepository
+            .tryIntoMineStack(player, breakResults._1.toVector)
+            .map(_._1),
+          breakResults._1.toVector
+        )
 
       // NOTE: SpigotのBlockはLocationを保存しているため、Blockを置き換える前にMaterialとして
       //  保存しておかないとすべてMaterial.AIRとして取得されてしまう
@@ -333,7 +332,6 @@ object BreakUtil {
         .runAction(SyncIO {
           // アイテムドロップは非同期スレッドで行ってはならない
           itemsToBeDropped
-            .flatten
             .filterNot(_.getType == Material.AIR)
             .foreach(dropLocation.getWorld.dropItemNaturally(dropLocation, _))
           breakResults._2.foreach { location =>
