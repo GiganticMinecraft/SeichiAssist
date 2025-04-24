@@ -9,20 +9,22 @@ import com.github.unchama.seichiassist.subsystems.ranking.domain.{
 }
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
+import java.util.UUID
+
 class JdbcBuildRankingRecordPersistence[F[_]: Sync]
     extends RankingRecordPersistence[F, BuildAmountData] {
 
   override def getAllRankingRecords: F[Vector[RankingRecord[BuildAmountData]]] = Sync[F].delay {
     DB.readOnly { implicit session =>
-      sql"SELECT name,build_count from playerdata"
+      sql"SELECT name, uuid, build_count from playerdata"
         .map { rs =>
           RankingRecord(
             rs.string("name"),
+            UUID.fromString(rs.string("uuid")),
             BuildAmountData(BuildExpAmount(BigDecimal(rs.string("build_count"))))
           )
         }
         .list()
-        .apply()
         .toVector
     }
   }
