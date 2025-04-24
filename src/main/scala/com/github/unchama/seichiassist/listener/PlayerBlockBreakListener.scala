@@ -368,11 +368,13 @@ class PlayerBlockBreakListener(
           mineStackAPI.mineStackRepository.tryIntoMineStack(player, drops),
           (drops, Vector.empty)
         )
-        _ <- IO {
-          intoFailedItemStacksAndSuccessItemStacks._1.foreach { itemStack =>
-            player.getWorld.dropItemNaturally(player.getLocation, itemStack)
-          }
-        }
+        _ <- PluginExecutionContexts
+          .onMainThread
+          .runAction(SyncIO {
+            intoFailedItemStacksAndSuccessItemStacks._1.foreach(
+              player.getWorld.dropItemNaturally(player.getLocation, _)
+            )
+          })
       } yield ()).unlessA(isContainer)
     } yield ()
 
