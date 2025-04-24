@@ -63,8 +63,9 @@ object AnnounceRankingRecord {
             case None =>
               s"$decorationColorCode$name$WHITE"
           }
-          _ <- BroadcastMinecraftMessage[F]
-            .string(s"整地量第${position}位は${playerNameText}で、整地量は${increaseAmountText}でした")
+          _ <- BroadcastMinecraftMessage[F].string(
+            s"整地量第${position}位は${playerNameText}で、整地量は${increaseAmountText}でした"
+          )
         } yield ()
     }
 
