@@ -1,50 +1,44 @@
 package com.github.unchama.itemstackbuilder
 
+import cats.effect.IO
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.mojang.authlib.GameProfile
 import com.mojang.authlib.properties.Property
+import org.bukkit.entity.Player
 import org.bukkit.inventory.meta.SkullMeta
-import org.bukkit.{Bukkit, Material, SkullType}
+import org.bukkit.{Bukkit, Material}
 
+import java.net.URI
 import java.util.UUID
 
-/**
- * Created by karayuu on 2019/04/09
- */
-class SkullItemStackBuilder(private val owner: SkullOwnerReference)
-    extends AbstractItemStackBuilder[SkullMeta](
-      Material.SKULL_ITEM,
-      SkullType.PLAYER.ordinal.toShort
-    ) {
+class SkullItemStackBuilder(private val owner: SkullOwnerReference)(
+  implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+) extends AbstractItemStackBuilder[SkullMeta](Material.PLAYER_HEAD) {
 
   /**
-   * プレーヤーがサーバーに参加したことのない場合に 頭のスキンを読み込むことができないため、そのようなケースが想定されるされる箇所では
-   * プレーヤー名を[[String]]として取るコンストラクタを使用せよ。
-   *
-   * それ以外の場合はこのコンストラクタを使うようにせよ。 Bukkitは`Persistent storage of users should be by UUID`と記している。
-   *
-   * @see
-   *   SkullMeta.setOwner
    * @param ownerUUID
-   *   [Material.SKULL_ITEM] に表示するプレーヤーのUUID
+   *   [Material.PLAYER_HEAD] に表示するプレーヤーのUUID
    */
-  def this(ownerUUID: UUID) = this(SkullOwnerUuid(ownerUUID))
+  def this(ownerUUID: UUID)(implicit playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]) =
+    this(SkullOwnerUuid(ownerUUID))(playerHeadSkinAPI)
 
-  /**
-   * @param ownerName
-   *   [Material.SKULL_ITEM] に表示するプレーヤーの名前
-   */
-  def this(ownerName: String) = this(SkullOwnerName(ownerName))
-
-  override def transformItemMetaOnBuild(meta: SkullMeta): Unit = {
+  override protected def transformItemMetaOnBuild(meta: SkullMeta): Unit = {
     owner match {
       case SkullOwnerUuid(uuid) =>
         meta.setOwningPlayer(Bukkit.getOfflinePlayer(uuid))
-      case SkullOwnerName(name) =>
-        /**
-         * 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
-         */
-        // noinspection ScalaDeprecation
-        meta.setOwner(name)
+
+        playerHeadSkinAPI.playerHeadSkinUrlByUUID(uuid).unsafeRunSync() match {
+          case Some(url) =>
+            val playerProfile = Bukkit.createPlayerProfile(uuid)
+            playerProfile.getTextures.setSkin(URI.create(url.url).toURL)
+            meta.setOwnerProfile(playerProfile)
+          case None =>
+        }
+
+      case SkullOwnerUuidWithNameWithTextureUrl(uuid, name, url) =>
+        val playerProfile = Bukkit.createPlayerProfile(uuid, name)
+        playerProfile.getTextures.setSkin(URI.create(url).toURL)
+        meta.setOwnerProfile(playerProfile)
 
       /**
        * @see

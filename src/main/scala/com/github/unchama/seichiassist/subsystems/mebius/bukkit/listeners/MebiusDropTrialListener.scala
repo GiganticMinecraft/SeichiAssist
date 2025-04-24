@@ -46,12 +46,10 @@ class MebiusDropTrialListener[G[_]: ChristmasEventsAPI: RandomEffect: SyncEffect
       .tryOnce[G](player.getName, player.getUniqueId.toString)
       .runSync[SyncIO]
       .unsafeRunSync()
-      .getOrElse(
-        return
-      )
+      .getOrElse(return)
 
     val mebius =
-      BukkitMebiusItemStackCodec.materialize(droppedMebiusProperty, damageValue = 0.toShort)
+      BukkitMebiusItemStackCodec.materialize(droppedMebiusProperty)
 
     player.sendMessage(s"$RESET$YELLOW${BOLD}おめでとうございます。採掘中にMEBIUSを発見しました。")
     player.sendMessage(s"$RESET$YELLOW${BOLD}MEBIUSはプレイヤーと共に成長するヘルメットです。")
