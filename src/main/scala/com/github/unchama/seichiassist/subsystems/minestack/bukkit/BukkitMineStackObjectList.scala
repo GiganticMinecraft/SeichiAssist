@@ -1180,6 +1180,7 @@ class BukkitMineStackObjectList[F[_]: Sync](
       mineStackObjects: Vector[MineStackObject[ItemStack]]
     ): F[Vector[(ItemStack, Option[MineStackObject[ItemStack]])]] = for {
       gachaPrizes <- gachaPrizeAPI.gachaPrizesWhenGachaEventsIsNotHolding
+      _ <- Sync[F].delay(println("MineStackObjectSearching..."))
     } yield {
       implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
         gachaPrizeAPI.canBeSignedAsGachaPrize
