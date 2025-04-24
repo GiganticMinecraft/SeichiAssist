@@ -381,7 +381,7 @@ class PlayerBlockBreakListener(
       SeichiAssist.instance.breakCountSystem.api.incrementSeichiExp.of(player, amount).toIO
     )
 
-    effectEnvironment.unsafeRunEffectAsync("破壊されたアイテムをMineStackに入れるかドロップする", program)
+//    effectEnvironment.unsafeRunEffectAsync("破壊されたアイテムをMineStackに入れるかドロップする", program)
   }
 
   /**
