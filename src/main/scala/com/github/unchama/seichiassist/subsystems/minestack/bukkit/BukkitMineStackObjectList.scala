@@ -5,6 +5,7 @@ import cats.effect.Sync
 import cats.effect.concurrent.Ref
 import com.github.unchama.minecraft.bukkit.algebra.CloneableBukkitItemStack._
 import com.github.unchama.minecraft.objects.MinecraftMaterial
+import com.github.unchama.generic.ApplicativeExtra.whenAOrElse
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.CanBeSignedAsGachaPrize
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject.{
@@ -1159,33 +1160,60 @@ class BukkitMineStackObjectList[F[_]: Sync](
     itemStacks: Vector[ItemStack],
     player: Player
   ): F[Vector[(ItemStack, Option[MineStackObject[ItemStack]])]] = {
-    for {
-      gachaPrizes <- gachaPrizeAPI.gachaPrizesWhenGachaEventsIsNotHolding
-      mineStackObjects <- allMineStackObjects
-    } yield {
-      implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
-        gachaPrizeAPI.canBeSignedAsGachaPrize
-
-      val signedItemStacks = gachaPrizes.map { gachaPrize =>
-        gachaPrize.materializeWithOwnerSignature(player.getName) -> gachaPrize.itemStack
-      }
-
-      itemStacks.map { _itemStack =>
-        signedItemStacks.find(_._1.isSimilar(_itemStack)) match {
-          case Some((_, notSignedItemStack)) =>
-            _itemStack -> mineStackObjects.find(_.itemStack.isSimilar(notSignedItemStack))
-          case None =>
-            mineStackObjects.find(_.itemStack.isSimilar(_itemStack)) match {
-              case Some(value)
-                  if value.category != GACHA_PRIZES || minestackBuiltinGachaPrizes.exists(
-                    _.swap.contains(value)
-                  ) =>
-                _itemStack -> Some(value)
-              case _ => _itemStack -> None
-            }
+    def findMineStackObjectWithoutGachaPrizeCategory(
+      mineStackObjects: Vector[MineStackObject[ItemStack]]
+    ): Vector[(ItemStack, Option[MineStackObject[ItemStack]])] = {
+      itemStacks.map { itemStack =>
+        mineStackObjects.find(_.itemStack.isSimilar(itemStack)) match {
+          case Some(value)
+              if value.category != GACHA_PRIZES || minestackBuiltinGachaPrizes.exists(
+                _.swap.contains(value)
+              ) =>
+            itemStack -> Some(value)
+          case _ => itemStack -> None
         }
       }
     }
+
+    def findMineStackObjectWithinGachaPrizeCategory(
+      itemStacks: Vector[ItemStack],
+      mineStackObjects: Vector[MineStackObject[ItemStack]]
+    ): F[Vector[(ItemStack, Option[MineStackObject[ItemStack]])]] = for {
+      gachaPrizes <- gachaPrizeAPI.gachaPrizesWhenGachaEventsIsNotHolding
+    } yield {
+      implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
+        gachaPrizeAPI.canBeSignedAsGachaPrize
+      val signedGachaPrizeItemStacks = gachaPrizes.map { gachaPrize =>
+        gachaPrize.materializeWithOwnerSignature(player.getName) -> gachaPrize.itemStack
+      }
+
+      itemStacks.map { itemStack =>
+        signedGachaPrizeItemStacks.find(_._1.isSimilar(itemStack)) match {
+          case Some((_, notSignedItemStack)) =>
+            itemStack -> mineStackObjects.find(_.itemStack.isSimilar(notSignedItemStack))
+          case None => itemStack -> None
+        }
+      }
+    }
+
+    for {
+      mineStackObjects <- allMineStackObjects
+      foundNotGachaPrizeMineStackObject <- Sync[F].pure(
+        findMineStackObjectWithoutGachaPrizeCategory(mineStackObjects)
+      )
+      foundGachaPrizeCategoryMineStackObject <- whenAOrElse(
+        foundNotGachaPrizeMineStackObject.exists(_._2.isEmpty)
+      )(
+        findMineStackObjectWithinGachaPrizeCategory(
+          foundNotGachaPrizeMineStackObject.collect {
+            case mineStackObject if mineStackObject._2.isDefined =>
+              mineStackObject._2.get.itemStack
+          },
+          mineStackObjects
+        ),
+        Vector.empty
+      )
+    } yield foundNotGachaPrizeMineStackObject ++ foundGachaPrizeCategoryMineStackObject
   }
 
   override protected implicit val F: Functor[F] = implicitly
