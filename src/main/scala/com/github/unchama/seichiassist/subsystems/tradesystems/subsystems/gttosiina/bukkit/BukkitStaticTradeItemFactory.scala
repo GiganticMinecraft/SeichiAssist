@@ -11,9 +11,8 @@ import scala.util.chaining.scalaUtilChainingOps
 object BukkitStaticTradeItemFactory extends StaticTradeItemFactory[ItemStack] {
 
   override val getMaxRingo: String => ItemStack = (name: String) =>
-    new ItemStack(Material.GOLDEN_APPLE, 1).tap { itemStack =>
+    new ItemStack(Material.ENCHANTED_GOLDEN_APPLE, 1).tap { itemStack =>
       import itemStack._
-      setDurability(1.toShort)
       val meta = getItemMeta
       meta.setDisplayName(s"$YELLOW$BOLD${ITALIC}椎名林檎")
       meta.setLore(
