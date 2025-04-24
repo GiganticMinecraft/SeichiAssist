@@ -89,9 +89,7 @@ class BukkitMineStackRepository[F[_]: Sync](
     itemStacks: Vector[ItemStack]
   ): F[(Vector[ItemStack], Vector[ItemStack])] = {
     for {
-      _ <- Sync[F].delay { println(s"start: ${System.nanoTime()}") }
       mineStackObjects <- mineStackObjectList.findBySignedItemStacks(itemStacks, player)
-      _ <- Sync[F].delay { println(s"end: ${System.nanoTime()}") }
       _ <- mineStackObjects.traverse {
         case (itemStack, Some(mineStackObject)) =>
           addStackedAmountOf(player, mineStackObject, itemStack.getAmount)
