@@ -371,9 +371,9 @@ class PlayerBlockBreakListener(
         _ <- PluginExecutionContexts
           .onMainThread
           .runAction(SyncIO {
-            intoFailedItemStacksAndSuccessItemStacks._1.foreach(
-              player.getWorld.dropItemNaturally(player.getLocation, _)
-            )
+            intoFailedItemStacksAndSuccessItemStacks
+              ._1
+              .foreach(player.getWorld.dropItemNaturally(player.getLocation, _))
           })
       } yield ()).unlessA(isContainer)
     } yield ()
