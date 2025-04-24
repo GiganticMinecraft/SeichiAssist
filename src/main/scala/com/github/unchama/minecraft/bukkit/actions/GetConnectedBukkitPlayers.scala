@@ -1,11 +1,11 @@
 package com.github.unchama.minecraft.bukkit.actions
 
-import cats.effect.{Sync, SyncIO}
+import cats.effect.SyncIO
 import com.github.unchama.minecraft.actions.{GetConnectedPlayers, OnMinecraftServerThread}
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
-class GetConnectedBukkitPlayers[F[_]: Sync: OnMinecraftServerThread]
+class GetConnectedBukkitPlayers[F[_]: OnMinecraftServerThread]
     extends GetConnectedPlayers[F, Player] {
 
   import scala.jdk.CollectionConverters._
