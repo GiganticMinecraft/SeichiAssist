@@ -24,6 +24,7 @@ import org.bukkit._
 import org.bukkit.block.{Block, Container}
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.{Entity, EntityType, Player}
+import org.bukkit.inventory.ItemStack
 
 import java.util.Random
 import java.util.stream.IntStream
@@ -233,28 +234,35 @@ object BreakUtil {
       targetBlocksInformation <- PluginExecutionContexts
         .onMainThread
         .runAction(SyncIO {
-          val seq: Seq[(Location, Block)] = targetBlocks
+          val clonedTool = miningTool.clone()
+          clonedTool.setType(Material.NETHERITE_PICKAXE)
+
+          val seq: Seq[(Location, Material, Vector[ItemStack])] = targetBlocks
             .toSeq
             .filterNot(_.getType == Material.AIR)
-            .map(block => (block.getLocation.clone(), block))
+            .map(block =>
+              (
+                block.getLocation.clone(),
+                block.getType,
+                if (block.getState.isInstanceOf[Container]) {
+                  Vector.empty
+                } else {
+                  block.getDrops(clonedTool, player).asScala.toVector
+                }
+              )
+            )
+
+          // NOTE: ブロックの破壊処理はプレイヤーへの視覚的情報の遅れ(動作遅延)につながるので、なるべく早く行う。
+          // また、インベントリを持つブロックのドロップ品は block.getDrops 関数でも取得できないので、breakNaturally 関数によって破壊する
+          targetBlocks.filter(_.getState.isInstanceOf[Container]).foreach(_.breakNaturally())
+          targetBlocks.foreach(_.setType(toMaterial))
 
           seq
         })
 
-      notContainerBlocks <- PluginExecutionContexts
-        .onMainThread
-        .runAction(SyncIO {
-          targetBlocksInformation.filterNot(_._2.getState.isInstanceOf[Container])
-        })
-
       breakResults = {
         val plainBreakResult =
-          notContainerBlocks.map {
-            case (location, block) =>
-              val clonedTool = miningTool.clone()
-              clonedTool.setType(Material.NETHERITE_PICKAXE)
-              (location, block.getDrops(clonedTool, player).asScala)
-          }
+          targetBlocksInformation.map { case (location, _, drops) => (location, drops) }
         val drops = plainBreakResult.mapFilter {
           case (_, drops) if drops.nonEmpty => Some(drops)
           case _                            => None
@@ -292,30 +300,20 @@ object BreakUtil {
           breakResults._1.toVector
         )
 
-      // NOTE: SpigotのBlockはLocationを保存しているため、Blockを置き換える前にMaterialとして
-      //  保存しておかないとすべてMaterial.AIRとして取得されてしまう
-      breakMaterials = targetBlocksInformation.map { case (_, block) => block.getType }
-
-      _ <- PluginExecutionContexts
-        .onMainThread
-        .runAction(SyncIO {
-          // ブロックをすべて[[toMaterial]]に変える
-          targetBlocks.filter(_.getState.isInstanceOf[Container]).foreach(_.breakNaturally())
-          targetBlocks.foreach(_.setType(toMaterial))
-        })
-
       _ <- IO {
         // 壊した時の音を再生する
         if (shouldPlayBreakSound) {
           targetBlocksInformation.foreach {
-            case (location, block) =>
-              dropLocation.getWorld.playEffect(location, Effect.STEP_SOUND, block)
+            case (location, material, _) =>
+              dropLocation.getWorld.playEffect(location, Effect.STEP_SOUND, material)
           }
         }
       }
 
       // プレイヤーの統計を増やす
-      totalCount = totalBreakCount(breakMaterials)
+      totalCount = totalBreakCount(targetBlocksInformation.map {
+        case (_, material, _) => material
+      })
       blockCountWeight <- blockCountWeight[IO](player.getWorld)
       expIncrease = SeichiExpAmount.ofNonNegative(totalCount * blockCountWeight)
 
