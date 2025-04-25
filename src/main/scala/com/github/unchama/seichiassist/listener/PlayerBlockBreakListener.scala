@@ -345,37 +345,35 @@ class PlayerBlockBreakListener(
         .unsafeRunSync()
     }
 
+    val isNotContainerBlock = !block.getState.isInstanceOf[Container]
+    val blockDrops =
+      event.getBlock.getDrops(player.getInventory.getItemInMainHand).asScala.toVector
+    val amalgamatedDrops = ItemStackUtil.amalgamate(blockDrops).toVector
+
+    val intoMineStackOrDrop = for {
+      intoMineStackResult <- mineStackAPI.mineStackRepository.tryIntoMineStack(player, amalgamatedDrops)
+      _ <- PluginExecutionContexts
+        .onMainThread
+        .runAction(SyncIO {
+          event.setDropItems(false)
+          intoMineStackResult
+            ._1
+            .foreach(player.getWorld.dropItemNaturally(player.getLocation, _))
+        })
+    } yield ()
+
+    // NOTE: Spigot 1.18.2のAPIではチェストの中身のドロップを計算することは不可能である。
+    // そのため、破壊したブロックがインベントリをもつ場合はドロップをキャンセルせず、
+    // MineStackの中身に入れることはせずにそのままドロップする
+    //
+    // また、ドロップしたアイテムをイベントで検知して取得するのも難しい。
+    // BlockDropItemEventは、playerがブロックを破壊したことをトリガーとするが、
+    // player#breakBlock関数を使用してブロックを破壊するとBlockBreakEventが再度発火し、
+    // その場合のみイベントの処理を実行しなかったとしてもサーバーに負荷がかかるので現実的ではない。
+    // これらのことから、やむを得ずこのような実装になっている。
     val program = for {
-      block <- IO(event.getBlock)
-      isContainer <- IO(block.getState.isInstanceOf[Container])
-      // NOTE: Spigot 1.18.2のAPIではチェストの中身のドロップを計算することは不可能である。
-      // そのため、破壊したブロックがインベントリをもつ場合はドロップをキャンセルせず、
-      // MineStackの中身に入れることはせずにそのままドロップする
-      //
-      // また、ドロップしたアイテムをイベントで検知して取得するのも難しい。
-      // BlockDropItemEventは、playerがブロックを破壊したことをトリガーとするが、
-      // player#breakBlock関数を使用してブロックを破壊するとBlockBreakEventが再度発火し、
-      // その場合のみイベントの処理を実行しなかったとしてもサーバーに負荷がかかるので現実的ではない。
-      // これらのことから、やむを得ずこのような実装になっている。
-      _ <- (for {
-        _ <- IO(event.setDropItems(false))
-        blockDrops <- IO(
-          event.getBlock.getDrops(player.getInventory.getItemInMainHand).asScala.toVector
-        )
-        drops = ItemStackUtil.amalgamate(blockDrops).toVector
-        currentAutoMineStackState <- mineStackAPI.autoMineStack(player)
-        intoFailedItemStacksAndSuccessItemStacks <- whenAOrElse(currentAutoMineStackState)(
-          mineStackAPI.mineStackRepository.tryIntoMineStack(player, drops),
-          (drops, Vector.empty)
-        )
-        _ <- PluginExecutionContexts
-          .onMainThread
-          .runAction(SyncIO {
-            intoFailedItemStacksAndSuccessItemStacks
-              ._1
-              .foreach(player.getWorld.dropItemNaturally(player.getLocation, _))
-          })
-      } yield ()).unlessA(isContainer)
+      currentMineStackAutoCollectState <- mineStackAPI.autoMineStack(player)
+      _ <- intoMineStackOrDrop.whenA(currentMineStackAutoCollectState && isNotContainerBlock)
     } yield ()
 
     effectEnvironment.unsafeRunEffectAsync(
