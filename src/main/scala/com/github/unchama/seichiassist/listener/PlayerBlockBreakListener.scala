@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.listener
 
 import cats.effect.{Fiber, IO, SyncIO}
-import com.github.unchama.generic.ApplicativeExtra.whenAOrElse
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.ManagedWorld._
@@ -351,7 +350,9 @@ class PlayerBlockBreakListener(
     val amalgamatedDrops = ItemStackUtil.amalgamate(blockDrops).toVector
 
     val intoMineStackOrDrop = for {
-      intoMineStackResult <- mineStackAPI.mineStackRepository.tryIntoMineStack(player, amalgamatedDrops)
+      intoMineStackResult <- mineStackAPI
+        .mineStackRepository
+        .tryIntoMineStack(player, amalgamatedDrops)
       _ <- PluginExecutionContexts
         .onMainThread
         .runAction(SyncIO {
