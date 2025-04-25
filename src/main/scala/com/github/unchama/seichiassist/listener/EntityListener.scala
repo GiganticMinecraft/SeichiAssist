@@ -18,6 +18,7 @@ import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.{Player, Projectile}
 import org.bukkit.event.entity._
 import org.bukkit.event.{EventHandler, Listener}
+import org.bukkit.inventory.meta.Damageable
 
 class EntityListener(
   implicit effectEnvironment: EffectEnvironment,
@@ -52,9 +53,7 @@ class EntityListener(
             .getBlockAt(projectile.getLocation.add(projectile.getVelocity.normalize)),
           MaterialSets.materials
         )
-        .getOrElse(
-          return
-        )
+        .getOrElse(return)
 
     // 整地ワールドでは重力値によるキャンセル判定を行う(スキル判定より先に判定させること)
     if (BreakUtil.getGravity(player, block, isAssault = false) > 3) {
@@ -72,30 +71,29 @@ class EntityListener(
     // 実際に使用するツール
     val tool = MaterialSets
       .refineItemStack(player.getInventory.getItemInMainHand, MaterialSets.breakToolMaterials)
-      .getOrElse(
-        return
-      )
+      .getOrElse(return)
 
     // 耐久値がマイナスかつ耐久無限ツールでない時処理を終了
-    if (tool.getDurability > tool.getType.getMaxDurability && !tool.getItemMeta.isUnbreakable)
+    if (
+      tool.getItemMeta.asInstanceOf[Damageable].getDamage > tool
+        .getType
+        .getMaxDurability && !tool.getItemMeta.isUnbreakable
+    )
       return
 
-    runArrowSkillOfHitBlock(player, block, tool)
+    runArrowSkillOfHitBlock(player, block, tool, projectile)
   }
 
   private def runArrowSkillOfHitBlock(
     player: Player,
     hitBlock: BlockBreakableBySkill,
-    tool: BreakTool
+    tool: BreakTool,
+    projectile: Projectile
   ): Unit = {
     val playerData = playermap(player.getUniqueId)
 
     val skillState = playerData.skillState.get.unsafeRunSync()
-    val selectedSkill = skillState
-      .activeSkill
-      .getOrElse(
-        return
-      )
+    val selectedSkill = skillState.activeSkill.getOrElse(return)
     val activeSkillArea = BreakArea(selectedSkill, skillState.usageMode)
 
     val breakArea = activeSkillArea.makeBreakArea(player).unsafeRunSync().head
@@ -132,7 +130,7 @@ class EntityListener(
     val nextDurability = {
       val durabilityEnchantment = tool.getEnchantmentLevel(Enchantment.DURABILITY)
 
-      tool.getDurability +
+      tool.getItemMeta.asInstanceOf[Damageable].getDamage +
         BreakUtil.calcDurability(
           durabilityEnchantment,
           breakBlocks.size + 10 * (lavaBlocks.size + waterBlocks.size)
@@ -157,7 +155,11 @@ class EntityListener(
       return
 
     // 耐久値を減らす
-    if (!tool.getItemMeta.isUnbreakable) tool.setDurability(nextDurability)
+    if (!tool.getItemMeta.isUnbreakable) {
+      val meta = tool.getItemMeta
+      meta.asInstanceOf[Damageable].setDamage(nextDurability)
+      tool.setItemMeta(meta)
+    }
 
     // 以降破壊する処理
     // 溶岩と水を破壊する
@@ -165,6 +167,8 @@ class EntityListener(
 
     // 元ブロックの真ん中の位置
     val centerOfBlock = hitBlock.getLocation.add(0.5, 0.5, 0.5)
+
+    projectile.remove()
 
     effectEnvironment.unsafeRunEffectAsync(
       "破壊エフェクトを再生する",

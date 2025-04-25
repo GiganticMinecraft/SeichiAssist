@@ -13,12 +13,10 @@ import org.bukkit.inventory.{ItemFlag, ItemStack}
  * @author
  *   karayuu
  */
-abstract class AbstractItemStackBuilder[-M <: ItemMeta] protected (
-  material: Material,
-  durability: Short
-) extends ItemStackBuilder {
+abstract class AbstractItemStackBuilder[-M <: ItemMeta] protected (material: Material)
+    extends ItemStackBuilder {
 
-  private val component: IconComponent = new IconComponent(material, durability)
+  private val component: IconComponent = new IconComponent(material)
 
   final override def build(): ItemStack = {
     val itemStack = component.itemStack()
