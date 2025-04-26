@@ -1,6 +1,6 @@
 package com.github.unchama.bungeesemaphoreresponder.infrastructure.redis
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 import cats.effect.{ContextShift, Effect, IO}
 import com.github.unchama.bungeesemaphoreresponder.Configuration
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerName

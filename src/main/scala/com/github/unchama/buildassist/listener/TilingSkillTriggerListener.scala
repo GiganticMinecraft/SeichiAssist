@@ -2,11 +2,13 @@ package com.github.unchama.buildassist.listener
 
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, SyncEffect, SyncIO}
-import com.github.unchama.buildassist.{BuildAssist, Util}
+import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.IncrementBuildExpWhenBuiltWithSkill
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
+import com.github.unchama.util.external.WorldGuardWrapper
 import org.bukkit.ChatColor.RED
+import org.bukkit.block.data.`type`.Leaves
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
@@ -48,10 +50,7 @@ class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[
     ) return
 
     val clickedBlock = event.getClickedBlock
-    val offHandItemSelector = offHandItem.getData.getData
-    if (
-      !(offHandItem.getType == clickedBlock.getType && offHandItemSelector == clickedBlock.getData)
-    ) {
+    if (!(offHandItem.getType == clickedBlock.getType)) {
       player.sendMessage(s"$RED「オフハンドと同じブロック」をクリックしてください。(基準になります)")
       return
     }
@@ -71,37 +70,40 @@ class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[
     val minestackObjectToUse =
       mineStackAPI
         .mineStackObjectList
-        .findBySignedItemStack(offHandItem, player)
+        .findBySignedItemStacks(Vector(offHandItem), player)
         .toIO
         .unsafeRunSync()
+        .head
+        ._2
         .filter(_ => buildAssistPlayerData.zs_minestack_flag)
 
     val replaceableMaterials = Set(
       Material.AIR,
       Material.SNOW,
-      Material.LONG_GRASS,
+      Material.TALL_GRASS,
       Material.DEAD_BUSH,
-      Material.YELLOW_FLOWER,
-      Material.RED_ROSE,
+      Material.DANDELION,
+      Material.POPPY,
+      Material.BLUE_ORCHID,
+      Material.ALLIUM,
+      Material.AZURE_BLUET,
+      Material.RED_TULIP,
+      Material.ORANGE_TULIP,
+      Material.WHITE_TULIP,
+      Material.PINK_TULIP,
+      Material.OXEYE_DAISY,
+      Material.SUNFLOWER,
+      Material.LILAC,
+      Material.LARGE_FERN,
+      Material.ROSE_BUSH,
+      Material.PEONY,
       Material.RED_MUSHROOM,
       Material.BROWN_MUSHROOM
     )
 
-    val fillTargetMaterials = Set(
-      Material.AIR,
-      Material.LAVA,
-      Material.STATIONARY_LAVA,
-      Material.WATER,
-      Material.STATIONARY_WATER
-    )
+    val fillTargetMaterials = Set(Material.AIR, Material.LAVA, Material.WATER)
 
     val b1 = new Breaks
-    val rawDataModifier: Byte => Byte = offHandItem.getType match {
-      case Material.LEAVES | Material.LEAVES_2 =>
-        val noDecayBit: Byte = 8
-        x => (x | noDecayBit).asInstanceOf[Byte]
-      case _ => identity
-    }
 
     b1.breakable {
       val targetXValues = centerX - areaInt to centerX + areaInt
@@ -121,7 +123,7 @@ class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[
                 val blockToBeReplaced = fillLocation.getBlock
 
                 if (fillTargetMaterials.contains(blockToBeReplaced.getType)) {
-                  if (Util.getWorldGuard.canBuild(player, fillLocation)) {
+                  if (WorldGuardWrapper.canBuild(player, fillLocation)) {
                     blockToBeReplaced.setType(Material.DIRT)
                   } else {
                     // 他人の保護がかかっている場合は通知を行う
@@ -137,7 +139,15 @@ class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[
               }
 
               targetSurfaceBlock.setType(offHandItem.getType)
-              targetSurfaceBlock.setData(rawDataModifier(offHandItemSelector))
+
+              val block = targetSurfaceLocation.getBlock
+
+              block.getBlockData match {
+                case leavesData: Leaves =>
+                  leavesData.setPersistent(true)
+                  block.setBlockData(leavesData)
+                case _ =>
+              }
 
               placementCount += 1
             }
@@ -179,7 +189,7 @@ class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[
 
             if (replaceableMaterials.contains(targetSurfaceBlock.getType)) {
               // 他人の保護がかかっている場合は処理を終了
-              if (!Util.getWorldGuard.canBuild(player, targetSurfaceLocation)) {
+              if (!WorldGuardWrapper.canBuild(player, targetSurfaceLocation)) {
                 player.sendMessage(s"${RED}付近に誰かの保護がかかっているようです")
                 b1.break()
               }
