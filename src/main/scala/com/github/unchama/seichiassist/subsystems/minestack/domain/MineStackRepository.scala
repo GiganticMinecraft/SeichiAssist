@@ -37,4 +37,14 @@ trait MineStackRepository[F[_], Player, ItemStack] {
    */
   def tryIntoMineStack(player: Player, itemStack: ItemStack, amount: Int): F[Boolean]
 
+  /**
+   * [[Player]]のMineStackリポジトリに[[ItemStack]]を格納することを試みます。
+   * @return `itemStacks`の要素である[[ItemStack]]をMineStackに格納し
+   *         格納できなかったアイテムをTupleの第1要素、格納できたアイテムを第2要素として返す作用
+   */
+  def tryIntoMineStack(
+    player: Player,
+    itemStacks: Vector[ItemStack]
+  ): F[(Vector[ItemStack], Vector[ItemStack])]
+
 }

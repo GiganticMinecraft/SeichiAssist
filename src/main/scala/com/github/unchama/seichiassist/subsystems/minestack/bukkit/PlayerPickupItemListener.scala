@@ -1,14 +1,15 @@
 package com.github.unchama.seichiassist.subsystems.minestack.bukkit
 
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
+import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.ApplicativeExtra.whenAOrElse
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.minestack.domain.{
-  MineStackRepository,
-  MineStackSettings
+  AutoCollectPreference,
+  MineStackRepository
 }
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -18,7 +19,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.{GameMode, Sound}
 
 class PlayerPickupItemListener[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F]](
-  implicit mineStackSettingRepository: PlayerDataRepository[MineStackSettings[G, Player]],
+  implicit autoCollectPreferenceRepository: PlayerDataRepository[Ref[F, AutoCollectPreference]],
   mineStackRepository: MineStackRepository[F, Player, ItemStack]
 ) extends Listener {
 
@@ -34,12 +35,13 @@ class PlayerPickupItemListener[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_
         val itemStack = item.getItemStack
 
         val program = for {
-          currentAutoMineStackState <- ContextCoercion(
-            mineStackSettingRepository(player).isAutoCollectionTurnedOn
-          )
-          isSucceedTryIntoMineStack <- whenAOrElse(currentAutoMineStackState)(
-            mineStackRepository.tryIntoMineStack(player, itemStack, itemStack.getAmount),
-            false
+          currentAutoMineStackState <-
+            autoCollectPreferenceRepository(player).get
+          intoSucceedItemStacksAndFailedItemStacks <- whenAOrElse(
+            currentAutoMineStackState.isEnabled
+          )(
+            mineStackRepository.tryIntoMineStack(player, Vector(itemStack)),
+            (Vector(itemStack), Vector.empty)
           )
           _ <- Sync[F]
             .delay {
@@ -48,13 +50,13 @@ class PlayerPickupItemListener[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_
               item.remove()
               if (SeichiAssist.DEBUG) {
                 player.sendMessage(RED.toString + "pick:" + itemStack.toString)
-                player.sendMessage(RED.toString + "pickDurability:" + itemStack.getDurability)
               }
             }
-            .whenA(isSucceedTryIntoMineStack)
+            .whenA(intoSucceedItemStacksAndFailedItemStacks._2.nonEmpty)
         } yield ()
 
         program.toIO.unsafeRunAsyncAndForget()
+      case _ => ()
     }
   }
 

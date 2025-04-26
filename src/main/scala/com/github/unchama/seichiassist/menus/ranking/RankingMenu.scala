@@ -10,6 +10,7 @@ import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.ranking.api.RankingProvider
 import com.github.unchama.seichiassist.subsystems.ranking.domain.values.{LoginTime, VoteCount}
 import com.github.unchama.seichiassist.subsystems.ranking.domain.{
@@ -25,7 +26,8 @@ object RankingMenu {
   class Environment[R](
     implicit val rankingApi: RankingProvider[IO, R],
     val ioCanOpenRankingMenuItself: IO CanOpen RankingMenu[R],
-    val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type
+    val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type,
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
 }
@@ -157,10 +159,14 @@ case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) 
     goBackToStickMenuSection ++ previousPageButtonSection ++ nextPageButtonSection
   }
 
-  private def rankingSection(ranking: Ranking[R]): Seq[(Int, Button)] = {
+  private def rankingSection(
+    ranking: Ranking[R]
+  )(implicit environment: Environment): Seq[(Int, Button)] = {
+    import environment.playerHeadSkinAPI
+
     def entry(position: Int, record: RankingRecord[R]): Button = {
       Button(
-        new SkullItemStackBuilder(record.playerName)
+        new SkullItemStackBuilder(record.uuid)
           .title(s"$YELLOW$BOLD${position}位:$WHITE${record.playerName}")
           .lore(template.recordDataLore(record.value))
           .build()
@@ -178,7 +184,11 @@ case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) 
       }
   }
 
-  private def totalAmountSection(ranking: Ranking[R]): Seq[(Int, Button)] = {
+  private def totalAmountSection(
+    ranking: Ranking[R]
+  )(implicit environment: Environment): Seq[(Int, Button)] = {
+    import environment.playerHeadSkinAPI
+
     Seq(
       ChestSlotRef(5, 4) ->
         Button(
