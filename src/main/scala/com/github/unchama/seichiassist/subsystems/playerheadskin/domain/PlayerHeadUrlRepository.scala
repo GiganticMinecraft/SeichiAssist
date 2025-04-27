@@ -2,23 +2,22 @@ package com.github.unchama.seichiassist.subsystems.playerheadskin.domain
 
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
+import cats.syntax.all._
 import com.github.unchama.generic.ApplicativeExtra
 
 class PlayerHeadUrlRepository[F[_]: Sync](implicit fetcher: PlayerHeadSkinUrlFetcher[F]) {
 
-  private val skinUrls: Ref[F, Vector[HeadSkinUrl]] = Ref.unsafe(Vector.empty)
-
-  import cats.implicits._
+  // NOTE: 一日で再起動される前提ならまぁ良いが、LRU cache にした方がベターではある
+  private val skinUrlUnboundedCache: Ref[F, Map[ /*targetPlayer*/ String, HeadSkinUrl]] =
+    Ref.unsafe(Map.empty)
 
   def readUrl(targetPlayer: String): F[Option[HeadSkinUrl]] = for {
-    urls <- skinUrls.get
-    targetPlayersHeadSkinUrl <- ApplicativeExtra.whenAOrElse(
-      !urls.exists(_.playerName == targetPlayer)
-    )(fetcher.fetchHeadSkinUrl(targetPlayer), None)
-    _ <- skinUrls
-      .update(_ :+ targetPlayersHeadSkinUrl.get)
-      .whenA(targetPlayersHeadSkinUrl.isDefined)
-    resultUrls <- skinUrls.get
-  } yield resultUrls.find(_.playerName == targetPlayer)
+    cache <- skinUrlUnboundedCache.get
+    skinUrlOpt <- ApplicativeExtra.optionOrElseA(
+      cache.get(targetPlayer),
+      fetcher.fetchHeadSkinUrl(targetPlayer)
+    )
+    _ <- skinUrlOpt.traverse(url => skinUrlUnboundedCache.update(_.updated(targetPlayer, url)))
+  } yield skinUrlOpt
 
 }
