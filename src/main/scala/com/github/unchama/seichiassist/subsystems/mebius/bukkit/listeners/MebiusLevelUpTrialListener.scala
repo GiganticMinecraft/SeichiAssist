@@ -31,15 +31,13 @@ class MebiusLevelUpTrialListener(
     val oldMebiusProperty =
       BukkitMebiusItemStackCodec
         .decodePropertyOfOwnedMebius(player)(player.getInventory.getHelmet)
-        .getOrElse(
-          return
-        )
+        .getOrElse(return)
 
     val newMebiusProperty = oldMebiusProperty.tryUpgradeByOneLevel[SyncIO].unsafeRunSync()
 
     if (newMebiusProperty != oldMebiusProperty) {
       player.getInventory.setHelmet {
-        BukkitMebiusItemStackCodec.materialize(newMebiusProperty, damageValue = 0)
+        BukkitMebiusItemStackCodec.materialize(newMebiusProperty)
       }
 
       import cats.implicits._

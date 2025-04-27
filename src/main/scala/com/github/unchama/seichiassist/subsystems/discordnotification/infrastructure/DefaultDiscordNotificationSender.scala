@@ -3,13 +3,11 @@ package com.github.unchama.seichiassist.subsystems.discordnotification.infrastru
 import cats.effect.LiftIO
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
-import io.chrisdavenport.log4cats.Logger
 
 /**
  * この実装は[[sendPlainText]]が呼ばれるたびに警告をロガーに流す以外は何もしない。
  */
-final class DefaultDiscordNotificationSender[F[_]: Logger: LiftIO]
-    extends DiscordNotificationAPI[F] {
+final class DefaultDiscordNotificationSender[F[_]: LiftIO] extends DiscordNotificationAPI[F] {
   override def sendPlainText(message: String): F[Unit] = {
     SeichiAssist
       .instance
