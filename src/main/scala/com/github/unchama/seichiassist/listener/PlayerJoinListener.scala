@@ -231,7 +231,7 @@ class PlayerJoinListener extends Listener {
       s"${WHITE}公式Discord: ${YELLOW}https://discord.gg/GcJtgsCj3W",
       s"${WHITE}サーバマップ:${YELLOW}https://www.seichi.network/map",
       s"${WHITE}サーバテクスチャ手動ダウンロード:${YELLOW}https://github.com/GiganticMinecraft/OriginalResourcePack/releases/latest",
-      s"${WHITE}ランキング: ${YELLOW}hhttps://seichi.conarin.com/ranking",
+      s"${WHITE}ランキング: ${YELLOW}https://seichi.conarin.com/ranking",
       s"＊--------------＊"
     )
 
