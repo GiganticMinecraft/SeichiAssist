@@ -48,7 +48,7 @@ class PlayerSettings {
   val toggleHalfBreakFlag: TargetedEffect[Player] = DeferredEffect(IO {
     allowBreakingHalfBlocks = !allowBreakingHalfBlocks
 
-    val newStatus = if (allowBreakingHalfBlocks) s"${GREEN}破壊可能" else "${RED}破壊不可能"
+    val newStatus = if (allowBreakingHalfBlocks) s"${GREEN}破壊可能" else s"${RED}破壊不可能"
     val responseMessage = s"現在ハーフブロックは$newStatus${RESET}です."
 
     MessageEffect(responseMessage)
