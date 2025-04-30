@@ -129,7 +129,7 @@ object NickNameMenu extends Menu {
                     if (effectPoint >= 10)
                       playerData.convertEffectPointToAchievePoint
                     else player.sendMessage("エフェクトポイントが不足しています。")
-                  }.whenA(effectPoint >= 10)
+                  }
                 } yield ()
               }
             }
