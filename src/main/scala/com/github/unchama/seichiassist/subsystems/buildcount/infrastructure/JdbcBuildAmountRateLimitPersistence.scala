@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.infrastructure
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.buildcount.application.Configuration
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.BuildAmountRateLimiterSnapshot
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountRateLimitPersistence
@@ -10,8 +9,7 @@ import scalikejdbc._
 import java.util.UUID
 
 class JdbcBuildAmountRateLimitPersistence[SyncContext[_]](
-  implicit SyncContext: Sync[SyncContext],
-  config: Configuration
+  implicit SyncContext: Sync[SyncContext]
 ) extends BuildAmountRateLimitPersistence[SyncContext] {
 
   override def read(key: UUID): SyncContext[Option[BuildAmountRateLimiterSnapshot]] =
@@ -26,7 +24,6 @@ class JdbcBuildAmountRateLimitPersistence[SyncContext[_]](
             BuildAmountRateLimiterSnapshot(exp, ldt)
           }
           .first()
-          .apply()
       }
     }
 
@@ -40,7 +37,7 @@ class JdbcBuildAmountRateLimitPersistence[SyncContext[_]](
              |  on duplicate key update
              |    available_permission = ${value.amount.toPlainString},
              |    record_date = ${value.recordTime}
-             |""".stripMargin.update().apply()
+             |""".stripMargin.update()
       }
     }
 }

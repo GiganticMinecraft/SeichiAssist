@@ -16,16 +16,13 @@ class JdbcManaAmountPersistence[F[_]](implicit F: Sync[F]) extends ManaAmountPer
         sql"select mana from playerdata where uuid = ${key.toString}"
           .map { rs => ManaAmount(rs.double("mana")) }
           .first()
-          .apply()
       }
     }
 
   override def write(key: UUID, value: ManaAmount): F[Unit] =
     F.delay {
       DB.localTx { implicit session =>
-        sql"update playerdata set mana = ${value.value} where uuid = ${key.toString}"
-          .update()
-          .apply()
+        sql"update playerdata set mana = ${value.value} where uuid = ${key.toString}".update()
       }
     }
 
