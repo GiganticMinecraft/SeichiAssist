@@ -11,18 +11,18 @@ import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gridregion.application.repository.{
-  RegionCountRepositoryDefinition,
+  RegionCountAllUntilNowRepositoryDefinition,
   RULChangePerClickSettingRepositoryDefinition,
   RegionUnitsRepositoryDefinition
 }
 import com.github.unchama.seichiassist.subsystems.gridregion.bukkit.BukkitRegionOperations
 import com.github.unchama.seichiassist.subsystems.gridregion.domain._
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.persistence.{
-  RegionCountPersistence,
+  RegionCountAllUntilNowPersistence,
   RegionTemplatePersistence
 }
 import com.github.unchama.seichiassist.subsystems.gridregion.infrastructure.{
-  JdbcRegionCountPersistence,
+  JdbcRegionCountAllUntilNowPersistence,
   JdbcRegionTemplatePersistence
 }
 import org.bukkit.Location
@@ -40,8 +40,8 @@ object System {
 
   def wired[F[_], G[_]: SyncEffect: ContextCoercion[*[_], F]]
     : G[System[F, Player, Location]] = {
-    implicit val regionCountPersistence: RegionCountPersistence[G] =
-      new JdbcRegionCountPersistence[G]
+    implicit val regionCountPersistence: RegionCountAllUntilNowPersistence[G] =
+      new JdbcRegionCountAllUntilNowPersistence[G]
     val regionTemplatePersistence: RegionTemplatePersistence[G] =
       new JdbcRegionTemplatePersistence[G]
 
@@ -62,8 +62,8 @@ object System {
             RegionUnitsRepositoryDefinition.finalization[G, Player]
           )
       )
-      regionCountRepositoryControls <- BukkitRepositoryControls.createHandles(
-        RegionCountRepositoryDefinition.withContext[G, Player]
+      regionCountAllUntilNowRepositoryControls <- BukkitRepositoryControls.createHandles(
+        RegionCountAllUntilNowRepositoryDefinition.withContext[G, Player]
       )
     } yield {
       val rulPerClickSettingRepository =
@@ -71,7 +71,7 @@ object System {
       val regionUnitsRepository =
         regionUnitsRepositoryControls.repository
       implicit val regionCountRepository: KeyedDataRepository[Player, Ref[G, RegionCount]] =
-        regionCountRepositoryControls.repository
+        regionCountAllUntilNowRepositoryControls.repository
       val regionOperations: RegionOperations[G, Location, Player] = new BukkitRegionOperations
 
       new System[F, Player, Location] {
@@ -134,7 +134,7 @@ object System {
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
           rulChangePerClickSettingRepositoryControls,
           regionUnitsRepositoryControls,
-          regionCountRepositoryControls
+          regionCountAllUntilNowRepositoryControls
         ).map(_.coerceFinalizationContextTo[F])
       }
     }

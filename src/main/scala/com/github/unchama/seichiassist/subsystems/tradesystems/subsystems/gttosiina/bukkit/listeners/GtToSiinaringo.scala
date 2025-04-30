@@ -36,7 +36,7 @@ class GtToSiinaringo[F[_]: ConcurrentEffect](
     // インベントリサイズが4列でない時終了
     if (inventory.row != 4) return
 
-    if (inventory.getTitle != s"$GOLD${BOLD}椎名林檎と交換したい景品を入れてネ") return
+    if (event.getView.getTitle != s"$GOLD${BOLD}椎名林檎と交換したい景品を入れてネ") return
     // 交換後の情報
     val tradedInformation =
       new BukkitTrade(name, gachaPrizeAPI.allGachaPrizeList.toIO.unsafeRunSync())

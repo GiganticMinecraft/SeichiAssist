@@ -63,18 +63,14 @@ trait FastDiggingSettingsReadApi[F[_], Player] {
   /**
    * 採掘速度上昇抑制の設定をプレーヤーごとに保持するデータレポジトリ。
    */
-  val currentSuppressionSettings: KeyedDataRepository[
-    Player,
-    ReadOnlyRef[F, FastDiggingEffectSuppressionState]
-  ]
+  val currentSuppressionSettings
+    : KeyedDataRepository[Player, ReadOnlyRef[F, FastDiggingEffectSuppressionState]]
 
   /**
    * 採掘速度上昇効果の統計を受け取るかどうかの設定をプレーヤーごとに保持するデータレポジトリ。
    */
-  val currentStatsSettings: KeyedDataRepository[
-    Player,
-    ReadOnlyRef[F, FastDiggingEffectStatsSettings]
-  ]
+  val currentStatsSettings
+    : KeyedDataRepository[Player, ReadOnlyRef[F, FastDiggingEffectStatsSettings]]
 
 }
 
