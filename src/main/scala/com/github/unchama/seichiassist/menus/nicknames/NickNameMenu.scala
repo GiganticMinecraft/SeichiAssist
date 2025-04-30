@@ -76,7 +76,6 @@ object NickNameMenu extends Menu {
   private case class NickNameMenuButtons(player: Player)(implicit environment: Environment) {
 
     import environment._
-    import cats.implicits._
 
     private val playerData = SeichiAssist.playermap.apply(player.getUniqueId)
 
