@@ -7,7 +7,7 @@ import org.bukkit.event.{EventHandler, Listener}
 class RescuePlayerListener extends Listener {
   @EventHandler
   def onPlayerFallenToVoid(event: PlayerMoveEvent): Unit = {
-    if (event.getTo.getBlockY < 0.0) {
+    if (event.getTo.getBlockY < -64.0) {
       val player = event.getPlayer
       val worldSpawnLocation = player.getWorld.getSpawnLocation
 

@@ -5,6 +5,7 @@ import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.BuildMainMenu
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import net.md_5.bungee.api.ChatColor._
 import org.bukkit.entity.{EntityType, Player}
 import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}
@@ -13,7 +14,8 @@ import org.bukkit.{Material, Sound}
 
 class PlayerInventoryListener(
   implicit effectEnvironment: EffectEnvironment,
-  ioCanOpenBuildMainMenu: IO CanOpen BuildMainMenu.type
+  ioCanOpenBuildMainMenu: IO CanOpen BuildMainMenu.type,
+  playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
 ) extends Listener {
 
   import com.github.unchama.targetedeffect._
@@ -58,7 +60,7 @@ class PlayerInventoryListener(
     // プレイヤーデータが無い場合は処理終了
 
     // インベントリ名が以下の時処理
-    if (topinventory.getTitle == s"${DARK_PURPLE.toString}$BOLD「直列設置」設定") {
+    if (view.getTitle == s"${DARK_PURPLE.toString}$BOLD「直列設置」設定") {
       event.setCancelled(true)
 
       // プレイヤーインベントリのクリックの場合終了
@@ -68,7 +70,7 @@ class PlayerInventoryListener(
       /*
        * クリックしたボタンに応じた各処理内容の記述ここから
        */
-      if (itemstackcurrent.getType == Material.SKULL_ITEM) {
+      if (itemstackcurrent.getType == Material.PLAYER_HEAD) {
         // ホームメニューへ帰還
 
         effectEnvironment.unsafeRunAsyncTargetedEffect(player)(
@@ -78,7 +80,7 @@ class PlayerInventoryListener(
           ),
           "BuildMainMenuを開く"
         )
-      } else if (itemstackcurrent.getType == Material.WOOD) {
+      } else if (itemstackcurrent.getType == Material.OAK_PLANKS) {
         // 直列設置設定
         if (playerLevel < BuildAssist.config.getblocklineuplevel) {
           player.sendMessage(RED.toString + "建築Lvが足りません")
@@ -91,7 +93,7 @@ class PlayerInventoryListener(
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           player.openInventory(MenuInventoryData.getBlockLineUpData(player))
         }
-      } else if (itemstackcurrent.getType == Material.STEP) {
+      } else if (itemstackcurrent.getType == Material.STONE_SLAB) {
         // 直列設置ハーフブロック設定
         if (playerdata.line_up_step_flg >= 2) {
           playerdata.line_up_step_flg = 0

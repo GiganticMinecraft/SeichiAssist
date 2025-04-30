@@ -29,7 +29,6 @@ class JdbcMineStackObjectPersistence[F[_]: Sync, ItemStack, Player](
             }
           }
           .toList()
-          .apply()
           .filterNot(_.isEmpty)
           .map(_.get)
       }
@@ -46,8 +45,8 @@ class JdbcMineStackObjectPersistence[F[_]: Sync, ItemStack, Player](
           Seq(key.toString, objectName, amount)
         }
 
-        sql"""INSERT INTO mine_stack 
-             | (player_uuid, object_name, amount) 
+        sql"""INSERT INTO mine_stack
+             | (player_uuid, object_name, amount)
              | VALUES (?, ?, ?)
              | ON DUPLICATE KEY UPDATE
              | amount = VALUES(amount)
