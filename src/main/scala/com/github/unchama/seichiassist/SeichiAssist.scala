@@ -413,8 +413,11 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.sharedinventory.System.wired[IO, IO].unsafeRunSync()
   }
 
-  private lazy val gachaPrizeSystem: subsystems.gachaprize.System[IO] =
-    subsystems.gachaprize.System.wired
+  private lazy val gachaPrizeSystem: subsystems.gachaprize.System[IO] = {
+    import PluginExecutionContexts.timer
+
+    subsystems.gachaprize.System.wired[IO].unsafeRunSync()
+  }
 
   private implicit lazy val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player] =
     gachaPrizeSystem.api
@@ -909,6 +912,9 @@ class SeichiAssist extends JavaPlugin() {
         subsystems.autosave.System.backgroundProcess[IO]
       }
 
+      val gachaPrizesUpdateProcess: IO[Nothing] =
+        gachaPrizeSystem.backgroundProcess
+
       val programs: List[IO[Nothing]] =
         List(
           dataRecalculationRoutine,
@@ -916,7 +922,8 @@ class SeichiAssist extends JavaPlugin() {
           levelUpGiftProcess,
           dragonNightTimeProcess,
           levelUpMessagesProcess,
-          autoSaveProcess
+          autoSaveProcess,
+          gachaPrizesUpdateProcess
         ) ++
           halfHourRankingRoutineOption.toList
 
