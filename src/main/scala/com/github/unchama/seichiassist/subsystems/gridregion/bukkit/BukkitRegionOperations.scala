@@ -95,26 +95,24 @@ class BukkitRegionOperations[F[_]: Sync](
     for {
       world <- Sync[F].delay(player.getWorld)
       wgManager = WorldGuardWrapper.getRegionManager(world)
-      result <-
-        if (!SeichiAssist.seichiAssistConfig.isGridProtectionEnabled(world)) {
-          Sync[F].pure(RegionCreationResult.WorldProhibitsRegionCreation)
-        } else {
-          Sync[F].delay {
-            val selection = WorldEditWrapper.getSelection(player)
-            val applicableRegions = wgManager.getApplicableRegions(selection)
+      isGridProtectionEnabled <- Sync[F].delay(
+        SeichiAssist.seichiAssistConfig.isGridProtectionEnabled(world)
+      )
+      worldEditSelection <- Sync[F].delay(WorldEditWrapper.getSelection(player))
+      applicableRegions <- Sync[F].delay(wgManager.getApplicableRegions(worldEditSelection))
+      regionCountPerPlayer <- Sync[F].delay(WorldGuardWrapper.getNumberOfRegions(player, world))
+      maxRegionCountPerWorld <- Sync[F].delay(WorldGuardWrapper.getWorldMaxRegion(world))
+    } yield {
+      if (!isGridProtectionEnabled) {
+        return Sync[F].pure(RegionCreationResult.WorldProhibitsRegionCreation)
+      }
 
-            val maxRegionCountPerWorld = WorldGuardWrapper.getWorldMaxRegion(world)
-            val regionCountPerPlayer = WorldGuardWrapper.getNumberOfRegions(player, world)
-            if (
-              regionCountPerPlayer < maxRegionCountPerWorld && applicableRegions.size() == 0
-            ) {
-              RegionCreationResult.Success
-            } else {
-              RegionCreationResult.Error
-            }
-          }
-        }
-    } yield result
+      if (regionCountPerPlayer < maxRegionCountPerWorld && applicableRegions.size() == 0) {
+        RegionCreationResult.Success
+      } else {
+        RegionCreationResult.Error
+      }
+    }
 
   }
 }
