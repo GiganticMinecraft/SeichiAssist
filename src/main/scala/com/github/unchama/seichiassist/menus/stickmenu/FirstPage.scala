@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.menus.stickmenu
 
 import cats.data.Kleisli
 import cats.effect.{IO, SyncIO}
+import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.router.CanOpen
@@ -97,6 +98,7 @@ object FirstPage extends Menu {
     val enderChestAccessApi: AnywhereEnderChestAPI[IO],
     val gachaTicketAPI: GachaTicketAPI[IO],
     val voteAPI: VoteAPI[IO, Player],
+    val nonServerThreadContextShift: NonServerThreadContextShift[IO],
     implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
@@ -146,10 +148,10 @@ object FirstPage extends Menu {
         ChestSlotRef(2, 4) -> computeEnderChestButton,
         ChestSlotRef(2, 6) -> computeMineStackButton,
         ChestSlotRef(3, 2) -> computeApologyItemsButton
-      ).traverse(_.sequence)
+      ).parTraverse(_.parSequence)
 
       val computeOptionallyShownPart: IO[List[(Int, Option[Button])]] =
-        List(ChestSlotRef(1, 1) -> computeStarLevelStatsButton).traverse(_.sequence)
+        List(ChestSlotRef(1, 1) -> computeStarLevelStatsButton).parTraverse(_.parSequence)
 
       for {
         constantlyShownPart <- computeConstantlyShownPart
