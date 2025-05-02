@@ -2,9 +2,9 @@ package com.github.unchama.seichiassist.subsystems.gachaprize.usecase
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
-  GachaPrizeTableEntry,
   GachaPrizeId,
   GachaPrizeListPersistence,
+  GachaPrizeTableEntry,
   GachaProbability,
   StaticGachaPrizeFactory
 }
@@ -13,6 +13,7 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
   GachaEventPersistence
 }
 import com.github.unchama.generic.Cloneable
+import com.github.unchama.generic.effect.concurrent.CachedRef
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain
 
 import java.time.LocalDate
@@ -20,7 +21,8 @@ import java.time.LocalDate
 class GachaPrizeUseCase[F[_]: Sync, ItemStack: Cloneable](
   implicit gachaPrizeListPersistence: GachaPrizeListPersistence[F, ItemStack],
   gachaEventPersistence: GachaEventPersistence[F],
-  gachaPrizeFactory: StaticGachaPrizeFactory[ItemStack]
+  gachaPrizeFactory: StaticGachaPrizeFactory[ItemStack],
+  gachaPrizeListRef: CachedRef[F, Vector[GachaPrizeTableEntry[ItemStack]]]
 ) {
 
   import cats.implicits._
@@ -62,7 +64,7 @@ class GachaPrizeUseCase[F[_]: Sync, ItemStack: Cloneable](
   } yield originalGachaPrizes.exists(_.id == gachaPrizeId)
 
   def listOfNow: F[Vector[GachaPrizeTableEntry[ItemStack]]] = for {
-    gachaPrizes <- gachaPrizeListPersistence.list
+    gachaPrizes <- gachaPrizeListRef.read
     holingGachaEvent <- holdingGachaEvent
     // どのイベント中でも経験値瓶は絶対に出す
     expBottle = domain.GachaPrizeTableEntry(
