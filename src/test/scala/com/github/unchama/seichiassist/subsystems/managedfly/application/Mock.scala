@@ -76,30 +76,30 @@ private[managedfly] class Mock[AsyncContext[_]: Concurrent, SyncContext[
     implicit configuration: SystemConfiguration
   ): PlayerFlyStatusManipulation[PlayerAsyncKleisli] = {
     new PlayerFlyStatusManipulation[PlayerAsyncKleisli] {
-      override val ensurePlayerExp
-        : PlayerAsyncKleisli[Unit] = Kleisli { player: PlayerMockReference =>
-        player
-          .experienceMutex
-          .lockAndUpdate { experience =>
-            experience.consume(configuration.expConsumptionAmount) match {
-              case Some(_) => Monad[AsyncContext].pure(experience)
-              case None    => Sync[AsyncContext].raiseError(PlayerExpNotEnough)
+      override val ensurePlayerExp: PlayerAsyncKleisli[Unit] = Kleisli {
+        player: PlayerMockReference =>
+          player
+            .experienceMutex
+            .lockAndUpdate { experience =>
+              experience.consume(configuration.expConsumptionAmount) match {
+                case Some(_) => Monad[AsyncContext].pure(experience)
+                case None    => Sync[AsyncContext].raiseError(PlayerExpNotEnough)
+              }
             }
-          }
-          .as(())
+            .as(())
       }
 
-      override val consumePlayerExp
-        : PlayerAsyncKleisli[Unit] = Kleisli { player: PlayerMockReference =>
-        player
-          .experienceMutex
-          .lockAndUpdate { experience =>
-            experience.consume(configuration.expConsumptionAmount) match {
-              case Some(consumed) => Monad[AsyncContext].pure(consumed)
-              case None           => Sync[AsyncContext].raiseError(PlayerExpNotEnough)
+      override val consumePlayerExp: PlayerAsyncKleisli[Unit] = Kleisli {
+        player: PlayerMockReference =>
+          player
+            .experienceMutex
+            .lockAndUpdate { experience =>
+              experience.consume(configuration.expConsumptionAmount) match {
+                case Some(consumed) => Monad[AsyncContext].pure(consumed)
+                case None           => Sync[AsyncContext].raiseError(PlayerExpNotEnough)
+              }
             }
-          }
-          .as(())
+            .as(())
       }
 
       override val isPlayerIdle: PlayerAsyncKleisli[IdleStatus] = Kleisli {
