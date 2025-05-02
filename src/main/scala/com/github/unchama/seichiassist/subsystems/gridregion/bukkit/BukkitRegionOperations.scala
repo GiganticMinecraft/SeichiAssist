@@ -105,9 +105,10 @@ class BukkitRegionOperations[F[_]: Sync](
     } yield {
       if (!isGridProtectionEnabled) {
         return Sync[F].pure(RegionCreationResult.WorldProhibitsRegionCreation)
-      }
-
-      if (regionCountPerPlayer < maxRegionCountPerWorld && applicableRegions.size() == 0) {
+      } else if (
+        regionCountPerPlayer < maxRegionCountPerWorld && applicableRegions
+          .size() == 0 && worldEditSelection.getX != worldEditSelection.getZ
+      ) {
         RegionCreationResult.Success
       } else {
         RegionCreationResult.Error
