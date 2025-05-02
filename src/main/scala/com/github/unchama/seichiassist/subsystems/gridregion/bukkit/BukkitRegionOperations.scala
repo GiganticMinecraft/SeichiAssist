@@ -8,7 +8,6 @@ import com.github.unchama.seichiassist.subsystems.gridregion.domain.CardinalDire
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.HorizontalAxisAlignedSubjectiveDirection.Ahead
 import com.github.unchama.seichiassist.subsystems.gridregion.domain._
 import com.github.unchama.util.external.{WorldEditWrapper, WorldGuardWrapper}
-import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion
 import org.bukkit.Location
 import org.bukkit.entity.Player
@@ -74,16 +73,24 @@ class BukkitRegionOperations[F[_]: Sync](
 
   override def tryCreatingSelectedWorldGuardRegion(player: Player): F[Unit] = for {
     regionCount <- regionCountAllUntilNowRepository(player).get
-    wgManager = WorldGuardWrapper.getRegionManager(player.getWorld)
-    selection = WorldEditWrapper.getSelection(player)
     regionName = s"${player.getName}_${regionCount.value}"
-    region = new ProtectedCuboidRegion(
-      regionName,
-      BlockVector3.at(selection.getBlockX, -64, selection.getBlockZ),
-      BlockVector3.at(selection.getBlockX, 320, selection.getBlockZ)
-    )
+    selectedProtectedCuboidRegion <- Sync[F].delay {
+      WorldEditWrapper.getSelectedRegion(player).map { region =>
+        new ProtectedCuboidRegion(
+          regionName,
+          region.getMinimumPoint.withY(-64),
+          region.getMaximumPoint.withY(320)
+        )
+      }
+    }
+    wgManager = WorldGuardWrapper.getRegionManager(player.getWorld)
     regionCreateResult <- Sync[F].delay {
-      wgManager.addRegion(region)
+      selectedProtectedCuboidRegion.foreach(wgManager.addRegion)
+    }
+    _ <- Sync[F].delay {
+      selectedProtectedCuboidRegion.foreach(protectedCuboidRegion =>
+        WorldGuardWrapper.addRegionOwner(protectedCuboidRegion, player)
+      )
     }
     _ <- regionCountAllUntilNowRepository(player).update(_.increment)
   } yield regionCreateResult
@@ -104,10 +111,10 @@ class BukkitRegionOperations[F[_]: Sync](
       maxRegionCountPerWorld <- Sync[F].delay(WorldGuardWrapper.getWorldMaxRegion(world))
     } yield {
       if (!isGridProtectionEnabled) {
-        return Sync[F].pure(RegionCreationResult.WorldProhibitsRegionCreation)
-      }
-
-      if (regionCountPerPlayer < maxRegionCountPerWorld && applicableRegions.size() == 0) {
+        RegionCreationResult.WorldProhibitsRegionCreation
+      } else if (
+        regionCountPerPlayer < maxRegionCountPerWorld && applicableRegions.size() == 0
+      ) {
         RegionCreationResult.Success
       } else {
         RegionCreationResult.Error

@@ -100,6 +100,11 @@ object WorldGuardWrapper {
   def isRegionMember(player: Player, location: Location): Boolean =
     getRegion(location).exists(_.isMember(wrapPlayer(player)))
 
+  def addRegionOwner(region: ProtectedRegion, owner: Player): Unit = {
+    val owners = region.getOwners
+    owners.addPlayer(wrapPlayer(owner))
+  }
+
   def canProtectionWorld(world: World): Boolean =
     worldGuard.getPlatform.getGlobalStateManager.get(BukkitAdapter.adapt(world)).useRegions
 
