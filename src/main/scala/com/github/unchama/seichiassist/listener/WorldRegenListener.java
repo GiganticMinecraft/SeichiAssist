@@ -118,7 +118,7 @@ public class WorldRegenListener implements Listener {
         BukkitWorld bukkitWorld = new BukkitWorld(world);
         session.setBlocks(new CuboidRegion(bukkitWorld, pos1, pos2), BukkitAdapter.adapt(Material.BEDROCK.createBlockData()));
         session.setBlocks(new CuboidRegion(bukkitWorld, pos1.add(0, 1, 0), pos2.add(0, 1 + spaceHeight, 0)), BukkitAdapter.adapt(Material.AIR.createBlockData()));
-        ProtectedRegion region = new ProtectedCuboidRegion(protName, BlockVector3.at(pos1.getX(), 0, pos1.getZ()), BlockVector3.at(pos2.getX(), 255, pos2.getZ()));
+        ProtectedRegion region = new ProtectedCuboidRegion(protName, BlockVector3.at(pos1.getX(), -64, pos1.getZ()), BlockVector3.at(pos2.getX(), 320, pos2.getZ()));
         WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world)).addRegion(region);
     }
 }
