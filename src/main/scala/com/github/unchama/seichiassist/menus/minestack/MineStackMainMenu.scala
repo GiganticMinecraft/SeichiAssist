@@ -13,6 +13,7 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory._
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import org.bukkit.ChatColor._
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -28,7 +29,8 @@ object MineStackMainMenu extends Menu {
     implicit val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
     implicit val ioCanOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu,
     implicit val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
-    implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack]
+    implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack],
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}MineStackメインメニュー")
@@ -39,8 +41,8 @@ object MineStackMainMenu extends Menu {
     def iconMaterialFor(category: MineStackObjectCategory): Material = category match {
       case ORES                        => Material.DIAMOND_ORE
       case MOB_DROP                    => Material.ENDER_PEARL
-      case AGRICULTURAL                => Material.SEEDS
-      case BUILDING                    => Material.SMOOTH_BRICK
+      case AGRICULTURAL                => Material.WHEAT_SEEDS
+      case BUILDING                    => Material.STONE_BRICKS
       case REDSTONE_AND_TRANSPORTATION => Material.REDSTONE
       case GACHA_PRIZES                => Material.GOLDEN_APPLE
     }
