@@ -15,7 +15,12 @@ trait GachaPointApi[F[_], G[_], Player] {
   /**
    * プレーヤーのガチャポイントをガチャ券に変換して一括で受け取る作用。
    */
-  val receiveBatch: Kleisli[F, Player, Unit]
+  val receiveLargeBatch: Kleisli[F, Player, Unit]
+
+  /**
+   * プレーヤーのガチャポイントをガチャ券に変換して一括で受け取る作用。
+   */
+  val receiveSmallBatch: Kleisli[F, Player, Unit]
 
   /**
    * プレーヤーのガチャポイントを増やす作用。
