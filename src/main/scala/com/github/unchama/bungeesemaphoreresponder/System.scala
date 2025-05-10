@@ -1,6 +1,6 @@
 package com.github.unchama.bungeesemaphoreresponder
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 import cats.effect.{ConcurrentEffect, ContextShift, IO, Timer}
 import com.github.unchama.bungeesemaphoreresponder.bukkit.listeners.BungeeSemaphoreCooperator
 import com.github.unchama.bungeesemaphoreresponder.domain.actions.BungeeSemaphoreSynchronization
