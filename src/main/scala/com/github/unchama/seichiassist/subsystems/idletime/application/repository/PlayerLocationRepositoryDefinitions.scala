@@ -9,11 +9,11 @@ object PlayerLocationRepositoryDefinitions {
 
   def initialization[F[_]: Applicative, Location, Player](
     implicit playerLocationRepository: Player => PlayerLocationRepository[F, Location, Player]
-  ): TwoPhasedRepositoryInitialization[F, Player, PlayerLocationRepository[
+  ): TwoPhasedRepositoryInitialization[
     F,
-    Location,
-    Player
-  ]] =
+    Player,
+    PlayerLocationRepository[F, Location, Player]
+  ] =
     TwoPhasedRepositoryInitialization
       .withoutPrefetching[F, Player, PlayerLocationRepository[F, Location, Player]] { player =>
         Applicative[F].pure(playerLocationRepository(player))
