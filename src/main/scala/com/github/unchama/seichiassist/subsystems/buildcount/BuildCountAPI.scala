@@ -16,15 +16,11 @@ trait BuildCountAPI[F[_], G[_], Player] {
 
   implicit val incrementBuildExpWhenBuiltByHand: IncrementBuildExpWhenBuiltByHand[G, Player]
 
-  implicit val incrementBuildExpWhenBuiltWithSkill: IncrementBuildExpWhenBuiltWithSkill[
-    G,
-    Player
-  ]
+  implicit val incrementBuildExpWhenBuiltWithSkill
+    : IncrementBuildExpWhenBuiltWithSkill[G, Player]
 
-  implicit val playerBuildAmountRepository: KeyedDataRepository[
-    Player,
-    ReadOnlyRef[G, BuildAmountData]
-  ]
+  implicit val playerBuildAmountRepository
+    : KeyedDataRepository[Player, ReadOnlyRef[G, BuildAmountData]]
 
   val buildAmountUpdates: fs2.Stream[F, (Player, BuildAmountData)]
 

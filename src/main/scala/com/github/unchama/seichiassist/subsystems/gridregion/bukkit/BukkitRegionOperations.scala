@@ -8,11 +8,12 @@ import com.github.unchama.seichiassist.subsystems.gridregion.domain.CardinalDire
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.HorizontalAxisAlignedSubjectiveDirection.Ahead
 import com.github.unchama.seichiassist.subsystems.gridregion.domain._
 import com.github.unchama.util.external.{WorldEditWrapper, WorldGuardWrapper}
+import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
 class BukkitRegionOperations[F[_]: Sync](
-  implicit regionCountRepository: KeyedDataRepository[Player, Ref[F, RegionCount]]
+  implicit regionCountAllUntilNowRepository: KeyedDataRepository[Player, Ref[F, RegionCount]]
 ) extends RegionOperations[F, Location, Player] {
   override def getSelectionCorners(
     currentLocation: Location,
@@ -71,63 +72,54 @@ class BukkitRegionOperations[F[_]: Sync](
   import cats.implicits._
 
   override def tryCreatingSelectedWorldGuardRegion(player: Player): F[Unit] = for {
-    regionCount <- regionCountRepository(player).get
-    regionCreateResult <- Sync[F].delay {
-      WorldEditWrapper
-        .getSelection(player)
-        .map { selection =>
-          val regionName = s"${player.getName}_${regionCount.value}"
-
-          WorldGuardWrapper.tryCreateRegion(
-            regionName,
-            player,
-            player.getWorld,
-            selection.getNativeMinimumPoint.toBlockVector,
-            selection.getNativeMaximumPoint.toBlockVector
-          )
-        }
-        .getOrElse(())
+    regionCount <- regionCountAllUntilNowRepository(player).get
+    regionName = s"${player.getName}_${regionCount.value}"
+    selectedProtectedCuboidRegion <- Sync[F].delay {
+      WorldEditWrapper.getSelectedRegion(player).map { region =>
+        new ProtectedCuboidRegion(
+          regionName,
+          region.getMinimumPoint.withY(-64),
+          region.getMaximumPoint.withY(320)
+        )
+      }
     }
-    _ <- regionCountRepository(player).update(_.increment)
+    wgManager = WorldGuardWrapper.getRegionManager(player.getWorld)
+    regionCreateResult <- Sync[F].delay {
+      selectedProtectedCuboidRegion.foreach(wgManager.addRegion)
+    }
+    _ <- Sync[F].delay {
+      selectedProtectedCuboidRegion.foreach(protectedCuboidRegion =>
+        WorldGuardWrapper.addRegionOwner(protectedCuboidRegion, player)
+      )
+    }
+    _ <- regionCountAllUntilNowRepository(player).update(_.increment)
   } yield regionCreateResult
 
   override def canCreateRegion(
     player: Player,
     shape: SubjectiveRegionShape
   ): F[RegionCreationResult] = {
-    val selection = WorldEditWrapper.getSelection(player)
     for {
-      regionCount <- regionCountRepository(player).get
       world <- Sync[F].delay(player.getWorld)
       wgManager = WorldGuardWrapper.getRegionManager(world)
-      result <-
-        if (!SeichiAssist.seichiAssistConfig.isGridProtectionEnabled(world)) {
-          Sync[F].pure(RegionCreationResult.WorldProhibitsRegionCreation)
-        } else if (selection.isEmpty || wgManager.isEmpty) {
-          Sync[F].pure(RegionCreationResult.Error)
-        } else {
-          Sync[F].delay {
-            val regions = WorldGuardWrapper.getApplicableRegionCount(
-              world,
-              s"${player.getName}_${regionCount.value}",
-              selection.get.getNativeMinimumPoint.toBlockVector,
-              selection.get.getNativeMaximumPoint.toBlockVector
-            )
-            if (regions != 0) {
-              RegionCreationResult.Error
-            } else {
-              val maxRegionCount = WorldGuardWrapper.getMaxRegionCount(player, world)
-              val regionCountPerPlayer = WorldGuardWrapper.getRegionCountOfPlayer(player, world)
-
-              if (maxRegionCount >= 0 && regionCountPerPlayer >= maxRegionCount) {
-                RegionCreationResult.Error
-              } else {
-                RegionCreationResult.Success
-              }
-            }
-          }
-        }
-    } yield result
+      isGridProtectionEnabled <- Sync[F].delay(
+        SeichiAssist.seichiAssistConfig.isGridProtectionEnabled(world)
+      )
+      worldEditSelection <- Sync[F].delay(WorldEditWrapper.getSelection(player))
+      applicableRegions <- Sync[F].delay(wgManager.getApplicableRegions(worldEditSelection))
+      regionCountPerPlayer <- Sync[F].delay(WorldGuardWrapper.getNumberOfRegions(player, world))
+      maxRegionCountPerWorld <- Sync[F].delay(WorldGuardWrapper.getWorldMaxRegion(world))
+    } yield {
+      if (!isGridProtectionEnabled) {
+        RegionCreationResult.WorldProhibitsRegionCreation
+      } else if (
+        regionCountPerPlayer < maxRegionCountPerWorld && applicableRegions.size() == 0
+      ) {
+        RegionCreationResult.Success
+      } else {
+        RegionCreationResult.Error
+      }
+    }
 
   }
 }
