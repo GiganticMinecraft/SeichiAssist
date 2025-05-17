@@ -14,9 +14,9 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory._
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject._
 import org.bukkit.Material
-import org.bukkit.entity.Player
+import org.bukkit.entity.{Player}
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.PotionMeta
+import org.bukkit.inventory.meta.{PotionMeta, Damageable}
 import org.bukkit.potion.{PotionData, PotionType}
 
 class BukkitMineStackObjectList[F[_]: Sync](
@@ -1170,18 +1170,54 @@ class BukkitMineStackObjectList[F[_]: Sync](
         gachaPrize.materializeWithOwnerSignature(player.getName) -> gachaPrize.itemStack
       }
 
+      // NOTE: 1.12.2 -> 1.18.2 のアップデート時に、
+      //  `isSimilar` を使うと同じはずのアイテムが別アイテムとして認識され、
+      //  ここではそこまで厳密な比較を要求していないので、一部の Meta を用いて比較する
+      def eqItemStack(rightHand: ItemStack, leftHand: ItemStack): Boolean = {
+        if (rightHand.getType != leftHand.getType) return false
+
+        val rightHandItemStackMeta = rightHand.getItemMeta
+        val leftHandItemStackMeta = leftHand.getItemMeta
+
+        val rightHandItemStackName = rightHandItemStackMeta.getDisplayName
+        val leftHandItemStackName = leftHandItemStackMeta.getDisplayName
+
+        if (rightHandItemStackName != leftHandItemStackName) return false
+
+        val rightHandItemStackLore = rightHandItemStackMeta.getLore
+        val leftHandItemStackLore = leftHandItemStackMeta.getLore
+
+        if (!rightHandItemStackLore.equals(leftHandItemStackLore)) return false
+
+        val rightHandItemStackEnchantments = rightHandItemStackMeta.getEnchants
+        val leftHandItemStackEnchantments = leftHandItemStackMeta.getEnchants
+
+        if (!rightHandItemStackEnchantments.equals(leftHandItemStackEnchantments)) return false
+
+        (leftHandItemStackMeta, rightHandItemStackMeta) match {
+          case (left: Damageable, right: Damageable) => left.getDamage == right.getDamage
+          case _                                     => true
+        }
+      }
+
       itemStacks.map { _itemStack =>
-        signedItemStacks.find(_._1.isSimilar(_itemStack)) match {
+        signedItemStacks
+          .find(signedItemStack => eqItemStack(signedItemStack._1, _itemStack)) match {
           case Some((_, notSignedItemStack)) =>
-            _itemStack -> mineStackObjects.find(_.itemStack.isSimilar(notSignedItemStack))
+            _itemStack -> mineStackObjects.find(mineStackObject =>
+              eqItemStack(mineStackObject.itemStack, notSignedItemStack)
+            )
           case None =>
-            mineStackObjects.find(_.itemStack.isSimilar(_itemStack)) match {
+            mineStackObjects.find(mineStackObject =>
+              eqItemStack(mineStackObject.itemStack, _itemStack)
+            ) match {
               case Some(value)
                   if value.category != GACHA_PRIZES || minestackBuiltinGachaPrizes.exists(
                     _.swap.contains(value)
                   ) =>
                 _itemStack -> Some(value)
-              case _ => _itemStack -> None
+              case _ =>
+                _itemStack -> None
             }
         }
       }
