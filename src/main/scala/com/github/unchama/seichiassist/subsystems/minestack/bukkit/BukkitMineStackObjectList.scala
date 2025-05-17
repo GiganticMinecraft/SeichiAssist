@@ -1184,8 +1184,8 @@ class BukkitMineStackObjectList[F[_]: Sync](
 
         if (rightHandItemStackName != leftHandItemStackName) return false
 
-        val rightHandItemStackLore = rightHandItemStackMeta.getLore
-        val leftHandItemStackLore = leftHandItemStackMeta.getLore
+        val rightHandItemStackLore = Option(rightHandItemStackMeta.getLore)
+        val leftHandItemStackLore = Option(leftHandItemStackMeta.getLore)
 
         if (!rightHandItemStackLore.equals(leftHandItemStackLore)) return false
 
