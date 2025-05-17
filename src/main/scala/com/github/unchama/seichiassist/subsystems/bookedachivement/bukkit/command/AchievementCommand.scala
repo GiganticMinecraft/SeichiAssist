@@ -9,10 +9,14 @@ import com.github.unchama.seichiassist.subsystems.bookedachivement.domain.Achiev
 import com.github.unchama.seichiassist.subsystems.bookedachivement.service.AchievementBookingService
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
+import eu.timepit.refined.api.Refined
+import eu.timepit.refined.numeric.Positive
+import eu.timepit.refined.auto._
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor.RED
 import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.entity.Player
+import shapeless.HNil
 
 import scala.jdk.CollectionConverters._
 
@@ -32,7 +36,11 @@ object AchievementCommand {
    * には実績の存在確認のロジックが入っていたが、これは必要であったか？
    */
   private val achievementNumberParser =
-    Parsers.closedRangeInt(1000, 9999, MessageEffect(s"${RED}操作の対象として指定できるのはNo1000～9999の実績です。"))
+    Parsers.closedRangeInt[Int Refined Positive](
+      1000,
+      9999,
+      MessageEffect(s"${RED}操作の対象として指定できるのはNo1000～9999の実績です。")
+    )
   private val scopeParser = Parsers.fromOptionParser(
     ScopeSpecification.fromString,
     MessageEffect(s"${RED}スコープ指定子はuser [ユーザー名], server, worldのみ入力できます。")
@@ -67,23 +75,25 @@ object AchievementCommand {
     )
   )
 
+  // TODO: パーサーを分けるべき
   def executor[F[_]: ConcurrentEffect](
     implicit service: AchievementBookingService[F]
   ): TabExecutor = ContextualExecutorBuilder
-    .beginConfiguration()
-    .argumentsParsers(
-      List(operationParser, achievementNumberParser, scopeParser),
-      onMissingArguments = descriptionPrintExecutor
-    )
-    .execution { context =>
+    .beginConfiguration
+    .thenParse(operationParser)
+    .thenParse(achievementNumberParser)
+    .thenParse(scopeParser)
+    .ifArgumentsMissing(descriptionPrintExecutor)
+    .buildWithExecutionF { context =>
+      import shapeless.::
+
       val sender = context.sender
 
-      val operation = context.args.parsed.head.asInstanceOf[AchievementOperation]
-      val achievementNumber = context.args.parsed(1).asInstanceOf[Int]
+      val operation :: achievementNumber :: scopeSpec :: HNil = context.args.parsed
 
       def execution(): IO[TargetedEffect[CommandSender]] = {
         val targetPlayerNames: List[String] =
-          context.args.parsed(2).asInstanceOf[ScopeSpecification] match {
+          scopeSpec match {
             case ScopeSpecification.USER =>
               val targetPlayerName =
                 context
@@ -140,8 +150,7 @@ object AchievementCommand {
         }.combineAll
       }
 
-      execution()
+      execution().flatMap(_.apply(sender))
     }
-    .build()
     .asNonBlockingTabExecutor()
 }

@@ -54,3 +54,21 @@ object LeftClickButtonEffect {
       effect.followedBy(SequentialEffect(effects: _*))
     )
 }
+
+/**
+ * 右クリックに限定した[FilteredButtonEffect]
+ */
+object RightClickButtonEffect {
+  import com.github.unchama.generic.syntax._
+
+  /**
+   * [ButtonEffectScope]に依存しない[TargetedEffect]を実行する[RightClickButtonEffect]を構築する.
+   */
+  def apply(
+    effect: TargetedEffect[Player],
+    effects: TargetedEffect[Player]*
+  ): FilteredButtonEffect =
+    FilteredButtonEffect(ClickEventFilter.RIGHT_CLICK)((_: ButtonEffectScope) =>
+      effect.followedBy(SequentialEffect(effects: _*))
+    )
+}

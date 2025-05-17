@@ -3,24 +3,6 @@ package com.github.unchama.generic
 object ListExtra {
 
   /**
-   * Listの内容を[[B]]または[[C]]に分類し、
-   * tupleとして返します。
-   */
-  def partitionWith[A, B, C](
-    list: List[A]
-  )(partitioningFunction: A => Either[B, C]): (List[B], List[C]) = {
-    list match {
-      case ::(head, next) =>
-        val partitionedNext = partitionWith(next)(partitioningFunction)
-        partitioningFunction(head) match {
-          case Left(value)  => (value :: partitionedNext._1, partitionedNext._2)
-          case Right(value) => (partitionedNext._1, value :: partitionedNext._2)
-        }
-      case Nil => (Nil, Nil)
-    }
-  }
-
-  /**
    * Listの中身で条件に一致するものがあったときに`element`を先頭に追加し直します
    * listの中に与えられたpredicateに合致する要素があった場合、その要素をelementで写して変換します。そのような要素がなかった場合、そのままlistを返却します。
    *
@@ -73,6 +55,23 @@ object ListExtra {
     val firstTarget = firstList.find(predicate)
     val secondTarget = secondList.find(predicate)
     map(firstTarget.product(secondTarget))
+  }
+
+  /**
+   * 最初の要素が `predicate` を満たすようになるまで `list` を左回転する。
+   *
+   * `list` が空である場合、または `list` を一周回転させても最初の要素が
+   * `predicate` を満たすことが無かった (つまり、すべての要素が
+   * `predicate` を満たさなかった) 場合には `None` が返される。
+   */
+  def rotateLeftUntil[A](list: List[A])(predicate: A => Boolean): Option[List[A]] = {
+    val rotationSize = list.indexWhere(predicate)
+    if (rotationSize == -1) {
+      None
+    } else {
+      val (cutPrefix, cutSuffix) = list.splitAt(rotationSize)
+      Some(cutSuffix ++ cutPrefix)
+    }
   }
 
 }

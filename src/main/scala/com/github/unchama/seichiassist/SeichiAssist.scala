@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 import cats.Parallel.Aux
 import cats.effect
 import cats.effect.concurrent.Ref
@@ -59,9 +59,11 @@ import com.github.unchama.seichiassist.menus.{BuildMainMenu, TopLevelRouter}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems._
 import com.github.unchama.seichiassist.subsystems.anywhereender.AnywhereEnderChestAPI
+import com.github.unchama.seichiassist.subsystems.autosave.application.SystemConfiguration
 import com.github.unchama.seichiassist.subsystems.breakcount.{BreakCountAPI, BreakCountReadAPI}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.BreakSkillTargetConfigAPI
+import com.github.unchama.seichiassist.subsystems.breaksuppressionpreference.BreakSuppressionPreferenceAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.donate.DonatePremiumPointAPI
@@ -78,6 +80,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.G
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.idletime.IdleTimeAPI
+import com.github.unchama.seichiassist.subsystems.gridregion.GridRegionAPI
 import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository
@@ -85,6 +88,7 @@ import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaReadApi}
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.bukkit.MineStackCommand
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.present.infrastructure.GlobalPlayerAccessor
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
@@ -98,11 +102,11 @@ import com.github.unchama.util.{ActionStatus, ClassUtils}
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import io.sentry.Sentry
 import io.sentry.SentryLevel
-import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.entity.{Entity, Player, Projectile}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
+import org.bukkit.{Bukkit, Location}
 import org.flywaydb.core.Flyway
 import org.slf4j.Logger
 import org.slf4j.impl.JDK14LoggerFactory
@@ -220,7 +224,6 @@ class SeichiAssist extends JavaPlugin() {
 
   private lazy val itemMigrationSystem: subsystems.itemmigration.System[IO] = {
     import PluginExecutionContexts.asyncShift
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
     subsystems.itemmigration.System.wired[IO, SyncIO].unsafeRunSync()
   }
@@ -258,6 +261,9 @@ class SeichiAssist extends JavaPlugin() {
     implicit val globalNotification: DiscordNotificationAPI[IO] =
       discordNotificationSystem.globalNotification
 
+    implicit val getConnectedPlayers: GetConnectedPlayers[IO, Player] =
+      new GetConnectedBukkitPlayers[IO]
+
     subsystems.buildcount.System.wired[IO, SyncIO].unsafeRunSync()
   }
 
@@ -290,6 +296,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
     implicit val gtToSiinaAPI: GtToSiinaAPI[ItemStack] = gtToSiinaSystem.api
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player] = playerHeadSkinSystem.api
 
     subsystems.seasonalevents.System.wired[IO, SyncIO, IO](this)
   }
@@ -343,8 +350,7 @@ class SeichiAssist extends JavaPlugin() {
     import PluginExecutionContexts.{asyncShift, onMainThread, timer}
 
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-    implicit val getConnectedPlayers: GetConnectedPlayers[IO, Player] =
-      new GetConnectedBukkitPlayers[IO]
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player] = playerHeadSkinSystem.api
 
     subsystems.gachapoint.System.wired[IO, SyncIO](breakCountSystem.api).unsafeRunSync()
   }
@@ -384,7 +390,6 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val presentSystem: Subsystem[IO] = {
     import PluginExecutionContexts.{asyncShift, onMainThread}
 
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val uuidToLastSeenName: UuidToLastSeenName[IO] = new GlobalPlayerAccessor[IO]
     subsystems.present.System.wired
@@ -404,20 +409,25 @@ class SeichiAssist extends JavaPlugin() {
     mineStackSystem.api
 
   private lazy val sharedInventorySystem: subsystems.sharedinventory.System[IO] = {
-    import PluginExecutionContexts.timer
+    import PluginExecutionContexts.{timer, onMainThread}
     subsystems.sharedinventory.System.wired[IO, IO].unsafeRunSync()
   }
 
-  private lazy val gachaPrizeSystem: subsystems.gachaprize.System[IO] =
-    subsystems.gachaprize.System.wired.unsafeRunSync()
+  private lazy val gachaPrizeSystem: subsystems.gachaprize.System[IO] = {
+    import PluginExecutionContexts.timer
+
+    subsystems.gachaprize.System.wired[IO].unsafeRunSync()
+  }
 
   private implicit lazy val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player] =
     gachaPrizeSystem.api
 
   private lazy val gachaSystem: subsystems.gacha.System[IO, Player] = {
     implicit val gachaTicketAPI: GachaTicketAPI[IO] = gachaTicketSystem.api
+    implicit val getConnectedPlayers: GetConnectedPlayers[IO, Player] =
+      new GetConnectedBukkitPlayers[IO]
 
-    subsystems.gacha.System.wired[IO].unsafeRunSync()
+    subsystems.gacha.System.wired[IO]
   }
 
   private lazy val consumeGachaTicketSystem
@@ -434,6 +444,8 @@ class SeichiAssist extends JavaPlugin() {
 
   private lazy val gachaTradeSystem: Subsystem[IO] = {
     implicit val gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player] = playerHeadSkinSystem.api
+
     subsystems.tradesystems.subsystems.gachatrade.System.wired[IO, SyncIO]
   }
 
@@ -459,6 +471,7 @@ class SeichiAssist extends JavaPlugin() {
   // TODO: これはprivateであるべきだが、Achievementシステムが再実装されるまでやむを得ずpublicにする
   lazy val voteSystem: subsystems.vote.System[IO, Player] = {
     implicit val breakCountAPI: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player] = playerHeadSkinSystem.api
 
     subsystems.vote.System.wired[IO, SyncIO]
   }
@@ -486,10 +499,38 @@ class SeichiAssist extends JavaPlugin() {
   lazy val breakSkillTargetConfigSystem: subsystems.breakskilltargetconfig.System[IO, Player] =
     subsystems.breakskilltargetconfig.System.wired[IO, SyncIO].unsafeRunSync()
 
+  lazy val breakSuppressionPreferenceSystem
+    : subsystems.breaksuppressionpreference.System[IO, Player] =
+    subsystems.breaksuppressionpreference.System.wired[IO, SyncIO].unsafeRunSync()
+
   /* TODO: mineStackSystemは本来privateであるべきだが、mineStackにアイテムを格納するAPIが現状の
       BreakUtilの実装から呼び出されている都合上やむを得ずpublicになっている。*/
   lazy val mineStackSystem: subsystems.minestack.System[IO, Player, ItemStack] =
     subsystems.minestack.System.wired[IO, SyncIO].unsafeRunSync()
+
+  private lazy val gridRegionSystem: subsystems.gridregion.System[IO, Player, Location] =
+    subsystems.gridregion.System.wired[IO, SyncIO].unsafeRunSync()
+
+  private lazy val joinAndQuitMessenger: Subsystem[IO] =
+    subsystems.joinandquitmessenger.System.wired[IO]
+
+  private lazy val elevatorSystem: Subsystem[IO] = {
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+
+    subsystems.elevator.System.wired[IO]
+  }
+
+  private lazy val blockLiquidStreamSystem: Subsystem[IO] =
+    subsystems.blockliquidstream.System.wired[IO]
+
+  private lazy val cancelDamageByFallingBlocksSystem: Subsystem[IO] =
+    subsystems.canceldamagebyfallingblocks.System.wired[IO]
+
+  private lazy val playerHeadSkinSystem: subsystems.playerheadskin.System[IO, Player] = {
+    import PluginExecutionContexts.asyncShift
+
+    subsystems.playerheadskin.System.wired[IO]
+  }
 
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
@@ -527,13 +568,22 @@ class SeichiAssist extends JavaPlugin() {
     mineStackSystem,
     consumeGachaTicketSystem,
     openirontrapdoor.System.wired,
-    breakSkillTargetConfigSystem
+    gridRegionSystem,
+    breakSkillTargetConfigSystem,
+    breakSuppressionPreferenceSystem,
+    joinAndQuitMessenger,
+    elevatorSystem,
+    blockLiquidStreamSystem,
+    cancelDamageByFallingBlocksSystem,
+    playerHeadSkinSystem,
+    disablegrowth.System.wired
   )
 
   private lazy val buildAssist: BuildAssist = {
     implicit val flyApi: ManagedFlyApi[SyncIO, Player] = managedFlySystem.api
     implicit val buildCountAPI: BuildCountAPI[IO, SyncIO, Player] = buildCountSystem.api
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player] = playerHeadSkinSystem.api
 
     new BuildAssist(this)
   }
@@ -597,8 +647,8 @@ class SeichiAssist extends JavaPlugin() {
     // BungeeCordとのI/O
     Bukkit
       .getMessenger
-      .registerIncomingPluginChannel(this, "SeichiAssistBungee", new BungeeReceiver(this))
-    Bukkit.getMessenger.registerOutgoingPluginChannel(this, "SeichiAssistBungee")
+      .registerIncomingPluginChannel(this, "BungeeCord", new BungeeReceiver(this))
+    Bukkit.getMessenger.registerOutgoingPluginChannel(this, "BungeeCord")
 
     // コンフィグ系の設定は全てConfig.javaに移動
     SeichiAssist.seichiAssistConfig = Config.loadFrom(this)
@@ -608,7 +658,7 @@ class SeichiAssist extends JavaPlugin() {
     if (!serverId.startsWith("local-")) {
       Sentry.init { options =>
         options.setDsn(
-          "https://7f241763b17c49db982ea29ad64b0264@sentry.onp.admin.seichi.click/2"
+          "https://66a9eb71bd1663f76df971d0b632b855@sentry.onp.admin.seichi.click/2"
         )
         // パフォーマンスモニタリングに使うトレースサンプルの送信割合
         // tracesSampleRateを1.0にすると全てのイベントが送られるため、送りすぎないように調整する必要がある
@@ -665,6 +715,7 @@ class SeichiAssist extends JavaPlugin() {
       )
     }
 
+    // TODO: 後でもどす
     itemMigrationSystem.entryPoints.runDatabaseMigration[SyncIO].unsafeRunSync()
     itemMigrationSystem.entryPoints.runWorldMigration.unsafeRunSync()
 
@@ -702,8 +753,12 @@ class SeichiAssist extends JavaPlugin() {
     implicit val gachaAPI: GachaDrawAPI[IO, Player] = gachaSystem.api
     implicit val consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player] =
       consumeGachaTicketSystem.api
+    implicit val gridRegionAPI: GridRegionAPI[IO, Player, Location] = gridRegionSystem.api
     implicit val breakSkillTargetConfigAPI: BreakSkillTargetConfigAPI[IO, Player] =
       breakSkillTargetConfigSystem.api
+    implicit val breakSuppressionPreferenceAPI: BreakSuppressionPreferenceAPI[IO, Player] =
+      breakSuppressionPreferenceSystem.api
+    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player] = playerHeadSkinSystem.api
 
     val menuRouter = TopLevelRouter.apply
     import SeichiAssist.Scopes.globalChatInterceptionScope
@@ -750,12 +805,11 @@ class SeichiAssist extends JavaPlugin() {
       new EntityListener(),
       new PlayerDeathEventListener(),
       new GachaItemListener(),
-      new RegionInventoryListener(),
       new WorldRegenListener(),
       new ChatInterceptor(List(globalChatInterceptionScope)),
       new MenuHandler(),
       SpawnRegionProjectileInterceptor,
-      Y5DoubleSlabCanceller
+      YMinus59DoubleSlabCanceller
     ).concat(bungeeSemaphoreResponderSystem.listenersToBeRegistered)
       .concat {
         Seq(
@@ -830,8 +884,12 @@ class SeichiAssist extends JavaPlugin() {
       implicit val ioConcurrent: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
       implicit val sendMessages: SendMinecraftMessage[IO, Player] = new SendBukkitMessage[IO]
 
-      val dragonNightTimeProcess: IO[Nothing] =
+      val dragonNightTimeProcess: IO[Nothing] = {
+        implicit val getConnectedPlayers: GetConnectedPlayers[IO, Player] =
+          new GetConnectedBukkitPlayers[IO]
+
         subsystems.dragonnighttime.System.backgroundProcess[IO, SyncIO, Player]
+      }
 
       val halfHourRankingRoutineOption: Option[IO[Nothing]] =
         // 公共鯖(7)と建築鯖(8)なら整地量のランキングを表示する必要はない
@@ -846,10 +904,16 @@ class SeichiAssist extends JavaPlugin() {
         subsystems.seichilevelupmessage.System.backgroundProcess[IO, SyncIO, Player]
 
       val autoSaveProcess: IO[Nothing] = {
-        val configuration = seichiAssistConfig.getAutoSaveSystemConfiguration
+        implicit val configuration: SystemConfiguration =
+          seichiAssistConfig.getAutoSaveSystemConfiguration
+        implicit val getConnectedPlayers: GetConnectedPlayers[IO, Player] =
+          new GetConnectedBukkitPlayers[IO]
 
-        subsystems.autosave.System.backgroundProcess[IO, IO](configuration)
+        subsystems.autosave.System.backgroundProcess[IO]
       }
+
+      val gachaPrizesUpdateProcess: IO[Nothing] =
+        gachaPrizeSystem.backgroundProcess
 
       val programs: List[IO[Nothing]] =
         List(
@@ -858,7 +922,8 @@ class SeichiAssist extends JavaPlugin() {
           levelUpGiftProcess,
           dragonNightTimeProcess,
           levelUpMessagesProcess,
-          autoSaveProcess
+          autoSaveProcess,
+          gachaPrizesUpdateProcess
         ) ++
           halfHourRankingRoutineOption.toList
 

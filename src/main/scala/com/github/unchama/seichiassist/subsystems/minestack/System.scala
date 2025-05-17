@@ -9,14 +9,13 @@ import com.github.unchama.datarepository.bukkit.player.{
 }
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
-import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 import com.github.unchama.minecraft.bukkit.objects.BukkitMaterial
 import com.github.unchama.minecraft.objects.MinecraftMaterial
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.minestack.application.repository.{
+  AutoCollectPreferenceRepositoryDefinition,
   MineStackObjectRepositoryDefinition,
-  MineStackSettingsRepositoryDefinition,
   MineStackUsageHistoryRepositoryDefinitions
 }
 import com.github.unchama.seichiassist.subsystems.minestack.bukkit.{
@@ -30,14 +29,10 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
   MineStackObjectList,
   MineStackObjectWithAmount
 }
-import com.github.unchama.seichiassist.subsystems.minestack.domain.persistence.{
-  MineStackGachaObjectPersistence,
-  PlayerSettingPersistence
-}
+import com.github.unchama.seichiassist.subsystems.minestack.domain.persistence.AutoCollectPreferencePersistence
 import com.github.unchama.seichiassist.subsystems.minestack.infrastructure.{
-  JdbcMineStackGachaObjectPersistence,
-  JdbcMineStackObjectPersistence,
-  JdbcPlayerSettingPersistence
+  JdbcAutoCollectPreferencePersistence,
+  JdbcMineStackObjectPersistence
 }
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -57,14 +52,11 @@ object System {
   def wired[F[_]: ConcurrentEffect, G[_]: SyncEffect: ContextCoercion[*[_], F]](
     implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player]
   ): F[System[F, Player, ItemStack]] = {
-    implicit val mineStackGachaObjectPersistence
-      : MineStackGachaObjectPersistence[F, ItemStack] =
-      new JdbcMineStackGachaObjectPersistence[F, ItemStack, Player]
     implicit val minecraftMaterial: MinecraftMaterial[Material, ItemStack] = new BukkitMaterial
     implicit val _mineStackObjectList: MineStackObjectList[F, ItemStack, Player] =
       new BukkitMineStackObjectList[F]
-    implicit val playerSettingPersistence: PlayerSettingPersistence[G] =
-      new JdbcPlayerSettingPersistence[G]
+    implicit val autoCollectPreferencePersistence: AutoCollectPreferencePersistence[G] =
+      new JdbcAutoCollectPreferencePersistence[G]
 
     for {
       allMineStackObjects <- _mineStackObjectList.allMineStackObjects
@@ -89,24 +81,21 @@ object System {
         )
       )
 
-      mineStackSettingsRepositoryControls <- ContextCoercion(
-        BukkitRepositoryControls.createHandles(
-          RepositoryDefinition
-            .Phased
-            .TwoPhased(
-              MineStackSettingsRepositoryDefinition.initialization[G, Player],
-              MineStackSettingsRepositoryDefinition.finalization[G, Player]
-            )
-        )
+      autoCollectPreferenceRepositoryControls <- ContextCoercion(
+        BukkitRepositoryControls
+          .createHandles(AutoCollectPreferenceRepositoryDefinition.withContext[G, Player])
       )
     } yield {
       implicit val mineStackObjectRepository
         : PlayerDataRepository[Ref[F, List[MineStackObjectWithAmount[ItemStack]]]] =
         mineStackObjectRepositoryControls.repository.map(_.mapK(ContextCoercion.asFunctionK))
       val mineStackUsageHistoryRepository = mineStackUsageHistoryRepositoryControls.repository
-      implicit val mineStackSettingRepository
-        : PlayerDataRepository[MineStackSettings[G, Player]] =
-        mineStackSettingsRepositoryControls.repository
+      implicit val autoCollectPreferenceRepository
+        : PlayerDataRepository[Ref[F, AutoCollectPreference]] =
+        autoCollectPreferenceRepositoryControls
+          .repository
+          .map(_.mapK(ContextCoercion.asFunctionK))
+
       implicit val _mineStackRepository: MineStackRepository[F, Player, ItemStack] =
         new BukkitMineStackRepository[F]
 
@@ -130,13 +119,9 @@ object System {
             override def setAutoMineStack(
               isItemCollectedAutomatically: Boolean
             ): Kleisli[F, Player, Unit] = Kleisli { player =>
-              for {
-                _ <- ContextCoercion {
-                  if (isItemCollectedAutomatically)
-                    mineStackSettingRepository(player).turnOnAutoCollect
-                  else mineStackSettingRepository(player).turnOffAutoCollect
-                }
-              } yield ()
+              autoCollectPreferenceRepository(player).set(
+                AutoCollectPreference(isItemCollectedAutomatically)
+              )
             }
 
             override def toggleAutoMineStack: Kleisli[F, Player, Unit] =
@@ -147,9 +132,8 @@ object System {
                 } yield ()
               }
 
-            override def autoMineStack(player: Player): F[Boolean] = ContextCoercion(
-              mineStackSettingRepository(player).isAutoCollectionTurnedOn
-            )
+            override def autoMineStack(player: Player): F[Boolean] =
+              autoCollectPreferenceRepository(player).get.map(_.isEnabled)
 
             override def mineStackObjectList: MineStackObjectList[F, ItemStack, Player] =
               _mineStackObjectList
@@ -158,12 +142,12 @@ object System {
               _mineStackRepository
           }
 
-        override val listeners: Seq[Listener] = Seq(new PlayerPickupItemListener[F, G])
+        override val listeners: Seq[Listener] = Seq(new PlayerPickupItemListener[F])
 
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
           mineStackObjectRepositoryControls,
           mineStackUsageHistoryRepositoryControls,
-          mineStackSettingsRepositoryControls
+          autoCollectPreferenceRepositoryControls
         ).map(_.coerceFinalizationContextTo[F])
       }
 

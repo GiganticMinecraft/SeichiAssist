@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.menus
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{
   ClickEventFilter,
   FilteredButtonEffect
@@ -10,14 +11,16 @@ import com.github.unchama.menuinventory.slot.button.action.{
 import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.data.RegionMenuData
+import com.github.unchama.seichiassist.menus.gridregion.GridRegionMenu
+import com.github.unchama.seichiassist.subsystems.gridregion.GridRegionAPI
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
-import com.github.unchama.util.external.ExternalPlugins
+import com.sk89q.worldedit.WorldEdit
+import com.sk89q.worldedit.bukkit.BukkitAdapter
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryType
-import org.bukkit.{Material, Sound}
+import org.bukkit.{Location, Material, Sound}
 
 object RegionMenu extends Menu {
 
@@ -25,15 +28,19 @@ object RegionMenu extends Menu {
   import com.github.unchama.targetedeffect._
   import com.github.unchama.targetedeffect.player.PlayerEffects._
 
-  override type Environment = Unit
+  class Environment(
+    implicit val ioCanOpenGridRegionMenu: IO CanOpen GridRegionMenu.type,
+    implicit val gridRegionAPI: GridRegionAPI[IO, Player, Location]
+  )
 
   override val frame: MenuFrame = MenuFrame(Right(InventoryType.HOPPER), s"${BLACK}保護メニュー")
 
   override def computeMenuLayout(
     player: Player
   )(implicit environment: Environment): IO[MenuSlotLayout] = {
-    import ConstantButtons._
-    val computations = ButtonComputations(player)
+    val constantButtons = ConstantButtons(environment)
+    val computations = ButtonComputations(environment)(player)
+    import constantButtons._
     import computations._
 
     for {
@@ -55,40 +62,42 @@ object RegionMenu extends Menu {
     }
   }
 
-  private case class ButtonComputations(player: Player) {
+  private case class ButtonComputations(environment: Environment)(player: Player) {
 
     import player._
+    import environment._
 
-    val computeButtonToClaimRegion: IO[Button] = IO {
-      val openerData = SeichiAssist.playermap(player.getUniqueId)
-      val selection = ExternalPlugins.getWorldEdit.getSelection(player)
-
+    val computeButtonToClaimRegion: IO[Button] = for {
+      regionCount <- gridRegionAPI.regionCount(player)
+    } yield {
+      val session = WorldEdit.getInstance().getSessionManager.get(BukkitAdapter.adapt(player))
+      val world = BukkitAdapter.adapt(player.getWorld)
+      val isSelected = session.isSelectionDefined(world)
       val playerHasPermission = player.hasPermission("worldguard.region.claim")
-      val isSelectionNull = selection == null
-      val selectionHasEnoughSpace =
-        if (!isSelectionNull)
-          selection.getLength >= 10 && selection.getWidth >= 10
-        else false
 
-      val canMakeRegion = playerHasPermission && !isSelectionNull && selectionHasEnoughSpace
+      val selectionOpt = Option.when(isSelected)(session.getSelection(world))
+      val selectionHasEnoughSpace =
+        selectionOpt.exists(selection => selection.getLength >= 10 && selection.getWidth >= 10)
+
+      val canMakeRegion = playerHasPermission && !isSelected && selectionHasEnoughSpace
 
       val iconItemStack = {
-
         val lore = {
-          if (!playerHasPermission)
+          if (!playerHasPermission) {
             Seq(s"${RED}このワールドでは", s"${RED}保護を作成できません")
-          else if (isSelectionNull)
+          } else if (!isSelected) {
             Seq(s"${RED}範囲指定されていません", s"${RED}先に木の斧で2か所クリックしてネ")
-          else if (!selectionHasEnoughSpace)
+          } else if (!selectionHasEnoughSpace) {
             Seq(s"${RED}選択された範囲が狭すぎます", s"${RED}一辺当たり最低10ブロック以上にしてネ")
-          else
+          } else {
             Seq(s"$DARK_GREEN${UNDERLINE}範囲指定されています", s"$DARK_GREEN${UNDERLINE}クリックすると保護を作成します")
+          }
         } ++ {
           if (playerHasPermission)
             Seq(
               s"${GRAY}Y座標は自動で全範囲保護されます",
               s"${YELLOW}A new region has been claimed",
-              s"${YELLOW}named '${getName}_${openerData.regionCount}'.",
+              s"${YELLOW}named '${getName}_${regionCount.value}'.",
               s"${GRAY}と出れば保護設定完了です",
               s"${RED}赤色で別の英文が出た場合",
               s"${GRAY}保護の設定に失敗しています",
@@ -100,7 +109,7 @@ object RegionMenu extends Menu {
         }
 
         import scala.util.chaining._
-        new IconItemStackBuilder(Material.GOLD_AXE)
+        new IconItemStackBuilder(Material.GOLDEN_AXE)
           .tap { b => if (canMakeRegion) b.enchanted() }
           .title(s"$YELLOW$UNDERLINE${BOLD}保護の作成")
           .lore(lore.toList)
@@ -112,7 +121,7 @@ object RegionMenu extends Menu {
         action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)(_ =>
           if (!playerHasPermission)
             MessageEffect(s"${RED}このワールドでは保護を作成できません")
-          else if (isSelectionNull)
+          else if (!isSelected)
             SequentialEffect(
               MessageEffect(s"${RED}先に木の斧で範囲を指定してからこのボタンを押してください"),
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
@@ -125,8 +134,8 @@ object RegionMenu extends Menu {
           else
             SequentialEffect(
               CommandEffect("/expand vert"),
-              CommandEffect(s"rg claim ${player.getName}_${openerData.regionCount}"),
-              openerData.incrementRegionNumber,
+              CommandEffect(s"rg claim ${player.getName}_${regionCount.value}"),
+              gridRegionAPI.createAndClaimRegionSelectedOnWorldGuard,
               CommandEffect("/sel"),
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
             )
@@ -135,7 +144,7 @@ object RegionMenu extends Menu {
     }
   }
 
-  private object ConstantButtons {
+  private case class ConstantButtons(environment: Environment) {
 
     val summonWandButton: Button = {
       val wandUsage = List(
@@ -145,7 +154,7 @@ object RegionMenu extends Menu {
         s"$GREEN④メニューの${YELLOW}金の斧${GREEN}をクリック"
       )
 
-      val iconItemStack = new IconItemStackBuilder(Material.WOOD_AXE)
+      val iconItemStack = new IconItemStackBuilder(Material.WOODEN_AXE)
         .title(s"$YELLOW$UNDERLINE${BOLD}保護設定用の木の斧を召喚")
         .lore(
           wandUsage ++ List(
@@ -238,8 +247,7 @@ object RegionMenu extends Menu {
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)(_ =>
           SequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1f, 1f),
-            // TODO メニューに置き換える
-            ComputedEffect(p => openInventoryEffect(RegionMenuData.getGridWorldGuardMenu(p)))
+            environment.ioCanOpenGridRegionMenu.open(GridRegionMenu)
           )
         )
       )

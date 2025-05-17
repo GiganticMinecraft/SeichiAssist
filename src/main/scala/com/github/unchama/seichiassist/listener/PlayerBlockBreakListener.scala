@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.listener
 
 import cats.effect.{Fiber, IO, SyncIO}
-import com.github.unchama.generic.ApplicativeExtra.whenAOrElse
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.ManagedWorld._
@@ -15,21 +14,25 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.util.BreakUtil
-import com.github.unchama.seichiassist.util.BreakUtil.BlockBreakResult
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.player.ActionBarMessageEffect
+import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.effect.BukkitResources
-import com.github.unchama.util.external.ExternalPlugins
+import com.github.unchama.util.external.WorldGuardWrapper
 import org.bukkit.ChatColor.RED
 import org.bukkit._
-import org.bukkit.block.Block
+import org.bukkit.block.{Block, Container}
+import org.bukkit.block.data.`type`.Slab
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.Damageable
 
 import scala.collection.mutable.ArrayBuffer
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.util.control.Breaks
 
 class PlayerBlockBreakListener(
@@ -48,11 +51,10 @@ class PlayerBlockBreakListener(
   def onPlayerActiveSkillEvent(event: BlockBreakEvent): Unit = {
     val player = event.getPlayer
 
-    val block = MaterialSets
-      .refineBlock(event.getBlock, MaterialSets.materials)
-      .getOrElse(
-        return
-      )
+    if (!player.getWorld.isSeichiSkillAllowed) return
+
+    val block =
+      MaterialSets.refineBlock(event.getBlock, MaterialSets.materials).getOrElse(return)
 
     // 重力値によるキャンセル判定(スキル判定より先に判定させること)
     val gravity = BreakUtil.getGravity(player, block, isAssault = false)
@@ -68,23 +70,17 @@ class PlayerBlockBreakListener(
       return
     }
 
-    if (!player.getWorld.isSeichiSkillAllowed) return
-
-    // 破壊不可能ブロックの時処理を終了
-    if (!BreakUtil.canBreak(player, block)) {
-      event.setCancelled(true)
-      return
-    }
-
     // 実際に使用するツール
     val tool: BreakTool = MaterialSets
       .refineItemStack(player.getInventory.getItemInMainHand, MaterialSets.breakToolMaterials)
-      .getOrElse(
-        return
-      )
+      .getOrElse(return)
 
     // 耐久値がマイナスかつ耐久無限ツールでない時処理を終了
-    if (tool.getDurability > tool.getType.getMaxDurability && !tool.getItemMeta.isUnbreakable)
+    if (
+      tool.getItemMeta.asInstanceOf[Damageable].getDamage > tool
+        .getType
+        .getMaxDurability && !tool.getItemMeta.isUnbreakable
+    )
       return
 
     // もしサバイバルでなければ、またはフライ中なら終了
@@ -93,13 +89,61 @@ class PlayerBlockBreakListener(
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     val skillState = playerData.skillState.get.unsafeRunSync()
 
-    if (!player.getWorld.isSeichiSkillAllowed) return
-
     // クールダウンタイム中は処理を終了
     if (!activeSkillAvailability(player).get.unsafeRunSync()) {
       // SEを再生
       player.playSound(player.getLocation, Sound.BLOCK_DISPENSER_FAIL, 0.5f, 1)
       return
+    }
+
+    // 選択したスキル
+    val selectedSkill = skillState.activeSkill.getOrElse(return)
+    if (!selectedSkill.range.isInstanceOf[MultiArea] || skillState.usageMode == Disabled) return
+
+    // 消費するマナが不足しているか判定
+    {
+      // プレイヤーのY座標
+      val playerLocY = player.getLocation.getBlockY - 1
+      // スキル破壊範囲
+      val skillArea = BreakArea(selectedSkill, skillState.usageMode)
+      // 破壊エリアリスト
+      val breakAreaList = skillArea.makeBreakArea(player).unsafeRunSync()
+      // 複数種類ブロック同時破壊設定
+      val isMultiTypeBreakingSkillEnabled =
+        BreakUtil.performsMultipleIDBlockBreakWhenUsingSkills(player).unsafeRunSync()
+      // 破壊範囲のブロック計算
+      val totalBreakRangeVolume = {
+        val breakLength = skillArea.breakLength
+        breakLength.x * breakLength.y * breakLength.z * skillArea.breakNum
+      }
+      breakAreaList.foreach { breakArea =>
+        import com.github.unchama.seichiassist.data.syntax._
+        val BlockSearching.Result(breakBlocks, waterBlocks, lavaBlocks) =
+          BlockSearching
+            .searchForBlocksBreakableWithSkill(player, breakArea.gridPoints(), block)
+            .unsafeRunSync()
+            .filterSolids(targetBlock =>
+              isMultiTypeBreakingSkillEnabled || BlockSearching
+                .multiTypeBreakingFilterPredicate(block)(targetBlock)
+            )
+            .filterAll(targetBlock =>
+              player.isSneaking || targetBlock
+                .getLocation
+                .getBlockY > playerLocY || targetBlock == block
+            )
+
+        // 破壊範囲で消費されるマナ計算
+        val manaToConsumeOnBreakArea = ManaAmount {
+          (gravity + 1) * selectedSkill.manaCost * (breakBlocks.size + 1).toDouble / totalBreakRangeVolume
+        }
+        // 消費マナが不足している場合は処理を終了
+        manaApi.manaAmount(player).canAcquire(manaToConsumeOnBreakArea).unsafeRunSync() match {
+          case false if isBreakBlockManaFullyConsumed(player).unsafeRunSync() =>
+            event.setCancelled(true)
+            return
+          case _ =>
+        }
+      }
     }
 
     // 追加マナ獲得
@@ -108,31 +152,30 @@ class PlayerBlockBreakListener(
       .restoreAbsolute(ManaAmount(BreakUtil.calcManaDrop(player)))
       .unsafeRunSync()
 
-    val selectedSkill = skillState
-      .activeSkill
-      .getOrElse(
-        return
-      )
-
-    if (!selectedSkill.range.isInstanceOf[MultiArea] || skillState.usageMode == Disabled) return
+    // 破壊不可能ブロックの時処理を終了
+    if (!BreakUtil.canBreakWithSkill(player, block)) {
+      event.setCancelled(true)
+      return
+    }
 
     event.setCancelled(true)
 
+    // ブロック破壊時に行う処理
     {
-      // プレイヤーの足のy座標を取得
+      // プレイヤーのY座標
       val playerLocY = player.getLocation.getBlockY - 1
-
+      // スキル破壊範囲
       val skillArea = BreakArea(selectedSkill, skillState.usageMode)
+      // 破壊エリアリスト
       val breakAreaList = skillArea.makeBreakArea(player).unsafeRunSync()
-
+      // 複数種類ブロック同時破壊設定
       val isMultiTypeBreakingSkillEnabled =
         BreakUtil.performsMultipleIDBlockBreakWhenUsingSkills(player).unsafeRunSync()
-
+      // 破壊範囲のブロック計算
       val totalBreakRangeVolume = {
         val breakLength = skillArea.breakLength
         breakLength.x * breakLength.y * breakLength.z * skillArea.breakNum
       }
-
       // エフェクト用に壊されるブロック全てのリストデータ
       val multiBreakList = new ArrayBuffer[Set[BlockBreakableBySkill]]
       // 壊される溶岩の全てのリストデータ
@@ -140,7 +183,7 @@ class PlayerBlockBreakListener(
       // 壊される水ブロックの全てのリストデータ
       val multiWaterList = new ArrayBuffer[Set[Block]]
       // 全ての耐久消費量
-      var toolDamageToSet = tool.getDurability.toInt
+      var toolDamageToSet = tool.getItemMeta.asInstanceOf[Damageable].getDamage
 
       // 消費が予約されたマナ
       val reservedMana = new ArrayBuffer[ManaAmount]
@@ -164,7 +207,6 @@ class PlayerBlockBreakListener(
                   .getLocation
                   .getBlockY > playerLocY || targetBlock == block
               )
-
           // このチャンクで消費されるマナ
           val manaToConsumeOnThisChunk = ManaAmount {
             (gravity + 1) * selectedSkill.manaCost * (breakBlocks.size + 1).toDouble / totalBreakRangeVolume
@@ -272,12 +314,16 @@ class PlayerBlockBreakListener(
 
         // ツールの耐久値を減らす
         val adjustManaAndDurability = IO {
-          if (!tool.getItemMeta.isUnbreakable) tool.setDurability(toolDamageToSet.toShort)
+          if (!tool.getItemMeta.isUnbreakable) {
+            val meta = tool.getItemMeta
+            meta.asInstanceOf[Damageable].setDamage(toolDamageToSet)
+            tool.setItemMeta(meta)
+          }
         }
 
         effectEnvironment.unsafeRunEffectAsync(
           "複数破壊エフェクトを実行する",
-          effectPrograms.toList.sequence[IO, Fiber[IO, Unit]]
+          effectPrograms.sequence[IO, Fiber[IO, Unit]]
         )
         effectEnvironment.unsafeRunEffectAsync(
           "複数破壊エフェクトの後処理を実行する",
@@ -297,51 +343,50 @@ class PlayerBlockBreakListener(
         .map(multiplier => BreakUtil.totalBreakCount(Seq(block.getType)) * multiplier)
         .unsafeRunSync()
     }
+
+    val isNotContainerBlock = !block.getState.isInstanceOf[Container]
+    val blockDrops =
+      event.getBlock.getDrops(player.getInventory.getItemInMainHand).asScala.toVector
+    val amalgamatedDrops = ItemStackUtil.amalgamate(blockDrops).toVector
+
+    val intoMineStackOrDrop = for {
+      intoMineStackResult <- mineStackAPI
+        .mineStackRepository
+        .tryIntoMineStack(player, amalgamatedDrops)
+      _ <- PluginExecutionContexts
+        .onMainThread
+        .runAction(SyncIO {
+          event.setDropItems(false)
+          intoMineStackResult
+            ._1
+            .foreach(player.getWorld.dropItemNaturally(player.getLocation, _))
+        })
+    } yield ()
+
+    // NOTE: Spigot 1.18.2のAPIではチェストの中身のドロップを計算することは不可能である。
+    // そのため、破壊したブロックがインベントリをもつ場合はドロップをキャンセルせず、
+    // MineStackの中身に入れることはせずにそのままドロップする
+    //
+    // また、ドロップしたアイテムをイベントで検知して取得するのも難しい。
+    // BlockDropItemEventは、playerがブロックを破壊したことをトリガーとするが、
+    // player#breakBlock関数を使用してブロックを破壊するとBlockBreakEventが再度発火し、
+    // その場合のみイベントの処理を実行しなかったとしてもサーバーに負荷がかかるので現実的ではない。
+    // これらのことから、やむを得ずこのような実装になっている。
+    val program = for {
+      currentMineStackAutoCollectState <- mineStackAPI.autoMineStack(player)
+      _ <- intoMineStackOrDrop.whenA(currentMineStackAutoCollectState && isNotContainerBlock)
+    } yield ()
+
     effectEnvironment.unsafeRunEffectAsync(
       "通常破壊されたブロックを整地量に計上する",
       SeichiAssist.instance.breakCountSystem.api.incrementSeichiExp.of(player, amount).toIO
     )
 
-    val tool: BreakTool = MaterialSets
-      .refineItemStack(player.getInventory.getItemInMainHand, MaterialSets.breakToolMaterials)
-      .getOrElse(
-        return
-      )
-
-    /**
-     * 手彫りで破壊したアイテムを直接MineStackに入れる
-     * 一つのBlockBreakEventから複数の種類のアイテムが出てくることはない。
-     * チェスト等のインベントリスロットのあるブロック`b`を破壊したときは、
-     * 破壊された`b`のみが`BlockBreakEvent`のドロップ対象となるため、
-     * 中身のドロップがキャンセルされることはない。
-     */
-    val drops = BreakUtil
-      .dropItemOnTool(tool)((block.getLocation(), block.getType, block.getData))
-      .getOrElse(
-        return
-      )
-
-    drops match {
-      case BlockBreakResult.ItemDrop(itemStack) =>
-        val program = for {
-          currentAutoMineStackState <- mineStackAPI.autoMineStack(player)
-          isSucceedTryIntoMineStack <- whenAOrElse(currentAutoMineStackState)(
-            mineStackAPI
-              .mineStackRepository
-              .tryIntoMineStack(player, itemStack, itemStack.getAmount),
-            false
-          )
-        } yield {
-          if (isSucceedTryIntoMineStack) event.setDropItems(false)
-          else ()
-        }
-        program.unsafeRunSync()
-      case _ => ()
-    }
+    effectEnvironment.unsafeRunEffectAsync("破壊されたアイテムをMineStackに入れるかドロップする", program)
   }
 
   /**
-   * y5ハーフブロック破壊抑制
+   * y-59ハーフブロック破壊抑制
    *
    * @param event
    *   BlockBreakEvent
@@ -349,22 +394,40 @@ class PlayerBlockBreakListener(
   @EventHandler(priority = EventPriority.LOWEST)
   @SuppressWarnings(Array("deprecation"))
   def onPlayerBlockHalf(event: BlockBreakEvent): Unit = {
-    val p = event.getPlayer
-    val b = event.getBlock
-    val world = p.getWorld
+    val player = event.getPlayer
+    val block = event.getBlock
+    val world = player.getWorld
     // そもそも自分の保護じゃなきゃ処理かけない
-    if (!ExternalPlugins.getWorldGuard.canBuild(p, b.getLocation)) return
-    if ((b.getType eq Material.DOUBLE_STEP) && b.getData == 0) {
-      b.setType(Material.STEP)
-      b.setData(0.toByte)
-      val location = b.getLocation
-      world.dropItemNaturally(location, new ItemStack(Material.STEP))
+    if (!WorldGuardWrapper.canBuild(player, block.getLocation)) return
+    block.getBlockData match {
+      case slab: Slab if slab.getType == Slab.Type.DOUBLE =>
+        val location = block.getLocation
+        world.dropItemNaturally(location, new ItemStack(block.getType))
+      case _: Slab =>
+      case _       => return
     }
-    if (b.getType ne Material.STEP) return
-    if (b.getY > 5) return
-    if (b.getData != 0) return
+    if (block.getY > -59) return
+    if (block.getBlockData.asInstanceOf[Slab].getType != Slab.Type.BOTTOM) return
     if (!world.isSeichi) return
     event.setCancelled(true)
-    p.sendMessage(s"${RED}Y5以下に敷かれたハーフブロックは破壊不可能です。")
+    player.sendMessage(s"${RED}Y-59以下に敷かれたハーフブロックは破壊不可能です。")
+  }
+
+  /**
+   * ブロック破壊時、「マナ切れブロック破壊停止設定」を取得する。
+   * マナ切れブロック破壊設定が `true` になっている場合、プレイヤーに破壊抑制メッセージを送信する。
+   * @param player マナ切れブロック破壊停止設定を取得するプレイヤー
+   */
+  private def isBreakBlockManaFullyConsumed(player: Player): IO[Boolean] = {
+    for {
+      breakSuppressionPreference <- SeichiAssist
+        .instance
+        .breakSuppressionPreferenceSystem
+        .api
+        .isBreakSuppressionEnabled(player)
+      _ <- ActionBarMessageEffect(s"${RED}マナ切れでブロック破壊を止めるスキルは有効化されています")
+        .run(player)
+        .whenA(breakSuppressionPreference)
+    } yield breakSuppressionPreference
   }
 }

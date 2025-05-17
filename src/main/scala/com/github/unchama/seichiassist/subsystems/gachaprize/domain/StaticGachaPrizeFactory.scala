@@ -8,6 +8,11 @@ trait StaticGachaPrizeFactory[ItemStack] {
   val gachaRingo: ItemStack
 
   /**
+   * 経験値瓶の[[ItemStack]]を返す
+   */
+  val expBottle: ItemStack
+
+  /**
    * 死神の鎌の[[ItemStack]]を返す
    * TODO: これはここに書かれるべきではなさそう？
    * ガチャアイテムとして排出されていないため。

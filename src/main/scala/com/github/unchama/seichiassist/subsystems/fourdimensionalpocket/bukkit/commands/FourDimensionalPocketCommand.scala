@@ -14,8 +14,7 @@ object FourDimensionalPocketCommand {
     implicit api: FourDimensionalPocketApi[F, Player]
   ): TabExecutor = {
     playerCommandBuilder
-      .executionF(context => api.openPocketInventory(context.sender))
-      .build()
+      .buildWithExecutionF(context => api.openPocketInventory(context.sender))
       .asNonBlockingTabExecutor()
   }
 }

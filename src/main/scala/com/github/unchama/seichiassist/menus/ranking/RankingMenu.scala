@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.menus.ranking
 
 import cats.effect.IO
+import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerReference}
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
@@ -10,6 +11,7 @@ import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.ranking.api.RankingProvider
 import com.github.unchama.seichiassist.subsystems.ranking.domain.values.{LoginTime, VoteCount}
 import com.github.unchama.seichiassist.subsystems.ranking.domain.{
@@ -25,7 +27,9 @@ object RankingMenu {
   class Environment[R](
     implicit val rankingApi: RankingProvider[IO, R],
     val ioCanOpenRankingMenuItself: IO CanOpen RankingMenu[R],
-    val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type
+    val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type,
+    val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player],
+    val nonServerThreadContextShift: NonServerThreadContextShift[IO]
   )
 
 }
@@ -113,6 +117,7 @@ object RankingMenuTemplates {
 //       ここにSeichiAmountData等を書きたくない気持ちがある。
 case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) extends Menu {
   import eu.timepit.refined.auto._
+  import cats.implicits._
 
   final private val perPage = 45
   final private val cutoff = 150
@@ -123,7 +128,7 @@ case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) 
 
   private def uiOperationSection(
     totalNumberOfPages: Int
-  )(implicit environment: Environment): Seq[(Int, Button)] = {
+  )(implicit environment: Environment): IO[Seq[(Int, Button)]] = {
     import environment._
 
     def buttonToTransferTo(pageIndex: Int, skullOwnerReference: SkullOwnerReference): Button =
@@ -134,36 +139,55 @@ case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) 
       )
 
     val goBackToStickMenuSection =
-      Seq(
-        ChestSlotRef(5, 0) -> CommonButtons.transferButton(
-          new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
-          "ランキングメニューへ戻る",
-          RankingRootMenu
+      IO(
+        Seq(
+          ChestSlotRef(5, 0) -> CommonButtons.transferButton(
+            new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
+            "ランキングメニューへ戻る",
+            RankingRootMenu
+          )
         )
       )
 
     val previousPageButtonSection =
       if (pageIndex > 0)
-        Seq(ChestSlotRef(5, 7) -> buttonToTransferTo(pageIndex - 1, SkullOwners.MHF_ArrowUp))
+        IO(
+          Seq(ChestSlotRef(5, 7) -> buttonToTransferTo(pageIndex - 1, SkullOwners.MHF_ArrowUp))
+        )
       else
-        Seq()
+        IO.pure(Seq.empty)
 
     val nextPageButtonSection =
       if (pageIndex + 1 < totalNumberOfPages)
-        Seq(ChestSlotRef(5, 8) -> buttonToTransferTo(pageIndex + 1, SkullOwners.MHF_ArrowDown))
+        IO(
+          Seq(
+            ChestSlotRef(5, 8) -> buttonToTransferTo(pageIndex + 1, SkullOwners.MHF_ArrowDown)
+          )
+        )
       else
-        Seq()
+        IO.pure(Seq.empty)
 
-    goBackToStickMenuSection ++ previousPageButtonSection ++ nextPageButtonSection
+    for {
+      goBackToStickMenuSection <- goBackToStickMenuSection
+      previousPageButtonSection <- previousPageButtonSection
+      nextPageButtonSection <- nextPageButtonSection
+    } yield goBackToStickMenuSection ++ previousPageButtonSection ++ nextPageButtonSection
   }
 
-  private def rankingSection(ranking: Ranking[R]): Seq[(Int, Button)] = {
-    def entry(position: Int, record: RankingRecord[R]): Button = {
-      Button(
-        new SkullItemStackBuilder(record.playerName)
-          .title(s"$YELLOW$BOLD${position}位:$WHITE${record.playerName}")
-          .lore(template.recordDataLore(record.value))
-          .build()
+  private def rankingSection(
+    ranking: Ranking[R]
+  )(implicit environment: Environment): IO[Seq[(Int, Button)]] = {
+    import environment.playerHeadSkinAPI
+    import environment.nonServerThreadContextShift
+
+    def entry(position: Int, record: RankingRecord[R]): IO[Button] = {
+      IO(
+        Button(
+          new SkullItemStackBuilder(record.uuid)
+            .title(s"$YELLOW$BOLD${position}位:$WHITE${record.playerName}")
+            .lore(template.recordDataLore(record.value))
+            .build()
+        )
       )
     }
 
@@ -172,21 +196,27 @@ case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) 
       .take(cutoff)
       .slice(pageIndex * perPage, pageIndex * perPage + perPage)
       .zipWithIndex
-      .map {
+      .parTraverse {
         case (RankingRecordWithPosition(record, position), index) =>
-          index -> entry(position, record)
+          entry(position, record).map(button => index -> button)
       }
   }
 
-  private def totalAmountSection(ranking: Ranking[R]): Seq[(Int, Button)] = {
-    Seq(
-      ChestSlotRef(5, 4) ->
-        Button(
-          new SkullItemStackBuilder(SkullOwners.unchama)
-            .title(s"$YELLOW$UNDERLINE${BOLD}整地鯖統計データ")
-            .lore(template.combinedDataLore(ranking.total))
-            .build()
-        )
+  private def totalAmountSection(
+    ranking: Ranking[R]
+  )(implicit environment: Environment): IO[Seq[(Int, Button)]] = {
+    import environment.playerHeadSkinAPI
+
+    IO(
+      Seq(
+        ChestSlotRef(5, 4) ->
+          Button(
+            new SkullItemStackBuilder(SkullOwners.unchama)
+              .title(s"$YELLOW$UNDERLINE${BOLD}整地鯖統計データ")
+              .lore(template.combinedDataLore(ranking.total))
+              .build()
+          )
+      )
     )
   }
 
@@ -196,19 +226,12 @@ case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) 
    */
   override def computeMenuLayout(
     player: Player
-  )(implicit environment: Environment): IO[MenuSlotLayout] = {
-    for {
-      ranking <- environment.rankingApi.ranking.read
-    } yield {
-      val recordsToInclude = ranking.recordCount min cutoff
-      val totalNumberOfPages = Math.ceil(recordsToInclude / 45.0).toInt
-
-      val combinedLayout =
-        rankingSection(ranking)
-          .++(uiOperationSection(totalNumberOfPages))
-          .++(totalAmountSection(ranking))
-
-      MenuSlotLayout(combinedLayout: _*)
-    }
-  }
+  )(implicit environment: Environment): IO[MenuSlotLayout] = for {
+    ranking <- environment.rankingApi.ranking.read
+    recordsToInclude <- IO.pure(ranking.recordCount min cutoff)
+    totalNumberOfPages <- IO.pure(Math.ceil(recordsToInclude / 45.0).toInt)
+    rankingSection <- rankingSection(ranking)
+    uiOperationSection <- uiOperationSection(totalNumberOfPages)
+    totalAmountSection <- totalAmountSection(ranking)
+  } yield MenuSlotLayout(rankingSection ++ uiOperationSection ++ totalAmountSection: _*)
 }

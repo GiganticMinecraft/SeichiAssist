@@ -36,10 +36,7 @@ class BukkitFairyRoutine(fairySpeech: FairySpeech[IO, Player])(
 
     val seconds = Ref.unsafe(0.seconds)
 
-    def countUp: IO[Unit] = seconds.update { second =>
-      if (second < 360.seconds) second + 30.seconds
-      else 0.seconds
-    }
+    def countUp: IO[Unit] = seconds.update(_ + 30.seconds)
 
     RepeatingRoutine.permanentRoutine(
       repeatInterval,

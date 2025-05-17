@@ -13,13 +13,16 @@ import com.github.unchama.seichiassist.menus.minestack.{
 }
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory
-import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect}
+import eu.timepit.refined.api.Refined
+import eu.timepit.refined.auto._
+import eu.timepit.refined.numeric.Positive
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import shapeless.HNil
 
 object MineStackCommand {
   def executor(
@@ -41,79 +44,76 @@ object MineStackCommand {
     def setAutoCollectionExecutor(
       isItemCollectedAutomatically: Boolean
     )(implicit mineStackAPI: MineStackAPI[IO, Player, ItemStack]): ContextualExecutor =
-      playerCommandBuilder
-        .execution { _ =>
-          IO {
-            SequentialEffect(
-              DeferredEffect {
-                IO(mineStackAPI.setAutoMineStack(isItemCollectedAutomatically))
-              },
-              if (isItemCollectedAutomatically)
-                MessageEffect("MineStack自動収集をONにしました。")
-              else
-                MessageEffect("MineStack自動収集をOFFにしました。")
-            )
-          }
-        }
-        .build()
+      playerCommandBuilder.buildWithEffectAsExecution(
+        SequentialEffect(
+          DeferredEffect {
+            IO(mineStackAPI.setAutoMineStack(isItemCollectedAutomatically))
+          },
+          if (isItemCollectedAutomatically)
+            MessageEffect("MineStack自動収集をONにしました。")
+          else
+            MessageEffect("MineStack自動収集をOFFにしました。")
+        )
+      )
 
     def openCategorizedMineStackMenu(
       implicit ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu,
       ioCanOpenMinestackMainMenu: IO CanOpen MineStackMainMenu.type
     ): ContextualExecutor =
       playerCommandBuilder
-        .argumentsParsers(
-          List(
-            Parsers
-              .closedRangeInt(0, Int.MaxValue, MessageEffect("カテゴリは0以上の値を入力してください"))
-              .andThen(_.flatMap { _categoryValue =>
-                val categoryValue = _categoryValue.asInstanceOf[Int]
-                MineStackObjectCategory.fromSerializedValue(categoryValue - 1) match {
-                  case Some(category)             => succeedWith(category)
-                  case None if categoryValue == 0 => succeedWith(emptyEffect)
-                  case None                       => failWith("指定されたカテゴリは存在しません。")
-                }
-              }),
-            Parsers.closedRangeInt(0, Int.MaxValue, MessageEffect("ページ数は0以上の値を指定してください。"))
+        .thenParse(
+          Parsers
+            .closedRangeInt[Int Refined Positive](
+              1,
+              Int.MaxValue,
+              MessageEffect("カテゴリは正の値を指定してください。")
+            )
+            .andThen(_.flatMap { categoryValue =>
+              MineStackObjectCategory.fromSerializedValue(categoryValue - 1) match {
+                case Some(category) =>
+                  succeedWith(Option.unless(categoryValue.value == 0)(category))
+                case None => failWith("指定されたカテゴリは存在しません。")
+              }
+            })
+        )
+        .thenParse(
+          Parsers.closedRangeInt[Int Refined Positive](
+            1,
+            Int.MaxValue,
+            MessageEffect("ページ数は正の値を指定してください。")
           )
         )
-        .execution { context =>
-          val categoryValue = context.args.parsed(1).toString.toInt
-          IO.pure(if (categoryValue == 0) {
-            ioCanOpenMinestackMainMenu.open(MineStackMainMenu)
-          } else {
-            ioCanOpenCategorizedMenu.open(
-              new CategorizedMineStackMenu(
-                context.args.parsed.head.asInstanceOf[MineStackObjectCategory],
-                categoryValue - 1
-              )
-            )
-          })
+        .buildWith { context =>
+          import shapeless.::
+          val categoryOpt :: page :: HNil = context.args.parsed
+
+          IO.pure {
+            categoryOpt.fold(ioCanOpenMinestackMainMenu.open(MineStackMainMenu)) { category =>
+              ioCanOpenCategorizedMenu.open(new CategorizedMineStackMenu(category, page - 1))
+            }
+          }
         }
-        .build()
 
     import cats.implicits._
 
     def storeEverythingInInventory(
       implicit mineStackAPI: MineStackAPI[IO, Player, ItemStack]
     ): ContextualExecutor =
-      playerCommandBuilder
-        .execution { context =>
-          for {
-            player <- IO(context.sender)
-            inventory <- IO(player.getInventory)
-            targetIndexes <- inventory.getContents.toList.zipWithIndex.traverse {
-              case (itemStack, index) if itemStack != null =>
-                mineStackAPI
-                  .mineStackRepository
-                  .tryIntoMineStack(player, itemStack, itemStack.getAmount)
-                  .map(Option.when(_)(index))
-              case _ => IO.pure(None)
-            }
-            _ <- IO(targetIndexes.foreach(_.foreach(index => inventory.clear(index))))
-          } yield MessageEffect(s"${YELLOW}インベントリの中身をすべてマインスタックに収納しました。")
-        }
-        .build()
+      playerCommandBuilder.buildWith { context =>
+        for {
+          player <- IO(context.sender)
+          inventory <- IO(player.getInventory)
+          targetIndexes <- inventory.getContents.toList.zipWithIndex.traverse {
+            case (itemStack, index) if itemStack != null =>
+              mineStackAPI
+                .mineStackRepository
+                .tryIntoMineStack(player, itemStack, itemStack.getAmount)
+                .map(Option.when(_)(index))
+            case _ => IO.pure(None)
+          }
+          _ <- IO(targetIndexes.foreach(_.foreach(index => inventory.clear(index))))
+        } yield MessageEffect(s"${YELLOW}インベントリの中身をすべてマインスタックに収納しました。")
+      }
 
   }
 

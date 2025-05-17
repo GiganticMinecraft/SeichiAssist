@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.task
 
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.player._
 import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings
 import com.github.unchama.seichiassist.database.DatabaseConstants
@@ -57,32 +56,6 @@ object PlayerDataLoading {
         + "where uuid = '" + stringUuid + "'")
 
       stmt.executeUpdate(loginInfoUpdateCommand)
-    }
-
-    def loadGridTemplate(stmt: Statement): Unit = {
-      // TODO: 本当にStarSelectじゃなきゃだめ?
-      val gridTemplateDataQuery = ("select * from "
-        + db + "." + DatabaseConstants.GRID_TEMPLATE_TABLENAME + " where "
-        + s"designer_uuid = '$stringUuid'")
-
-      stmt.executeQuery(gridTemplateDataQuery).recordIteration { resultSet: ResultSet =>
-        val templateMap = mutable.HashMap[Int, GridTemplate]()
-
-        while (resultSet.next()) {
-          val templateId = resultSet.getInt("id")
-
-          val aheadLength = resultSet.getInt("ahead_length")
-          val behindLength = resultSet.getInt("behind_length")
-          val rightLength = resultSet.getInt("right_length")
-          val leftLength = resultSet.getInt("left_length")
-
-          val template = new GridTemplate(aheadLength, behindLength, rightLength, leftLength)
-
-          templateMap(templateId) = template
-        }
-
-        playerData.templateMap = templateMap
-      }
     }
 
     def loadSkillEffectUnlockState(stmt: Statement): Set[UnlockableActiveSkillEffect] = {
@@ -180,7 +153,6 @@ object PlayerDataLoading {
           .unsafeRunSync()
 
         playerData.unclaimedApologyItems = rs.getInt("numofsorryforbug")
-        playerData.regionCount = rs.getInt("rgnum")
         playerData.playTick = rs.getLong("playtick")
 
         playerData.totalexp = rs.getInt("totalexp")
@@ -284,7 +256,6 @@ object PlayerDataLoading {
     Using(databaseGateway.con.createStatement()) { newStmt =>
       loadPlayerData(newStmt)
       updateLoginInfo(newStmt)
-      loadGridTemplate(newStmt)
     }
 
     timer.sendLapTimeMessage(s"$GREEN${playerName}のプレイヤーデータ読込完了")

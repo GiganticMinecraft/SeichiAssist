@@ -10,11 +10,12 @@ import com.github.unchama.seichiassist.menus.achievement.{
   AchievementCategoryMenu,
   AchievementMenu
 }
+import com.github.unchama.seichiassist.menus.gridregion.{GridRegionMenu, GridTemplateMenu}
 import com.github.unchama.seichiassist.menus.home.{ConfirmationMenuEnvironment, HomeMenu}
 import com.github.unchama.seichiassist.menus.minestack.{
   CategorizedMineStackMenu,
   MineStackMainMenu,
-  MineStackSelectItemColorMenu
+  MineStackSelectItemKindMenu
 }
 import com.github.unchama.seichiassist.menus.nicknames.NickNameMenu
 import com.github.unchama.seichiassist.menus.ranking.{RankingMenu, RankingRootMenu}
@@ -30,6 +31,7 @@ import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.BreakSkillTargetConfigAPI
+import com.github.unchama.seichiassist.subsystems.breaksuppressionpreference.BreakSuppressionPreferenceAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.donate.DonatePremiumPointAPI
@@ -43,9 +45,11 @@ import com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachat
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.GachaTicketAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
+import com.github.unchama.seichiassist.subsystems.gridregion.GridRegionAPI
 import com.github.unchama.seichiassist.subsystems.home.HomeReadAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
+import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.ranking.api.AssortedRankingApi
 import com.github.unchama.seichiassist.subsystems.ranking.domain.values.{LoginTime, VoteCount}
 import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
@@ -53,6 +57,7 @@ import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.FairySpeechAPI
 import io.chrisdavenport.cats.effect.time.JavaTime
+import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -98,7 +103,10 @@ object TopLevelRouter {
     gachaDrawAPI: GachaDrawAPI[IO, Player],
     consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player],
     fairySpeechAPI: FairySpeechAPI[IO, Player],
-    breakSkillTargetConfigAPI: BreakSkillTargetConfigAPI[IO, Player]
+    gridRegionAPI: GridRegionAPI[IO, Player, Location],
+    breakSkillTargetConfigAPI: BreakSkillTargetConfigAPI[IO, Player],
+    breakSuppressionPreferenceAPI: BreakSuppressionPreferenceAPI[IO, Player],
+    playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   ): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     import assortedRankingApi._
 
@@ -107,7 +115,7 @@ object TopLevelRouter {
       new MineStackMainMenu.Environment
     implicit lazy val categorizedMineStackMenuEnv: CategorizedMineStackMenu.Environment =
       new CategorizedMineStackMenu.Environment
-    implicit lazy val regionMenuEnv: RegionMenu.Environment = ()
+    implicit lazy val regionMenuEnv: RegionMenu.Environment = new RegionMenu.Environment
     implicit lazy val activeSkillMenuEnv: ActiveSkillMenu.Environment =
       new ActiveSkillMenu.Environment
     implicit lazy val activeSkillEffectMenuEnv: ActiveSkillEffectMenu.Environment =
@@ -130,9 +138,8 @@ object TopLevelRouter {
       new AchievementGroupMenu.Environment
     implicit lazy val passiveSkillMenuEnv: PassiveSkillMenu.Environment =
       new PassiveSkillMenu.Environment
-    implicit lazy val mineStackSelectItemColorMenuEnv
-      : MineStackSelectItemColorMenu.Environment =
-      new MineStackSelectItemColorMenu.Environment
+    implicit lazy val mineStackSelectItemColorMenuEnv: MineStackSelectItemKindMenu.Environment =
+      new MineStackSelectItemKindMenu.Environment
 
     implicit lazy val seichiRankingMenuEnv: RankingMenu[SeichiAmountData]#Environment =
       new RankingMenu.Environment
@@ -148,13 +155,18 @@ object TopLevelRouter {
 
     implicit lazy val voteMenuEnv: VoteMenu.Environment = new VoteMenu.Environment
 
+    implicit lazy val gridRegionMenuEnv: GridRegionMenu.Environment =
+      new GridRegionMenu.Environment
+    implicit lazy val gridTemplateMenuEnv: GridTemplateMenu.Environment =
+      new GridTemplateMenu.Environment
+
     implicit lazy val stickMenuEnv: FirstPage.Environment = new FirstPage.Environment
 
     implicit lazy val ioCanOpenVoteMenu: IO CanOpen VoteMenu.type = _.open
 
     implicit lazy val ioCanOpenNickNameMenu: IO CanOpen NickNameMenu.type = _.open
 
-    implicit lazy val ioCanOpenSelectItemColorMenu: IO CanOpen MineStackSelectItemColorMenu =
+    implicit lazy val ioCanOpenSelectItemColorMenu: IO CanOpen MineStackSelectItemKindMenu =
       _.open
     implicit lazy val ioCanOpenAchievementGroupMenu: IO CanOpen AchievementGroupMenu = _.open
     implicit lazy val ioCanOpenHomeConfirmationMenu
@@ -186,6 +198,8 @@ object TopLevelRouter {
     implicit lazy val ioCanOpenLoginTimeRankingMenu: IO CanOpen RankingMenu[LoginTime] = _.open
     implicit lazy val ioCanOpenVoteCountRankingMenu: IO CanOpen RankingMenu[VoteCount] = _.open
     implicit lazy val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type = _.open
+    implicit lazy val ioCanOpenGridRegionMenu: IO CanOpen GridRegionMenu.type = _.open
+    implicit lazy val ioCanOpenGridTemplateMenu: IO CanOpen GridTemplateMenu.type = _.open
 
     override implicit lazy val canOpenStickMenu: IO CanOpen FirstPage.type = _.open
     override implicit lazy val canOpenAchievementMenu: IO CanOpen AchievementMenu.type = _.open
