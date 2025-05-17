@@ -1,0 +1,113 @@
+name: Create new release(PullRequest)
+
+on:
+  workflow_dispatch:
+
+
+jobs:
+  get_branch_name:
+    runs-on: ubuntu-24.04
+    outputs:
+      value: ${{ steps.job.outputs.value }}
+    steps:
+      - name: Extract branch name
+        id: job
+        run: echo "value=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
+
+  bump_version:
+    runs-on: ubuntu-24.04
+    needs: get_branch_name
+    outputs:
+      old_version: ${{ steps.bump.outputs.old_version }}
+      new_version: ${{ steps.bump.outputs.new_version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Bump version
+        id: bump
+        run: |
+          get_defined_versions () {
+            grep -o -P "(?<=ThisBuild / version := \")\d+(?=\")" build.sbt
+          }
+
+          update_version_to () {
+            echo "置換先のバージョン： $1"
+            echo "new_version=$1" >> $GITHUB_OUTPUT
+            sed -i -e "s/ThisBuild \/ version := \"[0-9]\+\"/ThisBuild \/ version := \"$1\"/g" build.sbt
+          }
+
+          if [ ! $(get_defined_versions | wc -l) = "1" ]; then
+            echo "エラー：build.sbt でのバージョン指定が一意でありません。"
+            exit 1
+          fi
+
+          echo "old_version=$(get_defined_versions)" >> $GITHUB_OUTPUT
+
+          update_version_to $(get_defined_versions | xargs expr 1 +)
+      # 本来であればActionsに権限を増やしたりbranch protection ruleに例外を設けるなどしてpushを許したいが、
+      # どうやらこれが現時点では不可能なようなので^[1]、developへのpush権限があるユーザーと
+      # そのpersonal access token(repo権限付き)をVERSION_BUMP_WORKFLOW_ACTORとVERSION_BUMP_WORKFLOW_PUSH_TOKENへ
+      # 追加し、それを利用するようにしている。
+      # 参考:
+      #  - [1]: https://github.community/t/how-to-push-to-protected-branches-in-a-github-action/16101
+      - name: Commit & Push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          ACTOR=${{ secrets.VERSION_BUMP_WORKFLOW_ACTOR }}
+          TOKEN=${{ secrets.VERSION_BUMP_WORKFLOW_PUSH_TOKEN }}
+
+          git add -A
+          git commit -m "chore(bump): ${{ steps.bump.outputs.old_version }} -> ${{ steps.bump.outputs.new_version }}"
+
+          # masterへのマージはブランチが最新であることが要求されるため、ここでマージしておく
+          git fetch origin master
+          git merge --no-ff origin/master
+
+          git push \
+            https://$ACTOR:$TOKEN@github.com/GiganticMinecraft/SeichiAssist.git \
+            HEAD:${{ needs.get_branch_name.outputs.value }}
+
+  create_release:
+    runs-on: ubuntu-24.04
+    needs: bump_version
+    steps:
+      - uses: actions/checkout@master
+        with:
+          # これがないとchunk_searchで引っかかってリリースのjarアップロードに失敗する
+          submodules: "recursive"
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: build artifacts
+        run: mkdir -p target/build && sbt assembly
+
+      - name: Create release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: target/build/SeichiAssist.jar
+          tag_name: "v${{ needs.bump_version.outputs.new_version }}"
+          draft: false
+          prerelease: false
+
+  create_pull-request_to_master:
+    runs-on: ubuntu-24.04
+    needs: [get_branch_name, bump_version]
+    steps:
+      - uses: actions/checkout@master
+      - name: Create pull request
+        uses: repo-sync/pull-request@v2
+        with:
+          destination_branch: "master"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_title: "バージョン ${{ needs.bump_version.outputs.new_version }} リリース"
