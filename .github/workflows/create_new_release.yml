@@ -1,112 +1,111 @@
-name: 新規リリース(Pull Request)を作成する
+name: Create new release
 
 on:
-  workflow_dispatch:
+  pull_request:
+    paths:
+      - src/**
+      - build.sbt
+      - .scalafix.conf
+      - .scalafmt.conf
+      - project/*
+      - .github/workflows/**.yml
+      - .github/actions/**/**.yml
 
 jobs:
-  get_branch_name:
-    runs-on: ubuntu-24.04
-    outputs:
-      value: ${{ steps.job.outputs.value }}
-    steps:
-      - name: Extract branch name
-        id: job
-        run: echo "value=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
-
-  bump_version:
-    runs-on: ubuntu-24.04
-    needs: get_branch_name
-    outputs:
-      old_version: ${{ steps.bump.outputs.old_version }}
-      new_version: ${{ steps.bump.outputs.new_version }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@master
-        with:
-          persist-credentials: false
-          fetch-depth: 0
-      - name: Bump version
-        id: bump
-        run: |
-          get_defined_versions () {
-            grep -o -P "(?<=ThisBuild / version := \")\d+(?=\")" build.sbt
-          }
-
-          update_version_to () {
-            echo "置換先のバージョン： $1"
-            echo "new_version=$1" >> $GITHUB_OUTPUT
-            sed -i -e "s/ThisBuild \/ version := \"[0-9]\+\"/ThisBuild \/ version := \"$1\"/g" build.sbt
-          }
-
-          if [ ! $(get_defined_versions | wc -l) = "1" ]; then
-            echo "エラー：build.sbt でのバージョン指定が一意でありません。"
-            exit 1
-          fi
-
-          echo "old_version=$(get_defined_versions)" >> $GITHUB_OUTPUT
-
-          update_version_to $(get_defined_versions | xargs expr 1 +)
-      # 本来であればActionsに権限を増やしたりbranch protection ruleに例外を設けるなどしてpushを許したいが、
-      # どうやらこれが現時点では不可能なようなので^[1]、developへのpush権限があるユーザーと
-      # そのpersonal access token(repo権限付き)をVERSION_BUMP_WORKFLOW_ACTORとVERSION_BUMP_WORKFLOW_PUSH_TOKENへ
-      # 追加し、それを利用するようにしている。
-      # 参考:
-      #  - [1]: https://github.community/t/how-to-push-to-protected-branches-in-a-github-action/16101
-      - name: Commit & Push changes
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-
-          ACTOR=${{ secrets.VERSION_BUMP_WORKFLOW_ACTOR }}
-          TOKEN=${{ secrets.VERSION_BUMP_WORKFLOW_PUSH_TOKEN }}
-
-          git add -A
-          git commit -m "chore(bump): ${{ steps.bump.outputs.old_version }} -> ${{ steps.bump.outputs.new_version }}"
-
-          # masterへのマージはブランチが最新であることが要求されるため、ここでマージしておく
-          git fetch origin master
-          git merge --no-ff origin/master
-
-          git push \
-            https://$ACTOR:$TOKEN@github.com/GiganticMinecraft/SeichiAssist.git \
-            HEAD:${{ needs.get_branch_name.outputs.value }}
-
   create_release:
     runs-on: ubuntu-24.04
-    needs: bump_version
+    container: ghcr.io/giganticminecraft/seichiassist-builder-v2:1df7cf5
     steps:
-      - uses: actions/checkout@master
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          # これがないとchunk_searchで引っかかってリリースのjarアップロードに失敗する
-          submodules: "recursive"
+          submodules: 'recursive'
 
-      - uses: actions/setup-java@v4
+      - name: Prepare build dependencies cache
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-build-dependencies
+          cache-version: v-5
         with:
-          distribution: "temurin"
-          java-version: "17"
+          # sbt等は$HOMEではなくユーザーディレクトリを見ているようで、
+          # GH Actionsでの ~ は /github/home/ に展開されるにもかかわらず
+          # 実際のキャッシュは /root/ 以下に配備される。
+          #
+          # /root/.ivy/cache, /root/.sbt - sbt関連のキャッシュ
+          # /root/.m2 - ビルドログを観察した感じprotoc等はここを利用する
+          # /root/.cache - cousierがscalasbt等をキャッシュするのに使っている
+          path: |
+            /root/.ivy2/cache
+            /root/.sbt
+            /root/.m2
+            /root/.cache
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-${{ github.ref }}-${{ hashFiles('**/build.sbt') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-${{ github.ref }}-
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-
 
-      - name: build artifacts
-        run: mkdir -p target/build && sbt assembly
+      - name: Prepare build cache
+        if: github.ref != 'refs/heads/master'
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-build
+          cache-version: v-5
+        with:
+          path: |
+            target
+            project/target
+            project/project/target
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-${{ github.ref }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-${{ github.ref }}-
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-
+
+      # CIでのcheckoutはファイルのタイムスタンプをチェックアウト時刻に設定するため、
+      # そのままビルドするとlocalDependenciesにあるjarに変更が行われたと見なされ
+      # 不要なインクリメンタルコンパイルが走る
+      # タイムスタンプをコミット時刻に設定することでこれが回避できる
+      - name: Restore localDependencies' timestamps
+        # 参考: https://qiita.com/tomlla/items/219cea9dd071c8a9e147
+        run: |
+          git config --global --add safe.directory /__w/SeichiAssist/SeichiAssist
+          for jar in localDependencies/*.jar; do
+            timestamp=`git log -1 --pretty=format:'%cd' --date=format:'%Y%m%d%H%M.%S' $jar`
+            touch -t "$timestamp" $jar
+          done
+
+      # scalapbは.protoの再コンパイルの必要性を判定する際にタイムスタンプを見ているから、コミット時刻に合わせる
+      - name: Restore protocol timestamps
+        ## 参考: https://qiita.com/tomlla/items/219cea9dd071c8a9e147
+        run: |
+          for proto in protocol/*.proto; do
+            timestamp=`git log -1 --pretty=format:'%cd' --date=format:'%Y%m%d%H%M.%S' $proto`
+            touch -t "$timestamp" $proto
+          done
+
+      # sbt-assembly 2以降からディレクトリを作ってくれなくなった
+      - name: Build artifact
+        run: mkdir -p target/build && ./sbt assembly
+
+      - name: Create and push a tag
+        id: tag-name
+        # GiganticMinecraftにあるSeichiAssistリポジトリのブランチからのPRのみ実行
+        if: ${{ github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name }}
+        run: |
+          TAG_NAME=pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
+          git tag $TAG_NAME
+          git push origin $TAG_NAME
+          echo "value=$TAG_NAME" >> $GITHUB_OUTPUT
 
       - name: Create release
-        id: create_release
         uses: softprops/action-gh-release@v1
+        # GiganticMinecraftにあるSeichiAssistリポジトリのブランチからのPRのみ実行
+        if: ${{ github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: target/build/SeichiAssist.jar
-          tag_name: "v${{ needs.bump_version.outputs.new_version }}"
+          tag_name: ${{ steps.tag-name.outputs.value }}
           draft: false
-          prerelease: false
 
-  create_pull-request_to_master:
-    runs-on: ubuntu-24.04
-    needs: [get_branch_name, bump_version]
-    steps:
-      - uses: actions/checkout@master
-      - name: Create pull request
-        uses: repo-sync/pull-request@v2
-        with:
-          destination_branch: "master"
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          pr_title: "バージョン ${{ needs.bump_version.outputs.new_version }} リリース"
+      - name: Clean build artifact for caching target folder
+        run: rm -r target/build

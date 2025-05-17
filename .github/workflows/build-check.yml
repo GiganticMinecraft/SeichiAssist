@@ -1,7 +1,9 @@
-name: Create 1.18 release
+name: build check
 
 on:
-  pull_request:
+  push:
+    branches:
+      - develop
     paths:
       - src/**
       - build.sbt
@@ -12,7 +14,9 @@ on:
       - .github/actions/**/**.yml
 
 jobs:
-  create_release:
+  build_check:
+    env:
+      BUILD_ENVIRONMENT_IS_CI_OR_LOCAL: "CI"
     runs-on: ubuntu-24.04
     container: ghcr.io/giganticminecraft/seichiassist-builder-v2:1df7cf5
     steps:
@@ -82,30 +86,14 @@ jobs:
             touch -t "$timestamp" $proto
           done
 
-      # sbt-assembly 2以降からディレクトリを作ってくれなくなった
-      - name: Build artifact
+      - name: Check format with Scalafmt
+        run: ./sbt scalafmtCheckAll
+
+      - name: Check lint with Scalafix on push
+        run: ./sbt "scalafix --check"
+
+      - name: Test and build artifact
         run: mkdir -p target/build && ./sbt assembly
-
-      - name: Create and push a tag
-        id: tag-name
-        # GiganticMinecraftにあるSeichiAssistリポジトリのブランチからのPRのみ実行
-        if: ${{ github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name }}
-        run: |
-          TAG_NAME=pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
-          git tag $TAG_NAME
-          git push origin $TAG_NAME
-          echo "value=$TAG_NAME" >> $GITHUB_OUTPUT
-
-      - name: Create release
-        uses: softprops/action-gh-release@v1
-        # GiganticMinecraftにあるSeichiAssistリポジトリのブランチからのPRのみ実行
-        if: ${{ github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          files: target/build/SeichiAssist.jar
-          tag_name: ${{ steps.tag-name.outputs.value }}
-          draft: false
 
       - name: Clean build artifact for caching target folder
         run: rm -r target/build
