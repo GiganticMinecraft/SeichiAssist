@@ -25,7 +25,7 @@ jobs:
           submodules: 'recursive'
 
       - name: prepare build environment for seichiassist
-        uses: ./.github/workflows/prepare-build-environment-for-seichiassist.yml
+        uses: GiganticMinecraft/SeichiAssist/.github/workflows/prepare-build-environment-for-seichiassist.yml@develop
 
       - name: Check format with Scalafmt
         run: ./sbt scalafmtCheckAll

@@ -21,7 +21,7 @@ jobs:
           submodules: 'recursive'
 
       - name: prepare build environment for seichiassist
-        uses: ./.github/workflows/prepare-build-environment-for-seichiassist.yml
+        uses: GiganticMinecraft/SeichiAssist/.github/workflows/prepare-build-environment-for-seichiassist.yml@develop
 
       # sbt-assembly 2以降からディレクトリを作ってくれなくなった
       - name: Build artifact
