@@ -14,9 +14,15 @@ on:
 jobs:
   create_release:
     runs-on: ubuntu-24.04
+    container: ghcr.io/giganticminecraft/seichiassist-builder-v2:1df7cf5
     steps:
-      - name: prepare build environment for seichiassist
-        uses: GiganticMinecraft/Seichiassist/.github/workflows/reusable-workflows/prepare-build-environment-for-seichiassist.yml
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      - name: Prepare build environment for seichiassist
+        uses: ./.github/actions/prepare-build-environment-for-seichiassist
 
       # sbt-assembly 2以降からディレクトリを作ってくれなくなった
       - name: Build artifact
