@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: prepare build environment for seichiassist
-        uses: GiganticMinecraft/Seichiassist/.github/workflows/reusable-workflows/prepare-build-environment-for-seichiassist.yml
+        uses: ./.github/workflows/prepare-build-environment-for-seichiassist.yml
 
       # sbt-assembly 2以降からディレクトリを作ってくれなくなった
       - name: Build artifact
