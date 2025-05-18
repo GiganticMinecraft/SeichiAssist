@@ -74,6 +74,7 @@ jobs:
 
   create_release:
     runs-on: ubuntu-24.04
+    container: ghcr.io/giganticminecraft/seichiassist-builder-v2:1df7cf5
     needs: bump_version
     steps:
       - uses: actions/checkout@master
@@ -81,10 +82,8 @@ jobs:
           # これがないとchunk_searchで引っかかってリリースのjarアップロードに失敗する
           submodules: "recursive"
 
-      - uses: actions/setup-java@v4
-        with:
-          distribution: "temurin"
-          java-version: "17"
+      - name: Prepare build environment for seichiassist
+        uses: ./.github/actions/prepare-build-environment-for-seichiassist
 
       - name: build artifacts
         run: mkdir -p target/build && sbt assembly

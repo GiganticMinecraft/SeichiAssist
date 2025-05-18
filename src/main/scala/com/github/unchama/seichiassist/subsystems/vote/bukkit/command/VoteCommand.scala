@@ -27,7 +27,7 @@ class VoteCommand[F[_]: ConcurrentEffect](implicit votePersistence: VotePersiste
       .beginConfiguration
       .thenParse(Parsers.identity)
       .buildWithExecutionCSEffect { context =>
-        val playerName = context.args.yetToBeParsed.head
+        val playerName = context.args.parsed.head
         val distributionProcess = for {
           uuidEither <- new JdbcLastSeenNameToUuid[F].of(playerName)
           program <- uuidEither.traverse { uuid =>
