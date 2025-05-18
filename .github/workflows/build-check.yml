@@ -19,6 +19,11 @@ jobs:
       BUILD_ENVIRONMENT_IS_CI_OR_LOCAL: "CI"
     runs-on: ubuntu-24.04
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
       - name: prepare build environment for seichiassist
         uses: ./.github/workflows/prepare-build-environment-for-seichiassist.yml
 
