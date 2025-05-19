@@ -90,11 +90,14 @@ jobs:
 
       - name: Create release
         id: create_release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: target/build/SeichiAssist.jar
+          # target_commitish が master であることをトリガーとして、
+          #  seichi_infra で定義されている SeichiAssist のリリース用ワークフローがリリースを検知する
+          target_commitish: "master"
           tag_name: "v${{ needs.bump_version.outputs.new_version }}"
           draft: false
           prerelease: false
