@@ -42,6 +42,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: target/build/SeichiAssist.jar
+          # seichi_infra に定義されている SeichiAssist のリリース用ワークフローは、
+          # target_commitish が master のときに正式リリースだと認識する。
+          # デフォルト値は GitHub で設定されているデフォルトブランチになる。
+          target_commitish: master
           tag_name: "v${{ steps.get_current_version.outputs.current_version }}"
           draft: false
           prerelease: false
