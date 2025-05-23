@@ -705,7 +705,7 @@ class SeichiAssist extends JavaPlugin() {
             .dataSource(getURL, getID, getPW)
             .baselineOnMigrate(true)
             .locations("db/migration", "com/github/unchama/seichiassist/database/migrations")
-            .baselineVersion("1.0.0")
+            .baselineVersion("2.0.0")
             .schemas("flyway_managed_schema")
             .load
 
