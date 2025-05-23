@@ -24,14 +24,16 @@ jobs:
       - name: Get current version
         id: get_current_version
         run: |
-          CURRENT_VERSION=$(sbt -Dsbt.supershell=false 'print version' | tail -n1)
-
-          if [ -z "$CURRENT_VERSION" ]; then
-            echo "エラー：sbt からバージョンを取得できませんでした。"
+          get_defined_versions () {
+            grep -o -P "(?<=ThisBuild / version := \")\d+(?=\")" build.sbt
+          }
+          
+          if [ ! $(get_defined_versions | wc -l) = "1" ]; then
+            echo "エラー：build.sbt でのバージョン指定が一意でありません。"
             exit 1
           fi
-          
-          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+
+          echo "current_version=$(get_defined_versions)" >> $GITHUB_OUTPUT
 
       - name: Create release
         id: create_release
