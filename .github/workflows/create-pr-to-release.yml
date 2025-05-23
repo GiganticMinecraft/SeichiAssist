@@ -72,33 +72,6 @@ jobs:
             https://$ACTOR:$TOKEN@github.com/GiganticMinecraft/SeichiAssist.git \
             HEAD:${{ needs.get_branch_name.outputs.value }}
 
-  create_release:
-    runs-on: ubuntu-24.04
-    container: ghcr.io/giganticminecraft/seichiassist-builder-v2:1df7cf5
-    needs: bump_version
-    steps:
-      - uses: actions/checkout@master
-        with:
-          # これがないとchunk_searchで引っかかってリリースのjarアップロードに失敗する
-          submodules: "recursive"
-
-      - name: Prepare build environment for seichiassist
-        uses: ./.github/actions/prepare-build-environment-for-seichiassist
-
-      - name: build artifacts
-        run: mkdir -p target/build && sbt assembly
-
-      - name: Create release
-        id: create_release
-        uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          files: target/build/SeichiAssist.jar
-          tag_name: "v${{ needs.bump_version.outputs.new_version }}"
-          draft: false
-          prerelease: false
-
   create_pull-request_to_master:
     runs-on: ubuntu-24.04
     needs: [get_branch_name, bump_version]

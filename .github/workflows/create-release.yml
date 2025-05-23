@@ -1,0 +1,45 @@
+name: Create release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  create_seichiassist_release:
+    runs-on: ubuntu-24.04
+    container: ghcr.io/giganticminecraft/seichiassist-builder-v2:1df7cf5
+    steps:
+      - uses: actions/checkout@master
+        with:
+          # これがないとchunk_searchで引っかかってリリースのjarアップロードに失敗する
+          submodules: "recursive"
+
+      - name: Prepare build environment for seichiassist
+        uses: ./.github/actions/prepare-build-environment-for-seichiassist
+
+      - name: build artifacts
+        run: mkdir -p target/build && sbt assembly
+
+      - name: Get current version
+        id: get_current_version
+        run: |
+          CURRENT_VERSION=$(sbt -Dsbt.supershell=false 'print version' | tail -n1)
+
+          if [ -z "$CURRENT_VERSION" ]; then
+            echo "エラー：sbt からバージョンを取得できませんでした。"
+            exit 1
+          fi
+          
+          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: target/build/SeichiAssist.jar
+          tag_name: "v${{ steps.get_current_version.outputs.current_version }}"
+          draft: false
+          prerelease: false
