@@ -11,11 +11,14 @@ import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gridregion.application.repository.{
-  RegionCountAllUntilNowRepositoryDefinition,
   RULChangePerClickSettingRepositoryDefinition,
+  RegionCountAllUntilNowRepositoryDefinition,
   RegionUnitsRepositoryDefinition
 }
-import com.github.unchama.seichiassist.subsystems.gridregion.bukkit.BukkitRegionOperations
+import com.github.unchama.seichiassist.subsystems.gridregion.bukkit.{
+  BukkitRegionDefiner,
+  BukkitRegionRegister
+}
 import com.github.unchama.seichiassist.subsystems.gridregion.domain._
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.persistence.{
   RegionCountAllUntilNowPersistence,
@@ -72,7 +75,8 @@ object System {
         regionUnitsRepositoryControls.repository
       implicit val regionCountRepository: KeyedDataRepository[Player, Ref[G, RegionCount]] =
         regionCountAllUntilNowRepositoryControls.repository
-      val regionOperations: RegionOperations[G, Location, Player] = new BukkitRegionOperations
+      val regionRegister: RegionRegister[G, Location, Player] = new BukkitRegionRegister
+      val regionDefiner: RegionDefiner[G, Location] = new BukkitRegionDefiner[G]
 
       new System[F, Player, Location] {
         override val api: GridRegionAPI[F, Player, Location] =
@@ -103,17 +107,17 @@ object System {
               player: Player,
               shape: SubjectiveRegionShape
             ): F[RegionCreationResult] =
-              ContextCoercion(regionOperations.canCreateRegion(player, shape))
+              ContextCoercion(regionRegister.canCreateRegion(player, shape))
 
             override def regionSelection(
               player: Player,
               shape: SubjectiveRegionShape
-            ): RegionSelectionCorners[Location] =
-              regionOperations.getSelectionCorners(player.getLocation, shape)
+            ): F[RegionSelectionCorners[Location]] =
+              ContextCoercion(regionDefiner.getSelectionCorners(player.getLocation, shape))
 
             override def createAndClaimRegionSelectedOnWorldGuard: Kleisli[F, Player, Unit] =
               Kleisli { player =>
-                ContextCoercion(regionOperations.tryCreatingSelectedWorldGuardRegion(player))
+                ContextCoercion(regionRegister.tryCreatingSelectedWorldGuardRegion(player))
               }
 
             override def regionCount(player: Player): F[RegionCount] =

@@ -2,15 +2,18 @@ package com.github.unchama.seichiassist.subsystems.gridregion.domain
 
 case class RegionSelectionCorners[Location](startPosition: Location, endPosition: Location)
 
-trait RegionOperations[F[_], Location, Player] {
+trait RegionDefiner[F[_], Location] {
 
   /**
-   * @return `currentLocation` から `shape` を使って保護範囲の始点と終点を求める
+   * @return `currentLocation` から `shape` を使って保護範囲の始点と終点を求める作用
    */
   def getSelectionCorners(
     currentLocation: Location,
     shape: SubjectiveRegionShape
-  ): RegionSelectionCorners[Location]
+  ): F[RegionSelectionCorners[Location]]
+}
+
+trait RegionRegister[F[_], Location, Player] {
 
   /**
    * @return プレーヤーが現在選択している WorldGuard 領域により WorldGuard 保護の作成を試みる作用

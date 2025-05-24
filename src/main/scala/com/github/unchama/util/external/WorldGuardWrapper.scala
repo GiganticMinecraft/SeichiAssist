@@ -108,4 +108,16 @@ object WorldGuardWrapper {
   def canProtectionWorld(world: World): Boolean =
     worldGuard.getPlatform.getGlobalStateManager.get(BukkitAdapter.adapt(world)).useRegions
 
+  def isNotOverwrapping(
+    player: Player,
+    world: World,
+    protectedRegion: ProtectedRegion
+  ): Boolean = {
+    worldGuard
+      .getPlatform
+      .getRegionContainer
+      .get(BukkitAdapter.adapt(world))
+      .overlapsUnownedRegion(protectedRegion, wrapPlayer(player))
+  }
+
 }

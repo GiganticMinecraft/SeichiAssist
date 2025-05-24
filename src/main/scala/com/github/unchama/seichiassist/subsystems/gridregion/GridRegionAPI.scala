@@ -40,12 +40,12 @@ trait GridRegionReadAPI[F[_], Player, Location] {
   def canCreateRegion(player: Player, shape: SubjectiveRegionShape): F[RegionCreationResult]
 
   /**
-   * @return `player`の現在地点と`regionUnits`から[[RegionSelectionCorners]]を計算して返す
+   * @return `player`の現在地点と`regionUnits`から[[RegionSelectionCorners]]を計算して返す作用
    */
   def regionSelection(
     player: Player,
     shape: SubjectiveRegionShape
-  ): RegionSelectionCorners[Location]
+  ): F[RegionSelectionCorners[Location]]
 
   /**
    * @return `player`の[[RegionCount]]を取得する作用
