@@ -10,6 +10,7 @@ import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
+import com.github.unchama.seichiassist.subsystems.gridregion.application.GetGridLimitPerWorld
 import com.github.unchama.seichiassist.subsystems.gridregion.application.repository.{
   RULChangePerClickSettingRepositoryDefinition,
   RegionCountAllUntilNowRepositoryDefinition,
@@ -25,6 +26,7 @@ import com.github.unchama.seichiassist.subsystems.gridregion.domain.persistence.
   RegionTemplatePersistence
 }
 import com.github.unchama.seichiassist.subsystems.gridregion.infrastructure.{
+  GetGridLimitPerWorldFromConfig,
   JdbcRegionCountAllUntilNowPersistence,
   JdbcRegionTemplatePersistence
 }
@@ -77,6 +79,7 @@ object System {
         regionCountAllUntilNowRepositoryControls.repository
       val regionRegister: RegionRegister[G, Location, Player] = new BukkitRegionRegister
       val regionDefiner: RegionDefiner[G, Location] = new BukkitRegionDefiner[G]
+      val getGridLimitPerWorld: GetGridLimitPerWorld[G] = new GetGridLimitPerWorldFromConfig[G]
 
       new System[F, Player, Location] {
         override val api: GridRegionAPI[F, Player, Location] =
@@ -98,10 +101,8 @@ object System {
                 ContextCoercion(regionUnitsRepository(player).set(regionUnits))
               }
 
-            override def regionUnitLimit(worldName: String): RegionUnitSizeLimit = {
-              val limit = SeichiAssist.seichiAssistConfig.getGridLimitPerWorld(worldName)
-              RegionUnitSizeLimit(RegionUnitCount(limit))
-            }
+            override def regionUnitLimit(worldName: String): F[RegionUnitSizeLimit] =
+              ContextCoercion(getGridLimitPerWorld.apply(worldName))
 
             override def canCreateRegion(
               player: Player,
