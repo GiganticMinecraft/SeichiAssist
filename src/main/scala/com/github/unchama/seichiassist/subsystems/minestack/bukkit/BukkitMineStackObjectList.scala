@@ -491,26 +491,30 @@ class BukkitMineStackObjectList[F[_]: Sync](
         MineStackObjectByMaterial(BUILDING, "stripped_warped_hyphae", "表皮を剥いだ歪んだ菌糸", Material.STRIPPED_WARPED_HYPHAE),
       )
     ),
+    // NOTE: 木と板材に指定している mineStackObjectName が逆のように見えるが、正しい。
+    //  なぜこのような指定になっているのかと言うと、1.12.2 から 1.18.2 にアップデートする際に
+    //  間違って板材と木で指定する mineStackObjectName を逆にしてしまい、アイテム数が入れ替わってしまった。
+    //  これを直すためにこのような実装になっている。
     MineStackObjectWithKindVariants(
-      MineStackObjectByMaterial(BUILDING, "wood", "オークの木", Material.OAK_WOOD),
+      MineStackObjectByMaterial(BUILDING, "oak_planks", "オークの木", Material.OAK_WOOD),
       List(
-        MineStackObjectByMaterial(BUILDING, "wood_1", "トウヒの木", Material.SPRUCE_WOOD),
-        MineStackObjectByMaterial(BUILDING, "wood_2", "シラカバの木", Material.BIRCH_WOOD),
-        MineStackObjectByMaterial(BUILDING, "wood_3", "ジャングルの木", Material.JUNGLE_WOOD),
-        MineStackObjectByMaterial(BUILDING, "wood_4", "アカシアの木", Material.ACACIA_WOOD),
-        MineStackObjectByMaterial(BUILDING, "wood_5", "ダークオークの木", Material.DARK_OAK_WOOD),
+        MineStackObjectByMaterial(BUILDING, "spruce_planks", "トウヒの木", Material.SPRUCE_WOOD),
+        MineStackObjectByMaterial(BUILDING, "birch_planks", "シラカバの木", Material.BIRCH_WOOD),
+        MineStackObjectByMaterial(BUILDING, "jungle_planks", "ジャングルの木", Material.JUNGLE_WOOD),
+        MineStackObjectByMaterial(BUILDING, "acacia_planks", "アカシアの木", Material.ACACIA_WOOD),
+        MineStackObjectByMaterial(BUILDING, "dark_oak_planks", "ダークオークの木", Material.DARK_OAK_WOOD),
         MineStackObjectByMaterial(BUILDING, "crimson_hyphae", "真紅の菌糸", Material.CRIMSON_HYPHAE),
         MineStackObjectByMaterial(BUILDING, "warped_hyphae", "歪んだ菌糸", Material.WARPED_HYPHAE),
       )
     ),
     MineStackObjectWithKindVariants(
-      MineStackObjectByMaterial(BUILDING, "oak_planks", "オークの板材", Material.OAK_PLANKS),
+      MineStackObjectByMaterial(BUILDING, "wood", "オークの板材", Material.OAK_PLANKS),
       List(
-        MineStackObjectByMaterial(BUILDING, "spruce_planks", "トウヒの板材", Material.SPRUCE_PLANKS),
-        MineStackObjectByMaterial(BUILDING, "birch_planks", "シラカバの板材", Material.BIRCH_PLANKS),
-        MineStackObjectByMaterial(BUILDING, "jungle_planks", "ジャングルの板材", Material.JUNGLE_PLANKS),
-        MineStackObjectByMaterial(BUILDING, "acacia_planks", "アカシアの板材", Material.ACACIA_PLANKS),
-        MineStackObjectByMaterial(BUILDING, "dark_oak_planks", "ダークオークの板材", Material.DARK_OAK_PLANKS),
+        MineStackObjectByMaterial(BUILDING, "wood_1", "トウヒの板材", Material.SPRUCE_PLANKS),
+        MineStackObjectByMaterial(BUILDING, "wood_2", "シラカバの板材", Material.BIRCH_PLANKS),
+        MineStackObjectByMaterial(BUILDING, "wood_3", "ジャングルの板材", Material.JUNGLE_PLANKS),
+        MineStackObjectByMaterial(BUILDING, "wood_4", "アカシアの板材", Material.ACACIA_PLANKS),
+        MineStackObjectByMaterial(BUILDING, "wood_5", "ダークオークの板材", Material.DARK_OAK_PLANKS),
         MineStackObjectByMaterial(BUILDING, "crimson_planks", "真紅の板材", Material.CRIMSON_PLANKS),
         MineStackObjectByMaterial(BUILDING, "warped_planks", "歪んだ板材", Material.WARPED_PLANKS),
       )
