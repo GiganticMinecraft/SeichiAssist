@@ -27,7 +27,7 @@ import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.SequentialEffect
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
-import org.bukkit.{Location, Material}
+import org.bukkit.{Location, Material, World}
 
 object GridTemplateMenu extends Menu {
 
@@ -37,7 +37,7 @@ object GridTemplateMenu extends Menu {
 
   class Environment(
     implicit val canOpenGridRegionMenu: IO CanOpen GridRegionMenu.type,
-    implicit val gridRegionAPI: GridRegionAPI[IO, Player, Location],
+    implicit val gridRegionAPI: GridRegionAPI[IO, Player, Location, World],
     implicit val layoutPreparationContext: LayoutPreparationContext,
     implicit val onMinecraftServerThread: OnMinecraftServerThread[IO]
   )

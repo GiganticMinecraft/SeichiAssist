@@ -24,14 +24,14 @@ import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryType
-import org.bukkit.{Location, Material, Sound}
+import org.bukkit.{Location, Material, Sound, World}
 
 object GridRegionMenu extends Menu {
 
   class Environment(
     implicit val onMainThread: OnMinecraftServerThread[IO],
     implicit val layoutPreparationContext: LayoutPreparationContext,
-    val gridRegionAPI: GridRegionAPI[IO, Player, Location],
+    val gridRegionAPI: GridRegionAPI[IO, Player, Location, World],
     val ioCanOpenGridTemplateMenu: IO CanOpen GridTemplateMenu.type
   )
 
@@ -119,12 +119,12 @@ object GridRegionMenu extends Menu {
     ): IO[Button] = RecomputedButton {
       for {
         yaw <- IO(player.getEyeLocation.getYaw)
-        worldName <- IO(player.getWorld.getName)
+        world <- IO(player.getWorld)
         direction = CardinalDirection.relativeToCardinalDirections(yaw)(relativeDirection)
         gridLore <- gridLore(direction, relativeDirection)
         currentShape <- gridRegionAPI.currentlySelectedShape(player)
         currentPerClickRegionUnit <- gridRegionAPI.lengthChangePerClick(player)
-        gridSizeLimit <- environment.gridRegionAPI.regionUnitLimit(worldName)
+        gridSizeLimit <- environment.gridRegionAPI.regionUnitLimit(world)
       } yield {
         val expandedShape =
           currentShape.extendTowards(relativeDirection)(currentPerClickRegionUnit)
@@ -220,8 +220,8 @@ object GridRegionMenu extends Menu {
     val currentRegionShapeButton: IO[Button] = RecomputedButton {
       for {
         shape <- gridRegionAPI.currentlySelectedShape(player)
-        worldName <- IO.pure(player.getLocation.getWorld.getName)
-        regionUnitLimit <- gridRegionAPI.regionUnitLimit(worldName)
+        world <- IO.pure(player.getLocation.getWorld)
+        regionUnitLimit <- gridRegionAPI.regionUnitLimit(world)
       } yield {
         def showRegionShapeDimension(length: RegionUnitLength): String =
           s"$AQUA${length.rul}${GRAY}ユニット分($AQUA${length.toMeters}${GRAY}ブロック)"
@@ -247,8 +247,8 @@ object GridRegionMenu extends Menu {
 
     val createRegionButton: IO[Button] = RecomputedButton {
       for {
-        regionUnits <- gridRegionAPI.currentlySelectedShape(player)
-        canCreateRegionResult <- gridRegionAPI.canCreateRegion(player, regionUnits)
+        shape <- gridRegionAPI.currentlySelectedShape(player)
+        canCreateRegionResult <- gridRegionAPI.canCreateRegion(player, shape)
       } yield {
         canCreateRegionResult match {
           case RegionCreationResult.Success =>
@@ -258,7 +258,7 @@ object GridRegionMenu extends Menu {
                 .lore(List(s"${DARK_GREEN}保護作成可能です", s"$RED${UNDERLINE}クリックで作成"))
                 .build(),
               LeftClickButtonEffect(
-                gridRegionAPI.createAndClaimRegionSelectedOnWorldGuard,
+                gridRegionAPI.claimRegionByShapeSettings(shape),
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f),
                 closeInventoryEffect
               )

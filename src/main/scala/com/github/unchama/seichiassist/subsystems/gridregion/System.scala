@@ -10,13 +10,20 @@ import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.gridregion.application.GetGridLimitPerWorld
+import com.github.unchama.seichiassist.subsystems.gridregion.application.actions.{
+  CreateRegion,
+  GridRegionRegistrar
+}
 import com.github.unchama.seichiassist.subsystems.gridregion.application.repository.{
   RULChangePerClickSettingRepositoryDefinition,
   RegionCountAllUntilNowRepositoryDefinition,
   RegionUnitsRepositoryDefinition
 }
 import com.github.unchama.seichiassist.subsystems.gridregion.bukkit.{
+  BukkitCreateRegion,
+  BukkitGetGridUnitSizeLimitPerWorld,
+  BukkitGetRegionCountLimit,
+  BukkitRegionCreationPolicy,
   BukkitRegionDefiner,
   BukkitRegionRegister
 }
@@ -26,16 +33,16 @@ import com.github.unchama.seichiassist.subsystems.gridregion.domain.persistence.
   RegionTemplatePersistence
 }
 import com.github.unchama.seichiassist.subsystems.gridregion.infrastructure.{
-  GetGridLimitPerWorldFromConfig,
   JdbcRegionCountAllUntilNowPersistence,
   JdbcRegionTemplatePersistence
 }
 import org.bukkit.Location
 import org.bukkit.entity.Player
+import org.bukkit.World
 
-trait System[F[_], Player, Location] extends Subsystem[F] {
+trait System[F[_], Player, Location, World] extends Subsystem[F] {
 
-  val api: GridRegionAPI[F, Player, Location]
+  val api: GridRegionAPI[F, Player, Location, World]
 
 }
 
@@ -44,7 +51,7 @@ object System {
   import cats.implicits._
 
   def wired[F[_], G[_]: SyncEffect: ContextCoercion[*[_], F]]
-    : G[System[F, Player, Location]] = {
+    : G[System[F, Player, Location, World]] = {
     implicit val regionCountPersistence: RegionCountAllUntilNowPersistence[G] =
       new JdbcRegionCountAllUntilNowPersistence[G]
     val regionTemplatePersistence: RegionTemplatePersistence[G] =
@@ -77,13 +84,21 @@ object System {
         regionUnitsRepositoryControls.repository
       implicit val regionCountRepository: KeyedDataRepository[Player, Ref[G, RegionCount]] =
         regionCountAllUntilNowRepositoryControls.repository
-      val regionRegister: RegionRegister[G, Location, Player] = new BukkitRegionRegister
-      val regionDefiner: RegionDefiner[G, Location] = new BukkitRegionDefiner[G]
-      val getGridLimitPerWorld: GetGridLimitPerWorld[G] = new GetGridLimitPerWorldFromConfig[G]
+      implicit val regionRegister: RegionRegister[G, Location, Player] =
+        new BukkitRegionRegister
+      implicit val regionDefiner: RegionDefiner[G, Location] = new BukkitRegionDefiner[G]
+      implicit val getGridLimitPerWorld: GetGridUnitSizeLimitPerWorld[G, World] =
+        new BukkitGetGridUnitSizeLimitPerWorld[G]
+      implicit val regionCreationPolicy: RegionCreationPolicy[G, Player, World, Location] =
+        new BukkitRegionCreationPolicy[G]
+      implicit val getRegionCountLimit: GetRegionCountLimit[G, World] =
+        new BukkitGetRegionCountLimit[G]
+      implicit val createRegion: CreateRegion[G, Player, Location] = new BukkitCreateRegion[G]
+      val gridRegionRegistrar = new GridRegionRegistrar[G, Location, Player, World]
 
-      new System[F, Player, Location] {
-        override val api: GridRegionAPI[F, Player, Location] =
-          new GridRegionAPI[F, Player, Location] {
+      new System[F, Player, Location, World] {
+        override val api: GridRegionAPI[F, Player, Location, World] =
+          new GridRegionAPI[F, Player, Location, World] {
             override def toggleRulChangePerClick: Kleisli[F, Player, Unit] = Kleisli { player =>
               ContextCoercion(rulPerClickSettingRepository(player).toggleUnitPerClick)
             }
@@ -101,8 +116,8 @@ object System {
                 ContextCoercion(regionUnitsRepository(player).set(regionUnits))
               }
 
-            override def regionUnitLimit(worldName: String): F[RegionUnitSizeLimit] =
-              ContextCoercion(getGridLimitPerWorld.apply(worldName))
+            override def regionUnitLimit(world: World): F[RegionUnitSizeLimit] =
+              ContextCoercion(getGridLimitPerWorld.apply(world))
 
             override def canCreateRegion(
               player: Player,
@@ -132,6 +147,16 @@ object System {
             ): Kleisli[F, Player, Unit] = Kleisli { player =>
               ContextCoercion(
                 regionTemplatePersistence.saveRegionTemplate(player.getUniqueId, regionTemplate)
+              )
+            }
+
+            override def claimRegionByShapeSettings(
+              shape: SubjectiveRegionShape
+            ): Kleisli[F, Player, Unit] = Kleisli { player =>
+              ContextCoercion(
+                gridRegionRegistrar
+                  .validateAndCreateRegion(player, player.getWorld, player.getLocation, shape)
+                  .void
               )
             }
           }

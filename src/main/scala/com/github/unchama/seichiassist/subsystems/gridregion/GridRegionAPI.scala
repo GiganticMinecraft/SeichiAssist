@@ -17,7 +17,7 @@ trait GridRegionTemplateAPI[F[_], Player] {
 
 }
 
-trait GridRegionReadAPI[F[_], Player, Location] {
+trait GridRegionReadAPI[F[_], Player, Location, World] {
 
   /**
    * @return 1回のクリックで増減させる[[RegionUnitLength]]を返す作用
@@ -25,9 +25,9 @@ trait GridRegionReadAPI[F[_], Player, Location] {
   def lengthChangePerClick(player: Player): F[RegionUnitLength]
 
   /**
-   * @return 指定された`worldName`の[[RegionUnitSizeLimit]]
+   * @return 指定された`world`の[[RegionUnitSizeLimit]]
    */
-  def regionUnitLimit(worldName: String): F[RegionUnitSizeLimit]
+  def regionUnitLimit(world: World): F[RegionUnitSizeLimit]
 
   /**
    * @return [[Player]]が現在設定している[[SubjectiveRegionShape]]を取得する作用
@@ -73,9 +73,14 @@ trait GridRegionWriteAPI[F[_], Player, Location] {
    */
   def createAndClaimRegionSelectedOnWorldGuard: Kleisli[F, Player, Unit]
 
+  /**
+   * @return プレイヤーの位置をベースに `shape` の領域の保護を確保する作用
+   */
+  def claimRegionByShapeSettings(shape: SubjectiveRegionShape): Kleisli[F, Player, Unit]
+
 }
 
-trait GridRegionAPI[F[_], Player, Location]
+trait GridRegionAPI[F[_], Player, Location, World]
     extends GridRegionTemplateAPI[F, Player]
-    with GridRegionReadAPI[F, Player, Location]
+    with GridRegionReadAPI[F, Player, Location, World]
     with GridRegionWriteAPI[F, Player, Location]
