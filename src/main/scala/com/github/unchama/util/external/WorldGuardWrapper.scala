@@ -4,7 +4,7 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin
 import com.sk89q.worldguard.protection.flags.Flags
 import com.sk89q.worldguard.protection.managers.RegionManager
-import com.sk89q.worldguard.protection.regions.ProtectedRegion
+import com.sk89q.worldguard.protection.regions.{ProtectedCuboidRegion, ProtectedRegion}
 import com.sk89q.worldguard.{LocalPlayer, WorldGuard}
 import org.bukkit.entity.Player
 import org.bukkit.{Location, World}
@@ -108,4 +108,12 @@ object WorldGuardWrapper {
   def canProtectionWorld(world: World): Boolean =
     worldGuard.getPlatform.getGlobalStateManager.get(BukkitAdapter.adapt(world)).useRegions
 
+  def isNotOverlapping(world: World, protectedCuboidRegion: ProtectedCuboidRegion): Boolean = {
+    !getRegions(world).exists(protectedRegion =>
+      protectedCuboidRegion
+        .getIntersectingRegions(Iterable.single(protectedRegion).asJavaCollection)
+        .asScala
+        .nonEmpty
+    )
+  }
 }

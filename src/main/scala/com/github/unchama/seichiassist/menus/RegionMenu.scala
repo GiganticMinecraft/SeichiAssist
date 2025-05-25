@@ -20,7 +20,7 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryType
-import org.bukkit.{Location, Material, Sound}
+import org.bukkit.{Location, Material, Sound, World}
 
 object RegionMenu extends Menu {
 
@@ -30,7 +30,7 @@ object RegionMenu extends Menu {
 
   class Environment(
     implicit val ioCanOpenGridRegionMenu: IO CanOpen GridRegionMenu.type,
-    implicit val gridRegionAPI: GridRegionAPI[IO, Player, Location]
+    implicit val gridRegionAPI: GridRegionAPI[IO, Player, Location, World]
   )
 
   override val frame: MenuFrame = MenuFrame(Right(InventoryType.HOPPER), s"${BLACK}保護メニュー")
@@ -135,8 +135,8 @@ object RegionMenu extends Menu {
             SequentialEffect(
               CommandEffect("/expand vert"),
               CommandEffect(s"rg claim ${player.getName}_${regionCount.value}"),
-              gridRegionAPI.createAndClaimRegionSelectedOnWorldGuard,
               CommandEffect("/sel"),
+              gridRegionAPI.increaseRegionCount,
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
             )
         )
