@@ -93,7 +93,8 @@ object GridRegionMenu extends Menu {
 
         val leftClickEffect = LeftClickButtonEffect(
           gridRegionAPI.toggleRulChangePerClick,
-          FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+          FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f),
+          GridRegionMenu.open
         )
 
         Button(iconItemStack, leftClickEffect)
