@@ -8,7 +8,6 @@ import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
-import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gridregion.application.actions.{
   CreateRegion,
@@ -24,8 +23,7 @@ import com.github.unchama.seichiassist.subsystems.gridregion.bukkit.{
   BukkitGetGridUnitSizeLimitPerWorld,
   BukkitGetRegionCountLimit,
   BukkitRegionCreationPolicy,
-  BukkitRegionDefiner,
-  BukkitRegionRegister
+  BukkitRegionDefiner
 }
 import com.github.unchama.seichiassist.subsystems.gridregion.domain._
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.persistence.{
@@ -84,8 +82,6 @@ object System {
         regionUnitsRepositoryControls.repository
       implicit val regionCountRepository: KeyedDataRepository[Player, Ref[G, RegionCount]] =
         regionCountAllUntilNowRepositoryControls.repository
-      implicit val regionRegister: RegionRegister[G, Location, Player] =
-        new BukkitRegionRegister
       implicit val regionDefiner: RegionDefiner[G, Location] = new BukkitRegionDefiner[G]
       implicit val getGridLimitPerWorld: GetGridUnitSizeLimitPerWorld[G, World] =
         new BukkitGetGridUnitSizeLimitPerWorld[G]
@@ -122,8 +118,12 @@ object System {
             override def canCreateRegion(
               player: Player,
               shape: SubjectiveRegionShape
-            ): F[RegionCreationResult] =
-              ContextCoercion(regionRegister.canCreateRegion(player, shape))
+            ): F[RegionCreationResult] = ContextCoercion(for {
+              regionSelectionCorners <- regionDefiner
+                .getSelectionCorners(player.getLocation, shape)
+              validateResult <- regionCreationPolicy
+                .validate(player.getWorld, shape, regionSelectionCorners, player)
+            } yield validateResult)
 
             override def regionSelection(
               player: Player,

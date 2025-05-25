@@ -6,7 +6,6 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
   GetGridUnitSizeLimitPerWorld,
   GetRegionCountLimit,
-  RegionCount,
   RegionCreationPolicy,
   RegionSelectionCorners,
   SubjectiveRegionShape
