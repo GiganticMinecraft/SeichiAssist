@@ -69,14 +69,15 @@ trait GridRegionWriteAPI[F[_], Player, Location] {
   ): Kleisli[F, Player, Unit]
 
   /**
-   * @return プレーヤーが現在 WorldGuard で選択している領域にて保護を作成する作用
-   */
-  def createAndClaimRegionSelectedOnWorldGuard: Kleisli[F, Player, Unit]
-
-  /**
    * @return プレイヤーの位置をベースに `shape` の領域の保護を確保する作用
    */
   def claimRegionByShapeSettings(shape: SubjectiveRegionShape): Kleisli[F, Player, Unit]
+
+  /**
+   * TODO: これは gridregion subsystem ではなく、保護を管理するためのサブシステムで管理すべき
+   * @return `player` の [[RegionCount]] を増加させる作用
+   */
+  def increaseRegionCount: Kleisli[F, Player, Unit]
 
 }
 

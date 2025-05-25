@@ -16,30 +16,6 @@ class BukkitRegionRegister[F[_]: Sync](
 
   import cats.implicits._
 
-  override def tryCreatingSelectedWorldGuardRegion(player: Player): F[Unit] = for {
-    regionCount <- regionCountAllUntilNowRepository(player).get
-    regionName = s"${player.getName}_${regionCount.value}"
-    selectedProtectedCuboidRegion <- Sync[F].delay {
-      WorldEditWrapper.getSelectedRegion(player).map { region =>
-        new ProtectedCuboidRegion(
-          regionName,
-          region.getMinimumPoint.withY(-64),
-          region.getMaximumPoint.withY(320)
-        )
-      }
-    }
-    wgManager = WorldGuardWrapper.getRegionManager(player.getWorld)
-    regionCreateResult <- Sync[F].delay {
-      selectedProtectedCuboidRegion.foreach(wgManager.addRegion)
-    }
-    _ <- Sync[F].delay {
-      selectedProtectedCuboidRegion.foreach(protectedCuboidRegion =>
-        WorldGuardWrapper.addRegionOwner(protectedCuboidRegion, player)
-      )
-    }
-    _ <- regionCountAllUntilNowRepository(player).update(_.increment)
-  } yield regionCreateResult
-
   override def canCreateRegion(
     player: Player,
     shape: SubjectiveRegionShape

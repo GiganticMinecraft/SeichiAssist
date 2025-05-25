@@ -131,11 +131,6 @@ object System {
             ): F[RegionSelectionCorners[Location]] =
               ContextCoercion(regionDefiner.getSelectionCorners(player.getLocation, shape))
 
-            override def createAndClaimRegionSelectedOnWorldGuard: Kleisli[F, Player, Unit] =
-              Kleisli { player =>
-                ContextCoercion(regionRegister.tryCreatingSelectedWorldGuardRegion(player))
-              }
-
             override def regionCount(player: Player): F[RegionCount] =
               ContextCoercion(regionCountRepository(player).get)
 
@@ -159,6 +154,11 @@ object System {
                   .void
               )
             }
+
+            override def increaseRegionCount: Kleisli[F, Player, Unit] =
+              Kleisli { player =>
+                ContextCoercion(regionCountRepository(player).update(_.increment))
+              }
           }
 
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
