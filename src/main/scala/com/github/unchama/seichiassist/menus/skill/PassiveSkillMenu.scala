@@ -304,7 +304,10 @@ object PassiveSkillMenu extends Menu {
               )
             }
             val lengthInfoLore = if (openerData.giganticBerserk.reachedLimit()) {
-              List(s"${GRAY}MOBの魂を極限まで吸収し最大限の力を発揮する")
+              List(
+                s"${GRAY}MOBの魂を極限まで吸収し最大限の力を発揮する",
+                s"${GRAY}MOB討伐総数:${openerData.giganticBerserk.totalNumberOfKilledEnemies}"
+              )
             } else {
               List(
                 s"${GRAY}MOBの魂を${openerData.giganticBerserk.requiredExpToNextLevel()}回吸収すると更なる力が得られる",
