@@ -8,7 +8,7 @@ import java.io._
 ThisBuild / scalaVersion := "2.13.16"
 // ThisBuild / version はGitHub Actionsによって取得/自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
-ThisBuild / version := "94"
+ThisBuild / version := "95"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
@@ -90,7 +90,7 @@ val dependenciesToEmbed = Seq(
   "org.mariadb.jdbc" % "mariadb-java-client" % "3.5.3",
   "org.flywaydb" % "flyway-core" % "11.8.2",
   "org.flywaydb" % "flyway-mysql" % "11.8.2",
-  "org.scalikejdbc" %% "scalikejdbc" % "4.3.2",
+  "org.scalikejdbc" %% "scalikejdbc" % "4.3.3",
 
   // redis
   "io.github.rediscala" %% "rediscala" % "1.17.0",
@@ -112,7 +112,7 @@ val dependenciesToEmbed = Seq(
 
   // type-safety utils
   "eu.timepit" %% "refined" % "0.11.3",
-  "com.beachape" %% "enumeratum" % "1.7.6",
+  "com.beachape" %% "enumeratum" % "1.9.0",
 
   // protobuf
   "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
