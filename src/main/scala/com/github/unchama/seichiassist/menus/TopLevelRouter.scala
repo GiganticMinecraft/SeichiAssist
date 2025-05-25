@@ -57,7 +57,7 @@ import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.FairySpeechAPI
 import io.chrisdavenport.cats.effect.time.JavaTime
-import org.bukkit.Location
+import org.bukkit.{Location, World}
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -103,7 +103,7 @@ object TopLevelRouter {
     gachaDrawAPI: GachaDrawAPI[IO, Player],
     consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player],
     fairySpeechAPI: FairySpeechAPI[IO, Player],
-    gridRegionAPI: GridRegionAPI[IO, Player, Location],
+    gridRegionAPI: GridRegionAPI[IO, Player, Location, World],
     breakSkillTargetConfigAPI: BreakSkillTargetConfigAPI[IO, Player],
     breakSuppressionPreferenceAPI: BreakSuppressionPreferenceAPI[IO, Player],
     playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]

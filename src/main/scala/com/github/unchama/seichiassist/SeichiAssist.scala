@@ -106,7 +106,7 @@ import org.bukkit.ChatColor._
 import org.bukkit.entity.{Entity, Player, Projectile}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
-import org.bukkit.{Bukkit, Location}
+import org.bukkit.{Bukkit, Location, World}
 import org.flywaydb.core.Flyway
 import org.slf4j.Logger
 import org.slf4j.impl.JDK14LoggerFactory
@@ -508,7 +508,7 @@ class SeichiAssist extends JavaPlugin() {
   lazy val mineStackSystem: subsystems.minestack.System[IO, Player, ItemStack] =
     subsystems.minestack.System.wired[IO, SyncIO].unsafeRunSync()
 
-  private lazy val gridRegionSystem: subsystems.gridregion.System[IO, Player, Location] =
+  private lazy val gridRegionSystem: subsystems.gridregion.System[IO, Player, Location, World] =
     subsystems.gridregion.System.wired[IO, SyncIO].unsafeRunSync()
 
   private lazy val joinAndQuitMessenger: Subsystem[IO] =
@@ -753,7 +753,8 @@ class SeichiAssist extends JavaPlugin() {
     implicit val gachaAPI: GachaDrawAPI[IO, Player] = gachaSystem.api
     implicit val consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player] =
       consumeGachaTicketSystem.api
-    implicit val gridRegionAPI: GridRegionAPI[IO, Player, Location] = gridRegionSystem.api
+    implicit val gridRegionAPI: GridRegionAPI[IO, Player, Location, World] =
+      gridRegionSystem.api
     implicit val breakSkillTargetConfigAPI: BreakSkillTargetConfigAPI[IO, Player] =
       breakSkillTargetConfigSystem.api
     implicit val breakSuppressionPreferenceAPI: BreakSuppressionPreferenceAPI[IO, Player] =

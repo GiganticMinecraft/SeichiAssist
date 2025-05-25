@@ -17,7 +17,7 @@ trait GridRegionTemplateAPI[F[_], Player] {
 
 }
 
-trait GridRegionReadAPI[F[_], Player, Location] {
+trait GridRegionReadAPI[F[_], Player, Location, World] {
 
   /**
    * @return 1回のクリックで増減させる[[RegionUnitLength]]を返す作用
@@ -25,9 +25,9 @@ trait GridRegionReadAPI[F[_], Player, Location] {
   def lengthChangePerClick(player: Player): F[RegionUnitLength]
 
   /**
-   * @return 指定された`worldName`の[[RegionUnitSizeLimit]]
+   * @return 指定された`world`の[[RegionUnitSizeLimit]]
    */
-  def regionUnitLimit(worldName: String): RegionUnitSizeLimit
+  def regionUnitLimit(world: World): F[RegionUnitSizeLimit]
 
   /**
    * @return [[Player]]が現在設定している[[SubjectiveRegionShape]]を取得する作用
@@ -40,12 +40,12 @@ trait GridRegionReadAPI[F[_], Player, Location] {
   def canCreateRegion(player: Player, shape: SubjectiveRegionShape): F[RegionCreationResult]
 
   /**
-   * @return `player`の現在地点と`regionUnits`から[[RegionSelectionCorners]]を計算して返す
+   * @return `player`の現在地点と`regionUnits`から[[RegionSelectionCorners]]を計算して返す作用
    */
   def regionSelection(
     player: Player,
     shape: SubjectiveRegionShape
-  ): RegionSelectionCorners[Location]
+  ): F[RegionSelectionCorners[Location]]
 
   /**
    * @return `player`の[[RegionCount]]を取得する作用
@@ -69,13 +69,19 @@ trait GridRegionWriteAPI[F[_], Player, Location] {
   ): Kleisli[F, Player, Unit]
 
   /**
-   * @return プレーヤーが現在 WorldGuard で選択している領域にて保護を作成する作用
+   * @return プレイヤーの位置をベースに `shape` の領域の保護を確保する作用
    */
-  def createAndClaimRegionSelectedOnWorldGuard: Kleisli[F, Player, Unit]
+  def claimRegionByShapeSettings(shape: SubjectiveRegionShape): Kleisli[F, Player, Unit]
+
+  /**
+   * TODO: これは gridregion subsystem ではなく、保護を管理するためのサブシステムで管理すべき
+   * @return `player` の [[RegionCount]] を増加させる作用
+   */
+  def increaseRegionCount: Kleisli[F, Player, Unit]
 
 }
 
-trait GridRegionAPI[F[_], Player, Location]
+trait GridRegionAPI[F[_], Player, Location, World]
     extends GridRegionTemplateAPI[F, Player]
-    with GridRegionReadAPI[F, Player, Location]
+    with GridRegionReadAPI[F, Player, Location, World]
     with GridRegionWriteAPI[F, Player, Location]
