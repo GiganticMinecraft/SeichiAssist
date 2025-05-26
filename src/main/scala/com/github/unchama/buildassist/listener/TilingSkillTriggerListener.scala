@@ -48,6 +48,8 @@ class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[
         buildAssistPlayerData.ZoneSetSkillFlag)
     ) return
 
+    if (offHandItem.getType == Material.AIR) return
+
     val clickedBlock = event.getClickedBlock
     if (!(offHandItem.getType == clickedBlock.getType)) {
       player.sendMessage(s"$RED「オフハンドと同じブロック」をクリックしてください。(基準になります)")

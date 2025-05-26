@@ -51,6 +51,8 @@ class BlockLineUpTriggerListener[
     val mainHandItem = inventory.getItemInMainHand
     val offhandItem = inventory.getItemInOffHand
 
+    if (mainHandItem.getType == Material.AIR) return
+
     // オフハンドに木の棒を持ってるときのみ発動させる
     if (offhandItem.getType != Material.STICK) return
 
