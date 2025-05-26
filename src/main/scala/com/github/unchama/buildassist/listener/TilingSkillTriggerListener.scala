@@ -45,7 +45,6 @@ class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[
 
     if (
       !(player.isSneaking &&
-        BuildAssist.materiallist.contains(offHandItem.getType) &&
         buildAssistPlayerData.ZoneSetSkillFlag)
     ) return
 
