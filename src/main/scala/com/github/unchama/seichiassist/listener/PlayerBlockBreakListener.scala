@@ -359,6 +359,7 @@ class PlayerBlockBreakListener(
           event.setDropItems(false)
           intoMineStackResult
             ._1
+            .filterNot(_.getType == Material.AIR)
             .foreach(player.getWorld.dropItemNaturally(player.getLocation, _))
         })
     } yield ()
