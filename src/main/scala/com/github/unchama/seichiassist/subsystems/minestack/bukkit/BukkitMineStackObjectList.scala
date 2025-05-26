@@ -391,7 +391,6 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(BUILDING, "crimson_nylium", "真紅のナイリウム", Material.CRIMSON_NYLIUM),
     MineStackObjectByMaterial(BUILDING, "warped_nylium", "歪んだナイリウム", Material.WARPED_NYLIUM),
     MineStackObjectByMaterial(BUILDING, "warped_wart_block", "歪んだウォートブロック", Material.WARPED_WART_BLOCK),
-    MineStackObjectByMaterial(BUILDING, "tinted_glass", "遮光ガラス", Material.TINTED_GLASS),
     MineStackObjectByMaterial(BUILDING, "cut_sandstone", "研がれた砂岩", Material.CUT_SANDSTONE),
     MineStackObjectByMaterial(BUILDING, "moss_carpet", "苔のカーペット", Material.MOSS_CARPET),
     MineStackObjectByMaterial(BUILDING, "moss_block", "苔ブロック", Material.MOSS_BLOCK),
@@ -932,7 +931,8 @@ class BukkitMineStackObjectList[F[_]: Sync](
         MineStackObjectByMaterial(BUILDING, "stained_glass_12", "茶色の色付きガラス", Material.BROWN_STAINED_GLASS),
         MineStackObjectByMaterial(BUILDING, "stained_glass_13", "緑色の色付きガラス", Material.GREEN_STAINED_GLASS),
         MineStackObjectByMaterial(BUILDING, "stained_glass_14", "赤色の色付きガラス", Material.RED_STAINED_GLASS),
-        MineStackObjectByMaterial(BUILDING, "stained_glass_15", "黒色の色付きガラス", Material.BLACK_STAINED_GLASS)
+        MineStackObjectByMaterial(BUILDING, "stained_glass_15", "黒色の色付きガラス", Material.BLACK_STAINED_GLASS),
+        MineStackObjectByMaterial(BUILDING, "tinted_glass", "遮光ガラス", Material.TINTED_GLASS),
       )
     ),
     MineStackObjectWithKindVariants(
