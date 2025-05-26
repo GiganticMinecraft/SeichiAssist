@@ -51,12 +51,7 @@ class BlockLineUpTriggerListener[
     val mainHandItem = inventory.getItemInMainHand
     val offhandItem = inventory.getItemInOffHand
 
-    // メインハンドに設置対象ブロックがある場合
-    if (
-      !(BuildAssist.materiallist2.contains(mainHandItem.getType) || BuildAssist
-        .material_slab2
-        .contains(mainHandItem.getType))
-    ) return
+    if (mainHandItem.getType == Material.AIR) return
 
     // オフハンドに木の棒を持ってるときのみ発動させる
     if (offhandItem.getType != Material.STICK) return
@@ -140,7 +135,7 @@ class BlockLineUpTriggerListener[
         material.asInstanceOf[Slab].tap(slab => slab.setType(Slab.Type.DOUBLE)).getMaterial
       } else material
 
-    val playerHoldsSlabBlock = BuildAssist.material_slab2.contains(mainHandItemType)
+    val playerHoldsSlabBlock = mainHandItemType.createBlockData().isInstanceOf[Slab]
     (mainHandItemType eq Material.OAK_LEAVES) || (mainHandItemType eq Material.DARK_OAK_LEAVES) || (
       mainHandItemType eq Material.BIRCH_LEAVES
     ) || (mainHandItemType eq Material.ACACIA_LEAVES) || (
