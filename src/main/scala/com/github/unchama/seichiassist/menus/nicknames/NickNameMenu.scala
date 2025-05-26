@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.menus.nicknames
 
-import cats.effect.{IO, SyncIO}
+import cats.data.Kleisli
+import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
@@ -21,7 +22,8 @@ import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
-import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
+import com.github.unchama.targetedeffect.commandsender.MessageEffect
+import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects.openInventoryEffect
 import org.bukkit.{Material, Sound}
@@ -120,19 +122,13 @@ object NickNameMenu extends Menu {
           .build()
         button = Button(
           itemStack,
-          LeftClickButtonEffect {
-            UnfocusedEffect {
-              onMinecraftServerThread.runAction {
-                for {
-                  _ <- SyncIO {
-                    if (effectPoint >= 10)
-                      playerData.convertEffectPointToAchievePoint
-                    else player.sendMessage("エフェクトポイントが不足しています。")
-                  }
-                } yield ()
-              }
-            }
-          }
+          LeftClickButtonEffect(DeferredEffect {
+            IO(if (effectPoint >= 10) {
+              Kleisli.liftF(playerData.convertEffectPointToAchievePoint)
+            } else {
+              MessageEffect("エフェクトポイントが不足しています。")
+            })
+          })
         )
       } yield button
     }
