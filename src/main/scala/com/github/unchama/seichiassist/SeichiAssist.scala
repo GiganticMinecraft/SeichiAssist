@@ -532,6 +532,16 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.playerheadskin.System.wired[IO]
   }
 
+  private lazy val dragonnighttimeSystem: Subsystem[IO] = {
+    import PluginExecutionContexts.timer
+
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    implicit val fastDiggingEffectApi: FastDiggingEffectApi[IO, Player] =
+      fastDiggingEffectSystem.effectApi
+
+    subsystems.dragonnighttime.System.wired[IO]
+  }
+
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
     expBottleStackSystem,
@@ -576,7 +586,8 @@ class SeichiAssist extends JavaPlugin() {
     blockLiquidStreamSystem,
     cancelDamageByFallingBlocksSystem,
     playerHeadSkinSystem,
-    disablegrowth.System.wired
+    disablegrowth.System.wired,
+    dragonnighttimeSystem
   )
 
   private lazy val buildAssist: BuildAssist = {
