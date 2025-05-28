@@ -7,7 +7,7 @@ case class Period(startAt: LocalTime, endAt: LocalTime) {
   require(startAt.isBefore(endAt))
 
   def contains(time: LocalTime): Boolean =
-    startAt.isBefore(time) && time.isBefore(time)
+    startAt.isBefore(time) && time.isBefore(endAt)
 
   def toFiniteDuration: FiniteDuration =
     java.time.Duration.between(startAt, endAt).getSeconds.seconds
