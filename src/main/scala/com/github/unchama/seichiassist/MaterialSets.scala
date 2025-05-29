@@ -13,6 +13,8 @@ object MaterialSets {
       Material.WATER,
       Material.LAVA,
       Material.AIR,
+      Material.CAVE_AIR,
+      Material.VOID_AIR,
       Material.BEDROCK,
       Material.TORCH,
       Material.SOUL_TORCH,
