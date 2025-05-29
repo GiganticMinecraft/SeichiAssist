@@ -3,8 +3,8 @@ package com.github.unchama.seichiassist.subsystems.dragonnighttime.domain
 import java.time.{DayOfWeek, LocalDate}
 
 trait DragonNightTime {
-  val effectivePeriodOnWeekdays: Period
-  val effectivePeriodOnWeekends: Period
+  protected val effectivePeriodOnWeekdays: Period
+  protected val effectivePeriodOnWeekends: Period
 
   final def effectivePeriod(today: LocalDate): Period = {
     val todayWeekday = today.getDayOfWeek
