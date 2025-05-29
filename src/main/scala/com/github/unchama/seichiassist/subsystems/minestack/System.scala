@@ -38,6 +38,8 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import org.bukkit.inventory.ItemStack
+import com.github.unchama.seichiassist.subsystems.minestack.bukkit.EntityDropItemListener
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 
 trait System[F[_], Player, ItemStack] extends Subsystem[F] {
 
@@ -50,7 +52,8 @@ object System {
   import cats.implicits._
 
   def wired[F[_]: ConcurrentEffect, G[_]: SyncEffect: ContextCoercion[*[_], F]](
-    implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player]
+    implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
+    effectEnvironment: EffectEnvironment
   ): F[System[F, Player, ItemStack]] = {
     implicit val minecraftMaterial: MinecraftMaterial[Material, ItemStack] = new BukkitMaterial
     implicit val _mineStackObjectList: MineStackObjectList[F, ItemStack, Player] =
@@ -142,7 +145,8 @@ object System {
               _mineStackRepository
           }
 
-        override val listeners: Seq[Listener] = Seq(new PlayerPickupItemListener[F])
+        override val listeners: Seq[Listener] =
+          Seq(new PlayerPickupItemListener[F], new EntityDropItemListener[F])
 
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
           mineStackObjectRepositoryControls,
