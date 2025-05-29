@@ -29,7 +29,7 @@ class BukkitFindTeleportLocation[F[_]: Sync] extends FindTeleportLocation[F, Loc
       .clone()
       .add(0, 1, 0)
       .getBlock
-      .getType == Material.AIR
+      .isPassable
   }
 
   import cats.implicits._
