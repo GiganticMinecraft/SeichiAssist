@@ -90,7 +90,12 @@ class BukkitDrawGacha[
             case GachaRarity.Big =>
               Sync[F].delay {
                 player.playSound(player.getLocation, Sound.ENTITY_WITHER_SPAWN, 0.8f, 1f)
-                if (count == 1) player.sendMessage(s"${GOLD}おめでとう！！大当たり！$additionalMessage")
+
+                if (gachaPrize.itemStack.getItemMeta().getDisplayName().contains("椎名林檎")) {
+                  player.sendMessage(s"${YELLOW}おめでとう！椎名林檎が出たよ！$additionalMessage")
+                } else if (count == 1) {
+                  player.sendMessage(s"${GOLD}おめでとう！！大当たり！$additionalMessage")
+                }
               }
             case GachaRarity.Regular if count == 1 =>
               Sync[F].delay {
