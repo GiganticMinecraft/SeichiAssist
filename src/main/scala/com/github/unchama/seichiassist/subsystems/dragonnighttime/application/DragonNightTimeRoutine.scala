@@ -53,10 +53,12 @@ object DragonNightTimeRoutine {
 
     val routineAction: F[Unit] = for {
       effectivePeriod <- todayEffectivePeriod
-      effectToAdd <- Sync[F].pure(FastDiggingEffect(
-        FastDiggingAmplifier(10.0),
-        FastDiggingEffectCause.FromDragonNightTime
-      ))
+      effectToAdd <- Sync[F].pure(
+        FastDiggingEffect(
+          FastDiggingAmplifier(10.0),
+          FastDiggingEffectCause.FromDragonNightTime
+        )
+      )
       _ <- fastDiggingEffectApi.addEffectToAllPlayers(
         effectToAdd,
         effectivePeriod.toFiniteDuration
