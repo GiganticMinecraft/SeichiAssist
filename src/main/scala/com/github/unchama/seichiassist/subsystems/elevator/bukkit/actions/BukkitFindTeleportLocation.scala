@@ -10,13 +10,13 @@ class BukkitFindTeleportLocation[F[_]: Sync] extends FindTeleportLocation[F, Loc
   override def currentLocationTeleportFromAsCorrectIs(currentLocation: Location): F[Boolean] =
     Sync[F].delay {
       val isIronBlockBelow = currentLocation
-          .clone()
-          .add(0, -1, 0)
-          .getBlock
-          .getType == Material.IRON_BLOCK
+        .clone()
+        .add(0, -1, 0)
+        .getBlock
+        .getType == Material.IRON_BLOCK
       val isHeavyWeightedPressurePlate = currentLocation
-          .getBlock
-          .getType == Material.HEAVY_WEIGHTED_PRESSURE_PLATE
+        .getBlock
+        .getType == Material.HEAVY_WEIGHTED_PRESSURE_PLATE
 
       isIronBlockBelow && isHeavyWeightedPressurePlate
     }
@@ -35,7 +35,7 @@ class BukkitFindTeleportLocation[F[_]: Sync] extends FindTeleportLocation[F, Loc
       .add(0, 1, 0)
       .getBlock
       .isPassable
-    
+
     isIronBlockBelow && isHeavyWeightedPressurePlate && isPassableBlockAbove
   }
 
@@ -64,5 +64,4 @@ class BukkitFindTeleportLocation[F[_]: Sync] extends FindTeleportLocation[F, Loc
       }
       .findM(isTeleportTargetLocation)
   }
-
 }
