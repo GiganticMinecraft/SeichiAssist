@@ -14,9 +14,4 @@ case class Period(startAt: LocalTime, endAt: LocalTime) {
 
   def remainingDuration(time: LocalTime): Option[FiniteDuration] =
     Option.when(contains(time))(java.time.Duration.between(time, endAt).getSeconds.seconds)
-
-}
-
-object Period {
-  val effectivePeriod: Period = Period(LocalTime.of(20, 0, 0), LocalTime.of(21, 0, 0))
 }
