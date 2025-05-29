@@ -9,7 +9,7 @@ import java.time.Instant
 import java.time.ZoneId
 import cats.effect.{Effect, Sync, Timer}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.seichiassist.subsystems.dragonnighttime.domain.Period
+import com.github.unchama.seichiassist.subsystems.dragonnighttime.application.DragonNightTimeImpl
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.FastDiggingEffectWriteApi
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect.{
   FastDiggingAmplifier,
@@ -31,13 +31,20 @@ class JoinListener[F[_]: Effect: Timer](
   @EventHandler
   def onJoin(e: PlayerJoinEvent): Unit = {
     val program = for {
+      currentLocalDate <- Timer[F].clock.realTime(TimeUnit.MILLISECONDS).map {
+        currentEpochMilli =>
+          LocalDateTime
+            .ofInstant(Instant.ofEpochMilli(currentEpochMilli), ZoneId.systemDefault())
+            .toLocalDate
+      }
+      effectivePeriod <- Sync[F].pure(DragonNightTimeImpl.effectivePeriod(currentLocalDate))
       currentLocalTime <- Timer[F].clock.realTime(TimeUnit.MILLISECONDS).map {
         currentEpochMilli =>
           LocalDateTime
             .ofInstant(Instant.ofEpochMilli(currentEpochMilli), ZoneId.systemDefault())
             .toLocalTime
       }
-      isDragonNightTime <- Sync[F].pure(Period.effectivePeriod.contains(currentLocalTime))
+      isDragonNightTime <- Sync[F].pure(effectivePeriod.contains(currentLocalTime))
       effectToAdd <-
         Sync[F].pure(
           FastDiggingEffect(
@@ -45,14 +52,12 @@ class JoinListener[F[_]: Effect: Timer](
             FastDiggingEffectCause.FromDragonNightTime
           )
         )
-      remainingDuration <- Sync[F].pure(
-        Period.effectivePeriod.remainingDuration(currentLocalTime)
-      )
+      remainingDuration <- Sync[F].pure(effectivePeriod.remainingDuration(currentLocalTime))
       _ <- remainingDuration
         .traverse(duration =>
           fastDiggingEffectApi
             .addEffect(effectToAdd, duration)(e.getPlayer) >> MessageEffectF[F](
-            s"採掘速度上昇Lv10のバフが${Period.effectivePeriod.endAt.format(DateTimeFormatter.ofPattern("HH時mm分"))}まで付与され、マナ使用率が80%になりました"
+            s"採掘速度上昇Lv10のバフが${effectivePeriod.endAt.format(DateTimeFormatter.ofPattern("HH時mm分"))}まで付与され、マナ使用率が80%になりました"
           ).apply(e.getPlayer)
         )
         .whenA(isDragonNightTime)
