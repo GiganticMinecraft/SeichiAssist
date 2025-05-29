@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.dragonnighttime.domain
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDate
 
 trait DragonNightTime {
   val effectivePeriodOnWeekdays: Period

@@ -10,7 +10,6 @@ import java.time.ZoneId
 import cats.effect.{Effect, Sync, Timer}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.subsystems.dragonnighttime.application.DragonNightTimeImpl
-import com.github.unchama.seichiassist.subsystems.dragonnighttime.domain.Period
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.FastDiggingEffectWriteApi
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect.{
   FastDiggingAmplifier,

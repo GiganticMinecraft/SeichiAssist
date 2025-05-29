@@ -5,7 +5,7 @@ import com.github.unchama.seichiassist.subsystems.dragonnighttime.domain.{
   Period
 }
 
-import java.time.{DayOfWeek, LocalDate, LocalDateTime, LocalTime}
+import java.time.{DayOfWeek, LocalDate, LocalTime}
 
 object DragonNightTimeImpl extends DragonNightTime {
 
