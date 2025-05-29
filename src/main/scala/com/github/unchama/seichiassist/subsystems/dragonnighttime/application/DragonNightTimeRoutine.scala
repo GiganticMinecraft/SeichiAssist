@@ -22,7 +22,7 @@ object DragonNightTimeRoutine {
     manaApi: ManaApi[F, G, Player]
   ): F[Nothing] = {
     import cats.implicits._
-    import scala.concurrent.duration._
+    import scala.concurrent.duration.FiniteDuration
 
     val todayEffectivePeriod =
       Timer[F].clock.realTime(TimeUnit.MILLISECONDS).map { currentEpochMilli =>
@@ -34,38 +34,40 @@ object DragonNightTimeRoutine {
         DragonNightTimeImpl.effectivePeriod(currentLocalDate)
       }
 
-    val dailyDragonNightTime = todayEffectivePeriod.map(_.startAt)
+    val getIntervalToNextExecution: F[FiniteDuration] = for {
+      effectivePeriod <- todayEffectivePeriod
+      dailyDragonNightTime = effectivePeriod.startAt
+      getIntervalToNextExecution <- {
+        import cats.implicits._
 
-    val effectToAdd =
-      FastDiggingEffect(FastDiggingAmplifier(10.0), FastDiggingEffectCause.FromDragonNightTime)
+        Timer[F].clock.realTime(TimeUnit.MILLISECONDS).map { currentEpochMilli =>
+          val currentLocalTime =
+            LocalDateTime
+              .ofInstant(Instant.ofEpochMilli(currentEpochMilli), ZoneId.systemDefault())
+              .toLocalTime
 
-    val getIntervalToNextExecution: F[FiniteDuration] = {
-      import cats.implicits._
-
-      Timer[F].clock.realTime(TimeUnit.MILLISECONDS).flatMap { currentEpochMilli =>
-        val currentLocalTime =
-          LocalDateTime
-            .ofInstant(Instant.ofEpochMilli(currentEpochMilli), ZoneId.systemDefault())
-            .toLocalTime
-
-        dailyDragonNightTime.map(LocalTimeUtil.getDurationToNextTimeOfDay(currentLocalTime, _))
+          LocalTimeUtil.getDurationToNextTimeOfDay(currentLocalTime, dailyDragonNightTime)
+        }
       }
-    }
+    } yield getIntervalToNextExecution
 
-    val routineAction: F[Unit] = {
-      todayEffectivePeriod.flatMap { effectivePeriod =>
-        fastDiggingEffectApi.addEffectToAllPlayers(
-          effectToAdd,
-          effectivePeriod.toFiniteDuration
-        ) >>
-          ContextCoercion(manaApi.setManaConsumptionWithDragonNightTime(ManaMultiplier(0.8))) >>
-          CanBroadcast[F].broadcast("ドラゲナイタイム開始！") >>
-          CanBroadcast[F].broadcast("採掘速度上昇Lv10のバフが1時間付与され、マナ使用率が80%になりました") >>
-          Timer[F].sleep(effectivePeriod.toFiniteDuration) >>
-          ContextCoercion(manaApi.setManaConsumptionWithDragonNightTime(ManaMultiplier(1))) >>
-          CanBroadcast[F].broadcast("ドラゲナイタイムが終了しました。")
-      }
-    }
+    val routineAction: F[Unit] = for {
+      effectivePeriod <- todayEffectivePeriod
+      effectToAdd = FastDiggingEffect(
+        FastDiggingAmplifier(10.0),
+        FastDiggingEffectCause.FromDragonNightTime
+      )
+      _ <- fastDiggingEffectApi.addEffectToAllPlayers(
+        effectToAdd,
+        effectivePeriod.toFiniteDuration
+      )
+      _ <- ContextCoercion(manaApi.setManaConsumptionWithDragonNightTime(ManaMultiplier(0.8)))
+      _ <- CanBroadcast[F].broadcast("ドラゲナイタイム開始！")
+      _ <- CanBroadcast[F].broadcast("採掘速度上昇Lv10のバフが1時間付与され、マナ使用率が80%になりました")
+      _ <- Timer[F].sleep(effectivePeriod.toFiniteDuration)
+      _ <- ContextCoercion(manaApi.setManaConsumptionWithDragonNightTime(ManaMultiplier(1)))
+      _ <- CanBroadcast[F].broadcast("ドラゲナイタイムが終了しました。")
+    } yield ()
 
     RepeatingRoutine.permanentRoutine(getIntervalToNextExecution, routineAction)
   }
