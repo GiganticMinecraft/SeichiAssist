@@ -505,8 +505,11 @@ class SeichiAssist extends JavaPlugin() {
 
   /* TODO: mineStackSystemは本来privateであるべきだが、mineStackにアイテムを格納するAPIが現状の
       BreakUtilの実装から呼び出されている都合上やむを得ずpublicになっている。*/
-  lazy val mineStackSystem: subsystems.minestack.System[IO, Player, ItemStack] =
+  lazy val mineStackSystem: subsystems.minestack.System[IO, Player, ItemStack] = {
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+
     subsystems.minestack.System.wired[IO, SyncIO].unsafeRunSync()
+  }
 
   private lazy val gridRegionSystem: subsystems.gridregion.System[IO, Player, Location, World] =
     subsystems.gridregion.System.wired[IO, SyncIO].unsafeRunSync()
