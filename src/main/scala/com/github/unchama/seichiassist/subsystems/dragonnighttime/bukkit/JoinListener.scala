@@ -37,7 +37,7 @@ class JoinListener[F[_]: Effect: Timer](
             .ofInstant(Instant.ofEpochMilli(currentEpochMilli), ZoneId.systemDefault())
             .toLocalDate
       }
-      effectivePeriod = DragonNightTimeImpl.effectivePeriod(currentLocalDate)
+      effectivePeriod <- Sync[F].pure(DragonNightTimeImpl.effectivePeriod(currentLocalDate))
       currentLocalTime <- Timer[F].clock.realTime(TimeUnit.MILLISECONDS).map {
         currentEpochMilli =>
           LocalDateTime
