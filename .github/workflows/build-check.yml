@@ -2,8 +2,6 @@ name: build check
 
 on:
   push:
-    branches:
-      - develop
     paths:
       - src/**
       - build.sbt

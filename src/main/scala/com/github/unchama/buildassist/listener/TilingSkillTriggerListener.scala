@@ -45,9 +45,10 @@ class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[
 
     if (
       !(player.isSneaking &&
-        BuildAssist.materiallist.contains(offHandItem.getType) &&
         buildAssistPlayerData.ZoneSetSkillFlag)
     ) return
+
+    if (offHandItem.getType == Material.AIR) return
 
     val clickedBlock = event.getClickedBlock
     if (!(offHandItem.getType == clickedBlock.getType)) {

@@ -814,11 +814,6 @@ object MineStackMassCraftMenu {
           3
         ),
         ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
-          MassCraftRecipe(NonEmptyList.of(("stone", 3)), NonEmptyList.of(("step0", 6))),
-          oneToThousand,
-          3
-        ),
-        ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
           MassCraftRecipe(
             NonEmptyList.of(("granite", 3)),
             NonEmptyList.of(("granite_slab", 6))
@@ -826,7 +821,7 @@ object MineStackMassCraftMenu {
           oneToThousand,
           3
         ),
-        ChestSlotRef(3, 0) -> MassCraftRecipeBlock(
+        ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
           MassCraftRecipe(
             NonEmptyList.of(("diorite", 3)),
             NonEmptyList.of(("diorite_slab", 6))
@@ -834,7 +829,7 @@ object MineStackMassCraftMenu {
           oneToThousand,
           3
         ),
-        ChestSlotRef(4, 0) -> MassCraftRecipeBlock(
+        ChestSlotRef(3, 0) -> MassCraftRecipeBlock(
           MassCraftRecipe(
             NonEmptyList.of(("andesite", 3)),
             NonEmptyList.of(("andesite_slab", 6))
@@ -842,7 +837,7 @@ object MineStackMassCraftMenu {
           oneToThousand,
           3
         ),
-        ChestSlotRef(0, 5) -> MassCraftRecipeBlock(
+        ChestSlotRef(4, 0) -> MassCraftRecipeBlock(
           MassCraftRecipe(NonEmptyList.of(("smooth_brick0", 3)), NonEmptyList.of(("step5", 4))),
           oneToThousand,
           3

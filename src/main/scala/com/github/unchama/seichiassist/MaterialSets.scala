@@ -13,6 +13,8 @@ object MaterialSets {
       Material.WATER,
       Material.LAVA,
       Material.AIR,
+      Material.CAVE_AIR,
+      Material.VOID_AIR,
       Material.BEDROCK,
       Material.TORCH,
       Material.SOUL_TORCH,
@@ -134,7 +136,16 @@ object MaterialSets {
       Material.REDSTONE_LAMP,
       Material.EMERALD_BLOCK,
       Material.COAL_BLOCK,
-      Material.LAPIS_BLOCK
+      Material.LAPIS_BLOCK,
+      Material.GRASS,
+      Material.TALL_GRASS,
+      Material.VINE,
+      Material.TWISTING_VINES,
+      Material.WEEPING_VINES,
+      Material.SMALL_AMETHYST_BUD,
+      Material.MEDIUM_AMETHYST_BUD,
+      Material.LARGE_AMETHYST_BUD,
+      Material.AMETHYST_CLUSTER
     )
 
   // このMaterialは整地スキルに対応する

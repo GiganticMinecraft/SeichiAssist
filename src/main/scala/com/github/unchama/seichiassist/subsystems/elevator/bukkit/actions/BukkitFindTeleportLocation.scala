@@ -9,27 +9,22 @@ class BukkitFindTeleportLocation[F[_]: Sync] extends FindTeleportLocation[F, Loc
 
   override def currentLocationTeleportFromAsCorrectIs(currentLocation: Location): F[Boolean] =
     Sync[F].delay {
-      currentLocation
-        .clone()
-        .add(0, -1, 0)
-        .getBlock
-        .getType == Material.IRON_BLOCK && currentLocation
-        .getBlock
-        .getType == Material.HEAVY_WEIGHTED_PRESSURE_PLATE
+      val isIronBlockBelow =
+        currentLocation.clone().add(0, -1, 0).getBlock.getType == Material.IRON_BLOCK
+      val isHeavyWeightedPressurePlate =
+        currentLocation.getBlock.getType == Material.HEAVY_WEIGHTED_PRESSURE_PLATE
+
+      isIronBlockBelow && isHeavyWeightedPressurePlate
     }
 
   override def isTeleportTargetLocation(targetLocation: Location): F[Boolean] = Sync[F].delay {
-    targetLocation
-      .clone()
-      .add(0, -1, 0)
-      .getBlock
-      .getType == Material.IRON_BLOCK && targetLocation
-      .getBlock
-      .getType == Material.HEAVY_WEIGHTED_PRESSURE_PLATE && targetLocation
-      .clone()
-      .add(0, 1, 0)
-      .getBlock
-      .getType == Material.AIR
+    val isIronBlockBelow =
+      targetLocation.clone().add(0, -1, 0).getBlock.getType == Material.IRON_BLOCK
+    val isHeavyWeightedPressurePlate =
+      targetLocation.getBlock.getType == Material.HEAVY_WEIGHTED_PRESSURE_PLATE
+    val isPassableBlockAbove = targetLocation.clone().add(0, 1, 0).getBlock.isPassable
+
+    isIronBlockBelow && isHeavyWeightedPressurePlate && isPassableBlockAbove
   }
 
   import cats.implicits._
@@ -57,5 +52,4 @@ class BukkitFindTeleportLocation[F[_]: Sync] extends FindTeleportLocation[F, Loc
       }
       .findM(isTeleportTargetLocation)
   }
-
 }

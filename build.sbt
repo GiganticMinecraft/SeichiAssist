@@ -8,7 +8,7 @@ import java.io._
 ThisBuild / scalaVersion := "2.13.16"
 // ThisBuild / version はGitHub Actionsによって取得/自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
-ThisBuild / version := "95"
+ThisBuild / version := "96"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
@@ -126,7 +126,7 @@ val dependenciesToEmbed = Seq(
   "com.github.KisaragiEffective" % "ajd4jp-mirror" % "8.0.2.2021",
 
   // Sentry
-  "io.sentry" % "sentry" % "8.12.0"
+  "io.sentry" % "sentry" % "8.13.2"
 )
 
 // endregion

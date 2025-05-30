@@ -505,8 +505,11 @@ class SeichiAssist extends JavaPlugin() {
 
   /* TODO: mineStackSystemは本来privateであるべきだが、mineStackにアイテムを格納するAPIが現状の
       BreakUtilの実装から呼び出されている都合上やむを得ずpublicになっている。*/
-  lazy val mineStackSystem: subsystems.minestack.System[IO, Player, ItemStack] =
+  lazy val mineStackSystem: subsystems.minestack.System[IO, Player, ItemStack] = {
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+
     subsystems.minestack.System.wired[IO, SyncIO].unsafeRunSync()
+  }
 
   private lazy val gridRegionSystem: subsystems.gridregion.System[IO, Player, Location, World] =
     subsystems.gridregion.System.wired[IO, SyncIO].unsafeRunSync()
@@ -530,6 +533,16 @@ class SeichiAssist extends JavaPlugin() {
     import PluginExecutionContexts.asyncShift
 
     subsystems.playerheadskin.System.wired[IO]
+  }
+
+  private lazy val dragonnighttimeSystem: Subsystem[IO] = {
+    import PluginExecutionContexts.timer
+
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    implicit val fastDiggingEffectApi: FastDiggingEffectApi[IO, Player] =
+      fastDiggingEffectSystem.effectApi
+
+    subsystems.dragonnighttime.System.wired[IO]
   }
 
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
@@ -576,7 +589,8 @@ class SeichiAssist extends JavaPlugin() {
     blockLiquidStreamSystem,
     cancelDamageByFallingBlocksSystem,
     playerHeadSkinSystem,
-    disablegrowth.System.wired
+    disablegrowth.System.wired,
+    dragonnighttimeSystem
   )
 
   private lazy val buildAssist: BuildAssist = {
