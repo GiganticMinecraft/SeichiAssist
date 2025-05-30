@@ -1215,6 +1215,66 @@ object MineStackMassCraftMenu {
           oneToThousand,
           3
         )
+      ),
+      // 1.18.2 追加ブロック(1)
+      List(
+        ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("raw_copper", 9)),
+            NonEmptyList.of(("raw_copper_block", 1))
+          ),
+          oneToThousand,
+          1
+        ),
+        ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("raw_iron", 9)),
+            NonEmptyList.of(("raw_iron_block", 1))
+          ),
+          oneToThousand,
+          1
+        ),
+        ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("raw_gold", 9)),
+            NonEmptyList.of(("raw_gold_block", 1))
+          ),
+          oneToThousand,
+          1
+        ),
+        ChestSlotRef(3, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("copper_ingot", 9)),
+            NonEmptyList.of(("copper_block", 1))
+          ),
+          oneToThousand,
+          1
+        ),
+        ChestSlotRef(4, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("netherite_ingot", 9)),
+            NonEmptyList.of(("netherite_block", 1))
+          ),
+          oneToThousand,
+          1
+        ),
+        ChestSlotRef(0, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("netherite_scrap", 4),("gold_ingot", 4)),
+            NonEmptyList.of(("netherite_ingot", 1))
+          ),
+          oneToThousand,
+          1
+        ),
+        ChestSlotRef(1, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("ancient_debris", 4), ("coal", 1)),
+            NonEmptyList.of(("netherite_scrap", 4))
+          ),
+          oneToThousand,
+          3
+        ),
+      ),
       )
     )
   }
