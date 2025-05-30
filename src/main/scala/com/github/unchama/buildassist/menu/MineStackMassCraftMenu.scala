@@ -848,7 +848,7 @@ object MineStackMassCraftMenu {
         ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
           MassCraftRecipe(
             NonEmptyList.of(("cobblestone", 6)),
-            NonEmptyList.of(("stone_stairs", 4))
+            NonEmptyList.of(("cobblestone_stairs", 4))
           ),
           oneToThousand,
           3
