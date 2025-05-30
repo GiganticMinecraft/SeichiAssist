@@ -45,9 +45,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          target_commitish: ${{ github.base_ref }}
           files: target/build/SeichiAssist.jar
           tag_name: ${{ steps.tag-name.outputs.value }}
           draft: false
+          prerelease: true
 
       - name: Clean build artifact for caching target folder
         run: rm -r target/build
