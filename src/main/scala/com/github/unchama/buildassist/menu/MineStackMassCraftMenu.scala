@@ -1275,6 +1275,32 @@ object MineStackMassCraftMenu {
           3
         ),
       ),
+      // 1.18.2 追加ブロック(2)
+      List(
+        ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("stone", 4), ("coal",1)),
+            NonEmptyList.of(("smooth_stone", 4))
+          ),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("smooth_stone", 3)),
+            NonEmptyList.of(("smooth_stone_slab", 6))
+          ),
+          oneToThousand,
+          1
+        ),
+        ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("step0", 1)),
+            NonEmptyList.of(("smooth_stone_slab", 1))
+          ),
+          oneToThousand,
+          1
+        ),
       )
     )
   }
