@@ -165,7 +165,7 @@ object Fs3Topic {
           def publish1(a: A): F[Either[Fs3Topic.Closed, Unit]] =
             signalClosure.tryGet[F].flatMap {
               case Some(_) => Fs3Topic.closed.pure[F]
-              case None =>
+              case None    =>
                 state
                   .get
                   .flatMap { case (subs, _) => foreach(subs)(_.send(a).void) }

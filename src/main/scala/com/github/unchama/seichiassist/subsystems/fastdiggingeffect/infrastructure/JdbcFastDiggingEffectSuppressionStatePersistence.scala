@@ -27,7 +27,7 @@ class JdbcFastDiggingEffectSuppressionStatePersistence[F[_]: Sync]
 
   private def suppressionStateToInt(s: FastDiggingEffectSuppressionState): Int =
     s match {
-      case FastDiggingEffectSuppressionState.EnabledWithoutLimit => 0
+      case FastDiggingEffectSuppressionState.EnabledWithoutLimit     => 0
       case limit: FastDiggingEffectSuppressionState.EnabledWithLimit =>
         limit match {
           case EnabledWithLimit.Of_127 => 1

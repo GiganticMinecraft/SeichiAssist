@@ -29,7 +29,7 @@ object BukkitMebiusEnchantmentCodec {
       case ExplosionProtection  => unsafeEnchantmentAdded(Enchantment.PROTECTION_EXPLOSIONS)
       case Respiration          => unsafeEnchantmentAdded(Enchantment.OXYGEN)
       case WaterAffinity        => unsafeEnchantmentAdded(Enchantment.WATER_WORKER)
-      case Unbreakable =>
+      case Unbreakable          =>
         itemStack.tap { _ =>
           itemStack.setItemMeta {
             itemStack.getItemMeta.tap { meta => meta.setUnbreakable(true) }

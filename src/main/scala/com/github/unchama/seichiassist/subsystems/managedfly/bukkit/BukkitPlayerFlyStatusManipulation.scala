@@ -102,7 +102,7 @@ class BukkitPlayerFlyStatusManipulation[AsyncContext[_]: Concurrent: OnMinecraft
     : (IdleStatus, RemainingFlyDuration) => Kleisli[AsyncContext, Player, Unit] =
     (status, duration) => {
       val message = status match {
-        case Idle => s"${GRAY}放置時間中のflyは無期限で継続中です(経験値は消費しません)"
+        case Idle             => s"${GRAY}放置時間中のflyは無期限で継続中です(経験値は消費しません)"
         case HasMovedRecently =>
           duration match {
             case RemainingFlyDuration.Infinity =>

@@ -54,7 +54,7 @@ class WebhookDiscordNotificationSender[F[_]: Sync: ContextShift] private (webhoo
       }
       _ <- responseCode match {
         case HttpURLConnection.HTTP_OK | HttpURLConnection.HTTP_NO_CONTENT => Sync[F].unit
-        case code @ _ =>
+        case code @ _                                                      =>
           Sync[F].raiseError {
             new IOException(
               s"GlobalNotificationSender: Bad Response Code: $code with $webhookURL"
