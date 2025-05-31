@@ -19,7 +19,7 @@ object EffectStatsNotification {
     effectDiffWithSettings.evalMap {
       case (player, (effectListDiff, settings)) =>
         val shouldNotifyNewValue = settings match {
-          case FastDiggingEffectStatsSettings.AlwaysReceiveDetails => true
+          case FastDiggingEffectStatsSettings.AlwaysReceiveDetails          => true
           case FastDiggingEffectStatsSettings.ReceiveTotalAmplifierOnUpdate =>
             effectListDiff.hasDifference
         }

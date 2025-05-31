@@ -14,14 +14,14 @@ object GiftBundleTable {
     }
 
     val thresholdGifts = level.level match {
-      case 10 => GiftBundle.ofSinglePair(Gift.Item.SuperPickaxe, 5)
-      case 20 => GiftBundle.ofSinglePair(Gift.AutomaticGachaRun, 13)
-      case 40 => GiftBundle.ofSinglePair(Gift.Item.GachaApple, 256)
-      case 50 => GiftBundle.ofSinglePair(Gift.AutomaticGachaRun, 23)
-      case 60 => GiftBundle.ofSinglePair(Gift.AutomaticGachaRun, 26)
-      case 70 => GiftBundle.ofSinglePair(Gift.AutomaticGachaRun, 25)
-      case 80 => GiftBundle.ofSinglePair(Gift.AutomaticGachaRun, 24)
-      case 90 => GiftBundle.ofSinglePair(Gift.AutomaticGachaRun, 20)
+      case 10  => GiftBundle.ofSinglePair(Gift.Item.SuperPickaxe, 5)
+      case 20  => GiftBundle.ofSinglePair(Gift.AutomaticGachaRun, 13)
+      case 40  => GiftBundle.ofSinglePair(Gift.Item.GachaApple, 256)
+      case 50  => GiftBundle.ofSinglePair(Gift.AutomaticGachaRun, 23)
+      case 60  => GiftBundle.ofSinglePair(Gift.AutomaticGachaRun, 26)
+      case 70  => GiftBundle.ofSinglePair(Gift.AutomaticGachaRun, 25)
+      case 80  => GiftBundle.ofSinglePair(Gift.AutomaticGachaRun, 24)
+      case 90  => GiftBundle.ofSinglePair(Gift.AutomaticGachaRun, 20)
       case 100 =>
         GiftBundle.ofSinglePair(Gift.AutomaticGachaRun, 21).combinePair(Gift.Item.Elsa, 1)
       case _ => GiftBundle.empty

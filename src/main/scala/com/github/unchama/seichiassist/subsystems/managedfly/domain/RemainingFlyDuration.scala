@@ -43,8 +43,8 @@ object RemainingFlyDuration {
 
     (x: RemainingFlyDuration, y: RemainingFlyDuration) =>
       (x, y) match {
-        case (Infinity, _) => Infinity
-        case (_, Infinity) => Infinity
+        case (Infinity, _)                              => Infinity
+        case (_, Infinity)                              => Infinity
         case (PositiveMinutes(nx), PositiveMinutes(ny)) =>
           val sum = nx.toLong + ny.toLong
           if (sum <= Int.MaxValue)
