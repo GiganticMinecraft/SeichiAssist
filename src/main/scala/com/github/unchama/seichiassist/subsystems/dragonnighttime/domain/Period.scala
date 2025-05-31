@@ -14,4 +14,6 @@ case class Period(startAt: LocalTime, endAt: LocalTime) {
 
   def remainingDuration(time: LocalTime): Option[FiniteDuration] =
     Option.when(contains(time))(java.time.Duration.between(time, endAt).getSeconds.seconds)
+
+  def toHours: Long = java.time.Duration.between(startAt, endAt).toHours
 }
