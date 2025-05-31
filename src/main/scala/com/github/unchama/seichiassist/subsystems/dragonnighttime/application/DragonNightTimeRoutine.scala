@@ -65,7 +65,7 @@ object DragonNightTimeRoutine {
       )
       _ <- ContextCoercion(manaApi.setManaConsumptionWithDragonNightTime(ManaMultiplier(0.8)))
       _ <- CanBroadcast[F].broadcast("ドラゲナイタイム開始！")
-      _ <- CanBroadcast[F].broadcast(s"採掘速度上昇Lv10のバフが${effectivePeriod.toHours}時間付与され、マナ使用率が80%になりました")
+      _ <- CanBroadcast[F].broadcast(s"今から${DragonNightTimeImpl.endAtString(effectivePeriod)}までの間、採掘速度上昇Lv10のバフが付与され、マナ使用率が80%になります。")
       _ <- Timer[F].sleep(effectivePeriod.toFiniteDuration)
       _ <- ContextCoercion(manaApi.setManaConsumptionWithDragonNightTime(ManaMultiplier(1)))
       _ <- CanBroadcast[F].broadcast("ドラゲナイタイムが終了しました。")
