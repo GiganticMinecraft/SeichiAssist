@@ -62,7 +62,6 @@ object ItemInformation {
 
     if (!headMaterials.contains(block.getType)) return None
 
-    // プレイヤーの頭の場合，ドロップアイテムからItemStackを取得．データ値をPLAYERにして返す
     Some(block.getDrops.asScala.head)
   }
 
