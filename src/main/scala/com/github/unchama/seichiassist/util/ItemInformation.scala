@@ -60,9 +60,7 @@ object ItemInformation {
       Material.WITHER_SKELETON_WALL_SKULL
     )
 
-    if (!headMaterials.contains(block.getType)) return None
-
-    Some(block.getDrops.asScala.head)
+    Option.when(headMaterials.contains(block.getType))(block.getDrops.asScala.head)
   }
 
   /**
