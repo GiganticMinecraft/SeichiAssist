@@ -115,7 +115,7 @@ object ActiveSkillEffectMenu extends Menu {
       } yield ()
 
     effect match {
-      case ActiveSkillEffect.NoEffect => setEffectSelectionTo(effect)(player)
+      case ActiveSkillEffect.NoEffect          => setEffectSelectionTo(effect)(player)
       case effect: UnlockableActiveSkillEffect =>
         for {
           unlocked <- IO { playerData.skillEffectState.obtainedEffects.contains(effect) }

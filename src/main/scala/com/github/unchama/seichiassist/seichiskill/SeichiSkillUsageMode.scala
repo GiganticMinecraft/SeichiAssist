@@ -39,7 +39,7 @@ object SeichiSkillUsageMode extends IntEnum[SeichiSkillUsageMode] {
   )(usageIntention: SeichiSkillUsageMode): SeichiSkillUsageMode =
     usageIntention match {
       case Disabled => Active
-      case Active =>
+      case Active   =>
         selectedSkill match {
           case DualBreak | TrialBreak =>
             LowerActive
