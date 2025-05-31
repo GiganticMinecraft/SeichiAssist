@@ -1,6 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.dragonnighttime.application
 
-import com.github.unchama.seichiassist.subsystems.dragonnighttime.domain.{DragonNightTime, Period}
+import com.github.unchama.seichiassist.subsystems.dragonnighttime.domain.{
+  DragonNightTime,
+  Period
+}
 
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
