@@ -45,7 +45,22 @@ object ItemInformation {
   }
 
   def getSkullDataFromBlock(block: Block): Option[ItemStack] = {
-    if (block.getType != Material.PLAYER_HEAD) return None
+    val headMaterials = Set(
+      Material.PLAYER_WALL_HEAD,
+      Material.PLAYER_HEAD,
+      Material.DRAGON_HEAD,
+      Material.DRAGON_WALL_HEAD,
+      Material.ZOMBIE_HEAD,
+      Material.ZOMBIE_WALL_HEAD,
+      Material.CREEPER_HEAD,
+      Material.CREEPER_WALL_HEAD,
+      Material.SKELETON_SKULL,
+      Material.SKELETON_WALL_SKULL,
+      Material.WITHER_SKELETON_SKULL,
+      Material.WITHER_SKELETON_WALL_SKULL
+    )
+
+    if (!headMaterials.contains(block.getType)) return None
 
     // プレイヤーの頭の場合，ドロップアイテムからItemStackを取得．データ値をPLAYERにして返す
     Some(block.getDrops.asScala.head)
