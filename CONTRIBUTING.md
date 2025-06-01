@@ -1,287 +1,367 @@
-# 開発体制
+# 開発への貢献ガイドライン
 
-## 開発を始めるために必要なもの
-- [IntelliJ IDEA](https://www.jetbrains.com/idea/) などの統合開発環境
-- [AdoptOpenJDK 17](https://adoptium.net/temurin/releases/?version=17)
-- [sbt 1.9](https://www.scala-sbt.org/1.x/docs/Setup.html)
-- [Scala 2.13](https://www.scala-lang.org/download/)
-- Spigot 1.18.2
-- Docker
-- GitHubのアカウント
-- Git
+このドキュメントは、SeichiAssist プロジェクトへの開発貢献に関心のある方向けのガイドラインです。スムーズな開発参加のためにご一読ください。
 
-### 準備
-#### Java Development Kit
-最初に、Java Development Kit (JDK) 17をインストールする必要があります。
-[AdoptOpenJDK 17](https://adoptium.net/temurin/releases/?version=17) のインストールを推奨します。
+## 1. 開発環境の準備
 
-#### 統合開発環境
-次に、[IntelliJ IDEA](https://www.jetbrains.com/idea/)などの統合開発環境を導入します。
+開発を始めるにあたり、以下のツールと環境を準備してください。
 
-有料版 **Ultimate Edition** と機能が制限された無料版 **Community Edition** が2つありますが、SeichiAssist を開発する上では無料版で十分です。
+### 1.1. 必要なツール一覧
 
-ダウンロードは [こちら](https://www.jetbrains.com/idea/download/) から
+| ツールカテゴリ        | ツール名・バージョン                                  | 入手先 / 備考                                                                                                |
+| :-------------------- | :---------------------------------------------------- | :----------------------------------------------------------------------------------------------------------- |
+| **統合開発環境 (IDE)** | IntelliJ IDEA                                         | [公式サイト](https://www.jetbrains.com/idea/) を推奨                                                            |
+| **Java Development Kit** | AdoptOpenJDK 17 (Temurin)                             | [Adoptium](https://adoptium.net/temurin/releases/?version=17)                                                |
+| **ビルドツール** | sbt 1.9                                               | [公式ドキュメント](https://www.scala-sbt.org/1.x/docs/Setup.html)                                                  |
+| **プログラミング言語** | Scala 2.13                                            | sbt により自動でインストールされます                                                                             |
+| **Minecraft サーバー** | Spigot 1.18.2                                         | Docker コンテナ経由で提供されます                                                                                |
+| **コンテナ** | Docker                                                | [公式サイト](https://www.docker.com/) (Docker Desktop など)                                                       |
+| **バージョン管理** | Git                                                   | [公式サイト](https://git-scm.com/)                                                                               |
+| **アカウント** | GitHub アカウント                                     | [GitHub](https://github.com/join)                                                                              |
+
+---
+
+### 1.2. 各ツールのセットアップ詳細
+
+#### 1.2.1. Java Development Kit (JDK)
+JDK 17 をインストールします。上記リストの [AdoptOpenJDK 17 (Temurin)](https://adoptium.net/temurin/releases/?version=17) を推奨します。
+
+#### 1.2.2. 統合開発環境 (IDE) - IntelliJ IDEA
+[IntelliJ IDEA](https://www.jetbrains.com/idea/) の導入を推奨します。
 
 > [!NOTE]
 >
-> 学生の場合は、[学生ライセンス](https://www.jetbrains.com/community/education/#students)を申請することで Ultimate Edition を無料で利用できます。
+> 学生の方は、[学生ライセンス](https://www.jetbrains.com/community/education/#students) を申請することで Ultimate Edition を無料で利用できます。
 
-##### IntelliJ
-* インストールする時、Gitプラグインを有効にします。
-* Scala用の[プラグイン](https://plugins.jetbrains.com/plugin/1347-scala)を導入してください。
+* **エディション**: 有料版 (Ultimate) と無料版 (Community) がありますが、SeichiAssist の開発は無料版で十分です。
+    * [ダウンロードはこちら](https://www.jetbrains.com/idea/download/)
 
-#### sbt
-それが終わった後、[sbtの公式ページ](https://www.scala-sbt.org/1.x/docs/Setup.html) に従ってsbtのインストールをします。
-sbtがコマンドラインで使える状態で`sbt assembly`を実行すると、`target/build`フォルダにjarが出力されます。
+* **初期設定**:
+    1.  インストール時に **Git プラグインを有効**にしてください。
+    2.  Scala 用の[プラグイン](https://plugins.jetbrains.com/plugin/1347-scala)を導入してください。
 
-#### Scala
-Scalaはsbtによって自動的にダウンロード及びインストールされます。
+#### 1.2.3. sbt (ビルドツール)
+[sbt 公式ページ](https://www.scala-sbt.org/1.x/docs/Setup.html) の指示に従い、sbt をインストールします。
+インストール後、プロジェクトのルートディレクトリで `sbt assembly` コマンドを実行すると、`target/build` フォルダに成果物 (jar ファイル) が出力されます。
 
-#### Docker
-SpigotサーバーのDockerコンテナを立ち上げるために、Dockerのインストールが必要です。
+#### 1.2.4. Scala (プログラミング言語)
+Scala は sbt によって適切なバージョンが自動的にダウンロード・インストールされるため、手動でのインストールは不要です。
 
-詳しくは [Dockerの概要](https://docs.docker.com/get-started/overview/) 及び [Dockerのインストール](https://docs.docker.com/get-docker/) をご確認ください。
+#### 1.2.5. Docker
+Spigot サーバーの Docker コンテナを起動するために Docker をインストールします。
+* [Docker の概要](https://docs.docker.com/get-started/overview/)
+* [Docker のインストール](https://docs.docker.com/get-docker/)
 
-#### Spigot
-SpigotサーバーはDockerコンテナによって提供されます。
+#### 1.2.6. Spigot サーバー
+開発用の Spigot サーバーは Docker コンテナを通じて提供されるため、個別の手動セットアップは基本的に不要です。
 
-#### GitHubのアカウント
-GitHubにアカウントを[登録](https://github.com/join)します。
-詳細な手順は有志の方の[記事](https://qiita.com/ayatokura/items/9eabb7ae20752e6dc79d)をご覧ください。
+#### 1.2.7. GitHub アカウント
+お持ちでない場合は、[こちらから登録](https://github.com/join)してください。
+参考: [GitHubアカウント作成方法 (Qiita)](https://qiita.com/ayatokura/items/9eabb7ae20752e6dc79d)
 
-#### 上級者向け：ローカルにJavaとかsbtを入れたくない場合
+#### 1.2.8. Git (バージョン管理システム)
+Git をインストールします。公式の[インストールガイド (日本語)](https://git-scm.com/book/ja/v2/%E4%BD%BF%E3%81%84%E5%A7%8B%E3%82%81%E3%82%8B-Git%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB) を参照してください。
+
+---
+
+### 1.3. 🛠️ 上級者向け: ローカル環境への直接インストールを避ける方法
 
 > [!WARNING]
 >
-> 自分が何をしているのかわかっていないのであれば、この手順を飛ばしてください。
+> この手順は、Docker とシェルスクリプトの動作を理解している上級者向けです。自信がない場合は、この手順をスキップしてください。
 
-* VSCode + WSLで開発している
-* ビルドして立ち上げたいだけ
-* ランタイムの導入のコストが高いと考えている
-
-場合は、以下のシェルスクリプトを使うと便利です。
+ローカルに JDK や sbt を直接インストールしたくない場合 (例: VSCode + WSL 環境での開発、ビルドと起動のみが目的の場合)、以下のシェルスクリプトで Docker コンテナ内でビルドと実行準備ができます。
 
 ```bash
-$ rm -rf target/build # 再ビルドしたいなら既存のターゲットは削除
+# 1. 既存のビルド成果物を削除 (再ビルドする場合)
+$ rm -rf target/build
+
+# 2. Dockerコンテナ内でsbt assemblyを実行
 $ docker run --rm -it -v `pwd`:/app ghcr.io/giganticminecraft/seichiassist-builder-v2:1df7cf5 sh -c "cd /app && sbt assembly"
-$ sudo chown -R `whoami` target/build # docker上でsbtを実行するとrootになってしまうため権限を変える
+
+# 3. 生成されたファイルの所有権を変更 (Docker内でrootとして実行されるため)
+$ sudo chown -R `whoami` target/build
+
+# 4. EULA同意ファイルが存在しない場合コピー
 $ cp -n docker/spigot/eula.txt docker/spigot/serverfiles/eula.txt || true
+
+# 5. Docker Composeでサーバー群を起動 (バックグラウンド、必要ならビルド)
 $ docker compose up --build -d
 ```
 
-#### Git
-最後に、Gitのインストールも必要です。公式の[ガイド](https://git-scm.com/book/ja/v2/%E4%BD%BF%E3%81%84%E5%A7%8B%E3%82%81%E3%82%8B-Git%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB)をご覧ください。
+## 2. リポジトリの準備とコードの取得
 
-### SeichiAssistを自分のGitHubアカウントにコピーする
+### 2.1. SeichiAssist リポジトリをフォーク
 
-> [!WARNING]
+開発に参加するには、まず SeichiAssist の公式リポジトリを自身の GitHub アカウントにフォーク (コピー) します。
+
+> [!IMPORTANT]
 >
-> この手順は [GiganticMinecraft][gm-gh-organization] のメンバーである場合は行う必要はありません。
-> よくわからない場合は、この注意書きを無視して先へ進んでください。
+>   * このフォーク作業は、**最初の1回のみ**必要です。
+>   * [GiganticMinecraft の GitHub Organization](https://github.com/GiganticMinecraft) のメンバーは、この手順を行う必要がありません。不明な場合は、このまま進めてください。
+
+1.  [GiganticMinecraft/SeichiAssist のリポジトリページ](https://github.com/GiganticMinecraft/SeichiAssist)を開きます。
+2.  画面右上の **Fork** ボタンをクリックします。
+3.  「Create a new fork」画面が表示されたら、特に設定を変更せずに「**Create fork**」ボタンをクリックします。
+4.  フォークが完了すると、自身のアカウント配下のリポジトリ (例: `your-username/SeichiAssist`) に移動します。これを確認してください。
+
+### 2.2. フォークしたリポジトリをローカルにクローン
+
+次に、フォークしたリポジトリを自分のPCにクローン (ダウンロード) します。
+
+  * **IntelliJ IDEA を使用する場合**: [JetBrains のヘルプ (英語)](https://www.jetbrains.com/help/idea/cloning-repository.html) を参考にクローンしてください。
+  * **コマンドラインを使用する場合**: ターミナルで以下のコマンドを実行します (`your-username` は実際のGitHubユーザー名に置き換えてください)。
+    ```bash
+    git clone https://github.com/your-username/SeichiAssist.git
+    cd SeichiAssist # クローンしたディレクトリに移動
+    ```
+
+### 2.3. サブモジュール (protocol) の取得
+
+> [!IMPORTANT]
 >
-> また、この手順を行うのは、一回だけです。二回目以降は、この手順を行う必要はありません。
+>   * この作業は、**最初の1回のみ**必要です。
+>   * `git clone` で **`--recursive` オプションを付けなかった場合に**実行してください。
 
-変更を加える前に、SeichiAssistを自分の手元に「コピー」する必要があります。
-最初に、[GiganticMinecraftのページ][gm-gh-repo]を開いて、画面右上にある「fork」と書かれた枝分かれしているアイコンがあるボタンを押します。
+`protocol` ディレクトリ以下のファイルはサブモジュールとして管理されているため、別途取得が必要です。クローンした `SeichiAssist` ディレクトリ内で以下のコマンドを実行します。
 
-すると「Create a new fork」と書かれた画面に移動します。
-
-<!-- GitHub の issue とかに貼れば写真が GitHub の CDN 等に置かれるのでそのリンクを使う -->
-![img.png](https://user-images.githubusercontent.com/127779256/226674317-3ad07000-a272-4f2e-905a-15e07b394bae.png)
-
-いくつか入力欄がありますが、何も触らずにCreate forkを押します。
-
-また画面が切り替わります。画面左上に書かれた文字が「GiganticMinecraft/SeichiAssist」ではなく、「(あなたのID)/SeichiAssist」になっていることを確認できたら次へ進みます。
-
-### SeichiAssistを自分の手元にコピーする
-SeichiAssistは、Gitというバージョンを管理するシステムを使っています。そのため、どうにかして自分のパソコンにSeichiAssistを自分の手元にコピーしてくる必要があります。
-
-#### IntelliJの場合
-[JetBrainsのヘルプ](https://www.jetbrains.com/help/idea/cloning-repository.html) (英語) をご覧ください。
-
-
-#### protocol以下のファイルを入手
-
-> [!WARNING]
->
-> ・この手順はコマンドラインから直接クローンした場合の手順になります。
->
-> ・この手順を行うのは、一回だけです。二回目以降は、この手順を行う必要はありません。
-
-protocol以下のファイルは`git clone`では入手できません。以下のどちらかのコマンドを実行してください:
-
-* `git clone --recursive`
-* `git submodule update --init --recursive`
-
-### issueを見る
-一旦[GiganticMinecraftのページ][gm-gh-repo]へ戻って、画面上部の[Issues](https://github.com/GiganticMinecraft/SeichiAssist/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc)と書かれたタブをクリックしてみましょう。
-
-すると画面が切り替わり、たくさんのやりたいこと (主に[Redmineで承認されたもの](https://github.com/GiganticMinecraft/SeichiAssist/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3A%22Status%2FIdea%3A+Accepted%E2%9C%85%22+label%3A%22Tracked%3A+Redmine%22)) や、[バグ報告](https://github.com/GiganticMinecraft/SeichiAssist/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3Abug)が出てきます。
-
-はじめはこの中からできそうなものを探すと良いと思います。初めての場合は、"good first issue"というラベルがつけられた中から探すのがおすすめです。[
-ここ](https://github.com/GiganticMinecraft/SeichiAssist/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)から飛べます。
-
-### IntelliJ特有の手順
-IntelliJ IDEAの設定でフォーマットに `scalafmt` を使う
-- `Editor` > `Code Style` > `Scala` で
-    - `Formatter` を `Scalafmt` に変更
-    - `Reformat on file save` にチェックを付ける
-
-
-### 変更を加える
-1. developというブランチ (セーブデータのスロットのようなもの) を元に、新しいブランチを作ります。
-    * 必須ではありませんが、ブランチ名はなるべく以下のような形式をとるようにしてください。(迷ったら対応する issue についているタグから近いものを選ぶとよいでしょう。)
-        * 新しい機能を追加したときは `feat/[issue 番号]` または `feature/[issue 番号]` とします。
-        * バグを修正したときは `fix/[issue 番号]` とします。
-        * 機能を改善したときは `improvement/[issue 番号]` とします。
-        * 機能に関係のない変更をしたときは `development/[issue 番号]` とします。
-        * リファクタリングをしたときは `refactor/[issue 番号]` とします。
-        * ※ このようにすることで、 プルリクエストを作成したときに自動でラベルがつけられるようになります。
-        * ※ メンテナ向け: PR をマージするには自動リリースの識別用にタグをつける必要があります。上記ブランチ名の形式に従った場合は自動でタグがつけられますが、もしタグが付いていない場合はマージ前にタグをつけてください。
-2. 必要な変更を加えてファイルを保存します
-3. コミット (Gitに対するセーブ) します。コミットする時、メッセージを書くように求められます。[コンベンショナルコミット](https://www.conventionalcommits.org/ja/v1.0.0/)という、メッセージの書き方を推奨しています。わからなければ、今は飛ばしても大丈夫です。
-    * メッセージの1行目には変更した点の大まかな内容を書くように心がけてみてください。
-        * 1行目は45文字以内で書くことを推奨します。
-        * コンベンショナルコミット：1行目は「変更の区分」、半角コロン、半角スペースで始める方法を推奨しています。
-            * 新しい機能を実装したときは`feat: [大まかな内容]`とします。
-            * バグを修正したときは`fix: [大まかな内容]`とします。
-            * ドキュメントを触ったときは`docs: [大まかな内容]`とします。
-            * GitHub Actionsを触ったときは`ci: [大まかな内容]`とします。
-            * リファクタリングしたときは`refactor: [大まかな内容]`とします。
-            * テストを書いたときは`test: [大まかな内容]`とします。
-            * scalafmtやscalafixを反映したときは`style: [大まかな内容]`とします。
-            * パフォーマンスを改善したときは`perf: [大まかな内容]`とします。
-            * その他のコード品質に関わらない変更をしたときは、`chore: [大まかな内容]`とします。
-        * 発展的な内容：コンベンショナルコミットにおいて複数の種別に該当する場合、引き返して複数のコミットに分割することが推奨されています。
-    * メッセージの2行目以降は、より詳しい内容を書けます。必要に応じて記入してください。
-    * メッセージは日本語か英語で書くことを推奨します。
-4. 良くなるまで繰り返します
-
-#### 手元でデバッグ
-SeichiAssistは手元でデバッグできる環境を整えています。環境を立ち上げるためには、Dockerが必要です。
-
-/pluginsディレクトリに対してjarファイル配置すると、そのjarファイルとSeichiAssistを同時に起動した場合の動作を確認することができます。
-整地鯖で利用しているプラグインはGiganticMinecraftのメンバーのみ[MinIOからダウンロード](https://minio-console.onp-k8s.admin.seichi.click/browser/seichi-plugins/ZGViLTEtMTYtNS8=)することができます。
-接続情報などの詳しい情報は、Discordで聞いてください。
-
-##### Dockerを立ち上げる
-
-Linux環境では、`./prepare-docker.sh`、Windowsでは`prepare-docker.bat`を実行することで
-デバッグ用のBungeecordとSpigotの環境を構築することができます。
-
-また、第1引数として以下のように`update-gachadata`を指定すると、ガチャ景品データがダウンロードされ、開発環境のデータから置き換えられます。
-※初回起動時にはgachadataテーブルが空の状態になっているので、ガチャ景品データが必要な場合はオプションを付けずに一度起動したあとに、`update-gachadata`オプションを付けて起動してください。
-※初回起動時に`update-gachadata`を指定するとFlywayによるマイグレーションと競合し、起動することができません。(2023/07/27時点)
-
-```
-./prepare-docker.sh update-gachadata
+```bash
+git submodule update --init --recursive
 ```
 
-サーバーやDB等を停止する場合、 `docker compose down` を実行してください。
+(または、クローン時に `git clone --recursive https://github.com/your-username/SeichiAssist.git` を実行したのであれば不要です。)
 
-なお、SeichiAssistがJava 17未満でコンパイルされた場合は、実行時にエラーとなります。必ずJDKのバージョンを揃えるようにしてください。
+## 3. 開発の進め方
 
+### 3.1. Issue (開発タスク) の確認
 
-##### デバッグ用環境への接続
+開発タスクは GitHub の Issue で管理されています。
 
-DockerマシンのIPアドレス(Linux等なら`localhost`)を`DOCKER_IP`とします。
+  * [**全てのOpenなIssue一覧**](https://github.com/GiganticMinecraft/SeichiAssist/issues)
+  * 特に初めて貢献する方は、[`good first issue` ラベルの付いた Issue](https://github.com/GiganticMinecraft/SeichiAssist/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22good%20first%20issue%22) から探すのがおすすめです。
+  * Issue には、[Redmine で承認されたタスク](https://github.com/GiganticMinecraft/SeichiAssist/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22Tracked%3A%20Redmine%22) や [バグ報告](https://github.com/GiganticMinecraft/SeichiAssist/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug) が含まれます。
 
-`docker`により各サービスが起動したら、マルチプレイヤーのメニューで`DOCKER_IP`へと接続できます。
-また、`DOCKER_IP:8080`へとWebブラウザでアクセスすることで、phpMyAdminを介してデータベースを操作できます。
+### 3.2. IntelliJ IDEA の推奨設定 (scalafmt)
 
-##### コンソールにアクセスする
+コードの一貫性を保つため、`scalafmt` によるフォーマット設定を行います。
 
-自分のアカウントに管理者権限(OP)を与える時など、Spigotのコンソールにアクセスする場合は、
-`spigota` または `spigotb` のコンテナにアタッチする必要があります。
+1.  IntelliJ IDEA の設定 (Settings/Preferences) を開きます。
+2.  `Editor` > `Code Style` > `Scala` を選択します。
+3.  `Formatter:` ドロップダウンリストから `Scalafmt` を選択します。
+4.  `Reformat on file save` (ファイル保存時に自動フォーマット) にチェックを入れます。
 
-アタッチするには `docker attach [CONTAINER_NAME]` を実行します。
-コンテナを指定する際に使用するIDはコマンドプロンプトで `docker ps` を実行すると `seichiassist_spigotb_1` のような形式で表示されます。
+### 3.3. コーディングとコミット
 
-コンソールからは <kbd>Ctrl</kbd>キーと<kbd>C</kbd>キーを同時押しすることで出ることができます。サーバーは停止されません。
+1.  **ブランチの作成**: `develop` ブランチから作業用の新しいブランチを作成します。推奨されるブランチ名の形式は以下の通りです（対応する issue のタグを参考にしてください）。
 
-##### 整地ワールドの作成
+    * 新機能追加: `feat/[issue番号]` または `feature/[issue番号]`
+    * バグ修正: `fix/[issue番号]`
+    * 機能改善: `improvement/[issue番号]`
+    * 機能に無関係な変更: `development/[issue番号]`
+    * リファクタリング: `refactor/[issue番号]`
 
-初めてデバッグ環境のSpigotに接続した際にスポーンするワールドは整地ワールドではないため、そのままブロックを破壊しても整地レベルは上昇しません。
+    ```bash
+    git switch develop                 # developブランチに切り替え
+    git pull origin develop            # 最新のdevelopブランチの内容を取得
+    git switch -c <ブランチ名>           # 新しいブランチを作成して切り替え
+    ```
 
-整地ワールドを作成する場合、OP権限を付与したプレイヤーかアタッチしたコンソールからコマンドで `mvcreate world_SW normal` を実行します。
+  これらの形式に従うと、Pull Request作成時に自動でラベルが付与されます。メンテナは、マージ前に適切なタグが付いていることを確認してください（自動付与されない場合）。
 
-整地ワールドへ行くには、コマンドで `mvtp world_SW` を実行します。
+2.  **コードの変更**: 機能追加やバグ修正など、必要な変更を加えます。
 
-### 反映する
-さあ、いよいよ反映の時間がやってきました。
-まずは手元で`sbt scalafixAll`をします。次に`sbt scalafmtAll`をします。
-その後、自分の手元から自分のGitHubアカウントへ内容を反映します。
+3.  **コミット**: 変更内容をコミットします。コミットメッセージは[コンベンショナルコミット](https://www.conventionalcommits.org/ja/v1.0.0/)規約に従うことを推奨します。
 
-#### Pull Requestの作成
-次に、自分のGitHubアカウントにあるSeichiAssistを開いて、変更を依頼する手続き (Pull Request) の準備画面へ移動し、右上のCreate pull requestと書かれたボタンを押すとこのような入力欄が表示されます。
+    **コミットメッセージの基本構造:**
 
-```md
-close #
+    ```
+    <type>[optional scope]: <description>
 
-----
+    [optional body]
 
-### このPRの変更点と理由:
+    [optional footer(s)]
+    ```
 
-### 補足情報:
+    **主な `<type>`:**
+
+    | Type       | 説明                                                                 | 例                                            |
+    | :--------- | :------------------------------------------------------------------- | :-------------------------------------------- |
+    | `feat`     | 新機能の追加                                                           | `feat: ユーザープロフィール機能を追加`              |
+    | `fix`      | バグ修正                                                               | `fix: ガチャが引けないのを修正`               |
+    | `docs`     | ドキュメントのみの変更                                                     | `docs: READMEのセットアップ手順を更新`          |
+    | `style`    | コードの動作に影響しない変更 (フォーマットなど)                         | `style: scalafmt によるコード整形`             |
+    | `refactor` | 機能に影響を与えないコード品質の向上                               | `refactor: 変数名を明確にする`          |
+    | `perf`     | パフォーマンスを向上させるコード変更                                                | `perf: クエリの実行速度を改善`                |
+    | `test`     | 不足しているテストの追加や既存テストの修正                                            | `test: MineStack のテストを追加`     |
+    | `chore`    | ビルドプロセスや補助ツール、ライブラリの変更など (ソースコードの変更を含まない)                   | `chore: sbt のバージョンを更新`                |
+    | `ci`       | CI設定ファイルやスクリプトの変更 (GitHub Actionsなど)                               | `ci: ビルドワークフローのトリガーを修正`          |
+
+      * **1行目 (件名)**: 45文字以内を推奨。`<type>: 要約` の形式で記述します。
+      * **本文 (任意)**: より詳細な説明や変更理由を記述します。
+      * メッセージは日本語または英語で記述してください。
+      * 1つのコミットには、関連する1つの変更のみを含めるように心がけてください。
+
+4.  **繰り返し**: 満足のいく変更ができるまで、ステップ 2 と 3 を繰り返します。
+
+-----
+
+### 3.4. ローカル環境でのデバッグ
+
+開発中のプラグインは、ローカルの Docker 環境で動作確認できます。
+
+> [!IMPORTANT]
+>
+> SeichiAssist が Java 17 未満でコンパイルされた場合、実行時にエラーが発生します。JDK のバージョンが 17 であることを確認してください。
+
+#### 3.4.1. Docker デバッグ環境の起動・停止
+
+  * **起動**:
+      * Linux/macOS: プロジェクトルートで `./prepare-docker.sh` を実行します。
+      * Windows: プロジェクトルートで `prepare-docker.bat` を実行します。
+        これらのスクリプトで、デバッグ用の Bungeecord と Spigot サーバー環境が構築されます。
+  * **ガチャデータ更新オプション**:
+    `./prepare-docker.sh update-gachadata` (または `prepare-docker.bat update-gachadata`) のように引数を指定すると、最新のガチャ景品データがダウンロードされ、開発環境のデータが置き換えられます。
+  
+    ※ 初回起動時は `gachadata` テーブルが空です。ガチャ景品データが必要な場合、まずオプションなしで一度サーバーを起動し、その後 `update-gachadata` オプション付きで再度起動してください。初回起動時に `update-gachadata` を指定すると、Flyway によるマイグレーションと競合し、起動できません(2025/06/02 時点)。
+  * **停止**: `docker compose down` コマンドを実行します。
+
+#### 3.4.2. デバッグ環境への接続と操作
+
+| 対象サービス        | アクセス方法                                      | 備考                                           |
+| :------------------ | :------------------------------------------------ | :--------------------------------------------- |
+| **Minecraft サーバー** | マルチプレイから `localhost` (または Docker IP) に接続 |                                                |
+| **phpMyAdmin** | Webブラウザで `http://localhost:8080`             | データベース (MariaDB) の操作が可能です           |
+
+#### 3.4.3. Spigot サーバーコンソールへのアクセス
+
+OP権限の付与など、サーバーコンソールでの操作が必要な場合：
+
+1.  `docker ps` を実行し、SpigotコンテナのID (例: `seichiassist_spigotb_1`) を確認します。
+2.  `docker attach (コンテナID)` を実行してアタッチします。
+3.  コンソールから抜けるには <kbd>Ctrl</kbd> + <kbd>C</kbd> を押します (サーバーは停止しません)。
+
+#### 3.4.4. 整地ワールドの作成・移動
+
+デバッグ環境の初期スポーン地点は整地ワールドではありません。
+
+1.  **整地ワールド作成**: OP権限を持つプレイヤーかコンソールから `mvcreate world_SW normal` を実行します。
+2.  **整地ワールドへ移動**: `mvtp world_SW` を実行します。
+
+#### 3.4.5. 外部プラグインのテスト
+
+`/plugins` ディレクトリに他の `.jar` ファイルを配置すると、SeichiAssist とそれらのプラグインを同時に起動して動作確認できます。
+(整地鯖で使用しているプラグインは GiganticMinecraft メンバー限定で MinIO から入手可能です。詳細は Discord でお問い合わせください。)
+
+## 4. 変更内容をプロジェクトに反映 (Pull Request)
+
+### 4.1. コードのフォーマットと静的解析の実行
+
+コミットをプッシュする前に、ローカルで以下のコマンドを実行し、コードスタイルを統一します。
+
+```bash
+sbt scalafixAll
+sbt scalafmtAll
 ```
-(一部省略)
 
-書くべき主な内容の説明はコメントに記載されています。
+### 4.2. 変更を自身の GitHub リポジトリにプッシュ
 
-どれも必須ではありませんが、メンテナたちにどんな変更をしたのか正確に伝えるためにもなるべく書くことを心かけるといいでしょう。
+ローカルの変更内容を、GitHub 上の自身のフォークしたリポジトリにプッシュします。
 
-- **`close #`**
-  - プルリクエストと対象のIssueを紐付ける事ができます。
-  - そのプルリクエストに関係し、なおかつマージ後に自動でクローズしたいIssueの番号を指定してください。
-  - 複数のIssueを紐付ける場合は `close #1, close #2` と繰り返し指定します。
-  - 詳細: [キーワードを使用してPull RequestをIssueにリンクする - GitHub Docs](https://docs.github.com/ja/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue)
-- **`このPRの変更点と理由:`**
-  - このプルリクエストで行った変更点とその理由を記述します。
-  - 自明な場合は書く必要はありませんが、なるべく書くようにします。
-- **`補足情報:`**
-  - その他、メンテナたちに伝えたい事があれば自由に書いてください。
+```bash
+git push origin <作業ブランチ名>
+```
 
-一通り書き終わったら、長い場所の右下にある「Create pull request」と書かれたボタンを押してください。
+### 4.3. Pull Request (PR) の作成
 
-### コードレビューを待つ
-Pull Requestが作成されたら、GitHubのサーバーでコンパイルやファイルのチェックが自動的に始まります。
-また、[確認できる人](https://github.com/orgs/GiganticMinecraft/people) (主に@kory33、@rito528、@KisaragiEffective、@Lucky3028)が方向性が正しいかどうかレビューを行います。それまでは優雅に紅茶を飲んだり踊ったりして待つことができます。
+1.  自身の GitHub リポジトリページ (例: `https://github.com/<あなたのID>/SeichiAssist`) をブラウザで開きます。
 
-SeichiAssistでPull Requestが受け入れられる (マージされる) には、下の条件をすべてクリアする必要があります。
-* コンパイルやファイルのチェックがすべてエラーなく終わる
-  * コンパイル
-  * scalafix - エラーになった場合は`sbt scalafixAll`をしてください
-  * scalafmt - エラーになった場合は`sbt scalafmtAll`をしてください
-* 誰かから変更を承認してもらう
+2.  プッシュしたブランチに関する通知が表示されていれば、「**Compare & pull request**」ボタンをクリックします。
+    または、「**Pull requests**」タブを開き、「**New pull request**」ボタンをクリックします。
 
-### 承認とサーバーへの反映
-条件がすべてクリアされると、Pull Requestがマージ (変更依頼手続きが完了) されます。
+3.  **比較ブランチの確認**:
 
-#### デバッグサーバーへの反映
-マージされた後、自動的にデバッグサーバーへの反映手続きが始まります。[Discord](https://discord.com/channels/237758724121427969/959323550878138368)で進捗を確認できます。
-通常、デバッグサーバーへの反映は数分程度で終わります。
-デバッグ環境へは、以下の手順で接続できます。
-1. Minecraft Java Editionで`play-debug.seichi.click`に接続
-2. <kbd>T</kbd>キーでチャットを開く
-3. `/server deb112`と入力して`Enter`を押す
+      * `base repository`: `GiganticMinecraft/SeichiAssist`
+      * `base`: `develop` (マージ先のブランチ)
+      * `head repository`: `<あなたのID>/SeichiAssist` (自分のリポジトリ)
+      * `compare`: `<作業ブランチ名>` (自分が作業したブランチ)
+        上記になっていることを確認します。
 
-#### 自動リリースの範囲
-自動リリースはSeichiAssistのプログラムの部分のみ行われます。より正確に言うのであれば、jar以外の自動リリースは未対応です(`config.yml`など)。運営チームへ更新を依頼する必要があります。
-この問題点があるため、各サーバーや環境で共通で構わないパラメータは`config.yml`を読まず、コードへの直接実装を推奨します。
+4.  **PR のタイトルと説明を記述**: 以下のテンプレートを参考に、変更内容がレビュアーに伝わるように記述します。
 
-----
+    ```markdown
+    close # (関連するIssue番号)
 
-#### 運営メンバー向け: 本番サーバーへの反映
+    ----
 
-本番サーバーへの反映は通常GitHub ActionsでPull Requestを作成し、それをマージすることで行います。
-1. [GitHub Actionsのタブ](https://github.com/GiganticMinecraft/SeichiAssist/actions/workflows/create_new_release.yml)へ移動します。
-2. 画面右の「Run workflow」を押します。
-3. しばらくすると`master <- develop`のPull Requestが作成されます。
-4. 本番サーバーへ反映したいタイミングでマージします。
-5. マージした後、朝4時の再起動で変更が反映されます。
+    ### このPRの変更点と理由:
 
-緊急を要する場合は、`hotfix-*`ブランチを作成し、そのブランチから`master`ブランチへ向けてPull Requestを作成してください。
-`develop`ブランチへの直プッシュは、CIによるチェックが事後となってしまうため避けてください。
+    (ここにPRで行った変更内容とその理由を具体的に記述します。自明な場合は省略可能ですが、できるだけ詳細に書きましょう。)
 
-[gm-gh-organization]: https://github.com/GiganticMinecraft
-[gm-gh-repo]: https://github.com/GiganticMinecraft/SeichiAssist
+    ### 補足情報:
+
+    (その他、メンテナーに伝えたいことがあれば自由に記述してください。)
+    ```
+
+      * **`close #`**:
+          * この Pull Request に関連し、マージ後に自動でクローズしたい Issue の番号を指定します (例: `close #123`)。
+          * 複数指定する場合はカンマ区切りで記述します (例: `close #123, close #456`)。
+          * 詳細は [キーワードを使用してPull RequestをIssueにリンクする - GitHub Docs](https://docs.github.com/ja/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue) を参照してください。
+      * **`このPRの変更点と理由:`**:
+          * 行った変更内容とその背景・理由を具体的に説明します。
+      * **`補足情報:`**:
+          * レビューアに特に注意してほしい点や、その他共有事項があれば記述します。
+
+5.  記述後、「**Create pull request**」ボタンをクリックします。
+
+### 4.4. コードレビューとマージ
+
+PR を作成すると、GitHub Actions による自動チェックが実行され、プロジェクトメンテナーによるレビューが行われます。
+
+**PR がマージされるための条件:**
+
+| 条件項目                      | 詳細 / 対応                                                                      |
+| :---------------------------- | :------------------------------------------------------------------------------- |
+| **自動チェックの成功** | 全てのCIチェック (コンパイル、テスト、lint等) がパスすること。                              |
+|    ↳ コンパイルエラー        | エラーがないこと。                                                                 |
+|    ↳ `scalafix` チェック     | パスすること。エラー時はローカルで `sbt scalafixAll` を実行して修正。                     |
+|    ↳ `scalafmt` チェック     | パスすること。エラー時はローカルで `sbt scalafmtAll` を実行して修正。                     |
+| **メンテナーによる承認** | 1人以上のメンテナー ([@kory33](https://github.com/kory33), [@rito528](https://github.com/rito528), [@KisaragiEffective](https://github.com/KisaragiEffective), [@Lucky3028](https://github.com/Lucky3028) 等) から承認 (Approve) をもらうこと。 |
+
+レビューで修正依頼があった場合は、ローカルで修正し、再度コミット・プッシュしてください。
+
+## 5. サーバーへの反映プロセス
+
+### 5.1. デバッグサーバーへの自動反映
+
+`develop` ブランチにPRがマージされると、変更は自動的にデバッグサーバーへデプロイされます。
+
+  * **進捗確認**: [Discord の専用チャンネル](https://discord.com/channels/237758724121427969/959323550878138368) で確認できます。
+  * **反映時間**: 通常、数分程度で完了します。
+  * **接続方法**:
+    1.  Minecraft Java Edition でサーバーアドレス `play-debug.seichi.click` に接続します。
+    2.  チャットを開き (<kbd>T</kbd> キー)、`/server deb112` と入力して <kbd>Enter</kbd> を押します。
+
+#### 5.1.1. 自動リリースの対象範囲
+
+SeichiAssist の自動リリースは、SeichiAssist のプログラム本体 (`.jar` ファイル) のみを対象としています。
+`config.yml` などの設定ファイルを変更したい場合は [seichi_infra](https://github.com/GiganticMinecraft/seichi_infra) リポジトリを参照してください。
+
+> [!IMPORTANT]
+>
+> サーバーや環境間で共通の設定値は、極力 `config.yml` ではなくコード内に直接記述することを推奨します。
+
+-----
+
+### 5.2. 運営メンバー向け: 本番サーバーへの反映
+
+本番サーバーへのリリースは、主に GitHub Actions を介して行われます。
+
+| リリース種別        | 手順                                                                                                                              | ブランチ戦略                                 | 反映タイミング                             |
+| :------------------ | :-------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------- | :----------------------------------------- |
+| **通常リリース** | 1. [Create New Release ワークフロー](https://github.com/GiganticMinecraft/SeichiAssist/actions/workflows/create-pr-to-release.yml) を実行。<br>2. 自動作成された `master <- develop` のPRを適切なタイミングでマージ。 | `develop` → `master`                         | 原則、毎朝4時のサーバー再起動時                |
+| **緊急リリース (Hotfix)** | 1. `hotfix-*` (例: `hotfix-critical-issue`) ブランチを `master` から作成。<br>2. 修正をコミットし、`master` へ直接PRを作成してマージ。                                   | `master` → `hotfix-*` → `master`             | マージ後、手動または次回の再起動 (状況による) |
+
+> [!CAUTION]
+>
+> `develop` ブランチへの直接プッシュは、CIによるチェックが事後処理となるため避けてください。
+
