@@ -25,7 +25,7 @@ jobs:
             LABEL="development"
           elif [[ "$BRANCH_NAME" == "refactor"* ]]; then
             LABEL="refactoring"
-          elif [[ "$BRANCH_NAME" == "ci"* ]]; then
+          elif [[ "$BRANCH_NAME" == "ci/"* ]]; then
             LABEL="Build / CI"
           else
             echo "No matching label found for branch name: $BRANCH_NAME"
