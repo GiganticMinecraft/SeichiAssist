@@ -240,24 +240,9 @@ class PlayerClickListener(
       return
     }
 
-    val targetBlocks = Set(
-      Material.PLAYER_WALL_HEAD,
-      Material.PLAYER_HEAD,
-      Material.DRAGON_HEAD,
-      Material.DRAGON_WALL_HEAD,
-      Material.ZOMBIE_HEAD,
-      Material.ZOMBIE_WALL_HEAD,
-      Material.CREEPER_HEAD,
-      Material.CREEPER_WALL_HEAD,
-      Material.SKELETON_SKULL,
-      Material.SKELETON_WALL_SKULL,
-      Material.WITHER_SKELETON_SKULL,
-      Material.WITHER_SKELETON_WALL_SKULL
-    )
-
     val clickedBlock = e.getClickedBlock
-    // 頭じゃない場合無視
-    if (!targetBlocks.contains(clickedBlock.getType)) {
+    val skullData = ItemInformation.getSkullDataFromBlock(clickedBlock).getOrElse {
+      // 頭じゃない場合無視
       return
     }
 
@@ -273,10 +258,9 @@ class PlayerClickListener(
     }
 
     // 頭を付与
-    ItemInformation.getSkullDataFromBlock(clickedBlock) match {
-      case Some(itemStack) => p.getInventory.addItem(itemStack)
-      case None            =>
-    }
+    p.getInventory.addItem(skullData)
+
+    // ブロックを空気で置き換える
     if (!ExternalPlugins.getCoreProtectWrapper.queueBlockRemoval(p, clickedBlock)) {
       SeichiAssist
         .instance
@@ -285,8 +269,8 @@ class PlayerClickListener(
           s"Logging in skull break: Failed Location: ${clickedBlock.getLocation}, Player:$p"
         )
     }
-    // ブロックを空気で置き換える
     clickedBlock.setType(Material.AIR)
+
     // 音を鳴らしておく
     p.playSound(p.getLocation, Sound.ENTITY_ITEM_PICKUP, 2.0f, 1.0f)
   }

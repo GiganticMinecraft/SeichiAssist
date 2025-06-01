@@ -6,6 +6,7 @@ import com.github.unchama.seichiassist.subsystems.dragonnighttime.domain.{
 }
 
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 object DragonNightTimeImpl extends DragonNightTime {
   override protected val effectivePeriodOnWeekdays: Period =
@@ -13,4 +14,7 @@ object DragonNightTimeImpl extends DragonNightTime {
 
   override protected val effectivePeriodOnWeekends: Period =
     Period(LocalTime.of(19, 0, 0), LocalTime.of(21, 0, 0))
+
+  def endAtString(period: Period): String =
+    period.endAt.format(DateTimeFormatter.ofPattern("HH:mm"))
 }
