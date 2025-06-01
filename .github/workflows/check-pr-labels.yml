@@ -1,4 +1,4 @@
-name: Ensure labels exist on PR
+name: Check PR labels
 on:
   pull_request:
     types:
