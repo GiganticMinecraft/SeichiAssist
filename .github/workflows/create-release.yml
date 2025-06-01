@@ -46,6 +46,9 @@ jobs:
           # target_commitish が master のときに正式リリースだと認識する。
           # デフォルト値は GitHub で設定されているデフォルトブランチになる。
           target_commitish: master
+          generate_release_notes: true
           tag_name: "v${{ steps.get_current_version.outputs.current_version }}"
           draft: false
           prerelease: false
+          # make_latest は String を期待している
+          make_latest: "true"
