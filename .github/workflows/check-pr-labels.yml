@@ -1,6 +1,10 @@
 name: Ensure labels exist on PR
 on:
   pull_request:
+    types:
+      - opened
+      - labeled
+      - unlabeled
 
 jobs:
   ensure-labels-exist:
