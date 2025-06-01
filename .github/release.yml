@@ -1,0 +1,11 @@
+changelog:
+  exclude:
+    - renovate
+  categories:
+    - title: ✨ 新機能・機能改善
+      labels:
+        - feature
+        - improvement
+    - title: 🛠️ 不具合修正
+      labels:
+        - bug

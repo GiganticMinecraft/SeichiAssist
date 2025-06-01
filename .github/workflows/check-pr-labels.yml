@@ -1,0 +1,31 @@
+name: Ensure labels exist on PR
+on:
+  pull_request:
+
+jobs:
+  ensure-labels-exist:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Get labels
+        id: get_labels
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.number }}
+        run: |
+          json=$(gh pr view "$PR_NUMBER" --json labels | jq -c '.labels|map(.name)')
+          echo "json=$json" >> "$GITHUB_OUTPUT"
+      - name: Exist labels
+        id: exist_labels
+        env:
+          LABELS: ${{ steps.get_labels.outputs.json }}
+        run: |
+          labels_count=$(echo "$LABELS" | jq '. | length')
+
+          if [ "$labels_count" -eq 0 ]; then
+            echo "Error: No labels found on the PR. LABELS variable was empty or an empty JSON array."
+            exit 1
+          else
+            echo "Success: Labels exist on the PR."
+            exit 0
+          fi
