@@ -20,8 +20,12 @@ jobs:
         env:
           LABELS: ${{ steps.get_labels.outputs.json }}
         run: |
-          if [ $(echo '$LABELS' | jq '. | length') -eq 0 ];
-            then exit 1;
+          labels_count=$(echo "$LABELS" | jq '. | length')
+
+          if [ "$labels_count" -eq 0 ]; then
+            echo "Error: No labels found on the PR. LABELS variable was empty or an empty JSON array."
+            exit 1
           else
-            exit 0;
+            echo "Success: Labels exist on the PR."
+            exit 0
           fi
