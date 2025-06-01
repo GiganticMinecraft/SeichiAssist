@@ -1257,7 +1257,7 @@ object MineStackMassCraftMenu {
         ),
         ChestSlotRef(0, 5) -> MassCraftRecipeBlock(
           MassCraftRecipe(
-            NonEmptyList.of(("netherite_scrap", 4),("gold_ingot", 4)),
+            NonEmptyList.of(("netherite_scrap", 4), ("gold_ingot", 4)),
             NonEmptyList.of(("netherite_ingot", 1))
           ),
           oneToThousand,
@@ -1270,13 +1270,13 @@ object MineStackMassCraftMenu {
           ),
           oneToThousand,
           3
-        ),
+        )
       ),
       // 1.18.2 追加ブロック(2)
       List(
         ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
           MassCraftRecipe(
-            NonEmptyList.of(("stone", 4), ("coal",1)),
+            NonEmptyList.of(("stone", 4), ("coal", 1)),
             NonEmptyList.of(("smooth_stone", 4))
           ),
           oneToThousand,
@@ -1297,7 +1297,7 @@ object MineStackMassCraftMenu {
           ),
           oneToThousand,
           1
-        ),
+        )
       )
     )
   }
