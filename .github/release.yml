@@ -1,6 +1,7 @@
 changelog:
   exclude:
-    - renovate
+    labels:
+      - renovate
   categories:
     - title: ✨ 新機能・機能改善
       labels:
