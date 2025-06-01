@@ -17,7 +17,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.number }}
         run: |
-          json=$(gh pr view "$PR_NUMBER" --json labels | jq -c '.labels|map(.name)')
+          json=$(gh pr view "$PR_NUMBER" --json labels | jq -c '.labels | map(.name)')
           echo "json=$json" >> "$GITHUB_OUTPUT"
       - name: Exist labels
         id: exist_labels
