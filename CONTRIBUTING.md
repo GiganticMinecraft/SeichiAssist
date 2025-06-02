@@ -14,7 +14,7 @@
 | **Java Development Kit** | AdoptOpenJDK 17 (Temurin)                             | [Adoptium](https://adoptium.net/temurin/releases/?version=17)                                                |
 | **ビルドツール** | sbt 1.9                                               | [公式ドキュメント](https://www.scala-sbt.org/1.x/docs/Setup.html)                                                  |
 | **プログラミング言語** | Scala 2.13                                            | sbt により自動でインストールされます                                                                             |
-| **Minecraft サーバー** | Spigot 1.18.2                                         | Docker コンテナ経由で提供されます                                                                                |
+| **Minecraft サーバー** | Paper 1.18.2                                         | Docker コンテナ経由で提供されます                                                                                |
 | **コンテナ** | Docker                                                | [公式サイト](https://www.docker.com/) (Docker Desktop など)                                                       |
 | **バージョン管理** | Git                                                   | [公式サイト](https://git-scm.com/)                                                                               |
 | **アカウント** | GitHub アカウント                                     | [GitHub](https://github.com/join)                                                                              |
