@@ -2,14 +2,11 @@ package com.github.unchama.seichiassist.listener
 
 import cats.effect.IO
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.player.GiganticBerserk
-import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
 import com.github.unchama.seichiassist.util.InventoryOperations
-import com.github.unchama.seichiassist.menus.nicknames.NickNameMenu
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
@@ -22,7 +19,6 @@ import org.bukkit.{Bukkit, Material, Sound}
 
 class PlayerInventoryListener(
   implicit effectEnvironment: EffectEnvironment,
-  ioCanOpenNicknameMenu: IO CanOpen NickNameMenu.type,
   ioOnMainThread: OnMinecraftServerThread[IO]
 ) extends Listener {
 
@@ -31,12 +27,6 @@ class PlayerInventoryListener(
   import com.github.unchama.util.syntax._
 
   private val playerMap = SeichiAssist.playermap
-
-  // 実績メニューの処理
-  @EventHandler
-  def onPlayerClickTitleMenuEvent(event: InventoryClickEvent): Unit = {
-    OnClickTitleMenu.onPlayerClickTitleMenuEvent(event)
-  }
 
   // 鉱石・交換券変換システム
   @EventHandler
