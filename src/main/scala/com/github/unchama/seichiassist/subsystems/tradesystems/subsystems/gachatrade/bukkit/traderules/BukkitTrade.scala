@@ -46,11 +46,32 @@ class BukkitTrade(owner: String, gachaPrizeTable: Vector[GachaPrizeTableEntry[It
       gachaPrize => canBeSignedAsGachaPrize.signWith(owner)(gachaPrize)
     }
 
+    // NOTE: ガチャ景品の交換は耐久値を無視する必要があるため、緩い判定を行うために独自の比較関数を用意する
+    def compareItemStack(leftHand: ItemStack, rightHand: ItemStack): Boolean = {
+      if (leftHand.getType != rightHand.getType) return false
+
+      val leftMeta = leftHand.getItemMeta
+      val rightMeta = rightHand.getItemMeta
+
+      val leftLore = Option(leftMeta.getLore)
+      val rightLore = Option(rightMeta.getLore)
+
+      val leftEnchantments = leftMeta.getEnchants
+      val rightEnchantments = rightMeta.getEnchants
+
+      val isSameDisplayName =
+        leftMeta.hasDisplayName && rightMeta.hasDisplayName
+      val isSameLore = leftLore == rightLore
+      val isSameEnchantments = leftEnchantments == rightEnchantments
+
+      isSameDisplayName && isSameLore && isSameEnchantments
+    }
+
     val (nonTradable, tradable) =
       contents.partitionMap { itemStack =>
-        if (bigList.exists(_.isSimilar(itemStack)))
+        if (bigList.exists(bigItem => compareItemStack(bigItem, itemStack)))
           Right(BigOrRegular.Big -> itemStack.getAmount)
-        else if (regularList.exists(_.isSimilar(itemStack)))
+        else if (regularList.exists(regularItem => compareItemStack(regularItem, itemStack)))
           Right(BigOrRegular.Regular -> itemStack.getAmount)
         else Left(itemStack)
       }
