@@ -59,6 +59,8 @@ class BlockLineUpTriggerListener[
     val pl = player.getLocation
     val mainHandItemType = mainHandItem.getType
 
+    if (!mainHandItemType.isBlock()) return
+
     // 仰角は下向きがプラスで上向きがマイナス
     val pitch = pl.getPitch
     val yaw = (pl.getYaw + 360) % 360
