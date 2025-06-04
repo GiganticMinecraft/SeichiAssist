@@ -47,6 +47,7 @@ class BukkitTrade(owner: String, gachaPrizeTable: Vector[GachaPrizeTableEntry[It
     }
 
     // NOTE: ガチャ景品の交換は耐久値を無視する必要があるため、緩い判定を行うために独自の比較関数を用意する
+    //  ref: https://github.com/GiganticMinecraft/SeichiAssist/issues/2150
     def compareItemStack(leftHand: ItemStack, rightHand: ItemStack): Boolean = {
       if (leftHand.getType != rightHand.getType) return false
 
