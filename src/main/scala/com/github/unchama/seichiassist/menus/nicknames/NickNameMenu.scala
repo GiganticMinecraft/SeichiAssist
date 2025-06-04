@@ -17,15 +17,13 @@ import com.github.unchama.menuinventory.{
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import com.github.unchama.seichiassist.achievement.Nicknames
-import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
-import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect}
+import com.github.unchama.targetedeffect.DeferredEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import com.github.unchama.targetedeffect.player.PlayerEffects.openInventoryEffect
 import org.bukkit.{Material, Sound}
 import org.bukkit.entity.Player
 import org.bukkit.ChatColor._
@@ -39,7 +37,8 @@ object NickNameMenu extends Menu {
     implicit val onMinecraftServerThread: OnMinecraftServerThread[IO],
     implicit val voteAPI: VoteAPI[IO, Player],
     implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player],
-    implicit val ioCanOpenNicknameCombinationMenu: IO CanOpen NicknameCombinationMenu
+    implicit val ioCanOpenNicknameCombinationMenu: IO CanOpen NicknameCombinationMenu,
+    implicit val ioCanOpenNicknameShopMenu: IO CanOpen NicknameShopMenu
   )
 
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$DARK_PURPLE${BOLD}二つ名組み合わせシステム")
@@ -148,22 +147,11 @@ object NickNameMenu extends Menu {
       )
     }
 
-    val achievementPointShop: Button = {
-      val itemStack = new IconItemStackBuilder(Material.ITEM_FRAME)
-        .title(s"$YELLOW$UNDERLINE${BOLD}実績ポイントショップ")
-        .lore(List(s"${GREEN}クリックで開きます"))
-        .build()
-
-      Button(
-        itemStack,
-        LeftClickButtonEffect {
-          SequentialEffect(
-            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 0.1f),
-            openInventoryEffect(MenuInventoryData.computePartsShopMenu(player))
-          )
-        }
-      )
-    }
+    val achievementPointShop: Button = CommonButtons.transferButton(
+      new IconItemStackBuilder(Material.ITEM_FRAME),
+      s"$YELLOW$UNDERLINE${BOLD}実績ポイントショップ",
+      NicknameShopMenu(0)
+    )
 
     val headPartsSelect: Button =
       CommonButtons.transferButton(
