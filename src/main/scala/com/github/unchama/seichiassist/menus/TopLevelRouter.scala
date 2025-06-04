@@ -73,8 +73,6 @@ trait TopLevelRouter[F[_]] {
 
   implicit val ioCanOpenCategorizedMineStackMenu: F CanOpen CategorizedMineStackMenu
 
-  implicit val ioCanOpenNickNameMenu: F CanOpen NickNameMenu.type
-
 }
 
 object TopLevelRouter {
