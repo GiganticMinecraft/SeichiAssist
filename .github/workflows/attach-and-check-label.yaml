@@ -61,6 +61,11 @@ jobs:
 
           if [ "$labels_count" -eq 0 ]; then
             echo "Error: No labels found on the PR. LABELS variable was empty or an empty JSON array."
+
+            echo "このプルリクエストにラベルがつけられていません。" > comment.md
+            echo "適切なラベルをつけてください。" >> comment.md
+
+            gh pr comment ${{ github.event.number }} --body-file comment.md
             exit 1
           else
             echo "Success: Labels exist on the PR."
