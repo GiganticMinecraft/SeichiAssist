@@ -1,0 +1,65 @@
+name: Attach and Check PR Labels
+
+on:
+  pull_request:
+    types:
+      - opened
+      - labeled
+      - unlabeled
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GH_REPO: ${{ github.repository }}
+  PR_NUMBER: ${{ github.event.number }}
+  BRANCH_NAME: ${{ github.head_ref }}
+
+jobs:
+  attach-label:
+    if: github.event.action == 'opened'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Attach label to PR
+        run: |
+          if [[ "$BRANCH_NAME" == "feat"* ]]; then
+            LABEL="feature"
+          elif [[ "$BRANCH_NAME" == "fix"* ]]; then
+            LABEL="bug"
+          elif [[ "$BRANCH_NAME" == "development"* ]]; then
+            LABEL="development"
+          elif [[ "$BRANCH_NAME" == "refactor"* ]]; then
+            LABEL="refactoring"
+          elif [[ "$BRANCH_NAME" == "ci/"* ]]; then
+            LABEL="Build / CI"
+          elif [[ "$BRANCH_NAME" == "improve"* ]]; then
+            LABEL="improvement"
+          else
+            echo "No matching label found for branch name: $BRANCH_NAME"
+            exit 0
+          fi
+          
+          gh pr edit "$PR_NUMBER" --add-label "$LABEL"
+  
+  check-labels:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Get labels
+        id: get_labels
+        run: |
+          json=$(gh pr view "$PR_NUMBER" --json labels | jq -c '.labels | map(.name)')
+          echo "json=$json" >> "$GITHUB_OUTPUT"
+      - name: Exist labels
+        id: exist_labels
+        env:
+          LABELS: ${{ steps.get_labels.outputs.json }}
+        run: |
+          labels_count=$(echo "$LABELS" | jq '. | length')
+
+          if [ "$labels_count" -eq 0 ]; then
+            echo "Error: No labels found on the PR. LABELS variable was empty or an empty JSON array."
+            exit 1
+          else
+            echo "Success: Labels exist on the PR."
+            exit 0
+          fi
