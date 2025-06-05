@@ -13,12 +13,11 @@ import com.github.unchama.seichiassist.menus.nicknames.NickNameMenu
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
-import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.{EntityType, Player}
 import org.bukkit.event.inventory.{InventoryClickEvent, InventoryCloseEvent}
 import org.bukkit.event.{EventHandler, Listener}
-import org.bukkit.inventory.{ItemFlag, ItemStack}
-import org.bukkit.{Bukkit, Material, Sound}
+import org.bukkit.inventory.ItemStack
+import org.bukkit.{Material, Sound}
 import com.github.unchama.seichiassist.items.ExchangeTicket
 
 class PlayerInventoryListener(
