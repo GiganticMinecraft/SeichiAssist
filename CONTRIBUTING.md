@@ -48,12 +48,12 @@ JDK 17 をインストールします。上記リストの [AdoptOpenJDK 17 (Tem
 Scala は sbt によって適切なバージョンが自動的にダウンロード・インストールされるため、手動でのインストールは不要です。
 
 #### 1.2.5. Docker
-Spigot サーバーの Docker コンテナを起動するために Docker をインストールします。
+Paper サーバーの Docker コンテナを起動するために Docker をインストールします。
 * [Docker の概要](https://docs.docker.com/get-started/overview/)
 * [Docker のインストール](https://docs.docker.com/get-docker/)
 
-#### 1.2.6. Spigot サーバー
-開発用の Spigot サーバーは Docker コンテナを通じて提供されるため、個別の手動セットアップは基本的に不要です。
+#### 1.2.6. Paper サーバー
+開発用の Paper サーバーは Docker コンテナを通じて提供されるため、個別の手動セットアップは基本的に不要です。
 
 #### 1.2.7. GitHub アカウント
 お持ちでない場合は、[こちらから登録](https://github.com/join)してください。
@@ -83,7 +83,7 @@ $ docker run --rm -it -v `pwd`:/app ghcr.io/giganticminecraft/seichiassist-build
 $ sudo chown -R `whoami` target/build
 
 # 4. EULA同意ファイルが存在しない場合コピー
-$ cp -n docker/spigot/eula.txt docker/spigot/serverfiles/eula.txt || true
+$ cp -n docker/paper/eula.txt docker/paper/serverfiles/eula.txt || true
 
 # 5. Docker Composeでサーバー群を起動 (バックグラウンド、必要ならビルド)
 $ docker compose up --build -d
@@ -218,7 +218,7 @@ git submodule update --init --recursive
   * **起動**:
       * Linux/macOS: プロジェクトルートで `./prepare-docker.sh` を実行します。
       * Windows: プロジェクトルートで `prepare-docker.bat` を実行します。
-        これらのスクリプトで、デバッグ用の Bungeecord と Spigot サーバー環境が構築されます。
+        これらのスクリプトで、デバッグ用の Bungeecord と Paper サーバー環境が構築されます。
   * **ガチャデータ更新オプション**:
     `./prepare-docker.sh update-gachadata` (または `prepare-docker.bat update-gachadata`) のように引数を指定すると、最新のガチャ景品データがダウンロードされ、開発環境のデータが置き換えられます。
   
@@ -232,11 +232,11 @@ git submodule update --init --recursive
 | **Minecraft サーバー** | マルチプレイから `localhost` (または Docker IP) に接続 |                                                |
 | **phpMyAdmin** | Webブラウザで `http://localhost:8080`             | データベース (MariaDB) の操作が可能です           |
 
-#### 3.4.3. Spigot サーバーコンソールへのアクセス
+#### 3.4.3. Paper サーバーコンソールへのアクセス
 
 OP権限の付与など、サーバーコンソールでの操作が必要な場合：
 
-1.  `docker ps` を実行し、SpigotコンテナのID (例: `seichiassist_spigotb_1`) を確認します。
+1.  `docker ps` を実行し、Paper コンテナのID (例: `seichiassist_paperb_1`) を確認します。
 2.  `docker attach (コンテナID)` を実行してアタッチします。
 3.  コンソールから抜けるには <kbd>Ctrl</kbd> + <kbd>C</kbd> を押します (サーバーは停止しません)。
 
