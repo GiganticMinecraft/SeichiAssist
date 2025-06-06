@@ -14,11 +14,11 @@ online_mode: false
 servers:
   s1:
     motd: '&1Just another BungeeCord - Forced Host'
-    address: spigota:25565
+    address: papera:25565
     restricted: false
   s2:
     motd: '&1Just another BungeeCord - Forced Host'
-    address: spigotb:25565
+    address: paperb:25565
     restricted: false
 listeners:
   - query_port: 25577
