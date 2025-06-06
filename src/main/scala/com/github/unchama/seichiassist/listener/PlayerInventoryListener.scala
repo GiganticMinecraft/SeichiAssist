@@ -13,12 +13,12 @@ import com.github.unchama.seichiassist.menus.nicknames.NickNameMenu
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
-import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.{EntityType, Player}
 import org.bukkit.event.inventory.{InventoryClickEvent, InventoryCloseEvent}
 import org.bukkit.event.{EventHandler, Listener}
-import org.bukkit.inventory.{ItemFlag, ItemStack}
-import org.bukkit.{Bukkit, Material, Sound}
+import org.bukkit.inventory.ItemStack
+import org.bukkit.{Material, Sound}
+import com.github.unchama.seichiassist.items.ExchangeTicket
 
 class PlayerInventoryListener(
   implicit effectEnvironment: EffectEnvironment,
@@ -107,21 +107,7 @@ class PlayerInventoryListener(
     /*
      * step2 交換券をインベントリへ
      */
-    val exchangeTicket = {
-      import scala.util.chaining._
-      new ItemStack(Material.PAPER).tap {
-        _.setItemMeta {
-          Bukkit.getItemFactory.getItemMeta(Material.PAPER).tap { m =>
-            import m._
-            setDisplayName(s"$DARK_RED${BOLD}交換券")
-            addEnchant(Enchantment.PROTECTION_FIRE, 1, false)
-            addItemFlags(ItemFlag.HIDE_ENCHANTS)
-          }
-        }
-      }
-    }
-
-    val ticketsToGive = Seq.fill(ticketAmount)(exchangeTicket)
+    val ticketsToGive = Seq.fill(ticketAmount)(ExchangeTicket.itemStack)
 
     if (ticketsToGive.nonEmpty) {
       effectEnvironment.unsafeRunAsyncTargetedEffect(player)(
