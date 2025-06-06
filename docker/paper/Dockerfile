@@ -18,7 +18,7 @@ COPY --link --from=chunk-search-provider /build/chunk-search-rs /usr/bin/chunk-s
 
 # プラグインとスクリプトをローカルからコピーする
 COPY --link ./target/build/ /SeichiAssist/
-COPY --link ./docker/spigot/ /data/
+COPY --link ./docker/paper/ /data/
 ADD ./localDependencies/ /data/plugins/
 ADD ./plugins /plugins
 

@@ -3,20 +3,20 @@ networks:
     external: false
 
 volumes:
-  spigot_a:
-  spigot_b:
+  paper_a:
+  paper_b:
   db-data:
   redis-data:
 
 services:
-  spigota:
+  papera:
     build:
       context: .
-      dockerfile: ./docker/spigot/Dockerfile
+      dockerfile: ./docker/paper/Dockerfile
     networks:
       - seichi
     volumes:
-      - spigot_a:/data
+      - paper_a:/data
     ports:
       - "25566:25565"
       - "7091:7091"
@@ -39,14 +39,14 @@ services:
       - db
       - redis
     stdin_open: true
-  spigotb:
+  paperb:
     build:
       context: .
-      dockerfile: ./docker/spigot/Dockerfile
+      dockerfile: ./docker/paper/Dockerfile
     networks:
       - seichi
     volumes:
-      - spigot_b:/data
+      - paper_b:/data
     ports:
       - "25567:25565"
       - "7092:7091"
@@ -81,8 +81,8 @@ services:
     environment:
       - PLUGINS=https://github.com/ProxioDev/RedisBungee/releases/download/0.10.1/RedisBungee-Bungee-0.10.1-SNAPSHOT.jar
     depends_on:
-      - spigota
-      - spigotb
+      - papera
+      - paperb
     stdin_open: true
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:5.2.2
