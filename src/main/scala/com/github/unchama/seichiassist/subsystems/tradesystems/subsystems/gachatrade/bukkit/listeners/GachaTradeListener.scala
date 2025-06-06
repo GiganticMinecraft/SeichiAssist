@@ -45,7 +45,7 @@ class GachaTradeListener[F[_]: ConcurrentEffect, G[_]](rule: GachaTradeRule[Item
     val tradedInformation =
       rule
         .ruleFor(name, gachaListProvider.readGachaList.toIO.unsafeRunSync())
-        .trade(inventory.getContents.toList)
+        .trade(inventory.getContents.filterNot(_ == null).toList)
 
     val tradeAmount = tradedInformation.tradedSuccessResult.map(_.amount).sum
 
