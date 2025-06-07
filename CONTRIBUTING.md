@@ -112,7 +112,7 @@ $ docker compose up --build -d
   * **IntelliJ IDEA を使用する場合**: [JetBrains のヘルプ (英語)](https://www.jetbrains.com/help/idea/cloning-repository.html) を参考にクローンしてください。
   * **コマンドラインを使用する場合**: ターミナルで以下のコマンドを実行します (`your-username` は実際のGitHubユーザー名に置き換えてください)。
     ```bash
-    git clone https://github.com/your-username/SeichiAssist.git
+    git clone --recursive https://github.com/your-username/SeichiAssist.git
     cd SeichiAssist # クローンしたディレクトリに移動
     ```
 
