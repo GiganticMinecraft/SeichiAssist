@@ -60,8 +60,6 @@ import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.{Location, World}
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import com.github.unchama.seichiassist.menus.nicknames.NicknameCombinationMenu
-import com.github.unchama.seichiassist.menus.nicknames.NicknameShopMenu
 
 trait TopLevelRouter[F[_]] {
 
@@ -72,6 +70,8 @@ trait TopLevelRouter[F[_]] {
   implicit val ioCanOpenMineStackMenu: F CanOpen MineStackMainMenu.type
 
   implicit val ioCanOpenCategorizedMineStackMenu: F CanOpen CategorizedMineStackMenu
+
+  implicit val ioCanOpenNickNameMenu: F CanOpen NickNameMenu.type
 
 }
 
@@ -125,10 +125,6 @@ object TopLevelRouter {
       new PremiumPointTransactionHistoryMenu.Environment
     implicit lazy val serverSwitchMenuEnv: ServerSwitchMenu.Environment =
       new ServerSwitchMenu.Environment
-    implicit lazy val nicknameCombinationMenuEnv: NicknameCombinationMenu.Environment =
-      new NicknameCombinationMenu.Environment
-    implicit lazy val achievementShopMenuEnv: NicknameShopMenu.Environment =
-      new NicknameShopMenu.Environment
     implicit lazy val nickNameMenuEnv: NickNameMenu.Environment =
       new NickNameMenu.Environment
     implicit lazy val achievementMenuEnv: AchievementMenu.Environment =
@@ -167,11 +163,6 @@ object TopLevelRouter {
     implicit lazy val stickMenuEnv: FirstPage.Environment = new FirstPage.Environment
 
     implicit lazy val ioCanOpenVoteMenu: IO CanOpen VoteMenu.type = _.open
-
-    implicit lazy val ioCanOpenNicknameShopMenu: IO CanOpen NicknameShopMenu = _.open
-
-    implicit lazy val ioCanOpenNicknameCombinationMenu: IO CanOpen NicknameCombinationMenu =
-      _.open
 
     implicit lazy val ioCanOpenNickNameMenu: IO CanOpen NickNameMenu.type = _.open
 
