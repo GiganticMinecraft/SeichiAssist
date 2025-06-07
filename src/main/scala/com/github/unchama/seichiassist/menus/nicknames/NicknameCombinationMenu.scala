@@ -120,9 +120,6 @@ case class NicknameCombinationMenu(pageIndex: Int = 0, nicknamePart: NicknamePar
     implicit val environment: Environment
   ) {
 
-    // TODO: この定数は二つ名機能が再実装されたときに、更新時の制約として実装すべき
-    val MaxConbinatedNicknameLength = 8;
-
     import environment._
 
     private val playerdata = SeichiAssist.playermap(player.getUniqueId)
@@ -152,25 +149,12 @@ case class NicknameCombinationMenu(pageIndex: Int = 0, nicknamePart: NicknamePar
             SequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f),
               DeferredEffect(IO {
-                val length = Nicknames
-                  .getCombinedNicknameFor(
-                    archivementId,
-                    playerdata.settings.nickname.id2,
-                    playerdata.settings.nickname.id3
-                  )
-                  .getOrElse("")
-                  .length
-
-                if (length > MaxConbinatedNicknameLength) {
-                  MessageEffect(s"全パーツ合計で${MaxConbinatedNicknameLength}文字以内になるよう設定してください。")
-                } else {
-                  nicknamePart match {
-                    case Head   => playerdata.updateNickname(id1 = archivementId)
-                    case Middle => playerdata.updateNickname(id2 = archivementId)
-                    case Tail   => playerdata.updateNickname(id3 = archivementId)
-                  }
-                  MessageEffect(s"${nicknamePart.displayName}パーツ「${nickname}」をセットしました。")
+                nicknamePart match {
+                  case Head   => playerdata.updateNickname(id1 = archivementId)
+                  case Middle => playerdata.updateNickname(id2 = archivementId)
+                  case Tail   => playerdata.updateNickname(id3 = archivementId)
                 }
+                MessageEffect(s"${nicknamePart.displayName}パーツ「${nickname}」をセットしました。")
               })
             )
           )
