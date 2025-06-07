@@ -810,6 +810,7 @@ class SeichiAssist extends JavaPlugin() {
       case (commandName, executor) => getCommand(commandName).setExecutor(executor)
     }
 
+    import menuRouter.ioCanOpenNickNameMenu
     // リスナーの登録
     val listeners = Seq(
       new PlayerJoinListener(),
