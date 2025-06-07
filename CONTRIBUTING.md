@@ -339,7 +339,7 @@ PR を作成すると、GitHub Actions による自動チェックが実行さ�
   * **反映時間**: 通常、数分程度で完了します。
   * **接続方法**:
     1.  Minecraft Java Edition でサーバーアドレス `play-debug.seichi.click` に接続します。
-    2.  チャットを開き (<kbd>T</kbd> キー)、`/server deb112` と入力して <kbd>Enter</kbd> を押します。
+    2.  チャットを開き (<kbd>T</kbd> キー)、`/server debug-s1` と入力して <kbd>Enter</kbd> を押します。
 
 #### 5.1.1. 自動リリースの対象範囲
 
