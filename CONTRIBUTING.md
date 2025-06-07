@@ -221,8 +221,11 @@ git submodule update --init --recursive
         これらのスクリプトで、デバッグ用の Bungeecord と Paper サーバー環境が構築されます。
   * **ガチャデータ更新オプション**:
     `./prepare-docker.sh update-gachadata` (または `prepare-docker.bat update-gachadata`) のように引数を指定すると、最新のガチャ景品データがダウンロードされ、開発環境のデータが置き換えられます。
-  
-    ※ 初回起動時は `gachadata` テーブルが空です。ガチャ景品データが必要な場合、まずオプションなしで一度サーバーを起動し、その後 `update-gachadata` オプション付きで再度起動してください。初回起動時に `update-gachadata` を指定すると、Flyway によるマイグレーションと競合し、起動できません(2025/06/02 時点)。
+
+> [!WARNING]
+>
+> 初回起動時は `gachadata` テーブルが空です。ガチャ景品データが必要な場合、まずオプションなしで一度サーバーを起動し、その後 `update-gachadata` オプション付きで再度起動してください。初回起動時に `update-gachadata` を指定すると、Flyway によるマイグレーションと競合し、起動できません(2025/06/02 時点)。
+
   * **停止**: `docker compose down` コマンドを実行します。
 
 #### 3.4.2. デバッグ環境への接続と操作
