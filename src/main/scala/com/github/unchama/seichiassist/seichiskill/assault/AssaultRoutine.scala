@@ -42,7 +42,7 @@ object AssaultRoutine {
       refinedTool = MaterialSets.refineItemStack(offHandTool, MaterialSets.breakToolMaterials)
       _ <- refinedTool match {
         case Some(tool) => AssaultRoutine(player, tool, skill)
-        case None =>
+        case None       =>
           IO {
             player.sendMessage(s"${GREEN}使うツールをオフハンドにセット(fキー)してください")
           }

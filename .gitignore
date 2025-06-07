@@ -13,11 +13,11 @@
 
 # Local files
 deployLocal.sh
-localDependencies/spigot-1.18.2.jar
+localDependencies/paper-1.18.2.jar
 plugins/*
 
 # Docker
-docker/spigot/serverfiles/eula.txt
+docker/paper/serverfiles/eula.txt
 
 .env
 

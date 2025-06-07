@@ -2,6 +2,18 @@ name: build check
 
 on:
   push:
+    branches:
+      - develop
+      - master
+    paths:
+      - src/**
+      - build.sbt
+      - .scalafix.conf
+      - .scalafmt.conf
+      - project/*
+      - .github/workflows/**.yml
+      - .github/actions/**/**.yml
+  pull_request:
     paths:
       - src/**
       - build.sbt

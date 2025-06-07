@@ -76,7 +76,7 @@ object RmpCommand {
     } else {
       isSeichiWorldWithWGRegionsOption match {
         case None | Some(false) => MessageEffect(s"第1整地以外の保護をかけて整地する整地ワールドでのみ使用出来ます")
-        case Some(true) =>
+        case Some(true)         =>
           getOldRegionsIn(world, days).map { removalTargets =>
             removalTargets.foreach(WorldGuardWrapper.removeByProtectedRegionRegion(world, _))
 

@@ -8,7 +8,7 @@ import java.io._
 ThisBuild / scalaVersion := "2.13.16"
 // ThisBuild / version はGitHub Actionsによって取得/自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
-ThisBuild / version := "96"
+ThisBuild / version := "97"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
@@ -88,8 +88,8 @@ val dependenciesToEmbed = Seq(
 
   // DB
   "org.mariadb.jdbc" % "mariadb-java-client" % "3.5.3",
-  "org.flywaydb" % "flyway-core" % "11.8.2",
-  "org.flywaydb" % "flyway-mysql" % "11.8.2",
+  "org.flywaydb" % "flyway-core" % "11.9.1",
+  "org.flywaydb" % "flyway-mysql" % "11.9.1",
   "org.scalikejdbc" %% "scalikejdbc" % "4.3.3",
 
   // redis

@@ -18,6 +18,7 @@ import org.bukkit.entity.{Player}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.{PotionMeta, Damageable}
 import org.bukkit.potion.{PotionData, PotionType}
+import com.github.unchama.seichiassist.items.ExchangeTicket
 
 class BukkitMineStackObjectList[F[_]: Sync](
   implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
@@ -98,6 +99,13 @@ class BukkitMineStackObjectList[F[_]: Sync](
     MineStackObjectByMaterial(ORES, "exposed_cut_copper", "風化した切り込み入りの銅", Material.EXPOSED_CUT_COPPER),
     MineStackObjectByMaterial(ORES, "weathered_cut_copper", "錆びた切り込み入りの銅", Material.WEATHERED_CUT_COPPER),
     MineStackObjectByMaterial(ORES, "oxidized_cut_copper", "酸化した切り込み入りの銅", Material.OXIDIZED_CUT_COPPER),
+    MineStackObjectByItemStack(
+      ORES,
+      "exchange_ticket",
+      Some("交換券"),
+      hasNameLore = false,
+      ExchangeTicket.itemStack
+    ),
   )
 
   import scala.util.chaining._

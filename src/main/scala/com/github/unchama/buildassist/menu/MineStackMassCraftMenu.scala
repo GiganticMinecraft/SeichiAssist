@@ -848,12 +848,17 @@ object MineStackMassCraftMenu {
         ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
           MassCraftRecipe(
             NonEmptyList.of(("cobblestone", 6)),
-            NonEmptyList.of(("stone_stairs", 4))
+            NonEmptyList.of(("cobblestone_stairs", 4))
           ),
           oneToThousand,
           3
         ),
         ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(NonEmptyList.of(("stone", 6)), NonEmptyList.of(("stone_stairs", 4))),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
           MassCraftRecipe(
             NonEmptyList.of(("granite", 6)),
             NonEmptyList.of(("granite_stairs", 4))
@@ -861,7 +866,7 @@ object MineStackMassCraftMenu {
           oneToThousand,
           3
         ),
-        ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
+        ChestSlotRef(3, 0) -> MassCraftRecipeBlock(
           MassCraftRecipe(
             NonEmptyList.of(("diorite", 6)),
             NonEmptyList.of(("diorite_stairs", 4))
@@ -869,7 +874,7 @@ object MineStackMassCraftMenu {
           oneToThousand,
           3
         ),
-        ChestSlotRef(3, 0) -> MassCraftRecipeBlock(
+        ChestSlotRef(4, 0) -> MassCraftRecipeBlock(
           MassCraftRecipe(
             NonEmptyList.of(("andesite", 6)),
             NonEmptyList.of(("andesite_stairs", 4))
@@ -877,7 +882,7 @@ object MineStackMassCraftMenu {
           oneToThousand,
           3
         ),
-        ChestSlotRef(4, 0) -> MassCraftRecipeBlock(
+        ChestSlotRef(0, 5) -> MassCraftRecipeBlock(
           MassCraftRecipe(
             NonEmptyList.of(("smooth_brick0", 6)),
             NonEmptyList.of(("smooth_stairs", 4))
@@ -1206,6 +1211,92 @@ object MineStackMassCraftMenu {
           ),
           oneToThousand,
           3
+        )
+      ),
+      // 1.18.2 追加ブロック(1)
+      List(
+        ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("raw_copper", 9)),
+            NonEmptyList.of(("raw_copper_block", 1))
+          ),
+          oneToThousand,
+          1
+        ),
+        ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("raw_iron", 9)),
+            NonEmptyList.of(("raw_iron_block", 1))
+          ),
+          oneToThousand,
+          1
+        ),
+        ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("raw_gold", 9)),
+            NonEmptyList.of(("raw_gold_block", 1))
+          ),
+          oneToThousand,
+          1
+        ),
+        ChestSlotRef(3, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("copper_ingot", 9)),
+            NonEmptyList.of(("copper_block", 1))
+          ),
+          oneToThousand,
+          1
+        ),
+        ChestSlotRef(4, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("netherite_ingot", 9)),
+            NonEmptyList.of(("netherite_block", 1))
+          ),
+          oneToThousand,
+          1
+        ),
+        ChestSlotRef(0, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("netherite_scrap", 4), ("gold_ingot", 4)),
+            NonEmptyList.of(("netherite_ingot", 1))
+          ),
+          oneToThousand,
+          1
+        ),
+        ChestSlotRef(1, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("ancient_debris", 4), ("coal", 1)),
+            NonEmptyList.of(("netherite_scrap", 4))
+          ),
+          oneToThousand,
+          3
+        )
+      ),
+      // 1.18.2 追加ブロック(2)
+      List(
+        ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("stone", 4), ("coal", 1)),
+            NonEmptyList.of(("smooth_stone", 4))
+          ),
+          oneToThousand,
+          3
+        ),
+        ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("smooth_stone", 3)),
+            NonEmptyList.of(("smooth_stone_slab", 6))
+          ),
+          oneToThousand,
+          1
+        ),
+        ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("step0", 1)),
+            NonEmptyList.of(("smooth_stone_slab", 1))
+          ),
+          oneToThousand,
+          1
         )
       )
     )

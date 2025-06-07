@@ -4,5 +4,6 @@
     "config:base"
   ],
   "timezone": "Asia/Tokyo",
+  "labels": ["renovate"],
   "reviewers": ["kory33","Lucky3028","rito528"]
 }

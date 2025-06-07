@@ -130,7 +130,7 @@ object AsymmetricTryableDeferred {
               @tailrec
               def unregister(): Unit =
                 ref.get match {
-                  case State.Set(_) => ()
+                  case State.Set(_)             => ()
                   case s @ State.Unset(waiting) =>
                     val updated = State.Unset(waiting - id)
                     if (ref.compareAndSet(s, updated)) ()
@@ -156,7 +156,7 @@ object AsymmetricTryableDeferred {
       @tailrec
       def register(): Option[A] =
         ref.get match {
-          case State.Set(a) => Some(a)
+          case State.Set(a)             => Some(a)
           case s @ State.Unset(waiting) =>
             val updated = State.Unset(waiting.updated(id, (a: A) => cb(Right(a))))
             if (ref.compareAndSet(s, updated)) None

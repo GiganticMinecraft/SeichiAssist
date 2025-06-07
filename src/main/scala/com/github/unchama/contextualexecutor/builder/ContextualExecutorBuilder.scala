@@ -48,7 +48,7 @@ case class ContextualExecutorBuilder[CS <: CommandSender, HArgs <: HList](
         head <- OptionT(this.argumentsParser(sender, rawContext))
         nextArgument <- head.yetToBeParsed.headOption match {
           case Some(value) => OptionT.some[IO](value)
-          case None =>
+          case None        =>
             OptionT.liftF(onMissingArguments match {
               case Some(onMissingArguments) => onMissingArguments.executionWith(rawContext)
               case None                     => IO.unit
