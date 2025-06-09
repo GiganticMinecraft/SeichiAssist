@@ -277,18 +277,21 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
       }
 
     val listEnabled: ContextualExecutor =
-      ContextualExecutorBuilder.beginConfiguration.buildWithExecutionCSEffect { _ =>
-        Kleisli.liftF(gachaPrizeAPI.listOfNow).flatMap { events =>
-          val messages = "アイテム | 確率 | 記名の有無" +: events.map { gachaPrize =>
-            val itemStack = gachaPrize.itemStack
-            val probability = gachaPrize.probability.value
-            s"${itemStack.getType.toString} | $probability(${probability * 100}%) | ${if (
-                gachaPrize.signOwner
-              ) "あり"
-              else "なし"}"
-          }
+      ContextualExecutorBuilder.beginConfiguration.buildWithExecutionCSEffect { context =>
+        Kleisli.liftF(gachaPrizeAPI.listOfNow).flatMap { gachaPrizes =>
+          val gachaPrizeInformation = gachaPrizes
+            .map { gachaPrize =>
+              val itemStack = gachaPrize.itemStack
+              val probability = gachaPrize.probability.value
+              val isSign = if (gachaPrize.signOwner) "あり" else "なし"
 
-          MessageEffectF(messages.toList)
+              s"${gachaPrize.id.id}|${itemStack.getType.toString}/${itemStack.getItemMeta.getDisplayName}|${itemStack.getAmount}|$probability(${probability * 100}%)|$isSign"
+            }
+            .toList
+
+          MessageEffectF(
+            List(s"${RED}アイテム番号|アイテム名|アイテム数|出現確率|記名の有無") ++ gachaPrizeInformation
+          )
         }
       }
 
