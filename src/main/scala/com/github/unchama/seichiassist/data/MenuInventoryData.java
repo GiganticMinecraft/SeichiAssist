@@ -359,7 +359,7 @@ public final class MenuInventoryData {
         playerdata.samepageflag_$eq(false);
         int inventoryIndex = 1;
         int forNextI = 0;
-        for (int i = shopIndex.get(uuid).get(); i <= 9833; i++) {
+        for (int i = shopIndex.get(uuid).get(); i <= 9837; i++) {
             final List<String> lore;
             final ItemStack itemstack;
             if (inventoryIndex < 27) {
