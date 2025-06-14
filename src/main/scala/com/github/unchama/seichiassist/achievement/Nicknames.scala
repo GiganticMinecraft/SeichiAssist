@@ -240,6 +240,10 @@ object Nicknames {
     9831 -> HeadTail(s"襲来", s"襲来"),
     9832 -> HeadTail(s"撃退", s"撃退"),
     9833 -> HeadTail(s"脚", s"脚"),
+    9834 -> HeadTail(s"何", s"何"),
+    9835 -> HeadTail(s"おじさん", s"おじさん"),
+    9836 -> HeadTail(s"様", s"様"),
+    9837 -> HeadTail(s"教", s"教"),
     // 中パーツ(初期開放)
     9901 -> MiddleOnly(s"は"),
     9902 -> MiddleOnly(s"な"),
