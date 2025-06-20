@@ -64,6 +64,8 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
         s"$RED/gacha list (<イベント>)",
         "指定したイベントのガチャリストを表示",
         s"$DARK_GRAY※イベント名を指定しなかった場合は通常排出アイテムを表示します",
+        s"$RED/gacha list-enabled",
+        "現在有効になっているガチャリストを表示",
         s"$RED/gacha remove <番号>",
         "リスト該当番号のガチャ景品を削除",
         s"$RED/gacha setamount <番号> <個数>",
@@ -93,6 +95,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
         "add" -> add,
         "remove" -> remove,
         "list" -> list,
+        "list-enabled" -> listEnabled,
         "setamount" -> setAmount,
         "setprob" -> setProbability,
         "create-event" -> createEvent,
@@ -266,6 +269,28 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
           val totalProbability = eventGachaPrizes.map(_.probability.value).sum
           MessageEffectF(
             List(s"${RED}アイテム番号|アイテム名|アイテム数|出現確率") ++ gachaPrizeInformation ++ List(
+              s"${RED}合計確率: $totalProbability(${totalProbability * 100}%)",
+              s"${RED}合計確率は100%以内に収まるようにしてください。"
+            )
+          )
+        }
+      }
+
+    val listEnabled: ContextualExecutor =
+      ContextualExecutorBuilder.beginConfiguration.buildWithExecutionCSEffect { _ =>
+        Kleisli.liftF(gachaPrizeAPI.listOfNow).flatMap { gachaPrizes =>
+          // FIXME: /gacha list と同じコードが書かれているので、共通化したい
+          val gachaPrizeInformation = gachaPrizes.map { gachaPrize =>
+            val itemStack = gachaPrize.itemStack
+            val probability = gachaPrize.probability.value
+            val isSign = if (gachaPrize.signOwner) "あり" else "なし"
+
+            s"${gachaPrize.id.id}|${itemStack.getType.toString}/${itemStack.getItemMeta.getDisplayName}|${itemStack.getAmount}|$probability(${probability * 100}%)|$isSign"
+          }.toList
+
+          val totalProbability = gachaPrizes.map(_.probability.value).sum
+          MessageEffectF(
+            List(s"${RED}アイテム番号|アイテム名|アイテム数|出現確率|記名の有無") ++ gachaPrizeInformation ++ List(
               s"${RED}合計確率: $totalProbability(${totalProbability * 100}%)",
               s"${RED}合計確率は100%以内に収まるようにしてください。"
             )
