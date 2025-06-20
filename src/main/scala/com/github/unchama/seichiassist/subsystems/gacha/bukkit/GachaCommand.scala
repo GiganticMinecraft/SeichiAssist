@@ -279,6 +279,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
     val listEnabled: ContextualExecutor =
       ContextualExecutorBuilder.beginConfiguration.buildWithExecutionCSEffect { _ =>
         Kleisli.liftF(gachaPrizeAPI.listOfNow).flatMap { gachaPrizes =>
+          // FIXME: /gacha list と同じコードが書かれているので、共通化したい
           val gachaPrizeInformation = gachaPrizes.map { gachaPrize =>
             val itemStack = gachaPrize.itemStack
             val probability = gachaPrize.probability.value
@@ -287,7 +288,13 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
             s"${gachaPrize.id.id}|${itemStack.getType.toString}/${itemStack.getItemMeta.getDisplayName}|${itemStack.getAmount}|$probability(${probability * 100}%)|$isSign"
           }.toList
 
-          MessageEffectF(List(s"${RED}アイテム番号|アイテム名|アイテム数|出現確率|記名の有無") ++ gachaPrizeInformation)
+          val totalProbability = gachaPrizes.map(_.probability.value).sum
+          MessageEffectF(
+            List(s"${RED}アイテム番号|アイテム名|アイテム数|出現確率|記名の有無") ++ gachaPrizeInformation ++ List(
+              s"${RED}合計確率: $totalProbability(${totalProbability * 100}%)",
+              s"${RED}合計確率は100%以内に収まるようにしてください。"
+            )
+          )
         }
       }
 
