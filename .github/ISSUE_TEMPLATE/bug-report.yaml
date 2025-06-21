@@ -1,0 +1,78 @@
+name: "不具合報告"
+description: "SeichiAssistの不具合を報告します"
+labels:
+  - "bug"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        - 運営チームへのお問い合わせはここでは行えません。
+        - Issueには、必ず投稿の詳細を簡潔に記載してください。
+        - 調査に必要な情報 (サーバー名・ワールド名など) を全て含めてください。
+        - 複数の不具合を報告する際は1つのIssueにまとめず、不具合ごとに新しいIssueを作成してください。
+        - アイテム名など、ギガンティック⭐︎整地鯖・Minecraft において公式名称が存在するものに関しては、極力俗称や略称を使用しないようにしてください。
+        - エラーメッセージが存在する場合は、どのようなメッセージだったのかを記載してください。
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: 不具合を報告する前に
+      description: 不具合を報告する前に、以下の項目を確認してください。
+      options:
+        - label: 報告しようとしている不具合に関するIssueが[既に作成されていない](https://github.com/GiganticMinecraft/SeichiAssist/issues?q=)か確認しましたか?
+          required: true
+        - label: 悪用やセキュリティの脆弱性に関わる不具合の場合は[不具合フォーム](https://docs.google.com/forms/d/e/1FAIpQLScVOkjQvHNzdxAyOJvU3mCSPtZhsFFQK7yI1HFlyQRY8M7KMQ/viewform?pli=1)に報告してください。
+          required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: 概要
+      description: どのような問題が起きているのか簡単な概要
+    validations:
+      required: true
+  - type: input
+    id: date
+    attributes:
+      label: 発生日時
+      description: 不具合が発生した日時
+      placeholder: YYYY/MM/DD
+    validations:
+      required: true
+  - type: dropdown
+    id: server
+    attributes:
+      label: サーバー名
+      description: 不具合が発生したサーバー名
+      options:
+        - アルカディア (s1)
+        - エデン (s2)
+        - ヴァルハラ (s3)
+        - 整地専用 (s5)
+        - 公共施設 (s7)
+    validations:
+      required: true
+  - type: input
+    id: world
+    attributes:
+      label: ワールド名
+      description: 不具合が発生したワールド名
+    validations:
+      required: true
+  - type: input
+    id: coordinate
+    attributes:
+      label: 座標
+      description: ワールド関連の不具合を報告する際は記載してください。わからない場合はそのまま記載してください。
+      placeholder: x, y, z
+    validations:
+      required: false
+  - type: textarea
+    id: steps
+    attributes:
+      label: 再現手順
+      description: 不具合発生に至った手順を詳しく記載してください。
+      placeholder: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
