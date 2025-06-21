@@ -444,6 +444,7 @@ class SeichiAssist extends JavaPlugin() {
 
   private lazy val gachaTradeSystem
     : subsystems.tradesystems.subsystems.gachatrade.System[IO, Player, ItemStack] = {
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
     implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player] = playerHeadSkinSystem.api
 
