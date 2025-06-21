@@ -24,6 +24,7 @@ import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachat
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.BukkitTradeActionFromInventory
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.seichiassist.subsystems.tradesystems.domain.TradeResult
 
 trait System[F[_], Player, ItemStack] extends Subsystem[F] {
   val api: GachaTradeAPI[F, Player, ItemStack]
@@ -62,6 +63,18 @@ object System {
                 gachaTradeRule.ruleFor(player.getName(), gachaList).tradableItems
               }
             }
+
+          override def trade(
+            contents: List[ItemStack]
+          ): Kleisli[F, Player, TradeResult[ItemStack, (BigOrRegular, Int)]] = {
+            Kleisli { player =>
+              gachaListProvider.readGachaList.flatMap { gachaList =>
+                inventoryTradeAction.execute(player, contents)(
+                  gachaTradeRule.ruleFor(player.getName(), gachaList)
+                )
+              }
+            }
+          }
         }
 
       override val listeners: Seq[Listener] = Seq(new GachaTradeListener[F, G](gachaTradeRule))
