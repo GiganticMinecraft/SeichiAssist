@@ -86,6 +86,8 @@ case class NicknameCombinationMenu(pageIndex: Int = 0, nicknamePart: NicknamePar
     val nicknameButtonPerPage = (MenuRowCount - 1).chestRows.slotCount
 
     val nickNameCombinationMenuButtons = NickNameCombinationMenuButtons(player, nicknamePart)
+    val playerdata = SeichiAssist.playermap(player.getUniqueId)
+
     import nickNameCombinationMenuButtons._
 
     val archivementButtonMapping = liftedArchivementId
@@ -96,9 +98,13 @@ case class NicknameCombinationMenu(pageIndex: Int = 0, nicknamePart: NicknamePar
       .zipWithIndex
       .flatMap {
         case (archivementId, index) =>
-          val button = headPartButton(archivementId)
+          if (playerdata.TitleFlags.contains(archivementId)) {
+            val button = headPartButton(archivementId)
 
-          button.map(index -> _)
+            button.map(index -> _)
+          } else {
+            Some(index -> lockedNicknameButton(archivementId))
+          }
       }
 
     import eu.timepit.refined.auto._
@@ -160,6 +166,23 @@ case class NicknameCombinationMenu(pageIndex: Int = 0, nicknamePart: NicknamePar
           )
         )
       }
+    }
+
+    def lockedNicknameButton(archivementId: Int): Button = {
+      val itemStack = new IconItemStackBuilder(Material.BEDROCK)
+        .title(archivementId.toString())
+        .lore(s"$RED${archivementId.toString()}は解禁されていません。")
+        .build()
+
+      Button(
+        itemStack,
+        LeftClickButtonEffect(
+          SequentialEffect(
+            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f),
+            MessageEffect(s"$RED${archivementId.toString()}は解禁されていません。")
+          )
+        )
+      )
     }
 
     val resetSelectionButton: Button = {
