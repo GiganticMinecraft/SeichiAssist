@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 公式Discordグループ内 "#不具合報告"
+    about: GitHubに慣れていない方は公式Discordグループからでも不具合を報告できます。
+    url: https://discord.gg/GcJtgsCj3W
+  - name: 不具合フォーム
+    about: 悪用やセキュリティの脆弱性に関わる不具合は、こちらのフォームから報告してください。
+    url: https://docs.google.com/forms/d/e/1FAIpQLScVOkjQvHNzdxAyOJvU3mCSPtZhsFFQK7yI1HFlyQRY8M7KMQ/viewform?pli=1
