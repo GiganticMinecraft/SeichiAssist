@@ -442,7 +442,8 @@ class SeichiAssist extends JavaPlugin() {
     : subsystems.tradesystems.subsystems.gttosiina.System[IO, ItemStack] =
     subsystems.tradesystems.subsystems.gttosiina.System.wired[IO]
 
-  private lazy val gachaTradeSystem: Subsystem[IO] = {
+  private lazy val gachaTradeSystem
+    : subsystems.tradesystems.subsystems.gachatrade.System[IO, Player, ItemStack] = {
     implicit val gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
     implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player] = playerHeadSkinSystem.api
 

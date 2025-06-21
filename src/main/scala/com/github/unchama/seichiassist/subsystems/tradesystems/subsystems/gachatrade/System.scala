@@ -18,14 +18,21 @@ import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachat
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import org.bukkit.inventory.ItemStack
+import cats.data.Kleisli
+
+trait System[F[_], Player, ItemStack] extends Subsystem[F] {
+  val api: GachaTradeAPI[F, Player, ItemStack]
+}
 
 object System {
+
+  import cats.implicits._
 
   def wired[F[_]: ConcurrentEffect, G[_]](
     implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
     gachaPointApi: GachaPointApi[F, G, Player],
     playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
-  ): Subsystem[F] = {
+  ): System[F, Player, ItemStack] = {
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
       gachaPrizeAPI.canBeSignedAsGachaPrize
     implicit val gachaListProvider: GachaListProvider[F, ItemStack] =
@@ -37,7 +44,17 @@ object System {
       (playerName: String, gachaList: Vector[GachaPrizeTableEntry[ItemStack]]) =>
         new BukkitTrade(playerName, gachaList)
 
-    new Subsystem[F] {
+    new System[F, Player, ItemStack] {
+      override val api: GachaTradeAPI[F, Player, ItemStack] =
+        new GachaTradeAPI[F, Player, ItemStack] {
+          override def getTradableItems: Kleisli[F, Player, Vector[ItemStack]] =
+            Kleisli { player =>
+              gachaListProvider.readGachaList.map { gachaList =>
+                gachaTradeRule.ruleFor(player.getName(), gachaList).tradableItems
+              }
+            }
+        }
+
       override val listeners: Seq[Listener] = Seq(new GachaTradeListener[F, G](gachaTradeRule))
     }
   }
