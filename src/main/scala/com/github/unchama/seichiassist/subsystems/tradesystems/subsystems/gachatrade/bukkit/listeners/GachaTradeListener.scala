@@ -21,7 +21,7 @@ import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 
 class GachaTradeListener[F[_]: ConcurrentEffect, G[_]](rule: GachaTradeRule[ItemStack])(
-  implicit gachaListProvider: GachaListProvider[F, ItemStack],
+  gachaListProvider: GachaListProvider[F, ItemStack],
   tradeAction: TradeAction[F, Player, ItemStack, (BigOrRegular, Int)],
   effectEnvironment: EffectEnvironment
 ) extends Listener {

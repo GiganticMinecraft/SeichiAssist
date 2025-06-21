@@ -21,10 +21,12 @@ import org.bukkit.inventory.ItemStack
 import cats.data.Kleisli
 import com.github.unchama.seichiassist.subsystems.tradesystems.application.TradeAction
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.traderules.BigOrRegular
-import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.BukkitTradeActionFromInventory
+import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.actions.BukkitTradeActionFromInventory
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.subsystems.tradesystems.domain.TradeResult
+import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.actions.BukkitTradeActionFromMineStack
+import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 
 trait System[F[_], Player, ItemStack] extends Subsystem[F] {
   val api: GachaTradeAPI[F, Player, ItemStack]
@@ -37,6 +39,7 @@ object System {
   def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread, G[_]](
     implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
     gachaPointApi: GachaPointApi[F, G, Player],
+    mineStackAPI: MineStackAPI[F, Player, ItemStack],
     playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player],
     effectEnvironment: EffectEnvironment
   ): System[F, Player, ItemStack] = {
@@ -51,8 +54,10 @@ object System {
       (playerName: String, gachaList: Vector[GachaPrizeTableEntry[ItemStack]]) =>
         new BukkitTrade(playerName, gachaList)
 
-    implicit val inventoryTradeAction: TradeAction[F, Player, ItemStack, (BigOrRegular, Int)] =
+    val inventoryTradeAction: TradeAction[F, Player, ItemStack, (BigOrRegular, Int)] =
       new BukkitTradeActionFromInventory[F, G]
+    val mineStackTradeAction: TradeAction[F, Player, ItemStack, (BigOrRegular, Int)] =
+      new BukkitTradeActionFromMineStack[F, G]
 
     new System[F, Player, ItemStack] {
       override val api: GachaTradeAPI[F, Player, ItemStack] =
@@ -64,7 +69,7 @@ object System {
               }
             }
 
-          override def trade(
+          override def tradeFromInventory(
             contents: List[ItemStack]
           ): Kleisli[F, Player, TradeResult[ItemStack, (BigOrRegular, Int)]] = {
             Kleisli { player =>
@@ -75,9 +80,27 @@ object System {
               }
             }
           }
+
+          override def tradeFromMineStack(
+            contents: List[ItemStack]
+          ): Kleisli[F, Player, TradeResult[ItemStack, (BigOrRegular, Int)]] = {
+            Kleisli { player =>
+              gachaListProvider.readGachaList.flatMap { gachaList =>
+                mineStackTradeAction.execute(player, contents)(
+                  gachaTradeRule.ruleFor(player.getName(), gachaList)
+                )
+              }
+            }
+          }
         }
 
-      override val listeners: Seq[Listener] = Seq(new GachaTradeListener[F, G](gachaTradeRule))
+      override val listeners: Seq[Listener] = Seq(
+        new GachaTradeListener[F, G](gachaTradeRule)(
+          gachaListProvider,
+          inventoryTradeAction,
+          effectEnvironment
+        )
+      )
     }
   }
 

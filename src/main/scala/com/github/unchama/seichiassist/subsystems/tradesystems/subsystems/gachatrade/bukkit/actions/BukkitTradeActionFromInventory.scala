@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit
+package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.actions
 
 import com.github.unchama.seichiassist.subsystems.tradesystems.application.TradeAction
 import cats.effect.Sync

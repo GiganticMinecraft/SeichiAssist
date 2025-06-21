@@ -12,9 +12,16 @@ trait GachaTradeAPI[F[_], Player, ItemStack] {
   def getTradableItems: Kleisli[F, Player, Vector[ItemStack]]
 
   /**
-   * @return 実際にガチャ景品とガチャ券の取引を行う作用
+   * @return インベントリから実際にガチャ景品とガチャ券の取引を行う作用
    */
-  def trade(
+  def tradeFromInventory(
+    contents: List[ItemStack]
+  ): Kleisli[F, Player, TradeResult[ItemStack, (BigOrRegular, Int)]]
+
+  /**
+   * @return マインスタックから実際にガチャ景品とガチャ券の取引を行う作用
+   */
+  def tradeFromMineStack(
     contents: List[ItemStack]
   ): Kleisli[F, Player, TradeResult[ItemStack, (BigOrRegular, Int)]]
 
