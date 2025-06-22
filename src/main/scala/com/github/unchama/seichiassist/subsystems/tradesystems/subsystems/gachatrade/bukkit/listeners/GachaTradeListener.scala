@@ -15,10 +15,10 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 import com.github.unchama.seichiassist.subsystems.tradesystems.application.TradeAction
-import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.SequentialEffect
-import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.targetedeffect.commandsender.MessageEffectF
+import com.github.unchama.targetedeffect.player.FocusedSoundEffectF
 
 class GachaTradeListener[F[_]: ConcurrentEffect, G[_]](rule: GachaTradeRule[ItemStack])(
   gachaListProvider: GachaListProvider[F, ItemStack],
@@ -54,21 +54,23 @@ class GachaTradeListener[F[_]: ConcurrentEffect, G[_]](rule: GachaTradeRule[Item
       (big, regular) = tradeResult.tradedSuccessResult.partition {
         case TradeSuccessResult(_, _, (rarity, _)) => rarity == BigOrRegular.Big
       }
-      bigItemAmount = big.map(_.amount).sum
-      regularItemAmount = regular.map(_.amount).sum
-    } yield {
-      if (tradeResult.tradedSuccessResult.isEmpty) {
-        MessageEffect(s"${YELLOW}景品を認識しませんでした。すべてのアイテムを返却します").apply(player)
-      } else {
-        SequentialEffect(
-          FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1f, 1f),
-          MessageEffect(s"${GREEN}大当たり景品を${bigItemAmount}個、あたり景品を${regularItemAmount}個認識しました。"),
-          MessageEffect(
-            s"$GREEN${tradeResult.tradedSuccessResult.map(_.amount).sum}枚の${GOLD}ガチャ券${WHITE}を受け取りました。"
-          )
-        ).apply(player)
-      }
-    }
+      bigItemAmount = big.map(_.transactionInfo._2).sum
+      regularItemAmount = regular.map(_.transactionInfo._2).sum
+      _ <-
+        if (tradeResult.tradedSuccessResult.isEmpty) {
+          MessageEffectF[F](s"${YELLOW}景品を認識しませんでした。すべてのアイテムを返却します").apply(player)
+        } else {
+          SequentialEffect(
+            FocusedSoundEffectF[F](Sound.BLOCK_ANVIL_PLACE, 1f, 1f),
+            MessageEffectF[F](
+              s"${GREEN}大当たり景品を${bigItemAmount}個、あたり景品を${regularItemAmount}個認識しました。"
+            ),
+            MessageEffectF[F](
+              s"$GREEN${tradeResult.tradedSuccessResult.map(_.amount).sum}枚の${GOLD}ガチャ券${WHITE}を受け取りました。"
+            )
+          ).apply(player)
+        }
+    } yield ()
 
     effectEnvironment.unsafeRunEffectAsync("ガチャ景品とガチャ券の交換処理", program)
   }
