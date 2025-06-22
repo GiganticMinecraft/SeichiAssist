@@ -12,30 +12,25 @@ import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.G
 
 class BukkitTradeActionFromMineStack[F[_], G[_]](
   implicit mineStackAPI: MineStackAPI[F, Player, ItemStack],
-  gachaPointApi: GachaPointApi[F, G, Player]
+  gachaPointApi: GachaPointApi[F, G, Player],
+  override protected val F: Sync[F]
 ) extends TradeAction[F, Player, ItemStack, (BigOrRegular, Int)] {
 
   import cats.implicits._
 
-  override implicit protected val F: Sync[F] = implicitly
-
   override protected def applyTradeResult(
     player: Player,
+    contents: List[ItemStack],
     tradeResult: TradeResult[ItemStack, (BigOrRegular, Int)]
   ): F[Unit] = {
     val tradeAmount = tradeResult.tradedSuccessResult.map(_.amount).sum
 
     for {
-      successResultWithMineStackObject <- tradeResult.tradedSuccessResult.traverse { result =>
-        val mineStackObject =
-          mineStackAPI
-            .mineStackObjectList
-            .findBySignedItemStacks(Vector(result.itemStack), player)
-
-        mineStackObject.map(mineStackObject => (result, mineStackObject.head))
-      }
+      successResultWithMineStackObject <- mineStackAPI
+        .mineStackObjectList
+        .findBySignedItemStacks(contents.toVector, player)
       _ <- successResultWithMineStackObject.traverse {
-        case (_, (itemStack, Some(mineStackObject))) =>
+        case (itemStack, Some(mineStackObject)) =>
           mineStackAPI
             .mineStackRepository
             .subtractStackedAmountOf(player, mineStackObject, itemStack.getAmount())

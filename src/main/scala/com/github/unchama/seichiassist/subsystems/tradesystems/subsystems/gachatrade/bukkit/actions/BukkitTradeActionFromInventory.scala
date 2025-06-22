@@ -21,6 +21,7 @@ class BukkitTradeActionFromInventory[F[_]: Sync: OnMinecraftServerThread, G[_]](
 
   protected override def applyTradeResult(
     player: Player,
+    _contents: List[ItemStack],
     tradeResult: TradeResult[ItemStack, (BigOrRegular, Int)]
   ): F[Unit] = {
     val tradeAmount = tradeResult.tradedSuccessResult.map(_.amount).sum

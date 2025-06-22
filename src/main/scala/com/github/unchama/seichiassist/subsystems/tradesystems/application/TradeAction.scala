@@ -15,6 +15,7 @@ trait TradeAction[F[_], Player, ItemStack, TransactionInfo] {
    */
   protected def applyTradeResult(
     player: Player,
+    contents: List[ItemStack],
     tradeResult: TradeResult[ItemStack, TransactionInfo]
   ): F[Unit]
 
@@ -27,7 +28,7 @@ trait TradeAction[F[_], Player, ItemStack, TransactionInfo] {
   ): F[TradeResult[ItemStack, TransactionInfo]] = {
     for {
       tradeResult <- Sync[F].delay(tradeRule.trade(contents.filterNot(_ == null)))
-      _ <- applyTradeResult(player, tradeResult)
+      _ <- applyTradeResult(player, contents, tradeResult)
     } yield tradeResult
   }
 
