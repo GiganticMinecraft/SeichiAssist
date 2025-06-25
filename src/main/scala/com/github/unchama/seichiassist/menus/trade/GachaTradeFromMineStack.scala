@@ -194,8 +194,7 @@ case class GachaTradeFromMineStackMenu(
     ): TargetedEffect[Player] = Kleisli { player: Player =>
       for {
         tradeResult <- gachaTradeAPI.tryTradeFromMineStack(player, mineStackObject, tradeAmount)
-      } yield {
-        val name = {
+        name <- IO.pure {
           val itemStack = mineStackObject.itemStack
           val meta = itemStack.getItemMeta
 
@@ -207,8 +206,7 @@ case class GachaTradeFromMineStackMenu(
 
           s"$YELLOW$UNDERLINE$BOLD$name"
         }
-
-        tradeResult match {
+        _ <- (tradeResult match {
           case Left(TradeError.NotEnougthItemAmount) =>
             MessageEffect(s"$RED${BOLD}交換するアイテムが足りません。")
           case Left(TradeError.NotTradableItem) =>
@@ -216,10 +214,10 @@ case class GachaTradeFromMineStackMenu(
           case Right(result) =>
             val gachaTicketAmount = result.tradedSuccessResult.map(_.amount).sum
             MessageEffect(
-              s"$name$GREEN$BOLD${tradeAmount}個と$GREEN$BOLD${gachaTicketAmount}枚のガチャ券と交換しました。"
+              s"$name$GREEN$BOLD${tradeAmount}個と$GREEN$BOLD${gachaTicketAmount}枚のガチャ券を交換しました。"
             )
-        }
-      }
+        }).apply(player)
+      } yield ()
     }
 
     val tradeButtons: IO[Vector[IO[Button]]] = {
