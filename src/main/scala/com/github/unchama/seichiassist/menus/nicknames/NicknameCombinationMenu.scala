@@ -28,6 +28,7 @@ import com.github.unchama.seichiassist.menus.nicknames.NicknameCombinationMenu.N
 import com.github.unchama.seichiassist.menus.nicknames.NicknameCombinationMenu.NicknamePart.Middle
 import com.github.unchama.seichiassist.menus.nicknames.NicknameCombinationMenu.NicknamePart.Head
 import com.github.unchama.seichiassist.menus.nicknames.NicknameCombinationMenu.NicknamePart.Tail
+import com.github.unchama.generic.MapExtra
 
 object NicknameCombinationMenu {
 
@@ -111,13 +112,17 @@ case class NicknameCombinationMenu(pageIndex: Int = 0, nicknamePart: NicknamePar
 
     val totalNumberOfPages = Math.ceil((liftedArchivementId.length + 1) / 27.0).toInt
 
+    val nextPageButtonMapping =
+      MapExtra.when(pageIndex + 1 < totalNumberOfPages)(
+        Map(ChestSlotRef(3, 8) -> nextPageButton)
+      )
+
     val uiOperationButtonMapping = Map(
       ChestSlotRef(3, 0) -> {
-        if (pageIndex != 0) Some(previousPageButton) else Some(toNicknameMenuButton)
+        if (pageIndex != 0) previousPageButton else toNicknameMenuButton
       },
-      ChestSlotRef(3, 4) -> Some(resetSelectionButton),
-      ChestSlotRef(3, 8) -> Option.when(pageIndex + 1 < totalNumberOfPages)(nextPageButton)
-    ).collect { case (slotRef, Some(button)) => slotRef -> button }
+      ChestSlotRef(3, 4) -> resetSelectionButton
+    ) ++ nextPageButtonMapping
 
     MenuSlotLayout(archivementButtonMapping ++ uiOperationButtonMapping: _*)
   }
