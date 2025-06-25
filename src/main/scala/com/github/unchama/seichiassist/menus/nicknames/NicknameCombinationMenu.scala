@@ -29,6 +29,7 @@ import com.github.unchama.seichiassist.menus.nicknames.NicknameCombinationMenu.N
 import com.github.unchama.seichiassist.menus.nicknames.NicknameCombinationMenu.NicknamePart.Head
 import com.github.unchama.seichiassist.menus.nicknames.NicknameCombinationMenu.NicknamePart.Tail
 import com.github.unchama.generic.MapExtra
+import com.github.unchama.seichiassist.menus.paging.PageCounter
 
 object NicknameCombinationMenu {
 
@@ -109,8 +110,14 @@ case class NicknameCombinationMenu(pageIndex: Int = 0, nicknamePart: NicknamePar
       }
 
     import eu.timepit.refined.auto._
+    import eu.timepit.refined.numeric.GreaterEqual
+    import eu.timepit.refined._
 
-    val totalNumberOfPages = Math.ceil((liftedArchivementId.length + 1) / 27.0).toInt
+    // NOTE: `length` 呼び出して 0 を下回ることはない
+    val totalItems =
+      refineV[GreaterEqual[0]].unsafeFrom(liftedArchivementId.length)
+
+    val totalNumberOfPages = PageCounter.totalPage(totalItems, 27)
 
     val nextPageButtonMapping =
       MapExtra.when(pageIndex + 1 < totalNumberOfPages)(
