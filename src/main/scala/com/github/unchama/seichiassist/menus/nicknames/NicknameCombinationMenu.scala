@@ -99,7 +99,7 @@ case class NicknameCombinationMenu(pageIndex: Int = 0, nicknamePart: NicknamePar
       .flatMap {
         case (archivementId, index) =>
           if (playerdata.TitleFlags.contains(archivementId)) {
-            val button = headPartButton(archivementId)
+            val button = partButton(archivementId)
 
             button.map(index -> _)
           } else {
@@ -130,7 +130,7 @@ case class NicknameCombinationMenu(pageIndex: Int = 0, nicknamePart: NicknamePar
 
     private val playerdata = SeichiAssist.playermap(player.getUniqueId)
 
-    def headPartButton(archivementId: Int): Option[Button] = {
+    def partButton(archivementId: Int): Option[Button] = {
       val nickname = (nicknamePart match {
         case NicknamePart.Head   => Nicknames.getHeadPartFor _
         case NicknamePart.Middle => Nicknames.getMiddlePartFor _
