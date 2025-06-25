@@ -15,7 +15,6 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.GachaTradeAPI
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.targetedeffect.SequentialEffect
-import com.github.unchama.targetedeffect.DeferredEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.Sound
@@ -30,6 +29,10 @@ import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinA
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
 import com.github.unchama.seichiassist.SkullOwners
+import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject
+import cats.data.Kleisli
+import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.domain.TradeError
 
 object GachaTradeFromMineStackMenu {
   class Environment(
@@ -139,19 +142,6 @@ case class GachaTradeFromMineStackMenu(
         signedItemStackOpt <- mineStackObject.tryToSignedItemStack[IO, Player](player.getName())
         signedItemStack <- IO.pure(signedItemStackOpt.getOrElse(mineStackObject.itemStack))
       } yield {
-        val name = {
-          val itemStack = mineStackObject.itemStack
-          val meta = itemStack.getItemMeta
-
-          val name = mineStackObject
-            .uiName
-            .fold(if (meta.hasDisplayName) meta.getDisplayName else itemStack.getType.toString)(
-              itemName => itemName
-            )
-
-          s"$YELLOW$UNDERLINE$BOLD$name"
-        }
-
         val itemStackForButton = mineStackObject.itemStack.tap { itemStack =>
           import itemStack._
           setItemMeta {
@@ -181,36 +171,55 @@ case class GachaTradeFromMineStackMenu(
           }
         }
 
-        val maxStackSize = signedItemStack.getMaxStackSize()
-
-        val tradeContents =
-          signedItemStack.clone().tap(_.setAmount(exchangeAmount.amount % maxStackSize)) +:
-            List.fill(exchangeAmount.amount / maxStackSize)(
-              signedItemStack.clone().tap(_.setAmount(maxStackSize))
-            )
-
-        val leftClickButtonEffect = LeftClickButtonEffect {
-          // FIXME: 交換できる・できないの判定はここでするべきではない
-          DeferredEffect(IO(if (stackedAmount < exchangeAmount.amount) {
-            MessageEffect(s"$RED${BOLD}交換するアイテムが足りません。")
-          } else {
-            SequentialEffect(
-              gachaTradeAPI.tradeFromMineStack(tradeContents).void,
-              MessageEffect(
-                s"$GREEN$BOLD${name}$GREEN${BOLD}${exchangeAmount.amount}個とガチャ券を交換しました。"
-              ),
-              FocusedSoundEffect(Sound.BLOCK_DISPENSER_FAIL, 1f, 1f)
-            )
-          }))
-        }
-
         if (tradableItemStacks.contains(signedItemStack)) {
-          Button(itemStackForButton, leftClickButtonEffect)
+          Button(
+            itemStackForButton,
+            LeftClickButtonEffect {
+              SequentialEffect(
+                tradeEffect(mineStackObject, exchangeAmount.amount),
+                FocusedSoundEffect(Sound.BLOCK_DISPENSER_FAIL, 1f, 1f)
+              )
+            }
+          )
         } else {
           Button.empty
         }
       }
 
+    }
+
+    private def tradeEffect(
+      mineStackObject: MineStackObject[ItemStack],
+      tradeAmount: Int
+    ): TargetedEffect[Player] = Kleisli { player: Player =>
+      for {
+        tradeResult <- gachaTradeAPI.tryTradeFromMineStack(player, mineStackObject, tradeAmount)
+      } yield {
+        val name = {
+          val itemStack = mineStackObject.itemStack
+          val meta = itemStack.getItemMeta
+
+          val name = mineStackObject
+            .uiName
+            .fold(if (meta.hasDisplayName) meta.getDisplayName else itemStack.getType.toString)(
+              itemName => itemName
+            )
+
+          s"$YELLOW$UNDERLINE$BOLD$name"
+        }
+
+        tradeResult match {
+          case Left(TradeError.NotEnougthItemAmount) =>
+            MessageEffect(s"$RED${BOLD}交換するアイテムが足りません。")
+          case Left(TradeError.NotTradableItem) =>
+            MessageEffect(s"$RED${BOLD}そのアイテムは交換できません。")
+          case Right(result) =>
+            val gachaTicketAmount = result.tradedSuccessResult.map(_.amount).sum
+            MessageEffect(
+              s"$name$GREEN$BOLD${tradeAmount}個と$GREEN$BOLD${gachaTicketAmount}枚のガチャ券と交換しました。"
+            )
+        }
+      }
     }
 
     val tradeButtons: IO[Vector[IO[Button]]] = {

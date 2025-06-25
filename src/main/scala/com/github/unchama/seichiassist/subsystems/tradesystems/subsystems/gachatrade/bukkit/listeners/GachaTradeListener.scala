@@ -20,7 +20,9 @@ import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.targetedeffect.commandsender.MessageEffectF
 import com.github.unchama.targetedeffect.player.FocusedSoundEffectF
 
-class GachaTradeListener[F[_]: ConcurrentEffect, G[_]](rule: GachaTradeRule[ItemStack])(
+class GachaTradeListener[F[_]: ConcurrentEffect, G[_]](
+  rule: GachaTradeRule[ItemStack, (BigOrRegular, Int)]
+)(
   gachaListProvider: GachaListProvider[F, ItemStack],
   tradeAction: TradeAction[F, Player, ItemStack, (BigOrRegular, Int)],
   effectEnvironment: EffectEnvironment
