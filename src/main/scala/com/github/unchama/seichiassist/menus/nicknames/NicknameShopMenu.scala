@@ -29,6 +29,7 @@ import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
 import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.menuinventory.ChestSlotRef
 import com.github.unchama.seichiassist.achievement.Nicknames
+import com.github.unchama.generic.MapExtra
 
 object NicknameShopMenu {
 
@@ -84,15 +85,18 @@ case class NicknameShopMenu(val pageIndex: Int = 0) extends Menu {
           (index + 1) -> button
       }
 
+    val nextPageButtonMapping = MapExtra.when(pageIndex + 1 < totalNumberOfPages) {
+      Map(ChestSlotRef(3, 8) -> nextPageButton)
+    }
+
     val uiOperationButtonMapping =
       Map(
-        ChestSlotRef(0, 0) -> Some(informationButton),
+        ChestSlotRef(0, 0) -> informationButton,
         ChestSlotRef(3, 0) -> {
-          if (pageIndex != 0) Some(previousPageButton) else Some(toNicknameMenuButton)
+          if (pageIndex != 0) previousPageButton else toNicknameMenuButton
         },
-        ChestSlotRef(3, 8) -> Some(toNicknameMenuButton),
-        ChestSlotRef(3, 8) -> Option.when(pageIndex + 1 < totalNumberOfPages)(nextPageButton)
-      ).collect { case (slotRef, Some(button)) => slotRef -> button }
+        ChestSlotRef(3, 8) -> toNicknameMenuButton
+      ) ++ nextPageButtonMapping
 
     MenuSlotLayout(purchaseButtonMapping ++ uiOperationButtonMapping: _*)
   }
