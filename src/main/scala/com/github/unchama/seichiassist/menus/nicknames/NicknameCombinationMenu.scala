@@ -74,11 +74,24 @@ case class NicknameCombinationMenu(pageIndex: Int = 0, nicknamePart: NicknamePar
     MenuFrame(MenuRowCount.chestRows, s"$DARK_PURPLE${BOLD}二つ名組合せ「${nicknamePart.displayName}」")
 
   private def liftedArchivementId: Seq[Int] = {
+    val headTailArchivementIdStart = 1000
+    val headTailArchievementIdEnd = 9900
+    val middleOnlyArchivementIdStart = 9900
+    val middleOnlyArchievementIdEnd = 9999
+
     nicknamePart match {
-      case NicknamePart.Head => (1000 until 9900).filter(Nicknames.getNicknameFor(_).isDefined)
+      case NicknamePart.Head =>
+        (headTailArchivementIdStart until headTailArchievementIdEnd).filter(
+          Nicknames.getNicknameFor(_).isDefined
+        )
       case NicknamePart.Middle =>
-        (9900 until 9999).filter(Nicknames.getNicknameFor(_).isDefined)
-      case NicknamePart.Tail => (1000 until 9900).filter(Nicknames.getNicknameFor(_).isDefined)
+        (middleOnlyArchivementIdStart until middleOnlyArchievementIdEnd).filter(
+          Nicknames.getNicknameFor(_).isDefined
+        )
+      case NicknamePart.Tail =>
+        (headTailArchivementIdStart until headTailArchievementIdEnd).filter(
+          Nicknames.getNicknameFor(_).isDefined
+        )
     }
   }
 
