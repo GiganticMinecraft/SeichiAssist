@@ -30,6 +30,7 @@ import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinA
 import com.github.unchama.menuinventory.ChestSlotRef
 import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.generic.MapExtra
+import com.github.unchama.seichiassist.menus.paging.PageCounter
 
 object NicknameShopMenu {
 
@@ -59,6 +60,8 @@ case class NicknameShopMenu(val pageIndex: Int = 0) extends Menu {
 
     import nicknameShopMenuButtons._
     import eu.timepit.refined.auto._
+    import eu.timepit.refined.numeric.GreaterEqual
+    import eu.timepit.refined._
 
     val achievementRanges = Seq(9801 until 9834, 9911 until 9939)
     val achievementIdWithNicknamesToBeUnlocked =
@@ -69,8 +72,12 @@ case class NicknameShopMenu(val pageIndex: Int = 0) extends Menu {
 
     val nicknameButtonPerPage = (MenuRowCount - 1).chestRows.slotCount
 
+    // NOTE: `length` 呼び出して 0 を下回ることはない
+    val totalItems =
+      refineV[GreaterEqual[0]].unsafeFrom(achievementIdWithNicknamesToBeUnlocked.length)
+
     val totalNumberOfPages =
-      Math.ceil((achievementIdWithNicknamesToBeUnlocked.length + 1) / 26.0).toInt
+      PageCounter.totalPage(totalItems, 26)
 
     val purchaseButtonMapping = achievementIdWithNicknamesToBeUnlocked
       .slice(
