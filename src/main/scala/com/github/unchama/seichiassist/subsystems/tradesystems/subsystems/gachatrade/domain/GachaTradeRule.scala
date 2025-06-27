@@ -2,11 +2,10 @@ package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gacha
 
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.GachaPrizeTableEntry
 import com.github.unchama.seichiassist.subsystems.tradesystems.domain.TradeRule
-import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.traderules.BigOrRegular
 
-trait GachaTradeRule[ItemStack] {
+trait GachaTradeRule[ItemStack, TransactionInfo] {
   def ruleFor(
     playerName: String,
     gachaList: Vector[GachaPrizeTableEntry[ItemStack]]
-  ): TradeRule[ItemStack, (BigOrRegular, Int)]
+  ): TradeRule[ItemStack, TransactionInfo]
 }

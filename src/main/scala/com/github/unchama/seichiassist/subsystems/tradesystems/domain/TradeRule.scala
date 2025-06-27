@@ -7,6 +7,11 @@ package com.github.unchama.seichiassist.subsystems.tradesystems.domain
 trait TradeRule[ItemStack, TransactionInfo] {
 
   /**
+   * @return 交換可能なアイテムのリスト
+   */
+  val tradableItems: Vector[ItemStack]
+
+  /**
    * プレーヤーが入力したアイテムから、交換結果を計算する
    */
   def trade(contents: List[ItemStack]): TradeResult[ItemStack, TransactionInfo]
