@@ -10,8 +10,13 @@ import com.github.unchama.minecraft.algebra.HasName
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.tradesystems.domain.TradeResult
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.domain.TradeError
+import com.github.unchama.generic.effect.concurrent.RecoveringSemaphore
+import cats.effect.Concurrent
+import cats.effect.Timer
 
 class TradeFromMineStack[F[_]: Sync, ItemStack, Player: HasName, TransactionInfo](
+  recoveringSemaphore: RecoveringSemaphore[F]
+)(
   implicit tradeAction: TradeAction[F, Player, ItemStack, TransactionInfo],
   gachaListProvider: GachaListProvider[F, ItemStack],
   gachaTradeRule: GachaTradeRule[ItemStack, TransactionInfo],
@@ -26,8 +31,7 @@ class TradeFromMineStack[F[_]: Sync, ItemStack, Player: HasName, TransactionInfo
     mineStackObject: MineStackObject[ItemStack],
     amount: Int
   ): F[Either[TradeError, TradeResult[ItemStack, TransactionInfo]]] = {
-
-    for {
+    val program: F[Either[TradeError, TradeResult[ItemStack, TransactionInfo]]] = for {
       stackedAmount <- mineStackAPI
         .mineStackRepository
         .getStackedAmountOf(player, mineStackObject)
@@ -47,6 +51,30 @@ class TradeFromMineStack[F[_]: Sync, ItemStack, Player: HasName, TransactionInfo
         }
       }
     } yield result
+
+    val semaphoreError: F[Either[TradeError, TradeResult[ItemStack, TransactionInfo]]] =
+      Sync[F].pure(Left(TradeError.UsageSemaphoreIsLocked))
+
+    recoveringSemaphore.tryUse(program, semaphoreError)(TradeFromMineStack.usageInterval)
+  }
+
+}
+
+object TradeFromMineStack {
+
+  import cats.implicits._
+  import scala.concurrent.duration._
+
+  final val usageInterval = 1.second
+
+  def newIn[G[_]: Sync, F[_]: Concurrent: Timer, ItemStack, Player: HasName, TransactionInfo](
+    implicit tradeAction: TradeAction[F, Player, ItemStack, TransactionInfo],
+    gachaListProvider: GachaListProvider[F, ItemStack],
+    gachaTradeRule: GachaTradeRule[ItemStack, TransactionInfo],
+    mineStackAPI: MineStackAPI[F, Player, ItemStack],
+    gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player]
+  ): G[TradeFromMineStack[F, ItemStack, Player, TransactionInfo]] = {
+    RecoveringSemaphore.newIn[G, F].map(rs => new TradeFromMineStack(rs))
   }
 
 }

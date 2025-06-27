@@ -8,4 +8,6 @@ object TradeError {
 
   case object NotEnougthItemAmount extends TradeError
 
+  case object UsageSemaphoreIsLocked extends TradeError
+
 }

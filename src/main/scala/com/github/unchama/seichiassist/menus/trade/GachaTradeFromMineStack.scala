@@ -211,6 +211,8 @@ case class GachaTradeFromMineStackMenu(
             MessageEffect(s"$RED${BOLD}交換するアイテムが足りません。")
           case Left(TradeError.NotTradableItem) =>
             MessageEffect(s"$RED${BOLD}そのアイテムは交換できません。")
+          case Left(TradeError.UsageSemaphoreIsLocked) =>
+            MessageEffect(s"$RED${BOLD}現在処理中です。しばらく待ってからもう一度お試しください。")
           case Right(result) =>
             val gachaTicketAmount = result.tradedSuccessResult.map(_.amount).sum
             MessageEffect(
