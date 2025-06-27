@@ -59,6 +59,7 @@ import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{Material, Sound}
+import com.github.unchama.seichiassist.menus.trade.TradeSelector
 
 /**
  * 木の棒メニュー1ページ目
@@ -95,6 +96,7 @@ object FirstPage extends Menu {
     val ioCanOpenPassiveSkillMenu: IO CanOpen PassiveSkillMenu.type,
     val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type,
     val ioCanOpenVoteMenu: IO CanOpen VoteMenu.type,
+    val ioCanOpenGachaTradeMenu: IO CanOpen TradeSelector.type,
     val enderChestAccessApi: AnywhereEnderChestAPI[IO],
     val gachaTicketAPI: GachaTicketAPI[IO],
     val voteAPI: VoteAPI[IO, Player],
@@ -636,7 +638,9 @@ object FirstPage extends Menu {
         StickMenu.secondPage
       )
 
-    val gachaPrizeExchangeButton: Button = {
+    def gachaPrizeExchangeButton(
+      implicit ioCanOpenGachaTradeSelectorMenu: IO CanOpen TradeSelector.type
+    ): Button = {
       val iconItemStack =
         new IconItemStackBuilder(Material.NOTE_BLOCK)
           .title(s"$YELLOW$UNDERLINE${BOLD}不要ガチャ景品交換システム")
@@ -658,12 +662,7 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
-          openInventoryEffect(
-            InventoryUtil.createInventory(
-              size = 6.chestRows,
-              title = Some(s"$LIGHT_PURPLE${BOLD}交換したい景品を入れてください")
-            )
-          )
+          ioCanOpenGachaTradeSelectorMenu.open(TradeSelector)
         )
       )
     }

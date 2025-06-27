@@ -115,6 +115,7 @@ import java.util.UUID
 import java.util.logging.LogManager
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
+import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.GachaTradeAPI
 
 class SeichiAssist extends JavaPlugin() {
 
@@ -776,6 +777,8 @@ class SeichiAssist extends JavaPlugin() {
     implicit val breakSuppressionPreferenceAPI: BreakSuppressionPreferenceAPI[IO, Player] =
       breakSuppressionPreferenceSystem.api
     implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player] = playerHeadSkinSystem.api
+    implicit val gachaTradeAPI: GachaTradeAPI[IO, Player, ItemStack] =
+      gachaTradeSystem.api
 
     val menuRouter = TopLevelRouter.apply
     import SeichiAssist.Scopes.globalChatInterceptionScope
