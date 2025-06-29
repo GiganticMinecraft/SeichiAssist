@@ -29,6 +29,7 @@ import org.bukkit.inventory.ItemStack
 import java.util.Random
 import java.util.stream.IntStream
 import scala.jdk.CollectionConverters._
+import org.bukkit.block.data.`type`.Slab
 
 object BreakUtil {
 
@@ -95,15 +96,18 @@ object BreakUtil {
         ) 1
         // エンド整地ワールドには岩盤がないが、Y0にハーフを設置するひとがいるため
         else if (managedWorld.contains(ManagedWorld.WORLD_SW_END)) 0
-        // それ以外なら通常通りY5
-        else 5
+        // それ以外なら通常通りY-59
+        else -59
       }
 
-      val isBlockProtectedSlab =
-        checkTarget.getType == Material.STONE_SLAB &&
-          checkTarget.getY == halfBlockLayerYCoordinate
-
-      if (isBlockProtectedSlab) return false
+      checkTarget.getBlockData match {
+        case slab: Slab
+            if slab.getType == Slab
+              .Type
+              .BOTTOM && checkTarget.getY == halfBlockLayerYCoordinate =>
+          return false
+        case _ =>
+      }
     }
 
     !lockedBlocks.contains(checkTarget)
