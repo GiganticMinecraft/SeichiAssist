@@ -541,9 +541,9 @@ object FirstPage extends Menu {
             val requiredToNextTicket =
               s"$RESET${AQUA}次のガチャ券まで:${point.amountUntilNextGachaTicket.amount}ブロック"
             val receiveGachaTicketDescription =
-              s"$RESET${GRAY}左クリックで最大9st、右クリックで最大1stのガチャ券を受け取ります"
+              List(s"$RESET${GRAY}左クリックで最大9st、", s"$RESET${GRAY}右クリックで最大1stのガチャ券を受け取ります")
 
-            List(gachaTicketStatus, requiredToNextTicket, receiveGachaTicketDescription)
+            List(gachaTicketStatus, requiredToNextTicket) ++ receiveGachaTicketDescription
           }
 
           new SkullItemStackBuilder(SkullOwners.unchama)
