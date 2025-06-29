@@ -50,8 +50,7 @@ case class GiganticBerserk(
    */
   def totalNumberOfKilledEnemies: Int = {
     val currentStage = stage * 10
-    val previousLevel = level - 1
-    val previousStageLevel = currentStage + previousLevel
+    val previousStageLevel = currentStage + level
     LevelThresholds.giganticBerserkLevelList.take(previousStageLevel).sum + exp
   }
 
