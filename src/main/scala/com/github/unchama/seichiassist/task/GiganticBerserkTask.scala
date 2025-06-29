@@ -60,7 +60,6 @@ class GiganticBerserkTask {
     val level = playerdata.giganticBerserk.level
     val n = (playerdata.giganticBerserk.stage * 10) + level
 
-
     // レベルアップするかどうか判定
     if (
       LevelThresholds.giganticBerserkLevelList(n).asInstanceOf[Integer] <= playerdata
