@@ -430,7 +430,7 @@ class PlayerBlockBreakListener(
     val message = world.getEnvironment match {
       case Environment.NETHER  => s"${RED}ネザー整地ワールドではY${yLimit}以下のハーフブロックは破壊不可能です。"
       case Environment.THE_END => s"${RED}エンド整地ワールドではY${yLimit}以下のハーフブロックは破壊不可能です。"
-      case _                   => s"${RED}Y${yLimit}以下に敷かれたハーフブロックは破壊不可能です。"
+      case _                   => s"${RED}通常整地ワールドではY${yLimit}以下に敷かれたハーフブロックは破壊不可能です。"
     }
     player.sendMessage(message)
   }
