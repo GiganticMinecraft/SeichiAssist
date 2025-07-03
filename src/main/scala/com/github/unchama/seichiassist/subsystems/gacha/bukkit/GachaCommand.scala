@@ -133,7 +133,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
       Parsers.double(MessageEffect("確率は小数点数で指定してください（%形式）。")).andThen {
         _.flatMap { doubleNum =>
           if (doubleNum <= 100.0 && doubleNum >= 0.0) {
-            succeedWith(doubleNum)
+            succeedWith(doubleNum / 100.0)
           } else {
             failWith("確率は正の数かつ100.0以下で指定してください。")
           }
@@ -235,8 +235,8 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
               _ <- gachaPrizeAPI.addGachaPrize(
                 domain.GachaPrizeTableEntry(
                   mainHandItem,
-                  GachaProbability(probability / 100.0),
-                  probability < 10.0,
+                  GachaProbability(probability),
+                  probability < 0.1,
                   _,
                   events.find(gachaEvent => eventName.contains(gachaEvent.eventName))
                 )
@@ -367,13 +367,13 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
           currentGachaPrize <- Kleisli.liftF(gachaPrizeAPI.fetch(targetId))
           probabilityChange <- Kleisli.liftF(currentGachaPrize.traverse { gachaPrize =>
             gachaPrizeAPI
-              .upsertGachaPrize(gachaPrize.copy(probability = GachaProbability(newProb / 100.0)))
+              .upsertGachaPrize(gachaPrize.copy(probability = GachaProbability(newProb)))
           })
           itemStack = currentGachaPrize.map(_.itemStack)
         } yield {
           if (probabilityChange.nonEmpty) {
             MessageEffectF(
-              s"${targetId.id}|${itemStack.get.getType.toString}/${itemStack.get.getItemMeta.getDisplayName}${RESET}の確率を$newProb%に変更しました。"
+              s"${targetId.id}|${itemStack.get.getType.toString}/${itemStack.get.getItemMeta.getDisplayName}${RESET}の確率を${newProb * 100.0}%に変更しました。"
             )
           } else {
             MessageEffectF("指定されたIDのガチャ景品は存在しません。")
