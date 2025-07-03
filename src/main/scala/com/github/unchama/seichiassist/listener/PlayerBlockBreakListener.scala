@@ -387,7 +387,7 @@ class PlayerBlockBreakListener(
   }
 
   /**
-   * y-59ハーフブロック破壊抑制
+   * 世界別ハーフブロック破壊抑制
    *
    * @param event
    *   BlockBreakEvent
@@ -407,11 +407,30 @@ class PlayerBlockBreakListener(
       case _: Slab =>
       case _       => return
     }
-    if (block.getY > -59) return
-    if (block.getBlockData.asInstanceOf[Slab].getType != Slab.Type.BOTTOM) return
+    // 整地ワールドでない場合は処理しない
     if (!world.isSeichi) return
+
+    // 世界別の半ブロック破壊Y座標限界を取得
+    val yLimit = BreakUtil.getManualHalfBlockBreakYLimit(world)
+
+    // Y座標限界より上の場合は処理しない
+    if (block.getY > yLimit) return
+
+    // 下半分のハーフブロック以外は処理しない
+    if (block.getBlockData.asInstanceOf[Slab].getType != Slab.Type.BOTTOM) return
+
     event.setCancelled(true)
-    player.sendMessage(s"${RED}Y-59以下に敷かれたハーフブロックは破壊不可能です。")
+
+    // 世界別のメッセージを表示
+    val managedWorld = ManagedWorld.fromBukkitWorld(world)
+    val message = if (managedWorld.contains(ManagedWorld.WORLD_SW_NETHER)) {
+      s"${RED}ネザー整地ワールドではY${yLimit}以下のハーフブロックは破壊不可能です。"
+    } else if (managedWorld.contains(ManagedWorld.WORLD_SW_END)) {
+      s"${RED}エンド整地ワールドではY${yLimit}以下のハーフブロックは破壊不可能です。"
+    } else {
+      s"${RED}Y${yLimit}以下に敷かれたハーフブロックは破壊不可能です。"
+    }
+    player.sendMessage(message)
   }
 
   /**
