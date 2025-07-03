@@ -85,7 +85,19 @@ object BreakUtil {
     }
 
     if (checkTarget.getWorld.isSeichi) {
-      val halfBlockLayerYCoordinate = getHalfBlockLayerYCoordinate(checkTarget.getWorld)
+      val halfBlockLayerYCoordinate = {
+        val managedWorld = ManagedWorld.fromBukkitWorld(checkTarget.getWorld)
+        // 整地専用サーバー（s5）のWORLD_SW_3（Earth整地）は、外部ワールドのため岩盤高度がY0
+        if (
+          SeichiAssist.seichiAssistConfig.getServerNum == 5 && managedWorld.contains(
+            ManagedWorld.WORLD_SW_3
+          )
+        ) 1
+        // エンド整地ワールドには岩盤がないが、Y0にハーフを設置するひとがいるため
+        else if (managedWorld.contains(ManagedWorld.WORLD_SW_END)) 0
+        // それ以外なら通常通りY5
+        else 5
+      }
 
       val isBlockProtectedSlab =
         checkTarget.getType == Material.STONE_SLAB &&
@@ -567,50 +579,5 @@ object BreakUtil {
         .getMultipleIDBlockBreakLevel
 
     isLevelAboveThreshold && (currentWorld.isSeichi || flag)
-  }
-
-  /**
-   * 指定されたワールドでの半ブロック保護層のY座標を取得する
-   *
-   * @param world 対象のワールド
-   * @return 半ブロック保護層のY座標
-   */
-  def getHalfBlockLayerYCoordinate(world: World): Int = {
-    val managedWorld = ManagedWorld.fromBukkitWorld(world)
-    // 整地専用サーバー（s5）のWORLD_SW_3（Earth整地）は、外部ワールドのため岩盤高度がY0
-    if (
-      SeichiAssist.seichiAssistConfig.getServerNum == 5 && managedWorld.contains(
-        ManagedWorld.WORLD_SW_3
-      )
-    ) 1
-    // エンド整地ワールドには岩盤がないが、Y0にハーフを設置するひとがいるため
-    else if (managedWorld.contains(ManagedWorld.WORLD_SW_END)) 0
-    // ネザー整地ワールドは岩盤がY5以下のため
-    else if (managedWorld.contains(ManagedWorld.WORLD_SW_NETHER)) 5
-    // それ以外なら通常通りY5
-    else 5
-  }
-
-  /**
-   * 指定されたワールドでの手動半ブロック破壊保護のY座標限界を取得する
-   * この Y座標以下では半ブロックの手動破壊が禁止される
-   *
-   * @param world 対象のワールド
-   * @return 手動半ブロック破壊保護のY座標限界
-   */
-  def getManualHalfBlockBreakYLimit(world: World): Int = {
-    val managedWorld = ManagedWorld.fromBukkitWorld(world)
-    // ネザー整地ワールドは岩盤がY5以下のため
-    if (managedWorld.contains(ManagedWorld.WORLD_SW_NETHER)) 5
-    // エンド整地ワールドは岩盤がY0以下のため
-    else if (managedWorld.contains(ManagedWorld.WORLD_SW_END)) 0
-    // 整地専用サーバー（s5）のWORLD_SW_3（Earth整地）は、外部ワールドのため岩盤高度がY0
-    else if (
-      SeichiAssist.seichiAssistConfig.getServerNum == 5 && managedWorld.contains(
-        ManagedWorld.WORLD_SW_3
-      )
-    ) 1
-    // その他の整地ワールドは拡張Y座標があるためY-59以下
-    else -59
   }
 }

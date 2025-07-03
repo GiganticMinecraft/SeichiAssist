@@ -22,6 +22,7 @@ import com.github.unchama.util.effect.BukkitResources
 import com.github.unchama.util.external.WorldGuardWrapper
 import org.bukkit.ChatColor.RED
 import org.bukkit._
+import org.bukkit.World.Environment
 import org.bukkit.block.{Block, Container}
 import org.bukkit.block.data.`type`.Slab
 import org.bukkit.enchantments.Enchantment
@@ -387,7 +388,7 @@ class PlayerBlockBreakListener(
   }
 
   /**
-   * 世界別ハーフブロック破壊抑制
+   * ハーフブロック破壊抑制
    *
    * @param event
    *   BlockBreakEvent
@@ -410,10 +411,14 @@ class PlayerBlockBreakListener(
     // 整地ワールドでない場合は処理しない
     if (!world.isSeichi) return
 
-    // 世界別の半ブロック破壊Y座標限界を取得
-    val yLimit = BreakUtil.getManualHalfBlockBreakYLimit(world)
+    // 世界環境によってY座標制限を決定
+    val yLimit = world.getEnvironment match {
+      case Environment.NETHER  => 5
+      case Environment.THE_END => 0
+      case _                   => -59
+    }
 
-    // Y座標限界より上の場合は処理しない
+    // Y座標制限より上の場合は処理しない
     if (block.getY > yLimit) return
 
     // 下半分のハーフブロック以外は処理しない
@@ -421,14 +426,11 @@ class PlayerBlockBreakListener(
 
     event.setCancelled(true)
 
-    // 世界別のメッセージを表示
-    val managedWorld = ManagedWorld.fromBukkitWorld(world)
-    val message = if (managedWorld.contains(ManagedWorld.WORLD_SW_NETHER)) {
-      s"${RED}ネザー整地ワールドではY${yLimit}以下のハーフブロックは破壊不可能です。"
-    } else if (managedWorld.contains(ManagedWorld.WORLD_SW_END)) {
-      s"${RED}エンド整地ワールドではY${yLimit}以下のハーフブロックは破壊不可能です。"
-    } else {
-      s"${RED}Y${yLimit}以下に敷かれたハーフブロックは破壊不可能です。"
+    // 世界環境別のメッセージを表示
+    val message = world.getEnvironment match {
+      case Environment.NETHER  => s"${RED}ネザー整地ワールドではY$yLimit以下のハーフブロックは破壊不可能です。"
+      case Environment.THE_END => s"${RED}エンド整地ワールドではY$yLimit以下のハーフブロックは破壊不可能です。"
+      case _                   => s"${RED}Y$yLimit以下に敷かれたハーフブロックは破壊不可能です。"
     }
     player.sendMessage(message)
   }
