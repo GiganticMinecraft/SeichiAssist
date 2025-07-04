@@ -411,7 +411,7 @@ class PlayerBlockBreakListener(
     // 整地ワールドでない場合は処理しない
     if (!world.isSeichi) return
 
-    // 世界環境によってY座標制限を決定
+    // ディメンションによってY座標制限を決定
     val yLimit = world.getEnvironment match {
       case Environment.NETHER  => 5
       case Environment.THE_END => 0
