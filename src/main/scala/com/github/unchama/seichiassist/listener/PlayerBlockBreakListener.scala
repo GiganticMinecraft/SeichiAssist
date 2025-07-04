@@ -426,7 +426,7 @@ class PlayerBlockBreakListener(
 
     event.setCancelled(true)
 
-    // 世界環境別のメッセージを表示
+    // ディメンション別のメッセージを表示
     val message = world.getEnvironment match {
       case Environment.NETHER  => s"${RED}ネザー整地ワールドではY${yLimit}以下のハーフブロックは破壊不可能です。"
       case Environment.THE_END => s"${RED}エンド整地ワールドではY${yLimit}以下のハーフブロックは破壊不可能です。"
