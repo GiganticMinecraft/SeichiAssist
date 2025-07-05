@@ -59,17 +59,19 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
         s"$RED/gacha get <ID> (<名前>)",
         "指定したガチャリストのIDを入手 (所有者付きにもできます) IDを0に指定するとガチャリンゴを入手できます",
         s"$RED/gacha add <確率> (<イベント名>)",
-        "現在のメインハンドを指定されたイベントのガチャリストに追加。確率は1.0までで指定",
+        "現在のメインハンドを指定されたイベントのガチャリストに追加。確率は%で指定（100.0まで）",
         s"$DARK_GRAY※イベント名を入力しなかった場合は通常排出アイテムとして登録されます。",
         s"$RED/gacha list (<イベント>)",
         "指定したイベントのガチャリストを表示",
         s"$DARK_GRAY※イベント名を指定しなかった場合は通常排出アイテムを表示します",
+        s"$RED/gacha list-enabled",
+        "現在有効になっているガチャリストを表示",
         s"$RED/gacha remove <番号>",
         "リスト該当番号のガチャ景品を削除",
         s"$RED/gacha setamount <番号> <個数>",
         "リスト該当番号のガチャ景品の個数変更。64まで",
         s"$RED/gacha setprob <番号> <確率>",
-        "リスト該当番号のガチャ景品の確率変更",
+        "リスト該当番号のガチャ景品の確率変更（%で指定）",
         s"$RED/gacha create-event <イベント名(30字以内、日本語可)> <開始日> <終了日>",
         "日付はyyyy-MM-ddの形式で指定をしてください。",
         s"$DARK_GRAY※通常排出のガチャ景品リストがコピーされます。",
@@ -93,6 +95,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
         "add" -> add,
         "remove" -> remove,
         "list" -> list,
+        "list-enabled" -> listEnabled,
         "setamount" -> setAmount,
         "setprob" -> setProbability,
         "create-event" -> createEvent,
@@ -127,12 +130,12 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
         })
 
     private val probabilityParser: SingleArgumentParser[Double] =
-      Parsers.double(MessageEffect("確率は小数点数で指定してください。")).andThen {
+      Parsers.double(MessageEffect("確率は小数点数で指定してください（%形式）。")).andThen {
         _.flatMap { doubleNum =>
-          if (doubleNum <= 1.0 && doubleNum >= 0.0) {
-            succeedWith(doubleNum)
+          if (doubleNum <= 100.0 && doubleNum >= 0.0) {
+            succeedWith(doubleNum / 100.0)
           } else {
-            failWith("確率は正の数かつ1.0以下で指定してください。")
+            failWith("確率は正の数かつ100.0以下で指定してください。")
           }
         }
       }
@@ -273,6 +276,28 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
         }
       }
 
+    val listEnabled: ContextualExecutor =
+      ContextualExecutorBuilder.beginConfiguration.buildWithExecutionCSEffect { _ =>
+        Kleisli.liftF(gachaPrizeAPI.listOfNow).flatMap { gachaPrizes =>
+          // FIXME: /gacha list と同じコードが書かれているので、共通化したい
+          val gachaPrizeInformation = gachaPrizes.map { gachaPrize =>
+            val itemStack = gachaPrize.itemStack
+            val probability = gachaPrize.probability.value
+            val isSign = if (gachaPrize.signOwner) "あり" else "なし"
+
+            s"${gachaPrize.id.id}|${itemStack.getType.toString}/${itemStack.getItemMeta.getDisplayName}|${itemStack.getAmount}|$probability(${probability * 100}%)|$isSign"
+          }.toList
+
+          val totalProbability = gachaPrizes.map(_.probability.value).sum
+          MessageEffectF(
+            List(s"${RED}アイテム番号|アイテム名|アイテム数|出現確率|記名の有無") ++ gachaPrizeInformation ++ List(
+              s"${RED}合計確率: $totalProbability(${totalProbability * 100}%)",
+              s"${RED}合計確率は100%以内に収まるようにしてください。"
+            )
+          )
+        }
+      }
+
     val remove: ContextualExecutor = ContextualExecutorBuilder
       .beginConfiguration
       .thenParse(
@@ -348,7 +373,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
         } yield {
           if (probabilityChange.nonEmpty) {
             MessageEffectF(
-              s"${targetId.id}|${itemStack.get.getType.toString}/${itemStack.get.getItemMeta.getDisplayName}${RESET}の確率を$newProb(${newProb * 100}%)に変更しました。"
+              s"${targetId.id}|${itemStack.get.getType.toString}/${itemStack.get.getItemMeta.getDisplayName}${RESET}の確率を${newProb * 100.0}%に変更しました。"
             )
           } else {
             MessageEffectF("指定されたIDのガチャ景品は存在しません。")

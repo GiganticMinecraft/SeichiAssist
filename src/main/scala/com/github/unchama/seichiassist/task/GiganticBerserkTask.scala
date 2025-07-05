@@ -48,17 +48,17 @@ class GiganticBerserkTask {
       player.playSound(player.getLocation, Sound.ENTITY_WITHER_SHOOT, 1, 0.5f)
     }
 
-    // 最大レベルの場合終了
-    if (playerdata.giganticBerserk.reachedLimit()) return
-
     // 進化待機状態の場合終了
     if (playerdata.giganticBerserk.canEvolve) return
+
+    playerdata.GBexp = playerdata.giganticBerserk.exp + 1
+
+    // 最大レベルの場合終了
+    if (playerdata.giganticBerserk.reachedLimit()) return
 
     // stage * level
     val level = playerdata.giganticBerserk.level
     val n = (playerdata.giganticBerserk.stage * 10) + level
-
-    playerdata.GBexp = playerdata.giganticBerserk.exp + 1
 
     // レベルアップするかどうか判定
     if (

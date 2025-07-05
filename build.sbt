@@ -8,7 +8,7 @@ import java.io._
 ThisBuild / scalaVersion := "2.13.16"
 // ThisBuild / version はGitHub Actionsによって取得/自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
-ThisBuild / version := "98"
+ThisBuild / version := "99"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
@@ -87,10 +87,10 @@ val dependenciesToEmbed = Seq(
   "org.scala-lang.modules" %% "scala-collection-contrib" % "0.4.0",
 
   // DB
-  "org.mariadb.jdbc" % "mariadb-java-client" % "3.5.3",
-  "org.flywaydb" % "flyway-core" % "11.9.1",
-  "org.flywaydb" % "flyway-mysql" % "11.9.1",
-  "org.scalikejdbc" %% "scalikejdbc" % "4.3.3",
+  "org.mariadb.jdbc" % "mariadb-java-client" % "3.5.4",
+  "org.flywaydb" % "flyway-core" % "11.10.1",
+  "org.flywaydb" % "flyway-mysql" % "11.10.1",
+  "org.scalikejdbc" %% "scalikejdbc" % "4.3.4",
 
   // redis
   "io.github.rediscala" %% "rediscala" % "1.17.0",
@@ -118,15 +118,15 @@ val dependenciesToEmbed = Seq(
   "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
 
   // JSON
-  "io.circe" %% "circe-core" % "0.14.13",
-  "io.circe" %% "circe-generic" % "0.14.13",
-  "io.circe" %% "circe-parser" % "0.14.13",
+  "io.circe" %% "circe-core" % "0.14.14",
+  "io.circe" %% "circe-generic" % "0.14.14",
+  "io.circe" %% "circe-parser" % "0.14.14",
 
   // ajd4jp
   "com.github.KisaragiEffective" % "ajd4jp-mirror" % "8.0.2.2021",
 
   // Sentry
-  "io.sentry" % "sentry" % "8.13.2"
+  "io.sentry" % "sentry" % "8.16.0"
 )
 
 // endregion
