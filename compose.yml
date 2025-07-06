@@ -118,7 +118,7 @@ services:
     ]
     networks:
       - seichi
-    restart: always
+    restart: unless-stopped
     volumes:
       - db-data:/var/lib/mysql
       - ./docker/config/mysql:/etc/mysql/conf.d
