@@ -115,6 +115,7 @@ import java.util.UUID
 import java.util.logging.LogManager
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
+import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.GachaTradeAPI
 
 class SeichiAssist extends JavaPlugin() {
 
@@ -442,11 +443,15 @@ class SeichiAssist extends JavaPlugin() {
     : subsystems.tradesystems.subsystems.gttosiina.System[IO, ItemStack] =
     subsystems.tradesystems.subsystems.gttosiina.System.wired[IO]
 
-  private lazy val gachaTradeSystem: Subsystem[IO] = {
+  private lazy val gachaTradeSystem
+    : subsystems.tradesystems.subsystems.gachatrade.System[IO, Player, ItemStack] = {
+    import PluginExecutionContexts.timer
+
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
     implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player] = playerHeadSkinSystem.api
 
-    subsystems.tradesystems.subsystems.gachatrade.System.wired[IO, SyncIO]
+    subsystems.tradesystems.subsystems.gachatrade.System.wired[IO, SyncIO].unsafeRunSync()
   }
 
   private lazy val lastQuitSystem: subsystems.lastquit.System[IO] =
@@ -774,6 +779,8 @@ class SeichiAssist extends JavaPlugin() {
     implicit val breakSuppressionPreferenceAPI: BreakSuppressionPreferenceAPI[IO, Player] =
       breakSuppressionPreferenceSystem.api
     implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player] = playerHeadSkinSystem.api
+    implicit val gachaTradeAPI: GachaTradeAPI[IO, Player, ItemStack] =
+      gachaTradeSystem.api
 
     val menuRouter = TopLevelRouter.apply
     import SeichiAssist.Scopes.globalChatInterceptionScope

@@ -32,20 +32,22 @@ class BukkitTrade(owner: String, gachaPrizeTable: Vector[GachaPrizeTableEntry[It
   playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
 ) extends TradeRule[ItemStack, (BigOrRegular, Int)] {
 
+  private val bigList = gachaPrizeTable.collect {
+    case prize if GachaRarity.of[ItemStack](prize) == Big =>
+      canBeSignedAsGachaPrize.signWith(owner)(prize)
+  }
+
+  private val regularList = gachaPrizeTable.collect {
+    case prize if GachaRarity.of[ItemStack](prize) == Regular =>
+      canBeSignedAsGachaPrize.signWith(owner)(prize)
+  }
+
+  override val tradableItems: Vector[ItemStack] = bigList ++ regularList
+
   /**
    * プレーヤーが入力したアイテムから、交換結果を計算する
    */
   override def trade(contents: List[ItemStack]): TradeResult[ItemStack, (BigOrRegular, Int)] = {
-    // 大当たりのアイテム
-    val bigList = gachaPrizeTable.filter(GachaRarity.of[ItemStack](_) == Big).map {
-      gachaPrize => canBeSignedAsGachaPrize.signWith(owner)(gachaPrize)
-    }
-
-    // あたりのアイテム
-    val regularList = gachaPrizeTable.filter(GachaRarity.of[ItemStack](_) == Regular).map {
-      gachaPrize => canBeSignedAsGachaPrize.signWith(owner)(gachaPrize)
-    }
-
     // NOTE: ガチャ景品の交換は耐久値を無視する必要があるため、緩い判定を行うために独自の比較関数を用意する
     //  ref: https://github.com/GiganticMinecraft/SeichiAssist/issues/2150
     def compareItemStack(leftHand: ItemStack, rightHand: ItemStack): Boolean = {

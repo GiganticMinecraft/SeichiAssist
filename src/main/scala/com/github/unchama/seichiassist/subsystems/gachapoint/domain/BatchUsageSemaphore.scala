@@ -1,16 +1,16 @@
 package com.github.unchama.seichiassist.subsystems.gachapoint.domain
 
-import cats.FlatMap
 import cats.effect.concurrent.Ref
 import cats.effect.{Concurrent, Sync, Timer}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.RecoveringSemaphore
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.GachaPoint
+import cats.Monad
 
 /**
  * 特定のプレーヤーについてガチャポイント変換の制御を提供するオブジェクトのクラス。
  */
-class BatchUsageSemaphore[F[_]: FlatMap, G[_]: ContextCoercion[*[_], F]](
+class BatchUsageSemaphore[F[_]: Monad, G[_]: ContextCoercion[*[_], F]](
   gachaPointRef: Ref[G, GachaPoint],
   grantAction: GrantGachaTicketToAPlayer[F]
 )(recoveringSemaphore: RecoveringSemaphore[F]) {
@@ -21,21 +21,23 @@ class BatchUsageSemaphore[F[_]: FlatMap, G[_]: ContextCoercion[*[_], F]](
    * 576個(= 64 * 9スタック)のバッチでガチャポイント変換を行い、 [[BatchUsageSemaphore.usageInterval]]の間使用不可にする作用。
    */
   def tryLargeBatchTransaction: F[Unit] =
-    recoveringSemaphore.tryUse {
+    recoveringSemaphore.tryUse(
       ContextCoercion {
         gachaPointRef.modify { _.useInLargeBatch.asTuple }
-      }.flatTap(grantAction.give)
-    }(BatchUsageSemaphore.usageInterval)
+      }.flatTap(grantAction.give).void,
+      Monad[F].unit
+    )(BatchUsageSemaphore.usageInterval)
 
   /**
    * 64個(= 64 * 1スタック)のバッチでガチャポイント変換を行い、 [[BatchUsageSemaphore.usageInterval]]の間使用不可にする作用。
    */
   def trySmallBatchTransaction: F[Unit] =
-    recoveringSemaphore.tryUse {
+    recoveringSemaphore.tryUse(
       ContextCoercion {
         gachaPointRef.modify { _.useInSmallBatch.asTuple }
-      }.flatTap(grantAction.give)
-    }(BatchUsageSemaphore.usageInterval)
+      }.flatTap(grantAction.give).void,
+      Monad[F].unit
+    )(BatchUsageSemaphore.usageInterval)
 }
 
 object BatchUsageSemaphore {

@@ -20,19 +20,19 @@ class BukkitTrade(owner: String, gachaPrizeTable: Vector[GachaPrizeTableEntry[It
   tradeItemFactory: StaticTradeItemFactory[ItemStack]
 ) extends TradeRule[ItemStack, Unit] {
 
+  override val tradableItems: Vector[ItemStack] = gachaPrizeTable
+    .filter(GachaRarity.of[ItemStack](_) == Gigantic)
+    .map(gachaPrize => canBeSignedAsGachaPrize.signWith(owner)(gachaPrize))
+
   /**
    * プレーヤーが入力したアイテムから、交換結果を計算する
    */
   override def trade(contents: List[ItemStack]): TradeResult[ItemStack, Unit] = {
-    val giganticItemStacks = gachaPrizeTable
-      .filter(GachaRarity.of[ItemStack](_) == Gigantic)
-      .map(gachaPrize => canBeSignedAsGachaPrize.signWith(owner)(gachaPrize))
-
-    val (tradableItems, nonTradableItems) =
-      contents.partition(itemStack => giganticItemStacks.exists(_.isSimilar(itemStack)))
+    val (tradableItemsFromPlayerInputtedItems, nonTradableItemsFromPlayerInputtedItems) =
+      contents.partition(itemStack => tradableItems.exists(_.isSimilar(itemStack)))
 
     TradeResult[ItemStack, Unit](
-      tradableItems.map(_ =>
+      tradableItemsFromPlayerInputtedItems.map(_ =>
         /* NOTE: 2022/10/19現在、交換できるギガンティックアイテムは
               スタックできるアイテムではない。
               すなわち、この実装は交換できるアイテムが必ず単一のアイテムである
@@ -44,7 +44,7 @@ class BukkitTrade(owner: String, gachaPrizeTable: Vector[GachaPrizeTableEntry[It
           ()
         )
       ),
-      nonTradableItems
+      nonTradableItemsFromPlayerInputtedItems
     )
   }
 }
