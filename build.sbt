@@ -55,7 +55,7 @@ resolvers ++= Seq(
 )
 
 val providedDependencies = Seq(
-  "org.jetbrains" % "annotations" % "26.0.2",
+  "org.jetbrains" % "annotations" % "26.0.2-1",
   "org.apache.commons" % "commons-lang3" % "3.18.0",
   "commons-codec" % "commons-codec" % "1.19.0",
   "org.spigotmc" % "spigot-api" % "1.18.2-R0.1-SNAPSHOT",
