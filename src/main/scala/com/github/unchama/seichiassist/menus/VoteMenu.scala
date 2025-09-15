@@ -244,7 +244,11 @@ object VoteMenu extends Menu {
           )
         ),
         NoConsume -> FairyLore(
-          NonEmptyList.of(s"$BLUE$UNDERLINE${BOLD}リンゴつかうな", s"$RESET${GRAY}絶対にりんごを開放しません。", "")
+          NonEmptyList.of(
+            s"$BLUE$UNDERLINE${BOLD}リンゴつかうな",
+            s"$RESET${GRAY}ほんの少しだけ妖精さんにりんごを開放します。",
+            s"$RESET${GRAY}伝えるとしばらく口を利いてくれません。"
+          )
         )
       )
 
