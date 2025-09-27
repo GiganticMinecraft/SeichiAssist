@@ -88,8 +88,8 @@ val dependenciesToEmbed = Seq(
 
   // DB
   "org.mariadb.jdbc" % "mariadb-java-client" % "3.5.6",
-  "org.flywaydb" % "flyway-core" % "11.13.1",
-  "org.flywaydb" % "flyway-mysql" % "11.13.1",
+  "org.flywaydb" % "flyway-core" % "11.13.2",
+  "org.flywaydb" % "flyway-mysql" % "11.13.2",
   "org.scalikejdbc" %% "scalikejdbc" % "4.3.5",
 
   // redis
