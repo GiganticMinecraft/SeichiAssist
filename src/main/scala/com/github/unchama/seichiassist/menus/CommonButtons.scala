@@ -35,6 +35,23 @@ object CommonButtons {
       )
     )
 
+  def transferButton[M <: Menu](
+    itemStack: org.bukkit.inventory.ItemStack,
+    transferDescription: String,
+    target: M
+  )(implicit canOpenM: CanOpen[IO, M]): Button = {
+    val meta = itemStack.getItemMeta
+    meta.setDisplayName(navigation(transferDescription))
+    meta.setLore(java.util.Arrays.asList(clickResultDescription("クリックで移動")))
+    itemStack.setItemMeta(meta)
+    Button(
+      itemStack,
+      action.LeftClickButtonEffect(
+        SequentialEffect(CommonSoundEffects.menuTransitionFenceSound, canOpenM.open(target))
+      )
+    )
+  }
+
   def openStickMenu(
     implicit canOpenStickMenu: CanOpen[IO, FirstPage.type],
     playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]

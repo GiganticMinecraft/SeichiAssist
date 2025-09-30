@@ -131,47 +131,49 @@ case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) 
   )(implicit environment: Environment): IO[Seq[(Int, Button)]] = {
     import environment._
 
-    def buttonToTransferTo(pageIndex: Int, skullOwnerReference: SkullOwnerReference): Button =
-      CommonButtons.transferButton(
-        new SkullItemStackBuilder(skullOwnerReference),
-        s"${template.rankingName}${pageIndex + 1}ページ目へ",
-        RankingMenu(template, pageIndex)
-      )
+    def buttonToTransferTo(
+      pageIndex: Int,
+      skullOwnerReference: SkullOwnerReference
+    ): IO[Button] =
+      new SkullItemStackBuilder(skullOwnerReference).buildAsync().map { itemStack =>
+        CommonButtons.transferButton(
+          itemStack,
+          s"${template.rankingName}${pageIndex + 1}ページ目へ",
+          RankingMenu(template, pageIndex)
+        )
+      }
 
     val goBackToStickMenuSection =
-      IO(
+      new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft).buildAsync().map { itemStack =>
         Seq(
-          ChestSlotRef(5, 0) -> CommonButtons.transferButton(
-            new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
-            "ランキングメニューへ戻る",
-            RankingRootMenu
-          )
+          ChestSlotRef(5, 0) -> CommonButtons
+            .transferButton(itemStack, "ランキングメニューへ戻る", RankingRootMenu)
         )
-      )
+      }
 
     val previousPageButtonSection =
       if (pageIndex > 0)
-        IO(
-          Seq(ChestSlotRef(5, 7) -> buttonToTransferTo(pageIndex - 1, SkullOwners.MHF_ArrowUp))
-        )
+        buttonToTransferTo(pageIndex - 1, SkullOwners.MHF_ArrowUp).map { button =>
+          Seq(ChestSlotRef(5, 7) -> button)
+        }
       else
         IO.pure(Seq.empty)
 
     val nextPageButtonSection =
       if (pageIndex + 1 < totalNumberOfPages)
-        IO(
-          Seq(
-            ChestSlotRef(5, 8) -> buttonToTransferTo(pageIndex + 1, SkullOwners.MHF_ArrowDown)
-          )
-        )
+        buttonToTransferTo(pageIndex + 1, SkullOwners.MHF_ArrowDown).map { button =>
+          Seq(ChestSlotRef(5, 8) -> button)
+        }
       else
         IO.pure(Seq.empty)
 
-    for {
+    (for {
       goBackToStickMenuSection <- goBackToStickMenuSection
       previousPageButtonSection <- previousPageButtonSection
       nextPageButtonSection <- nextPageButtonSection
-    } yield goBackToStickMenuSection ++ previousPageButtonSection ++ nextPageButtonSection
+    } yield goBackToStickMenuSection ++ previousPageButtonSection ++ nextPageButtonSection): IO[
+      Seq[(Int, Button)]
+    ]
   }
 
   private def rankingSection(
@@ -181,14 +183,11 @@ case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) 
     import environment.nonServerThreadContextShift
 
     def entry(position: Int, record: RankingRecord[R]): IO[Button] = {
-      IO(
-        Button(
-          new SkullItemStackBuilder(record.uuid)
-            .title(s"$YELLOW$BOLD${position}位:$WHITE${record.playerName}")
-            .lore(template.recordDataLore(record.value))
-            .build()
-        )
-      )
+      new SkullItemStackBuilder(record.uuid)
+        .title(s"$YELLOW$BOLD${position}位:$WHITE${record.playerName}")
+        .lore(template.recordDataLore(record.value))
+        .buildAsync()
+        .map(Button(_))
     }
 
     ranking
@@ -207,17 +206,11 @@ case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) 
   )(implicit environment: Environment): IO[Seq[(Int, Button)]] = {
     import environment.playerHeadSkinAPI
 
-    IO(
-      Seq(
-        ChestSlotRef(5, 4) ->
-          Button(
-            new SkullItemStackBuilder(SkullOwners.unchama)
-              .title(s"$YELLOW$UNDERLINE${BOLD}整地鯖統計データ")
-              .lore(template.combinedDataLore(ranking.total))
-              .build()
-          )
-      )
-    )
+    new SkullItemStackBuilder(SkullOwners.unchama)
+      .title(s"$YELLOW$UNDERLINE${BOLD}整地鯖統計データ")
+      .lore(template.combinedDataLore(ranking.total))
+      .buildAsync()
+      .map { itemStack => Seq(ChestSlotRef(5, 4) -> Button(itemStack)) }
   }
 
   /**

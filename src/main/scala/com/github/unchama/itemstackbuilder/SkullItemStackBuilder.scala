@@ -5,6 +5,7 @@ import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinA
 import com.mojang.authlib.GameProfile
 import com.mojang.authlib.properties.Property
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.{Bukkit, Material}
 
@@ -26,14 +27,7 @@ class SkullItemStackBuilder(private val owner: SkullOwnerReference)(
     owner match {
       case SkullOwnerUuid(uuid) =>
         meta.setOwningPlayer(Bukkit.getOfflinePlayer(uuid))
-
-        playerHeadSkinAPI.playerHeadSkinUrlByUUID(uuid).unsafeRunSync() match {
-          case Some(url) =>
-            val playerProfile = Bukkit.createPlayerProfile(uuid)
-            playerProfile.getTextures.setSkin(URI.create(url.url).toURL)
-            meta.setOwnerProfile(playerProfile)
-          case None =>
-        }
+      // Note: 非同期で取得したスキンURLは buildAsync() で設定される
 
       case SkullOwnerUuidWithNameWithTextureUrl(uuid, name, url) =>
         val playerProfile = Bukkit.createPlayerProfile(uuid, name)
@@ -56,6 +50,31 @@ class SkullItemStackBuilder(private val owner: SkullOwnerReference)(
         val profileField = meta.getClass.getDeclaredField("profile")
         profileField.setAccessible(true)
         profileField.set(meta, gameProfile)
+    }
+  }
+
+  /**
+   * 非同期でプレイヤーヘッドのスキンテクスチャを取得してItemStackをビルドする。
+   * SkullOwnerUuid の場合のみ非同期でスキンURLを取得し、それ以外は即座にビルドする。
+   *
+   * @return ビルドされたItemStackを返すIO
+   */
+  def buildAsync(): IO[ItemStack] = {
+    owner match {
+      case SkullOwnerUuid(uuid) =>
+        playerHeadSkinAPI.playerHeadSkinUrlByUUID(uuid).map { urlOpt =>
+          val itemStack = build()
+          urlOpt.foreach { url =>
+            val meta = itemStack.getItemMeta.asInstanceOf[SkullMeta]
+            val playerProfile = Bukkit.createPlayerProfile(uuid)
+            playerProfile.getTextures.setSkin(URI.create(url.url).toURL)
+            meta.setOwnerProfile(playerProfile)
+            itemStack.setItemMeta(meta)
+          }
+          itemStack
+        }
+      case _ =>
+        IO.pure(build())
     }
   }
 }
