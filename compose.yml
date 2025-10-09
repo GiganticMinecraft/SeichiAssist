@@ -85,7 +85,7 @@ services:
       - paperb
     stdin_open: true
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin:5.2.2
+    image: phpmyadmin/phpmyadmin:5.2.3
     environment:
       - TZ=Asia/Tokyo
       - PMA_ARBITRARY=1
