@@ -34,10 +34,7 @@ object RmpCommand {
     )
   })
 
-  private val ignoredRegions = Set(
-    "spawn",
-    "__global__"
-  )
+  private val ignoredRegions = Set("spawn", "__global__")
 
   private val argsAndSenderConfiguredBuilder = ContextualExecutorBuilder
     .beginConfiguration
