@@ -1,6 +1,6 @@
 # SeichiAssist
 
-[![GitHub Actions](https://github.com/GiganticMinecraft/SeichiAssist/actions/workflows/build_and_deploy.yml/badge.svg)](https://github.com/GiganticMinecraft/SeichiAssist/actions/workflows/build_and_deploy.yml)
+[![GitHub Actions](https://github.com/GiganticMinecraft/SeichiAssist/actions/workflows/build-check.yml/badge.svg)](https://github.com/GiganticMinecraft/SeichiAssist/actions/workflows/build-check.yml)
 
 ## 前提プラグイン
 - [CoreProtect-2.15.0](https://www.spigotmc.org/resources/coreprotect.8631/download?version=231781)
