@@ -11,7 +11,8 @@
 - [Multiverse-Portals-4.2.1](https://dev.bukkit.org/projects/multiverse-portals/files/2428333/download)
 - [ParticleAPI_v2.1.1](https://dl.inventivetalent.org/download/?file=plugin/ParticleAPI_v2.1.1)
 - [WorldBorder1.9.10 (beta)](https://www.spigotmc.org/resources/worldborder.60905/download?version=275003)
-- [worldedit-bukkit-7.0.0](https://dev.bukkit.org/projects/worldedit/files/2597538/download)
+- [FastAsyncWorldEdit-Bukkit-2.9.2](https://cdn.modrinth.com/data/z4HZZnLr/versions/YSQCH9EW/FastAsyncWorldEdit-Bukkit-2.9.2.jar)
+  - WorldEditが内蔵されているため、別途導入する必要はありません。
 - [worldguard-bukkit-7.0.0](https://dev.bukkit.org/projects/worldguard/files/2610618/download)
 
 ## 前提プラグイン(整地鯖内製)
