@@ -21,7 +21,7 @@ ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
 // region 雑多な設定
 
 // kind-projector 構文を使いたいため
-addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.3" cross CrossVersion.full)
+addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.4" cross CrossVersion.full)
 
 // CIビルドで詳細なログを確認するため
 ThisBuild / logLevel := {
