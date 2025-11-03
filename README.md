@@ -13,7 +13,7 @@
 - [WorldBorder1.9.10 (beta)](https://www.spigotmc.org/resources/worldborder.60905/download?version=275003)
 - [FastAsyncWorldEdit-Bukkit-2.9.2](https://cdn.modrinth.com/data/z4HZZnLr/versions/YSQCH9EW/FastAsyncWorldEdit-Bukkit-2.9.2.jar)
   - WorldEditが内蔵されているため、別途導入する必要はありません。
-- [worldguard-bukkit-7.0.0](https://dev.bukkit.org/projects/worldguard/files/2610618/download)
+- [worldguard-bukkit-7.0.7](https://dev.bukkit.org/projects/worldguard/files/3677516/download)
 
 ## 前提プラグイン(整地鯖内製)
 - RegenWorld [リポジトリ](https://github.com/GiganticMinecraft/RegenWorld) | [jar](https://redmine.seichi.click/attachments/download/890/RegenWorld-1.0.jar)
