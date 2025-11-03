@@ -6,5 +6,10 @@
   "timezone": "Asia/Tokyo",
   "labels": ["renovate"],
   "reviewers": ["kory33","Lucky3028","rito528"],
-  "ignoreDeps": ["authlib", "coreprotect", "worldguard-bukkit", "mariadb"]
+  "ignoreDeps": [
+    "com.mojang:authlib",
+    "net.coreprotect:coreprotect",
+    "com.sk89q.worldguard:worldguard-bukkit",
+    "mariadb"
+  ]
 }
