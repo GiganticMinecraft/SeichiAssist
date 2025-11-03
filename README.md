@@ -3,14 +3,17 @@
 [![GitHub Actions](https://github.com/GiganticMinecraft/SeichiAssist/actions/workflows/build-check.yml/badge.svg)](https://github.com/GiganticMinecraft/SeichiAssist/actions/workflows/build-check.yml)
 
 ## 前提プラグイン
-- [CoreProtect-2.15.0](https://www.spigotmc.org/resources/coreprotect.8631/download?version=231781)
+- [CoreProtect-22.4](https://www.patreon.com/file?h=104200466&i=18902237)
+  - リンク先がPatreonという支援サイトになっていますが、問題ありません。
+  - いつからかCoreProtect開発チームは寄付を募っており、その寄付特典としてビルドしたJarの優先的配布を行っていることから、その配布リンクが流用されているものと思われます。
 - [item-nbt-api-plugin-2.11.2](https://www.spigotmc.org/resources/item-entity-tile-nbt-api.7939/download?version=241690)
 - [Multiverse-Core-4.3.1](https://dev.bukkit.org/projects/multiverse-core/files/2428161/download)
 - [Multiverse-Portals-4.2.1](https://dev.bukkit.org/projects/multiverse-portals/files/2428333/download)
 - [ParticleAPI_v2.1.1](https://dl.inventivetalent.org/download/?file=plugin/ParticleAPI_v2.1.1)
 - [WorldBorder1.9.10 (beta)](https://www.spigotmc.org/resources/worldborder.60905/download?version=275003)
-- [worldedit-bukkit-7.0.0](https://dev.bukkit.org/projects/worldedit/files/2597538/download)
-- [worldguard-bukkit-7.0.0](https://dev.bukkit.org/projects/worldguard/files/2610618/download)
+- [FastAsyncWorldEdit-Bukkit-2.9.2](https://cdn.modrinth.com/data/z4HZZnLr/versions/YSQCH9EW/FastAsyncWorldEdit-Bukkit-2.9.2.jar)
+  - WorldEditが内蔵されているため、別途導入する必要はありません。
+- [worldguard-bukkit-7.0.7](https://dev.bukkit.org/projects/worldguard/files/3677516/download)
 
 ## 前提プラグイン(整地鯖内製)
 - RegenWorld [リポジトリ](https://github.com/GiganticMinecraft/RegenWorld) | [jar](https://redmine.seichi.click/attachments/download/890/RegenWorld-1.0.jar)
