@@ -49,3 +49,7 @@ jobs:
 
       - name: Clean build artifact for caching target folder
         run: rm -r target/build
+
+      - name: Upload dependency graph
+        if: github.ref == 'refs/heads/develop'
+        uses: scalacenter/sbt-dependency-submission@v3.1.0
