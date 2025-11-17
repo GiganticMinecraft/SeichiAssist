@@ -31,7 +31,7 @@ jobs:
     container: ghcr.io/giganticminecraft/seichiassist-builder-v2:1df7cf5
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: 'recursive'
 
@@ -49,3 +49,7 @@ jobs:
 
       - name: Clean build artifact for caching target folder
         run: rm -r target/build
+
+      - name: Upload dependency graph
+        if: github.ref == 'refs/heads/develop'
+        uses: scalacenter/sbt-dependency-submission@v3.1.0

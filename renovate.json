@@ -1,9 +1,15 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base"
+    "config:recommended"
   ],
   "timezone": "Asia/Tokyo",
   "labels": ["renovate"],
-  "reviewers": ["kory33","Lucky3028","rito528"]
+  "reviewers": ["kory33","Lucky3028","rito528"],
+  "ignoreDeps": [
+    "com.mojang:authlib",
+    "net.coreprotect:coreprotect",
+    "com.sk89q.worldguard:worldguard-bukkit",
+    "mariadb"
+  ]
 }

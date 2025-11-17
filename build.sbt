@@ -5,10 +5,10 @@ import java.io._
 
 // region 全プロジェクト共通のメタデータ
 
-ThisBuild / scalaVersion := "2.13.16"
+ThisBuild / scalaVersion := "2.13.17"
 // ThisBuild / version はGitHub Actionsによって取得/自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
-ThisBuild / version := "99"
+ThisBuild / version := "100"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
@@ -21,7 +21,7 @@ ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
 // region 雑多な設定
 
 // kind-projector 構文を使いたいため
-addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.3" cross CrossVersion.full)
+addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.4" cross CrossVersion.full)
 
 // CIビルドで詳細なログを確認するため
 ThisBuild / logLevel := {
@@ -55,14 +55,14 @@ resolvers ++= Seq(
 )
 
 val providedDependencies = Seq(
-  "org.jetbrains" % "annotations" % "26.0.2",
-  "org.apache.commons" % "commons-lang3" % "3.17.0",
-  "commons-codec" % "commons-codec" % "1.18.0",
+  "org.jetbrains" % "annotations" % "26.0.2-1",
+  "org.apache.commons" % "commons-lang3" % "3.20.0",
+  "commons-codec" % "commons-codec" % "1.20.0",
   "org.spigotmc" % "spigot-api" % "1.18.2-R0.1-SNAPSHOT",
   // https://maven.enginehub.org/repo/com/sk89q/worldedit/worldedit-bukkit/
   "com.sk89q.worldguard" % "worldguard-bukkit" % "7.0.7",
   "net.coreprotect" % "coreprotect" % "21.3",
-  "com.mojang" % "authlib" % "6.0.58",
+  "com.mojang" % "authlib" % "6.0.59",
 
   // no runtime
   "org.typelevel" %% "simulacrum" % "1.0.1"
@@ -87,10 +87,10 @@ val dependenciesToEmbed = Seq(
   "org.scala-lang.modules" %% "scala-collection-contrib" % "0.4.0",
 
   // DB
-  "org.mariadb.jdbc" % "mariadb-java-client" % "3.5.4",
-  "org.flywaydb" % "flyway-core" % "11.10.1",
-  "org.flywaydb" % "flyway-mysql" % "11.10.1",
-  "org.scalikejdbc" %% "scalikejdbc" % "4.3.4",
+  "org.mariadb.jdbc" % "mariadb-java-client" % "3.5.6",
+  "org.flywaydb" % "flyway-core" % "11.17.0",
+  "org.flywaydb" % "flyway-mysql" % "11.17.0",
+  "org.scalikejdbc" %% "scalikejdbc" % "4.3.5",
 
   // redis
   "io.github.rediscala" %% "rediscala" % "1.17.0",
@@ -98,7 +98,7 @@ val dependenciesToEmbed = Seq(
   // effect system
   "org.typelevel" %% "cats-core" % "2.13.0",
   "org.typelevel" %% "cats-effect" % "2.5.5",
-  "co.fs2" %% "fs2-core" % "2.5.12",
+  "co.fs2" %% "fs2-core" % "2.5.13",
 
   // algebra
   "io.chrisdavenport" %% "log4cats-core" % "1.1.1",
@@ -118,15 +118,15 @@ val dependenciesToEmbed = Seq(
   "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
 
   // JSON
-  "io.circe" %% "circe-core" % "0.14.14",
-  "io.circe" %% "circe-generic" % "0.14.14",
-  "io.circe" %% "circe-parser" % "0.14.14",
+  "io.circe" %% "circe-core" % "0.14.15",
+  "io.circe" %% "circe-generic" % "0.14.15",
+  "io.circe" %% "circe-parser" % "0.14.15",
 
   // ajd4jp
   "com.github.KisaragiEffective" % "ajd4jp-mirror" % "8.0.2.2021",
 
   // Sentry
-  "io.sentry" % "sentry" % "8.16.0"
+  "io.sentry" % "sentry" % "8.26.0"
 )
 
 // endregion

@@ -14,20 +14,98 @@ on:
       - src/main/resources/db/migration/**
       - .github/workflows/check-sql-version-duplicated-files.yml
 jobs:
-  check:
+  check-duplicates:
     runs-on: ubuntu-24.04
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: '0'
-      - name: Fetch and merge develop
-        run: git fetch origin develop && git merge --no-ff origin/develop
-      - name: Check SQL migration files
+      - name: Check for duplicate migration versions
         run: |
-          ls src/main/resources/db/migration | grep -o -E "^V([0-9]+\.)?([0-9]+\.)?([0-9]+)" | awk 'a[$0]++ {print $0 > "result.txt"}'
-          if [ -s result.txt ]; then
-            echo "Some migration files have duplicated ver:"
-            cat result.txt
-            exit 1
+          echo "=== Checking for duplicate Flyway migration versions ==="
+
+          CURRENT_FILES=$(find src/main/resources/db/migration -name "*.sql" 2>/dev/null || true)
+
+          if [ -z "$CURRENT_FILES" ]; then
+            echo "No migration files found in current branch"
+            exit 0
           fi
+
+          echo "Migration files in current branch:"
+          echo "$CURRENT_FILES"
+          echo ""
+
+          declare -A VERSION_MAP
+          DUPLICATES_FOUND=false
+
+          for file in $CURRENT_FILES; do
+            filename=$(basename "$file")
+            # V で始まるバージョン番号を抽出（例: V1.0.0, V2.1.3__description.sql -> V1.0.0, V2.1.3）
+            if [[ $filename =~ ^(V[0-9]+(\.[0-9]+)*) ]]; then
+              version="${BASH_REMATCH[1]}"
+
+              if [ -n "${VERSION_MAP[$version]}" ]; then
+                echo "❌ ERROR: Duplicate version found: $version"
+                echo "   File 1: ${VERSION_MAP[$version]}"
+                echo "   File 2: $file"
+                DUPLICATES_FOUND=true
+              else
+                VERSION_MAP[$version]="$file"
+              fi
+            fi
+          done
+
+          echo "=== Checking other PRs for version conflicts ==="
+
+          PR_DATA=$(gh pr list --state open --json number,url,files \
+            --jq '[.[] | select(.files[].path | contains("src/main/resources/db/migration")) | {number: .number, url: .url, files: (.files | map(select(.path | contains("src/main/resources/db/migration"))) | map(.path))}]')
+
+          if [ "$PR_DATA" = "[]" ] || [ -z "$PR_DATA" ]; then
+            echo "No other open PRs with migration files found"
+          else
+            echo "Found PRs with migration files:"
+            echo "$PR_DATA" | jq -r '.[] | "PR #\(.number): \(.url)"'
+            echo ""
+
+            echo "$PR_DATA" | jq -r '.[] | "PR#\(.number)|\(.files | join(","))"' | while IFS='|' read -r pr_info files; do
+              pr_number=$(echo "$pr_info" | cut -d'#' -f2)
+
+              if [ "${{ github.event.pull_request.number }}" = "$pr_number" ]; then
+                echo "Skipping current PR #$pr_number"
+                continue
+              fi
+
+              echo "Checking PR #$pr_number"
+
+              # ファイルパスをカンマ区切りから改行区切りに変換
+              echo "$files" | tr ',' '\n' | while read -r other_file; do
+                if [ -z "$other_file" ]; then
+                  continue
+                fi
+
+                filename=$(basename "$other_file")
+                if [[ $filename =~ ^(V[0-9]+(\.[0-9]+)*) ]]; then
+                  other_version="${BASH_REMATCH[1]}"
+
+                  if [ -n "${VERSION_MAP[$other_version]}" ]; then
+                    echo "❌ ERROR: Version conflict with PR #$pr_number!"
+                    echo "   Version: $other_version"
+                    echo "   Current PR: ${VERSION_MAP[$other_version]}"
+                    echo "   Other PR #$pr_number: $other_file"
+                    DUPLICATES_FOUND=true
+                  fi
+                fi
+              done
+            done
+          fi
+
+          echo ""
+          if [ "$DUPLICATES_FOUND" = true ]; then
+            echo "=== ❌ Duplicate migration versions detected ==="
+            exit 1
+          else
+            echo "=== ✅ No duplicate migration versions found ==="
+            exit 0
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
