@@ -10,7 +10,6 @@ import com.github.unchama.menuinventory.slot.button.action.{
 }
 import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
-import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.menus.gridregion.GridRegionMenu
 import com.github.unchama.seichiassist.subsystems.gridregion.GridRegionAPI
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -46,13 +45,12 @@ object RegionMenu extends Menu {
     for {
       buttonToClaimRegion <- computeButtonToClaimRegion
     } yield {
-      menuinventory
-        .MenuSlotLayout(
-          0 -> summonWandButton,
-          1 -> buttonToClaimRegion,
-          2 -> displayOpenerRegionButton,
-          4 -> openGridRegionMenuButton
-        )
+      menuinventory.MenuSlotLayout(
+        0 -> summonWandButton,
+        1 -> buttonToClaimRegion,
+        2 -> displayOpenerRegionButton,
+        4 -> openGridRegionMenuButton
+      )
     }
   }
 
