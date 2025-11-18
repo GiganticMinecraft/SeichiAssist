@@ -53,12 +53,6 @@ object RegionMenu extends Menu {
           2 -> displayOpenerRegionButton,
           4 -> openGridRegionMenuButton
         )
-        .merge(
-          // ヴァルハラサーバー(`serverNum = 3`) では RegionGUI が利用できない (2022/08/06現在) ので表示しない
-          if (SeichiAssist.seichiAssistConfig.getServerNum != 3)
-            MenuSlotLayout(3 -> openRegionGUIButton)
-          else MenuSlotLayout.emptyLayout
-        )
     }
   }
 
@@ -208,24 +202,6 @@ object RegionMenu extends Menu {
             ComputedEffect(player => CommandEffect(s"rg list -p ${player.getName}"))
           )
         )
-      )
-    }
-
-    val openRegionGUIButton: Button = {
-      val iconItemStack = new IconItemStackBuilder(Material.DIAMOND_AXE)
-        .title(s"$YELLOW$UNDERLINE${BOLD}RegionGUI機能")
-        .lore(
-          s"$DARK_RED${UNDERLINE}クリックで開く",
-          s"${RED}保護の管理が超簡単に！",
-          s"${YELLOW}自分の所有する保護内でクリックすると",
-          s"${YELLOW}保護の各種設定や削除が行えます",
-          s"${DARK_GRAY}command=>[/land]"
-        )
-        .build()
-
-      Button(
-        iconItemStack,
-        action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)(_ => CommandEffect("land"))
       )
     }
 
