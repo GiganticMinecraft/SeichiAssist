@@ -63,6 +63,8 @@ runs:
       run: |
         for proto in protocol/*.proto; do
           timestamp=`git log -1 --pretty=format:'%cd' --date=format:'%Y%m%d%H%M.%S' $proto`
-          touch -t "$timestamp" $proto
+          if [ -n "$timestamp" ]; then
+            touch -t "$timestamp" $proto
+          fi
         done
       shell: bash
