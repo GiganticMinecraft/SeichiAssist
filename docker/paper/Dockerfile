@@ -1,14 +1,15 @@
-# syntax=docker/dockerfile:1.20
-FROM ghcr.io/giganticminecraft/chunk-search-rs:sha-f1943b1 as chunk-search-provider
-FROM ghcr.io/giganticminecraft/seichiassist-runner-v2:890105f
+# syntax=docker/dockerfile:1
+FROM ghcr.io/giganticminecraft/chunk-search-rs:sha-7515d8c as chunk-search-provider
+FROM ghcr.io/giganticminecraft/seichiassist-runner-v2:776da10
 FROM mikefarah/yq:4.48.2 as yq
 
 FROM itzg/minecraft-server:java17-jdk
 
 # nkfをインストール
-RUN apt-get update && apt-get install -y nkf \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+RUN \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    apt-get update && apt-get install -y nkf
 
 #yqをインストール
 COPY --from=yq /usr/bin/yq /usr/bin/yq
