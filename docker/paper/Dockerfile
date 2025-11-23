@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM ghcr.io/giganticminecraft/chunk-search-rs:sha-7515d8c as chunk-search-provider
 FROM ghcr.io/giganticminecraft/seichiassist-runner-v2:776da10
-FROM mikefarah/yq:4.48.2 as yq
+FROM mikefarah/yq:4.49.1 as yq
 
 FROM itzg/minecraft-server:java17-jdk
 

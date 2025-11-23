@@ -88,8 +88,8 @@ val dependenciesToEmbed = Seq(
 
   // DB
   "org.mariadb.jdbc" % "mariadb-java-client" % "3.5.6",
-  "org.flywaydb" % "flyway-core" % "11.17.0",
-  "org.flywaydb" % "flyway-mysql" % "11.17.0",
+  "org.flywaydb" % "flyway-core" % "11.17.1",
+  "org.flywaydb" % "flyway-mysql" % "11.17.1",
   "org.scalikejdbc" %% "scalikejdbc" % "4.3.5",
 
   // redis
@@ -112,7 +112,7 @@ val dependenciesToEmbed = Seq(
 
   // type-safety utils
   "eu.timepit" %% "refined" % "0.11.3",
-  "com.beachape" %% "enumeratum" % "1.9.0",
+  "com.beachape" %% "enumeratum" % "1.9.1",
 
   // protobuf
   "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
@@ -126,7 +126,7 @@ val dependenciesToEmbed = Seq(
   "com.github.KisaragiEffective" % "ajd4jp-mirror" % "8.0.2.2021",
 
   // Sentry
-  "io.sentry" % "sentry" % "8.26.0"
+  "io.sentry" % "sentry" % "8.27.0"
 )
 
 // endregion
