@@ -10,6 +10,6 @@
     "com.mojang:authlib",
     "net.coreprotect:coreprotect",
     "com.sk89q.worldguard:worldguard-bukkit",
-    "mariadb"
+    "docker-registry1.mariadb.com/library/mariadb"
   ]
 }
