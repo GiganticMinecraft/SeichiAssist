@@ -61,7 +61,8 @@ runs:
     - name: Restore protocol timestamps
       ## 参考: https://qiita.com/tomlla/items/219cea9dd071c8a9e147
       run: |
-        for proto in protocol/*.proto; do
+        cd protocol
+        for proto in *.proto; do
           timestamp=`git log -1 --pretty=format:'%cd' --date=format:'%Y%m%d%H%M.%S' $proto`
           touch -t "$timestamp" $proto
         done
