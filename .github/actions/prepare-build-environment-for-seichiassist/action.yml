@@ -5,7 +5,7 @@ runs:
   using: composite
   steps:
     - name: Prepare build dependencies cache
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       env:
         cache-name: cache-build-dependencies
         cache-version: v-5
@@ -29,7 +29,7 @@ runs:
 
     - name: Prepare build cache
       if: github.ref != 'refs/heads/master'
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       env:
         cache-name: cache-build
         cache-version: v-5
