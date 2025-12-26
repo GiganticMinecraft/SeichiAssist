@@ -9,6 +9,7 @@ object ScalikeJDBCConfiguration {
       initialSize = 5,
       maxSize = 20,
       connectionTimeoutMillis = 100000L,
+      validationQuery = "SELECT 1",
       driverName =
         "com.github.unchama.seichiassist.relocateddependencies.org.mariadb.jdbc.Driver"
     )
