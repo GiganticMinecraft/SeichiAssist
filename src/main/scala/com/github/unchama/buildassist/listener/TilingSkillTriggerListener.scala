@@ -49,6 +49,7 @@ class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[
     ) return
 
     if (offHandItem.getType == Material.AIR) return
+    if (BuildAssist.placementSkillExcludedMaterials.contains(offHandItem.getType)) return
 
     val clickedBlock = event.getClickedBlock
     if (!(offHandItem.getType == clickedBlock.getType)) {
