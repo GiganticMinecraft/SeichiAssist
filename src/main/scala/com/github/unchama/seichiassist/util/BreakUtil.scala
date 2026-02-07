@@ -88,14 +88,8 @@ object BreakUtil {
     if (checkTarget.getWorld.isSeichi) {
       val halfBlockLayerYCoordinate = {
         val managedWorld = ManagedWorld.fromBukkitWorld(checkTarget.getWorld)
-        // 整地専用サーバー（s5）のWORLD_SW_3（Earth整地）は、外部ワールドのため岩盤高度がY0
-        if (
-          SeichiAssist.seichiAssistConfig.getServerNum == 5 && managedWorld.contains(
-            ManagedWorld.WORLD_SW_3
-          )
-        ) 1
         // エンド整地ワールドには岩盤がないが、Y0にハーフを設置するひとがいるため
-        else if (managedWorld.contains(ManagedWorld.WORLD_SW_END)) 0
+        if (managedWorld.contains(ManagedWorld.WORLD_SW_END)) 0
         // それ以外なら通常通りY-59
         else -59
       }
