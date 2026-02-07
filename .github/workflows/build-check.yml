@@ -28,10 +28,10 @@ jobs:
     env:
       BUILD_ENVIRONMENT_IS_CI_OR_LOCAL: "CI"
     runs-on: ubuntu-24.04
-    container: ghcr.io/giganticminecraft/seichiassist-builder-v2:1df7cf5
+    container: ghcr.io/giganticminecraft/seichiassist-builder-v2:776da10
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           submodules: 'recursive'
 
@@ -52,4 +52,4 @@ jobs:
 
       - name: Upload dependency graph
         if: github.ref == 'refs/heads/develop'
-        uses: scalacenter/sbt-dependency-submission@v3.1.0
+        uses: scalacenter/sbt-dependency-submission@v3.2.1

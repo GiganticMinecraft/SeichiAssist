@@ -5,10 +5,10 @@ import java.io._
 
 // region 全プロジェクト共通のメタデータ
 
-ThisBuild / scalaVersion := "2.13.17"
+ThisBuild / scalaVersion := "2.13.18"
 // ThisBuild / version はGitHub Actionsによって取得/自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
-ThisBuild / version := "100"
+ThisBuild / version := "101"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
@@ -57,7 +57,7 @@ resolvers ++= Seq(
 val providedDependencies = Seq(
   "org.jetbrains" % "annotations" % "26.0.2-1",
   "org.apache.commons" % "commons-lang3" % "3.20.0",
-  "commons-codec" % "commons-codec" % "1.20.0",
+  "commons-codec" % "commons-codec" % "1.21.0",
   "org.spigotmc" % "spigot-api" % "1.18.2-R0.1-SNAPSHOT",
   // https://maven.enginehub.org/repo/com/sk89q/worldedit/worldedit-bukkit/
   "com.sk89q.worldguard" % "worldguard-bukkit" % "7.0.7",
@@ -87,9 +87,9 @@ val dependenciesToEmbed = Seq(
   "org.scala-lang.modules" %% "scala-collection-contrib" % "0.4.0",
 
   // DB
-  "org.mariadb.jdbc" % "mariadb-java-client" % "3.5.6",
-  "org.flywaydb" % "flyway-core" % "11.17.0",
-  "org.flywaydb" % "flyway-mysql" % "11.17.0",
+  "org.mariadb.jdbc" % "mariadb-java-client" % "3.5.7",
+  "org.flywaydb" % "flyway-core" % "12.0.0",
+  "org.flywaydb" % "flyway-mysql" % "12.0.0",
   "org.scalikejdbc" %% "scalikejdbc" % "4.3.5",
 
   // redis
@@ -112,7 +112,7 @@ val dependenciesToEmbed = Seq(
 
   // type-safety utils
   "eu.timepit" %% "refined" % "0.11.3",
-  "com.beachape" %% "enumeratum" % "1.9.0",
+  "com.beachape" %% "enumeratum" % "1.9.4",
 
   // protobuf
   "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
@@ -126,7 +126,7 @@ val dependenciesToEmbed = Seq(
   "com.github.KisaragiEffective" % "ajd4jp-mirror" % "8.0.2.2021",
 
   // Sentry
-  "io.sentry" % "sentry" % "8.26.0"
+  "io.sentry" % "sentry" % "8.31.0"
 )
 
 // endregion

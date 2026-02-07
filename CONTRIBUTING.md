@@ -77,7 +77,7 @@ Git をインストールします。公式の[インストールガイド (日�
 $ rm -rf target/build
 
 # 2. Dockerコンテナ内でsbt assemblyを実行
-$ docker run --rm -it -v `pwd`:/app ghcr.io/giganticminecraft/seichiassist-builder-v2:1df7cf5 sh -c "cd /app && sbt assembly"
+$ docker run --rm -it -v `pwd`:/app ghcr.io/giganticminecraft/seichiassist-builder-v2:776da10 sh -c "cd /app && sbt assembly"
 
 # 3. 生成されたファイルの所有権を変更 (Docker内でrootとして実行されるため)
 $ sudo chown -R `whoami` target/build
