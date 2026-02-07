@@ -11,15 +11,20 @@ import com.github.unchama.seichiassist.seichiskill.{
   BlockSearching,
   BreakArea
 }
+import com.github.unchama.seichiassist.seichiskill.SeichiSkill.AssaultArmor
 import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.util.BreakUtil
+import com.github.unchama.seichiassist.data.XYZTuple
 import com.github.unchama.seichiassist.{DefaultEffectEnvironment, MaterialSets, SeichiAssist}
 import org.bukkit.ChatColor._
+import org.bukkit.block.Block
 import org.bukkit.enchantments.Enchantment
-import org.bukkit.entity.Player
+import org.bukkit.entity.{Damageable => DamageableEntity, Entity, Player, Vehicle}
 import org.bukkit.inventory.meta.Damageable
 import org.bukkit.{GameMode, Location, Material, Sound}
+import scala.jdk.CollectionConverters._
+import cats.syntax.all._
 
 object AssaultRoutine {
 
@@ -28,6 +33,60 @@ object AssaultRoutine {
   private def locationsFarEnough(l1: Location, l2: Location): Boolean = {
     val projections: Seq[Location => Int] = Seq(_.getBlockX, _.getBlockY, _.getBlockZ)
     projections.exists(p => (p(l1) - p(l2)).abs >= 10)
+  }
+
+  private def containsPlayerPassenger(entity: Entity): Boolean =
+    entity.getPassengers.asScala.exists {
+      case _: Player => true
+      case passenger => containsPlayerPassenger(passenger)
+    }
+
+  private def destroyVehicleAsPlayer(vehicle: Vehicle, player: Player): IO[Unit] =
+    IO {
+      vehicle match {
+        case damageable: DamageableEntity => damageable.damage(1000.0, player)
+        case _                            => vehicle.remove()
+      }
+    }
+
+  private def destroyVehiclesInArea(
+    player: Player,
+    relativeVectors: Seq[XYZTuple],
+    referencePoint: Block
+  ): IO[Unit] = {
+    val maxAxisDistance = relativeVectors.foldLeft(0) { (currentMax, vector) =>
+      currentMax.max(vector.x.abs).max(vector.y.abs).max(vector.z.abs)
+    } + 2
+
+    val targetCoordinates: Set[(Int, Int, Int)] = relativeVectors
+      .iterator
+      .map {
+        case XYZTuple(x, y, z) =>
+          val targetBlock = referencePoint.getRelative(x, y, z)
+          (targetBlock.getX, targetBlock.getY, targetBlock.getZ)
+      }
+      .toSet
+
+    val targetVehicles = IO {
+      player
+        .getNearbyEntities(maxAxisDistance, maxAxisDistance, maxAxisDistance)
+        .asScala
+        .collect { case vehicle: Vehicle => vehicle }
+        .filter { vehicle =>
+          val location = vehicle.getLocation
+          targetCoordinates.contains(
+            (location.getBlockX, location.getBlockY, location.getBlockZ)
+          )
+        }
+        .filter(vehicle => vehicle.isValid && !vehicle.isDead)
+        .filterNot(containsPlayerPassenger)
+        .toList
+    }
+
+    for {
+      vehicles <- targetVehicles
+      _ <- vehicles.traverse(destroyVehicleAsPlayer(_, player))
+    } yield ()
   }
 
   def tryStart(player: Player, skill: AssaultSkill)(
@@ -120,9 +179,10 @@ object AssaultRoutine {
       }
 
       import com.github.unchama.seichiassist.data.syntax._
+      val breakGridPoints = breakArea.gridPoints()
       val BlockSearching.Result(foundBlocks, foundWaters, foundLavas) =
         BlockSearching
-          .searchForBlocksBreakableWithSkill(player, breakArea.gridPoints(), block)
+          .searchForBlocksBreakableWithSkill(player, breakGridPoints, block)
           .unsafeRunSync()
           .filterAll(targetBlock =>
             player.isSneaking || !shouldBreakAllBlocks ||
@@ -184,6 +244,13 @@ object AssaultRoutine {
       } else {
         if (shouldRemoveOrCondenseWater) foundWaters.foreach(_.setType(Material.PACKED_ICE))
         if (shouldRemoveOrCondenseLava) foundLavas.foreach(_.setType(Material.MAGMA_BLOCK))
+      }
+
+      if (assaultSkill == AssaultArmor) {
+        DefaultEffectEnvironment.unsafeRunEffectAsync(
+          "アサルトアーマー範囲内の乗り物を破壊する",
+          destroyVehiclesInArea(player, breakGridPoints, block)
+        )
       }
 
       Some(newState)
