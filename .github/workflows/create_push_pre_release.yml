@@ -33,7 +33,8 @@ jobs:
       - name: Create and push a tag
         id: tag-name
         run: |
-          TAG_NAME=develop-${GITHUB_SHA::12}
+          SHORT_SHA=$(git rev-parse --short=12 HEAD)
+          TAG_NAME=develop-$SHORT_SHA
 
           if git ls-remote --tags origin "refs/tags/$TAG_NAME" | grep -q "$TAG_NAME"; then
             echo "Tag $TAG_NAME already exists on origin. Reusing existing tag."
@@ -43,6 +44,7 @@ jobs:
           fi
 
           echo "value=$TAG_NAME" >> $GITHUB_OUTPUT
+
 
       - name: Create pre release
         uses: softprops/action-gh-release@v2
