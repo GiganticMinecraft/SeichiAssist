@@ -1,0 +1,60 @@
+name: Create push pre release
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - src/**
+      - build.sbt
+      - .scalafix.conf
+      - .scalafmt.conf
+      - project/*
+      - .github/workflows/**.yml
+      - .github/actions/**/**.yml
+
+jobs:
+  create_release:
+    runs-on: ubuntu-24.04
+    container: ghcr.io/giganticminecraft/seichiassist-builder-v2:776da10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          submodules: "recursive"
+
+      - name: Prepare build environment for seichiassist
+        uses: ./.github/actions/prepare-build-environment-for-seichiassist
+
+      # sbt-assembly 2以降からディレクトリを作ってくれなくなった
+      - name: Build artifact
+        run: mkdir -p target/build && ./sbt assembly
+
+      - name: Create and push a tag
+        id: tag-name
+        run: |
+          TAG_NAME=develop-${GITHUB_SHA::12}
+
+          if git ls-remote --tags origin "refs/tags/$TAG_NAME" | grep -q "$TAG_NAME"; then
+            echo "Tag $TAG_NAME already exists on origin. Reusing existing tag."
+          else
+            git tag "$TAG_NAME"
+            git push origin "$TAG_NAME"
+          fi
+
+          echo "value=$TAG_NAME" >> $GITHUB_OUTPUT
+
+      - name: Create pre release
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          target_commitish: "develop"
+          files: target/build/SeichiAssist.jar
+          tag_name: ${{ steps.tag-name.outputs.value }}
+          name: ${{ steps.tag-name.outputs.value }}
+          draft: false
+          prerelease: true
+
+      - name: Clean build artifact for caching target folder
+        run: rm -r target/build
