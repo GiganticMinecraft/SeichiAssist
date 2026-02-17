@@ -57,6 +57,7 @@ jobs:
           name: ${{ steps.tag-name.outputs.value }}
           draft: false
           prerelease: true
+          generate_release_notes: true
 
       - name: Clean build artifact for caching target folder
         run: rm -r target/build
