@@ -43,8 +43,9 @@ object AssaultRoutine {
 
   private def destroyVehicleAsPlayer(vehicle: Vehicle, player: Player): IO[Unit] =
     IO {
+      val lethalDamage = 1000.0
       vehicle match {
-        case damageable: DamageableEntity => damageable.damage(1000.0, player)
+        case damageable: DamageableEntity => damageable.damage(lethalDamage, player)
         case _                            => vehicle.remove()
       }
     }
