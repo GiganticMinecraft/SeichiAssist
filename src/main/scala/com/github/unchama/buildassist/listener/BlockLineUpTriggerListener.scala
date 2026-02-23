@@ -61,6 +61,8 @@ class BlockLineUpTriggerListener[
 
     if (!mainHandItemType.isBlock()) return
 
+    if (BuildAssist.placementSkillExcludedMaterials.contains(mainHandItemType)) return
+
     // 仰角は下向きがプラスで上向きがマイナス
     val pitch = pl.getPitch
     val yaw = (pl.getYaw + 360) % 360

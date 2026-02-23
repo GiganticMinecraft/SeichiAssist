@@ -8,7 +8,7 @@ import java.io._
 ThisBuild / scalaVersion := "2.13.18"
 // ThisBuild / version はGitHub Actionsによって取得/自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
-ThisBuild / version := "101"
+ThisBuild / version := "102"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
@@ -55,7 +55,7 @@ resolvers ++= Seq(
 )
 
 val providedDependencies = Seq(
-  "org.jetbrains" % "annotations" % "26.0.2-1",
+  "org.jetbrains" % "annotations" % "26.1.0",
   "org.apache.commons" % "commons-lang3" % "3.20.0",
   "commons-codec" % "commons-codec" % "1.21.0",
   "org.spigotmc" % "spigot-api" % "1.18.2-R0.1-SNAPSHOT",
@@ -88,8 +88,8 @@ val dependenciesToEmbed = Seq(
 
   // DB
   "org.mariadb.jdbc" % "mariadb-java-client" % "3.5.7",
-  "org.flywaydb" % "flyway-core" % "12.0.0",
-  "org.flywaydb" % "flyway-mysql" % "12.0.0",
+  "org.flywaydb" % "flyway-core" % "12.0.2",
+  "org.flywaydb" % "flyway-mysql" % "12.0.2",
   "org.scalikejdbc" %% "scalikejdbc" % "4.3.5",
 
   // redis
@@ -112,7 +112,7 @@ val dependenciesToEmbed = Seq(
 
   // type-safety utils
   "eu.timepit" %% "refined" % "0.11.3",
-  "com.beachape" %% "enumeratum" % "1.9.4",
+  "com.beachape" %% "enumeratum" % "1.9.5",
 
   // protobuf
   "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
@@ -126,7 +126,7 @@ val dependenciesToEmbed = Seq(
   "com.github.KisaragiEffective" % "ajd4jp-mirror" % "8.0.2.2021",
 
   // Sentry
-  "io.sentry" % "sentry" % "8.31.0"
+  "io.sentry" % "sentry" % "8.33.0"
 )
 
 // endregion
