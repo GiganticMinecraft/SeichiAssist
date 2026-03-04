@@ -38,8 +38,7 @@ object System {
   def wired[F[_]: ConcurrentEffect: Timer: ErrorLogger, G[_]: SyncEffect: ContextCoercion[*[
     _
   ], F]](breakCountReadAPI: BreakCountReadAPI[F, G, Player])(
-    implicit ioOnMainThread: OnMinecraftServerThread[IO],
-    playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    implicit ioOnMainThread: OnMinecraftServerThread[IO]
   ): G[System[F, G, Player]] = {
     import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 

@@ -28,8 +28,7 @@ object BigOrRegular {
 }
 
 class BukkitTrade(owner: String, gachaPrizeTable: Vector[GachaPrizeTableEntry[ItemStack]])(
-  implicit canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack],
-  playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+  implicit canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
 ) extends TradeRule[ItemStack, (BigOrRegular, Int)] {
 
   /**

@@ -36,8 +36,7 @@ class NewYearListener[F[_]: ConcurrentEffect: NonServerThreadContextShift, G[_]:
   implicit effectEnvironment: EffectEnvironment,
   repository: LastQuitPersistenceRepository[F, UUID],
   manaApi: ManaWriteApi[G, Player],
-  ioOnMainThread: OnMinecraftServerThread[IO],
-  playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+  ioOnMainThread: OnMinecraftServerThread[IO]
 ) extends Listener {
 
   import cats.implicits._

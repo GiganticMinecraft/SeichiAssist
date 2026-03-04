@@ -20,8 +20,7 @@ class BukkitReceiveVoteBenefits[F[_]: OnMinecraftServerThread: Sync, G[
   _
 ]: SyncEffect: ContextCoercion[*[_], F]](
   implicit votePersistence: VotePersistence[F],
-  breakCountAPI: BreakCountAPI[F, G, Player],
-  playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+  breakCountAPI: BreakCountAPI[F, G, Player]
 ) extends ReceiveVoteBenefits[F, Player] {
 
   import cats.implicits._

@@ -44,8 +44,7 @@ object System {
     implicit manaWriteApi: ManaWriteApi[G, Player],
     effectEnvironment: EffectEnvironment,
     ioOnMainThread: OnMinecraftServerThread[IO],
-    gtToSiinaAPI: GtToSiinaAPI[ItemStack],
-    playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    gtToSiinaAPI: GtToSiinaAPI[ItemStack]
   ): System[H] = {
 
     implicit val repository: LastQuitPersistenceRepository[F, UUID] =

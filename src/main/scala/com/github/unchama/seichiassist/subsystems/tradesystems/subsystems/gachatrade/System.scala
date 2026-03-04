@@ -23,8 +23,7 @@ object System {
 
   def wired[F[_]: ConcurrentEffect, G[_]](
     implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
-    gachaPointApi: GachaPointApi[F, G, Player],
-    playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    gachaPointApi: GachaPointApi[F, G, Player]
   ): Subsystem[F] = {
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
       gachaPrizeAPI.canBeSignedAsGachaPrize
