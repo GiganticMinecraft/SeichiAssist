@@ -2,7 +2,11 @@ package com.github.unchama.seichiassist.menus.ranking
 
 import cats.effect.IO
 import com.github.unchama.concurrent.NonServerThreadContextShift
-import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerReference}
+import com.github.unchama.itemstackbuilder.{
+  SkullItemStackBuilder,
+  SkullOwnerReference,
+  SkullOwnerUuid
+}
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
@@ -181,14 +185,14 @@ case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) 
     import environment.nonServerThreadContextShift
 
     def entry(position: Int, record: RankingRecord[R]): IO[Button] = {
-      IO(
+      playerHeadSkinAPI.playerHeadSkinUrlByUUID(record.uuid).map { skinUrl =>
         Button(
-          new SkullItemStackBuilder(record.uuid)
+          new SkullItemStackBuilder(SkullOwnerUuid(record.uuid, skinUrl))
             .title(s"$YELLOW$BOLD${position}位:$WHITE${record.playerName}")
             .lore(template.recordDataLore(record.value))
             .build()
         )
-      )
+      }
     }
 
     ranking
@@ -205,7 +209,6 @@ case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) 
   private def totalAmountSection(
     ranking: Ranking[R]
   )(implicit environment: Environment): IO[Seq[(Int, Button)]] = {
-    import environment.playerHeadSkinAPI
 
     IO(
       Seq(

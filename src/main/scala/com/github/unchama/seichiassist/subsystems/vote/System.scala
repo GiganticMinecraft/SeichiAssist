@@ -1,11 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.vote
 
 import cats.data.Kleisli
-import cats.effect.{ConcurrentEffect, IO, SyncEffect}
+import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
-import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.vote.application.actions.ReceiveVoteBenefits
 import com.github.unchama.seichiassist.subsystems.vote.bukkit.actions.BukkitReceiveVoteBenefits
 import com.github.unchama.seichiassist.subsystems.vote.bukkit.command.VoteCommand
@@ -25,8 +24,7 @@ trait System[F[_], Player] extends Subsystem[F] {
 object System {
 
   def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread, G[_]: SyncEffect](
-    implicit breakCountAPI: BreakCountAPI[F, G, Player],
-    playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    implicit breakCountAPI: BreakCountAPI[F, G, Player]
   ): System[F, Player] = {
     implicit val _votePersistence: VotePersistence[F] = new JdbcVotePersistence[F]
     val _receiveVoteBenefits: ReceiveVoteBenefits[F, Player] =

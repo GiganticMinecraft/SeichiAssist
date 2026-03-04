@@ -1,38 +1,32 @@
 package com.github.unchama.itemstackbuilder
 
-import cats.effect.IO
-import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.mojang.authlib.GameProfile
 import com.mojang.authlib.properties.Property
-import org.bukkit.entity.Player
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.{Bukkit, Material}
 
 import java.net.URI
 import java.util.UUID
 
-class SkullItemStackBuilder(private val owner: SkullOwnerReference)(
-  implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
-) extends AbstractItemStackBuilder[SkullMeta](Material.PLAYER_HEAD) {
+class SkullItemStackBuilder(private val owner: SkullOwnerReference)
+    extends AbstractItemStackBuilder[SkullMeta](Material.PLAYER_HEAD) {
 
   /**
    * @param ownerUUID
    *   [Material.PLAYER_HEAD] に表示するプレーヤーのUUID
    */
-  def this(ownerUUID: UUID)(implicit playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]) =
-    this(SkullOwnerUuid(ownerUUID))(playerHeadSkinAPI)
+  def this(ownerUUID: UUID) =
+    this(SkullOwnerUuid(ownerUUID))
 
   override protected def transformItemMetaOnBuild(meta: SkullMeta): Unit = {
     owner match {
-      case SkullOwnerUuid(uuid) =>
+      case SkullOwnerUuid(uuid, resolvedSkinUrl) =>
         meta.setOwningPlayer(Bukkit.getOfflinePlayer(uuid))
 
-        playerHeadSkinAPI.playerHeadSkinUrlByUUID(uuid).unsafeRunSync() match {
-          case Some(url) =>
-            val playerProfile = Bukkit.createPlayerProfile(uuid)
-            playerProfile.getTextures.setSkin(URI.create(url.url).toURL)
-            meta.setOwnerProfile(playerProfile)
-          case None =>
+        resolvedSkinUrl.foreach { skinUrl =>
+          val playerProfile = Bukkit.createPlayerProfile(uuid)
+          playerProfile.getTextures.setSkin(URI.create(skinUrl.url).toURL)
+          meta.setOwnerProfile(playerProfile)
         }
 
       case SkullOwnerUuidWithNameWithTextureUrl(uuid, name, url) =>
