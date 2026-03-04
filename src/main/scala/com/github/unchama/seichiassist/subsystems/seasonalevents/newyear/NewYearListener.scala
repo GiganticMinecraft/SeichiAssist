@@ -7,7 +7,6 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
-import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.seasonalevents.domain.LastQuitPersistenceRepository
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYearItemData._

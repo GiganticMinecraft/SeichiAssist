@@ -7,7 +7,6 @@ import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
-import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryListener
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemListener

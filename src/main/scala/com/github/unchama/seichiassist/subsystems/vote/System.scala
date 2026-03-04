@@ -1,11 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.vote
 
 import cats.data.Kleisli
-import cats.effect.{ConcurrentEffect, IO, SyncEffect}
+import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
-import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.vote.application.actions.ReceiveVoteBenefits
 import com.github.unchama.seichiassist.subsystems.vote.bukkit.actions.BukkitReceiveVoteBenefits
 import com.github.unchama.seichiassist.subsystems.vote.bukkit.command.VoteCommand

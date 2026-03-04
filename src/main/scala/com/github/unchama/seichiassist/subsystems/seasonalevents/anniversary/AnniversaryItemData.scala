@@ -1,8 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary
 
-import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerTextureValue}
-import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary.ANNIVERSARY_COUNT
 import com.github.unchama.seichiassist.util.EnchantNameToJapanese
 import de.tr7zw.nbtapi.NBTItem
@@ -10,7 +8,6 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.Material._
 import org.bukkit.enchantments.Enchantment
-import org.bukkit.entity.Player
 import org.bukkit.inventory.meta.BookMeta.Generation
 import org.bukkit.inventory.meta.{BookMeta, ItemMeta, SkullMeta}
 import org.bukkit.inventory.{ItemFlag, ItemStack}

@@ -3,7 +3,11 @@ package com.github.unchama.seichiassist.menus
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.buildassist.menu.{BlockPlacementSkillMenu, MineStackMassCraftMenu}
 import com.github.unchama.buildassist.{BuildAssist, MenuInventoryData}
-import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder, SkullOwnerUuid}
+import com.github.unchama.itemstackbuilder.{
+  IconItemStackBuilder,
+  SkullItemStackBuilder,
+  SkullOwnerUuid
+}
 import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{

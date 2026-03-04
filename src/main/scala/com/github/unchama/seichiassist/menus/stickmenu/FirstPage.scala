@@ -3,7 +3,11 @@ package com.github.unchama.seichiassist.menus.stickmenu
 import cats.data.Kleisli
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
-import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder, SkullOwnerUuid}
+import com.github.unchama.itemstackbuilder.{
+  IconItemStackBuilder,
+  SkullItemStackBuilder,
+  SkullOwnerUuid
+}
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{
@@ -627,9 +631,7 @@ object FirstPage extends Menu {
       )
     }
 
-    def secondPageButton(
-      implicit ioCanOpenSecondPage: IO CanOpen SecondPage.type
-    ): Button =
+    def secondPageButton(implicit ioCanOpenSecondPage: IO CanOpen SecondPage.type): Button =
       CommonButtons.transferButton(
         new SkullItemStackBuilder(SkullOwners.MHF_ArrowRight),
         "2ページ目へ",
