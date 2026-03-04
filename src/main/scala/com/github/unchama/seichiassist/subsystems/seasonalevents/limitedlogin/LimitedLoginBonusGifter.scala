@@ -24,8 +24,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class LimitedLoginBonusGifter(
-  implicit ioOnMainThread: OnMinecraftServerThread[IO],
-  playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+  implicit ioOnMainThread: OnMinecraftServerThread[IO]
 ) extends Listener {
   @EventHandler
   def onPlayerJoin(event: PlayerJoinEvent): Unit = {

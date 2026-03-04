@@ -16,8 +16,7 @@ import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 
 class EventCommand(
-  implicit ioOnMainThread: OnMinecraftServerThread[IO],
-  playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+  implicit ioOnMainThread: OnMinecraftServerThread[IO]
 ) {
 
   import com.github.unchama.targetedeffect._

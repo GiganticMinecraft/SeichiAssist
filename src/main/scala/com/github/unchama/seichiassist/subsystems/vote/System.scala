@@ -25,8 +25,7 @@ trait System[F[_], Player] extends Subsystem[F] {
 object System {
 
   def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread, G[_]: SyncEffect](
-    implicit breakCountAPI: BreakCountAPI[F, G, Player],
-    playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    implicit breakCountAPI: BreakCountAPI[F, G, Player]
   ): System[F, Player] = {
     implicit val _votePersistence: VotePersistence[F] = new JdbcVotePersistence[F]
     val _receiveVoteBenefits: ReceiveVoteBenefits[F, Player] =

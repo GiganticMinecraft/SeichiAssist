@@ -8,6 +8,7 @@ import com.github.unchama.itemstackbuilder.{
   AbstractItemStackBuilder,
   IconItemStackBuilder,
   SkullItemStackBuilder,
+  SkullOwnerUuid,
   TippedArrowIconItemStackBuilder
 }
 import com.github.unchama.menuinventory.router.CanOpen
@@ -103,6 +104,7 @@ object ActiveSkillMenu extends Menu {
       ref <- skillStateRef(player)
       state <- ref.get
       availablePoints <- availableActiveSkillPoint
+      skinUrl <- playerHeadSkinAPI.playerHeadSkinUrlByUUID(getUniqueId)
     } yield {
       val activeSkillSelectionLore: Option[String] =
         state
@@ -121,7 +123,7 @@ object ActiveSkillMenu extends Menu {
         }
 
       val itemStack =
-        new SkullItemStackBuilder(getUniqueId)
+        new SkullItemStackBuilder(SkullOwnerUuid(getUniqueId, skinUrl))
           .title(s"$YELLOW$UNDERLINE$BOLD${getName}のアクティブスキルデータ")
           .lore(
             activeSkillSelectionLore.toList ++

@@ -36,8 +36,7 @@ object CommonButtons {
     )
 
   def openStickMenu(
-    implicit canOpenStickMenu: CanOpen[IO, FirstPage.type],
-    playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    implicit canOpenStickMenu: CanOpen[IO, FirstPage.type]
   ): Button = {
     transferButton(
       new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),

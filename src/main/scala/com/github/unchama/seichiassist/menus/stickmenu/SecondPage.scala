@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.menus.stickmenu
 
 import cats.effect.{IO, SyncIO}
-import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
+import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder, SkullOwnerUuid}
 import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.router.CanOpen
@@ -136,23 +136,26 @@ object SecondPage extends Menu {
       }
 
       val effect = action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-        DeferredEffect(IO {
+        DeferredEffect(playerHeadSkinAPI.playerHeadSkinUrlByUUID(getUniqueId).flatMap { skinUrl =>
+          IO {
           val expManager = new ExperienceManager(player)
           if (expManager.hasExp(10000)) {
             import scala.util.chaining._
-            val skullToGive = new SkullItemStackBuilder(getUniqueId).build().tap { stack =>
-              import stack._
-              // 季節イベント中の特殊lore
-              if (Valentine.isInEvent) setItemMeta {
-                valentinePlayerHead(getItemMeta.asInstanceOf[SkullMeta])
+            val skullToGive =
+              new SkullItemStackBuilder(SkullOwnerUuid(getUniqueId, skinUrl)).build().tap {
+                stack =>
+                  import stack._
+                  // 季節イベント中の特殊lore
+                  if (Valentine.isInEvent) setItemMeta {
+                    valentinePlayerHead(getItemMeta.asInstanceOf[SkullMeta])
+                  }
+                  else if (Christmas.isInEventNow) setItemMeta {
+                    christmasPlayerHead(getItemMeta.asInstanceOf[SkullMeta])
+                  }
+                  else if (Anniversary.isInEvent) setItemMeta {
+                    anniversaryPlayerHead(getItemMeta.asInstanceOf[SkullMeta])
+                  }
               }
-              else if (Christmas.isInEventNow) setItemMeta {
-                christmasPlayerHead(getItemMeta.asInstanceOf[SkullMeta])
-              }
-              else if (Anniversary.isInEvent) setItemMeta {
-                anniversaryPlayerHead(getItemMeta.asInstanceOf[SkullMeta])
-              }
-            }
 
             SequentialEffect(
               InventoryOperations.grantItemStacksEffect(skullToGive),
@@ -166,7 +169,7 @@ object SecondPage extends Menu {
               FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.1f)
             )
           }
-        })
+        }})
       }
 
       Button(iconItemStack, effect)

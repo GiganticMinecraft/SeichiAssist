@@ -36,8 +36,7 @@ import scala.util.Random
 class AnniversaryListener(
   implicit effectEnvironment: EffectEnvironment,
   ioOnMainThread: OnMinecraftServerThread[IO],
-  gtToSiinaAPI: GtToSiinaAPI[ItemStack],
-  playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+  gtToSiinaAPI: GtToSiinaAPI[ItemStack]
 ) extends Listener {
 
   @EventHandler

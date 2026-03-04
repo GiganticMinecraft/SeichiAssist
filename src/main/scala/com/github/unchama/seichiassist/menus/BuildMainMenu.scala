@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.menus
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.buildassist.menu.{BlockPlacementSkillMenu, MineStackMassCraftMenu}
 import com.github.unchama.buildassist.{BuildAssist, MenuInventoryData}
-import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
+import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder, SkullOwnerUuid}
 import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{
@@ -49,7 +49,10 @@ private case class ButtonComputations(player: Player)(
   import player._
 
   def computeStatsButton(): IO[Button] = RecomputedButton {
-    BuildAssist.instance.buildAmountDataRepository(player).read.toIO.map { data =>
+    for {
+      data <- BuildAssist.instance.buildAmountDataRepository(player).read.toIO
+      skinUrl <- playerHeadSkinAPI.playerHeadSkinUrlByUUID(getUniqueId)
+    } yield {
       val buildLevel = data.levelCorrespondingToExp
       val rawLevel = buildLevel.level
 
@@ -59,7 +62,7 @@ private case class ButtonComputations(player: Player)(
           s"$RESET${AQUA}総建築量: ${data.expAmount.toPlainString}"
         )
 
-        // 最大レベルに到達した後は”次のレベル”が存在しないため、表示しない
+        // 最大レベルに到達した後は"次のレベル"が存在しないため、表示しない
         val nextLevelInfo: Option[String] = data
           .levelProgress
           .map(blp => s"$RESET${AQUA}次のレベルまで: ${blp.expAmountToNextLevel.toPlainString}")
@@ -68,7 +71,7 @@ private case class ButtonComputations(player: Player)(
       }
 
       Button {
-        new SkullItemStackBuilder(getUniqueId)
+        new SkullItemStackBuilder(SkullOwnerUuid(getUniqueId, skinUrl))
           .enchanted()
           .title(s"$YELLOW$EMPHASIZE${player.getName}の建築データ")
           .lore(lore)
