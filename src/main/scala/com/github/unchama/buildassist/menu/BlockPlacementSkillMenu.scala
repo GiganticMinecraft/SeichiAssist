@@ -59,7 +59,6 @@ object BlockPlacementSkillMenu extends Menu {
 
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
     import player._
-    import environment._
 
     private def computeCurrentSkillAreaInt(range: Int): Int = (range - 1) / 2
     private val maxRange = 15

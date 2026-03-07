@@ -54,8 +54,7 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
   )
 
   private def mineStackMainMenuButtonSection(
-    implicit ioCanOpenMineStackMainMenu: IO CanOpen MineStackMainMenu.type,
-    playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    implicit ioCanOpenMineStackMainMenu: IO CanOpen MineStackMainMenu.type
   ): Seq[(Int, Button)] =
     Seq(
       ChestSlotRef(5, 0) -> CommonButtons.transferButton(

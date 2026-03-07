@@ -1,10 +1,13 @@
 package com.github.unchama.itemstackbuilder
 
+import com.github.unchama.seichiassist.subsystems.playerheadskin.domain.HeadSkinUrl
+
 import java.util.UUID
 
 sealed trait SkullOwnerReference
 
-case class SkullOwnerUuid(uuid: UUID) extends SkullOwnerReference
+case class SkullOwnerUuid(uuid: UUID, resolvedSkinUrl: Option[HeadSkinUrl])
+    extends SkullOwnerReference
 
 /**
  * UUID指定だけでは、カスタムテクスチャをヘッドに設定することができない場合に備えて、`TextureValue`を指定するもの

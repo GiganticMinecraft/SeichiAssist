@@ -3,7 +3,11 @@ package com.github.unchama.seichiassist.menus.stickmenu
 import cats.data.Kleisli
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
-import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
+import com.github.unchama.itemstackbuilder.{
+  IconItemStackBuilder,
+  SkullItemStackBuilder,
+  SkullOwnerUuid
+}
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{
@@ -190,8 +194,9 @@ object FirstPage extends Menu {
           visibility,
           environment.voteAPI
         ).computeLore()
+        skinUrl <- playerHeadSkinAPI.playerHeadSkinUrlByUUID(getUniqueId)
       } yield Button(
-        new SkullItemStackBuilder(getUniqueId)
+        new SkullItemStackBuilder(SkullOwnerUuid(getUniqueId, skinUrl))
           .title(s"$YELLOW$BOLD$UNDERLINE${getName}の統計データ")
           .lore(lore)
           .build(),
@@ -626,10 +631,7 @@ object FirstPage extends Menu {
       )
     }
 
-    def secondPageButton(
-      implicit ioCanOpenSecondPage: IO CanOpen SecondPage.type,
-      playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
-    ): Button =
+    def secondPageButton(implicit ioCanOpenSecondPage: IO CanOpen SecondPage.type): Button =
       CommonButtons.transferButton(
         new SkullItemStackBuilder(SkullOwners.MHF_ArrowRight),
         "2ページ目へ",
