@@ -206,9 +206,7 @@ case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) 
       }
   }
 
-  private def totalAmountSection(
-    ranking: Ranking[R]
-  )(implicit environment: Environment): IO[Seq[(Int, Button)]] = {
+  private def totalAmountSection(ranking: Ranking[R]): IO[Seq[(Int, Button)]] = {
 
     IO(
       Seq(

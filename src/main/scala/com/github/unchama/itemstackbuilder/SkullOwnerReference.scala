@@ -6,7 +6,7 @@ import java.util.UUID
 
 sealed trait SkullOwnerReference
 
-case class SkullOwnerUuid(uuid: UUID, resolvedSkinUrl: Option[HeadSkinUrl] = None)
+case class SkullOwnerUuid(uuid: UUID, resolvedSkinUrl: Option[HeadSkinUrl])
     extends SkullOwnerReference
 
 /**

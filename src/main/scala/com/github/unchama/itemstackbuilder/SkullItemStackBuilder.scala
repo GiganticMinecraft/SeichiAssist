@@ -11,13 +11,6 @@ import java.util.UUID
 class SkullItemStackBuilder(private val owner: SkullOwnerReference)
     extends AbstractItemStackBuilder[SkullMeta](Material.PLAYER_HEAD) {
 
-  /**
-   * @param ownerUUID
-   *   [Material.PLAYER_HEAD] に表示するプレーヤーのUUID
-   */
-  def this(ownerUUID: UUID) =
-    this(SkullOwnerUuid(ownerUUID))
-
   override protected def transformItemMetaOnBuild(meta: SkullMeta): Unit = {
     owner match {
       case SkullOwnerUuid(uuid, resolvedSkinUrl) =>
