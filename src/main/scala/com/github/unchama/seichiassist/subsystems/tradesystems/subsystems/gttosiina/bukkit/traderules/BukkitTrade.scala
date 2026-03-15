@@ -20,9 +20,10 @@ class BukkitTrade(owner: String, gachaPrizeTable: Vector[GachaPrizeTableEntry[It
   tradeItemFactory: StaticTradeItemFactory[ItemStack]
 ) extends TradeRule[ItemStack, Unit] {
 
-  override val tradableItems: Vector[ItemStack] = gachaPrizeTable
+  override val tradableItems: Set[ItemStack] = gachaPrizeTable
     .filter(GachaRarity.of[ItemStack](_) == Gigantic)
     .map(gachaPrize => canBeSignedAsGachaPrize.signWith(owner)(gachaPrize))
+    .toSet
 
   /**
    * プレーヤーが入力したアイテムから、交換結果を計算する

@@ -74,7 +74,7 @@ object System {
 
         override val api: GachaTradeAPI[F, Player, ItemStack] =
           new GachaTradeAPI[F, Player, ItemStack] {
-            override def getTradableItems: Kleisli[F, Player, Vector[ItemStack]] =
+            override def getTradableItems: Kleisli[F, Player, Set[ItemStack]] =
               Kleisli { player =>
                 gachaListProvider.readGachaList.map { gachaList =>
                   gachaTradeRule.ruleFor(player.getName(), gachaList).tradableItems

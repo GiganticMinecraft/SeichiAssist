@@ -38,7 +38,7 @@ class BukkitTrade(owner: String, gachaPrizeTable: Vector[GachaPrizeTableEntry[It
       canBeSignedAsGachaPrize.signWith(owner)(prize)
   }
 
-  override val tradableItems: Vector[ItemStack] = bigList ++ regularList
+  override val tradableItems: Set[ItemStack] = (bigList ++ regularList).toSet
 
   /**
    * プレーヤーが入力したアイテムから、交換結果を計算する

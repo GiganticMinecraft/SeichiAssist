@@ -9,7 +9,7 @@ trait TradeRule[ItemStack, TransactionInfo] {
   /**
    * @return 交換可能なアイテムのリスト
    */
-  val tradableItems: Vector[ItemStack]
+  val tradableItems: Set[ItemStack]
 
   /**
    * プレーヤーが入力したアイテムから、交換結果を計算する

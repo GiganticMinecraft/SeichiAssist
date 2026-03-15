@@ -11,7 +11,7 @@ trait GachaTradeAPI[F[_], Player, ItemStack] {
   /**
    * @return プレイヤーが取引可能なアイテムのリストを取得する
    */
-  def getTradableItems: Kleisli[F, Player, Vector[ItemStack]]
+  def getTradableItems: Kleisli[F, Player, Set[ItemStack]]
 
   /**
    * @return インベントリから実際にガチャ景品とガチャ券の取引を行う作用
