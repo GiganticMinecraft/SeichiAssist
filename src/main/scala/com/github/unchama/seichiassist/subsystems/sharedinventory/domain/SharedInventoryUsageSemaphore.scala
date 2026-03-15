@@ -5,20 +5,21 @@ import com.github.unchama.generic.effect.concurrent.RecoveringSemaphore
 import com.github.unchama.seichiassist.subsystems.sharedinventory.domain.bukkit.InventoryContents
 
 import java.util.UUID
+import cats.Monad
 
-class SharedInventoryUsageSemaphore[F[_]](recoveringSemaphore: RecoveringSemaphore[F])(
+class SharedInventoryUsageSemaphore[F[_]: Monad](recoveringSemaphore: RecoveringSemaphore[F])(
   implicit persistence: SharedInventoryPersistence[F]
 ) {
 
   def trySaveTransaction(uuid: UUID, inventoryContents: InventoryContents): F[Unit] =
-    recoveringSemaphore.tryUse {
-      persistence.save(uuid, inventoryContents)
-    }(SharedInventoryUsageSemaphore.usageInterval)
+    recoveringSemaphore.tryUse(persistence.save(uuid, inventoryContents), Monad[F].unit)(
+      SharedInventoryUsageSemaphore.usageInterval
+    )
 
   def tryClearTransaction(uuid: UUID): F[Unit] =
-    recoveringSemaphore.tryUse {
-      persistence.clear(uuid)
-    }(SharedInventoryUsageSemaphore.usageInterval)
+    recoveringSemaphore.tryUse(persistence.clear(uuid), Monad[F].unit)(
+      SharedInventoryUsageSemaphore.usageInterval
+    )
 
 }
 
