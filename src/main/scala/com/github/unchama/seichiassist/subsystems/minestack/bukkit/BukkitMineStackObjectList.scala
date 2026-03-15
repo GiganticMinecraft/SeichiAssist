@@ -19,6 +19,8 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.{PotionMeta, Damageable}
 import org.bukkit.potion.{PotionData, PotionType}
 import com.github.unchama.seichiassist.items.ExchangeTicket
+import org.bukkit.inventory.meta.BlockStateMeta
+import org.bukkit.block.Banner
 
 class BukkitMineStackObjectList[F[_]: Sync](
   implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
@@ -1205,6 +1207,22 @@ class BukkitMineStackObjectList[F[_]: Sync](
         val leftHandItemStackEnchantments = leftHandItemStackMeta.getEnchants
 
         if (!rightHandItemStackEnchantments.equals(leftHandItemStackEnchantments)) return false
+
+        if (rightHand.getType == Material.SHIELD) {
+          (rightHandItemStackMeta, leftHandItemStackMeta) match {
+            case (rightBanner: BlockStateMeta, leftBanner: BlockStateMeta) =>
+              val rightState = rightBanner.getBlockState()
+              val leftState = leftBanner.getBlockState()
+
+              (rightState, leftState) match {
+                case (rightBanner: Banner, leftBanner: Banner)
+                    if !rightBanner.getPatterns().equals(leftBanner.getPatterns()) =>
+                  return false
+                case _ =>
+              }
+            case _ =>
+          }
+        }
 
         (leftHandItemStackMeta, rightHandItemStackMeta) match {
           case (left: Damageable, right: Damageable) => left.getDamage == right.getDamage

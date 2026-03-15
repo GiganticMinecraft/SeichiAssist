@@ -297,7 +297,6 @@ class SeichiAssist extends JavaPlugin() {
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
     implicit val gtToSiinaAPI: GtToSiinaAPI[ItemStack] = gtToSiinaSystem.api
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player] = playerHeadSkinSystem.api
 
     subsystems.seasonalevents.System.wired[IO, SyncIO, IO](this)
   }
@@ -351,7 +350,6 @@ class SeichiAssist extends JavaPlugin() {
     import PluginExecutionContexts.{asyncShift, onMainThread, timer}
 
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player] = playerHeadSkinSystem.api
 
     subsystems.gachapoint.System.wired[IO, SyncIO](breakCountSystem.api).unsafeRunSync()
   }
@@ -449,7 +447,6 @@ class SeichiAssist extends JavaPlugin() {
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player] = playerHeadSkinSystem.api
 
     subsystems.tradesystems.subsystems.gachatrade.System.wired[IO, SyncIO].unsafeRunSync()
   }
@@ -476,7 +473,6 @@ class SeichiAssist extends JavaPlugin() {
   // TODO: これはprivateであるべきだが、Achievementシステムが再実装されるまでやむを得ずpublicにする
   lazy val voteSystem: subsystems.vote.System[IO, Player] = {
     implicit val breakCountAPI: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player] = playerHeadSkinSystem.api
 
     subsystems.vote.System.wired[IO, SyncIO]
   }
@@ -677,7 +673,7 @@ class SeichiAssist extends JavaPlugin() {
     if (!serverId.startsWith("local-")) {
       Sentry.init { options =>
         options.setDsn(
-          "https://66a9eb71bd1663f76df971d0b632b855@sentry.onp.admin.seichi.click/2"
+          "https://cf7311bbd2d04e53a60d72a3659f7bc7@bugsink-dsn.onp-k8s.admin.seichi.click/2"
         )
         // パフォーマンスモニタリングに使うトレースサンプルの送信割合
         // tracesSampleRateを1.0にすると全てのイベントが送られるため、送りすぎないように調整する必要がある

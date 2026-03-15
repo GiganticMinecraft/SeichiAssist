@@ -34,6 +34,8 @@ object RmpCommand {
     )
   })
 
+  private val ignoredRegions = Set("spawn", "__global__")
+
   private val argsAndSenderConfiguredBuilder = ContextualExecutorBuilder
     .beginConfiguration
     .refineSenderWithError[ConsoleCommandSender](s"${GREEN}このコマンドはコンソールから実行してください")
@@ -109,7 +111,7 @@ object RmpCommand {
     val regions = WorldGuardWrapper.getRegions(world)
 
     val oldRegions = regions.filter { region =>
-      region.getId != "spawn" && region
+      !ignoredRegions.contains(region.getId) && region
         .getOwners
         .getUniqueIds
         .asScala

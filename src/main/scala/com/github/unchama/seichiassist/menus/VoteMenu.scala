@@ -225,7 +225,8 @@ object VoteMenu extends Menu {
           NonEmptyList.of(
             s"$RED$UNDERLINE${BOLD}ガンガンたべるぞ",
             s"$RESET${GRAY}とにかく妖精さんにりんごを開放します。",
-            s"$RESET${GRAY}めっちゃ喜ばれます。"
+            s"$RESET${GRAY}めっちゃ喜ばれます。",
+            s"$RESET$GRAY(30秒ごとにマナを回復してくれます。)"
           )
         ),
         Consume -> FairyLore(
@@ -233,18 +234,25 @@ object VoteMenu extends Menu {
             s"$YELLOW$UNDERLINE${BOLD}バッチリたべよう",
             s"$RESET${GRAY}食べ過ぎないように注意しつつ",
             s"$RESET${GRAY}妖精さんにりんごを開放します。",
-            s"$RESET${GRAY}喜ばれます。"
+            s"$RESET${GRAY}喜ばれます。",
+            s"$RESET$GRAY(1分ごとにマナを回復してくれます。)"
           )
         ),
         LessConsume -> FairyLore(
           NonEmptyList.of(
             s"$GREEN$UNDERLINE${BOLD}リンゴだいじに",
             s"$RESET${GRAY}少しだけ妖精さんにりんごを開放します。",
-            s"$RESET${GRAY}伝えると大抵落ち込みます。"
+            s"$RESET${GRAY}伝えると大抵落ち込みます。",
+            s"$RESET$GRAY(1分30秒ごとにマナを回復してくれます。)"
           )
         ),
         NoConsume -> FairyLore(
-          NonEmptyList.of(s"$BLUE$UNDERLINE${BOLD}リンゴつかうな", s"$RESET${GRAY}絶対にりんごを開放しません。", "")
+          NonEmptyList.of(
+            s"$BLUE$UNDERLINE${BOLD}リンゴつかうな",
+            s"$RESET${GRAY}ほんの少しだけ妖精さんにりんごを開放します。",
+            s"$RESET${GRAY}伝えるとしばらく口を利いてくれません。",
+            s"$RESET$GRAY(2分ごとにマナを回復してくれます。)"
+          )
         )
       )
 

@@ -3,7 +3,11 @@ package com.github.unchama.seichiassist.menus.stickmenu
 import cats.data.Kleisli
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
-import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
+import com.github.unchama.itemstackbuilder.{
+  IconItemStackBuilder,
+  SkullItemStackBuilder,
+  SkullOwnerUuid
+}
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{
@@ -192,8 +196,9 @@ object FirstPage extends Menu {
           visibility,
           environment.voteAPI
         ).computeLore()
+        skinUrl <- playerHeadSkinAPI.playerHeadSkinUrlByUUID(getUniqueId)
       } yield Button(
-        new SkullItemStackBuilder(getUniqueId)
+        new SkullItemStackBuilder(SkullOwnerUuid(getUniqueId, skinUrl))
           .title(s"$YELLOW$BOLD$UNDERLINE${getName}の統計データ")
           .lore(lore)
           .build(),
@@ -543,9 +548,9 @@ object FirstPage extends Menu {
             val requiredToNextTicket =
               s"$RESET${AQUA}次のガチャ券まで:${point.amountUntilNextGachaTicket.amount}ブロック"
             val receiveGachaTicketDescription =
-              s"$RESET${GRAY}左クリックで最大9st、右クリックで最大1stのガチャ券を受け取ります"
+              List(s"$RESET${GRAY}左クリックで最大9st、", s"$RESET${GRAY}右クリックで最大1stのガチャ券を受け取ります")
 
-            List(gachaTicketStatus, requiredToNextTicket, receiveGachaTicketDescription)
+            List(gachaTicketStatus, requiredToNextTicket) ++ receiveGachaTicketDescription
           }
 
           new SkullItemStackBuilder(SkullOwners.unchama)
@@ -628,10 +633,7 @@ object FirstPage extends Menu {
       )
     }
 
-    def secondPageButton(
-      implicit ioCanOpenSecondPage: IO CanOpen SecondPage.type,
-      playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
-    ): Button =
+    def secondPageButton(implicit ioCanOpenSecondPage: IO CanOpen SecondPage.type): Button =
       CommonButtons.transferButton(
         new SkullItemStackBuilder(SkullOwners.MHF_ArrowRight),
         "2ページ目へ",

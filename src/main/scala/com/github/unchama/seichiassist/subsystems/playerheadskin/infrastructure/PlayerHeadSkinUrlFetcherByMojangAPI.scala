@@ -44,30 +44,32 @@ class PlayerHeadSkinUrlFetcherByMojangAPI[F[_]: Sync] extends PlayerHeadSkinUrlF
   private def textureUrl(name: String): F[Option[String]] = {
     for {
       profileOpt <- getHttpRequest(s"https://api.mojang.com/users/profiles/minecraft/$name")
-      id = for {
-        profile <- profileOpt
-        id <- parse(profile).toOption.flatMap(_.hcursor.get[String]("id").toOption)
-      } yield id
+      id =
+        for {
+          profile <- profileOpt
+          id <- parse(profile).toOption.flatMap(_.hcursor.get[String]("id").toOption)
+        } yield id
       playerDataOpt <- getHttpRequest(
         s"https://sessionserver.mojang.com/session/minecraft/profile/$id"
       )
-      url = for {
-        playerData <- playerDataOpt
-        base64TextureProperties <- parse(playerData)
-          .toOption
-          .flatMap(
-            _.hcursor
-              .downField("properties")
-              .values
-              .flatMap(_.head.hcursor.get[String]("value").toOption)
-          )
-        url <- parse(
-          new String(Base64.decodeBase64(base64TextureProperties), StandardCharsets.UTF_8)
-        ).toOption
-          .flatMap(
-            _.hcursor.downField("textures").downField("SKIN").get[String]("url").toOption
-          )
-      } yield url
+      url =
+        for {
+          playerData <- playerDataOpt
+          base64TextureProperties <- parse(playerData)
+            .toOption
+            .flatMap(
+              _.hcursor
+                .downField("properties")
+                .values
+                .flatMap(_.head.hcursor.get[String]("value").toOption)
+            )
+          url <- parse(
+            new String(Base64.decodeBase64(base64TextureProperties), StandardCharsets.UTF_8)
+          ).toOption
+            .flatMap(
+              _.hcursor.downField("textures").downField("SKIN").get[String]("url").toOption
+            )
+        } yield url
 
     } yield url
   }

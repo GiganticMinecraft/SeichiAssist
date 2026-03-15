@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade
 
-import cats.effect.{ConcurrentEffect, IO}
+import cats.effect.ConcurrentEffect
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
@@ -8,7 +8,6 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
   CanBeSignedAsGachaPrize,
   GachaPrizeTableEntry
 }
-import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.listeners.GachaTradeListener
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.traderules.BukkitTrade
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.domain.{
@@ -47,11 +46,9 @@ object System {
     implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
     gachaPointApi: GachaPointApi[F, G, Player],
     mineStackAPI: MineStackAPI[F, Player, ItemStack],
-    playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player],
     effectEnvironment: EffectEnvironment
   ): G[System[F, Player, ItemStack]] = {
     type TransactionInfo = (BigOrRegular, Int)
-
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
       gachaPrizeAPI.canBeSignedAsGachaPrize
     implicit val gachaListProvider: GachaListProvider[F, ItemStack] =

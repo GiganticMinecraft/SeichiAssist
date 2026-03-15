@@ -87,6 +87,40 @@ class BuildAssist(plugin: Plugin)(
 object BuildAssist {
   var instance: BuildAssist = _
 
+  val placementSkillExcludedMaterials: Set[Material] = Set(
+    // NOTE: ドアブロックは設置時にフルブロックとして設置されないことがあるようなので除外している
+    // ref: https://github.com/GiganticMinecraft/SeichiAssist/issues/2602
+    Material.OAK_DOOR,
+    Material.SPRUCE_DOOR,
+    Material.BIRCH_DOOR,
+    Material.JUNGLE_DOOR,
+    Material.ACACIA_DOOR,
+    Material.DARK_OAK_DOOR,
+    Material.CRIMSON_DOOR,
+    Material.WARPED_DOOR,
+    Material.IRON_DOOR,
+
+    // NOTE: シュルカーボックス系はアイテム消失リスクがあるため除外している
+    // ref: https://github.com/GiganticMinecraft/SeichiAssist/issues/2602
+    Material.SHULKER_BOX,
+    Material.WHITE_SHULKER_BOX,
+    Material.ORANGE_SHULKER_BOX,
+    Material.MAGENTA_SHULKER_BOX,
+    Material.LIGHT_BLUE_SHULKER_BOX,
+    Material.YELLOW_SHULKER_BOX,
+    Material.LIME_SHULKER_BOX,
+    Material.PINK_SHULKER_BOX,
+    Material.GRAY_SHULKER_BOX,
+    Material.LIGHT_GRAY_SHULKER_BOX,
+    Material.CYAN_SHULKER_BOX,
+    Material.PURPLE_SHULKER_BOX,
+    Material.BLUE_SHULKER_BOX,
+    Material.BROWN_SHULKER_BOX,
+    Material.GREEN_SHULKER_BOX,
+    Material.RED_SHULKER_BOX,
+    Material.BLACK_SHULKER_BOX
+  )
+
   val material_destruction: java.util.Set[Material] = util
     .EnumSet
     .of(

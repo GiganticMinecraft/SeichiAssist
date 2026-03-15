@@ -1,0 +1,24 @@
+name: Check Renovate Config
+
+on:
+  pull_request:
+    paths:
+      - ./github/workflows/check-renovate-config.yaml
+      - .renovate.json
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: "0"
+
+      - name: Install npm
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Check Renovate configuration
+        run: npx --yes --package renovate -- renovate-config-validator --strict

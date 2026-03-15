@@ -1,7 +1,9 @@
-name: Create new pre release
+name: Create push pre release
 
 on:
-  pull_request:
+  push:
+    branches:
+      - develop
     paths:
       - src/**
       - build.sbt
@@ -19,7 +21,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
-          submodules: 'recursive'
+          submodules: "recursive"
 
       - name: Prepare build environment for seichiassist
         uses: ./.github/actions/prepare-build-environment-for-seichiassist
@@ -30,26 +32,32 @@ jobs:
 
       - name: Create and push a tag
         id: tag-name
-        # GiganticMinecraftにあるSeichiAssistリポジトリのブランチからのPRのみ実行
-        if: ${{ github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name }}
         run: |
-          TAG_NAME=pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
-          git tag $TAG_NAME
-          git push origin $TAG_NAME
+          SHORT_SHA=$(git rev-parse --short=12 HEAD)
+          TAG_NAME=develop-$SHORT_SHA
+
+          if git ls-remote --tags origin "refs/tags/$TAG_NAME" | grep -q "$TAG_NAME"; then
+            echo "Tag $TAG_NAME already exists on origin. Reusing existing tag."
+          else
+            git tag "$TAG_NAME"
+            git push origin "$TAG_NAME"
+          fi
+
           echo "value=$TAG_NAME" >> $GITHUB_OUTPUT
+
 
       - name: Create pre release
         uses: softprops/action-gh-release@v2
-        # GiganticMinecraftにあるSeichiAssistリポジトリのブランチからのPRのみ実行
-        if: ${{ github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          target_commitish: ${{ github.head_ref }}
+          target_commitish: "develop"
           files: target/build/SeichiAssist.jar
           tag_name: ${{ steps.tag-name.outputs.value }}
+          name: ${{ steps.tag-name.outputs.value }}
           draft: false
           prerelease: true
+          generate_release_notes: true
 
       - name: Clean build artifact for caching target folder
         run: rm -r target/build
