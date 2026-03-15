@@ -124,7 +124,7 @@ case class GachaTradeFromMineStackMenu(
     import scala.jdk.CollectionConverters._
 
     private def tradeButtonFromMineStackObjectGroup(
-      tradableItemStacks: Vector[ItemStack],
+      tradableItemStacks: Set[ItemStack],
       mineStackObjectGroup: MineStackObjectGroup[ItemStack]
     ): IO[Button] = RecomputedButton {
 
