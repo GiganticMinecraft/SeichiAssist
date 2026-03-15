@@ -214,9 +214,10 @@ case class GachaTradeFromMineStackMenu(
           case Left(TradeError.UsageSemaphoreIsLocked) =>
             MessageEffect(s"$RED${BOLD}現在処理中です。しばらく待ってからもう一度お試しください。")
           case Right(result) =>
+            val tradedItemAmount = result.tradedSuccessResult.map(_.transactionInfo._2).sum
             val gachaTicketAmount = result.tradedSuccessResult.map(_.amount).sum
             MessageEffect(
-              s"$name$GREEN$BOLD${tradeAmount}個と$GREEN$BOLD${gachaTicketAmount}枚のガチャ券を交換しました。"
+              s"$name$GREEN$BOLD${tradedItemAmount}個と$GREEN$BOLD${gachaTicketAmount}枚のガチャ券を交換しました。"
             )
         }).apply(player)
       } yield ()

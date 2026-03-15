@@ -40,13 +40,14 @@ class TradeFromMineStack[F[_]: Sync, ItemStack, Player: HasName, TransactionInfo
       signedItemStack <- Sync[F].pure(signedItemStackOpt.getOrElse(mineStackObject.itemStack))
       gachaList <- gachaListProvider.readGachaList
       tradeRule <- Sync[F].pure(gachaTradeRule.ruleFor(HasName[Player].of(player), gachaList))
+      val actualAmount = math.min(stackedAmount, amount.toLong).toInt
       result <- {
-        if (stackedAmount < amount) {
+        if (stackedAmount == 0) {
           Sync[F].pure(Left(TradeError.NotEnoughItemAmount))
         } else if (!tradeRule.tradableItems.contains(signedItemStack)) {
           Sync[F].pure(Left(TradeError.NotTradableItem))
         } else {
-          val tradeContents = List.fill(amount)(signedItemStack)
+          val tradeContents = List.fill(actualAmount)(signedItemStack)
           tradeAction.execute(player, tradeContents)(tradeRule).map(Right(_))
         }
       }
