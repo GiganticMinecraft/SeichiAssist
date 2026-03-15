@@ -42,7 +42,7 @@ class TradeFromMineStack[F[_]: Sync, ItemStack, Player: HasName, TransactionInfo
       tradeRule <- Sync[F].pure(gachaTradeRule.ruleFor(HasName[Player].of(player), gachaList))
       result <- {
         if (stackedAmount < amount) {
-          Sync[F].pure(Left(TradeError.NotEnougthItemAmount))
+          Sync[F].pure(Left(TradeError.NotEnoughItemAmount))
         } else if (!tradeRule.tradableItems.contains(signedItemStack)) {
           Sync[F].pure(Left(TradeError.NotTradableItem))
         } else {

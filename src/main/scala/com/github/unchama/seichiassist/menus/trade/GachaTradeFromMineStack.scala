@@ -100,7 +100,7 @@ case class GachaTradeFromMineStackMenu(
 
     val uiOperation = MenuSlotLayout(
       ChestSlotRef(5, 0) -> backtoTradeSelectorButton,
-      ChestSlotRef(5, 8) -> toggeleExchangeAmountButton
+      ChestSlotRef(5, 8) -> toggleExchangeAmountButton
     )
 
     for {
@@ -207,7 +207,7 @@ case class GachaTradeFromMineStackMenu(
           s"$YELLOW$UNDERLINE$BOLD$name"
         }
         _ <- (tradeResult match {
-          case Left(TradeError.NotEnougthItemAmount) =>
+          case Left(TradeError.NotEnoughItemAmount) =>
             MessageEffect(s"$RED${BOLD}交換するアイテムが足りません。")
           case Left(TradeError.NotTradableItem) =>
             MessageEffect(s"$RED${BOLD}そのアイテムは交換できません。")
@@ -235,7 +235,7 @@ case class GachaTradeFromMineStackMenu(
 
     }
 
-    val toggeleExchangeAmountButton: Button = {
+    val toggleExchangeAmountButton: Button = {
       val nextExchangeAmount = exchangeAmount match {
         case GachaTradeFromMineStackMenu.ExchangeAmount.One =>
           GachaTradeFromMineStackMenu.ExchangeAmount.Ten

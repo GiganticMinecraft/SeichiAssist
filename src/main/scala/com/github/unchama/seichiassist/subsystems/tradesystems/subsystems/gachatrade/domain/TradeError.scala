@@ -6,7 +6,7 @@ object TradeError {
 
   case object NotTradableItem extends TradeError
 
-  case object NotEnougthItemAmount extends TradeError
+  case object NotEnoughItemAmount extends TradeError
 
   case object UsageSemaphoreIsLocked extends TradeError
 
