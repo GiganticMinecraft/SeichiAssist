@@ -36,8 +36,8 @@ object BukkitNotifyLevelUp {
             Sync[F].delay(player.sendMessage(messageLevelMaxPlayer)) >>
             sendEverySound[F](Sound.ENTITY_ENDER_DRAGON_DEATH, 1.0f, 1.2f) >>
             LaunchFireWorksEffect.launchFireWorks[F](
-            player.getLocation
-          ) >> DiscordNotificationAPI[F].sendPlainText(messageLevelMaxDiscord)
+              player.getLocation
+            ) >> DiscordNotificationAPI[F].sendPlainText(messageLevelMaxDiscord)
         } else if (oldLevel < newLevel) {
           val messageLevelUp =
             s"${GOLD}ﾑﾑｯﾚﾍﾞﾙｱｯﾌﾟ∩( ・ω・)∩【建築Lv(${oldLevel.level})→建築Lv(${newLevel.level})】"

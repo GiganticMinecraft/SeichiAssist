@@ -15,7 +15,11 @@ object SendSoundEffect {
         .forEach(player => player.playSound(player.getLocation, kind, volume, pitch))
     }
 
-  def sendEverySoundWithoutIgnore[F[_]: Sync](kind: Sound, volume: Float, pitch: Float): F[Unit] = {
+  def sendEverySoundWithoutIgnore[F[_]: Sync](
+    kind: Sound,
+    volume: Float,
+    pitch: Float
+  ): F[Unit] = {
     import cats.implicits._
 
     Bukkit
