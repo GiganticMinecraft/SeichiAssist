@@ -44,21 +44,23 @@ object BukkitNotifyLevelUp {
             .amount >= nextTenBillion
         ) {
           // TODO: ここのSyncIOを剥がせそう
-          OnMinecraftServerThread[F].runAction(SyncIO {
-            val notificationMessage =
-              s"${player.getName}の総整地量が${(newBreakAmount.expAmount.amount / 100000000).toInt}億に到達しました！"
+          OnMinecraftServerThread[F].runAction(
+            SyncIO {
+              val notificationMessage =
+                s"${player.getName}の総整地量が${(newBreakAmount.expAmount.amount / 100000000).toInt}億に到達しました！"
 
-            SendMessageEffect
-              .sendMessageToEveryoneIgnoringPreferenceIO(s"$GOLD$BOLD$notificationMessage")(
-                forString[IO]
-              )
-              .unsafeRunAsyncAndForget()
-            DiscordNotificationAPI[F]
-              .sendPlainText(notificationMessage)
-              .toIO
-              .unsafeRunAsyncAndForget()
-            SendSoundEffect.sendEverySound(Sound.ENTITY_ENDER_DRAGON_DEATH, 1.0f, 1.2f)
-          })
+              SendMessageEffect
+                .sendMessageToEveryoneIgnoringPreferenceIO(s"$GOLD$BOLD$notificationMessage")(
+                  forString[IO]
+                )
+                .unsafeRunAsyncAndForget()
+              DiscordNotificationAPI[F]
+                .sendPlainText(notificationMessage)
+                .toIO
+                .unsafeRunAsyncAndForget()
+            } >> SendSoundEffect
+              .sendEverySound[SyncIO](Sound.ENTITY_ENDER_DRAGON_DEATH, 1.0f, 1.2f)
+          )
         } else Applicative[F].unit
       }
 
