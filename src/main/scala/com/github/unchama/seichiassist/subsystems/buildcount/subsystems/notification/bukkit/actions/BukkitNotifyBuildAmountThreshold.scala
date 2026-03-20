@@ -49,9 +49,11 @@ object BukkitNotifyBuildAmountThreshold {
 
           SendMessageEffect.sendMessageToEveryoneIgnoringPreferenceM[String, F](
             s"$GOLD$BOLD$notificationMessage"
-          ) >> Sync[F].delay {
-            SendSoundEffect.sendEverySound(Sound.ENTITY_ENDER_DRAGON_DEATH, 1.0f, 1.2f)
-          } >> DiscordNotificationAPI[F].sendPlainText(notificationMessage)
+          ) >> SendSoundEffect.sendEverySound[F](
+            Sound.ENTITY_ENDER_DRAGON_DEATH,
+            1.0f,
+            1.2f
+          ) >> DiscordNotificationAPI[F].sendPlainText(notificationMessage)
         } else Sync[F].unit
       }
     }
