@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.util
 
-import cats.effect.IO
+import cats.effect.Sync
 import com.github.unchama.seichiassist.SeichiAssist
 import org.bukkit.{Bukkit, Sound}
 
@@ -8,13 +8,18 @@ object SendSoundEffect {
 
   import scala.jdk.CollectionConverters._
 
-  def sendEverySound(kind: Sound, volume: Float, pitch: Float): Unit = {
-    Bukkit
-      .getOnlinePlayers
-      .forEach(player => player.playSound(player.getLocation, kind, volume, pitch))
-  }
+  def sendEverySound[F[_]: Sync](kind: Sound, volume: Float, pitch: Float): F[Unit] =
+    Sync[F].delay {
+      Bukkit
+        .getOnlinePlayers
+        .forEach(player => player.playSound(player.getLocation, kind, volume, pitch))
+    }
 
-  def sendEverySoundWithoutIgnore(kind: Sound, volume: Float, pitch: Float): Unit = {
+  def sendEverySoundWithoutIgnore[F[_]: Sync](
+    kind: Sound,
+    volume: Float,
+    pitch: Float
+  ): F[Unit] = {
     import cats.implicits._
 
     Bukkit
@@ -26,13 +31,13 @@ object SendSoundEffect {
           settings <- SeichiAssist
             .playermap(player.getUniqueId)
             .settings
-            .getBroadcastMutingSettings
-          _ <- IO {
+            .getBroadcastMutingSettings[F]
+          _ <- Sync[F].delay {
             if (!settings.shouldMuteSounds)
               player.playSound(player.getLocation, kind, volume, pitch)
           }
         } yield ()
       }
-      .unsafeRunSync()
+      .void
   }
 }

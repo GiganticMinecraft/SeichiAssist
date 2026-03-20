@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.util
 
 import cats.Monad
-import cats.effect.{IO, LiftIO}
+import cats.effect.{IO, Sync}
 import com.github.unchama.minecraft.actions.GetConnectedPlayers
 import com.github.unchama.minecraft.bukkit.actions.GetConnectedBukkitPlayers
 import com.github.unchama.seichiassist.SeichiAssist
@@ -28,7 +28,7 @@ object SendMessageEffect {
     } yield ()
   }
 
-  def sendMessageToEveryone[T, F[_]: Monad: LiftIO: GetConnectedPlayers[*[_], Player]](
+  def sendMessageToEveryone[T, F[_]: Sync: GetConnectedPlayers[*[_], Player]](
     content: T
   )(implicit ev: PlayerSendable[T, F]): F[Unit] = {
     import cats.implicits._
@@ -40,8 +40,7 @@ object SendMessageEffect {
           playerSettings <- SeichiAssist
             .playermap(player.getUniqueId)
             .settings
-            .getBroadcastMutingSettings
-            .to[F]
+            .getBroadcastMutingSettings[F]
           _ <- ev.send(player, content).unlessA(playerSettings.shouldMuteMessages)
         } yield ()
       }

@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.data.player.settings
 
 import cats.data.Kleisli
-import cats.effect.IO
+import cats.effect.{IO, Sync}
 import com.github.unchama.seichiassist.data.player.{NicknameStyle, PlayerNickname}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
@@ -36,11 +36,10 @@ class PlayerSettings {
     UnfocusedEffect {
       this.shouldDisplayDeathMessages = !this.shouldDisplayDeathMessages
     }
-  val getBroadcastMutingSettings: IO[BroadcastMutingSettings] = IO {
-    broadcastMutingSettings
-  }
+  def getBroadcastMutingSettings[F[_]: Sync]: F[BroadcastMutingSettings] =
+    Sync[F].delay { broadcastMutingSettings }
   val toggleBroadcastMutingSettings: TargetedEffect[Any] = Kleisli.liftF(for {
-    currentSettings <- getBroadcastMutingSettings
+    currentSettings <- getBroadcastMutingSettings[IO]
     nextSettings = currentSettings.next
   } yield {
     broadcastMutingSettings = nextSettings
