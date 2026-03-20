@@ -78,13 +78,11 @@ class BukkitDrawGacha[
               Sync[F].delay {
                 player.sendMessage(s"${RED}おめでとう！！！！！Gigantic☆大当たり！$additionalMessage")
                 player.spigot().sendMessage(message)
-              } >> Sync[F].delay {
-                SendSoundEffect.sendEverySoundWithoutIgnore(
-                  Sound.ENTITY_ENDER_DRAGON_DEATH,
-                  0.5f,
-                  2f
-                )
-              } >> sendMessageToEveryone[String, F](
+              } >> SendSoundEffect.sendEverySoundWithoutIgnore[F](
+                Sound.ENTITY_ENDER_DRAGON_DEATH,
+                0.5f,
+                2f
+              ) >> sendMessageToEveryone[String, F](
                 s"$GOLD${player.getName}がガチャでGigantic☆大当たり！"
               )
             case GachaRarity.Big =>

@@ -32,11 +32,10 @@ object BukkitNotifyLevelUp {
           val messageLevelMaxDiscord = s"${player.getName}の建築レベルが最大Lvに到達したよ(`･ω･´)"
           val messageLevelMaxPlayer = s"${GOLD}最大Lvに到達したよ(`･ω･´)"
 
-          sendMessageToEveryoneIgnoringPreferenceM[String, F](messageLevelMaxGlobal) >> Sync[F]
-            .delay {
-              player.sendMessage(messageLevelMaxPlayer)
-              sendEverySound(Sound.ENTITY_ENDER_DRAGON_DEATH, 1.0f, 1.2f)
-            } >> LaunchFireWorksEffect.launchFireWorks[F](
+          sendMessageToEveryoneIgnoringPreferenceM[String, F](messageLevelMaxGlobal) >>
+            Sync[F].delay(player.sendMessage(messageLevelMaxPlayer)) >>
+            sendEverySound[F](Sound.ENTITY_ENDER_DRAGON_DEATH, 1.0f, 1.2f) >>
+            LaunchFireWorksEffect.launchFireWorks[F](
             player.getLocation
           ) >> DiscordNotificationAPI[F].sendPlainText(messageLevelMaxDiscord)
         } else if (oldLevel < newLevel) {

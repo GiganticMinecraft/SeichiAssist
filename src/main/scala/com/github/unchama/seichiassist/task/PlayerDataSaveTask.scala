@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.task
 
 import cats.Monad
-import cats.effect.Sync
+import cats.effect.{IO, Sync}
 import com.github.unchama.seichiassist.data.player.{NicknameStyle, PlayerData}
 import com.github.unchama.seichiassist.seichiskill.effect.{
   ActiveSkillEffect,
@@ -102,12 +102,12 @@ object PlayerDataSaveTask {
           + ",totalexp = " + playerdata.totalexp
           + ",everysound = " + playerdata
             .settings
-            .getBroadcastMutingSettings
+            .getBroadcastMutingSettings[IO]
             .unsafeRunSync()
             .shouldMuteSounds
           + ",everymessage = " + playerdata
             .settings
-            .getBroadcastMutingSettings
+            .getBroadcastMutingSettings[IO]
             .unsafeRunSync()
             .shouldMuteMessages
 

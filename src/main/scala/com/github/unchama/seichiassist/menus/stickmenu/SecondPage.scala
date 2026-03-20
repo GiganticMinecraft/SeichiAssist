@@ -185,7 +185,7 @@ object SecondPage extends Menu {
       val playerData = SeichiAssist.playermap(getUniqueId)
 
       for {
-        currentSettings <- playerData.settings.getBroadcastMutingSettings
+        currentSettings <- playerData.settings.getBroadcastMutingSettings[IO]
         iconItemStack = {
           val soundConfigurationState =
             if (currentSettings.shouldMuteSounds) {
@@ -221,7 +221,7 @@ object SecondPage extends Menu {
             DeferredEffect {
               playerData
                 .settings
-                .getBroadcastMutingSettings
+                .getBroadcastMutingSettings[IO]
                 .map {
                   case ReceiveMessageAndSound => s"${GREEN}非表示/消音設定を解除しました"
                   case ReceiveMessageOnly     => s"${RED}消音可能な全体大当たり通知音を消音します"
