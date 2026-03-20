@@ -21,7 +21,6 @@ COPY --link --from=chunk-search-provider /build/chunk-search-rs /usr/bin/chunk-s
 COPY --link ./target/build/ /SeichiAssist/
 COPY --link ./docker/paper/ /data/
 ADD ./localDependencies/ /data/plugins/
-ADD ./plugins /plugins
 
 RUN chmod a+x /data/update-seichiassist.sh
 RUN nkf -Lu --overwrite /data/update-seichiassist.sh
