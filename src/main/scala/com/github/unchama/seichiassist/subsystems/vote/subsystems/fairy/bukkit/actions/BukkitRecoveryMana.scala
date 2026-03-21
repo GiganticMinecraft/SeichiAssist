@@ -97,9 +97,9 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
       )
 
       isDragonNightTime <- dragonNightTimeApi.isInDragonNightTime
+      dragonNightTimeManaMultiplier <- Sync[F].pure(if (isDragonNightTime) 2.0 else 1.0)
       finalRecoveryAmount =
-        if (isDragonNightTime) recoveryManaAmountInMinedGachaRingo * 2
-        else recoveryManaAmountInMinedGachaRingo
+        recoveryManaAmountInMinedGachaRingo * dragonNightTimeManaMultiplier
 
       manaRecoveryState <- Sync[F].delay {
         // NOTE: recoveryManaAmountが300を下回ると、がちゃりんごを一つも消費しないが、
