@@ -116,6 +116,7 @@ import java.util.logging.LogManager
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.GachaTradeAPI
+import com.github.unchama.seichiassist.subsystems.dragonnighttime.DragonNightTimeApi
 
 class SeichiAssist extends JavaPlugin() {
 
@@ -484,6 +485,8 @@ class SeichiAssist extends JavaPlugin() {
     implicit val voteAPI: VoteAPI[IO, Player] = voteSystem.api
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
     implicit val fairySpeechAPI: FairySpeechAPI[IO, Player] = fairySpeechSystem.api
+    implicit val dragonNightTimeApi: DragonNightTimeApi[IO] =
+      dragonnighttimeSystem.api
 
     subsystems.vote.subsystems.fairy.System.wired.unsafeRunSync()
   }
@@ -536,7 +539,7 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.playerheadskin.System.wired[IO]
   }
 
-  private lazy val dragonnighttimeSystem: Subsystem[IO] = {
+  private lazy val dragonnighttimeSystem: subsystems.dragonnighttime.System[IO] = {
     import PluginExecutionContexts.timer
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
