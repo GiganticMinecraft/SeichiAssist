@@ -11,6 +11,7 @@ import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
+import com.github.unchama.seichiassist.subsystems.dragonnighttime.DragonNightTimeApi
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.SummonFairy
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.repository.FairyManaRecoveryRoutineFiberRepositoryDefinition
@@ -52,7 +53,8 @@ object System {
     ],
     repeatingTaskContext: RepeatingTaskContext,
     concurrentEffect: ConcurrentEffect[IO],
-    minecraftServerThread: OnMinecraftServerThread[IO]
+    minecraftServerThread: OnMinecraftServerThread[IO],
+    dragonNightTimeApi: DragonNightTimeApi[IO]
   ): SyncIO[System[IO, SyncIO, Player]] = {
     implicit val persistence: FairyPersistence[IO] = new JdbcFairyPersistence[IO]
     implicit val fairySpeechProvider: FairySpeech[IO, Player] = new BukkitFairySpeech[IO]
