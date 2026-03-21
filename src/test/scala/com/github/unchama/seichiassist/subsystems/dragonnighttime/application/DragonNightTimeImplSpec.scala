@@ -4,7 +4,7 @@ import com.github.unchama.seichiassist.subsystems.dragonnighttime.domain.Period
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-import java.time.{DayOfWeek, LocalDate, LocalTime}
+import java.time.{LocalDate, LocalTime}
 import com.github.unchama.seichiassist.subsystems.dragonnighttime.domain.DragonNightTime
 
 class DragonNightTimeImplSpec extends AnyWordSpec with Matchers {
@@ -27,7 +27,6 @@ class DragonNightTimeImplSpec extends AnyWordSpec with Matchers {
     "月〜金の全曜日は平日ピリオドを返す" in {
       val weekdays = Set(monday, tuesday, wednesday, thursday, friday)
       weekdays.foreach { date =>
-        assert(date.getDayOfWeek != DayOfWeek.SATURDAY && date.getDayOfWeek != DayOfWeek.SUNDAY)
         dragonNightTime.effectivePeriod(date) shouldBe weekdayPeriod
       }
     }

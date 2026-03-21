@@ -56,9 +56,8 @@ class PeriodSpec extends AnyWordSpec with ScalaCheckPropertyChecks with Matchers
     }
 
     "remainingDuration は期間外のとき None を返す" in {
-      period.remainingDuration(LocalTime.of(19, 0, 0)) shouldBe None
-      period.remainingDuration(end) shouldBe None
-      period.remainingDuration(LocalTime.of(22, 0, 0)) shouldBe None
+      val outsideTimes = Seq(LocalTime.of(19, 0, 0), end, LocalTime.of(22, 0, 0))
+      outsideTimes.foreach(t => period.remainingDuration(t) shouldBe None)
     }
   }
 }
