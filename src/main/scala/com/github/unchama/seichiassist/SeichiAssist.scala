@@ -485,7 +485,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val voteAPI: VoteAPI[IO, Player] = voteSystem.api
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
     implicit val fairySpeechAPI: FairySpeechAPI[IO, Player] = fairySpeechSystem.api
-    implicit val dragonNightTimeApi: DragonNightTimeApi[IO] =
+    implicit val dragonNightTimeApi: DragonNightTimeApi =
       dragonnighttimeSystem.api
 
     subsystems.vote.subsystems.fairy.System.wired.unsafeRunSync()

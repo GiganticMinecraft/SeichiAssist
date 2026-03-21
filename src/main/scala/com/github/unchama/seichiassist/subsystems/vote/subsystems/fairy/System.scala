@@ -54,7 +54,7 @@ object System {
     repeatingTaskContext: RepeatingTaskContext,
     concurrentEffect: ConcurrentEffect[IO],
     minecraftServerThread: OnMinecraftServerThread[IO],
-    dragonNightTimeApi: DragonNightTimeApi[IO]
+    dragonNightTimeApi: DragonNightTimeApi
   ): SyncIO[System[IO, SyncIO, Player]] = {
     implicit val persistence: FairyPersistence[IO] = new JdbcFairyPersistence[IO]
     implicit val fairySpeechProvider: FairySpeech[IO, Player] = new BukkitFairySpeech[IO]

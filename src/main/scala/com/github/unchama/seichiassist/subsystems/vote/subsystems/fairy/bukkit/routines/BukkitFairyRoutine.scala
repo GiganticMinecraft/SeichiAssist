@@ -23,7 +23,7 @@ class BukkitFairyRoutine(fairySpeech: FairySpeech[IO, Player])(
   concurrentEffect: ConcurrentEffect[IO],
   minecraftServerThread: OnMinecraftServerThread[IO],
   mineStackAPI: MineStackAPI[IO, Player, ItemStack],
-  dragonNightTimeApi: DragonNightTimeApi[IO]
+  dragonNightTimeApi: DragonNightTimeApi
 ) extends FairyRoutine[IO, Player] {
 
   override def start(player: Player): IO[Nothing] = {

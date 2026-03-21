@@ -33,7 +33,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
   implicit manaApi: ManaApi[F, G, Player],
   fairyPersistence: FairyPersistence[F],
   mineStackAPI: MineStackAPI[F, Player, ItemStack],
-  dragonNightTimeApi: DragonNightTimeApi[F]
+  dragonNightTimeApi: DragonNightTimeApi
 ) extends RecoveryMana[F] {
 
   import cats.implicits._
@@ -96,7 +96,8 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
         recoveryManaAmount * (appleConsumeAmountFromMineStack.toDouble / pureAppleConsumeAmount)
       )
 
-      isDragonNightTime <- dragonNightTimeApi.isInDragonNightTime
+      now <- JavaTime[F].getLocalDateTime(ZoneId.systemDefault())
+      isDragonNightTime <- Sync[F].pure(dragonNightTimeApi.isInDragonNightTime(now))
       dragonNightTimeManaMultiplier <- Sync[F].pure(if (isDragonNightTime) 2.0 else 1.0)
       finalRecoveryAmount =
         recoveryManaAmountInMinedGachaRingo * dragonNightTimeManaMultiplier
@@ -146,9 +147,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
             }
           ).apply(player)
       }.whenA(isFairyUsing && isRecoverTiming && !nonRecoveredManaAmount.isFull)
-      finishUse <- JavaTime[F]
-        .getLocalDateTime(ZoneId.systemDefault())
-        .map(now => isFairyUsing && fairyEndTimeOpt.exists(_.endTime.isBefore(now)))
+      finishUse = isFairyUsing && fairyEndTimeOpt.exists(_.endTime.isBefore(now))
       _ <- {
         fairySpeech
           .bye(player) >> fairyPersistence.updateIsFairyUsing(uuid, isFairyUsing = false)
