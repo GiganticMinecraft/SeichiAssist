@@ -5,6 +5,7 @@ import cats.effect.{ConcurrentEffect, IO, SyncIO, Timer}
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
+import com.github.unchama.seichiassist.subsystems.dragonnighttime.DragonNightTimeApi
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.FairyRoutine
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions.BukkitRecoveryMana
@@ -21,7 +22,8 @@ class BukkitFairyRoutine(fairySpeech: FairySpeech[IO, Player])(
   fairyPersistence: FairyPersistence[IO],
   concurrentEffect: ConcurrentEffect[IO],
   minecraftServerThread: OnMinecraftServerThread[IO],
-  mineStackAPI: MineStackAPI[IO, Player, ItemStack]
+  mineStackAPI: MineStackAPI[IO, Player, ItemStack],
+  dragonNightTimeApi: DragonNightTimeApi
 ) extends FairyRoutine[IO, Player] {
 
   override def start(player: Player): IO[Nothing] = {
