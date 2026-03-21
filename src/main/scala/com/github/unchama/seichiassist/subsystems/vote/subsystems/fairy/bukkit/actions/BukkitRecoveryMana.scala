@@ -4,6 +4,7 @@ import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
+import com.github.unchama.seichiassist.subsystems.dragonnighttime.DragonNightTimeApi
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.RecoveryMana
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyPersistence
@@ -31,7 +32,8 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
 )(
   implicit manaApi: ManaApi[F, G, Player],
   fairyPersistence: FairyPersistence[F],
-  mineStackAPI: MineStackAPI[F, Player, ItemStack]
+  mineStackAPI: MineStackAPI[F, Player, ItemStack],
+  dragonNightTimeApi: DragonNightTimeApi[F]
 ) extends RecoveryMana[F] {
 
   import cats.implicits._
@@ -94,6 +96,11 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
         recoveryManaAmount * (appleConsumeAmountFromMineStack.toDouble / pureAppleConsumeAmount)
       )
 
+      isDragonNightTime <- dragonNightTimeApi.isInDragonNightTime
+      dragonNightTimeManaMultiplier <- Sync[F].pure(if (isDragonNightTime) 2.0 else 1.0)
+      finalRecoveryAmount =
+        recoveryManaAmountInMinedGachaRingo * dragonNightTimeManaMultiplier
+
       manaRecoveryState <- Sync[F].delay {
         // NOTE: recoveryManaAmountが300を下回ると、がちゃりんごを一つも消費しないが、
         //       りんごを消費できなかったときと同じ処理を行うと仕様として紛らわしいので、
@@ -111,9 +118,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
           AppleAmount(appleConsumeAmountFromMineStack)
         ) >>
           ContextCoercion(
-            manaApi
-              .manaAmount(player)
-              .restoreAbsolute(ManaAmount(recoveryManaAmountInMinedGachaRingo))
+            manaApi.manaAmount(player).restoreAbsolute(ManaAmount(finalRecoveryAmount))
           ) >>
           fairySpeech.speechRandomly(player, manaRecoveryState) >>
           mineStackAPI
@@ -125,7 +130,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
             ) >>
           SequentialEffect(
             MessageEffectF(
-              s"$RESET$YELLOW${BOLD}マナ妖精が${Math.floor(recoveryManaAmountInMinedGachaRingo)}マナを回復してくれました"
+              s"$RESET$YELLOW${BOLD}マナ妖精が${Math.floor(finalRecoveryAmount)}マナを回復してくれました"
             ),
             manaRecoveryState match {
               case FairyManaRecoveryState.RecoverWithoutAppleButLessThanAApple =>
