@@ -26,9 +26,7 @@ class DragonNightTimeImplSpec extends AnyWordSpec with Matchers {
   "DragonNightTimeImpl" should {
     "月〜金の全曜日は平日ピリオドを返す" in {
       val weekdays = Set(monday, tuesday, wednesday, thursday, friday)
-      weekdays.foreach { date =>
-        dragonNightTime.effectivePeriod(date) shouldBe weekdayPeriod
-      }
+      weekdays.foreach { date => dragonNightTime.effectivePeriod(date) shouldBe weekdayPeriod }
     }
 
     "土・日は週末ピリオドを返す" in {
