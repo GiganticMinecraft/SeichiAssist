@@ -34,26 +34,26 @@ class FairyManaRecoverySpec extends AnyWordSpec with ScalaCheckPropertyChecks wi
       result.manaBeforeDragonNightMultiplier shouldBe baseAmount +- 0.001
     }
 
-    "isDragonNight = true のとき finalRecoveredMana が2倍になる" in {
+    "isDragonNight = true のときマナ回復量が2倍になる" in {
       val mana = FairyBaseRecoveryMana(600)
       val normal = FairyManaRecovery.compute(mana, 10L, 0.5, isDragonNight = false)
       val dragon = FairyManaRecovery.compute(mana, 10L, 0.5, isDragonNight = true)
       dragon.finalRecoveredMana shouldBe normal.finalRecoveredMana * 2.0 +- 0.001
     }
 
-    "isDragonNight = false のとき乗算なし (finalRecoveredMana == manaBeforeDragonNightMultiplier)" in {
+    "isDragonNight = false のときボーナスが付かない" in {
       val mana = FairyBaseRecoveryMana(600)
       val result = FairyManaRecovery.compute(mana, 10L, 0.5, isDragonNight = false)
       result.finalRecoveredMana shouldBe result.manaBeforeDragonNightMultiplier +- 0.001
     }
 
-    "mineStackedAmount < pureAppleConsumeAmount のとき appleConsumed がスタック量に丸められる" in {
+    "mineStackedAmount < pureAppleConsumeAmount のとき、がちゃりんご消費数が持っている分に丸められる" in {
       val mana = FairyBaseRecoveryMana(900) // pureAppleConsumeAmount = 3
       val result = FairyManaRecovery.compute(mana, 1L, 0.5, isDragonNight = false)
       result.consumedGachaAppleCount shouldBe 1
     }
 
-    "mineStackedAmount >= pureAppleConsumeAmount のとき appleConsumed が pure量" in {
+    "mineStackedAmount >= pureAppleConsumeAmount のときがちゃりんごの消費数がベース回復量分になる" in {
       val mana = FairyBaseRecoveryMana(900) // pureAppleConsumeAmount = 3
       val result = FairyManaRecovery.compute(mana, 10L, 0.5, isDragonNight = false)
       result.consumedGachaAppleCount shouldBe 3
@@ -65,7 +65,7 @@ class FairyManaRecoverySpec extends AnyWordSpec with ScalaCheckPropertyChecks wi
       result.state shouldBe FairyManaRecoveryState.RecoveredWithApple
     }
 
-    "state: MineStackが0のとき RecoveredWithoutApple" in {
+    "state: MineStack に存在するがちゃりんごの数が0のとき RecoveredWithoutApple" in {
       val mana = FairyBaseRecoveryMana(600)
       val result = FairyManaRecovery.compute(mana, 0L, 0.5, isDragonNight = false)
       result.state shouldBe FairyManaRecoveryState.RecoveredWithoutApple
