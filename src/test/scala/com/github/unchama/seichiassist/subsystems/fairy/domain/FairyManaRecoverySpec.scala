@@ -14,7 +14,8 @@ class FairyManaRecoverySpec extends AnyWordSpec with ScalaCheckPropertyChecks wi
   "FairyManaRecovery.compute" should {
 
     "recoveryMana < 300 のとき (pureAppleConsumeAmount == 0) finalRecoveredMana == 0.0 を返す" in {
-      val result = FairyManaRecovery.compute(FairyBaseRecoveryMana(299), 100L, 0.5, isDragonNight = false)
+      val result =
+        FairyManaRecovery.compute(FairyBaseRecoveryMana(299), 100L, 0.5, isDragonNight = false)
       result.finalRecoveredMana shouldBe 0.0
       result.consumedGachaAppleCount shouldBe 0
     }

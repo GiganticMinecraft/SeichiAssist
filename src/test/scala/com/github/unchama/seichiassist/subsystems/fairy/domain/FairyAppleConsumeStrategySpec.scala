@@ -7,7 +7,10 @@ import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
 import scala.concurrent.duration._
 
-class FairyAppleConsumeStrategySpec extends AnyWordSpec with ScalaCheckPropertyChecks with Matchers {
+class FairyAppleConsumeStrategySpec
+    extends AnyWordSpec
+    with ScalaCheckPropertyChecks
+    with Matchers {
 
   "FairyAppleConsumeStrategy.Permissible" should {
     "任意のdurationでtrueを返す" in {

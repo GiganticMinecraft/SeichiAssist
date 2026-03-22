@@ -52,7 +52,10 @@ trait FairyPersistence[F[_]] {
   /**
    * @return 妖精が回復するマナの量を変更する作用
    */
-  def updateFairyBaseRecoveryMana(player: UUID, fairyBaseRecoveryMana: FairyBaseRecoveryMana): F[Unit]
+  def updateFairyBaseRecoveryMana(
+    player: UUID,
+    fairyBaseRecoveryMana: FairyBaseRecoveryMana
+  ): F[Unit]
 
   /**
    * @return 妖精が回復するマナの量を取得する作用
