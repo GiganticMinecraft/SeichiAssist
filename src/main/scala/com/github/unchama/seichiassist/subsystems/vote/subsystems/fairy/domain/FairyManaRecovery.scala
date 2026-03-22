@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain
 
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
   FairyManaRecoveryState,
-  FairyRecoveryMana
+  FairyBaseRecoveryMana
 }
 
 /**
@@ -36,39 +36,52 @@ object FairyManaRecovery {
   /**
    * マナ回復量と回復状態を計算する。
    *
+   * - 回復量は、通常のがちゃりんごの回復量の70%を基本とする
+   * - 3%の確率で、がちゃりんご1個あたり0.3マナのボーナス回復が発生する
+   * - ドラゲナイタイムのときはマナ回復量が2倍になる
+   *
    * @param recoveryMana
-   *   妖精の回復マナ設定値。
+   *   妖精の回復マナ設定値
    * @param mineStackedAmount
-   *   プレイヤーの MineStack に積まれているがちゃりんごの現在個数。
+   *   プレイヤーの MineStack に存在している、がちゃりんごの在庫数
    * @param bonusRoll
-   *   呼び出し元が生成した `[0.0, 1.0)` の一様乱数。
-   *   `<= 0.03` のときボーナス回復が発動する。
+   *   呼び出し元が生成した `[0.0, 1.0)` の一様乱数
+   *   `<= 0.03` のときボーナス回復が発動する
    * @param isDragonNight
-   *   ドラゲナイタイム中であるかどうか。`true` のとき回復量が 2 倍になる。
+   *   ドラゲナイタイム中であるかどうか。`true` のとき回復量が 2 倍になる
    * @return
-   *   計算結果を格納した [[ManaRecoveryResult]]。
+   *   計算結果
    */
   def compute(
-    recoveryMana: FairyRecoveryMana,
+    recoveryMana: FairyBaseRecoveryMana,
     mineStackedAmount: Long,
     bonusRoll: Double,
     isDragonNight: Boolean
   ): ManaRecoveryResult = {
-    val pureAppleConsumeAmount = recoveryMana.recoveryMana / 300
+    val manaPerApple = 300
+    val baseManaRecoveryRatio = 0.7
+
+    val bonusRollThreshold = 0.03
+    val bonusManaPerApple = 0.3
+
+    val dragonNightMultiplier = 2.0
+
+    val pureAppleConsumeAmount = recoveryMana.amount / manaPerApple
     val consumedGachaAppleCount = Math.min(pureAppleConsumeAmount, mineStackedAmount).toInt
-    val baseAmount = recoveryMana.recoveryMana * 0.7
-    val bonusAmount = if (bonusRoll <= 0.03) consumedGachaAppleCount * 0.3 else 0.0
+    val baseAmount = recoveryMana.amount * baseManaRecoveryRatio
+    val bonusAmount =
+      if (bonusRoll <= bonusRollThreshold) consumedGachaAppleCount * bonusManaPerApple else 0.0
     val totalBase = baseAmount + bonusAmount
 
     val manaBeforeDragonNightMultiplier =
       if (pureAppleConsumeAmount == 0) 0.0
       else totalBase * (consumedGachaAppleCount.toDouble / pureAppleConsumeAmount)
 
-    val multiplier = if (isDragonNight) 2.0 else 1.0
+    val multiplier = if (isDragonNight) dragonNightMultiplier else 1.0
     val finalRecoveredMana = manaBeforeDragonNightMultiplier * multiplier
 
     val state =
-      if (totalBase == 0.0 && manaBeforeDragonNightMultiplier < 300.0)
+      if (totalBase == 0.0 && manaBeforeDragonNightMultiplier < manaPerApple.toDouble)
         FairyManaRecoveryState.RecoverWithoutAppleButLessThanAApple
       else if (manaBeforeDragonNightMultiplier == 0.0)
         FairyManaRecoveryState.RecoveredWithoutApple

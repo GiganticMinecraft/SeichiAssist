@@ -57,12 +57,12 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
         .mineStackRepository
         .getStackedAmountOf(player, gachaRingoObject.get)
 
-      defaultRecoveryMana <- fairyPersistence.fairyRecoveryMana(uuid)
+      defaultRecoveryMana <- fairyPersistence.fairyBaseRecoveryMana(uuid)
 
       _ <- MessageEffectF(s"$RESET$YELLOW${BOLD}MineStackにがちゃりんごがないようです。。。")
         .apply(player)
         .whenA(
-          isFairyUsing && isRecoverTiming && !nonRecoveredManaAmount.isFull && defaultRecoveryMana.recoveryMana / 300 > mineStackedGachaRingoAmount
+          isFairyUsing && isRecoverTiming && !nonRecoveredManaAmount.isFull && defaultRecoveryMana.amount / 300 > mineStackedGachaRingoAmount
         )
 
       bonusRoll <- Sync[F].delay(new Random().nextDouble())

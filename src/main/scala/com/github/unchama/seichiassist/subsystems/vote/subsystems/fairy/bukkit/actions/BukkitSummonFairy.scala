@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.domain.EffectPoint
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.SummonFairy
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyPersistence
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairyRecoveryManaAmount
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairyBaseRecoveryMana
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.FairySpeech
 import com.github.unchama.targetedeffect.commandsender.MessageEffectF
 import org.bukkit.ChatColor._
@@ -30,17 +30,17 @@ class BukkitSummonFairy[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
         manaApi.readManaAmount(player)
       }
       levelCappedManaAmount = manaAmount.cap.value
-      recoveryManaAmount = FairyRecoveryManaAmount.manaAmountAt(levelCappedManaAmount)
+      recoveryManaAmount = FairyBaseRecoveryMana.manaAmountAt(levelCappedManaAmount)
       uuid = player.getUniqueId
       fairySummonCost <- fairyPersistence.fairySummonCost(uuid)
       _ <- voteAPI.decreaseEffectPoint(uuid, EffectPoint(fairySummonCost.value * 2))
-      _ <- fairyPersistence.updateFairyRecoveryMana(uuid, recoveryManaAmount)
+      _ <- fairyPersistence.updateFairyBaseRecoveryMana(uuid, recoveryManaAmount)
       _ <- fairyPersistence.updateFairyEndTime(uuid, fairySummonCost.endTime)
       _ <- fairySpeech.summonSpeech(player)
       _ <- MessageEffectF(
         List(
           s"$RESET$YELLOW${BOLD}妖精を呼び出しました！",
-          s"$RESET$YELLOW${BOLD}この子は1分間に約${recoveryManaAmount.recoveryMana}マナ",
+          s"$RESET$YELLOW${BOLD}この子は1分間に約${recoveryManaAmount.amount}マナ",
           s"$RESET$YELLOW${BOLD}回復させる力を持っているようです。"
         )
       ).apply(player)
