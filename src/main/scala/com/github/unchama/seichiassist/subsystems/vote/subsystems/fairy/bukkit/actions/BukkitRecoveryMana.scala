@@ -148,7 +148,8 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
             }
           ).apply(player)
       }.whenA(isFairyUsing && isRecoverTiming && !nonRecoveredManaAmount.isFull)
-      finishUse = isFairyUsing && fairyEndTimeOpt.exists(_.endTime.isBefore(now))
+      isFairyTimeEnded = fairyEndTimeOpt.exists(_.endTime.isBefore(now))
+      finishUse = isFairyUsing && isFairyTimeEnded
       _ <- {
         fairySpeech
           .bye(player) >> fairyPersistence.updateIsFairyUsing(uuid, isFairyUsing = false)
