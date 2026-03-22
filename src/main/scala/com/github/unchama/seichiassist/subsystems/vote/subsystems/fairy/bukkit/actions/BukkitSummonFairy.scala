@@ -9,6 +9,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.applicat
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyPersistence
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairyBaseRecoveryMana
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.FairySpeech
+import scala.util.Random
 import com.github.unchama.targetedeffect.commandsender.MessageEffectF
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -30,7 +31,8 @@ class BukkitSummonFairy[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
         manaApi.readManaAmount(player)
       }
       levelCappedManaAmount = manaAmount.cap.value
-      recoveryManaAmount = FairyBaseRecoveryMana.manaAmountAt(levelCappedManaAmount)
+      randomRoll <- Sync[F].delay(new Random().nextDouble())
+      recoveryManaAmount = FairyBaseRecoveryMana.manaAmountAt(levelCappedManaAmount, randomRoll)
       uuid = player.getUniqueId
       fairySummonCost <- fairyPersistence.fairySummonCost(uuid)
       _ <- voteAPI.decreaseEffectPoint(uuid, EffectPoint(fairySummonCost.value * 2))
