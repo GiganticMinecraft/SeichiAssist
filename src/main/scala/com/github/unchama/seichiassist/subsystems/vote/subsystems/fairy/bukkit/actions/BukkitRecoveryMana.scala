@@ -98,6 +98,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
 
       now <- JavaTime[F].getLocalDateTime(ZoneId.systemDefault())
       isDragonNightTime <- Sync[F].pure(dragonNightTimeApi.isInDragonNightTime(now))
+      // NOTE: ドラゲナイタイム中は回復量が2倍になる
       dragonNightTimeManaMultiplier <- Sync[F].pure(if (isDragonNightTime) 2.0 else 1.0)
       finalRecoveryAmount =
         recoveryManaAmountInMinedGachaRingo * dragonNightTimeManaMultiplier
