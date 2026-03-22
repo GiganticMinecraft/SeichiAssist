@@ -16,20 +16,20 @@ object FairyManaRecovery {
   /**
    * マナ回復計算の結果。
    *
-   * @param appleConsumed
+   * @param consumedGachaAppleCount
    *   実際に消費するがちゃりんごの個数。
    *   MineStack の在庫が不足している場合は在庫量に切り捨てられる。
-   * @param manaFromApples
+   * @param manaBeforeDragonNightMultiplier
    *   りんご消費比率を適用した後、ドラゲナイ乗算前の回復量。
-   * @param finalAmount
+   * @param finalRecoveredMana
    *   ドラゲナイタイム乗算を適用した最終的な回復マナ量。
    * @param state
-   *   回復結果の分類。メッセージ選択などに使用する。
+   *   回復結果の分類
    */
   case class ManaRecoveryResult(
-    appleConsumed: Int,
-    manaFromApples: Double,
-    finalAmount: Double,
+    consumedGachaAppleCount: Int,
+    manaBeforeDragonNightMultiplier: Double,
+    finalRecoveredMana: Double,
     state: FairyManaRecoveryState
   )
 
@@ -55,27 +55,32 @@ object FairyManaRecovery {
     isDragonNight: Boolean
   ): ManaRecoveryResult = {
     val pureAppleConsumeAmount = recoveryMana.recoveryMana / 300
-    val appleConsumed = Math.min(pureAppleConsumeAmount, mineStackedAmount).toInt
+    val consumedGachaAppleCount = Math.min(pureAppleConsumeAmount, mineStackedAmount).toInt
     val baseAmount = recoveryMana.recoveryMana * 0.7
-    val bonusAmount = if (bonusRoll <= 0.03) appleConsumed * 0.3 else 0.0
+    val bonusAmount = if (bonusRoll <= 0.03) consumedGachaAppleCount * 0.3 else 0.0
     val totalBase = baseAmount + bonusAmount
 
-    val manaFromApples =
+    val manaBeforeDragonNightMultiplier =
       if (pureAppleConsumeAmount == 0) 0.0
-      else totalBase * (appleConsumed.toDouble / pureAppleConsumeAmount)
+      else totalBase * (consumedGachaAppleCount.toDouble / pureAppleConsumeAmount)
 
     val multiplier = if (isDragonNight) 2.0 else 1.0
-    val finalAmount = manaFromApples * multiplier
+    val finalRecoveredMana = manaBeforeDragonNightMultiplier * multiplier
 
     val state =
-      if (totalBase == 0.0 && manaFromApples < 300.0)
+      if (totalBase == 0.0 && manaBeforeDragonNightMultiplier < 300.0)
         FairyManaRecoveryState.RecoverWithoutAppleButLessThanAApple
-      else if (manaFromApples == 0.0)
+      else if (manaBeforeDragonNightMultiplier == 0.0)
         FairyManaRecoveryState.RecoveredWithoutApple
       else
         FairyManaRecoveryState.RecoveredWithApple
 
-    ManaRecoveryResult(appleConsumed, manaFromApples, finalAmount, state)
+    ManaRecoveryResult(
+      consumedGachaAppleCount,
+      manaBeforeDragonNightMultiplier,
+      finalRecoveredMana,
+      state
+    )
   }
 
 }

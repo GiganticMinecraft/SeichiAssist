@@ -13,49 +13,49 @@ class FairyManaRecoverySpec extends AnyWordSpec with ScalaCheckPropertyChecks wi
 
   "FairyManaRecovery.compute" should {
 
-    "recoveryMana < 300 のとき (pureAppleConsumeAmount == 0) finalAmount == 0.0 を返す" in {
+    "recoveryMana < 300 のとき (pureAppleConsumeAmount == 0) finalRecoveredMana == 0.0 を返す" in {
       val result = FairyManaRecovery.compute(FairyRecoveryMana(299), 100L, 0.5, isDragonNight = false)
-      result.finalAmount shouldBe 0.0
-      result.appleConsumed shouldBe 0
+      result.finalRecoveredMana shouldBe 0.0
+      result.consumedGachaAppleCount shouldBe 0
     }
 
     "bonusRoll <= 0.03 のときボーナスが適用される" in {
       val mana = FairyRecoveryMana(600) // pureAppleConsumeAmount = 2
       val withBonus = FairyManaRecovery.compute(mana, 10L, 0.03, isDragonNight = false)
       val withoutBonus = FairyManaRecovery.compute(mana, 10L, 0.04, isDragonNight = false)
-      withBonus.finalAmount should be > withoutBonus.finalAmount
+      withBonus.finalRecoveredMana should be > withoutBonus.finalRecoveredMana
     }
 
     "bonusRoll > 0.03 のときボーナスなし" in {
       val mana = FairyRecoveryMana(600)
       val result = FairyManaRecovery.compute(mana, 10L, 0.5, isDragonNight = false)
       val baseAmount = 600 * 0.7
-      result.manaFromApples shouldBe baseAmount +- 0.001
+      result.manaBeforeDragonNightMultiplier shouldBe baseAmount +- 0.001
     }
 
-    "isDragonNight = true のとき finalAmount が2倍になる" in {
+    "isDragonNight = true のとき finalRecoveredMana が2倍になる" in {
       val mana = FairyRecoveryMana(600)
       val normal = FairyManaRecovery.compute(mana, 10L, 0.5, isDragonNight = false)
       val dragon = FairyManaRecovery.compute(mana, 10L, 0.5, isDragonNight = true)
-      dragon.finalAmount shouldBe normal.finalAmount * 2.0 +- 0.001
+      dragon.finalRecoveredMana shouldBe normal.finalRecoveredMana * 2.0 +- 0.001
     }
 
-    "isDragonNight = false のとき乗算なし (finalAmount == manaFromApples)" in {
+    "isDragonNight = false のとき乗算なし (finalRecoveredMana == manaBeforeDragonNightMultiplier)" in {
       val mana = FairyRecoveryMana(600)
       val result = FairyManaRecovery.compute(mana, 10L, 0.5, isDragonNight = false)
-      result.finalAmount shouldBe result.manaFromApples +- 0.001
+      result.finalRecoveredMana shouldBe result.manaBeforeDragonNightMultiplier +- 0.001
     }
 
     "mineStackedAmount < pureAppleConsumeAmount のとき appleConsumed がスタック量に丸められる" in {
       val mana = FairyRecoveryMana(900) // pureAppleConsumeAmount = 3
       val result = FairyManaRecovery.compute(mana, 1L, 0.5, isDragonNight = false)
-      result.appleConsumed shouldBe 1
+      result.consumedGachaAppleCount shouldBe 1
     }
 
     "mineStackedAmount >= pureAppleConsumeAmount のとき appleConsumed が pure量" in {
       val mana = FairyRecoveryMana(900) // pureAppleConsumeAmount = 3
       val result = FairyManaRecovery.compute(mana, 10L, 0.5, isDragonNight = false)
-      result.appleConsumed shouldBe 3
+      result.consumedGachaAppleCount shouldBe 3
     }
 
     "state: りんごを消費して回復したとき RecoveredWithApple" in {
@@ -70,7 +70,7 @@ class FairyManaRecoverySpec extends AnyWordSpec with ScalaCheckPropertyChecks wi
       result.state shouldBe FairyManaRecoveryState.RecoveredWithoutApple
     }
 
-    "state: recoveryMana == 0 かつ manaFromApples < 300 のとき RecoverWithoutAppleButLessThanAApple" in {
+    "state: recoveryMana == 0 かつ manaBeforeDragonNightMultiplier < 300 のとき RecoverWithoutAppleButLessThanAApple" in {
       val mana = FairyRecoveryMana(0)
       val result = FairyManaRecovery.compute(mana, 10L, 0.5, isDragonNight = false)
       result.state shouldBe FairyManaRecoveryState.RecoverWithoutAppleButLessThanAApple

@@ -78,10 +78,10 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
       _ <- {
         fairyPersistence.increaseConsumedAppleAmountByFairy(
           uuid,
-          AppleAmount(result.appleConsumed)
+          AppleAmount(result.consumedGachaAppleCount)
         ) >>
           ContextCoercion(
-            manaApi.manaAmount(player).restoreAbsolute(ManaAmount(result.finalAmount))
+            manaApi.manaAmount(player).restoreAbsolute(ManaAmount(result.finalRecoveredMana))
           ) >>
           fairySpeech.speechRandomly(player, result.state) >>
           mineStackAPI
@@ -89,11 +89,11 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
             .subtractStackedAmountOf(
               player,
               gachaRingoObject.get,
-              result.appleConsumed
+              result.consumedGachaAppleCount
             ) >>
           SequentialEffect(
             MessageEffectF(
-              s"$RESET$YELLOW${BOLD}マナ妖精が${Math.floor(result.finalAmount)}マナを回復してくれました"
+              s"$RESET$YELLOW${BOLD}マナ妖精が${Math.floor(result.finalRecoveredMana)}マナを回復してくれました"
             ),
             result.state match {
               case FairyManaRecoveryState.RecoverWithoutAppleButLessThanAApple =>
@@ -102,7 +102,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
                 )
               case FairyManaRecoveryState.RecoveredWithApple =>
                 MessageEffectF(
-                  s"$RESET$YELLOW${BOLD}あっ！${result.appleConsumed}個のがちゃりんごが食べられてる！"
+                  s"$RESET$YELLOW${BOLD}あっ！${result.consumedGachaAppleCount}個のがちゃりんごが食べられてる！"
                 )
               case _ =>
                 MessageEffectF(s"$RESET$YELLOW${BOLD}あなたは妖精にりんごを渡しませんでした。")
