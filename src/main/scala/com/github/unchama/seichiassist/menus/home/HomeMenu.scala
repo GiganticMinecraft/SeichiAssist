@@ -153,7 +153,7 @@ case class HomeMenuButtonComputations(player: Player)(
     val program = for {
       homeOpt <- homeReadAPI.get(player.getUniqueId, homeId)
     } yield {
-      val lore = homeOpt.fold(List(s"${GRAY}ホームポイント$homeId", s"${GRAY}ポイント未設定"))(home => {
+      val lore = homeOpt.fold(List(s"${GRAY}ホームポイント${homeId}は", s"${GRAY}ポイントが未設定です"))(home => {
         val location = home.location
         val optionName = home.name
         val worldName =
