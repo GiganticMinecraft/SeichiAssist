@@ -153,7 +153,7 @@ case class HomeMenuButtonComputations(player: Player)(
     val program = for {
       homeOpt <- homeReadAPI.get(player.getUniqueId, homeId)
     } yield {
-      val lore = homeOpt.fold(List(s"${GRAY}ホームポイント$homeId", s"${GRAY}ポイント未設定"))(home => {
+      val lore = homeOpt.fold(List(s"${GRAY}ホームポイント${homeId}は", s"${GRAY}ポイントが未設定です"))(home => {
         val location = home.location
         val optionName = home.name
         val worldName =
@@ -171,7 +171,8 @@ case class HomeMenuButtonComputations(player: Player)(
           List(s"$DARK_RED${UNDERLINE}クリックで名称変更", s"${DARK_GRAY}command->[/home name $homeId]")
 
         val coordinates = List(
-          s"$GRAY$worldName x:${Math.floor(location.x)} y:${Math.floor(location.y)} z:${Math.floor(location.z)}"
+          s"$GRAY$worldName",
+          s"${GRAY}x: ${Math.floor(location.x)} y: ${Math.floor(location.y)} z: ${Math.floor(location.z)}"
         )
         nameStatus ++ commandInfo ++ coordinates
       })
