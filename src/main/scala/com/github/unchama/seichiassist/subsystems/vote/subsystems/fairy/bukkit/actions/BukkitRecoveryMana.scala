@@ -7,7 +7,10 @@ import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.subsystems.dragonnighttime.DragonNightTimeApi
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.RecoveryMana
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{FairyManaRecovery, FairyPersistence}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
+  FairyManaRecovery,
+  FairyPersistence
+}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
   AppleAmount,
   FairyManaRecoveryState
@@ -21,7 +24,6 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 import java.time.ZoneId
-import java.util.UUID
 import scala.concurrent.duration.FiniteDuration
 import scala.util.Random
 
@@ -38,8 +40,8 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
   import cats.implicits._
 
   override def recovery(consumptionPeriod: FiniteDuration): F[Unit] = {
-    val uuid: UUID = player.getUniqueId
     for {
+      uuid <- Sync[F].delay(player.getUniqueId)
       isFairyUsing <- fairyPersistence.isFairyUsing(uuid)
       fairyEndTimeOpt <- fairyPersistence.fairyEndTime(uuid)
       consumeStrategy <- fairyPersistence.appleConsumeStrategy(uuid)
