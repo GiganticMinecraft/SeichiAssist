@@ -5,7 +5,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.p
   AppleConsumeAmountRank,
   FairyAppleConsumeStrategy,
   FairyEndTime,
-  FairyRecoveryMana,
+  FairyBaseRecoveryMana,
   FairySummonCost
 }
 
@@ -52,12 +52,15 @@ trait FairyPersistence[F[_]] {
   /**
    * @return 妖精が回復するマナの量を変更する作用
    */
-  def updateFairyRecoveryMana(player: UUID, fairyRecoveryMana: FairyRecoveryMana): F[Unit]
+  def updateFairyBaseRecoveryMana(
+    player: UUID,
+    fairyBaseRecoveryMana: FairyBaseRecoveryMana
+  ): F[Unit]
 
   /**
    * @return 妖精が回復するマナの量を取得する作用
    */
-  def fairyRecoveryMana(player: UUID): F[FairyRecoveryMana]
+  def fairyBaseRecoveryMana(player: UUID): F[FairyBaseRecoveryMana]
 
   /**
    * @return 妖精の効果が終了する時刻を変更する作用

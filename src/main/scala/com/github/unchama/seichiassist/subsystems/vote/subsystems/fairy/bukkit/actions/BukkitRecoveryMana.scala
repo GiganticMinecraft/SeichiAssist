@@ -7,10 +7,12 @@ import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.subsystems.dragonnighttime.DragonNightTimeApi
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.RecoveryMana
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyPersistence
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
+  FairyManaRecovery,
+  FairyPersistence
+}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
   AppleAmount,
-  FairyAppleConsumeStrategy,
   FairyManaRecoveryState
 }
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.FairySpeech
@@ -22,7 +24,6 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 import java.time.ZoneId
-import java.util.UUID
 import scala.concurrent.duration.FiniteDuration
 import scala.util.Random
 
@@ -39,20 +40,12 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
   import cats.implicits._
 
   override def recovery(consumptionPeriod: FiniteDuration): F[Unit] = {
-    val uuid: UUID = player.getUniqueId
     for {
+      uuid <- Sync[F].delay(player.getUniqueId)
       isFairyUsing <- fairyPersistence.isFairyUsing(uuid)
       fairyEndTimeOpt <- fairyPersistence.fairyEndTime(uuid)
       consumeStrategy <- fairyPersistence.appleConsumeStrategy(uuid)
-      isRecoverTiming = consumeStrategy match {
-        case FairyAppleConsumeStrategy.Permissible                                      => true
-        case FairyAppleConsumeStrategy.Consume if consumptionPeriod.toSeconds % 60 == 0 => true
-        case FairyAppleConsumeStrategy.LessConsume if consumptionPeriod.toSeconds % 90 == 0 =>
-          true
-        case FairyAppleConsumeStrategy.NoConsume if consumptionPeriod.toSeconds % 120 == 0 =>
-          true
-        case _ => false
-      }
+      isRecoverTiming = consumeStrategy.isRecoveryTiming(consumptionPeriod)
       nonRecoveredManaAmount <- ContextCoercion {
         manaApi.readManaAmount(player)
       }
@@ -66,82 +59,52 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion
         .mineStackRepository
         .getStackedAmountOf(player, gachaRingoObject.get)
 
-      defaultRecoveryMana <- fairyPersistence.fairyRecoveryMana(uuid)
-      // MineStackに入っているガチャりんごの数を考慮していないりんごの消費量
-      pureAppleConsumeAmount <- Sync[F].delay(defaultRecoveryMana.recoveryMana / 300)
-      // MineStackに入っているガチャりんごの数を考慮したりんごの消費量
-      appleConsumeAmountFromMineStack <- Sync[F].delay(
-        Math.min(pureAppleConsumeAmount, mineStackedGachaRingoAmount).toInt
-      )
+      defaultRecoveryMana <- fairyPersistence.fairyBaseRecoveryMana(uuid)
 
       _ <- MessageEffectF(s"$RESET$YELLOW${BOLD}MineStackにがちゃりんごがないようです。。。")
         .apply(player)
         .whenA(
-          isFairyUsing && isRecoverTiming && !nonRecoveredManaAmount.isFull && pureAppleConsumeAmount > mineStackedGachaRingoAmount
+          isFairyUsing && isRecoverTiming && !nonRecoveredManaAmount.isFull && defaultRecoveryMana.amount / 300 > mineStackedGachaRingoAmount
         )
 
-      // NOTE: 3%の確率で最大の回復量まで回復する
-      bonusRecoveryAmount <- Sync[F].delay {
-        val random = new Random().nextDouble()
-
-        if (random <= 0.03) appleConsumeAmountFromMineStack * 0.3
-        else 0
-      }
-
-      recoveryManaAmount <- Sync[F].pure(
-        defaultRecoveryMana.recoveryMana * 0.7 + bonusRecoveryAmount
-      )
-
-      recoveryManaAmountInMinedGachaRingo <- Sync[F].pure(
-        recoveryManaAmount * (appleConsumeAmountFromMineStack.toDouble / pureAppleConsumeAmount)
-      )
-
+      bonusRoll <- Sync[F].delay(new Random().nextDouble())
       now <- JavaTime[F].getLocalDateTime(ZoneId.systemDefault())
-      isDragonNightTime <- Sync[F].pure(dragonNightTimeApi.isInDragonNightTime(now))
-      // NOTE: ドラゲナイタイム中は回復量が2倍になる
-      dragonNightTimeManaMultiplier <- Sync[F].pure(if (isDragonNightTime) 2.0 else 1.0)
-      finalRecoveryAmount =
-        recoveryManaAmountInMinedGachaRingo * dragonNightTimeManaMultiplier
-
-      manaRecoveryState <- Sync[F].delay {
-        // NOTE: recoveryManaAmountが300を下回ると、がちゃりんごを一つも消費しないが、
-        //       りんごを消費できなかったときと同じ処理を行うと仕様として紛らわしいので、
-        //       回復量が300未満だった場合はりんごを消費して回復したことにする
-        if (recoveryManaAmount == 0 && recoveryManaAmountInMinedGachaRingo < 300)
-          FairyManaRecoveryState.RecoverWithoutAppleButLessThanAApple
-        else if (recoveryManaAmountInMinedGachaRingo == 0)
-          FairyManaRecoveryState.RecoveredWithoutApple
-        else FairyManaRecoveryState.RecoveredWithApple
-      }
+      isDragonNightTime = dragonNightTimeApi.isInDragonNightTime(now)
+      result = FairyManaRecovery.compute(
+        defaultRecoveryMana,
+        mineStackedGachaRingoAmount,
+        bonusRoll,
+        isDragonNightTime
+      )
 
       _ <- {
         fairyPersistence.increaseConsumedAppleAmountByFairy(
           uuid,
-          AppleAmount(appleConsumeAmountFromMineStack)
+          AppleAmount(result.consumedGachaAppleCount)
         ) >>
           ContextCoercion(
-            manaApi.manaAmount(player).restoreAbsolute(ManaAmount(finalRecoveryAmount))
+            manaApi.manaAmount(player).restoreAbsolute(ManaAmount(result.finalRecoveredMana))
           ) >>
-          fairySpeech.speechRandomly(player, manaRecoveryState) >>
+          fairySpeech.speechRandomly(player, result.state) >>
           mineStackAPI
             .mineStackRepository
             .subtractStackedAmountOf(
               player,
               gachaRingoObject.get,
-              appleConsumeAmountFromMineStack
+              result.consumedGachaAppleCount
             ) >>
           SequentialEffect(
             MessageEffectF(
-              s"$RESET$YELLOW${BOLD}マナ妖精が${Math.floor(finalRecoveryAmount)}マナを回復してくれました"
+              s"$RESET$YELLOW${BOLD}マナ妖精が${Math.floor(result.finalRecoveredMana)}マナを回復してくれました"
             ),
-            manaRecoveryState match {
+            result.state match {
               case FairyManaRecoveryState.RecoverWithoutAppleButLessThanAApple =>
                 MessageEffectF(
                   s"$RESET$YELLOW${BOLD}回復量ががちゃりんご１つ分に満たなかったため、あなたは妖精にりんごを渡しませんでした。"
                 )
               case FairyManaRecoveryState.RecoveredWithApple =>
                 MessageEffectF(
-                  s"$RESET$YELLOW${BOLD}あっ！${appleConsumeAmountFromMineStack}個のがちゃりんごが食べられてる！"
+                  s"$RESET$YELLOW${BOLD}あっ！${result.consumedGachaAppleCount}個のがちゃりんごが食べられてる！"
                 )
               case _ =>
                 MessageEffectF(s"$RESET$YELLOW${BOLD}あなたは妖精にりんごを渡しませんでした。")

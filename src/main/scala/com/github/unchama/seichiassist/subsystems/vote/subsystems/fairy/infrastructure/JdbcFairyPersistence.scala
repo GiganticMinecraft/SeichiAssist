@@ -83,24 +83,24 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
     }.get
   }
 
-  override def updateFairyRecoveryMana(
+  override def updateFairyBaseRecoveryMana(
     player: UUID,
-    fairyRecoveryMana: FairyRecoveryMana
+    fairyBaseRecoveryMana: FairyBaseRecoveryMana
   ): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      sql"UPDATE vote_fairy SET fairy_recovery_mana_value = ${fairyRecoveryMana.recoveryMana} WHERE uuid = ${player.toString}"
+      sql"UPDATE vote_fairy SET fairy_recovery_mana_value = ${fairyBaseRecoveryMana.amount} WHERE uuid = ${player.toString}"
         .execute()
     }
   }
 
-  override def fairyRecoveryMana(player: UUID): F[FairyRecoveryMana] = Sync[F].delay {
+  override def fairyBaseRecoveryMana(player: UUID): F[FairyBaseRecoveryMana] = Sync[F].delay {
     DB.readOnly { implicit session =>
       val recoveryMana =
         sql"SELECT fairy_recovery_mana_value FROM vote_fairy WHERE uuid = ${player.toString}"
           .map(_.int("fairy_recovery_mana_value"))
           .single()
           .get
-      FairyRecoveryMana(recoveryMana)
+      FairyBaseRecoveryMana(recoveryMana)
     }
   }
 
