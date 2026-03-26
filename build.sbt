@@ -77,7 +77,7 @@ val scalafixCoreDep =
 
 val testDependencies = Seq(
   "org.scalamock" %% "scalamock" % "6.2.0",
-  "org.scalatest" %% "scalatest" % "3.2.19",
+  "org.scalatest" %% "scalatest" % "3.2.20",
   "org.scalatestplus" %% "scalacheck-1-14" % "3.2.2.0",
   // テスト用のTestSchedulerを使うため
   "io.monix" %% "monix" % "3.4.1"
