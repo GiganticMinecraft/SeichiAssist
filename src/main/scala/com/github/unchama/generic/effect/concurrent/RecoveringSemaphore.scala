@@ -1,6 +1,5 @@
 package com.github.unchama.generic.effect.concurrent
 
-import cats.Monad
 import cats.effect.concurrent.Semaphore
 import cats.effect.{Bracket, Concurrent, Sync, Timer}
 
@@ -17,19 +16,17 @@ final class RecoveringSemaphore[F[_]: Timer: Concurrent] private (semaphore: Sem
   /**
    * このセマフォが利用可能であれば `action` を実行し、 `recoverTime` の間使用不能にする。
    */
-  def tryUse[U](action: F[U])(recoverTime: FiniteDuration): F[Unit] = {
+  def tryUse[U](action: F[U], default: => F[U])(recoverTime: FiniteDuration): F[U] = {
     // セマフォを`recoverTime` の間使用不能にし、その後解放する作用
     val releaseProgram: F[Unit] = Timer[F].sleep(recoverTime) >> semaphore.release
 
     semaphore.tryAcquire.flatMap { acquired =>
       if (acquired)
-        Bracket[F, Throwable]
-          .guarantee(action) {
-            releaseProgram.start.as(())
-          }
-          .as(())
+        Bracket[F, Throwable].guarantee(action) {
+          releaseProgram.start.as(())
+        }
       else
-        Monad[F].unit
+        default
     }
   }
 }

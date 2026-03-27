@@ -17,7 +17,7 @@ import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect}
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
-import eu.timepit.refined.numeric.Positive
+import eu.timepit.refined.numeric.NonNegative
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
@@ -63,24 +63,26 @@ object MineStackCommand {
       playerCommandBuilder
         .thenParse(
           Parsers
-            .closedRangeInt[Int Refined Positive](
-              1,
+            .closedRangeInt[Int Refined NonNegative](
+              0,
               Int.MaxValue,
-              MessageEffect("カテゴリは正の値を指定してください。")
+              MessageEffect("カテゴリは0以上の値を指定してください。")
             )
             .andThen(_.flatMap { categoryValue =>
-              MineStackObjectCategory.fromSerializedValue(categoryValue - 1) match {
-                case Some(category) =>
-                  succeedWith(Option.unless(categoryValue.value == 0)(category))
-                case None => failWith("指定されたカテゴリは存在しません。")
-              }
+              if (categoryValue.value == 0)
+                succeedWith(None)
+              else
+                MineStackObjectCategory.fromSerializedValue(categoryValue - 1) match {
+                  case Some(category) => succeedWith(Some(category))
+                  case None           => failWith("指定されたカテゴリは存在しません。")
+                }
             })
         )
         .thenParse(
-          Parsers.closedRangeInt[Int Refined Positive](
-            1,
+          Parsers.closedRangeInt[Int Refined NonNegative](
+            0,
             Int.MaxValue,
-            MessageEffect("ページ数は正の値を指定してください。")
+            MessageEffect("ページ数は0以上の値を指定してください。")
           )
         )
         .buildWith { context =>

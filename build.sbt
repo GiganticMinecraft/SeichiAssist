@@ -8,7 +8,7 @@ import java.io._
 ThisBuild / scalaVersion := "2.13.18"
 // ThisBuild / version はGitHub Actionsによって取得/自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
-ThisBuild / version := "102"
+ThisBuild / version := "103"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
@@ -77,7 +77,7 @@ val scalafixCoreDep =
 
 val testDependencies = Seq(
   "org.scalamock" %% "scalamock" % "6.2.0",
-  "org.scalatest" %% "scalatest" % "3.2.19",
+  "org.scalatest" %% "scalatest" % "3.2.20",
   "org.scalatestplus" %% "scalacheck-1-14" % "3.2.2.0",
   // テスト用のTestSchedulerを使うため
   "io.monix" %% "monix" % "3.4.1"
@@ -88,8 +88,8 @@ val dependenciesToEmbed = Seq(
 
   // DB
   "org.mariadb.jdbc" % "mariadb-java-client" % "3.5.7",
-  "org.flywaydb" % "flyway-core" % "12.0.2",
-  "org.flywaydb" % "flyway-mysql" % "12.0.2",
+  "org.flywaydb" % "flyway-core" % "12.2.0",
+  "org.flywaydb" % "flyway-mysql" % "12.2.0",
   "org.scalikejdbc" %% "scalikejdbc" % "4.3.5",
 
   // redis
@@ -112,7 +112,7 @@ val dependenciesToEmbed = Seq(
 
   // type-safety utils
   "eu.timepit" %% "refined" % "0.11.3",
-  "com.beachape" %% "enumeratum" % "1.9.5",
+  "com.beachape" %% "enumeratum" % "1.9.6",
 
   // protobuf
   "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
@@ -126,7 +126,7 @@ val dependenciesToEmbed = Seq(
   "com.github.KisaragiEffective" % "ajd4jp-mirror" % "8.0.2.2021",
 
   // Sentry
-  "io.sentry" % "sentry" % "8.33.0"
+  "io.sentry" % "sentry" % "8.37.1"
 )
 
 // endregion
@@ -148,6 +148,7 @@ assembly / assemblyExcludedJars := {
 assembly / assemblyMergeStrategy := {
   // cf. https://qiita.com/yokra9/items/1e72646623f962ce02ee と ChatGPTに聞いた
   case PathList("META-INF", "versions", "9", "module-info.class") => MergeStrategy.discard
+  case "module-info.class" => MergeStrategy.discard
   case PathList(ps @ _*) if ps.last endsWith "LICENSE" => MergeStrategy.rename
   case PathList("org", "apache", "commons", "logging", xs @ _*) => MergeStrategy.last
   case PathList("plugin.yml") => MergeStrategy.first

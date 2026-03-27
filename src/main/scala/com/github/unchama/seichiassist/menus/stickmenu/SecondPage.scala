@@ -1,7 +1,11 @@
 package com.github.unchama.seichiassist.menus.stickmenu
 
 import cats.effect.{IO, SyncIO}
-import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
+import com.github.unchama.itemstackbuilder.{
+  IconItemStackBuilder,
+  SkullItemStackBuilder,
+  SkullOwnerUuid
+}
 import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.router.CanOpen
@@ -136,36 +140,41 @@ object SecondPage extends Menu {
       }
 
       val effect = action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-        DeferredEffect(IO {
-          val expManager = new ExperienceManager(player)
-          if (expManager.hasExp(10000)) {
-            import scala.util.chaining._
-            val skullToGive = new SkullItemStackBuilder(getUniqueId).build().tap { stack =>
-              import stack._
-              // 季節イベント中の特殊lore
-              if (Valentine.isInEvent) setItemMeta {
-                valentinePlayerHead(getItemMeta.asInstanceOf[SkullMeta])
-              }
-              else if (Christmas.isInEventNow) setItemMeta {
-                christmasPlayerHead(getItemMeta.asInstanceOf[SkullMeta])
-              }
-              else if (Anniversary.isInEvent) setItemMeta {
-                anniversaryPlayerHead(getItemMeta.asInstanceOf[SkullMeta])
+        DeferredEffect(playerHeadSkinAPI.playerHeadSkinUrlByUUID(getUniqueId).flatMap {
+          skinUrl =>
+            IO {
+              val expManager = new ExperienceManager(player)
+              if (expManager.hasExp(10000)) {
+                import scala.util.chaining._
+                val skullToGive =
+                  new SkullItemStackBuilder(SkullOwnerUuid(getUniqueId, skinUrl)).build().tap {
+                    stack =>
+                      import stack._
+                      // 季節イベント中の特殊lore
+                      if (Valentine.isInEvent) setItemMeta {
+                        valentinePlayerHead(getItemMeta.asInstanceOf[SkullMeta])
+                      }
+                      else if (Christmas.isInEventNow) setItemMeta {
+                        christmasPlayerHead(getItemMeta.asInstanceOf[SkullMeta])
+                      }
+                      else if (Anniversary.isInEvent) setItemMeta {
+                        anniversaryPlayerHead(getItemMeta.asInstanceOf[SkullMeta])
+                      }
+                  }
+
+                SequentialEffect(
+                  InventoryOperations.grantItemStacksEffect(skullToGive),
+                  UnfocusedEffect { expManager.changeExp(-10000) },
+                  MessageEffect(s"${GOLD}経験値10000を消費して自分の頭を召喚しました"),
+                  FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
+                )
+              } else {
+                SequentialEffect(
+                  MessageEffect(s"${RED}必要な経験値が足りません"),
+                  FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.1f)
+                )
               }
             }
-
-            SequentialEffect(
-              InventoryOperations.grantItemStacksEffect(skullToGive),
-              UnfocusedEffect { expManager.changeExp(-10000) },
-              MessageEffect(s"${GOLD}経験値10000を消費して自分の頭を召喚しました"),
-              FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
-            )
-          } else {
-            SequentialEffect(
-              MessageEffect(s"${RED}必要な経験値が足りません"),
-              FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.1f)
-            )
-          }
         })
       }
 
@@ -176,7 +185,7 @@ object SecondPage extends Menu {
       val playerData = SeichiAssist.playermap(getUniqueId)
 
       for {
-        currentSettings <- playerData.settings.getBroadcastMutingSettings
+        currentSettings <- playerData.settings.getBroadcastMutingSettings[IO]
         iconItemStack = {
           val soundConfigurationState =
             if (currentSettings.shouldMuteSounds) {
@@ -212,7 +221,7 @@ object SecondPage extends Menu {
             DeferredEffect {
               playerData
                 .settings
-                .getBroadcastMutingSettings
+                .getBroadcastMutingSettings[IO]
                 .map {
                   case ReceiveMessageAndSound => s"${GREEN}非表示/消音設定を解除しました"
                   case ReceiveMessageOnly     => s"${RED}消音可能な全体大当たり通知音を消音します"

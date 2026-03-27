@@ -32,7 +32,8 @@ object ItemInformation {
      */
     if (
       !(skullMeta.hasOwner && (SkullOwnerUuid(
-        skullMeta.getOwningPlayer.getPlayerProfile.getUniqueId
+        skullMeta.getOwningPlayer.getPlayerProfile.getUniqueId,
+        None
       ) == SkullOwners.unchama || skullMeta.getOwner == "unchama"))
     ) return false
 

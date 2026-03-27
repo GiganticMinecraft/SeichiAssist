@@ -88,9 +88,8 @@ class GiganticBerserkTask {
 
         val program = List(
           DiscordNotificationAPI[F].sendPlainText(messageWithoutColor).toIO,
-          IO {
-            SendSoundEffect.sendEverySound(Sound.ENTITY_ENDER_DRAGON_DEATH, 1, 1.2f)
-          } >> SendMessageEffect.sendMessageToEveryoneIgnoringPreferenceIO(messageWithColor)
+          SendSoundEffect.sendEverySound[IO](Sound.ENTITY_ENDER_DRAGON_DEATH, 1, 1.2f) >>
+            SendMessageEffect.sendMessageToEveryoneIgnoringPreferenceIO(messageWithColor)
         ).sequence
 
         program.unsafeRunAsyncAndForget()

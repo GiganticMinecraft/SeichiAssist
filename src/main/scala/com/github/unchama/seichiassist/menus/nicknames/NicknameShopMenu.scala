@@ -121,7 +121,7 @@ case class NicknameShopMenu(val pageIndex: Int = 0) extends Menu {
 
       Button(
         new IconItemStackBuilder(Material.EMERALD_ORE)
-          .title(s"$YELLOW$UNDERLINE${BOLD}実績ポイント 情報")
+          .title(s"$YELLOW$UNDERLINE${BOLD}実績ポイント情報")
           .lore(
             s"${GREEN}クリックで情報を最新化",
             s"${RED}累計獲得量: ${achievePoint.cumulativeTotal}",

@@ -115,6 +115,8 @@ import java.util.UUID
 import java.util.logging.LogManager
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
+import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.GachaTradeAPI
+import com.github.unchama.seichiassist.subsystems.dragonnighttime.DragonNightTimeApi
 
 class SeichiAssist extends JavaPlugin() {
 
@@ -296,7 +298,6 @@ class SeichiAssist extends JavaPlugin() {
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
     implicit val gtToSiinaAPI: GtToSiinaAPI[ItemStack] = gtToSiinaSystem.api
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player] = playerHeadSkinSystem.api
 
     subsystems.seasonalevents.System.wired[IO, SyncIO, IO](this)
   }
@@ -350,7 +351,6 @@ class SeichiAssist extends JavaPlugin() {
     import PluginExecutionContexts.{asyncShift, onMainThread, timer}
 
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player] = playerHeadSkinSystem.api
 
     subsystems.gachapoint.System.wired[IO, SyncIO](breakCountSystem.api).unsafeRunSync()
   }
@@ -442,11 +442,14 @@ class SeichiAssist extends JavaPlugin() {
     : subsystems.tradesystems.subsystems.gttosiina.System[IO, ItemStack] =
     subsystems.tradesystems.subsystems.gttosiina.System.wired[IO]
 
-  private lazy val gachaTradeSystem: Subsystem[IO] = {
-    implicit val gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player] = playerHeadSkinSystem.api
+  private lazy val gachaTradeSystem
+    : subsystems.tradesystems.subsystems.gachatrade.System[IO, Player, ItemStack] = {
+    import PluginExecutionContexts.timer
 
-    subsystems.tradesystems.subsystems.gachatrade.System.wired[IO, SyncIO]
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    implicit val gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
+
+    subsystems.tradesystems.subsystems.gachatrade.System.wired[IO, SyncIO].unsafeRunSync()
   }
 
   private lazy val lastQuitSystem: subsystems.lastquit.System[IO] =
@@ -471,7 +474,6 @@ class SeichiAssist extends JavaPlugin() {
   // TODO: これはprivateであるべきだが、Achievementシステムが再実装されるまでやむを得ずpublicにする
   lazy val voteSystem: subsystems.vote.System[IO, Player] = {
     implicit val breakCountAPI: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player] = playerHeadSkinSystem.api
 
     subsystems.vote.System.wired[IO, SyncIO]
   }
@@ -483,6 +485,8 @@ class SeichiAssist extends JavaPlugin() {
     implicit val voteAPI: VoteAPI[IO, Player] = voteSystem.api
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
     implicit val fairySpeechAPI: FairySpeechAPI[IO, Player] = fairySpeechSystem.api
+    implicit val dragonNightTimeApi: DragonNightTimeApi =
+      dragonnighttimeSystem.api
 
     subsystems.vote.subsystems.fairy.System.wired.unsafeRunSync()
   }
@@ -535,7 +539,7 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.playerheadskin.System.wired[IO]
   }
 
-  private lazy val dragonnighttimeSystem: Subsystem[IO] = {
+  private lazy val dragonnighttimeSystem: subsystems.dragonnighttime.System[IO] = {
     import PluginExecutionContexts.timer
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
@@ -774,6 +778,8 @@ class SeichiAssist extends JavaPlugin() {
     implicit val breakSuppressionPreferenceAPI: BreakSuppressionPreferenceAPI[IO, Player] =
       breakSuppressionPreferenceSystem.api
     implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player] = playerHeadSkinSystem.api
+    implicit val gachaTradeAPI: GachaTradeAPI[IO, Player, ItemStack] =
+      gachaTradeSystem.api
 
     val menuRouter = TopLevelRouter.apply
     import SeichiAssist.Scopes.globalChatInterceptionScope

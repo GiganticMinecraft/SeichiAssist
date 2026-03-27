@@ -62,6 +62,9 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import com.github.unchama.seichiassist.menus.nicknames.NicknameCombinationMenu
 import com.github.unchama.seichiassist.menus.nicknames.NicknameShopMenu
+import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.GachaTradeAPI
+import com.github.unchama.seichiassist.menus.trade.GachaTradeFromMineStackMenu
+import com.github.unchama.seichiassist.menus.trade.TradeSelector
 
 trait TopLevelRouter[F[_]] {
 
@@ -106,7 +109,8 @@ object TopLevelRouter {
     gridRegionAPI: GridRegionAPI[IO, Player, Location, World],
     breakSkillTargetConfigAPI: BreakSkillTargetConfigAPI[IO, Player],
     breakSuppressionPreferenceAPI: BreakSuppressionPreferenceAPI[IO, Player],
-    playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player],
+    gachaTradeAPI: GachaTradeAPI[IO, Player, ItemStack]
   ): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     import assortedRankingApi._
 
@@ -164,6 +168,11 @@ object TopLevelRouter {
     implicit lazy val gridTemplateMenuEnv: GridTemplateMenu.Environment =
       new GridTemplateMenu.Environment
 
+    implicit lazy val gachaTradeSelectorMenuEnv: TradeSelector.Environment =
+      new TradeSelector.Environment
+    implicit lazy val gachaTradeFromMineStackMenuEnv: GachaTradeFromMineStackMenu.Environment =
+      new GachaTradeFromMineStackMenu.Environment
+
     implicit lazy val stickMenuEnv: FirstPage.Environment = new FirstPage.Environment
 
     implicit lazy val ioCanOpenVoteMenu: IO CanOpen VoteMenu.type = _.open
@@ -212,6 +221,9 @@ object TopLevelRouter {
 
     override implicit lazy val canOpenStickMenu: IO CanOpen FirstPage.type = _.open
     override implicit lazy val canOpenAchievementMenu: IO CanOpen AchievementMenu.type = _.open
+
+    implicit lazy val canOpenGachaTradeSelectorMenu: IO CanOpen TradeSelector.type = _.open
+    implicit lazy val canOpenGachaTradeMenu: IO CanOpen GachaTradeFromMineStackMenu = _.open
   }
 
 }

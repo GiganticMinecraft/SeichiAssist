@@ -108,7 +108,7 @@ class PlayerJoinListener extends Listener {
         )
         .unsafeRunAsyncAndForget()
 
-      SendSoundEffect.sendEverySound(Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
+      SendSoundEffect.sendEverySound[IO](Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f).unsafeRunSync()
 
       // 同時に【はじめての方へ】ページに誘導したほうがただWebサイトに誘導するよりまだ可能性がありそう
       // https://github.com/GiganticMinecraft/SeichiAssist/issues/1939

@@ -26,6 +26,7 @@ import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import net.md_5.bungee.api.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
+import com.github.unchama.itemstackbuilder.SkullOwnerUuid
 
 object ActiveSkillEffectMenu extends Menu {
 
@@ -182,13 +183,14 @@ object ActiveSkillEffectMenu extends Menu {
       for {
         effectPoints <- voteAPI.effectPoints(player)
         premiumEffectPoint <- donateAPI.currentPoint(player.getUniqueId)
+        skinUrl <- playerHeadSkinAPI.playerHeadSkinUrlByUUID(player.getUniqueId)
         button <-
           IO {
             val playerData = SeichiAssist.playermap(getUniqueId)
 
             ReloadingButton(ActiveSkillEffectMenu) {
               Button(
-                new SkullItemStackBuilder(getUniqueId)
+                new SkullItemStackBuilder(SkullOwnerUuid(player.getUniqueId, skinUrl))
                   .title(s"$UNDERLINE$BOLD$YELLOW${getName}のスキルエフェクトデータ")
                   .lore(
                     List(
@@ -239,8 +241,7 @@ object ActiveSkillEffectMenu extends Menu {
       )
 
     def goBackToSkillMenuButton(
-      implicit ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type,
-      playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+      implicit ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type
     ): Button =
       CommonButtons.transferButton(
         new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
