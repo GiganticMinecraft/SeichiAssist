@@ -80,7 +80,8 @@ object FairyManaRecovery {
     val manaBeforeDragonNightMultiplier =
       if (isLessThanSingleAppleRecovery) baseAmount
       else if (pureAppleConsumeAmount == 0) 0.0
-      else (baseAmount * (consumedGachaAppleCount.toDouble / pureAppleConsumeAmount)) + bonusAmount
+      else
+        (baseAmount * (consumedGachaAppleCount.toDouble / pureAppleConsumeAmount)) + bonusAmount
 
     val multiplier = if (isDragonNight) dragonNightMultiplier else 1.0
     val finalRecoveredMana = manaBeforeDragonNightMultiplier * multiplier
