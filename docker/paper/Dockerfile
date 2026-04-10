@@ -3,7 +3,7 @@ FROM ghcr.io/giganticminecraft/chunk-search-rs:latest@sha256:e80b9442523852965fd
 FROM ghcr.io/giganticminecraft/seichiassist-runner-v2:latest@sha256:31a6bbbd31b21f51f262a5753e17ded8bdac3903ffe14e0480407fdf1b3c4243
 FROM mikefarah/yq:4.52.5 as yq
 
-FROM itzg/minecraft-server:stable-java17
+FROM itzg/minecraft-server:stable-java17@sha256:5cc640a32d042f5e07e2fb381c0351aac3cf82bf512afa408240bde5c2358899
 
 # nkf と zip 展開ツールをインストール
 RUN \
@@ -21,9 +21,7 @@ COPY --link --from=chunk-search-provider /build/chunk-search-rs /usr/bin/chunk-s
 COPY --link ./target/build/ /SeichiAssist/
 ADD ./localDependencies/ /data/plugins/
 
-COPY --link ./docker/paper/update-seichiassist.sh /usr/local/bin/update-seichiassist.sh
-
-RUN chmod a+x /usr/local/bin/update-seichiassist.sh
+COPY --link --chmod=755 ./docker/paper/update-seichiassist.sh /usr/local/bin/update-seichiassist.sh
 RUN nkf -Lu --overwrite /usr/local/bin/update-seichiassist.sh
 
 ENTRYPOINT ["/usr/local/bin/update-seichiassist.sh"]
