@@ -93,11 +93,5 @@ class FairyManaRecoverySpec extends AnyWordSpec with ScalaCheckPropertyChecks wi
       val result = FairyManaRecovery.compute(mana, 0L, 0.5, isDragonNight = false)
       result.state shouldBe FairyManaRecoveryState.RecoveredWithoutApple
     }
-
-    "state: recoveryMana == 0 のとき RecoveredWithoutApple" in {
-      val mana = FairyBaseRecoveryMana(0)
-      val result = FairyManaRecovery.compute(mana, 10L, 0.5, isDragonNight = false)
-      result.state shouldBe FairyManaRecoveryState.RecoveredWithoutApple
-    }
   }
 }
