@@ -68,25 +68,25 @@ object FairyManaRecovery {
     val dragonNightMultiplier = 2.0
 
     val pureAppleConsumeAmount = recoveryMana.amount / manaPerApple
-    val isLessThanSingleAppleRecovery = recoveryMana.amount > 0 && recoveryMana.amount < manaPerApple
+    val isLessThanSingleAppleRecovery =
+      recoveryMana.amount > 0 && recoveryMana.amount < manaPerApple
     val consumedGachaAppleCount =
       if (isLessThanSingleAppleRecovery) 0
       else Math.min(pureAppleConsumeAmount, mineStackedAmount).toInt
     val baseAmount = recoveryMana.amount * baseManaRecoveryRatio
     val bonusAmount =
       if (bonusRoll <= bonusRollThreshold) consumedGachaAppleCount * bonusManaPerApple else 0.0
-    val totalBase = baseAmount + bonusAmount
 
     val manaBeforeDragonNightMultiplier =
-      if (isLessThanSingleAppleRecovery) totalBase
+      if (isLessThanSingleAppleRecovery) baseAmount
       else if (pureAppleConsumeAmount == 0) 0.0
-      else totalBase * (consumedGachaAppleCount.toDouble / pureAppleConsumeAmount)
+      else (baseAmount * (consumedGachaAppleCount.toDouble / pureAppleConsumeAmount)) + bonusAmount
 
     val multiplier = if (isDragonNight) dragonNightMultiplier else 1.0
     val finalRecoveredMana = manaBeforeDragonNightMultiplier * multiplier
 
     val state =
-      if (isLessThanSingleAppleRecovery && manaBeforeDragonNightMultiplier > 0.0)
+      if (isLessThanSingleAppleRecovery)
         FairyManaRecoveryState.RecoverWithoutAppleButLessThanAApple
       else if (manaBeforeDragonNightMultiplier == 0.0)
         FairyManaRecoveryState.RecoveredWithoutApple

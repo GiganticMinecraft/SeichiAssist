@@ -40,6 +40,16 @@ class FairyManaRecoverySpec extends AnyWordSpec with ScalaCheckPropertyChecks wi
       withBonus.finalRecoveredMana should be > withoutBonus.finalRecoveredMana
     }
 
+    "在庫不足時でもボーナス回復量は実際に消費したがちゃりんご分だけ減衰しない" in {
+      val mana = FairyBaseRecoveryMana(600) // pureAppleConsumeAmount = 2
+      val baseManaRecoveryRatio = 0.7
+      val bonusManaPerApple = 0.3
+      val result = FairyManaRecovery.compute(mana, 1L, 0.03, isDragonNight = false)
+
+      result.manaBeforeDragonNightMultiplier shouldBe
+        ((mana.amount * baseManaRecoveryRatio) * 0.5 + bonusManaPerApple) +- 0.001
+    }
+
     "bonusRoll > 0.03 のときボーナスなし" in {
       val mana = FairyBaseRecoveryMana(600)
       val result = FairyManaRecovery.compute(mana, 10L, 0.5, isDragonNight = false)
