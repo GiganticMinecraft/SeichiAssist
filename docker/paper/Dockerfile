@@ -3,13 +3,13 @@ FROM ghcr.io/giganticminecraft/chunk-search-rs:latest@sha256:e80b9442523852965fd
 FROM ghcr.io/giganticminecraft/seichiassist-runner-v2:latest@sha256:31a6bbbd31b21f51f262a5753e17ded8bdac3903ffe14e0480407fdf1b3c4243
 FROM mikefarah/yq:4.52.5 as yq
 
-FROM itzg/minecraft-server:java17-jdk
+FROM itzg/minecraft-server:stable-java17
 
-# nkfをインストール
+# nkf と zip 展開ツールをインストール
 RUN \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    apt-get update && apt-get install -y nkf
+    apt-get update && apt-get install -y nkf unzip
 
 #yqをインストール
 COPY --from=yq /usr/bin/yq /usr/bin/yq
@@ -17,12 +17,13 @@ COPY --from=yq /usr/bin/yq /usr/bin/yq
 # chunk-search-rsをインストール
 COPY --link --from=chunk-search-provider /build/chunk-search-rs /usr/bin/chunk-search-rs
 
-# プラグインとスクリプトをローカルからコピーする
+# プラグインをローカルからコピーする
 COPY --link ./target/build/ /SeichiAssist/
-COPY --link ./docker/paper/ /data/
 ADD ./localDependencies/ /data/plugins/
 
-RUN chmod a+x /data/update-seichiassist.sh
-RUN nkf -Lu --overwrite /data/update-seichiassist.sh
+COPY --link ./docker/paper/update-seichiassist.sh /usr/local/bin/update-seichiassist.sh
 
-ENTRYPOINT ["/data/update-seichiassist.sh"]
+RUN chmod a+x /usr/local/bin/update-seichiassist.sh
+RUN nkf -Lu --overwrite /usr/local/bin/update-seichiassist.sh
+
+ENTRYPOINT ["/usr/local/bin/update-seichiassist.sh"]

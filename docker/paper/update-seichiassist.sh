@@ -13,7 +13,7 @@ cd SeichiAssist
 
 rm -f config.yml || true
 
-jar xf ../SeichiAssist.jar config.yml
+unzip -o ../SeichiAssist.jar config.yml
 
 config_update_expr="\
   .servernum = \"$SERVER_NUM\" |\
