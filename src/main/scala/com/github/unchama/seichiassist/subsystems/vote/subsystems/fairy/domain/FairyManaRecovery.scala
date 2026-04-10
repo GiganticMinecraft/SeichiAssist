@@ -39,6 +39,7 @@ object FairyManaRecovery {
    * - 回復量は、通常のがちゃりんごの回復量の70%を基本とする
    * - 3%の確率で、がちゃりんご1個あたり0.3マナのボーナス回復が発生する
    * - ドラゲナイタイムのときはマナ回復量が2倍になる
+   * - 回復量ががちゃりんご1個分(300)に満たない場合は、がちゃりんごを消費せずに回復する
    *
    * @param recoveryMana
    *   妖精の回復マナ設定値
@@ -67,21 +68,26 @@ object FairyManaRecovery {
     val dragonNightMultiplier = 2.0
 
     val pureAppleConsumeAmount = recoveryMana.amount / manaPerApple
-    val consumedGachaAppleCount = Math.min(pureAppleConsumeAmount, mineStackedAmount).toInt
+    val isLessThanSingleAppleRecovery =
+      recoveryMana.amount > 0 && recoveryMana.amount < manaPerApple
+    val consumedGachaAppleCount =
+      if (isLessThanSingleAppleRecovery) 0
+      else Math.min(pureAppleConsumeAmount, mineStackedAmount).toInt
     val baseAmount = recoveryMana.amount * baseManaRecoveryRatio
     val bonusAmount =
       if (bonusRoll <= bonusRollThreshold) consumedGachaAppleCount * bonusManaPerApple else 0.0
-    val totalBase = baseAmount + bonusAmount
 
     val manaBeforeDragonNightMultiplier =
-      if (pureAppleConsumeAmount == 0) 0.0
-      else totalBase * (consumedGachaAppleCount.toDouble / pureAppleConsumeAmount)
+      if (isLessThanSingleAppleRecovery) baseAmount
+      else if (pureAppleConsumeAmount == 0) 0.0
+      else
+        (baseAmount * (consumedGachaAppleCount.toDouble / pureAppleConsumeAmount)) + bonusAmount
 
     val multiplier = if (isDragonNight) dragonNightMultiplier else 1.0
     val finalRecoveredMana = manaBeforeDragonNightMultiplier * multiplier
 
     val state =
-      if (totalBase == 0.0 && manaBeforeDragonNightMultiplier < manaPerApple.toDouble)
+      if (isLessThanSingleAppleRecovery)
         FairyManaRecoveryState.RecoverWithoutAppleButLessThanAApple
       else if (manaBeforeDragonNightMultiplier == 0.0)
         FairyManaRecoveryState.RecoveredWithoutApple
