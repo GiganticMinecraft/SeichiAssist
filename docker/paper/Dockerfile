@@ -1,15 +1,15 @@
 # syntax=docker/dockerfile:1
-FROM ghcr.io/giganticminecraft/chunk-search-rs:latest@sha256:8eae15c9dc5c5f08e453771410bc095c51c299a8134e6c745cb62d18831510d3 as chunk-search-provider
+FROM ghcr.io/giganticminecraft/chunk-search-rs:latest@sha256:c80fc37be0d7e5079fcb1e399e0df1a0e9cf91d99bb65bcc0581cc2fa4854641 as chunk-search-provider
 FROM ghcr.io/giganticminecraft/seichiassist-runner-v2:latest@sha256:31a6bbbd31b21f51f262a5753e17ded8bdac3903ffe14e0480407fdf1b3c4243
-FROM mikefarah/yq:4.53.2 as yq
+FROM mikefarah/yq:4.52.5 as yq
 
-FROM itzg/minecraft-server:stable-java17@sha256:dea8184ce4d3c5459ec8aca1fa2acd4215395321ff0817cdf5be8493980700fa
+FROM itzg/minecraft-server:java17-jdk
 
-# nkf と zip 展開ツールをインストール
+# nkfをインストール
 RUN \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    apt-get update && apt-get install -y nkf unzip
+    apt-get update && apt-get install -y nkf
 
 #yqをインストール
 COPY --from=yq /usr/bin/yq /usr/bin/yq
@@ -17,11 +17,12 @@ COPY --from=yq /usr/bin/yq /usr/bin/yq
 # chunk-search-rsをインストール
 COPY --link --from=chunk-search-provider /build/chunk-search-rs /usr/bin/chunk-search-rs
 
-# プラグインをローカルからコピーする
+# プラグインとスクリプトをローカルからコピーする
 COPY --link ./target/build/ /SeichiAssist/
+COPY --link ./docker/paper/ /data/
 ADD ./localDependencies/ /data/plugins/
 
-COPY --link --chmod=755 ./docker/paper/update-seichiassist.sh /usr/local/bin/update-seichiassist.sh
-RUN nkf -Lu --overwrite /usr/local/bin/update-seichiassist.sh
+RUN chmod a+x /data/update-seichiassist.sh
+RUN nkf -Lu --overwrite /data/update-seichiassist.sh
 
-ENTRYPOINT ["/usr/local/bin/update-seichiassist.sh"]
+ENTRYPOINT ["/data/update-seichiassist.sh"]
