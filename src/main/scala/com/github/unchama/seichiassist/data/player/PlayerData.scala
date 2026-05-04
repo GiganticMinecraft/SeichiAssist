@@ -29,16 +29,25 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
   // region session-specific data
   // TODO many properties here might not be right to belong here
 
+  // 現在座標
+  var loc: Option[Location] = None
+
+  // 放置時間
+  var idleMinute = 0
+
   // 経験値マネージャ
   lazy private val expmanager: IExperienceManager = new ExperienceManager(player)
   val settings = new PlayerSettings()
   // プレイヤー名
   val lowercaseName: String = name.toLowerCase()
 
+  var canCreateRegion = true
+  var unitPerClick = 1
   // 投票受け取りボタン連打防止用
   var votecooldownflag = true
   // ガチャボタン連打防止用
   var gachacooldownflag = true
+  var samepageflag = false // 実績ショップ用
 
   // endregion
 

@@ -76,9 +76,9 @@ jobs:
     runs-on: ubuntu-24.04
     needs: [get_branch_name, bump_version]
     steps:
-      - uses: actions/checkout@61b9e3751b92087fd0b06925ba6dd6314e06f089 # master
+      - uses: actions/checkout@master
       - name: Create pull request
-        uses: repo-sync/pull-request@7e79a9f5dc3ad0ce53138f01df2fad14a04831c5 # v2
+        uses: repo-sync/pull-request@v2
         with:
           destination_branch: "master"
           github_token: ${{ secrets.GITHUB_TOKEN }}
