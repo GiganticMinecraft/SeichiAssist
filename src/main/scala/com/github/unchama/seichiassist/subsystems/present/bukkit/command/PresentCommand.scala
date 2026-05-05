@@ -82,6 +82,7 @@ class PresentCommand {
             .toList
             // 配布対象外のプレゼントを除外
             .filter { case (_, state) => state != PresentClaimingState.Unavailable }
+            .sortBy(_._1)
             .map {
               case (id, state) =>
                 s"${presentStateColor(state)}ID=$id: ${state.label}"
