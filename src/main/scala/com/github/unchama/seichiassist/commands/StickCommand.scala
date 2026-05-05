@@ -27,7 +27,7 @@ object StickCommand {
             s"$RESET$GOLD- Monthly Stick Vol.$thisMonth -"
           )
         )
-        stickItemStack <- IO.pure(new ItemStack(Material.STICK, 1).tap { itemStack =>
+        stickItemStack <- IO(new ItemStack(Material.STICK, 1).tap { itemStack =>
           import itemStack._
           val meta = getItemMeta
           meta.setDisplayName(s"$RESET${WHITE}木の棒メニュー(${thisMonth}月)")
