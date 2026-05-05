@@ -82,9 +82,10 @@ class PresentCommand {
             .toList
             // 配布対象外のプレゼントを除外
             .filter { case (_, state) => state != PresentClaimingState.Unavailable }
+            .sortBy(_._1)
             .map {
               case (id, state) =>
-                s"ID=$id: ${decoratePresentState(state)}"
+                s"${presentStateColor(state)}ID=$id: ${state.label}"
             }
             .filter(_.nonEmpty)
 
@@ -144,8 +145,8 @@ class PresentCommand {
                 b =>
                   b.sortBy(_._1).map {
                     case (id, state) =>
-                      s"ID=$id: ${decoratePresentState(state)}"
-                  }
+                      s"${presentStateColor(state)}ID=$id: ${state.label}"
+                }
               )
             } yield {
               MessageEffect(messageLine)
@@ -490,9 +491,9 @@ class PresentCommand {
     Some(SubCommands.Help.executor)
   ).asNonBlockingTabExecutor()
 
-  private def decoratePresentState(state: PresentClaimingState): String = state match {
-    case PresentClaimingState.Claimed     => s"${ChatColor.GOLD}受け取り済み"
-    case PresentClaimingState.NotClaimed  => s"${ChatColor.GREEN}受け取り可能"
-    case PresentClaimingState.Unavailable => s"${ChatColor.GRAY}配布対象外"
+  private def presentStateColor(state: PresentClaimingState): ChatColor = state match {
+    case PresentClaimingState.Claimed     => ChatColor.GOLD
+    case PresentClaimingState.NotClaimed  => ChatColor.GREEN
+    case PresentClaimingState.Unavailable => ChatColor.GRAY
   }
 }
