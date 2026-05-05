@@ -85,7 +85,7 @@ class PresentCommand {
             .sortBy(_._1)
             .map {
               case (id, state) =>
-                s"${presentStateColor(state)}ID=$id: ${state.label}"
+                s"${presentStateColor(state)}ID=$id: ${presentStateLabel(state)}"
             }
             .filter(_.nonEmpty)
 
@@ -145,8 +145,8 @@ class PresentCommand {
                 b =>
                   b.sortBy(_._1).map {
                     case (id, state) =>
-                      s"${presentStateColor(state)}ID=$id: ${state.label}"
-                }
+                      s"${presentStateColor(state)}ID=$id: ${presentStateLabel(state)}"
+                  }
               )
             } yield {
               MessageEffect(messageLine)
@@ -495,5 +495,11 @@ class PresentCommand {
     case PresentClaimingState.Claimed     => ChatColor.GOLD
     case PresentClaimingState.NotClaimed  => ChatColor.GREEN
     case PresentClaimingState.Unavailable => ChatColor.GRAY
+  }
+
+  private def presentStateLabel(state: PresentClaimingState): String = state match {
+    case PresentClaimingState.Claimed     => "受け取り済み"
+    case PresentClaimingState.NotClaimed  => "受け取り可能"
+    case PresentClaimingState.Unavailable => "配布対象外"
   }
 }
