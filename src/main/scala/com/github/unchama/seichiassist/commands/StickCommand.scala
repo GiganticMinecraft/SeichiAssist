@@ -15,25 +15,25 @@ import scala.util.chaining.scalaUtilChainingOps
 object StickCommand {
   val executor: TabExecutor = playerCommandBuilder
     .buildWithExecutionF { context =>
-      val thisMonth = LocalDate.now().getMonth.getValue
-
-      val stickLore = List(
-        s"$RESET${WHITE}棒を持って右クリックもしくは",
-        s"$RESET${WHITE}左クリックでメニューを開きます。",
-        s"$RESET${WHITE}各メニューの詳細は公式サイトで確認できます。",
-        "",
-        s"$RESET$GOLD- Monthly Stick Vol.$thisMonth -"
-      )
-      val stickItemStack = new ItemStack(Material.STICK, 1).tap { itemStack =>
-        import itemStack._
-        val meta = getItemMeta
-        meta.setDisplayName(s"$RESET${WHITE}木の棒メニュー(${thisMonth}月)")
-        meta.setLore(stickLore.asJava)
-        setItemMeta(meta)
-      }
-
       val sender = context.sender
       for {
+        thisMonth <- IO(LocalDate.now().getMonth.getValue)
+        stickLore <- IO.pure(
+          List(
+            s"$RESET${WHITE}棒を持って右クリックもしくは",
+            s"$RESET${WHITE}左クリックでメニューを開きます。",
+            s"$RESET${WHITE}各メニューの詳細は公式サイトで確認できます。",
+            "",
+            s"$RESET$GOLD- Monthly Stick Vol.$thisMonth -"
+          )
+        )
+        stickItemStack <- IO.pure(new ItemStack(Material.STICK, 1).tap { itemStack =>
+          import itemStack._
+          val meta = getItemMeta
+          meta.setDisplayName(s"$RESET${WHITE}木の棒メニュー(${thisMonth}月)")
+          meta.setLore(stickLore.asJava)
+          setItemMeta(meta)
+        })
         inventoryNotFull <- IO(!InventoryOperations.isPlayerInventoryFull(sender))
         _ <-
           if (inventoryNotFull) IO {
