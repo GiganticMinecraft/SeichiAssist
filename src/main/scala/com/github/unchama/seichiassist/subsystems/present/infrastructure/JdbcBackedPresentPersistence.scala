@@ -58,12 +58,12 @@ class JdbcBackedPresentPersistence[F[_]: Sync] extends PresentPersistence[F, Ite
 
           val initialValues = players.map { uuid => Seq(presentID, uuid.toString, false) }.toSeq
 
-          DB.localTx { _ =>
+          DB.localTx { implicit session =>
             // upsert - これによってfilterなしで整合性違反を起こすことはなくなる
             sql"""
                   INSERT INTO present_state VALUES (?, ?, ?)
                   ON DUPLICATE KEY UPDATE present_id=present_id, uuid=uuid
-                 """.batch(initialValues: _*)
+                 """.batch(initialValues: _*).apply[List]()
           }
 
           // 型推論
