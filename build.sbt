@@ -8,7 +8,7 @@ import java.io._
 ThisBuild / scalaVersion := "2.13.18"
 // ThisBuild / version はGitHub Actionsによって取得/自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
-ThisBuild / version := "105"
+ThisBuild / version := "106"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
@@ -88,8 +88,8 @@ val dependenciesToEmbed = Seq(
 
   // DB
   "org.mariadb.jdbc" % "mariadb-java-client" % "3.5.8",
-  "org.flywaydb" % "flyway-core" % "12.5.0",
-  "org.flywaydb" % "flyway-mysql" % "12.5.0",
+  "org.flywaydb" % "flyway-core" % "12.6.0",
+  "org.flywaydb" % "flyway-mysql" % "12.6.0",
   "org.scalikejdbc" %% "scalikejdbc" % "4.3.5",
 
   // redis
@@ -126,7 +126,7 @@ val dependenciesToEmbed = Seq(
   "com.github.KisaragiEffective" % "ajd4jp-mirror" % "8.0.2.2021",
 
   // Sentry
-  "io.sentry" % "sentry" % "8.40.0"
+  "io.sentry" % "sentry" % "8.41.0"
 )
 
 // endregion
