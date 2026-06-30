@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 FROM ghcr.io/giganticminecraft/chunk-search-rs:latest@sha256:a6e5cc08778367d8d05b0ed7a7e927451b8817b341264185459412865e626e46 as chunk-search-provider
-FROM ghcr.io/giganticminecraft/seichiassist-runner-v2:latest@sha256:31a6bbbd31b21f51f262a5753e17ded8bdac3903ffe14e0480407fdf1b3c4243
+FROM ghcr.io/giganticminecraft/seichiassist-runner-v2:latest@sha256:ba8eff5547de3cea8c32d849506a92d33f15c57e4f4359d1e621785f5801b6fd
 FROM mikefarah/yq:4.53.3 as yq
 
 FROM itzg/minecraft-server:stable-java17@sha256:9747457a6928d675847672bf0c8f6201498247a1eda6ef3277ba188720f6a8f5
