@@ -44,14 +44,16 @@ class PlayerSettings {
   } yield {
     broadcastMutingSettings = nextSettings
   })
-  val toggleHalfBreakFlag: TargetedEffect[Player] = DeferredEffect(IO {
-    allowBreakingHalfBlocks = !allowBreakingHalfBlocks
+  val toggleHalfBreakFlag: TargetedEffect[Player] = DeferredEffect(
+    IO {
+      allowBreakingHalfBlocks = !allowBreakingHalfBlocks
 
-    val newStatus = if (allowBreakingHalfBlocks) s"${GREEN}破壊可能" else s"${RED}破壊不可能"
-    val responseMessage = s"現在ハーフブロックは$newStatus${RESET}です."
+      val newStatus = if (allowBreakingHalfBlocks) s"${GREEN}破壊可能" else s"${RED}破壊不可能"
+      val responseMessage = s"現在ハーフブロックは$newStatus${RESET}です."
 
-    MessageEffect(responseMessage)
-  })
+      MessageEffect(responseMessage)
+    }
+  )
 
   /**
    * 複数ブロック同時破壊のON/OFFを切り替える[UnforcedEffect]

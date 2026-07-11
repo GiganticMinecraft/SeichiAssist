@@ -179,14 +179,16 @@ case class NicknameCombinationMenu(pageIndex: Int = 0, nicknamePart: NicknamePar
           LeftClickButtonEffect(
             SequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f),
-              DeferredEffect(IO {
-                nicknamePart match {
-                  case Head   => playerdata.updateNickname(id1 = archivementId)
-                  case Middle => playerdata.updateNickname(id2 = archivementId)
-                  case Tail   => playerdata.updateNickname(id3 = archivementId)
+              DeferredEffect(
+                IO {
+                  nicknamePart match {
+                    case Head   => playerdata.updateNickname(id1 = archivementId)
+                    case Middle => playerdata.updateNickname(id2 = archivementId)
+                    case Tail   => playerdata.updateNickname(id3 = archivementId)
+                  }
+                  MessageEffect(s"${nicknamePart.displayName}パーツ「${nickname}」をセットしました。")
                 }
-                MessageEffect(s"${nicknamePart.displayName}パーツ「${nickname}」をセットしました。")
-              })
+              )
             )
           )
         )
