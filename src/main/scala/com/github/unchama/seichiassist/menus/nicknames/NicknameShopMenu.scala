@@ -132,10 +132,12 @@ case class NicknameShopMenu(val pageIndex: Int = 0) extends Menu {
         LeftClickButtonEffect(
           SequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f),
-            DeferredEffect(IO {
-              playerdata.recalculateAchievePoint()
-              ioCanOpenNicknameShopMenu.open(NicknameShopMenu(pageIndex))
-            })
+            DeferredEffect(
+              IO {
+                playerdata.recalculateAchievePoint()
+                ioCanOpenNicknameShopMenu.open(NicknameShopMenu(pageIndex))
+              }
+            )
           )
         )
       )
