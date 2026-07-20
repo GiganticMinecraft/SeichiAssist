@@ -17,8 +17,8 @@ object PlayerCountEffectSynchronization {
 
   import scala.concurrent.duration._
 
-  def using[F[_]: ConcurrentEffect: Timer: GetConnectedPlayers[
-    *[_],
+  def using[F[_]: ConcurrentEffect: Timer: [f[_]] =>> GetConnectedPlayers[
+    f,
     Player
   ]: GetNetworkConnectionCount, Player](
     implicit configuration: Configuration,

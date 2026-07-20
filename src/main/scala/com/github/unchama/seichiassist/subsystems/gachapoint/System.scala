@@ -34,9 +34,9 @@ object System {
   import cats.effect.implicits._
   import cats.implicits._
 
-  def wired[F[_]: ConcurrentEffect: Timer: ErrorLogger, G[_]: SyncEffect: ContextCoercion[*[
+  def wired[F[_]: ConcurrentEffect: Timer: ErrorLogger, G[_]: SyncEffect: [f[
     _
-  ], F]](
+  ]] =>> ContextCoercion[f, F]](
     breakCountReadAPI: BreakCountReadAPI[F, G, Player]
   )(implicit ioOnMainThread: OnMinecraftServerThread[IO]): G[System[F, G, Player]] = {
     import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance

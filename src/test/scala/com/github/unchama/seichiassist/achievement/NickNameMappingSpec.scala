@@ -26,9 +26,9 @@ class NickNameMappingSpec extends AnyWordSpec {
         val NicknameCombination(first, second, third) =
           NicknameMapping.getNicknameCombinationFor(achievement)
 
-        val selectFirst: NicknamesToBeUnlocked => Option[String] = _.head()
-        val selectSecond: NicknamesToBeUnlocked => Option[String] = _.middle()
-        val selectThird: NicknamesToBeUnlocked => Option[String] = _.tail()
+        val selectFirst: NicknamesToBeUnlocked => Option[String] = _.head
+        val selectSecond: NicknamesToBeUnlocked => Option[String] = _.middle
+        val selectThird: NicknamesToBeUnlocked => Option[String] = _.tail
 
         info(s"for achievement $achievement")
 

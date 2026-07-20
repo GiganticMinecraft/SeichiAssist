@@ -14,7 +14,7 @@ import com.github.unchama.targetedeffect.commandsender.MessageEffectF
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
-class BukkitSummonFairy[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
+class BukkitSummonFairy[F[_]: Sync, G[_]: [f[_]] =>> ContextCoercion[f, F]](
   implicit voteAPI: VoteAPI[F, Player],
   manaApi: ManaApi[F, G, Player],
   fairyPersistence: FairyPersistence[F],

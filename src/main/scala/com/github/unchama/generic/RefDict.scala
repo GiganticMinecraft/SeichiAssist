@@ -27,8 +27,8 @@ trait RefDict[F[_], Key, Value] {
 
 object RefDict {
 
-  implicit def contravariantFunctor[F[_], Value]: Contravariant[RefDict[F, *, Value]] =
-    new Contravariant[RefDict[F, *, Value]] {
+  implicit def contravariantFunctor[F[_], Value]: Contravariant[[a] =>> RefDict[F, a, Value]] =
+    new Contravariant[[a] =>> RefDict[F, a, Value]] {
       override def contramap[A, B](fa: RefDict[F, A, Value])(f: B => A): RefDict[F, B, Value] =
         new RefDict[F, B, Value] {
           override def read(key: B): F[Option[Value]] = fa.read(f(key))

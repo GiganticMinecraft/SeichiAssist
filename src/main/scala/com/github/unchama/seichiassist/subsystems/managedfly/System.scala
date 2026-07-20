@@ -37,7 +37,9 @@ object System {
 
   def wired[AsyncContext[_]: ConcurrentEffect: OnMinecraftServerThread: Timer, SyncContext[
     _
-  ]: SyncEffect: ContextCoercion[*[_], AsyncContext]](configuration: SystemConfiguration)(
+  ]: SyncEffect: [f[_]] =>> ContextCoercion[f, AsyncContext]](
+    configuration: SystemConfiguration
+  )(
     implicit idleTimeAPI: IdleTimeAPI[AsyncContext, Player]
   ): SyncContext[System[SyncContext, AsyncContext]] = {
     implicit val _configuration: SystemConfiguration = configuration
@@ -46,7 +48,7 @@ object System {
       new JdbcFlyDurationPersistenceRepository[SyncContext]
 
     implicit val _playerKleisliManipulation
-      : PlayerFlyStatusManipulation[Kleisli[AsyncContext, Player, *]] =
+      : PlayerFlyStatusManipulation[[a] =>> Kleisli[AsyncContext, Player, a]] =
       new BukkitPlayerFlyStatusManipulation[AsyncContext]
 
     implicit val _factory: ActiveSessionFactory[AsyncContext, Player] =

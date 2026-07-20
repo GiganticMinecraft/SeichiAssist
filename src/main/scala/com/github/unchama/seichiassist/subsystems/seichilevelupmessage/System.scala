@@ -9,7 +9,7 @@ import org.typelevel.log4cats.ErrorLogger
 
 object System {
 
-  def backgroundProcess[F[_]: Async: SendMinecraftMessage[*[_], Player]: ErrorLogger, G[
+  def backgroundProcess[F[_]: Async: [f[_]] =>> SendMinecraftMessage[f, Player]: ErrorLogger, G[
     _
   ], Player](implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player]): F[Nothing] = {
     StreamExtra.compileToRestartingStream("[SeichiLevelUpMessage]") {

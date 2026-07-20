@@ -32,9 +32,9 @@ object ExpBarSynchronizationRepositoryTemplate {
   import cats.effect.implicits._
   import cats.implicits._
 
-  def initialization[G[_]: Sync, F[_]: ConcurrentEffect: ContextCoercion[
+  def initialization[G[_]: Sync, F[_]: ConcurrentEffect: [g[_]] =>> ContextCoercion[
     G,
-    *[_]
+    g
   ]: ErrorLogger, Player: HasUuid](
     breakCountReadAPI: BreakCountReadAPI[F, G, Player],
     visibilityValues: fs2.Stream[F, (Player, BreakCountBarVisibility)]

@@ -19,9 +19,9 @@ import org.bukkit.{Location, Material}
 import scala.util.chaining._
 import scala.util.control.Breaks
 
-class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[
+class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[_]: [f[
   _
-]: IncrementBuildExpWhenBuiltWithSkill[*[_], Player]: SyncEffect](
+]] =>> IncrementBuildExpWhenBuiltWithSkill[f, Player]: SyncEffect](
   implicit mineStackAPI: MineStackAPI[G, Player, ItemStack]
 ) extends Listener {
 

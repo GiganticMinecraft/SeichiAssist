@@ -29,7 +29,7 @@ object RegionMenu extends Menu {
 
   class Environment(
     implicit val ioCanOpenGridRegionMenu: IO CanOpen GridRegionMenu.type,
-    implicit val gridRegionAPI: GridRegionAPI[IO, Player, Location, World]
+    val gridRegionAPI: GridRegionAPI[IO, Player, Location, World]
   )
 
   override val frame: MenuFrame = MenuFrame(Right(InventoryType.HOPPER), s"${BLACK}保護メニュー")

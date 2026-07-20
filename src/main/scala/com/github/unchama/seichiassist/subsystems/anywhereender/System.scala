@@ -24,7 +24,10 @@ object System {
   import ContextCoercion._
   import cats.implicits._
 
-  def wired[F[_]: BreakCountReadAPI[IO, *[_], Player]: ContextCoercion[*[_], G], G[_]: Effect](
+  def wired[F[_]: [g[_]] =>> BreakCountReadAPI[IO, g, Player]: [f[_]] =>> ContextCoercion[
+    f,
+    G
+  ], G[_]: Effect](
     configuration: SystemConfiguration
   )(implicit onMainThread: OnMinecraftServerThread[IO]): System[G] = new System[G] {
 

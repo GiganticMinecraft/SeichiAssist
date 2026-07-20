@@ -30,7 +30,7 @@ object GridRegionMenu extends Menu {
 
   class Environment(
     implicit val onMainThread: OnMinecraftServerThread[IO],
-    implicit val layoutPreparationContext: LayoutPreparationContext,
+    val layoutPreparationContext: LayoutPreparationContext,
     val gridRegionAPI: GridRegionAPI[IO, Player, Location, World],
     val ioCanOpenGridTemplateMenu: IO CanOpen GridTemplateMenu.type
   )
