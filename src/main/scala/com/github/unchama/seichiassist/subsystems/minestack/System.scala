@@ -51,7 +51,7 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_]: ConcurrentEffect, G[_]: SyncEffect: ContextCoercion[*[_], F]](
+  def wired[F[_]: ConcurrentEffect, G[_]: SyncEffect: [f[_]] =>> ContextCoercion[f, F]](
     implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
     effectEnvironment: EffectEnvironment
   ): F[System[F, Player, ItemStack]] = {

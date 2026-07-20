@@ -79,8 +79,6 @@ object V1_0_0_MigrateMebiusToNewCodec {
 
   }
 
-  import eu.timepit.refined.auto._
-
   def migrationFunction(
     itemStack: ItemStack
   )(implicit repository: UuidRepository[SyncIO], logger: Logger): ItemStack = {

@@ -23,8 +23,6 @@ object V1_3_0_RemoveUnnecessaryLoreOfHalloweenItem {
     lore.contains(halloweenClearPrizeLore) || lore.contains(halloweenSpecialPrizeLore)
   }
 
-  import eu.timepit.refined.auto._
-
   def migrationFunction(itemStack: ItemStack): ItemStack = {
     if (!isHalloweenPrize(itemStack)) return itemStack
 

@@ -5,7 +5,7 @@ import java.io._
 
 // region 全プロジェクト共通のメタデータ
 
-ThisBuild / scalaVersion := "2.13.18"
+ThisBuild / scalaVersion := "3.3.8"
 // ThisBuild / version はGitHub Actionsによって取得/自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
 ThisBuild / version := "106"
@@ -13,15 +13,12 @@ ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
 // Scalafixが要求するため、semanticdbは有効化する
+// Scala 3ではコンパイラ内蔵の-Xsemanticdbが使われるため、semanticdbVersionの指定は不要
 ThisBuild / semanticdbEnabled := true
-ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
 
 // endregion
 
 // region 雑多な設定
-
-// kind-projector 構文を使いたいため
-addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.4" cross CrossVersion.full)
 
 // テストが落ちた時にスタックトレースを表示するため。
 // ScalaTest のオプションは https://www.scalatest.org/user_guide/using_the_runner を参照のこと。
@@ -56,12 +53,10 @@ val providedDependencies = Seq(
   "com.mojang" % "authlib" % "6.0.59"
 ).map(_ % "provided")
 
-val scalafixCoreDep =
-  "ch.epfl.scala" %% "scalafix-core" % _root_
-    .scalafix
-    .sbt
-    .BuildInfo
-    .scalafixVersion % ScalafixConfig
+// NOTE(scala3): src/scalafix配下のカスタムルール2つ（.scalafix.confにもCIにも未参照）は、
+// scalafix-coreがScala 2.13向けにのみ公開されておりScala 3コンパイラでは
+// コンパイルできないため、Scala 3移行に伴い配線を外している。
+// 再度有効化する場合は、ルールを別プロジェクトに切り出して2.13でクロスビルドする必要がある。
 
 val testDependencies = Seq(
   "org.scalamock" %% "scalamock" % "6.2.0",
@@ -180,7 +175,8 @@ unmanagedResources / excludeFilter :=
 // region ScalaPBの設定
 
 Compile / PB.protoSources := Seq(baseDirectory.value / "protocol")
-Compile / PB.targets := Seq(scalapb.gen() -> (Compile / sourceManaged).value / "scalapb")
+Compile / PB.targets :=
+  Seq(scalapb.gen(scala3Sources = true) -> (Compile / sourceManaged).value / "scalapb")
 
 // endregion
 
@@ -189,22 +185,19 @@ Compile / PB.targets := Seq(scalapb.gen() -> (Compile / sourceManaged).value / "
 lazy val root = (project in file(".")).settings(
   name := "SeichiAssist",
   assembly / assemblyOutputPath := baseDirectory.value / "target" / "build" / "SeichiAssist.jar",
-  libraryDependencies := (providedDependencies :+ scalafixCoreDep) ++ testDependencies ++ dependenciesToEmbed,
+  libraryDependencies := providedDependencies ++ testDependencies ++ dependenciesToEmbed,
+  // src/scalafix配下のカスタムルールのコンパイルを無効化する（依存関係セクションのNOTE参照）
+  ScalafixConfig / sources := Nil,
   excludeDependencies := Seq(ExclusionRule(organization = "org.bukkit", name = "bukkit")),
   unmanagedBase := baseDirectory.value / "localDependencies",
   scalacOptions ++= Seq(
-    "-Yprofile-trace",
-    "profile.trace",
     "-encoding",
     "utf8",
     "-unchecked",
-    "-language:higherKinds",
     "-deprecation",
-    "-Xsource:3",
-    "-Xsource-features:case-apply-copy-access",
-    "-Ypatmat-exhaust-depth",
-    "320",
-    "-Ywarn-unused"
+    // enumeratumのfindValuesがマクロでコンパニオンのツリーを参照するため
+    "-Yretain-trees",
+    "-Wunused:all"
   ),
   javacOptions ++= Seq("-encoding", "utf8"),
   assembly / assemblyShadeRules ++= Seq(
@@ -216,7 +209,10 @@ lazy val root = (project in file(".")).settings(
   ),
   // sbt-assembly 1.0.0からはTestを明示的にタスクツリーに入れる必要がある
   // cf. https://github.com/sbt/sbt-assembly/pull/432/commits/361224a6202856bc2e572df811d0e6a1f1efda98
-  Compile / assembly / test := (Test / test).value
+  // NOTE: assemblyタスクが参照するのは `assembly / test` スコープである。
+  // 以前は `Compile / assembly / test` に配線されており、assemblyの実行時に
+  // テストが走っていなかった（CIのassemblyだけではテストが実行されない状態だった）。
+  assembly / test := (Test / test).value
 )
 
 // endregion

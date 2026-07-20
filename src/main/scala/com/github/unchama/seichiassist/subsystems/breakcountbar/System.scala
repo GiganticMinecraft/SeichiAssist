@@ -34,9 +34,10 @@ object System {
 
   private final val topicSubscriptionSize = 10
 
-  def wired[G[_]: SyncEffect, F[_]: ConcurrentEffect: ContextCoercion[G, *[_]]: ErrorLogger](
-    breakCountReadAPI: BreakCountReadAPI[F, G, Player]
-  ): F[System[F, G, Player]] = {
+  def wired[
+    G[_]: SyncEffect,
+    F[_]: ConcurrentEffect: [g[_]] =>> ContextCoercion[G, g]: ErrorLogger
+  ](breakCountReadAPI: BreakCountReadAPI[F, G, Player]): F[System[F, G, Player]] = {
     import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 
     val persistence: BreakCountBarVisibilityPersistence[G] =

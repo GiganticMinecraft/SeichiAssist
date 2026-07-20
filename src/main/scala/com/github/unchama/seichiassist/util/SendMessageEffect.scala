@@ -10,16 +10,17 @@ import org.bukkit.entity.Player
 
 object SendMessageEffect {
 
-  def sendMessageToEveryoneIgnoringPreferenceIO[T: PlayerSendable[*, IO]](
+  def sendMessageToEveryoneIgnoringPreferenceIO[T: [a] =>> PlayerSendable[a, IO]](
     content: T
   ): IO[Unit] = {
     implicit val g: GetConnectedBukkitPlayers[IO] = new GetConnectedBukkitPlayers[IO]
     sendMessageToEveryoneIgnoringPreferenceM[T, IO](content)
   }
 
-  def sendMessageToEveryoneIgnoringPreferenceM[T, F[_]: Monad: GetConnectedPlayers[*[
-    _
-  ], Player]](content: T)(implicit ev: PlayerSendable[T, F]): F[Unit] = {
+  def sendMessageToEveryoneIgnoringPreferenceM[T, F[_]: Monad: [f[_]] =>> GetConnectedPlayers[
+    f,
+    Player
+  ]](content: T)(implicit ev: PlayerSendable[T, F]): F[Unit] = {
     import cats.implicits._
 
     for {
@@ -28,7 +29,7 @@ object SendMessageEffect {
     } yield ()
   }
 
-  def sendMessageToEveryone[T, F[_]: Sync: GetConnectedPlayers[*[_], Player]](
+  def sendMessageToEveryone[T, F[_]: Sync: [f[_]] =>> GetConnectedPlayers[f, Player]](
     content: T
   )(implicit ev: PlayerSendable[T, F]): F[Unit] = {
     import cats.implicits._

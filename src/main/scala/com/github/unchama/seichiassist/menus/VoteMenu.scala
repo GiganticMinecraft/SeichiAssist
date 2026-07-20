@@ -48,7 +48,7 @@ object VoteMenu extends Menu {
     val fairyAPI: FairyAPI[IO, SyncIO, Player],
     val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
     val fairySpeechAPI: FairySpeechAPI[IO, Player],
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   /**
@@ -64,7 +64,6 @@ object VoteMenu extends Menu {
     player: Player
   )(implicit environment: Environment): IO[MenuSlotLayout] = {
     import environment._
-    import eu.timepit.refined.auto._
     val constantButtons = ConstantButtons(player)
     import constantButtons._
 

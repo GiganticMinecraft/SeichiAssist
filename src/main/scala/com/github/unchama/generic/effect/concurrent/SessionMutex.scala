@@ -37,7 +37,8 @@ object SessionMutex {
 
   import cats.implicits._
 
-  def newIn[F[_]: Concurrent, G[_]: Sync: ContextCoercion[*[_], F]]: G[SessionMutex[F, G]] =
+  def newIn[F[_]: Concurrent, G[_]: Sync: [f[_]] =>> ContextCoercion[f, F]]
+    : G[SessionMutex[F, G]] =
     for {
       mutex <- Mutex.of[F, G, TryableFiber[F, Unit]](TryableFiber.unit[F])
     } yield new SessionMutex(mutex)

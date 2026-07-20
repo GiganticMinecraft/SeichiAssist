@@ -16,7 +16,6 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor.RED
 import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.entity.Player
-import shapeless.HNil
 
 import scala.jdk.CollectionConverters._
 
@@ -85,11 +84,9 @@ object AchievementCommand {
     .thenParse(scopeParser)
     .ifArgumentsMissing(descriptionPrintExecutor)
     .buildWithExecutionF { context =>
-      import shapeless.::
-
       val sender = context.sender
 
-      val operation :: achievementNumber :: scopeSpec :: HNil = context.args.parsed
+      val (operation, achievementNumber, scopeSpec) = context.args.parsed
 
       def execution(): IO[TargetedEffect[CommandSender]] = {
         val targetPlayerNames: List[String] =

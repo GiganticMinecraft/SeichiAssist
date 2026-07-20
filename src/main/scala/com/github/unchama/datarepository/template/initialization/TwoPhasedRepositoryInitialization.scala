@@ -49,8 +49,8 @@ object TwoPhasedRepositoryInitialization {
   import cats.implicits._
 
   implicit def functorInstance[F[_]: Functor, Player]
-    : Functor[TwoPhasedRepositoryInitialization[F, Player, *]] =
-    new Functor[TwoPhasedRepositoryInitialization[F, Player, *]] {
+    : Functor[[a] =>> TwoPhasedRepositoryInitialization[F, Player, a]] =
+    new Functor[[a] =>> TwoPhasedRepositoryInitialization[F, Player, a]] {
       override def map[A, B](
         fa: TwoPhasedRepositoryInitialization[F, Player, A]
       )(f: A => B): TwoPhasedRepositoryInitialization[F, Player, B] =
