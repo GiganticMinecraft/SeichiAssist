@@ -1,6 +1,6 @@
 package com.github.unchama.util.logging.log4cats
 
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 
 object PrefixedLogger {
 

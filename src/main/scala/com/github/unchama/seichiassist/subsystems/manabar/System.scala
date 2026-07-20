@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.mana.ManaReadApi
 import com.github.unchama.seichiassist.subsystems.manabar.application.ManaBarSynchronizationRepository
 import com.github.unchama.seichiassist.subsystems.manabar.bukkit.CreateFreshBossBar
-import io.chrisdavenport.log4cats.ErrorLogger
+import org.typelevel.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 
 object System {

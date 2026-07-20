@@ -13,7 +13,7 @@ import com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notifica
   BukkitNotifyLevelUp
 }
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
-import io.chrisdavenport.log4cats.ErrorLogger
+import org.typelevel.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 
 object System {

@@ -5,7 +5,7 @@ import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.minecraft.actions.SendMinecraftMessage
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.seichilevelupmessage.domain.MessageTable
-import io.chrisdavenport.log4cats.ErrorLogger
+import org.typelevel.log4cats.ErrorLogger
 
 object System {
 

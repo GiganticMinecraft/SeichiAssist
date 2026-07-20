@@ -4,7 +4,7 @@ import org.apache.pekko.actor.ActorSystem
 import cats.effect.{ContextShift, Effect, IO}
 import com.github.unchama.seichiassist.domain.actions.GetNetworkConnectionCount
 import com.github.unchama.seichiassist.domain.configuration.RedisBungeeRedisConfiguration
-import io.chrisdavenport.log4cats.ErrorLogger
+import org.typelevel.log4cats.ErrorLogger
 import redis.RedisClient
 import redis.api.scripting.RedisScript
 import redis.protocol.{Bulk, MultiBulk}

@@ -33,7 +33,7 @@ import com.github.unchama.seichiassist.subsystems.buildcount.infrastructure.{
 }
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import io.chrisdavenport.cats.effect.time.JavaTime
-import io.chrisdavenport.log4cats.ErrorLogger
+import org.typelevel.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 

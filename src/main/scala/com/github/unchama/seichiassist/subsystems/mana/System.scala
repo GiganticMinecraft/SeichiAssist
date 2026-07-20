@@ -21,7 +21,7 @@ import com.github.unchama.seichiassist.subsystems.mana.domain.{
   ManaMultiplier
 }
 import com.github.unchama.seichiassist.subsystems.mana.infrastructure.JdbcManaAmountPersistence
-import io.chrisdavenport.log4cats.ErrorLogger
+import org.typelevel.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 
 trait System[F[_], G[_], Player] extends Subsystem[F] {

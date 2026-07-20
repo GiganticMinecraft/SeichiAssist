@@ -9,7 +9,7 @@ import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.minecraft.algebra.HasUuid
 import com.github.unchama.minecraft.objects.MinecraftBossBar
 import com.github.unchama.seichiassist.subsystems.mana.ManaReadApi
-import io.chrisdavenport.log4cats.ErrorLogger
+import org.typelevel.log4cats.ErrorLogger
 
 object ManaBarSynchronizationRepository {
 

@@ -13,7 +13,7 @@ import com.github.unchama.minecraft.bukkit.actions.{BroadcastBukkitMessage, Send
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.halfhourranking.application.AnnounceRankingRecord
 import com.github.unchama.seichiassist.subsystems.halfhourranking.domain.RankingRecord
-import io.chrisdavenport.log4cats.ErrorLogger
+import org.typelevel.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 
 object System {

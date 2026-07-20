@@ -9,7 +9,7 @@ import cats.kernel.Monoid
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.seichiassist.subsystems.ranking.domain._
-import io.chrisdavenport.log4cats.ErrorLogger
+import org.typelevel.log4cats.ErrorLogger
 
 import scala.concurrent.duration.FiniteDuration
 

@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.subsystems.ranking.api.{
 import com.github.unchama.seichiassist.subsystems.ranking.application.GenericRefreshingRankingCache
 import com.github.unchama.seichiassist.subsystems.ranking.domain.values.{LoginTime, VoteCount}
 import com.github.unchama.seichiassist.subsystems.ranking.infrastructure._
-import io.chrisdavenport.log4cats.ErrorLogger
+import org.typelevel.log4cats.ErrorLogger
 
 import scala.concurrent.duration.DurationInt
 

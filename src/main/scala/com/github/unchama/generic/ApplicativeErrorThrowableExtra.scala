@@ -1,7 +1,7 @@
 package com.github.unchama.generic
 
 import cats.ApplicativeError
-import io.chrisdavenport.log4cats.ErrorLogger
+import org.typelevel.log4cats.ErrorLogger
 
 object ApplicativeErrorThrowableExtra {
 

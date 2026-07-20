@@ -19,7 +19,7 @@ import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.{
   BreakCountBarVisibilityPersistence
 }
 import com.github.unchama.seichiassist.subsystems.breakcountbar.infrastructure.JdbcBreakCountBarVisibilityPersistence
-import io.chrisdavenport.log4cats.ErrorLogger
+import org.typelevel.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 
 trait System[F[_], G[_], Player] extends Subsystem[F] {
