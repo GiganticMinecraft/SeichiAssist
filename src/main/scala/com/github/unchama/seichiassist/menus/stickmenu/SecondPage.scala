@@ -257,20 +257,18 @@ object SecondPage extends Menu {
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
           SequentialEffect(
             playerData.settings.toggleDeathMessageMutingSettings,
-            DeferredEffect(
-              IO {
-                val (soundPitch, message) =
-                  if (playerData.settings.shouldDisplayDeathMessages)
-                    (1.0f, s"${GREEN}死亡メッセージ:表示")
-                  else
-                    (0.5f, s"${RED}死亡メッセージ:隠す")
+            DeferredEffect(IO {
+              val (soundPitch, message) =
+                if (playerData.settings.shouldDisplayDeathMessages)
+                  (1.0f, s"${GREEN}死亡メッセージ:表示")
+                else
+                  (0.5f, s"${RED}死亡メッセージ:隠す")
 
-                SequentialEffect(
-                  MessageEffect(message),
-                  FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundPitch)
-                )
-              }
-            )
+              SequentialEffect(
+                MessageEffect(message),
+                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundPitch)
+              )
+            })
           )
         }
       )
@@ -303,20 +301,18 @@ object SecondPage extends Menu {
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
           SequentialEffect(
             playerData.settings.toggleWorldGuardLogEffect,
-            DeferredEffect(
-              IO {
-                val (soundPitch, message) =
-                  if (playerData.settings.shouldDisplayWorldGuardLogs)
-                    (1.0f, s"${GREEN}ワールドガード保護メッセージ:表示")
-                  else
-                    (0.5f, s"${RED}ワールドガード保護メッセージ:隠す")
+            DeferredEffect(IO {
+              val (soundPitch, message) =
+                if (playerData.settings.shouldDisplayWorldGuardLogs)
+                  (1.0f, s"${GREEN}ワールドガード保護メッセージ:表示")
+                else
+                  (0.5f, s"${RED}ワールドガード保護メッセージ:隠す")
 
-                SequentialEffect(
-                  FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundPitch),
-                  MessageEffect(message)
-                )
-              }
-            )
+              SequentialEffect(
+                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundPitch),
+                MessageEffect(message)
+              )
+            })
           )
         }
       )

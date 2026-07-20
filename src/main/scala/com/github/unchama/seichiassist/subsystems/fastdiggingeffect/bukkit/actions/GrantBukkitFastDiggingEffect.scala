@@ -13,12 +13,10 @@ class GrantBukkitFastDiggingEffect[F[_]: OnMinecraftServerThread]
     val potionEffect = new PotionEffect(PotionEffectType.FAST_DIGGING, 40, amount, false, false)
 
     // ポーション効果の削除及び付与はメインスレッドでのみ許可される(Spigot 1.12)
-    OnMinecraftServerThread[F].runAction(
-      SyncIO[Unit] {
-        player.removePotionEffect(PotionEffectType.FAST_DIGGING)
-        player.addPotionEffect(potionEffect)
-      }
-    )
+    OnMinecraftServerThread[F].runAction(SyncIO[Unit] {
+      player.removePotionEffect(PotionEffectType.FAST_DIGGING)
+      player.addPotionEffect(potionEffect)
+    })
   }
 
 }
