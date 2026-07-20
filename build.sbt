@@ -101,7 +101,7 @@ val dependenciesToEmbed = Seq(
   "co.fs2" %% "fs2-core" % "2.5.13",
 
   // algebra
-  "org.typelevel" %% "log4cats-core" % "1.7.0",
+  "org.typelevel" %% "log4cats-core" % "2.8.0",
   "org.typelevel" %% "log4cats-slf4j" % "1.7.0",
   "io.chrisdavenport" %% "cats-effect-time" % "0.1.3",
 
