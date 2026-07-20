@@ -62,10 +62,7 @@ val providedDependencies = Seq(
   // https://maven.enginehub.org/repo/com/sk89q/worldedit/worldedit-bukkit/
   "com.sk89q.worldguard" % "worldguard-bukkit" % "7.0.7",
   "net.coreprotect" % "coreprotect" % "21.3",
-  "com.mojang" % "authlib" % "6.0.59",
-
-  // no runtime
-  "org.typelevel" %% "simulacrum" % "1.0.1"
+  "com.mojang" % "authlib" % "6.0.59"
 ).map(_ % "provided")
 
 val scalafixCoreDep =
@@ -216,7 +213,6 @@ lazy val root = (project in file(".")).settings(
     "-Xsource-features:case-apply-copy-access",
     "-Ypatmat-exhaust-depth",
     "320",
-    "-Ymacro-annotations",
     "-Ywarn-unused"
   ),
   javacOptions ++= Seq("-encoding", "utf8"),
