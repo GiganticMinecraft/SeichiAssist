@@ -99,7 +99,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.Fa
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global._
 import com.github.unchama.util.{ActionStatus, ClassUtils}
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 import io.sentry.Sentry
 import io.sentry.SentryLevel
 import org.bukkit.ChatColor._
@@ -145,7 +145,7 @@ class SeichiAssist extends JavaPlugin() {
     new JDK14LoggerFactory().getLogger(newLogger.getName)
   }
 
-  implicit val loggerF: io.chrisdavenport.log4cats.Logger[IO] =
+  implicit val loggerF: org.typelevel.log4cats.Logger[IO] =
     Slf4jLogger.getLoggerFromSlf4j(logger)
 
   // endregion

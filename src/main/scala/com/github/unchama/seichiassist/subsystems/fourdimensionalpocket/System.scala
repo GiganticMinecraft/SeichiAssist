@@ -30,7 +30,7 @@ import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.{
 }
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.infrastructure.JdbcBukkitPocketInventoryPersistence
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
-import io.chrisdavenport.log4cats.ErrorLogger
+import org.typelevel.log4cats.ErrorLogger
 import org.bukkit.Sound
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player

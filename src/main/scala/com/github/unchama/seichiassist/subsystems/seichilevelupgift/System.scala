@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.seichilevelupgift.bukkit.BukkitGrantLevelUpGift
 import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.GrantLevelUpGiftAlgebra
 import com.github.unchama.seichiassist.subsystems.seichilevelupgift.usecases.GrantGiftOnSeichiLevelDiff
-import io.chrisdavenport.log4cats.ErrorLogger
+import org.typelevel.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 

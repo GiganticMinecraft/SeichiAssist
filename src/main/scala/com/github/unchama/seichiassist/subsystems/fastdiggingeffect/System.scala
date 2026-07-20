@@ -49,7 +49,7 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.infrastructu
   JdbcFastDiggingEffectStatsSettingsPersistence,
   JdbcFastDiggingEffectSuppressionStatePersistence
 }
-import io.chrisdavenport.log4cats.ErrorLogger
+import org.typelevel.log4cats.ErrorLogger
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 

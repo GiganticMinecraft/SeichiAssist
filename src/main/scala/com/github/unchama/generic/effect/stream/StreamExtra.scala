@@ -6,7 +6,7 @@ import cats.{Eq, Monad}
 import com.github.unchama.generic.Diff
 import com.github.unchama.minecraft.algebra.HasUuid
 import fs2.{Chunk, Pull, Stream}
-import io.chrisdavenport.log4cats.ErrorLogger
+import org.typelevel.log4cats.ErrorLogger
 
 object StreamExtra {
 

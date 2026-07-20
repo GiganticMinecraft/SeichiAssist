@@ -16,7 +16,7 @@ import com.github.unchama.seichiassist.subsystems.mana.domain.{
   ManaAmount,
   ManaAmountPersistence
 }
-import io.chrisdavenport.log4cats.ErrorLogger
+import org.typelevel.log4cats.ErrorLogger
 
 object ManaRepositoryDefinition {
 

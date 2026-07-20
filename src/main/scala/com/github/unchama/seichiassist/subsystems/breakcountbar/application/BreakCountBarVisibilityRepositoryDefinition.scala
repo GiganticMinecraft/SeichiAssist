@@ -14,7 +14,7 @@ import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.{
   BreakCountBarVisibilityPersistence
 }
 import fs2.Pipe
-import io.chrisdavenport.log4cats.ErrorLogger
+import org.typelevel.log4cats.ErrorLogger
 
 object BreakCountBarVisibilityRepositoryDefinition {
 
