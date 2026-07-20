@@ -18,9 +18,9 @@ import org.typelevel.log4cats.ErrorLogger
 
 object BreakCountBarVisibilityRepositoryDefinition {
 
-  def withContext[G[_]: Sync, F[_]: ConcurrentEffect: ContextCoercion[
+  def withContext[G[_]: Sync, F[_]: ConcurrentEffect: [g[_]] =>> ContextCoercion[
     G,
-    *[_]
+    g
   ]: ErrorLogger, Player: HasUuid](
     persistence: BreakCountBarVisibilityPersistence[G],
     publishChanges: Pipe[F, (Player, BreakCountBarVisibility), Unit]

@@ -27,8 +27,6 @@ object V1_1_0_AddUnbreakableToNarutoRemake {
     lore.contains(narutoRemake1Lore) || lore.contains(narutoRemake2Lore)
   }
 
-  import eu.timepit.refined.auto._
-
   def migrationFunction(itemStack: ItemStack): ItemStack = {
     if (!isNarutoRemake(itemStack)) return itemStack
 

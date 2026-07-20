@@ -15,10 +15,11 @@ object BroadcastEffect {
         players <- IO {
           val players = Bukkit.getOnlinePlayers
 
-          players.synchronized {
+          val snapshot: List[Player] = players.synchronized {
             import scala.jdk.CollectionConverters._
             players.asScala.toList
           }
+          snapshot
         }
         _ <- players.traverse(effect.run)
       } yield ()

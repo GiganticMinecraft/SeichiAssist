@@ -4,11 +4,10 @@ import cats.effect.concurrent.{MVar, MVar2, Ref}
 import cats.effect.{Bracket, Concurrent, ExitCase, Sync}
 import com.github.unchama.generic.ContextCoercion
 
-final class Mutex[
-  MutexContext[_],
-  ReadContext[_]: ContextCoercion[*[_], MutexContext],
-  A
-] private (mVar: MVar2[MutexContext, A], previous: Ref[ReadContext, A])(
+final class Mutex[MutexContext[_], ReadContext[_]: [f[_]] =>> ContextCoercion[
+  f,
+  MutexContext
+], A] private (mVar: MVar2[MutexContext, A], previous: Ref[ReadContext, A])(
   implicit fBracket: Bracket[MutexContext, Throwable]
 ) {
 
@@ -62,7 +61,7 @@ object Mutex {
 
   import cats.implicits._
 
-  def of[F[_]: Concurrent, G[_]: Sync: ContextCoercion[*[_], F], A](
+  def of[F[_]: Concurrent, G[_]: Sync: [f[_]] =>> ContextCoercion[f, F], A](
     initial: A
   ): G[Mutex[F, G, A]] = {
     for {

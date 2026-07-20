@@ -16,7 +16,7 @@ trait System[F[_], G[_], H[_]] extends Subsystem[H] {
 }
 
 object System {
-  def wired[F[_]: ConcurrentEffect, G[_]: SyncEffect: ContextCoercion[*[_], F], H[_]](
+  def wired[F[_]: ConcurrentEffect, G[_]: SyncEffect: [f[_]] =>> ContextCoercion[f, F], H[_]](
     implicit effectEnvironment: EffectEnvironment
   ): F[System[F, G, H]] = {
     import cats.implicits._

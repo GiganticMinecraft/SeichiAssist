@@ -9,7 +9,7 @@ sealed trait RemainingFlyDuration {
    *
    * @return
    */
-  val tickOneMinute: Option[RemainingFlyDuration]
+  def tickOneMinute: Option[RemainingFlyDuration]
 
 }
 

@@ -31,9 +31,9 @@ import org.bukkit.entity.Player
 
 class HomeCommand[F[
   _
-]: OnMinecraftServerThread: ConcurrentEffect: NonServerThreadContextShift: HomeAPI, G[
+]: OnMinecraftServerThread: ConcurrentEffect: NonServerThreadContextShift: HomeAPI, G[_]: [f[
   _
-]: ContextCoercion[*[_], F]](
+]] =>> ContextCoercion[f, F]](
   implicit scope: ChatInterceptionScope,
   breakCountReadAPI: BreakCountReadAPI[F, G, Player],
   buildCountReadAPI: BuildCountAPI[F, G, Player]

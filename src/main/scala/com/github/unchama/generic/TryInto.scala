@@ -12,7 +12,8 @@ object TryInto {
   private def fromFunction[F, T, E](fn: F => Either[E, T]): TryInto[F, T, E] =
     (f: F) => fn(f)
 
-  implicit def refineByPredicate[A, P: Validate[A, *]]: TryInto[A, A Refined P, String] =
+  implicit def refineByPredicate[A, P: [a] =>> Validate[A, a]]
+    : TryInto[A, A Refined P, String] =
     fromFunction(refineV(_))
 
   implicit def refl[From, To >: From]: TryInto[From, To, Nothing] =

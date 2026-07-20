@@ -63,7 +63,7 @@ object ActiveSkillMenu extends Menu {
     val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
     val ioOnMainThread: OnMinecraftServerThread[IO],
     val globalNotification: DiscordNotificationAPI[IO],
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整地スキル選択")
@@ -509,7 +509,6 @@ object ActiveSkillMenu extends Menu {
   )(implicit environment: Environment): IO[MenuSlotLayout] = {
     import cats.implicits._
     import environment._
-    import eu.timepit.refined.auto._
 
     val buttonComputations = new ButtonComputations(player)
     import ConstantButtons._

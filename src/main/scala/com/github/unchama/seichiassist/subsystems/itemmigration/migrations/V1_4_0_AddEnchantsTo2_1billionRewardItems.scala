@@ -36,8 +36,6 @@ object V1_4_0_AddEnchantsTo2_1billionRewardItems {
   ).map { case (color, str) => s"$color$BOLD$ITALIC$str" }.mkString
   private val gaeaReplicaLore = s"${WHITE}35億/1日を突破した記念に配布されたものです。"
 
-  import eu.timepit.refined.auto._
-
   def migration: ItemMigration = ItemMigration(
     ItemMigrationVersionNumber(1, 4, 0),
     MigrationHelper.delegateConversionForContainers(migrationFunction)
