@@ -48,7 +48,7 @@ object System {
     _
   ]: ConcurrentEffect: OnMinecraftServerThread: ErrorLogger: DiscordNotificationAPI, G[
     _
-  ]: SyncEffect: ContextCoercion[*[_], F]](
+  ]: SyncEffect: [f[_]] =>> ContextCoercion[f, F]](
   ): F[System[F, G]] = {
     implicit val persistence: SeichiAmountDataPersistence[G] =
       new JdbcSeichiAmountDataPersistence[G]

@@ -18,8 +18,8 @@ import com.github.unchama.seichiassist.subsystems.managedfly.domain.{
 }
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
-import eu.timepit.refined.api.Refined
-import eu.timepit.refined.numeric.Positive
+import io.github.iltotore.iron.:|
+import io.github.iltotore.iron.constraint.numeric.Positive
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
@@ -42,13 +42,13 @@ object BukkitFlyCommand {
 
   private val durationParser =
     Parsers
-      .closedRangeInt[Int Refined Positive](
+      .closedRangeInt[Int :| Positive](
         1,
         Int.MaxValue,
         MessageEffect(durationParseFailedMessage)
       )
       .andThen { parseResult =>
-        parseResult.map(r => RemainingFlyDuration.PositiveMinutes.fromPositive(r.value))
+        parseResult.map(r => RemainingFlyDuration.PositiveMinutes.fromPositive(r))
       }
 
   import cats.effect.implicits._

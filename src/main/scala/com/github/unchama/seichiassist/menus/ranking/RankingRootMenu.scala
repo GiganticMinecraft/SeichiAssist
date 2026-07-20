@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.menus.ranking
 
+import io.github.iltotore.iron.autoRefine
+
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.router.CanOpen
@@ -14,7 +16,6 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmount
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
 import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import com.github.unchama.seichiassist.subsystems.ranking.domain.values.{LoginTime, VoteCount}
-import eu.timepit.refined.auto._
 import org.bukkit.ChatColor._
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -27,7 +28,7 @@ object RankingRootMenu extends Menu {
     val ioCanOpenBuildRankingMenu: IO CanOpen RankingMenu[BuildAmountData],
     val ioCanOpenLoginTimeRankingMenu: IO CanOpen RankingMenu[LoginTime],
     val ioCanOpenVoteCountRankingMenu: IO CanOpen RankingMenu[VoteCount],
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$DARK_PURPLE${BOLD}ランキング")

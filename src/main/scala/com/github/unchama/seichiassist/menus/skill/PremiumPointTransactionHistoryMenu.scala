@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.menus.skill
 
+import io.github.iltotore.iron.autoRefine
+
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{
   IconItemStackBuilder,
@@ -25,7 +27,7 @@ object PremiumPointTransactionHistoryMenu {
     implicit val ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
     val ioCanOpenTransactionHistoryMenu: IO CanOpen PremiumPointTransactionHistoryMenu,
     val donateAPI: DonatePremiumPointAPI[IO],
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
 }
@@ -33,7 +35,6 @@ object PremiumPointTransactionHistoryMenu {
 case class PremiumPointTransactionHistoryMenu(pageNumber: Int) extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
-  import eu.timepit.refined.auto._
 
   override type Environment = PremiumPointTransactionHistoryMenu.Environment
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$BLUE${BOLD}プレミアムエフェクト購入履歴")

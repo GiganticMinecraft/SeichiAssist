@@ -29,7 +29,7 @@ object RegionMenu extends Menu {
 
   class Environment(
     implicit val ioCanOpenGridRegionMenu: IO CanOpen GridRegionMenu.type,
-    implicit val gridRegionAPI: GridRegionAPI[IO, Player, Location, World]
+    val gridRegionAPI: GridRegionAPI[IO, Player, Location, World]
   )
 
   override val frame: MenuFrame = MenuFrame(Right(InventoryType.HOPPER), s"${BLACK}保護メニュー")
@@ -93,8 +93,8 @@ object RegionMenu extends Menu {
               s"${GRAY}と出れば保護設定完了です",
               s"${RED}赤色で別の英文が出た場合",
               s"${GRAY}保護の設定に失敗しています",
-              s"$GRAY・別の保護と被っていないか",
-              s"$GRAY・保護数上限に達していないか",
+              s"${GRAY}・別の保護と被っていないか",
+              s"${GRAY}・保護数上限に達していないか",
               s"${GRAY}確認してください"
             )
           else Seq()

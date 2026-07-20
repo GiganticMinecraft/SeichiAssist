@@ -17,7 +17,10 @@ import java.time.{Instant, LocalDateTime, ZoneId}
 import java.util.concurrent.TimeUnit
 
 object DragonNightTimeRoutine {
-  def apply[F[_]: Concurrent: CanBroadcast: Timer, G[_]: ContextCoercion[*[_], F], Player](
+  def apply[F[_]: Concurrent: CanBroadcast: Timer, G[_]: [f[_]] =>> ContextCoercion[
+    f,
+    F
+  ], Player](
     implicit fastDiggingEffectApi: FastDiggingEffectWriteApi[F, Player],
     manaApi: ManaApi[F, G, Player]
   ): F[Nothing] = {

@@ -35,8 +35,8 @@ object NicknameCombinationMenu {
 
   class Environment(
     implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player],
-    implicit val ioCanOpenNicknameCombinationMenu: IO CanOpen NicknameCombinationMenu,
-    implicit val ioCanOpenNicknameMenu: IO CanOpen NickNameMenu.type
+    val ioCanOpenNicknameCombinationMenu: IO CanOpen NicknameCombinationMenu,
+    val ioCanOpenNicknameMenu: IO CanOpen NickNameMenu.type
   )
 
   sealed trait NicknamePart {
@@ -122,13 +122,12 @@ case class NicknameCombinationMenu(pageIndex: Int = 0, nicknamePart: NicknamePar
           }
       }
 
-    import eu.timepit.refined.auto._
-    import eu.timepit.refined.numeric.GreaterEqual
-    import eu.timepit.refined._
+    import io.github.iltotore.iron.constraint.numeric.GreaterEqual
+    import io.github.iltotore.iron.{autoRefine, refineUnsafe}
 
     // NOTE: `length` 呼び出して 0 を下回ることはない
     val totalItems =
-      refineV[GreaterEqual[0]].unsafeFrom(liftedArchivementId.length)
+      (liftedArchivementId.length).refineUnsafe[GreaterEqual[0]]
 
     val totalNumberOfPages = PageCounter.totalPage(totalItems, 27)
 

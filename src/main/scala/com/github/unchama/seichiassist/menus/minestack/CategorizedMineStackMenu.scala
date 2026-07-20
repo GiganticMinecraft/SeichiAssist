@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.menus.minestack
 
+import io.github.iltotore.iron.autoRefine
+
 import cats.effect.IO
 import com.github.unchama.generic.MapExtra
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerReference}
@@ -26,8 +28,8 @@ object CategorizedMineStackMenu {
     val ioCanOpenSelectItemColorMenu: IO CanOpen MineStackSelectItemKindMenu,
     val onMainThread: OnMinecraftServerThread[IO],
     val mineStackAPI: MineStackAPI[IO, Player, ItemStack],
-    implicit val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
+    val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
 }
@@ -39,7 +41,6 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
     extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
-  import eu.timepit.refined.auto._
 
   /**
    * マインスタックオブジェクトボタンを置くセクションの行数

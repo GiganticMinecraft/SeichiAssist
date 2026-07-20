@@ -36,8 +36,8 @@ object NicknameShopMenu {
 
   class Environment(
     implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player],
-    implicit val ioCanOpenNicknameShopMenu: IO CanOpen NicknameShopMenu,
-    implicit val ioCanOpenNicknameMenu: IO CanOpen NickNameMenu.type
+    val ioCanOpenNicknameShopMenu: IO CanOpen NicknameShopMenu,
+    val ioCanOpenNicknameMenu: IO CanOpen NickNameMenu.type
   )
 
 }
@@ -59,9 +59,8 @@ case class NicknameShopMenu(val pageIndex: Int = 0) extends Menu {
     val nicknameShopMenuButtons = NicknameShopMenuButtons(player)
 
     import nicknameShopMenuButtons._
-    import eu.timepit.refined.auto._
-    import eu.timepit.refined.numeric.GreaterEqual
-    import eu.timepit.refined._
+    import io.github.iltotore.iron.constraint.numeric.GreaterEqual
+    import io.github.iltotore.iron.{autoRefine, refineUnsafe}
 
     val achievementRanges = Seq(9801 until 9834, 9911 until 9939)
     val achievementIdWithNicknamesToBeUnlocked =
@@ -74,7 +73,7 @@ case class NicknameShopMenu(val pageIndex: Int = 0) extends Menu {
 
     // NOTE: `length` 呼び出して 0 を下回ることはない
     val totalItems =
-      refineV[GreaterEqual[0]].unsafeFrom(achievementIdWithNicknamesToBeUnlocked.length)
+      (achievementIdWithNicknamesToBeUnlocked.length).refineUnsafe[GreaterEqual[0]]
 
     val totalNumberOfPages =
       PageCounter.totalPage(totalItems, 26)

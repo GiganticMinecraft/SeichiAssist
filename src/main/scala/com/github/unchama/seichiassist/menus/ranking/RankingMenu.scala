@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.menus.ranking
 
+import io.github.iltotore.iron.autoRefine
+
 import cats.effect.IO
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.itemstackbuilder.{
@@ -120,7 +122,6 @@ object RankingMenuTemplates {
 // TODO: Rは生のデータ型を想定しているが、何らかのenumを想定することはできるか？
 //       ここにSeichiAmountData等を書きたくない気持ちがある。
 case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) extends Menu {
-  import eu.timepit.refined.auto._
   import cats.implicits._
 
   final private val perPage = 45

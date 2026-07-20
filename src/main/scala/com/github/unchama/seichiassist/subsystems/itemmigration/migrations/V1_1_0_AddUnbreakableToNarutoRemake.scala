@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.itemmigration.migrations
 
+import io.github.iltotore.iron.autoRefine
+
 import com.github.unchama.itemmigration.bukkit.util.MigrationHelper
 import com.github.unchama.itemmigration.domain.{ItemMigration, ItemMigrationVersionNumber}
 import org.bukkit.ChatColor._
@@ -26,8 +28,6 @@ object V1_1_0_AddUnbreakableToNarutoRemake {
     val lore = itemStack.getItemMeta.getLore.asScala
     lore.contains(narutoRemake1Lore) || lore.contains(narutoRemake2Lore)
   }
-
-  import eu.timepit.refined.auto._
 
   def migrationFunction(itemStack: ItemStack): ItemStack = {
     if (!isNarutoRemake(itemStack)) return itemStack

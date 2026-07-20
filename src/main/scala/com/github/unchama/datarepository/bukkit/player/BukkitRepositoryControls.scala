@@ -38,7 +38,7 @@ case class BukkitRepositoryControls[F[_], R](
   def map[S](f: R => S): BukkitRepositoryControls[F, S] =
     BukkitRepositoryControls(repository.map(f), initializer, backupProcess, finalizer)
 
-  def coerceFinalizationContextTo[G[_]: ContextCoercion[F, *[_]]]
+  def coerceFinalizationContextTo[G[_]: [g[_]] =>> ContextCoercion[F, g]]
     : BukkitRepositoryControls[G, R] =
     transformFinalizationContext(ContextCoercion.asFunctionK)
 }

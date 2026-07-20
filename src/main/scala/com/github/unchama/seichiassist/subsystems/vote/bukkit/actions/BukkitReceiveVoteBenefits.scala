@@ -15,9 +15,9 @@ import com.github.unchama.seichiassist.subsystems.vote.domain.{
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
 import org.bukkit.entity.Player
 
-class BukkitReceiveVoteBenefits[F[_]: OnMinecraftServerThread: Sync, G[
+class BukkitReceiveVoteBenefits[F[_]: OnMinecraftServerThread: Sync, G[_]: SyncEffect: [f[
   _
-]: SyncEffect: ContextCoercion[*[_], F]](
+]] =>> ContextCoercion[f, F]](
   implicit votePersistence: VotePersistence[F],
   breakCountAPI: BreakCountAPI[F, G, Player]
 ) extends ReceiveVoteBenefits[F, Player] {

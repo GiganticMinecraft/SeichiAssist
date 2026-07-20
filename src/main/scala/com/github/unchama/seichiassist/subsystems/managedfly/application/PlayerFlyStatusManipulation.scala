@@ -9,7 +9,7 @@ import com.github.unchama.seichiassist.subsystems.managedfly.domain.{
 /**
  * プレーヤーの飛行状態に`F`の文脈で干渉する手段を与える型クラスインスタンスのtrait。
  *
- * `F` は `Kleisli[G, Player, *]` の形をしていることを想定している。
+ * `F` は `[a] =>> Kleisli[G, Player, a]` の形をしていることを想定している。
  */
 trait PlayerFlyStatusManipulation[F[_]] extends AnyRef {
 

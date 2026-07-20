@@ -17,9 +17,9 @@ object ManaBarSynchronizationRepository {
 
   import cats.implicits._
 
-  def withContext[G[_]: Sync, F[_]: ConcurrentEffect: ContextCoercion[
+  def withContext[G[_]: Sync, F[_]: ConcurrentEffect: [g[_]] =>> ContextCoercion[
     G,
-    *[_]
+    g
   ]: ErrorLogger, Player: HasUuid](
     manaApi: ManaReadApi[F, G, Player]
   )(createFreshBossBar: G[BossBarWithPlayer[F, Player]]): RepositoryDefinition[G, Player, _] = {
