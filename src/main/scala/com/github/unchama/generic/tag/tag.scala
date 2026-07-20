@@ -19,14 +19,23 @@ package com.github.unchama.generic.tag
  */
 
 object tag {
-  type @@[+T, U] = T & Tagged[U]
+
+  /**
+   * `T` に幽霊型 `U` を付与したタグ付き型。`T @@ U <: T` であり、実行時表現は `T` そのもの。
+   *
+   * NOTE(scala3): Scala 2時代はShapeless由来の交差型 `T with Tagged[U]` と
+   * `asInstanceOf` によるエンコーディングだったが、Scala 3では交差型の消去規則が
+   * 異なり、フィールドのJVM型が `Tagged` 側へ消去されて格納時に
+   * ClassCastException を起こす（実際に PluginExecutionContexts の初期化が
+   * ExceptionInInitializerError でプラグインのロードを失敗させた）。
+   * このため、消去が `T` になる上限境界付き opaque type へ変更した。
+   */
+  opaque type @@[+T, U] <: T = T
 
   def apply[U] = new Tagger[U]
 
-  trait Tagged[U]
-
   class Tagger[U] {
-    def apply[T](t: T): T @@ U = t.asInstanceOf[T @@ U]
+    def apply[T](t: T): T @@ U = t
   }
 
 }
