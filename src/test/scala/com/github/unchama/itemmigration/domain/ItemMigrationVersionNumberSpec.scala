@@ -18,6 +18,21 @@ class ItemMigrationVersionNumberSpec extends AnyWordSpec {
       assert(ItemMigrationVersionNumber(1, 10, 3).versionString == "1.10.3")
     }
 
+    "成分数は3に限らず、任意の個数のリテラルから構築できる" in {
+      // Scala 2時代のrefined.auto._と可変長引数による構築と同じ受け入れ範囲であること
+      assert(ItemMigrationVersionNumber(1, 0).versionString == "1.0")
+      assert(ItemMigrationVersionNumber(1, 2, 3, 4).versionString == "1.2.3.4")
+      assert(
+        ItemMigrationVersionNumber.fromString("1.0").contains(ItemMigrationVersionNumber(1, 0))
+      )
+    }
+
+    "負のリテラル・非リテラル・成分なしの構築はコンパイルエラーになる" in {
+      assertDoesNotCompile("ItemMigrationVersionNumber(-1, 0)")
+      assertDoesNotCompile("val runtimeValue = 1; ItemMigrationVersionNumber(runtimeValue)")
+      assertDoesNotCompile("ItemMigrationVersionNumber()")
+    }
+
     "fromStringで非負整数のドット区切りをパースできる" in {
       assert(
         ItemMigrationVersionNumber
