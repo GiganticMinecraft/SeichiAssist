@@ -16,7 +16,7 @@ import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.B
  */
 trait IncrementBuildExpWhenBuiltByHand[F[_], Player] {
 
-  def of(player: Player): F[Unit] = of(player, BuildExpAmount(1))
+  def of(player: Player): F[Unit] = of(player, BuildExpAmount.ofNonNegative(1))
 
   def of(player: Player, by: BuildExpAmount): F[Unit]
 
@@ -49,7 +49,7 @@ object IncrementBuildExpWhenBuiltByHand {
               by.mapAmount(_ * multiplier.whenInSeichiWorld),
               by
             ),
-            F.pure(BuildExpAmount(0))
+            F.pure(BuildExpAmount.ofNonNegative(0))
           )
 
         // レートリミッターで制限しないと当然無制限になるので注意！！！

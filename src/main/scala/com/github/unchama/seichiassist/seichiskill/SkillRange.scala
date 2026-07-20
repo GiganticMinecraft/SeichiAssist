@@ -64,8 +64,8 @@ object AssaultSkillRange {
     case (width, height, depth) => f(XYZTuple(width, height, depth))
   }
 
-  val armor: AssaultRangeBuilder = build(Armor)
-  val condenseWater: AssaultRangeBuilder = build(Water)
-  val condenseLava: AssaultRangeBuilder = build(Lava)
-  val condenseLiquid: AssaultRangeBuilder = build(Liquid)
+  val armor: AssaultRangeBuilder = build(Armor.apply)
+  val condenseWater: AssaultRangeBuilder = build(Water.apply)
+  val condenseLava: AssaultRangeBuilder = build(Lava.apply)
+  val condenseLiquid: AssaultRangeBuilder = build(Liquid.apply)
 }

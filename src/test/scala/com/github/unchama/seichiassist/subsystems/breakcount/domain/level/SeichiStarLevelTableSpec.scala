@@ -13,8 +13,8 @@ class SeichiStarLevelTableSpec extends AnyWordSpec with ScalaCheckPropertyChecks
     "satisfy the contract" in {
       import SeichiStarLevelTable.{expAt, levelAt}
 
-      forAll { l: SeichiStarLevel => levelAt(expAt(l)) == l }
-      forAll { e: SeichiExpAmount =>
+      forAll { (l: SeichiStarLevel) => levelAt(expAt(l)) == l }
+      forAll { (e: SeichiExpAmount) =>
         expAt(levelAt(e)) <= e && e <= expAt(levelAt(e).increment)
       }
     }

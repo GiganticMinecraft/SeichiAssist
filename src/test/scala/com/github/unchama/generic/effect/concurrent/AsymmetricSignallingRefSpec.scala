@@ -38,7 +38,7 @@ class AsymmetricSignallingRefSpec
     "signal all the changes" in {
       val initialValue: Value = 0
 
-      forAll(minSuccessful(10000)) { updates: List[Value] =>
+      forAll(minSuccessful(10000)) { (updates: List[Value]) =>
         val task = for {
           ref <- AsymmetricSignallingRef.in[Task, Task, Task, Value](initialValue)
           updateResult <-

@@ -117,7 +117,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
       val dateOpt = sql"SELECT fairy_end_time FROM vote_fairy WHERE uuid = ${player.toString}"
         .map(_.localDateTime("fairy_end_time"))
         .single()
-      dateOpt.map(FairyEndTime)
+      dateOpt.map(FairyEndTime.apply)
     }
   }
 
@@ -139,7 +139,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
           sql"SELECT given_apple_amount FROM vote_fairy WHERE uuid = ${player.toString}"
             .map(_.int("given_apple_amount"))
             .single()
-        appleAmountOpt.map(AppleAmount)
+        appleAmountOpt.map(AppleAmount.apply)
       }
     }
 

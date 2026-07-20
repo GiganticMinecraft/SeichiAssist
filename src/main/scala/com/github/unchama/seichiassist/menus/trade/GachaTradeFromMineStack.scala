@@ -191,7 +191,7 @@ case class GachaTradeFromMineStackMenu(
     private def tradeEffect(
       mineStackObject: MineStackObject[ItemStack],
       tradeAmount: Int
-    ): TargetedEffect[Player] = Kleisli { player: Player =>
+    ): TargetedEffect[Player] = Kleisli { (player: Player) =>
       for {
         tradeResult <- gachaTradeAPI.tryTradeFromMineStack(player, mineStackObject, tradeAmount)
         name <- IO.pure {

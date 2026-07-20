@@ -45,7 +45,7 @@ class PresentCommand {
     Parsers.integer(MessageEffect("presentコマンドに与えるプレゼントIDは整数である必要があります。"))
 
   private val presentScopeModeParser = Parsers.fromOptionParser(
-    { arg1: String =>
+    { (arg1: String) =>
       arg1 match {
         // enum match
         case "player" | "all" => Some(arg1)

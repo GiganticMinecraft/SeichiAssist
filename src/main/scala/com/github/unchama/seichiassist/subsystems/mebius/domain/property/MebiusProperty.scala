@@ -79,11 +79,38 @@ case class MebiusProperty private (
     loop(forcedMaterial.next)
   }
 
+  def withMebiusName(newName: String): MebiusProperty = this.copy(mebiusName = newName)
+
+  def withOwnerNicknameOverride(newNickname: String): MebiusProperty =
+    this.copy(ownerNicknameOverride = Some(newNickname))
+
   lazy val ownerNickname: String = ownerNicknameOverride.getOrElse(ownerPlayerId)
 
 }
 
 object MebiusProperty {
+
+  def of(
+    mebiusType: MebiusType,
+    ownerPlayerId: String,
+    ownerUuid: String,
+    enchantmentLevels: MebiusEnchantmentLevels,
+    forcedMaterial: MebiusForcedMaterial = MebiusForcedMaterial.None,
+    level: MebiusLevel = MebiusLevel(1),
+    ownerNicknameOverride: Option[String] = None,
+    mebiusName: String = "MEBIUS"
+  ): MebiusProperty =
+    MebiusProperty(
+      mebiusType,
+      ownerPlayerId,
+      ownerUuid,
+      enchantmentLevels,
+      forcedMaterial,
+      level,
+      ownerNicknameOverride,
+      mebiusName
+    )
+
   def initialProperty(
     mebiusType: MebiusType,
     ownerPlayerId: String,

@@ -192,7 +192,7 @@ object ContextualExecutorBuilder {
   }
 
   private val defaultSenderValidation: SenderTypeValidation[CommandSender] = {
-    sender: CommandSender => IO.pure(Some(sender))
+    (sender: CommandSender) => IO.pure(Some(sender))
   }
 
   def beginConfiguration: ContextualExecutorBuilder[CommandSender, HNil] =

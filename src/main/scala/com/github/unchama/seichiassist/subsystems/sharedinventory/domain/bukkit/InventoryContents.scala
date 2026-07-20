@@ -10,4 +10,7 @@ object InventoryContents {
 
   def ofNonEmpty(inventoryContents: NonEmptyList[ItemStack]): InventoryContents =
     InventoryContents(inventoryContents.toList)
+
+  def of(inventoryContents: List[ItemStack]): InventoryContents =
+    InventoryContents(inventoryContents)
 }

@@ -96,7 +96,7 @@ object System {
           }
 
           override def addGachaPoint(point: GachaPoint): Kleisli[F, Player, Unit] =
-            Kleisli { player: Player =>
+            Kleisli { (player: Player) =>
               ContextCoercion(
                 gachaPointRepositoryControlsRepository
                   .lift(player)
@@ -106,7 +106,7 @@ object System {
             }
 
           override def subtractGachaPoint(point: GachaPoint): Kleisli[F, Player, Unit] =
-            Kleisli { player: Player =>
+            Kleisli { (player: Player) =>
               ContextCoercion(
                 gachaPointRepositoryControlsRepository
                   .lift(player)

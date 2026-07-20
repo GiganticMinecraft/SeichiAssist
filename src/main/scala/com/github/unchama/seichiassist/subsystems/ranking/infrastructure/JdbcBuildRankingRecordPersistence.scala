@@ -21,7 +21,7 @@ class JdbcBuildRankingRecordPersistence[F[_]: Sync]
           RankingRecord(
             rs.string("name"),
             UUID.fromString(rs.string("uuid")),
-            BuildAmountData(BuildExpAmount(BigDecimal(rs.string("build_count"))))
+            BuildAmountData(BuildExpAmount.ofNonNegative(BigDecimal(rs.string("build_count"))))
           )
         }
         .list()

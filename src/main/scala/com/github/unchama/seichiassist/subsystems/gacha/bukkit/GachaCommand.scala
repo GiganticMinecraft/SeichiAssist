@@ -225,7 +225,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
 
         val player = context.sender
         val probability :: HNil = context.args.parsed
-        val eventName = context.args.yetToBeParsed.headOption.map(GachaEventName)
+        val eventName = context.args.yetToBeParsed.headOption.map(GachaEventName.apply)
         val mainHandItem = player.getInventory.getItemInMainHand
 
         Kleisli
@@ -248,7 +248,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
 
     val list: ContextualExecutor =
       ContextualExecutorBuilder.beginConfiguration.buildWithExecutionCSEffect { context =>
-        val eventName = context.args.yetToBeParsed.headOption.map(GachaEventName)
+        val eventName = context.args.yetToBeParsed.headOption.map(GachaEventName.apply)
         Kleisli.liftF(gachaPrizeAPI.allGachaPrizeList).flatMap { gachaPrizes =>
           val eventGachaPrizes = gachaPrizes.filter { gachaPrize =>
             if (eventName.isEmpty) gachaPrize.nonGachaEventItem

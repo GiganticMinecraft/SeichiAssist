@@ -38,7 +38,7 @@ object AchievementConditions {
   }
 
   def brokenBlockRankingPosition_<=(n: Int): AchievementCondition[Int] = {
-    val predicate: PlayerPredicate = { player: Player =>
+    val predicate: PlayerPredicate = { (player: Player) =>
       SeichiAssist
         .instance
         .rankingSystemApi
@@ -56,7 +56,7 @@ object AchievementConditions {
     amount: BigDecimal,
     localizedAmount: String
   ): AchievementCondition[String] = {
-    val predicate: PlayerPredicate = { player: Player =>
+    val predicate: PlayerPredicate = { (player: Player) =>
       BuildAssist
         .instance
         .buildAmountDataRepository(player)
