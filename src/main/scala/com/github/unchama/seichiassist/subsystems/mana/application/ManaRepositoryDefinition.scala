@@ -22,8 +22,8 @@ object ManaRepositoryDefinition {
 
   import cats.implicits._
 
-  def withContext[F[_]: ConcurrentEffect: ErrorLogger, G[_]: Sync: ContextCoercion[
-    *[_],
+  def withContext[F[_]: ConcurrentEffect: ErrorLogger, G[_]: Sync: [f[_]] =>> ContextCoercion[
+    f,
     F
   ], Player: HasUuid](
     publishChanges: fs2.Pipe[F, (Player, LevelCappedManaAmount), Unit],

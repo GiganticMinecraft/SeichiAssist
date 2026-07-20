@@ -35,8 +35,8 @@ object NicknameCombinationMenu {
 
   class Environment(
     implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player],
-    implicit val ioCanOpenNicknameCombinationMenu: IO CanOpen NicknameCombinationMenu,
-    implicit val ioCanOpenNicknameMenu: IO CanOpen NickNameMenu.type
+    val ioCanOpenNicknameCombinationMenu: IO CanOpen NicknameCombinationMenu,
+    val ioCanOpenNicknameMenu: IO CanOpen NickNameMenu.type
   )
 
   sealed trait NicknamePart {

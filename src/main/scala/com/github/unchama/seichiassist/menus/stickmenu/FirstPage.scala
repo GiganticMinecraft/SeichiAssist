@@ -79,7 +79,6 @@ object FirstPage extends Menu {
     onMainThread
   }
   import com.github.unchama.targetedeffect.player.PlayerEffects._
-  import eu.timepit.refined.auto._
 
   class Environment(
     implicit val breakCountAPI: BreakCountReadAPI[IO, SyncIO, Player],
@@ -105,7 +104,7 @@ object FirstPage extends Menu {
     val gachaTicketAPI: GachaTicketAPI[IO],
     val voteAPI: VoteAPI[IO, Player],
     val nonServerThreadContextShift: NonServerThreadContextShift[IO],
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   override val frame: MenuFrame =

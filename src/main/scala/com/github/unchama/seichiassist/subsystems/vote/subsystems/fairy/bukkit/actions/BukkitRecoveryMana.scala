@@ -27,10 +27,10 @@ import java.time.ZoneId
 import scala.concurrent.duration.FiniteDuration
 import scala.util.Random
 
-class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: ContextCoercion[*[_], F]](
-  player: Player,
-  fairySpeech: FairySpeech[F, Player]
-)(
+class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: [f[_]] =>> ContextCoercion[
+  f,
+  F
+]](player: Player, fairySpeech: FairySpeech[F, Player])(
   implicit manaApi: ManaApi[F, G, Player],
   fairyPersistence: FairyPersistence[F],
   mineStackAPI: MineStackAPI[F, Player, ItemStack],

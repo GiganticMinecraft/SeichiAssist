@@ -1,6 +1,5 @@
 package com.github.unchama.itemmigration.domain
 
-import eu.timepit.refined.auto._
 import org.scalatest.wordspec.AnyWordSpec
 
 /**

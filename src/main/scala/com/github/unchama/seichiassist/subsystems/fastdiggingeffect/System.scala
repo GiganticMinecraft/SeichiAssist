@@ -72,10 +72,10 @@ object System {
 
   def wired[G[_]: SyncEffect, F[
     _
-  ]: OnMinecraftServerThread: Timer: ConcurrentEffect: ErrorLogger: ContextCoercion[
+  ]: OnMinecraftServerThread: Timer: ConcurrentEffect: ErrorLogger: [g[_]] =>> ContextCoercion[
     G,
-    *[_]
-  ]: GetConnectedPlayers[*[_], Player]: GetNetworkConnectionCount, H[_]](
+    g
+  ]: [f[_]] =>> GetConnectedPlayers[f, Player]: GetNetworkConnectionCount, H[_]](
     implicit breakCountReadAPI: BreakCountReadAPI[F, H, Player],
     config: Configuration
   ): F[System[F, F, Player]] = {

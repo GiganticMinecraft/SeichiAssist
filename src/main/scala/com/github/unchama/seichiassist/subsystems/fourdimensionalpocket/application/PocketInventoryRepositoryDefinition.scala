@@ -35,10 +35,12 @@ object PocketInventoryRepositoryDefinition {
   type RepositoryValue[F[_], G[_], Inventory] =
     (Mutex[F, G, Inventory], Deferred[F, Fiber[F, Nothing]])
 
-  def withContext[F[_]: ConcurrentEffect: ErrorLogger, G[_]: Sync: ContextCoercion[
-    *[_],
-    F
-  ], Player: HasUuid, Inventory: CreateInventory[G, *]: InteractInventory[F, Player, *]](
+  def withContext[
+    F[_]: ConcurrentEffect: ErrorLogger,
+    G[_]: Sync: [f[_]] =>> ContextCoercion[f, F],
+    Player: HasUuid,
+    Inventory: [a] =>> CreateInventory[G, a]: [a] =>> InteractInventory[F, Player, a]
+  ](
     persistence: PocketInventoryPersistence[G, Inventory],
     levelStream: fs2.Stream[F, (Player, Diff[SeichiLevel])]
   ): RepositoryDefinition[G, Player, RepositoryValue[F, G, Inventory]] =

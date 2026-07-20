@@ -27,8 +27,6 @@ import org.bukkit.entity.Player
 
 object AchievementCategoryMenu {
 
-  import eu.timepit.refined.auto._
-
   type AchievementGroupRepr = (AchievementGroup, Material)
 
   val groupsLayoutFor: AchievementCategory => Map[Int, AchievementGroupRepr] = {
@@ -82,7 +80,7 @@ object AchievementCategoryMenu {
   class Environment(
     implicit val ioCanOpenAchievementMainMenu: IO CanOpen AchievementMenu.type,
     val ioCanOpenAchievementGroupMenu: IO CanOpen AchievementGroupMenu,
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
 }
@@ -99,7 +97,6 @@ case class AchievementCategoryMenu(category: AchievementCategory) extends Menu {
     player: Player
   )(implicit environment: Environment): IO[MenuSlotLayout] = {
     import environment._
-    import eu.timepit.refined.auto._
 
     val groupButtons =
       groupsLayoutFor(category).view.mapValues(repr => buttonFor(repr)).toMap

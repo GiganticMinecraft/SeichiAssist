@@ -22,7 +22,6 @@ import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import shapeless.HNil
 
 object MineStackCommand {
   def executor(
@@ -86,8 +85,7 @@ object MineStackCommand {
           )
         )
         .buildWith { context =>
-          import shapeless.::
-          val categoryOpt :: page :: HNil = context.args.parsed
+          val (categoryOpt, page) = context.args.parsed
 
           IO.pure {
             categoryOpt.fold(ioCanOpenMinestackMainMenu.open(MineStackMainMenu)) { category =>

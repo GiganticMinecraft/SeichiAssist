@@ -26,7 +26,7 @@ object IncrementSeichiExp {
   /**
    * 与えられたデータレポジトリと更新を流すトピックを用いてプレーヤーの整地量を増加させるような 代数を作成する。
    */
-  def using[F[_]: Sync: ClassifyPlayerWorld[*[_], Player], G[_]: Effect, Player](
+  def using[F[_]: Sync: [f[_]] =>> ClassifyPlayerWorld[f, Player], G[_]: Effect, Player](
     dataRepository: KeyedDataRepository[Player, Ref[F, SeichiAmountData]],
     dataTopic: Fs3Topic[G, Option[(Player, SeichiAmountData)]]
   ): IncrementSeichiExp[F, Player] =

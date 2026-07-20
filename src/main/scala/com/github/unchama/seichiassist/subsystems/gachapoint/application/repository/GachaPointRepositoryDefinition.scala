@@ -27,7 +27,7 @@ object GachaPointRepositoryDefinition {
 
   import cats.implicits._
 
-  def withContext[G[_]: Sync: ContextCoercion[*[_], F], F[
+  def withContext[G[_]: Sync: [f[_]] =>> ContextCoercion[f, F], F[
     _
   ]: Concurrent: Timer, Player: HasUuid](persistence: GachaPointPersistence[G])(
     grantEffectFactory: Player => GrantGachaTicketToAPlayer[F]

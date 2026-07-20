@@ -285,13 +285,13 @@ object Nicknames {
   val getNicknameFor: AchievementId => Option[NicknamesToBeUnlocked] = Nicknames.map.get
 
   def getHeadPartFor(achievementId: AchievementId): Option[PartialNickname] =
-    getNicknameFor(achievementId).flatMap(_.head())
+    getNicknameFor(achievementId).flatMap(_.head)
 
   def getMiddlePartFor(achievementId: AchievementId): Option[PartialNickname] =
-    getNicknameFor(achievementId).flatMap(_.middle())
+    getNicknameFor(achievementId).flatMap(_.middle)
 
   def getTailPartFor(achievementId: AchievementId): Option[PartialNickname] =
-    getNicknameFor(achievementId).flatMap(_.tail())
+    getNicknameFor(achievementId).flatMap(_.tail)
 
   /**
    * @deprecated
@@ -326,11 +326,11 @@ object Nicknames {
  * この構造で持たれる二つ名は、対応する実績を解除、または対応する二つ名を購入していれば、 二つ名組み合わせ設定で使用できるようになる。
  */
 sealed trait NicknamesToBeUnlocked {
-  def head(): Option[String]
+  def head: Option[String]
 
-  def middle(): Option[String]
+  def middle: Option[String]
 
-  def tail(): Option[String]
+  def tail: Option[String]
 }
 
 case class HeadTail(private val _head: String, private val _tail: String)
