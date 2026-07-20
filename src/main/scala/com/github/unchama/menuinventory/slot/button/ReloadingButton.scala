@@ -17,14 +17,12 @@ object ReloadingButton {
     ctx: LayoutPreparationContext,
     onMainThread: OnMinecraftServerThread[IO]
   ): Button = {
-    button.withAnotherEffect(
-      ButtonEffect(scope => {
-        val clicker = scope.event.getWhoClicked.asInstanceOf[Player]
-        Kleisli.liftF(for {
-          newLayout <- menu.computeMenuLayout(clicker)
-          _ <- scope.overwriteCurrentViewBy(newLayout)
-        } yield ())
-      })
-    )
+    button.withAnotherEffect(ButtonEffect(scope => {
+      val clicker = scope.event.getWhoClicked.asInstanceOf[Player]
+      Kleisli.liftF(for {
+        newLayout <- menu.computeMenuLayout(clicker)
+        _ <- scope.overwriteCurrentViewBy(newLayout)
+      } yield ())
+    }))
   }
 }

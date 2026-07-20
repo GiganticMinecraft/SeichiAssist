@@ -26,12 +26,10 @@ object SeichiAssistCommand {
 
   private val reloadConfigExecutor = ContextualExecutorBuilder
     .beginConfiguration
-    .buildWithEffectAsExecution(
-      UnfocusedEffect {
-        SeichiAssist.seichiAssistConfig = Config.loadFrom(SeichiAssist.instance)
-        MessageEffect("config.ymlの設定値を再読み込みしました")
-      }
-    )
+    .buildWithEffectAsExecution(UnfocusedEffect {
+      SeichiAssist.seichiAssistConfig = Config.loadFrom(SeichiAssist.instance)
+      MessageEffect("config.ymlの設定値を再読み込みしました")
+    })
 
   private val toggleDebugExecutor = ContextualExecutorBuilder
     .beginConfiguration
@@ -62,16 +60,14 @@ object SeichiAssistCommand {
   private val setAnniversaryFlagExecutor = ContextualExecutorBuilder
     .beginConfiguration
     .refineSenderWithError[ConsoleCommandSender]("コンソール専用コマンドです")
-    .buildWithEffectAsExecution(
-      UnfocusedEffect {
-        SeichiAssist
-          .databaseGateway
-          .playerDataManipulator
-          .setAnniversary(anniversary = true, null)
+    .buildWithEffectAsExecution(UnfocusedEffect {
+      SeichiAssist
+        .databaseGateway
+        .playerDataManipulator
+        .setAnniversary(anniversary = true, null)
 
-        MessageEffect("Anniversaryアイテムの配布を開始しました。")
-      }
-    )
+      MessageEffect("Anniversaryアイテムの配布を開始しました。")
+    })
 
   val executor: TabExecutor = BranchedExecutor(
     Map(
