@@ -197,7 +197,12 @@ lazy val root = (project in file(".")).settings(
     "-deprecation",
     // enumeratumのfindValuesがマクロでコンパニオンのツリーを参照するため
     "-Yretain-trees",
-    "-Wunused:all"
+    "-Wunused:all",
+    // implicit valの初期化が自分自身を暗黙引数として解決すると、フィールドに
+    // 未初期化のnullが格納される実行時バグになる（例: 匿名クラス内の
+    // `override protected implicit val F: Monad[F] = implicitly`）。
+    // この種の警告は見逃すと危険なため、コンパイルエラーへ昇格させる。
+    "-Wconf:msg=Infinite loop in function body:e"
   ),
   javacOptions ++= Seq("-encoding", "utf8"),
   assembly / assemblyShadeRules ++= Seq(
