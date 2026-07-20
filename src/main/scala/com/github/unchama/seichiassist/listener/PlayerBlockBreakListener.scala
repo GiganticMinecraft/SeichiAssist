@@ -356,15 +356,13 @@ class PlayerBlockBreakListener(
         .tryIntoMineStack(player, amalgamatedDrops)
       _ <- PluginExecutionContexts
         .onMainThread
-        .runAction(
-          SyncIO {
-            event.setDropItems(false)
-            intoMineStackResult
-              ._1
-              .filterNot(_.getType == Material.AIR)
-              .foreach(player.getWorld.dropItemNaturally(player.getLocation, _))
-          }
-        )
+        .runAction(SyncIO {
+          event.setDropItems(false)
+          intoMineStackResult
+            ._1
+            .filterNot(_.getType == Material.AIR)
+            .foreach(player.getWorld.dropItemNaturally(player.getLocation, _))
+        })
     } yield ()
 
     // NOTE: Spigot 1.18.2のAPIではチェストの中身のドロップを計算することは不可能である。

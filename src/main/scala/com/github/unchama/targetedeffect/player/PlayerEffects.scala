@@ -38,22 +38,20 @@ object PlayerEffects {
   )(implicit onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] =
     Kleisli { player =>
       // BungeeCordのサーバ移動はサーバスレッドでなければならない(Spigot 1.12.2)
-      onMainThread.runAction(
-        SyncIO {
+      onMainThread.runAction(SyncIO {
 
-          import com.google.common.io.ByteStreams
+        import com.google.common.io.ByteStreams
 
-          val byteArrayDataOutput = ByteStreams.newDataOutput()
-          import byteArrayDataOutput._
-          writeUTF("Connect")
-          writeUTF(serverIdentifier)
-          player.sendPluginMessage(
-            SeichiAssist.instance,
-            "BungeeCord",
-            byteArrayDataOutput.toByteArray
-          )
-        }
-      )
+        val byteArrayDataOutput = ByteStreams.newDataOutput()
+        import byteArrayDataOutput._
+        writeUTF("Connect")
+        writeUTF(serverIdentifier)
+        player.sendPluginMessage(
+          SeichiAssist.instance,
+          "BungeeCord",
+          byteArrayDataOutput.toByteArray
+        )
+      })
     }
 
 }

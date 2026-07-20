@@ -50,23 +50,21 @@ object LaunchFireWorksEffect {
     // 爆発後に尾を引くかをランダムに決める
     effect.trail(rand.nextBoolean())
 
-    OnMinecraftServerThread[F].runAction(
-      SyncIO {
-        // 花火を作る
-        val firework = loc.getWorld.spawn(loc, classOf[Firework])
+    OnMinecraftServerThread[F].runAction(SyncIO {
+      // 花火を作る
+      val firework = loc.getWorld.spawn(loc, classOf[Firework])
 
-        // 花火の設定情報オブジェクトを取り出す
-        val meta = firework.getFireworkMeta
+      // 花火の設定情報オブジェクトを取り出す
+      val meta = firework.getFireworkMeta
 
-        // 打ち上げ高さを1以上4以内でランダムに決める
-        meta.setPower(1 + rand.nextInt(4))
+      // 打ち上げ高さを1以上4以内でランダムに決める
+      meta.setPower(1 + rand.nextInt(4))
 
-        // 花火の設定情報を花火に設定
-        meta.addEffect(effect.build())
+      // 花火の設定情報を花火に設定
+      meta.addEffect(effect.build())
 
-        firework.setFireworkMeta(meta)
-      }
-    )
+      firework.setFireworkMeta(meta)
+    })
   }
 
 }

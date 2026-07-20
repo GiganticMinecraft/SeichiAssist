@@ -325,17 +325,15 @@ object BreakUtil {
 
       _ <- PluginExecutionContexts
         .onMainThread
-        .runAction(
-          SyncIO {
-            // アイテムドロップは非同期スレッドで行ってはならない
-            itemsToBeDropped
-              .filterNot(_.getType == Material.AIR)
-              .foreach(dropLocation.getWorld.dropItemNaturally(dropLocation, _))
-            breakResults._2.foreach { location =>
-              location.getWorld.spawnEntity(location, EntityType.SILVERFISH)
-            }
+        .runAction(SyncIO {
+          // アイテムドロップは非同期スレッドで行ってはならない
+          itemsToBeDropped
+            .filterNot(_.getType == Material.AIR)
+            .foreach(dropLocation.getWorld.dropItemNaturally(dropLocation, _))
+          breakResults._2.foreach { location =>
+            location.getWorld.spawnEntity(location, EntityType.SILVERFISH)
           }
-        )
+        })
     } yield ()
   }
 
