@@ -1,5 +1,4 @@
 import ResourceFilter.filterResources
-import sbt.Keys.baseDirectory
 
 import java.io._
 
@@ -29,6 +28,7 @@ Compile / testOptions += Tests.Argument("-oS")
 // region 依存関係
 
 resolvers ++= Seq(
+  // ajd4jpのミラーのため
   "jitpack.io" at "https://jitpack.io",
   "maven.sk89q.com" at "https://maven.enginehub.org/repo/",
   "maven.playpro.com" at "https://maven.playpro.com",
@@ -37,9 +37,7 @@ resolvers ++= Seq(
   "repo.maven.apache.org" at "https://repo.maven.apache.org/maven2",
   "hub.spigotmc.org" at "https://hub.spigotmc.org/nexus/content/repositories/snapshots",
   "oss.sonatype.org" at "https://oss.sonatype.org/content/repositories/snapshots",
-  "repo.phoenix616.dev" at "https://repo.phoenix616.dev", // authlibのための
-  // ajd4jpのミラーのため
-  "jitpack.io" at "https://jitpack.io"
+  "repo.phoenix616.dev" at "https://repo.phoenix616.dev" // authlibのため
 )
 
 val providedDependencies = Seq(
@@ -52,11 +50,6 @@ val providedDependencies = Seq(
   "net.coreprotect" % "coreprotect" % "21.3",
   "com.mojang" % "authlib" % "6.0.59"
 ).map(_ % "provided")
-
-// NOTE(scala3): src/scalafix配下のカスタムルール2つ（.scalafix.confにもCIにも未参照）は、
-// scalafix-coreがScala 2.13向けにのみ公開されておりScala 3コンパイラでは
-// コンパイルできないため、Scala 3移行に伴い配線を外している。
-// 再度有効化する場合は、ルールを別プロジェクトに切り出して2.13でクロスビルドする必要がある。
 
 val testDependencies = Seq(
   "org.scalamock" %% "scalamock" % "6.2.0",
@@ -186,7 +179,10 @@ lazy val root = (project in file(".")).settings(
   name := "SeichiAssist",
   assembly / assemblyOutputPath := baseDirectory.value / "target" / "build" / "SeichiAssist.jar",
   libraryDependencies := providedDependencies ++ testDependencies ++ dependenciesToEmbed,
-  // src/scalafix配下のカスタムルールのコンパイルを無効化する（依存関係セクションのNOTE参照）
+  // src/scalafix配下のカスタムルール2つ（.scalafix.confにもCIにも未参照）のコンパイルを
+  // 無効化する。scalafix-coreはScala 2.13向けにのみ公開されており、Scala 3コンパイラでは
+  // コンパイルできない。再度有効化する場合は、ルールを別プロジェクトへ切り出して
+  // 2.13でクロスビルドする必要がある。
   ScalafixConfig / sources := Nil,
   excludeDependencies := Seq(ExclusionRule(organization = "org.bukkit", name = "bukkit")),
   unmanagedBase := baseDirectory.value / "localDependencies",
@@ -212,11 +208,9 @@ lazy val root = (project in file(".")).settings(
       )
       .inAll
   ),
-  // sbt-assembly 1.0.0からはTestを明示的にタスクツリーに入れる必要がある
-  // cf. https://github.com/sbt/sbt-assembly/pull/432/commits/361224a6202856bc2e572df811d0e6a1f1efda98
-  // NOTE: assemblyタスクが参照するのは `assembly / test` スコープである。
-  // 以前は `Compile / assembly / test` に配線されており、assemblyの実行時に
-  // テストが走っていなかった（CIのassemblyだけではテストが実行されない状態だった）。
+  // assemblyの実行時にテストを走らせる（sbt-assembly 1.0.0からはデフォルトで実行されない）。
+  // assemblyタスクが参照するのは `assembly / test` スコープであることに注意。
+  // 誤って `Compile / assembly / test` へ配線するとテストが実行されないままassemblyが成功する。
   assembly / test := (Test / test).value
 )
 
