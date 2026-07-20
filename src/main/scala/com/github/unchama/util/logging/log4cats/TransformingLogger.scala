@@ -1,6 +1,6 @@
 package com.github.unchama.util.logging.log4cats
 
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 
 class TransformingLogger[F[_]: Logger](f: String => String) extends Logger[F] {
   override def error(t: Throwable)(message: => String): F[Unit] = Logger[F].error(t)(f(message))

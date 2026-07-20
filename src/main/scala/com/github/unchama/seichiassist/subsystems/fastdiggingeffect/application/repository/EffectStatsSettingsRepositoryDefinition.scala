@@ -19,7 +19,7 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.stats
 }
 import fs2.Pipe
 import io.chrisdavenport.cats.effect.time.JavaTime
-import io.chrisdavenport.log4cats.ErrorLogger
+import org.typelevel.log4cats.ErrorLogger
 
 object EffectStatsSettingsRepositoryDefinition {
 

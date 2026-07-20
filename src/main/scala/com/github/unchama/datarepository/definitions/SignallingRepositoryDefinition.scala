@@ -10,7 +10,7 @@ import com.github.unchama.generic.effect.concurrent.AsymmetricSignallingRef
 import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.minecraft.algebra.HasUuid
 import fs2.Pipe
-import io.chrisdavenport.log4cats.ErrorLogger
+import org.typelevel.log4cats.ErrorLogger
 
 object SignallingRepositoryDefinition {
 

@@ -3,8 +3,8 @@ package com.github.unchama.concurrent
 import cats.effect.{Sync, Timer}
 import cats.{Monad, MonadError}
 import com.github.unchama.generic.{ApplicativeErrorThrowableExtra}
-import io.chrisdavenport.log4cats.ErrorLogger
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import org.typelevel.log4cats.ErrorLogger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 
 import scala.concurrent.duration.FiniteDuration
 

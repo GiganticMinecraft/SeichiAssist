@@ -21,7 +21,7 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.{
 }
 import com.github.unchama.seichiassist.subsystems.breakcount.infrastructure.JdbcSeichiAmountDataPersistence
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
-import io.chrisdavenport.log4cats.ErrorLogger
+import org.typelevel.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 
 import java.util.UUID

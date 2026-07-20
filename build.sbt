@@ -78,7 +78,7 @@ val scalafixCoreDep =
 val testDependencies = Seq(
   "org.scalamock" %% "scalamock" % "6.2.0",
   "org.scalatest" %% "scalatest" % "3.2.20",
-  "org.scalatestplus" %% "scalacheck-1-14" % "3.2.2.0",
+  "org.scalatestplus" %% "scalacheck-1-19" % "3.2.20.0",
   // テスト用のTestSchedulerを使うため
   "io.monix" %% "monix" % "3.4.1"
 ).map(_ % "test")
@@ -101,14 +101,13 @@ val dependenciesToEmbed = Seq(
   "co.fs2" %% "fs2-core" % "2.5.13",
 
   // algebra
-  "io.chrisdavenport" %% "log4cats-core" % "1.1.1",
-  "io.chrisdavenport" %% "log4cats-slf4j" % "1.1.1",
-  "io.chrisdavenport" %% "cats-effect-time" % "0.1.2",
+  "org.typelevel" %% "log4cats-core" % "1.7.0",
+  "org.typelevel" %% "log4cats-slf4j" % "1.7.0",
+  "io.chrisdavenport" %% "cats-effect-time" % "0.1.3",
 
   // logging
   "org.slf4j" % "slf4j-api" % "1.7.36",
   "org.slf4j" % "slf4j-jdk14" % "1.7.36",
-  "com.typesafe.scala-logging" % "scala-logging-slf4j_2.10" % "2.1.2",
 
   // type-safety utils
   "eu.timepit" %% "refined" % "0.11.4",
