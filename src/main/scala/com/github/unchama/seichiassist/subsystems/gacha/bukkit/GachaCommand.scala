@@ -27,14 +27,13 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
 import com.github.unchama.seichiassist.subsystems.gachaprize.{GachaPrizeAPI, domain}
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
-import eu.timepit.refined.api.Refined
-import eu.timepit.refined.auto._
-import eu.timepit.refined.numeric.{Interval, NonNegative, Positive}
+import io.github.iltotore.iron.:|
+
+import io.github.iltotore.iron.constraint.numeric.{GreaterEqual, Interval, Positive}
 import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import shapeless.HNil
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -112,11 +111,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
 
     private val gachaPrizeIdExistsParser: SingleArgumentParser[GachaPrizeId] =
       Parsers
-        .closedRangeInt[Int Refined Positive](
-          1,
-          Int.MaxValue,
-          MessageEffect("IDは正の値を指定してください。")
-        )
+        .closedRangeInt[Int :| Positive](1, Int.MaxValue, MessageEffect("IDは正の値を指定してください。"))
         .andThen(_.flatMap { intId =>
           val id = GachaPrizeId(intId)
 
@@ -145,17 +140,16 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
       .thenParse(Parsers.identity)
       .thenParse(s =>
         Parsers
-          .closedRangeInt[Int Refined Positive](
+          .closedRangeInt[Int :| Positive](
             1,
             Int.MaxValue,
             MessageEffect("配布するガチャ券の枚数は正の値を指定してください。")
           )
           .apply(s)
-          .map(r => GachaTicketAmount(r.value))
+          .map(r => GachaTicketAmount(r))
       )
       .buildWithExecutionCSEffect { context =>
-        import shapeless.::
-        val selector :: amount :: HNil = context.args.parsed
+        val (selector, amount) = context.args.parsed
         selector match {
           case "all" =>
             Kleisli
@@ -187,15 +181,14 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
     val giveItem: ContextualExecutor =
       playerCommandBuilder
         .thenParse(
-          Parsers.closedRangeInt[Int Refined NonNegative](
+          Parsers.closedRangeInt[Int :| GreaterEqual[0]](
             0,
             Int.MaxValue,
             MessageEffect("IDは0以上の整数を指定してください。")
           )
         )
         .buildWithExecutionCSEffect { context =>
-          import shapeless.::
-          val gachaPrizeId :: shapeless.HNil = context.args.parsed
+          val gachaPrizeId = context.args.parsed.head
           // optional
           val ownerName = context.args.yetToBeParsed.headOption
 
@@ -221,10 +214,8 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
 
     val add: ContextualExecutor =
       playerCommandBuilder.thenParse(probabilityParser).buildWithExecutionCSEffect { context =>
-        import shapeless.::
-
         val player = context.sender
-        val probability :: HNil = context.args.parsed
+        val probability = context.args.parsed.head
         val eventName = context.args.yetToBeParsed.headOption.map(GachaEventName.apply)
         val mainHandItem = player.getInventory.getItemInMainHand
 
@@ -301,11 +292,8 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
     val remove: ContextualExecutor = ContextualExecutorBuilder
       .beginConfiguration
       .thenParse(
-        Parsers.closedRangeInt[Int Refined Positive](
-          1,
-          Int.MaxValue,
-          MessageEffect("IDは正の値を指定してください。")
-        )
+        Parsers
+          .closedRangeInt[Int :| Positive](1, Int.MaxValue, MessageEffect("IDは正の値を指定してください。"))
       )
       .buildWithExecutionCSEffect { context =>
         val gachaId = GachaPrizeId(context.args.parsed.head)
@@ -324,15 +312,14 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
         .beginConfiguration
         .thenParse(gachaPrizeIdExistsParser)
         .thenParse(
-          Parsers.closedRangeInt[Int Refined Interval.Closed[1, 64]](
+          Parsers.closedRangeInt[Int :| Interval.Closed[1, 64]](
             1,
             64,
             MessageEffect("数は1～64で指定してください。")
           )
         )
         .buildWithExecutionCSEffect { context =>
-          import shapeless.::
-          val targetId :: amount :: HNil = context.args.parsed
+          val (targetId, amount) = context.args.parsed
 
           Kleisli
             .liftF(for {
@@ -360,8 +347,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
       .thenParse(gachaPrizeIdExistsParser)
       .thenParse(probabilityParser)
       .buildWithExecutionCSEffect { context =>
-        import shapeless.::
-        val targetId :: newProb :: HNil = context.args.parsed
+        val (targetId, newProb) = context.args.parsed
 
         (for {
           currentGachaPrize <- Kleisli.liftF(gachaPrizeAPI.fetch(targetId))
@@ -389,8 +375,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
         .thenParse(Parsers.identity)
         .thenParse(Parsers.identity)
         .buildWithExecutionCSEffect { context =>
-          import shapeless.::
-          val e :: startDate :: endDate :: HNil = context.args.parsed
+          val (e, startDate, endDate) = context.args.parsed
           val eventName = GachaEventName(e)
 
           val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -455,8 +440,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
     val replaceGachaPrize: ContextualExecutor =
       playerCommandBuilder.thenParse(gachaPrizeIdExistsParser).buildWithExecutionCSEffect {
         context =>
-          import shapeless.::
-          val targetId :: HNil = context.args.parsed
+          val targetId = context.args.parsed.head
 
           Kleisli
             .liftF[F, CommandSender, Unit] {

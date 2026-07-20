@@ -2,8 +2,8 @@ package com.github.unchama.generic.ratelimiting
 
 import cats.effect.Timer
 import com.github.unchama.testutil.concurrent.tests.TaskDiscreteEventually
-import eu.timepit.refined.numeric.NonNegative
-import eu.timepit.refined.refineV
+import io.github.iltotore.iron.constraint.numeric.GreaterEqual
+import io.github.iltotore.iron.refineUnsafe
 import monix.catnap.SchedulerEffect
 import monix.eval.Task
 import monix.execution.ExecutionModel
@@ -18,7 +18,6 @@ class FixedWindowRateLimiterSpec
     with TaskDiscreteEventually {
 
   import cats.implicits._
-  import eu.timepit.refined.auto._
 
   import scala.concurrent.duration._
 
@@ -26,7 +25,7 @@ class FixedWindowRateLimiterSpec
     seed: Int
   )(implicit monixTimer: Timer[Task]): Task[RateLimiter[Task, Natural]] = {
     val random = new Random(seed)
-    val maxPermit = refineV[NonNegative].unsafeFrom(random.nextInt(1000))
+    val maxPermit = (random.nextInt(1000).refineUnsafe[GreaterEqual[0]])
     val sleepTime = random.nextInt(60000).millis
 
     FixedWindowRateLimiter.in[Task, Natural](maxPermit, sleepTime)
@@ -46,15 +45,17 @@ class FixedWindowRateLimiterSpec
     keepPermitsEqual()
 
     "block requests exceeding limits" in {
-      val maxCount: Natural = 10
-      val requestCount: Natural = 100
+      val maxCount: Natural = (10).refineUnsafe[GreaterEqual[0]]
+      val requestCount: Natural = (100).refineUnsafe[GreaterEqual[0]]
 
       val program = for {
         rateLimiter <- FixedWindowRateLimiter.in[Task, Natural](maxCount, 1.minute)
-        allowances <- (1 to requestCount).toList.traverse(_ => rateLimiter.requestPermission(1))
+        allowances <- (1 to requestCount)
+          .toList
+          .traverse(_ => rateLimiter.requestPermission((1).refineUnsafe[GreaterEqual[0]]))
       } yield {
-        assert(allowances.take(maxCount).forall(_ == (1: Natural)))
-        assert(allowances.drop(maxCount).forall(_ == (0: Natural)))
+        assert(allowances.take(maxCount).forall(_ == (1).refineUnsafe[GreaterEqual[0]]))
+        assert(allowances.drop(maxCount).forall(_ == (0).refineUnsafe[GreaterEqual[0]]))
         ()
       }
 
@@ -62,13 +63,17 @@ class FixedWindowRateLimiterSpec
     }
 
     "reset back to accepting request when the specified time passes" in {
-      val maxCount: Natural = 10
+      val maxCount: Natural = (10).refineUnsafe[GreaterEqual[0]]
 
       val program = for {
         rateLimiter <- FixedWindowRateLimiter.in[Task, Natural](maxCount, 1.minute)
-        _ <- (1 to maxCount).toList.traverse(_ => rateLimiter.requestPermission(1))
+        _ <- (1 to maxCount)
+          .toList
+          .traverse(_ => rateLimiter.requestPermission((1).refineUnsafe[GreaterEqual[0]]))
         _ <- monixTimer.sleep(1.minute + 1.second)
-        allowed <- rateLimiter.requestPermission(1).map(_ == (1: Natural))
+        allowed <- rateLimiter
+          .requestPermission((1).refineUnsafe[GreaterEqual[0]])
+          .map(_ == (1).refineUnsafe[GreaterEqual[0]])
       } yield {
         assert(allowed)
       }
@@ -77,7 +82,7 @@ class FixedWindowRateLimiterSpec
     }
 
     "reset back to accepting request as long as the specified time passes" in {
-      val maxCount: Natural = 5
+      val maxCount: Natural = (5).refineUnsafe[GreaterEqual[0]]
       val windowCount = 5
 
       val program = for {
@@ -87,11 +92,12 @@ class FixedWindowRateLimiterSpec
           .traverse(_ =>
             (1 to maxCount)
               .toList
-              .traverse(_ => rateLimiter.requestPermission(1))
+              .traverse(_ => rateLimiter.requestPermission((1).refineUnsafe[GreaterEqual[0]]))
               .flatTap(_ => monixTimer.sleep(1.minute + 1.second))
           )
       } yield {
-        val expected = List.fill(windowCount * maxCount)(1: Natural)
+        val expected =
+          List.fill(windowCount * maxCount)((1).refineUnsafe[GreaterEqual[0]]: Natural)
         assert(allowances.flatten == expected)
         ()
       }

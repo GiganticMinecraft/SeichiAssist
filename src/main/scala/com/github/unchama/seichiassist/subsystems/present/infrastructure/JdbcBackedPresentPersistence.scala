@@ -5,9 +5,9 @@ import cats.effect.Sync
 import com.github.unchama.generic.MapExtra
 import com.github.unchama.seichiassist.subsystems.present.domain.OperationResult.DeleteResult
 import com.github.unchama.seichiassist.subsystems.present.domain._
-import eu.timepit.refined.api.Refined
-import eu.timepit.refined.auto._
-import eu.timepit.refined.numeric.Positive
+import io.github.iltotore.iron.:|
+
+import io.github.iltotore.iron.constraint.numeric.Positive
 import org.bukkit.inventory.ItemStack
 import scalikejdbc._
 
@@ -116,8 +116,8 @@ class JdbcBackedPresentPersistence[F[_]: Sync] extends PresentPersistence[F, Ite
 
   override def fetchStateWithPagination(
     player: UUID,
-    perPage: Int Refined Positive,
-    page: Int Refined Positive
+    perPage: Int :| Positive,
+    page: Int :| Positive
   ): F[Either[PaginationRejectReason, List[(PresentID, PresentClaimingState)]]] = {
     import cats.implicits._
     for {
@@ -181,13 +181,13 @@ class JdbcBackedPresentPersistence[F[_]: Sync] extends PresentPersistence[F, Ite
   }
 
   private def idSliceWithPagination(
-    perPage: Int Refined Positive,
-    page: Int Refined Positive
+    perPage: Int :| Positive,
+    page: Int :| Positive
   ): F[Set[PresentID]] =
     Sync[F].delay {
       val offset = (page - 1) * perPage
       DB.readOnly { implicit session =>
-        sql"""SELECT present_id FROM present ORDER BY present_id LIMIT ${perPage.value} OFFSET $offset"""
+        sql"""SELECT present_id FROM present ORDER BY present_id LIMIT ${(perPage: Int)} OFFSET $offset"""
           .map { _.long("present_id") }
           .toList()
           .toSet

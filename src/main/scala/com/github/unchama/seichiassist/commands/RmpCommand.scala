@@ -17,7 +17,6 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion
 import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, ConsoleCommandSender, TabExecutor}
 import org.bukkit.{Bukkit, World}
-import shapeless.{::, HNil}
 
 import scala.jdk.CollectionConverters._
 
@@ -49,15 +48,15 @@ object RmpCommand {
     .ifArgumentsMissing(printDescriptionExecutor)
 
   private val removeExecutor = argsAndSenderConfiguredBuilder.buildWith { context =>
-    val (world :: days :: HNil) = context.args.parsed
-    removeRegions(world, days.value)
+    val (world, days) = context.args.parsed
+    removeRegions(world, days)
   }
 
   private val listExecutor = argsAndSenderConfiguredBuilder.buildWith { context =>
-    val (world :: days :: HNil) = context.args.parsed
+    val (world, days) = context.args.parsed
 
     IO {
-      getOldRegionsIn(world, days.value).map { removalTargets =>
+      getOldRegionsIn(world, days).map { removalTargets =>
         if (removalTargets.isEmpty) {
           MessageEffect(s"${GREEN}該当Regionは存在しません")
         } else {

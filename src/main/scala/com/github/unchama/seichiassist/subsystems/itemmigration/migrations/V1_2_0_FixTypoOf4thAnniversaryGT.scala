@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.itemmigration.migrations
 
+import io.github.iltotore.iron.autoRefine
+
 import com.github.unchama.itemmigration.bukkit.util.MigrationHelper
 import com.github.unchama.itemmigration.domain.{ItemMigration, ItemMigrationVersionNumber}
 import org.bukkit.ChatColor._
@@ -18,8 +20,6 @@ object V1_2_0_FixTypoOf4thAnniversaryGT {
     val name = itemStack.getItemMeta.getDisplayName
     name.contains(gt4thName)
   }
-
-  import eu.timepit.refined.auto._
 
   def migrationFunction(itemStack: ItemStack): ItemStack = {
     if (!is4thGiganticItem(itemStack)) return itemStack

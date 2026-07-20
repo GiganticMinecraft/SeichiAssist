@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.itemmigration.migrations
 
+import io.github.iltotore.iron.autoRefine
+
 import com.github.unchama.itemmigration.bukkit.util.MigrationHelper
 import com.github.unchama.itemmigration.domain.{ItemMigration, ItemMigrationVersionNumber}
 import org.bukkit.ChatColor._
@@ -35,8 +37,6 @@ object V1_4_0_AddEnchantsTo2_1billionRewardItems {
     WHITE -> "Whiteday Replica"
   ).map { case (color, str) => s"$color$BOLD$ITALIC$str" }.mkString
   private val gaeaReplicaLore = s"${WHITE}35億/1日を突破した記念に配布されたものです。"
-
-  import eu.timepit.refined.auto._
 
   def migration: ItemMigration = ItemMigration(
     ItemMigrationVersionNumber(1, 4, 0),

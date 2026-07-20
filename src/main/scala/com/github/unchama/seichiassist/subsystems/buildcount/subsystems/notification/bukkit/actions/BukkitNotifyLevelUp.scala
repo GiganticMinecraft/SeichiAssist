@@ -21,9 +21,9 @@ object BukkitNotifyLevelUp {
   import cats.implicits._
 
   // TODO: BukkitNotifyLevelUpなのにdiffの展開やいつメッセージを出すかなどを扱うべきでない。
-  def apply[F[_]: Sync: OnMinecraftServerThread: DiscordNotificationAPI: GetConnectedPlayers[*[
+  def apply[F[_]: Sync: OnMinecraftServerThread: DiscordNotificationAPI: [f[
     _
-  ], Player]]: NotifyLevelUp[F, Player] = {
+  ]] =>> GetConnectedPlayers[f, Player]]: NotifyLevelUp[F, Player] = {
     new NotifyLevelUp[F, Player] {
       override def ofBuildLevelTo(player: Player)(diff: Diff[BuildLevel]): F[Unit] = {
         val Diff(oldLevel, newLevel) = diff

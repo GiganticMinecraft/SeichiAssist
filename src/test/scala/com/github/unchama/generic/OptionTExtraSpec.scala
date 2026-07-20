@@ -7,21 +7,21 @@ import org.scalatest.wordspec.AnyWordSpec
 
 class OptionTExtraSpec extends AnyWordSpec {
   "failIf" should {
-    "produce failing OptionT[Id, *] on true" in {
+    "produce failing [a] =>> OptionT[Id, a] on true" in {
       assert(OptionTExtra.failIf[Id](failCondition = true) == OptionT.none(Applicative[Id]))
     }
 
-    "produce failing OptionT[IO, *] on true" in {
+    "produce failing [a] =>> OptionT[IO, a] on true" in {
       assert(OptionTExtra.failIf[IO](failCondition = true).value.unsafeRunSync().isEmpty)
     }
 
-    "produce succeeding OptionT[Id, *] on false" in {
+    "produce succeeding [a] =>> OptionT[Id, a] on false" in {
       assert(
         OptionTExtra.failIf[Id](failCondition = false) == OptionT.some(())(Applicative[Id])
       )
     }
 
-    "produce succeeding OptionT[IO, *] on false" in {
+    "produce succeeding [a] =>> OptionT[IO, a] on false" in {
       assert(OptionTExtra.failIf[IO](failCondition = false).value.unsafeRunSync().nonEmpty)
     }
   }

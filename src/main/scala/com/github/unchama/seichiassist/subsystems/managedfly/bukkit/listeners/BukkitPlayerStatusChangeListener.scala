@@ -14,7 +14,7 @@ import org.bukkit.event.{EventHandler, Listener}
 class BukkitPlayerStatusChangeListener[F[_]: ConcurrentEffect, G[_]: SyncEffect](
   implicit
   sessionReferenceRepository: KeyedDataRepository[Player, ActiveSessionReference[F, G]],
-  playerFlyStatusManipulation: PlayerFlyStatusManipulation[Kleisli[F, Player, *]]
+  playerFlyStatusManipulation: PlayerFlyStatusManipulation[[a] =>> Kleisli[F, Player, a]]
 ) extends Listener {
 
   import cats.effect.implicits._

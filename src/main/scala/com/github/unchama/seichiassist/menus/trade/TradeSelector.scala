@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.menus.trade
 
+import io.github.iltotore.iron.autoRefine
+
 import com.github.unchama.menuinventory.Menu
 import com.github.unchama.menuinventory.MenuFrame
 import cats.effect.IO
@@ -23,15 +25,14 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 object TradeSelector extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
-  import eu.timepit.refined.auto._
 
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$LIGHT_PURPLE${BOLD}交換元を選んでください")
 
   class Environment(
     implicit val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
-    implicit val ioCanOpenGachaTradeMenu: IO CanOpen GachaTradeFromMineStackMenu,
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player],
-    implicit val onMainThread: OnMinecraftServerThread[IO]
+    val ioCanOpenGachaTradeMenu: IO CanOpen GachaTradeFromMineStackMenu,
+    val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player],
+    val onMainThread: OnMinecraftServerThread[IO]
   )
 
   override def computeMenuLayout(

@@ -30,7 +30,7 @@ object IncrementBuildExpWhenBuiltByHand {
     implicit ev: IncrementBuildExpWhenBuiltByHand[F, Player]
   ): IncrementBuildExpWhenBuiltByHand[F, Player] = ev
 
-  def using[F[_]: ClassifyPlayerWorld[*[_], Player], G[_]: Effect, Player](
+  def using[F[_]: [f[_]] =>> ClassifyPlayerWorld[f, Player], G[_]: Effect, Player](
     rateLimiterRepository: KeyedDataRepository[Player, RateLimiter[F, BuildExpAmount]],
     dataRepository: KeyedDataRepository[Player, Ref[F, BuildAmountData]],
     dataTopic: Fs3Topic[G, (Player, BuildAmountData)]

@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.menus.nicknames
 
+import io.github.iltotore.iron.autoRefine
+
 import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
@@ -33,17 +35,15 @@ object NickNameMenu extends Menu {
 
   class Environment(
     implicit val ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type,
-    implicit val layoutPreparationContext: LayoutPreparationContext,
-    implicit val onMinecraftServerThread: OnMinecraftServerThread[IO],
-    implicit val voteAPI: VoteAPI[IO, Player],
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player],
-    implicit val ioCanOpenNicknameCombinationMenu: IO CanOpen NicknameCombinationMenu,
-    implicit val ioCanOpenNicknameShopMenu: IO CanOpen NicknameShopMenu
+    val layoutPreparationContext: LayoutPreparationContext,
+    val onMinecraftServerThread: OnMinecraftServerThread[IO],
+    val voteAPI: VoteAPI[IO, Player],
+    val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player],
+    val ioCanOpenNicknameCombinationMenu: IO CanOpen NicknameCombinationMenu,
+    val ioCanOpenNicknameShopMenu: IO CanOpen NicknameShopMenu
   )
 
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$DARK_PURPLE${BOLD}二つ名組み合わせシステム")
-
-  import eu.timepit.refined.auto._
 
   override def computeMenuLayout(
     player: Player

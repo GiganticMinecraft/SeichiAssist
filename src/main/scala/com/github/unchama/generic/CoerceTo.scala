@@ -1,6 +1,6 @@
 package com.github.unchama.generic
 
-import eu.timepit.refined.api.Refined
+import io.github.iltotore.iron.:|
 
 /**
  * `From`型の値を`To`型の値に「強制」する方法を提供する。
@@ -26,14 +26,12 @@ object CoerceTo {
     override def coerceTo(from: T): T = from
   }
 
-  implicit def forgetRefinedPredicate[T, Predicate]: CoerceTo[T Refined Predicate, T] =
-    new CoerceTo[T Refined Predicate, T] {
+  implicit def forgetRefinedPredicate[T, Predicate]: CoerceTo[T :| Predicate, T] =
+    new CoerceTo[T :| Predicate, T] {
 
       /**
        * @inheritdoc
        */
-      override def coerceTo(from: Refined[T, Predicate]): T = from match {
-        case Refined(t) => t
-      }
+      override def coerceTo(from: T :| Predicate): T = from
     }
 }

@@ -10,7 +10,7 @@ import org.bukkit.ChatColor.{RED, RESET, WHITE, YELLOW}
 
 object EffectStatsNotification {
 
-  def using[F[_]: ConcurrentEffect: SendMinecraftMessage[*[_], Player], Player](
+  def using[F[_]: ConcurrentEffect: [f[_]] =>> SendMinecraftMessage[f, Player], Player](
     effectDiffWithSettings: fs2.Stream[
       F,
       (Player, (EffectListDiff, FastDiggingEffectStatsSettings))
