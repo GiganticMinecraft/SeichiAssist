@@ -278,8 +278,8 @@ object GridRegionMenu extends Menu {
                 .lore(
                   List(
                     s"$RED${UNDERLINE}以下の原因により保護を作成できません。",
-                    s"$RED・保護の範囲が他の保護と重複している",
-                    s"$RED・保護の作成上限に達している"
+                    s"${RED}・保護の範囲が他の保護と重複している",
+                    s"${RED}・保護の作成上限に達している"
                   )
                 )
                 .build()

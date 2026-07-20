@@ -209,7 +209,10 @@ lazy val root = (project in file(".")).settings(
   ),
   // sbt-assembly 1.0.0からはTestを明示的にタスクツリーに入れる必要がある
   // cf. https://github.com/sbt/sbt-assembly/pull/432/commits/361224a6202856bc2e572df811d0e6a1f1efda98
-  Compile / assembly / test := (Test / test).value
+  // NOTE: assemblyタスクが参照するのは `assembly / test` スコープである。
+  // 以前は `Compile / assembly / test` に配線されており、assemblyの実行時に
+  // テストが走っていなかった（CIのassemblyだけではテストが実行されない状態だった）。
+  assembly / test := (Test / test).value
 )
 
 // endregion
