@@ -48,9 +48,9 @@ object System {
   import cats.implicits._
   import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid._
 
-  def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread: ErrorLogger, G[
+  def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread: ErrorLogger, G[_]: SyncEffect: [f[
     _
-  ]: SyncEffect: ContextCoercion[*[_], F]](breakCountReadAPI: BreakCountReadAPI[F, G, Player])(
+  ]] =>> ContextCoercion[f, F]](breakCountReadAPI: BreakCountReadAPI[F, G, Player])(
     implicit effectEnvironment: EffectEnvironment,
     syncIOUuidRepository: UuidRepository[SyncIO]
   ): F[System[F, Player]] = {
@@ -72,31 +72,32 @@ object System {
           )
         }
     } yield {
-      implicit val systemApi = new FourDimensionalPocketApi[F, Player] {
-        override val openPocketInventory: Kleisli[F, Player, Unit] = Kleisli { player =>
-          Sync[F].delay {
-            // 開く音を再生
-            player.playSound(player.getLocation, Sound.BLOCK_ENDER_CHEST_OPEN, 1f, 0.1f)
-          } >> ContextCoercion {
-            pocketInventoryRepositoryHandles.repository(player)._1.readLatest
-          }.flatMap(inventory => interactInventory.open(inventory)(player))
-        }
-        override val currentPocketSize
-          : KeyedDataRepository[Player, ReadOnlyRef[F, PocketSize]] = {
-          KeyedDataRepository.unlift { player =>
-            pocketInventoryRepositoryHandles.repository.lift(player).map {
-              case (mutex, _) =>
-                ReadOnlyRef.fromAnySource {
-                  ContextCoercion {
-                    mutex
-                      .readLatest
-                      .map(inventory => PocketSize.fromTotalStackCount(inventory.getSize))
+      implicit val systemApi: FourDimensionalPocketApi[F, Player] =
+        new FourDimensionalPocketApi[F, Player] {
+          override val openPocketInventory: Kleisli[F, Player, Unit] = Kleisli { player =>
+            Sync[F].delay {
+              // 開く音を再生
+              player.playSound(player.getLocation, Sound.BLOCK_ENDER_CHEST_OPEN, 1f, 0.1f)
+            } >> ContextCoercion {
+              pocketInventoryRepositoryHandles.repository(player)._1.readLatest
+            }.flatMap(inventory => interactInventory.open(inventory)(player))
+          }
+          override val currentPocketSize
+            : KeyedDataRepository[Player, ReadOnlyRef[F, PocketSize]] = {
+            KeyedDataRepository.unlift { player =>
+              pocketInventoryRepositoryHandles.repository.lift(player).map {
+                case (mutex, _) =>
+                  ReadOnlyRef.fromAnySource {
+                    ContextCoercion {
+                      mutex
+                        .readLatest
+                        .map(inventory => PocketSize.fromTotalStackCount(inventory.getSize))
+                    }
                   }
-                }
+              }
             }
           }
         }
-      }
 
       val openPocketListener =
         new OpenPocketInventoryOnPlacingEnderPortalFrame[F](systemApi, effectEnvironment)

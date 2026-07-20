@@ -30,9 +30,10 @@ object Home {
   /**
    * プレイヤーの現在レベル（整地レベル、建築レベル）で利用可能なホームポイント数を取得する作用
    */
-  def maxAvailableHomeCountF[F[_]: ConcurrentEffect, G[_]: ContextCoercion[*[_], F], Player](
-    player: Player
-  )(
+  def maxAvailableHomeCountF[F[_]: ConcurrentEffect, G[_]: [f[_]] =>> ContextCoercion[
+    f,
+    F
+  ], Player](player: Player)(
     implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player],
     buildCountReadAPI: BuildCountAPI[F, G, Player]
   ): F[Int] = {

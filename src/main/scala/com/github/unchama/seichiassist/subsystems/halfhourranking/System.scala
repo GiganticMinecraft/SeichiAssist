@@ -22,9 +22,9 @@ object System {
 
   import scala.concurrent.duration._
 
-  def backgroundProcess[F[_]: OnMinecraftServerThread: Timer: Concurrent: ErrorLogger, G[
+  def backgroundProcess[F[_]: OnMinecraftServerThread: Timer: Concurrent: ErrorLogger, G[_]: [f[
     _
-  ]: ContextCoercion[*[_], F]: Functor](
+  ]] =>> ContextCoercion[f, F]: Functor](
     implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player]
   ): F[Nothing] = {
     implicit val sendBukkitMessage: SendMinecraftMessage[F, Player] = SendBukkitMessage[F]

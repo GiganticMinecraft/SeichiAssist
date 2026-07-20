@@ -1,6 +1,5 @@
 package com.github.unchama.itemmigration.domain
 
-import eu.timepit.refined.auto._
 import org.scalatest.wordspec.AnyWordSpec
 
 /**
@@ -31,6 +30,41 @@ class ItemMigrationVersionNumberSpec extends AnyWordSpec {
     "fromStringとversionStringは往復可能である" in {
       assert(
         ItemMigrationVersionNumber.fromString("1.4.0").map(_.versionString).contains("1.4.0")
+      )
+    }
+
+    "リテラル構築とfromString構築の値は、等価性とハッシュ値の両方が一致する" in {
+      // 適用済みマイグレーションのスキップ判定（ItemMigrations.yetToBeApplied）は、
+      // DBからfromStringで読み戻した値と、マイグレーション定義のリテラル構築値との
+      // Set.contains（hashCode + equals）に依存している。この一致が崩れると
+      // 適用済みのマイグレーションが再適用されてしまうため、両構築経路の
+      // 完全な互換性をここで固定する。
+      val literal = ItemMigrationVersionNumber(1, 0, 0)
+      val parsed = ItemMigrationVersionNumber.fromString("1.0.0").get
+
+      assert(literal == parsed)
+      assert(literal.hashCode == parsed.hashCode)
+      assert(Set[ItemMigrationVersionNumber](literal).contains(parsed))
+      assert(Set[ItemMigrationVersionNumber](parsed).contains(literal))
+    }
+
+    "fromStringで読み戻したバージョンはyetToBeAppliedで適用済みとして扱われる" in {
+      def migrationOf(version: ItemMigrationVersionNumber): ItemMigration =
+        ItemMigration(version, identity)
+
+      val definedMigrations = ItemMigrations(
+        IndexedSeq(
+          migrationOf(ItemMigrationVersionNumber(1, 0, 0)),
+          migrationOf(ItemMigrationVersionNumber(1, 1, 0))
+        )
+      )
+      // DBから読み戻した状態を再現する
+      val appliedVersions: Set[ItemMigrationVersionNumber] =
+        Set(ItemMigrationVersionNumber.fromString("1.0.0").get)
+
+      assert(
+        definedMigrations.yetToBeApplied(appliedVersions).versions ==
+          List(ItemMigrationVersionNumber(1, 1, 0))
       )
     }
 

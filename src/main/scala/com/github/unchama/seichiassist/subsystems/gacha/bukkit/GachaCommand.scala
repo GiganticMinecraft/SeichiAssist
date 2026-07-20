@@ -34,7 +34,6 @@ import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import shapeless.HNil
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -154,8 +153,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
           .map(r => GachaTicketAmount(r.value))
       )
       .buildWithExecutionCSEffect { context =>
-        import shapeless.::
-        val selector :: amount :: HNil = context.args.parsed
+        val (selector, amount) = context.args.parsed
         selector match {
           case "all" =>
             Kleisli
@@ -194,8 +192,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
           )
         )
         .buildWithExecutionCSEffect { context =>
-          import shapeless.::
-          val gachaPrizeId :: shapeless.HNil = context.args.parsed
+          val gachaPrizeId = context.args.parsed.head
           // optional
           val ownerName = context.args.yetToBeParsed.headOption
 
@@ -221,10 +218,8 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
 
     val add: ContextualExecutor =
       playerCommandBuilder.thenParse(probabilityParser).buildWithExecutionCSEffect { context =>
-        import shapeless.::
-
         val player = context.sender
-        val probability :: HNil = context.args.parsed
+        val probability = context.args.parsed.head
         val eventName = context.args.yetToBeParsed.headOption.map(GachaEventName.apply)
         val mainHandItem = player.getInventory.getItemInMainHand
 
@@ -331,8 +326,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
           )
         )
         .buildWithExecutionCSEffect { context =>
-          import shapeless.::
-          val targetId :: amount :: HNil = context.args.parsed
+          val (targetId, amount) = context.args.parsed
 
           Kleisli
             .liftF(for {
@@ -360,8 +354,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
       .thenParse(gachaPrizeIdExistsParser)
       .thenParse(probabilityParser)
       .buildWithExecutionCSEffect { context =>
-        import shapeless.::
-        val targetId :: newProb :: HNil = context.args.parsed
+        val (targetId, newProb) = context.args.parsed
 
         (for {
           currentGachaPrize <- Kleisli.liftF(gachaPrizeAPI.fetch(targetId))
@@ -389,8 +382,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
         .thenParse(Parsers.identity)
         .thenParse(Parsers.identity)
         .buildWithExecutionCSEffect { context =>
-          import shapeless.::
-          val e :: startDate :: endDate :: HNil = context.args.parsed
+          val (e, startDate, endDate) = context.args.parsed
           val eventName = GachaEventName(e)
 
           val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -455,8 +447,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
     val replaceGachaPrize: ContextualExecutor =
       playerCommandBuilder.thenParse(gachaPrizeIdExistsParser).buildWithExecutionCSEffect {
         context =>
-          import shapeless.::
-          val targetId :: HNil = context.args.parsed
+          val targetId = context.args.parsed.head
 
           Kleisli
             .liftF[F, CommandSender, Unit] {

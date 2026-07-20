@@ -32,9 +32,9 @@ object EffectStatsSettingsRepositoryDefinition {
   import cats.effect.implicits._
   import cats.implicits._
 
-  def withContext[F[_]: ConcurrentEffect: JavaTime: ErrorLogger, G[_]: Sync: ContextCoercion[*[
+  def withContext[F[_]: ConcurrentEffect: JavaTime: ErrorLogger, G[_]: Sync: [f[
     _
-  ], F], Player: HasUuid](
+  ]] =>> ContextCoercion[f, F], Player: HasUuid](
     persistence: FastDiggingEffectStatsSettingsPersistence[G],
     publishEffectDiff: Pipe[
       F,

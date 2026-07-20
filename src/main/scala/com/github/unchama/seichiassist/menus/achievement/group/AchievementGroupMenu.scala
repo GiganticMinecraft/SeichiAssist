@@ -22,7 +22,7 @@ object AchievementGroupMenu {
   class Environment(
     implicit val ioCanOpenGroupMenu: IO CanOpen AchievementGroupMenu,
     val ioCanOpenCategoryMenu: IO CanOpen AchievementCategoryMenu,
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   val sequentialEntriesIn: AchievementGroup => List[GroupMenuEntry] = CachedFunction {
@@ -109,7 +109,6 @@ case class AchievementGroupMenu(group: AchievementGroup, pageNumber: Int = 1) ex
   )(implicit environment: AchievementGroupMenu.Environment): IO[MenuSlotLayout] = {
     import cats.implicits._
     import environment._
-    import eu.timepit.refined.auto._
 
     def buttonToTransferTo(
       newPageNumber: Int,

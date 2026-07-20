@@ -12,7 +12,6 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion
 import org.bukkit.Bukkit
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
-import shapeless.{::, HNil}
 
 object RegionOwnerTransferCommand {
   import com.github.unchama.contextualexecutor.builder.ParserResponse._
@@ -26,7 +25,7 @@ object RegionOwnerTransferCommand {
       }
     }
     .buildWithExecutionCSEffect { context =>
-      val regionName :: newOwner :: HNil = context.args.parsed
+      val (regionName, newOwner) = context.args.parsed
       val sender = context.sender
 
       val region =

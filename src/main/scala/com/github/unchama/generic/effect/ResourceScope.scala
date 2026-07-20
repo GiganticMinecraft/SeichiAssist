@@ -94,7 +94,7 @@ object ResourceScope {
    * @tparam R
    *   リソースハンドラの型
    */
-  def unsafeCreate[F[_]: Concurrent, G[_]: Sync: ContextCoercion[*[_], F], R]
+  def unsafeCreate[F[_]: Concurrent, G[_]: Sync: [f[_]] =>> ContextCoercion[f, F], R]
     : ResourceScope[F, G, R] = {
     new MultiDictResourceScope()
   }
@@ -102,7 +102,7 @@ object ResourceScope {
   /**
    * 新たな資源スコープを作成する計算。
    */
-  def create[F[_]: Concurrent, G[_]: Sync: ContextCoercion[*[_], F], R]
+  def create[F[_]: Concurrent, G[_]: Sync: [f[_]] =>> ContextCoercion[f, F], R]
     : F[ResourceScope[F, G, R]] = {
     Concurrent[F].delay(unsafeCreate[F, G, R])
   }
@@ -117,8 +117,10 @@ object ResourceScope {
    * @tparam R
    *   リソースハンドラの型
    */
-  def unsafeCreateSingletonScope[F[_]: Concurrent, G[_]: Sync: ContextCoercion[*[_], F], R]
-    : SingleResourceScope[F, G, R] = new SingleResourceScope()
+  def unsafeCreateSingletonScope[F[_]: Concurrent, G[_]: Sync: [f[_]] =>> ContextCoercion[
+    f,
+    F
+  ], R]: SingleResourceScope[F, G, R] = new SingleResourceScope()
 
   /**
    * `ResourceScope` の標準的な実装。
@@ -184,7 +186,7 @@ object ResourceScope {
   class SingleResourceScope[F[_]: Concurrent, G[_], ResourceHandler] private[ResourceScope] (
     implicit override val DataAccessContext: Sync[G],
     contextCoercion: ContextCoercion[G, F]
-  ) extends ResourceScope[OptionT[F, *], G, ResourceHandler] {
+  ) extends ResourceScope[[a] =>> OptionT[F, a], G, ResourceHandler] {
 
     type OptionF[a] = OptionT[F, a]
 

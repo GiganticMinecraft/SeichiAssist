@@ -17,9 +17,9 @@ object SignallingRepositoryDefinition {
   import FiberAdjoinedRepositoryDefinition.FiberAdjoined
   import cats.implicits._
 
-  def withPublishSink[G[_]: Sync, F[_]: ConcurrentEffect: ContextCoercion[
+  def withPublishSink[G[_]: Sync, F[_]: ConcurrentEffect: [g[_]] =>> ContextCoercion[
     G,
-    *[_]
+    g
   ]: ErrorLogger, Player: HasUuid, T](publishSink: Pipe[F, (Player, T), Unit])(
     definition: RepositoryDefinition.Phased[G, Player, T]
   ): Phased.TwoPhased[G, Player, Ref[G, T] FiberAdjoined F] = {
@@ -48,9 +48,9 @@ object SignallingRepositoryDefinition {
       } { case (ref, fiberPromise) => ref.get.map(_ -> fiberPromise) }
   }
 
-  def withPublishSinkHidden[G[_]: Sync, F[_]: ConcurrentEffect: ContextCoercion[
+  def withPublishSinkHidden[G[_]: Sync, F[_]: ConcurrentEffect: [g[_]] =>> ContextCoercion[
     G,
-    *[_]
+    g
   ]: ErrorLogger, Player: HasUuid, T](publishSink: Pipe[F, (Player, T), Unit])(
     definition: RepositoryDefinition.Phased[G, Player, T]
   ): RepositoryDefinition[G, Player, Ref[G, T]] =

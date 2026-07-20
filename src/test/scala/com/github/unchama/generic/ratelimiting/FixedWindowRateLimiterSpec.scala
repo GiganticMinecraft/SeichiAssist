@@ -46,15 +46,17 @@ class FixedWindowRateLimiterSpec
     keepPermitsEqual()
 
     "block requests exceeding limits" in {
-      val maxCount: Natural = 10
-      val requestCount: Natural = 100
+      val maxCount: Natural = refineV[NonNegative].unsafeFrom(10)
+      val requestCount: Natural = refineV[NonNegative].unsafeFrom(100)
 
       val program = for {
         rateLimiter <- FixedWindowRateLimiter.in[Task, Natural](maxCount, 1.minute)
-        allowances <- (1 to requestCount).toList.traverse(_ => rateLimiter.requestPermission(1))
+        allowances <- (1 to requestCount)
+          .toList
+          .traverse(_ => rateLimiter.requestPermission(refineV[NonNegative].unsafeFrom(1)))
       } yield {
-        assert(allowances.take(maxCount).forall(_ == (1: Natural)))
-        assert(allowances.drop(maxCount).forall(_ == (0: Natural)))
+        assert(allowances.take(maxCount).forall(_ == refineV[NonNegative].unsafeFrom(1)))
+        assert(allowances.drop(maxCount).forall(_ == refineV[NonNegative].unsafeFrom(0)))
         ()
       }
 
@@ -62,13 +64,17 @@ class FixedWindowRateLimiterSpec
     }
 
     "reset back to accepting request when the specified time passes" in {
-      val maxCount: Natural = 10
+      val maxCount: Natural = refineV[NonNegative].unsafeFrom(10)
 
       val program = for {
         rateLimiter <- FixedWindowRateLimiter.in[Task, Natural](maxCount, 1.minute)
-        _ <- (1 to maxCount).toList.traverse(_ => rateLimiter.requestPermission(1))
+        _ <- (1 to maxCount)
+          .toList
+          .traverse(_ => rateLimiter.requestPermission(refineV[NonNegative].unsafeFrom(1)))
         _ <- monixTimer.sleep(1.minute + 1.second)
-        allowed <- rateLimiter.requestPermission(1).map(_ == (1: Natural))
+        allowed <- rateLimiter
+          .requestPermission(refineV[NonNegative].unsafeFrom(1))
+          .map(_ == refineV[NonNegative].unsafeFrom(1))
       } yield {
         assert(allowed)
       }
@@ -77,7 +83,7 @@ class FixedWindowRateLimiterSpec
     }
 
     "reset back to accepting request as long as the specified time passes" in {
-      val maxCount: Natural = 5
+      val maxCount: Natural = refineV[NonNegative].unsafeFrom(5)
       val windowCount = 5
 
       val program = for {
@@ -87,11 +93,12 @@ class FixedWindowRateLimiterSpec
           .traverse(_ =>
             (1 to maxCount)
               .toList
-              .traverse(_ => rateLimiter.requestPermission(1))
+              .traverse(_ => rateLimiter.requestPermission(refineV[NonNegative].unsafeFrom(1)))
               .flatTap(_ => monixTimer.sleep(1.minute + 1.second))
           )
       } yield {
-        val expected = List.fill(windowCount * maxCount)(1: Natural)
+        val expected =
+          List.fill(windowCount * maxCount)(refineV[NonNegative].unsafeFrom(1): Natural)
         assert(allowances.flatten == expected)
         ()
       }
