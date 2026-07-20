@@ -16,6 +16,7 @@
   "packageRules": [
     {
       "matchManagers": ["sbt"],
+      "matchUpdateTypes": ["minor", "patch", "digest"],
       "automerge": true,
       "automergeType": "pr",
       "platformAutomerge": true
