@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.menus.achievement
 
+import io.github.iltotore.iron.autoRefine
+
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory.router.CanOpen

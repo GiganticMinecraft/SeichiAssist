@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.menus.stickmenu
 
+import io.github.iltotore.iron.autoRefine
+
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.itemstackbuilder.{
   IconItemStackBuilder,

@@ -1,14 +1,14 @@
 package com.github.unchama.menuinventory
 
+import io.github.iltotore.iron.autoRefine
+
 import org.scalatest.wordspec.AnyWordSpec
 
 /**
  * [[ChestSlotRef]] の回帰テスト。
  *
- * `ChestSlotRef(行, 列)` のリテラル呼び出しはリポジトリ内に約300箇所存在し、
- * refined.auto._ のマクロによるコンパイル時リテラル検証に依存している。
- * Scala 3移行ではこの検証をinlineファクトリへ置き換える方針のため、
- * スロットID計算の現行挙動をここで固定する。
+ * `ChestSlotRef(行, 列)` のリテラル呼び出しはリポジトリ内に約300箇所存在する。
+ * リテラルのコンパイル時検証はIronが担う。スロットID計算の現行挙動をここで固定する。
  */
 class ChestSlotRefSpec extends AnyWordSpec {
 

@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.menus.nicknames
 
+import io.github.iltotore.iron.autoRefine
+
 import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}

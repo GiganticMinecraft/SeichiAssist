@@ -1,13 +1,14 @@
 package com.github.unchama.itemmigration.domain
 
+import io.github.iltotore.iron.autoRefine
+
 import org.scalatest.wordspec.AnyWordSpec
 
 /**
  * [[ItemMigrationVersionNumber]] と [[ItemMigrations]] のバージョン順序の回帰テスト。
  *
- * `ItemMigrationVersionNumber(1, 0, 0)` のようなリテラル構築は refined.auto._ の
- * コンパイル時検証に依存しており、Scala 3移行でinlineファクトリへ置き換える方針の
- * ため、文字列変換・パース・ソート順の現行挙動をここで固定する。
+ * `ItemMigrationVersionNumber(1, 0, 0)` のようなリテラル構築のコンパイル時検証は
+ * Ironが担う。文字列変換・パース・ソート順の現行挙動をここで固定する。
  */
 class ItemMigrationVersionNumberSpec extends AnyWordSpec {
 
@@ -18,20 +19,20 @@ class ItemMigrationVersionNumberSpec extends AnyWordSpec {
       assert(ItemMigrationVersionNumber(1, 10, 3).versionString == "1.10.3")
     }
 
-    "1〜3成分のリテラルから構築できる" in {
-      // リテラル構築で受け入れる成分数は3つまでとする合意仕様
-      // （Scala 2時代は任意個数だったが、既存のバージョン定義はすべて3成分以下）
+    "成分数は3に限らず、任意の個数のリテラルから構築できる" in {
+      // Ironのリテラル自動検証と可変長引数により、Scala 2時代のrefined.auto._と
+      // 同じ受け入れ範囲（任意個数）が復元されている
       assert(ItemMigrationVersionNumber(1, 0).versionString == "1.0")
+      assert(ItemMigrationVersionNumber(1, 2, 3, 4).versionString == "1.2.3.4")
       assert(
         ItemMigrationVersionNumber.fromString("1.0").contains(ItemMigrationVersionNumber(1, 0))
       )
     }
 
-    "負のリテラル・非リテラル・成分なし・4成分以上の構築はコンパイルエラーになる" in {
+    "負のリテラル・非リテラル・成分なしの構築はコンパイルエラーになる" in {
       assertDoesNotCompile("ItemMigrationVersionNumber(-1, 0)")
       assertDoesNotCompile("val runtimeValue = 1; ItemMigrationVersionNumber(runtimeValue)")
       assertDoesNotCompile("ItemMigrationVersionNumber()")
-      assertDoesNotCompile("ItemMigrationVersionNumber(1, 2, 3, 4)")
     }
 
     "fromStringで非負整数のドット区切りをパースできる" in {

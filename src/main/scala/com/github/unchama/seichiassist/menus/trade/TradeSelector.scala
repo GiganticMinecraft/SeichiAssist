@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.menus.trade
 
+import io.github.iltotore.iron.autoRefine
+
 import com.github.unchama.menuinventory.Menu
 import com.github.unchama.menuinventory.MenuFrame
 import cats.effect.IO

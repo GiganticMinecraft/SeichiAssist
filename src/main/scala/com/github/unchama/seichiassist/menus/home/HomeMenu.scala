@@ -9,6 +9,7 @@ import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
+import io.github.iltotore.iron.autoRefine
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
@@ -47,9 +48,8 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
   override def computeMenuLayout(
     player: Player
   )(implicit environment: Environment): IO[MenuSlotLayout] = {
-    import eu.timepit.refined._
-    import eu.timepit.refined.api.Refined
-    import eu.timepit.refined.numeric._
+    import io.github.iltotore.iron.constraint.numeric.Interval
+    import io.github.iltotore.iron.refineEither
 
     val buttonComputations = HomeMenuButtonComputations(player)
     import buttonComputations._
@@ -63,12 +63,13 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
     val homePointPart = for {
       homeNumber <- homeNumberRange
     } yield {
-      val columnEither = refineV[Interval.ClosedOpen[0, 9]](homeNumber - 9 * pageIndex - 1)
+      val columnEither =
+        (homeNumber - 9 * pageIndex - 1).refineEither[Interval.ClosedOpen[0, 9]]
       columnEither.fold(
         _ => throw new RuntimeException("This branch should not be reached."),
         column =>
           Map(
-            ChestSlotRef.fromRefined(Refined.unsafeApply(0), column) ->
+            ChestSlotRef(0, column) ->
               ConstantButtons.warpToHomePointButton(homeNumber)
           )
       )
@@ -76,16 +77,17 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
 
     // ボタンの構築に副作用がある箇所のメニュー定義
     val dynamicPartComputation = homeNumberRange.toList.flatTraverse { homeNumber =>
-      val columnEither = refineV[Interval.ClosedOpen[0, 9]](homeNumber - 9 * pageIndex - 1)
+      val columnEither =
+        (homeNumber - 9 * pageIndex - 1).refineEither[Interval.ClosedOpen[0, 9]]
       columnEither.fold(
         _ => throw new RuntimeException("This branch should not be reached."),
         column => {
           List(
-            ChestSlotRef.fromRefined(Refined.unsafeApply(1), column) ->
+            ChestSlotRef(1, column) ->
               setHomeNameButton(homeNumber),
-            ChestSlotRef.fromRefined(Refined.unsafeApply(2), column) ->
+            ChestSlotRef(2, column) ->
               buttonComputations.setHomeButton(homeNumber),
-            ChestSlotRef.fromRefined(Refined.unsafeApply(3), column) ->
+            ChestSlotRef(3, column) ->
               buttonComputations.removeHomeButton(homeNumber)
           ).traverse(_.sequence)
         }

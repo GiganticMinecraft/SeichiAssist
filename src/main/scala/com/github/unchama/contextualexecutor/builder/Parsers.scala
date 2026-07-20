@@ -4,8 +4,8 @@ import cats.effect.IO
 import com.github.unchama.generic.{CoerceTo, TryInto}
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
-import eu.timepit.refined.api.Refined
-import eu.timepit.refined.numeric.NonNegative
+import io.github.iltotore.iron.:|
+import io.github.iltotore.iron.constraint.numeric.GreaterEqual
 import org.bukkit.command.CommandSender
 
 import java.time.LocalDate
@@ -20,11 +20,11 @@ object Parsers {
 
   def nonNegativeInteger(
     failureMessage: TargetedEffect[CommandSender] = emptyEffect
-  ): SingleArgumentParser[Int Refined NonNegative] =
-    closedRangeInt[Int Refined NonNegative](0, Int.MaxValue, failureMessage)
+  ): SingleArgumentParser[Int :| GreaterEqual[0]] =
+    closedRangeInt[Int :| GreaterEqual[0]](0, Int.MaxValue, failureMessage)
 
   /**
-   * @tparam X refineされているかもしれない整数型。例: `Int`、[[Refined]][Int, [[eu.timepit.refined.numeric.Positive]]]
+   * @tparam X 制約付きかもしれない整数型。例: `Int`、`Int :| Positive`
    * @return
    *   [smallEnd]より大きいか等しく[largeEnd]より小さいか等しい整数のパーサ
    */

@@ -49,14 +49,14 @@ object RmpCommand {
 
   private val removeExecutor = argsAndSenderConfiguredBuilder.buildWith { context =>
     val (world, days) = context.args.parsed
-    removeRegions(world, days.value)
+    removeRegions(world, days)
   }
 
   private val listExecutor = argsAndSenderConfiguredBuilder.buildWith { context =>
     val (world, days) = context.args.parsed
 
     IO {
-      getOldRegionsIn(world, days.value).map { removalTargets =>
+      getOldRegionsIn(world, days).map { removalTargets =>
         if (removalTargets.isEmpty) {
           MessageEffect(s"${GREEN}該当Regionは存在しません")
         } else {

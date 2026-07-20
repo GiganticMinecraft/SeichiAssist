@@ -15,9 +15,9 @@ import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectCategory
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect}
-import eu.timepit.refined.api.Refined
-import eu.timepit.refined.auto._
-import eu.timepit.refined.numeric.NonNegative
+import io.github.iltotore.iron.:|
+
+import io.github.iltotore.iron.constraint.numeric.GreaterEqual
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
@@ -62,13 +62,13 @@ object MineStackCommand {
       playerCommandBuilder
         .thenParse(
           Parsers
-            .closedRangeInt[Int Refined NonNegative](
+            .closedRangeInt[Int :| GreaterEqual[0]](
               0,
               Int.MaxValue,
               MessageEffect("カテゴリは0以上の値を指定してください。")
             )
             .andThen(_.flatMap { categoryValue =>
-              if (categoryValue.value == 0)
+              if (categoryValue == 0)
                 succeedWith(None)
               else
                 MineStackObjectCategory.fromSerializedValue(categoryValue - 1) match {
@@ -78,7 +78,7 @@ object MineStackCommand {
             })
         )
         .thenParse(
-          Parsers.closedRangeInt[Int Refined NonNegative](
+          Parsers.closedRangeInt[Int :| GreaterEqual[0]](
             0,
             Int.MaxValue,
             MessageEffect("ページ数は0以上の値を指定してください。")

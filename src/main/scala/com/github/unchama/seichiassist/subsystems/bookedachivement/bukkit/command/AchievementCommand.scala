@@ -9,9 +9,9 @@ import com.github.unchama.seichiassist.subsystems.bookedachivement.domain.Achiev
 import com.github.unchama.seichiassist.subsystems.bookedachivement.service.AchievementBookingService
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
-import eu.timepit.refined.api.Refined
-import eu.timepit.refined.numeric.Positive
-import eu.timepit.refined.auto._
+import io.github.iltotore.iron.:|
+import io.github.iltotore.iron.constraint.numeric.Positive
+
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor.RED
 import org.bukkit.command.{CommandSender, TabExecutor}
@@ -35,7 +35,7 @@ object AchievementCommand {
    * には実績の存在確認のロジックが入っていたが、これは必要であったか？
    */
   private val achievementNumberParser =
-    Parsers.closedRangeInt[Int Refined Positive](
+    Parsers.closedRangeInt[Int :| Positive](
       1000,
       9999,
       MessageEffect(s"${RED}操作の対象として指定できるのはNo1000～9999の実績です。")

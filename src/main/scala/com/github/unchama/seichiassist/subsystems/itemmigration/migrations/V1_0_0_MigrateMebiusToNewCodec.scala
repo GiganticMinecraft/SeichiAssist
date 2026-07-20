@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.itemmigration.migrations
 
+import io.github.iltotore.iron.autoRefine
+
 import cats.effect.SyncIO
 import com.github.unchama.itemmigration.bukkit.util.MigrationHelper
 import com.github.unchama.itemmigration.domain.{ItemMigration, ItemMigrationVersionNumber}

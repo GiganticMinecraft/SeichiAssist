@@ -20,8 +20,8 @@ import com.github.unchama.seichiassist.subsystems.present.domain._
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffectF}
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
-import eu.timepit.refined.api.Refined
-import eu.timepit.refined.numeric.Positive
+import io.github.iltotore.iron.{:|, autoRefine}
+import io.github.iltotore.iron.constraint.numeric.Positive
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -119,7 +119,7 @@ class PresentCommand {
       ): ContextualExecutor =
         playerCommandBuilder
           .thenParse(
-            Parsers.closedRangeInt[Int Refined Positive](
+            Parsers.closedRangeInt[Int :| Positive](
               1,
               Int.MaxValue,
               MessageEffect("ページ数には1以上の数を指定してください。")
@@ -127,7 +127,7 @@ class PresentCommand {
           )
           .ifArgumentsMissing(help)
           .buildWith { context =>
-            val perPage: Int Refined Positive = Refined.unsafeApply(10)
+            val perPage: Int :| Positive = 10
             val page = context.args.parsed.head
             val player = context.sender.getUniqueId
             val eff = for {

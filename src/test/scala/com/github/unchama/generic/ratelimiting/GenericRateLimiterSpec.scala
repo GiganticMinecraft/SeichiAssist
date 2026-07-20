@@ -4,10 +4,10 @@ import cats.effect.Timer
 import com.github.unchama.generic.algebra.typeclasses.OrderedMonus
 import com.github.unchama.testutil.concurrent.tests.ConcurrentEffectTest
 import com.github.unchama.testutil.execution.MonixTestSchedulerTests
-import eu.timepit.refined.api.Refined
-import eu.timepit.refined.auto._
-import eu.timepit.refined.numeric.NonNegative
-import eu.timepit.refined.refineV
+import io.github.iltotore.iron.:|
+
+import io.github.iltotore.iron.constraint.numeric.GreaterEqual
+import io.github.iltotore.iron.refineUnsafe
 import monix.catnap.SchedulerEffect
 import monix.eval.Task
 import monix.execution.ExecutionModel
@@ -33,19 +33,19 @@ trait GenericRateLimiterSpec
   )
   implicit private val monixTimer: Timer[Task] = SchedulerEffect.timer(monixScheduler)
 
-  type Natural = Int Refined NonNegative
+  type Natural = Int :| GreaterEqual[0]
 
   implicit val natOrderedMonus: OrderedMonus[Natural] = new OrderedMonus[Natural] {
-    override def empty: Natural = refineV[NonNegative].unsafeFrom(0)
+    override def empty: Natural = (0).refineUnsafe[GreaterEqual[0]]
 
     override def |-|(x: Natural, y: Natural): Natural =
-      if (x >= y) refineV[NonNegative].unsafeFrom(x - y)
+      if (x >= y) (x - y).refineUnsafe[GreaterEqual[0]]
       else empty
 
     override def combine(x: Natural, y: Natural): Natural =
-      refineV[NonNegative].unsafeFrom(x + y)
+      (x + y).refineUnsafe[GreaterEqual[0]]
 
-    override def compare(x: Natural, y: Natural): Int = x.value.compare(y.value)
+    override def compare(x: Natural, y: Natural): Int = (x: Int).compare(y)
   }
 
   /**

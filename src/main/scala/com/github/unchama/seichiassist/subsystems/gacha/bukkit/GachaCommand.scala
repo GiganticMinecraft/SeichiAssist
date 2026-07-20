@@ -27,9 +27,9 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
 import com.github.unchama.seichiassist.subsystems.gachaprize.{GachaPrizeAPI, domain}
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
-import eu.timepit.refined.api.Refined
-import eu.timepit.refined.auto._
-import eu.timepit.refined.numeric.{Interval, NonNegative, Positive}
+import io.github.iltotore.iron.:|
+
+import io.github.iltotore.iron.constraint.numeric.{GreaterEqual, Interval, Positive}
 import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.entity.Player
@@ -111,11 +111,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
 
     private val gachaPrizeIdExistsParser: SingleArgumentParser[GachaPrizeId] =
       Parsers
-        .closedRangeInt[Int Refined Positive](
-          1,
-          Int.MaxValue,
-          MessageEffect("IDは正の値を指定してください。")
-        )
+        .closedRangeInt[Int :| Positive](1, Int.MaxValue, MessageEffect("IDは正の値を指定してください。"))
         .andThen(_.flatMap { intId =>
           val id = GachaPrizeId(intId)
 
@@ -144,13 +140,13 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
       .thenParse(Parsers.identity)
       .thenParse(s =>
         Parsers
-          .closedRangeInt[Int Refined Positive](
+          .closedRangeInt[Int :| Positive](
             1,
             Int.MaxValue,
             MessageEffect("配布するガチャ券の枚数は正の値を指定してください。")
           )
           .apply(s)
-          .map(r => GachaTicketAmount(r.value))
+          .map(r => GachaTicketAmount(r))
       )
       .buildWithExecutionCSEffect { context =>
         val (selector, amount) = context.args.parsed
@@ -185,7 +181,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
     val giveItem: ContextualExecutor =
       playerCommandBuilder
         .thenParse(
-          Parsers.closedRangeInt[Int Refined NonNegative](
+          Parsers.closedRangeInt[Int :| GreaterEqual[0]](
             0,
             Int.MaxValue,
             MessageEffect("IDは0以上の整数を指定してください。")
@@ -296,11 +292,8 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
     val remove: ContextualExecutor = ContextualExecutorBuilder
       .beginConfiguration
       .thenParse(
-        Parsers.closedRangeInt[Int Refined Positive](
-          1,
-          Int.MaxValue,
-          MessageEffect("IDは正の値を指定してください。")
-        )
+        Parsers
+          .closedRangeInt[Int :| Positive](1, Int.MaxValue, MessageEffect("IDは正の値を指定してください。"))
       )
       .buildWithExecutionCSEffect { context =>
         val gachaId = GachaPrizeId(context.args.parsed.head)
@@ -319,7 +312,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
         .beginConfiguration
         .thenParse(gachaPrizeIdExistsParser)
         .thenParse(
-          Parsers.closedRangeInt[Int Refined Interval.Closed[1, 64]](
+          Parsers.closedRangeInt[Int :| Interval.Closed[1, 64]](
             1,
             64,
             MessageEffect("数は1～64で指定してください。")

@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.menus
 
+import io.github.iltotore.iron.autoRefine
+
 import cats.data.{Kleisli, NonEmptyList}
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
 import cats.implicits._

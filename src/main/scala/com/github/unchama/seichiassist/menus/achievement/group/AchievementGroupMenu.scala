@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.menus.achievement.group
 
+import io.github.iltotore.iron.autoRefine
+
 import cats.effect.IO
 import com.github.unchama.generic.CachedFunction
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerReference}
