@@ -1,7 +1,6 @@
 package com.github.unchama.generic.algebra.typeclasses
 
 import cats.Order
-import simulacrum.typeclass
 
 /**
  * 後者関数 `successor` を兼ね揃えた全順序集合の型クラス。
@@ -9,7 +8,7 @@ import simulacrum.typeclass
  * この型クラスのインスタンスは、任意の `x: T` と `y: T` について
  *   - `x < y` ならば `x < x.successor <= y` を満たす。
  */
-@typeclass trait HasSuccessor[T] extends AnyRef {
+trait HasSuccessor[T] extends AnyRef {
 
   import cats.implicits._
 
@@ -53,6 +52,8 @@ import simulacrum.typeclass
 }
 
 object HasSuccessor {
+
+  def apply[T](implicit instance: HasSuccessor[T]): HasSuccessor[T] = instance
 
   implicit def positiveIntHasSuccessor[T: PositiveInt]: HasSuccessor[T] =
     new HasSuccessor[T] {

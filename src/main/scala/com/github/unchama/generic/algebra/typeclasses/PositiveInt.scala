@@ -1,7 +1,6 @@
 package com.github.unchama.generic.algebra.typeclasses
 
 import cats.Order
-import simulacrum.typeclass
 
 /**
  * 正のIntと同型な型のクラス。
@@ -12,7 +11,7 @@ import simulacrum.typeclass
  *
  * を満たす。
  */
-@typeclass trait PositiveInt[T] {
+trait PositiveInt[T] {
 
   /**
    * 正整数を包む。非正整数については例外を投げる。
@@ -27,6 +26,8 @@ import simulacrum.typeclass
 }
 
 object PositiveInt {
+
+  def apply[T](implicit instance: PositiveInt[T]): PositiveInt[T] = instance
 
   implicit def positiveIntHasOrder[T: PositiveInt]: Order[T] = Order.by(PositiveInt[T].asInt)
 
