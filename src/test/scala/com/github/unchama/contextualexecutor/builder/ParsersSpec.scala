@@ -65,7 +65,7 @@ class ParsersSpec extends AnyWordSpec {
   private def refinedErrorMessageOf[P](int: Int)(
     implicit constraint: RuntimeConstraint[Int, P]
   ): String =
-    int.refineEither[P].swap.getOrElse(fail(s"Ironがの検証に成功してしまいました"))
+    int.refineEither[P].swap.getOrElse(fail(s"Ironが${int}の検証に成功してしまいました"))
 
   "Parsers.identity" should {
     "入力文字列をそのまま返す" in {
