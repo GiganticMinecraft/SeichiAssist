@@ -28,7 +28,7 @@ object EffectListRepositoryDefinitions {
    */
   type RepositoryValue[F[_], G[_]] = Mutex[F, G, FastDiggingEffectList] FiberAdjoined F
 
-  def initialization[F[_]: Concurrent, G[_]: Sync: ContextCoercion[*[_], F]]
+  def initialization[F[_]: Concurrent, G[_]: Sync: [f[_]] =>> ContextCoercion[f, F]]
     : SinglePhasedRepositoryInitialization[G, RepositoryValue[F, G]] =
     (_, _) => {
       for {
@@ -37,9 +37,9 @@ object EffectListRepositoryDefinitions {
       } yield PrefetchResult.Success(ref, deferred)
     }
 
-  def tappingAction[F[_]: ConcurrentEffect: Timer: ErrorLogger, G[
+  def tappingAction[F[_]: ConcurrentEffect: Timer: ErrorLogger, G[_]: SyncEffect: [f[
     _
-  ]: SyncEffect: ContextCoercion[*[_], F], Player](
+  ]] =>> ContextCoercion[f, F], Player](
     effectTopic: Fs3Topic[F, Option[(Player, FastDiggingEffectList)]]
   ): (Player, RepositoryValue[F, G]) => G[Unit] = {
     case (player, (mutexRef, fiberPromise)) =>

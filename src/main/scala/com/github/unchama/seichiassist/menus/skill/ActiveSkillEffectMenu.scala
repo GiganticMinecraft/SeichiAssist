@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.menus.skill
 
+import io.github.iltotore.iron.autoRefine
+
 import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
@@ -42,7 +44,7 @@ object ActiveSkillEffectMenu extends Menu {
     val ioOnMainThread: OnMinecraftServerThread[IO],
     val voteAPI: VoteAPI[IO, Player],
     val donateAPI: DonatePremiumPointAPI[IO],
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}整地スキルエフェクト選択")
@@ -263,7 +265,6 @@ object ActiveSkillEffectMenu extends Menu {
     import c._
     import cats.implicits._
     import environment._
-    import eu.timepit.refined.auto._
 
     val computeDynamicPart = {
       List(ChestSlotRef(0, 0) -> effectDataButton) ++ ActiveSkillNormalEffect

@@ -54,7 +54,7 @@ object System {
     _
   ]: OnMinecraftServerThread: ConcurrentEffect: ErrorLogger: DiscordNotificationAPI, G[
     _
-  ]: SyncEffect: ContextCoercion[*[_], F]: Clock](
+  ]: SyncEffect: [f[_]] =>> ContextCoercion[f, F]: Clock](
     implicit configuration: Configuration,
     getConnectedPlayers: GetConnectedPlayers[F, Player]
   ): F[System[F, G]] = {

@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.menus.skill
 
+import io.github.iltotore.iron.autoRefine
+
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.router.CanOpen
@@ -34,10 +36,10 @@ object PassiveSkillMenu extends Menu {
 
   class Environment(
     implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player],
-    implicit val breakSkillTargetConfigAPI: BreakSkillTargetConfigAPI[IO, Player],
-    implicit val breakSuppressionPreferenceAPI: BreakSuppressionPreferenceAPI[IO, Player],
+    val breakSkillTargetConfigAPI: BreakSkillTargetConfigAPI[IO, Player],
+    val breakSuppressionPreferenceAPI: BreakSuppressionPreferenceAPI[IO, Player],
     val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   /**
@@ -54,7 +56,6 @@ object PassiveSkillMenu extends Menu {
   )(implicit environment: Environment): IO[MenuSlotLayout] = {
     import cats.implicits._
     import environment._
-    import eu.timepit.refined.auto._
 
     val buttonComputations = new ButtonComputations(player)
     import buttonComputations._

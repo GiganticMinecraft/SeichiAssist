@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.menus.minestack
 
+import io.github.iltotore.iron.autoRefine
+
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory._
@@ -22,15 +24,14 @@ import org.bukkit.inventory.ItemStack
 object MineStackMainMenu extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
-  import eu.timepit.refined.auto._
 
   class Environment(
     implicit val ioOnMainThread: OnMinecraftServerThread[IO],
-    implicit val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
-    implicit val ioCanOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu,
-    implicit val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
-    implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack],
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
+    val ioCanOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu,
+    val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
+    val mineStackAPI: MineStackAPI[IO, Player, ItemStack],
+    val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}MineStackメインメニュー")

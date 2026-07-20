@@ -189,7 +189,7 @@ object Fs3Channel {
             Deferred[F, Unit].flatMap { waiting =>
               state
                 .modify {
-                  case State(values, size, ignorePreviousWaiting @ _, producers, closed) =>
+                  case State(values, size, _ @_, producers, closed) =>
                     if (values.nonEmpty || producers.nonEmpty) {
                       var unblock_ = F.unit
                       var allValues_ = values

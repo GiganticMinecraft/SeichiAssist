@@ -1,18 +1,24 @@
 package com.github.unchama.seichiassist.menus.paging
 
+import io.github.iltotore.iron.constraint.numeric.{GreaterEqual, Positive}
+import io.github.iltotore.iron.{:|, refineUnsafe}
+
 import scala.math.Integral.Implicits._
-import eu.timepit.refined.types.numeric.PosInt
-import eu.timepit.refined.numeric.GreaterEqual
-import eu.timepit.refined.api.Refined
 
 object PageCounter {
-  def totalPage(totalItems: Int Refined GreaterEqual[0], itemsPerPage: PosInt): PosInt = {
-    if (totalItems.value == 0) return PosInt(1)
 
-    val (basePage, rem) = totalItems.value /% itemsPerPage.value
+  /**
+   * ページ数を計算する。`itemsPerPage` にリテラルを渡した場合、正であることは
+   * Ironによりコンパイル時に検証される。
+   */
+  def totalPage(totalItems: Int :| GreaterEqual[0], itemsPerPage: Int :| Positive): Int :|
+    Positive = {
+    if (totalItems == 0) return 1.refineUnsafe
+
+    val (basePage, rem) = (totalItems: Int) /% itemsPerPage
 
     val result = if (rem == 0) basePage else basePage + 1
 
-    PosInt.unsafeFrom(result)
+    result.refineUnsafe
   }
 }

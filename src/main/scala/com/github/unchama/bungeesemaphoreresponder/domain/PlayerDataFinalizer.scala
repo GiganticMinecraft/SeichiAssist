@@ -27,7 +27,7 @@ trait PlayerDataFinalizer[F[_], Player] {
     PlayerDataFinalizer(player => trans.apply(onQuitOf(player)))
   }
 
-  def coerceContextTo[G[_]: ContextCoercion[F, *[_]]]: PlayerDataFinalizer[G, Player] =
+  def coerceContextTo[G[_]: [g[_]] =>> ContextCoercion[F, g]]: PlayerDataFinalizer[G, Player] =
     transformContext[G](implicitly)
 
 }

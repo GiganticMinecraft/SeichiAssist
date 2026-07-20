@@ -12,8 +12,8 @@ object SynchronizationProcess {
 
   import cats.implicits._
 
-  def using[F[_]: GrantFastDiggingEffect[*[_], Player]: MonadError[
-    *[_],
+  def using[F[_]: [f[_]] =>> GrantFastDiggingEffect[f, Player]: [f[_]] =>> MonadError[
+    f,
     Throwable
   ]: JavaTime, Player](
     suppressionState: KeyedDataRepository[

@@ -1,11 +1,10 @@
 import ResourceFilter.filterResources
-import sbt.Keys.baseDirectory
 
 import java.io._
 
 // region 全プロジェクト共通のメタデータ
 
-ThisBuild / scalaVersion := "2.13.18"
+ThisBuild / scalaVersion := "3.3.8"
 // ThisBuild / version はGitHub Actionsによって取得/自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
 ThisBuild / version := "106"
@@ -13,15 +12,12 @@ ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
 // Scalafixが要求するため、semanticdbは有効化する
+// Scala 3ではコンパイラ内蔵の-Xsemanticdbが使われるため、semanticdbVersionの指定は不要
 ThisBuild / semanticdbEnabled := true
-ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
 
 // endregion
 
 // region 雑多な設定
-
-// kind-projector 構文を使いたいため
-addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.4" cross CrossVersion.full)
 
 // テストが落ちた時にスタックトレースを表示するため。
 // ScalaTest のオプションは https://www.scalatest.org/user_guide/using_the_runner を参照のこと。
@@ -32,6 +28,7 @@ Compile / testOptions += Tests.Argument("-oS")
 // region 依存関係
 
 resolvers ++= Seq(
+  // ajd4jpのミラーのため
   "jitpack.io" at "https://jitpack.io",
   "maven.sk89q.com" at "https://maven.enginehub.org/repo/",
   "maven.playpro.com" at "https://maven.playpro.com",
@@ -40,9 +37,7 @@ resolvers ++= Seq(
   "repo.maven.apache.org" at "https://repo.maven.apache.org/maven2",
   "hub.spigotmc.org" at "https://hub.spigotmc.org/nexus/content/repositories/snapshots",
   "oss.sonatype.org" at "https://oss.sonatype.org/content/repositories/snapshots",
-  "repo.phoenix616.dev" at "https://repo.phoenix616.dev", // authlibのための
-  // ajd4jpのミラーのため
-  "jitpack.io" at "https://jitpack.io"
+  "repo.phoenix616.dev" at "https://repo.phoenix616.dev" // authlibのため
 )
 
 val providedDependencies = Seq(
@@ -55,13 +50,6 @@ val providedDependencies = Seq(
   "net.coreprotect" % "coreprotect" % "21.3",
   "com.mojang" % "authlib" % "6.0.59"
 ).map(_ % "provided")
-
-val scalafixCoreDep =
-  "ch.epfl.scala" %% "scalafix-core" % _root_
-    .scalafix
-    .sbt
-    .BuildInfo
-    .scalafixVersion % ScalafixConfig
 
 val testDependencies = Seq(
   "org.scalamock" %% "scalamock" % "6.2.0",
@@ -98,7 +86,7 @@ val dependenciesToEmbed = Seq(
   "org.slf4j" % "slf4j-jdk14" % "1.7.36",
 
   // type-safety utils
-  "eu.timepit" %% "refined" % "0.11.4",
+  "io.github.iltotore" %% "iron" % "3.3.2",
   "com.beachape" %% "enumeratum" % "1.9.8",
 
   // protobuf
@@ -180,7 +168,8 @@ unmanagedResources / excludeFilter :=
 // region ScalaPBの設定
 
 Compile / PB.protoSources := Seq(baseDirectory.value / "protocol")
-Compile / PB.targets := Seq(scalapb.gen() -> (Compile / sourceManaged).value / "scalapb")
+Compile / PB.targets :=
+  Seq(scalapb.gen(scala3Sources = true) -> (Compile / sourceManaged).value / "scalapb")
 
 // endregion
 
@@ -189,22 +178,27 @@ Compile / PB.targets := Seq(scalapb.gen() -> (Compile / sourceManaged).value / "
 lazy val root = (project in file(".")).settings(
   name := "SeichiAssist",
   assembly / assemblyOutputPath := baseDirectory.value / "target" / "build" / "SeichiAssist.jar",
-  libraryDependencies := (providedDependencies :+ scalafixCoreDep) ++ testDependencies ++ dependenciesToEmbed,
+  libraryDependencies := providedDependencies ++ testDependencies ++ dependenciesToEmbed,
+  // src/scalafix配下のカスタムルール2つ（.scalafix.confにもCIにも未参照）のコンパイルを
+  // 無効化する。scalafix-coreはScala 2.13向けにのみ公開されており、Scala 3コンパイラでは
+  // コンパイルできない。再度有効化する場合は、ルールを別プロジェクトへ切り出して
+  // 2.13でクロスビルドする必要がある。
+  ScalafixConfig / sources := Nil,
   excludeDependencies := Seq(ExclusionRule(organization = "org.bukkit", name = "bukkit")),
   unmanagedBase := baseDirectory.value / "localDependencies",
   scalacOptions ++= Seq(
-    "-Yprofile-trace",
-    "profile.trace",
     "-encoding",
     "utf8",
     "-unchecked",
-    "-language:higherKinds",
     "-deprecation",
-    "-Xsource:3",
-    "-Xsource-features:case-apply-copy-access",
-    "-Ypatmat-exhaust-depth",
-    "320",
-    "-Ywarn-unused"
+    // enumeratumのfindValuesがマクロでコンパニオンのツリーを参照するため
+    "-Yretain-trees",
+    "-Wunused:all",
+    // implicit valの初期化が自分自身を暗黙引数として解決すると、フィールドに
+    // 未初期化のnullが格納される実行時バグになる（例: 匿名クラス内の
+    // `override protected implicit val F: Monad[F] = implicitly`）。
+    // この種の警告は見逃すと危険なため、コンパイルエラーへ昇格させる。
+    "-Wconf:msg=Infinite loop in function body:e"
   ),
   javacOptions ++= Seq("-encoding", "utf8"),
   assembly / assemblyShadeRules ++= Seq(
@@ -214,9 +208,10 @@ lazy val root = (project in file(".")).settings(
       )
       .inAll
   ),
-  // sbt-assembly 1.0.0からはTestを明示的にタスクツリーに入れる必要がある
-  // cf. https://github.com/sbt/sbt-assembly/pull/432/commits/361224a6202856bc2e572df811d0e6a1f1efda98
-  Compile / assembly / test := (Test / test).value
+  // assemblyの実行時にテストを走らせる（sbt-assembly 1.0.0からはデフォルトで実行されない）。
+  // assemblyタスクが参照するのは `assembly / test` スコープであることに注意。
+  // 誤って `Compile / assembly / test` へ配線するとテストが実行されないままassemblyが成功する。
+  assembly / test := (Test / test).value
 )
 
 // endregion

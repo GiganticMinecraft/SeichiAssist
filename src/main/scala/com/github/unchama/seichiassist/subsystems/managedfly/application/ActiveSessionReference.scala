@@ -51,9 +51,10 @@ object ActiveSessionReference {
 
   import cats.implicits._
 
-  def createNew[AsyncContext[_]: ConcurrentEffect, SyncContext[_]: Sync: ContextCoercion[*[
+  def createNew[AsyncContext[_]: ConcurrentEffect, SyncContext[_]: Sync: [f[
     _
-  ], AsyncContext]]: SyncContext[ActiveSessionReference[AsyncContext, SyncContext]] = {
+  ]] =>> ContextCoercion[f, AsyncContext]]
+    : SyncContext[ActiveSessionReference[AsyncContext, SyncContext]] = {
     for {
       mutex <- Mutex
         .of[AsyncContext, SyncContext, Option[ActiveSession[AsyncContext, SyncContext]]](None)
