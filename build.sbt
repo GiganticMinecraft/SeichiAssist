@@ -23,15 +23,6 @@ ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
 // kind-projector 構文を使いたいため
 addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.4" cross CrossVersion.full)
 
-// CIビルドで詳細なログを確認するため
-ThisBuild / logLevel := {
-  if (scala.sys.env.get("BUILD_ENVIRONMENT_IS_CI_OR_LOCAL").contains("CI")) {
-    Level.Debug
-  } else {
-    Level.Info
-  }
-}
-
 // テストが落ちた時にスタックトレースを表示するため。
 // ScalaTest のオプションは https://www.scalatest.org/user_guide/using_the_runner を参照のこと。
 Compile / testOptions += Tests.Argument("-oS")
