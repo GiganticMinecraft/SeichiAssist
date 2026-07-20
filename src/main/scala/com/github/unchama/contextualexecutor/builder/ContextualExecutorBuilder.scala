@@ -11,8 +11,6 @@ import com.github.unchama.contextualexecutor.{
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.command.CommandSender
-import shapeless.ops.hlist.Prepend
-import shapeless.{HList, HNil, :: => HCons}
 
 import scala.reflect.ClassTag
 
@@ -29,8 +27,7 @@ import scala.reflect.ClassTag
  * @param argumentsParser
  *   [RawCommandContext]から[PartiallyParsedArgs]の作成を試みる関数
  */
-// TODO(scala3): HListをTupleに置き換える。Shapelessで実装された同等の操作がネイティブに (`Tuple.Map` などを通じて) サポートされている。
-case class ContextualExecutorBuilder[CS <: CommandSender, HArgs <: HList](
+case class ContextualExecutorBuilder[CS <: CommandSender, HArgs <: Tuple](
   senderTypeValidation: SenderTypeValidation[CS],
   argumentsParser: CommandArgumentsParser[CS, HArgs],
   onMissingArguments: Option[ContextualExecutor] = None
@@ -40,9 +37,9 @@ case class ContextualExecutorBuilder[CS <: CommandSender, HArgs <: HList](
   /**
    * 引数を追加で受け取る。追加された引数は[[HArgs]]の末尾に追加され、新しいContextualExecutionBuilderが返される。
    */
-  def thenParse[LastArg](parserToBeAdded: SingleArgumentParser[LastArg])(
-    implicit prepend: Prepend[HArgs, HCons[LastArg, HNil]]
-  ): ContextualExecutorBuilder[CS, prepend.Out] = {
+  def thenParse[LastArg](
+    parserToBeAdded: SingleArgumentParser[LastArg]
+  ): ContextualExecutorBuilder[CS, Tuple.Append[HArgs, LastArg]] = {
     this.copy(argumentsParser = (sender, rawContext) => {
       val program = for {
         head <- OptionT(this.argumentsParser(sender, rawContext))
@@ -60,7 +57,7 @@ case class ContextualExecutorBuilder[CS <: CommandSender, HArgs <: HList](
           case Right(lastArg) => OptionT.pure[IO](lastArg)
         }
       } yield {
-        val parsedArguments = (head.parsed :+ parsedLastArg)(prepend)
+        val parsedArguments = head.parsed :* parsedLastArg
         PartiallyParsedArgs(parsedArguments, head.yetToBeParsed.tail)
       }
 
@@ -187,14 +184,14 @@ case class ContextualExecutorBuilder[CS <: CommandSender, HArgs <: HList](
 }
 
 object ContextualExecutorBuilder {
-  private def defaultArgumentParser: CommandArgumentsParser[CommandSender, HNil] = {
-    case (_, context) => IO.pure(Some(PartiallyParsedArgs(HNil, context.args)))
+  private def defaultArgumentParser: CommandArgumentsParser[CommandSender, EmptyTuple] = {
+    case (_, context) => IO.pure(Some(PartiallyParsedArgs(EmptyTuple, context.args)))
   }
 
   private val defaultSenderValidation: SenderTypeValidation[CommandSender] = {
     (sender: CommandSender) => IO.pure(Some(sender))
   }
 
-  def beginConfiguration: ContextualExecutorBuilder[CommandSender, HNil] =
+  def beginConfiguration: ContextualExecutorBuilder[CommandSender, EmptyTuple] =
     ContextualExecutorBuilder(defaultSenderValidation, defaultArgumentParser)
 }

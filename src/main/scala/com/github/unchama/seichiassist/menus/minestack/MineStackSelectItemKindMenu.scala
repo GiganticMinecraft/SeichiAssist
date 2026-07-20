@@ -11,7 +11,6 @@ import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObjectWithKindVariants
-import eu.timepit.refined.auto._
 import org.bukkit.ChatColor.{BOLD, DARK_BLUE}
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -23,10 +22,10 @@ object MineStackSelectItemKindMenu {
 
   class Environment(
     implicit val canOpenCategorizedMineStackMenu: CanOpen[IO, CategorizedMineStackMenu],
-    implicit val canOpenSelectItemKindMenu: CanOpen[IO, MineStackSelectItemKindMenu],
-    implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack],
-    implicit val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    val canOpenSelectItemKindMenu: CanOpen[IO, MineStackSelectItemKindMenu],
+    val mineStackAPI: MineStackAPI[IO, Player, ItemStack],
+    val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
+    val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
 }

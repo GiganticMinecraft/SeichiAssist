@@ -16,9 +16,9 @@ object BukkitNotifyBuildAmountThreshold {
   import cats.implicits._
 
   // TODO: BukkitNotifyLevelUpなのにdiffの展開やいつメッセージを出すかなどを扱うべきでない。
-  def apply[F[_]: Sync: DiscordNotificationAPI: OnMinecraftServerThread: GetConnectedPlayers[*[
+  def apply[F[_]: Sync: DiscordNotificationAPI: OnMinecraftServerThread: [f[
     _
-  ], Player]]: NotifyBuildAmountThreshold[F, Player] = {
+  ]] =>> GetConnectedPlayers[f, Player]]: NotifyBuildAmountThreshold[F, Player] = {
     new NotifyBuildAmountThreshold[F, Player] {
       override def ofBuildAmountTo(player: Player)(diff: Diff[BuildAmountData]): F[Unit] = {
         val Diff(oldBuildAmount, newBuildAmount) = diff

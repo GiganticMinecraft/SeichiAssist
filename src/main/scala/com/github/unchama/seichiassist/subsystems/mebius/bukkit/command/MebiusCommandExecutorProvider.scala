@@ -23,7 +23,6 @@ import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect, Unfo
 import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.entity.Player
-import shapeless.HList
 
 class MebiusCommandExecutorProvider(
   implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]]
@@ -142,9 +141,7 @@ class MebiusCommandExecutorProvider(
       }
     }
 
-    private def concatHeadAndRemainingArgs[A](
-      args: PartiallyParsedArgs[shapeless.::[A, HList]]
-    ): String =
+    private def concatHeadAndRemainingArgs[A](args: PartiallyParsedArgs[A *: Tuple]): String =
       args.parsed.head.toString + " " + args.yetToBeParsed.mkString(" ")
 
     object NicknameCommand {

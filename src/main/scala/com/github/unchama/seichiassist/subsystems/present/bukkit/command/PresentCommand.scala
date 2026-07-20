@@ -21,13 +21,11 @@ import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffectF}
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
 import eu.timepit.refined.api.Refined
-import eu.timepit.refined.auto._
 import eu.timepit.refined.numeric.Positive
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{ChatColor, Material}
-import shapeless.HNil
 
 /**
  * `/present` コマンドを定義する。
@@ -129,7 +127,7 @@ class PresentCommand {
           )
           .ifArgumentsMissing(help)
           .buildWith { context =>
-            val perPage: Int Refined Positive = 10
+            val perPage: Int Refined Positive = Refined.unsafeApply(10)
             val page = context.args.parsed.head
             val player = context.sender.getUniqueId
             val eff = for {
@@ -326,8 +324,7 @@ class PresentCommand {
           .ifArgumentsMissing(help)
           .buildWithExecutionCSEffect { context =>
             if (context.sender.hasPermission("seichiassist.present.grant")) {
-              import shapeless.::
-              val presentId :: mode :: HNil = context.args.parsed
+              val (presentId, mode) = context.args.parsed
               // Parserを通した段階でargs[0]は "player" | "all" になっているのでこれでOK
               val isGlobal = mode == "all"
               (for {
@@ -400,9 +397,8 @@ class PresentCommand {
           .ifArgumentsMissing(help)
           .buildWithExecutionCSEffect { context =>
             if (context.sender.hasPermission("seichiassist.present.revoke")) {
-              import shapeless.::
               val args = context.args
-              val presentId :: presentScope :: HNil = args.parsed
+              val (presentId, presentScope) = args.parsed
               val isGlobal = presentScope == "all"
               (for {
                 _ <- Kleisli.liftF(NonServerThreadContextShift[F].shift)

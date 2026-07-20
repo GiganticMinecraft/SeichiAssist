@@ -26,7 +26,7 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_]: Sync, G[_]: SyncEffect: ContextCoercion[*[_], F]]: F[System[F]] = {
+  def wired[F[_]: Sync, G[_]: SyncEffect: [f[_]] =>> ContextCoercion[f, F]]: F[System[F]] = {
     for {
       consumeGachaTicketSettingRepositoryControls <- ContextCoercion(
         BukkitRepositoryControls.createHandles(

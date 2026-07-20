@@ -20,7 +20,7 @@ import org.bukkit.inventory.Inventory
 
 import java.util.UUID
 
-class OpenPocketCommand[F[_]: Effect: InteractInventory[*[_], Player, Inventory]](
+class OpenPocketCommand[F[_]: Effect: [f[_]] =>> InteractInventory[f, Player, Inventory]](
   repository: KeyedDataRepository[Player, ReadOnlyRef[F, Inventory]],
   persistence: RefDict[F, UUID, Inventory]
 )(implicit syncIOUuidRepository: UuidRepository[SyncIO]) {

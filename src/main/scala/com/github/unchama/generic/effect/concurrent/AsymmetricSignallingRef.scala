@@ -58,7 +58,7 @@ object AsymmetricSignallingRef {
   /**
    * 指定された値で初期化された[[AsymmetricSignallingRef]]を作成する作用。
    */
-  def apply[G[_]: Sync, F[_]: ConcurrentEffect: ContextCoercion[G, *[_]], A](
+  def apply[G[_]: Sync, F[_]: ConcurrentEffect: [g[_]] =>> ContextCoercion[G, g], A](
     initial: A
   ): G[AsymmetricSignallingRef[G, F, A]] = in[G, G, F, A](initial)
 
@@ -67,7 +67,7 @@ object AsymmetricSignallingRef {
    *
    * [[apply]] とほぼ等価であるが、状態の作成を別の作用型の中で行う。
    */
-  def in[H[_]: Sync, G[_]: Sync, F[_]: ConcurrentEffect: ContextCoercion[G, *[_]], A](
+  def in[H[_]: Sync, G[_]: Sync, F[_]: ConcurrentEffect: [g[_]] =>> ContextCoercion[G, g], A](
     initial: A
   ): H[AsymmetricSignallingRef[G, F, A]] = {
     val initialState = TimeStamped(new Token, new Token, initial)

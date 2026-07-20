@@ -79,7 +79,6 @@ object FirstPage extends Menu {
     onMainThread
   }
   import com.github.unchama.targetedeffect.player.PlayerEffects._
-  import eu.timepit.refined.auto._
 
   class Environment(
     implicit val breakCountAPI: BreakCountReadAPI[IO, SyncIO, Player],
@@ -105,7 +104,7 @@ object FirstPage extends Menu {
     val gachaTicketAPI: GachaTicketAPI[IO],
     val voteAPI: VoteAPI[IO, Player],
     val nonServerThreadContextShift: NonServerThreadContextShift[IO],
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   override val frame: MenuFrame =
@@ -572,8 +571,8 @@ object FirstPage extends Menu {
       implicit ioCanOpenServerSwitchMenu: IO CanOpen ServerSwitchMenu.type
     ): Button = {
       val buttonLore = List(
-        s"$GRAY・各サバイバルサーバー",
-        s"$GRAY・公共施設サーバー",
+        s"${GRAY}・各サバイバルサーバー",
+        s"${GRAY}・公共施設サーバー",
         s"${GRAY}間を移動する時に使います",
         s"$DARK_RED${UNDERLINE}クリックして開く"
       )
@@ -592,8 +591,8 @@ object FirstPage extends Menu {
 
     val spawnCommandButton: Button = {
       val buttonLore = List(
-        s"$GRAY・整地ワールド間を移動するとき",
-        s"$GRAY・拠点を建築するとき",
+        s"${GRAY}・整地ワールド間を移動するとき",
+        s"${GRAY}・拠点を建築するとき",
         s"$GRAY に使います",
         s"$DARK_RED${UNDERLINE}クリックするとワープします",
         s"${DARK_GRAY}command=>[/spawn]"

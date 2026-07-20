@@ -34,7 +34,7 @@ object BlockPlacementSkillMenu extends Menu {
 
   class Environment(
     implicit val canOpenMainMenu: CanOpen[IO, BuildMainMenu.type],
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   override val frame: MenuFrame =
@@ -108,7 +108,9 @@ object BlockPlacementSkillMenu extends Menu {
           .lore(
             s"$RESET$AQUA${UNDERLINE}スキルの使用設定: ${if (isSkillEnabled) "ON" else "OFF"}",
             s"$RESET$AQUA${UNDERLINE}スキルの範囲設定: $skillRange×$skillRange",
-            s"$RESET$AQUA${UNDERLINE}MineStack優先設定: ${if (isConsumingMineStack) "ON" else "OFF"}"
+            s"$RESET$AQUA${UNDERLINE}MineStack優先設定: ${
+                if (isConsumingMineStack) "ON" else "OFF"
+              }"
           )
           .build()
 

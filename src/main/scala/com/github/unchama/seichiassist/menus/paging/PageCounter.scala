@@ -6,8 +6,11 @@ import eu.timepit.refined.numeric.GreaterEqual
 import eu.timepit.refined.api.Refined
 
 object PageCounter {
-  def totalPage(totalItems: Int Refined GreaterEqual[0], itemsPerPage: PosInt): PosInt = {
-    if (totalItems.value == 0) return PosInt(1)
+  private def computeTotalPage(
+    totalItems: Int Refined GreaterEqual[0],
+    itemsPerPage: PosInt
+  ): PosInt = {
+    if (totalItems.value == 0) return PosInt.unsafeFrom(1)
 
     val (basePage, rem) = totalItems.value /% itemsPerPage.value
 
@@ -15,4 +18,18 @@ object PageCounter {
 
     PosInt.unsafeFrom(result)
   }
+
+  /**
+   * ページ数を計算する。`itemsPerPage` はリテラルでなければならず、
+   * 正であることはコンパイル時に検証される。
+   * Scala 2ではrefined.auto._のマクロが担っていたコンパイル時検証をinline化により置き換えたもの。
+   */
+  inline def totalPage(
+    totalItems: Int Refined GreaterEqual[0],
+    inline itemsPerPage: Int
+  ): PosInt =
+    inline if (itemsPerPage > 0)
+      computeTotalPage(totalItems, PosInt.unsafeFrom(itemsPerPage))
+    else
+      scala.compiletime.error("PageCounter: itemsPerPageは正のリテラルでなければならない")
 }

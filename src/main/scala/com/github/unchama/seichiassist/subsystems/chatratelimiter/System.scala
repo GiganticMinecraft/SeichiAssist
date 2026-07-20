@@ -13,7 +13,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 
 object System {
-  def wired[F[_]: ConcurrentEffect, G[_]: SyncEffect: ContextCoercion[*[_], F]: Timer](
+  def wired[F[_]: ConcurrentEffect, G[_]: SyncEffect: [f[_]] =>> ContextCoercion[f, F]: Timer](
     implicit breakCountAPI: BreakCountReadAPI[F, G, Player]
   ): F[Subsystem[F]] = {
     val repository = ChatRateLimitRepositoryDefinition.inSyncContext[G, Player]

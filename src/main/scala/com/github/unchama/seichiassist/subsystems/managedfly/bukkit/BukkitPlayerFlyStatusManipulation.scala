@@ -13,7 +13,7 @@ import org.bukkit.entity.Player
 class BukkitPlayerFlyStatusManipulation[AsyncContext[_]: Concurrent: OnMinecraftServerThread](
   implicit configuration: SystemConfiguration,
   idleTimeAPI: IdleTimeAPI[AsyncContext, Player]
-) extends PlayerFlyStatusManipulation[Kleisli[AsyncContext, Player, *]] {
+) extends PlayerFlyStatusManipulation[[a] =>> Kleisli[AsyncContext, Player, a]] {
 
   import cats.implicits._
 
