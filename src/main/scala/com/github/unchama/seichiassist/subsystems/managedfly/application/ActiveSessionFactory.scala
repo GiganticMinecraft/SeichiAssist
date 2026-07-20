@@ -12,7 +12,8 @@ import com.github.unchama.seichiassist.subsystems.managedfly.domain._
  * プレーヤーに紐づいたFlyセッションを作成できるオブジェクト。
  */
 class ActiveSessionFactory[AsyncContext[_]: Timer: Concurrent, Player](
-  implicit KleisliAsyncContext: PlayerFlyStatusManipulation[Kleisli[AsyncContext, Player, *]]
+  implicit
+  KleisliAsyncContext: PlayerFlyStatusManipulation[[a] =>> Kleisli[AsyncContext, Player, a]]
 ) {
 
   type KleisliAsyncContext[A] = Kleisli[AsyncContext, Player, A]
@@ -47,7 +48,7 @@ class ActiveSessionFactory[AsyncContext[_]: Timer: Concurrent, Player](
     } yield newDuration
   }
 
-  def start[SyncContext[_]: Sync: ContextCoercion[*[_], AsyncContext]](
+  def start[SyncContext[_]: Sync: [f[_]] =>> ContextCoercion[f, AsyncContext]](
     totalDuration: RemainingFlyDuration
   ): KleisliAsyncContext[ActiveSession[AsyncContext, SyncContext]] = {
     import cats.effect.implicits._

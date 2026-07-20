@@ -20,7 +20,7 @@ import scala.util.chaining.scalaUtilChainingOps
 import scala.util.control.Breaks
 
 class BlockLineUpTriggerListener[
-  F[_]: IncrementBuildExpWhenBuiltWithSkill[*[_], Player]: SyncEffect
+  F[_]: [f[_]] =>> IncrementBuildExpWhenBuiltWithSkill[f, Player]: SyncEffect
 ](
   implicit manaApi: ManaApi[IO, SyncIO, Player],
   mineStackAPI: MineStackAPI[IO, Player, ItemStack]

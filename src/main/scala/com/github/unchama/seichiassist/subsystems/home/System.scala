@@ -26,7 +26,7 @@ trait System[F[_]] extends Subsystem[F] {
 object System {
   def wired[F[_]: OnMinecraftServerThread: ConcurrentEffect: NonServerThreadContextShift, G[
     _
-  ]: ContextCoercion[*[_], F]](
+  ]: [f[_]] =>> ContextCoercion[f, F]](
     implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player],
     buildCountReadAPI: BuildCountAPI[F, G, Player]
   ): System[F] = {

@@ -65,44 +65,68 @@ object System {
           gachaPrizesRef.startUpdateRoutine(_gachaPersistence.list)
 
         override implicit val api: GachaPrizeAPI[F, ItemStack, Player] =
-          new GachaPrizeAPI[F, ItemStack, Player] {
-            override protected implicit val F: Monad[F] = implicitly
-
-            override def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Boolean] =
-              gachaPrizeUseCase.removeByGachaPrizeId(gachaPrizeId)
-
-            override def addGachaPrize(
-              gachaPrizeByGachaPrizeId: GachaPrizeByGachaPrizeId
-            ): F[Unit] =
-              gachaPrizeUseCase.addGachaPrize(gachaPrizeByGachaPrizeId)
-
-            override def upsertGachaPrize(
-              gachaPrize: GachaPrizeTableEntry[ItemStack]
-            ): F[Unit] =
-              _gachaPersistence.upsertGachaPrize(gachaPrize)
-
-            override def listOfNow: F[Vector[GachaPrizeTableEntry[ItemStack]]] =
-              gachaPrizeUseCase.listOfNow
-
-            override def allGachaPrizeList: F[Vector[GachaPrizeTableEntry[ItemStack]]] =
-              gachaPrizesRef.read
-
-            override def staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack] =
-              _staticGachaPrizeFactory
-
-            override def createdGachaEvents: F[Vector[GachaEvent]] =
-              _gachaEventPersistence.gachaEvents
-
-            override def createGachaEvent(gachaEvent: GachaEvent): F[Unit] =
-              gachaPrizeUseCase.createGachaEvent(gachaEvent)
-
-            override def deleteGachaEvent(gachaEventName: GachaEventName): F[Unit] =
-              _gachaEventPersistence.deleteGachaEvent(gachaEventName)
-
-            override def canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
-              _canBeSignedAsGachaPrize
-          }
+          createApi(
+            gachaPrizesRef,
+            gachaPrizeUseCase,
+            _gachaPersistence,
+            _gachaEventPersistence,
+            _staticGachaPrizeFactory,
+            _canBeSignedAsGachaPrize
+          )
       }
+    }
+  }
+
+  /**
+   * [[GachaPrizeAPI]] の実装を構築する。
+   *
+   * 実装上の注意: 匿名クラス内の `override protected implicit val F` を `implicitly` や
+   * `Monad[F]` で初期化してはならない。Scala 3では定義中の `this.F` 自身が暗黙引数として
+   * 解決され、未初期化の null が格納される（コンパイラの "Infinite loop in function body"
+   * 警告が出る）。このため、匿名クラスの外側で確定させた `monadF` を明示的に代入している。
+   */
+  private[gachaprize] def createApi[F[_]: Monad](
+    gachaPrizesRef: CachedRef[F, Vector[GachaPrizeTableEntry[ItemStack]]],
+    gachaPrizeUseCase: GachaPrizeUseCase[F, ItemStack],
+    gachaPersistence: GachaPrizeListPersistence[F, ItemStack],
+    gachaEventPersistence: GachaEventPersistence[F],
+    staticFactory: StaticGachaPrizeFactory[ItemStack],
+    signableAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack]
+  ): GachaPrizeAPI[F, ItemStack, Player] = {
+    val monadF: Monad[F] = Monad[F]
+
+    new GachaPrizeAPI[F, ItemStack, Player] {
+      override protected implicit val F: Monad[F] = monadF
+
+      override def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Boolean] =
+        gachaPrizeUseCase.removeByGachaPrizeId(gachaPrizeId)
+
+      override def addGachaPrize(gachaPrizeByGachaPrizeId: GachaPrizeByGachaPrizeId): F[Unit] =
+        gachaPrizeUseCase.addGachaPrize(gachaPrizeByGachaPrizeId)
+
+      override def upsertGachaPrize(gachaPrize: GachaPrizeTableEntry[ItemStack]): F[Unit] =
+        gachaPersistence.upsertGachaPrize(gachaPrize)
+
+      override def listOfNow: F[Vector[GachaPrizeTableEntry[ItemStack]]] =
+        gachaPrizeUseCase.listOfNow
+
+      override def allGachaPrizeList: F[Vector[GachaPrizeTableEntry[ItemStack]]] =
+        gachaPrizesRef.read
+
+      override def staticGachaPrizeFactory: StaticGachaPrizeFactory[ItemStack] =
+        staticFactory
+
+      override def createdGachaEvents: F[Vector[GachaEvent]] =
+        gachaEventPersistence.gachaEvents
+
+      override def createGachaEvent(gachaEvent: GachaEvent): F[Unit] =
+        gachaPrizeUseCase.createGachaEvent(gachaEvent)
+
+      override def deleteGachaEvent(gachaEventName: GachaEventName): F[Unit] =
+        gachaEventPersistence.deleteGachaEvent(gachaEventName)
+
+      override def canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
+        signableAsGachaPrize
     }
   }
 

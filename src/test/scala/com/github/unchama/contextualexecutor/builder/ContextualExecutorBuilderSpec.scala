@@ -1,7 +1,6 @@
 package com.github.unchama.contextualexecutor.builder
 
 import cats.effect.IO
-import cats.implicits._
 import com.github.unchama.contextualexecutor.{
   ContextualExecutor,
   ExecutedCommand,
@@ -13,12 +12,11 @@ import org.bukkit.command.{Command, CommandSender}
 import org.bukkit.entity.Player
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.wordspec.AnyWordSpec
-import shapeless.{HList, HNil}
 
 /**
  * コマンド引数DSL ([[ContextualExecutorBuilder]]) の回帰テスト。
  *
- * Scala 3移行の際にShapeless HListによる引数型の蓄積をScala 3のTupleへ置き換える予定であるため、
+ * Scala 2時代はShapeless HListで実装されていた引数型の蓄積がScala 3のTupleへ置き換えられたため、
  * 引数のパース順序、エラー通知、送信者の絞り込みといった外部から観測できる挙動をここで固定する。
  */
 class ContextualExecutorBuilderSpec extends AnyWordSpec with MockFactory {
@@ -39,9 +37,9 @@ class ContextualExecutorBuilderSpec extends AnyWordSpec with MockFactory {
   }
 
   "引数を取らないビルダー" should {
-    "空のHListと未パース引数をそのまま実行部へ渡す" in {
+    "空のタプルと未パース引数をそのまま実行部へ渡す" in {
       val sender = stub[CommandSender]
-      var capturedParsed: Option[HList] = None
+      var capturedParsed: Option[Tuple] = None
       var capturedYetToBeParsed: Option[List[String]] = None
 
       val executor = ContextualExecutorBuilder.beginConfiguration.buildWith { context =>
@@ -53,15 +51,15 @@ class ContextualExecutorBuilderSpec extends AnyWordSpec with MockFactory {
 
       executor.executionWith(contextWith(sender, List("raw1", "raw2"))).unsafeRunSync()
 
-      assert(capturedParsed.contains(HNil))
+      assert(capturedParsed.contains(EmptyTuple))
       assert(capturedYetToBeParsed.contains(List("raw1", "raw2")))
     }
   }
 
   "thenParseを使ったビルダー" should {
-    "正常な引数をパースしてHListとして実行部へ渡す" in {
+    "正常な引数をパースしてタプルとして実行部へ渡す" in {
       val sender = stub[CommandSender]
-      var captured: Option[HList] = None
+      var captured: Option[Tuple] = None
 
       val executor =
         ContextualExecutorBuilder.beginConfiguration.thenParse(Parsers.integer()).buildWith {
@@ -70,12 +68,12 @@ class ContextualExecutorBuilderSpec extends AnyWordSpec with MockFactory {
 
       executor.executionWith(contextWith(sender, List("42"))).unsafeRunSync()
 
-      assert(captured.contains(42 :: HNil))
+      assert(captured.contains(42 *: EmptyTuple))
     }
 
     "複数の引数を宣言順にパースし、余剰引数はyetToBeParsedに残す" in {
       val sender = stub[CommandSender]
-      var capturedParsed: Option[HList] = None
+      var capturedParsed: Option[Tuple] = None
       var capturedYetToBeParsed: Option[List[String]] = None
 
       val executor = ContextualExecutorBuilder
@@ -93,7 +91,7 @@ class ContextualExecutorBuilderSpec extends AnyWordSpec with MockFactory {
         .executionWith(contextWith(sender, List("name", "7", "rest1", "rest2")))
         .unsafeRunSync()
 
-      assert(capturedParsed.contains("name" :: 7 :: HNil))
+      assert(capturedParsed.contains(("name", 7)))
       assert(capturedYetToBeParsed.contains(List("rest1", "rest2")))
     }
 
@@ -178,7 +176,7 @@ class ContextualExecutorBuilderSpec extends AnyWordSpec with MockFactory {
 
     "型の絞り込みと引数パースを組み合わせられる" in {
       val playerSender = stub[Player]
-      var captured: Option[HList] = None
+      var captured: Option[Tuple] = None
 
       val executor = ContextualExecutorBuilder
         .beginConfiguration
@@ -190,7 +188,7 @@ class ContextualExecutorBuilderSpec extends AnyWordSpec with MockFactory {
 
       executor.executionWith(contextWith(playerSender, List("arg"))).unsafeRunSync()
 
-      assert(captured.contains("arg" :: HNil))
+      assert(captured.contains("arg" *: EmptyTuple))
     }
   }
 }

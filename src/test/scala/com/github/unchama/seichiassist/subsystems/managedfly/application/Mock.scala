@@ -7,9 +7,9 @@ import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.Mutex
 import com.github.unchama.seichiassist.subsystems.managedfly.domain._
 
-private[managedfly] class Mock[AsyncContext[_]: Concurrent, SyncContext[
+private[managedfly] class Mock[AsyncContext[_]: Concurrent, SyncContext[_]: Sync: [f[
   _
-]: Sync: ContextCoercion[*[_], AsyncContext]] {
+]] =>> ContextCoercion[f, AsyncContext]] {
 
   sealed trait ExperienceMock {
     def consume(amount: BigInt): Option[ExperienceMock]

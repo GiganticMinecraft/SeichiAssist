@@ -29,7 +29,6 @@ class BukkitFairyRoutine(fairySpeech: FairySpeech[IO, Player])(
   override def start(player: Player): IO[Nothing] = {
 
     val repeatInterval: IO[FiniteDuration] = IO {
-      import scala.concurrent.duration._
 
       30.seconds
     }

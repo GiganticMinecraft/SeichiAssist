@@ -48,7 +48,7 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_], G[_]: SyncEffect: ContextCoercion[*[_], F]]
+  def wired[F[_], G[_]: SyncEffect: [f[_]] =>> ContextCoercion[f, F]]
     : G[System[F, Player, Location, World]] = {
     implicit val regionCountPersistence: RegionCountAllUntilNowPersistence[G] =
       new JdbcRegionCountAllUntilNowPersistence[G]

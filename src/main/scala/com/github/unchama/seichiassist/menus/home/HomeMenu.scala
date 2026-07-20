@@ -19,7 +19,6 @@ import com.github.unchama.seichiassist.{ManagedWorld, SkullOwners}
 import com.github.unchama.targetedeffect._
 import com.github.unchama.targetedeffect.player.PlayerEffects._
 import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
-import eu.timepit.refined.auto._
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
@@ -28,12 +27,12 @@ object HomeMenu {
 
   class Environment(
     implicit val ioCanOpenConfirmationMenu: IO CanOpen HomeChangeConfirmationMenu,
-    implicit val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
-    implicit val ioCanOpenHome: IO CanOpen HomeMenu,
+    val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
+    val ioCanOpenHome: IO CanOpen HomeMenu,
     val ioCanOpenHomeRemoveConfirmationMenu: IO CanOpen HomeRemoveConfirmationMenu,
-    implicit val homeReadAPI: HomeReadAPI[IO],
-    implicit val asyncShift: NonServerThreadContextShift[IO],
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    val homeReadAPI: HomeReadAPI[IO],
+    val asyncShift: NonServerThreadContextShift[IO],
+    val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
 }
@@ -49,7 +48,7 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
     player: Player
   )(implicit environment: Environment): IO[MenuSlotLayout] = {
     import eu.timepit.refined._
-    import eu.timepit.refined.auto._
+    import eu.timepit.refined.api.Refined
     import eu.timepit.refined.numeric._
 
     val buttonComputations = HomeMenuButtonComputations(player)
@@ -68,7 +67,10 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
       columnEither.fold(
         _ => throw new RuntimeException("This branch should not be reached."),
         column =>
-          Map(ChestSlotRef(0, column) -> ConstantButtons.warpToHomePointButton(homeNumber))
+          Map(
+            ChestSlotRef.fromRefined(Refined.unsafeApply(0), column) ->
+              ConstantButtons.warpToHomePointButton(homeNumber)
+          )
       )
     }
 
@@ -79,9 +81,12 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
         _ => throw new RuntimeException("This branch should not be reached."),
         column => {
           List(
-            ChestSlotRef(1, column) -> setHomeNameButton(homeNumber),
-            ChestSlotRef(2, column) -> buttonComputations.setHomeButton(homeNumber),
-            ChestSlotRef(3, column) -> buttonComputations.removeHomeButton(homeNumber)
+            ChestSlotRef.fromRefined(Refined.unsafeApply(1), column) ->
+              setHomeNameButton(homeNumber),
+            ChestSlotRef.fromRefined(Refined.unsafeApply(2), column) ->
+              buttonComputations.setHomeButton(homeNumber),
+            ChestSlotRef.fromRefined(Refined.unsafeApply(3), column) ->
+              buttonComputations.removeHomeButton(homeNumber)
           ).traverse(_.sequence)
         }
       )

@@ -22,9 +22,12 @@ trait System[F[_]] extends Subsystem[F] {
 }
 
 object System {
-  def backgroundProcess[F[_]: Concurrent: Timer: OnMinecraftServerThread: GetConnectedPlayers[*[
+  def backgroundProcess[F[_]: Concurrent: Timer: OnMinecraftServerThread: [f[
     _
-  ], org.bukkit.entity.Player], G[_]: ContextCoercion[*[_], F], Player](
+  ]] =>> GetConnectedPlayers[f, org.bukkit.entity.Player], G[_]: [f[_]] =>> ContextCoercion[
+    f,
+    F
+  ], Player](
     implicit fastDiggingEffectApi: FastDiggingEffectWriteApi[F, Player],
     manaApi: ManaApi[F, G, Player]
   ): F[Nothing] = {

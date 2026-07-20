@@ -59,7 +59,6 @@ object SecondPage extends Menu {
   import com.github.unchama.targetedeffect._
   import com.github.unchama.targetedeffect.player.PlayerEffects._
   import com.github.unchama.util.InventoryUtil._
-  import eu.timepit.refined.auto._
   import menuinventory.syntax._
 
   class Environment(
@@ -68,7 +67,7 @@ object SecondPage extends Menu {
     val gachaDrawAPI: GachaDrawAPI[IO, Player],
     val gachaPointAPI: GachaPointApi[IO, SyncIO, Player],
     val consumeGachaTicketAPI: ConsumeGachaTicketAPI[IO, Player],
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   override val frame: MenuFrame =

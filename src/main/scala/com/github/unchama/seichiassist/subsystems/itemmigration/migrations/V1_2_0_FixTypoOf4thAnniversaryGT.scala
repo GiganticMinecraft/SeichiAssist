@@ -19,8 +19,6 @@ object V1_2_0_FixTypoOf4thAnniversaryGT {
     name.contains(gt4thName)
   }
 
-  import eu.timepit.refined.auto._
-
   def migrationFunction(itemStack: ItemStack): ItemStack = {
     if (!is4thGiganticItem(itemStack)) return itemStack
 

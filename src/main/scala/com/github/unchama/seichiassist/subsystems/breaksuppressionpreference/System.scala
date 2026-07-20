@@ -18,7 +18,7 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_], G[_]: SyncEffect: ContextCoercion[*[_], F]]: G[System[F, Player]] = {
+  def wired[F[_], G[_]: SyncEffect: [f[_]] =>> ContextCoercion[f, F]]: G[System[F, Player]] = {
     implicit val breakSuppressionPreferencePersistence
       : BreakSuppressionPreferencePersistence[G] =
       new JdbcBreakSuppressionPreferencePersistence[G]
