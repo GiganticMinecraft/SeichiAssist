@@ -12,5 +12,13 @@
     "net.coreprotect:coreprotect",
     "com.sk89q.worldguard:worldguard-bukkit",
     "docker-registry1.mariadb.com/library/mariadb"
+  ],
+  "packageRules": [
+    {
+      "matchManagers": ["sbt"],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
+    }
   ]
 }
