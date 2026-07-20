@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.menus
 
+import io.github.iltotore.iron.autoRefine
+
 import cats.data.{Kleisli, NonEmptyList}
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
 import cats.implicits._
@@ -48,7 +50,7 @@ object VoteMenu extends Menu {
     val fairyAPI: FairyAPI[IO, SyncIO, Player],
     val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
     val fairySpeechAPI: FairySpeechAPI[IO, Player],
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   /**
@@ -64,7 +66,6 @@ object VoteMenu extends Menu {
     player: Player
   )(implicit environment: Environment): IO[MenuSlotLayout] = {
     import environment._
-    import eu.timepit.refined.auto._
     val constantButtons = ConstantButtons(player)
     import constantButtons._
 

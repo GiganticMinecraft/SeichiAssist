@@ -48,7 +48,6 @@ private case class ButtonComputations(player: Player)(
   playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
 ) {
 
-  import BuildMainMenu._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import player._
 
@@ -408,7 +407,7 @@ object BuildMainMenu extends Menu {
     val ioOnMainThread: OnMinecraftServerThread[IO],
     val canOpenBlockPlacementSkillMenu: CanOpen[IO, BlockPlacementSkillMenu.type],
     val canOpenMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu],
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   val EMPHASIZE = s"$UNDERLINE$BOLD"

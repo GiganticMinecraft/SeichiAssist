@@ -43,15 +43,17 @@ object ContextCoercion extends ContextCoercionOps {
   implicit def syncEffectToSync[F[_]: SyncEffect, G[_]: Sync]: ContextCoercion[F, G] = {
     import cats.effect.implicits._
 
-    fromFunctionK(λ[F ~> G] { fa =>
-      Sync[G].delay {
+    fromFunctionK(new FunctionK[F, G] {
+      def apply[A](fa: F[A]): G[A] = Sync[G].delay {
         fa.runSync[SyncIO].unsafeRunSync()
       }
     })
   }
 
   implicit val catsEffectSyncIOToIOCoercion: ContextCoercion[SyncIO, IO] = fromFunctionK {
-    λ[SyncIO ~> IO](_.toIO)
+    new FunctionK[SyncIO, IO] {
+      def apply[A](fa: SyncIO[A]): IO[A] = fa.toIO
+    }
   }
 
 }

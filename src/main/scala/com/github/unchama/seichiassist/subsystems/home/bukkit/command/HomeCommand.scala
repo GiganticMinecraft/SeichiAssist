@@ -22,18 +22,18 @@ import com.github.unchama.seichiassist.subsystems.home.domain.{Home, HomeId}
 import com.github.unchama.seichiassist.subsystems.home.{HomeAPI, HomeReadAPI, HomeWriteAPI}
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
-import eu.timepit.refined.api.Refined
-import eu.timepit.refined.numeric.Positive
-import eu.timepit.refined.auto._
+import io.github.iltotore.iron.:|
+import io.github.iltotore.iron.constraint.numeric.Positive
+
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 
 class HomeCommand[F[
   _
-]: OnMinecraftServerThread: ConcurrentEffect: NonServerThreadContextShift: HomeAPI, G[
+]: OnMinecraftServerThread: ConcurrentEffect: NonServerThreadContextShift: HomeAPI, G[_]: [f[
   _
-]: ContextCoercion[*[_], F]](
+]] =>> ContextCoercion[f, F]](
   implicit scope: ChatInterceptionScope,
   breakCountReadAPI: BreakCountReadAPI[F, G, Player],
   buildCountReadAPI: BuildCountAPI[F, G, Player]
@@ -61,7 +61,7 @@ class HomeCommand[F[
 
   private val argsAndSenderConfiguredBuilder = playerCommandBuilder
     .thenParse(
-      Parsers.closedRangeInt[Int Refined Positive](
+      Parsers.closedRangeInt[Int :| Positive](
         HomeId.minimumNumber,
         HomeId.maxNumber,
         failureMessage =

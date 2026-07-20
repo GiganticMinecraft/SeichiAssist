@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.present.domain
 
 import com.github.unchama.seichiassist.subsystems.present.domain.OperationResult.DeleteResult
-import eu.timepit.refined.api.Refined
-import eu.timepit.refined.numeric.Positive
+import io.github.iltotore.iron.:|
+import io.github.iltotore.iron.constraint.numeric.Positive
 
 import java.util.UUID
 
@@ -111,8 +111,8 @@ trait PresentPersistence[F[_], ItemStack] {
    */
   def fetchStateWithPagination(
     player: UUID,
-    perPage: Int Refined Positive,
-    page: Int Refined Positive
+    perPage: Int :| Positive,
+    page: Int :| Positive
   ): F[Either[PaginationRejectReason, List[(PresentID, PresentClaimingState)]]]
 
   /**

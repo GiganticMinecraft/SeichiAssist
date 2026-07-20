@@ -13,7 +13,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
 }
 import org.bukkit.entity.Player
 
-class BukkitFairySummonRequest[F[_]: Sync, G[_]: ContextCoercion[*[_], F]](
+class BukkitFairySummonRequest[F[_]: Sync, G[_]: [f[_]] =>> ContextCoercion[f, F]](
   implicit breakCountAPI: BreakCountAPI[F, G, Player],
   voteAPI: VoteAPI[F, Player],
   fairyPersistence: FairyPersistence[F],

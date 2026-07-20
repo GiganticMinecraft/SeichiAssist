@@ -10,7 +10,7 @@ import org.bukkit.entity.Player
 object SyncCanBroadcastOnBukkit {
   import cats.implicits._
 
-  def apply[F[_]: Sync: OnMinecraftServerThread: GetConnectedPlayers[*[_], Player]]
+  def apply[F[_]: Sync: OnMinecraftServerThread: [f[_]] =>> GetConnectedPlayers[f, Player]]
     : CanBroadcast[F] = (message: String) => {
     for {
       _ <- SendMessageEffect.sendMessageToEveryoneIgnoringPreferenceM[String, F](message)

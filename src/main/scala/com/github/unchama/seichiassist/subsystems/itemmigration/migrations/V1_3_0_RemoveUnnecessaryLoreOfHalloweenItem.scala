@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.itemmigration.migrations
 
+import io.github.iltotore.iron.autoRefine
+
 import com.github.unchama.itemmigration.bukkit.util.MigrationHelper
 import com.github.unchama.itemmigration.domain.{ItemMigration, ItemMigrationVersionNumber}
 import org.bukkit.ChatColor._
@@ -22,8 +24,6 @@ object V1_3_0_RemoveUnnecessaryLoreOfHalloweenItem {
     val lore = itemStack.getItemMeta.getLore.asScala
     lore.contains(halloweenClearPrizeLore) || lore.contains(halloweenSpecialPrizeLore)
   }
-
-  import eu.timepit.refined.auto._
 
   def migrationFunction(itemStack: ItemStack): ItemStack = {
     if (!isHalloweenPrize(itemStack)) return itemStack

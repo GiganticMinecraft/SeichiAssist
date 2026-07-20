@@ -68,13 +68,13 @@ import com.github.unchama.seichiassist.menus.trade.TradeSelector
 
 trait TopLevelRouter[F[_]] {
 
-  implicit val canOpenStickMenu: F CanOpen FirstPage.type
+  implicit def canOpenStickMenu: F CanOpen FirstPage.type
 
-  implicit val canOpenAchievementMenu: F CanOpen AchievementMenu.type
+  implicit def canOpenAchievementMenu: F CanOpen AchievementMenu.type
 
-  implicit val ioCanOpenMineStackMenu: F CanOpen MineStackMainMenu.type
+  implicit def ioCanOpenMineStackMenu: F CanOpen MineStackMainMenu.type
 
-  implicit val ioCanOpenCategorizedMineStackMenu: F CanOpen CategorizedMineStackMenu
+  implicit def ioCanOpenCategorizedMineStackMenu: F CanOpen CategorizedMineStackMenu
 
 }
 

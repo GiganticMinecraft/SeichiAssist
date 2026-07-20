@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.menus.trade
 
+import io.github.iltotore.iron.autoRefine
+
 import com.github.unchama.menuinventory.Menu
 import com.github.unchama.menuinventory.MenuFrame
 import cats.effect.IO
@@ -37,12 +39,12 @@ import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachat
 object GachaTradeFromMineStackMenu {
   class Environment(
     implicit val mineStackAPI: MineStackAPI[IO, Player, ItemStack],
-    implicit val gachaTradeAPI: GachaTradeAPI[IO, Player, ItemStack],
-    implicit val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
-    implicit val onMainThread: OnMinecraftServerThread[IO],
-    implicit val ioCanOpenTradeSelector: IO CanOpen TradeSelector.type,
-    implicit val ioCanOpenGachaTradeMenu: IO CanOpen GachaTradeFromMineStackMenu,
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    val gachaTradeAPI: GachaTradeAPI[IO, Player, ItemStack],
+    val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
+    val onMainThread: OnMinecraftServerThread[IO],
+    val ioCanOpenTradeSelector: IO CanOpen TradeSelector.type,
+    val ioCanOpenGachaTradeMenu: IO CanOpen GachaTradeFromMineStackMenu,
+    val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   sealed trait ExchangeAmount {
@@ -79,7 +81,6 @@ case class GachaTradeFromMineStackMenu(
 
   import com.github.unchama.menuinventory.syntax._
   import cats.implicits._
-  import eu.timepit.refined.auto._
 
   override val frame: MenuFrame = MenuFrame(6.chestRows, s"$LIGHT_PURPLE${BOLD}交換したい景品を選んでください")
 

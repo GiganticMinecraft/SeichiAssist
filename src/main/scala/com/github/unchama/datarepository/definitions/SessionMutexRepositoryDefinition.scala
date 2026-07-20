@@ -14,8 +14,8 @@ object SessionMutexRepositoryDefinition {
 
   import cats.implicits._
 
-  def withRepositoryContext[F[_]: ConcurrentEffect, G[_]: Sync: ContextCoercion[
-    *[_],
+  def withRepositoryContext[F[_]: ConcurrentEffect, G[_]: Sync: [f[_]] =>> ContextCoercion[
+    f,
     F
   ], Player]: RepositoryDefinition[G, Player, SessionMutex[F, G]] = {
     RepositoryDefinition

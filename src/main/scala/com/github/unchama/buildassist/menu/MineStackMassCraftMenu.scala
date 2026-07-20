@@ -1,5 +1,7 @@
 package com.github.unchama.buildassist.menu
 
+import io.github.iltotore.iron.autoRefine
+
 import cats.data.{Kleisli, NonEmptyList}
 import cats.effect.IO
 import com.github.unchama.buildassist.BuildAssist
@@ -42,7 +44,7 @@ object MineStackMassCraftMenu {
     implicit val canOpenBuildMainMenu: CanOpen[IO, BuildMainMenu.type],
     val canOpenItself: CanOpen[IO, MineStackMassCraftMenu],
     val mineStackAPI: MineStackAPI[IO, Player, ItemStack],
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   case class MassCraftRecipe(
@@ -236,7 +238,6 @@ object MineStackMassCraftMenu {
    * `Seq`の`i`番目の`List`には、 メニュー`(i+1)`番目のインベントリ内のスロットへの参照とレシピブロックの組が格納されている。
    */
   val recipeBlocks: Seq[List[(Int, MassCraftRecipeBlock)]] = {
-    import eu.timepit.refined.auto._
 
     val oneToHundred: List[Int] = List(1, 10, 100)
     val oneToThousand: List[Int] = List(1, 10, 100, 1000)
@@ -1310,8 +1311,6 @@ case class MineStackMassCraftMenu(pageNumber: Int = 1) extends Menu {
     import com.github.unchama.menuinventory.syntax._
     MenuFrame(6.chestRows, ColorScheme.purpleBold(s"MineStackブロック一括クラフト$pageNumber"))
   }
-
-  import eu.timepit.refined.auto._
 
   override def computeMenuLayout(
     player: Player
