@@ -1,6 +1,5 @@
 package com.github.unchama.menuinventory
 
-import eu.timepit.refined.auto._
 import org.scalatest.wordspec.AnyWordSpec
 
 /**

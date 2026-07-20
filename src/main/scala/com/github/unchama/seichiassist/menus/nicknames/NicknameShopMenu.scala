@@ -36,8 +36,8 @@ object NicknameShopMenu {
 
   class Environment(
     implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player],
-    implicit val ioCanOpenNicknameShopMenu: IO CanOpen NicknameShopMenu,
-    implicit val ioCanOpenNicknameMenu: IO CanOpen NickNameMenu.type
+    val ioCanOpenNicknameShopMenu: IO CanOpen NicknameShopMenu,
+    val ioCanOpenNicknameMenu: IO CanOpen NickNameMenu.type
   )
 
 }

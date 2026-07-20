@@ -14,9 +14,11 @@ object AnnounceRankingRecord {
 
   import cats.implicits._
 
-  def apply[F[_]: Monad: SendMinecraftMessage[*[_], Player]: BroadcastMinecraftMessage, G[
-    _
-  ]: ContextCoercion[*[_], F]: Functor, Player: HasUuid](
+  def apply[
+    F[_]: Monad: [f[_]] =>> SendMinecraftMessage[f, Player]: BroadcastMinecraftMessage,
+    G[_]: [f[_]] =>> ContextCoercion[f, F]: Functor,
+    Player: HasUuid
+  ](
     breakCountReadApi: BreakCountReadAPI[F, G, Player]
   )(resolveName: Player => F[String]): RankingRecord[Player] => F[Unit] = { rankingRecord =>
     val rankingPositionColor = List(LIGHT_PURPLE, YELLOW, AQUA)

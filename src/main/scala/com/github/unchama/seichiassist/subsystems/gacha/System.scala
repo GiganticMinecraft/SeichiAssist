@@ -38,8 +38,8 @@ trait System[F[_], Player] extends Subsystem[F] {
 
 object System {
 
-  def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread: GetConnectedPlayers[
-    *[_],
+  def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread: [f[_]] =>> GetConnectedPlayers[
+    f,
     Player
   ]: GachaTicketAPI](
     implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],

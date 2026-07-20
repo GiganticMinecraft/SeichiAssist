@@ -15,7 +15,6 @@ import com.github.unchama.targetedeffect.UnfocusedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
-import shapeless.HNil
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -32,9 +31,7 @@ class DonationCommand[F[_]: ConcurrentEffect](
       .thenParse(Parsers.identity)
       .thenParse(Parsers.integer(MessageEffect(s"${RED}付与するプレミアムエフェクトポイントは整数で指定してください。")))
       .buildWithExecutionCSEffect { context =>
-        import shapeless.::
-
-        val rawName :: rawDonatePoint :: HNil = context.args.parsed
+        val (rawName, rawDonatePoint) = context.args.parsed
         val playerName = PlayerName(rawName)
         val donatePoint = DonatePremiumEffectPoint(rawDonatePoint)
 

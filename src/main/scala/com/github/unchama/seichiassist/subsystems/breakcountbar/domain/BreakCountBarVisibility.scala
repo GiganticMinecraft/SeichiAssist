@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.breakcountbar.domain
 
 sealed trait BreakCountBarVisibility {
-  val nextValue: BreakCountBarVisibility
+  def nextValue: BreakCountBarVisibility
 }
 
 object BreakCountBarVisibility {

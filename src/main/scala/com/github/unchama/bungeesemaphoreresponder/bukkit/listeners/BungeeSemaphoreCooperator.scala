@@ -52,7 +52,7 @@ class BungeeSemaphoreCooperator[F[_]: ConcurrentEffect: Timer](
             case Validated.Valid(_) =>
               synchronization.confirmSaveCompletionOf(name)
             case Validated.Invalid(errors) =>
-              synchronization.notifySaveFailureOf(name) >> errors.traverse(error =>
+              synchronization.notifySaveFailureOf(name) >> errors.traverse_(error =>
                 Sync[F].delay {
                   error.printStackTrace()
                 }

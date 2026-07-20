@@ -19,7 +19,7 @@ package com.github.unchama.generic.tag
  */
 
 object tag {
-  type @@[+T, U] = T with Tagged[U]
+  type @@[+T, U] = T & Tagged[U]
 
   def apply[U] = new Tagger[U]
 

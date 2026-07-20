@@ -39,8 +39,8 @@ object SinglePhasedRepositoryInitialization {
   import cats.implicits._
 
   implicit def functorInstance[F[_]: Functor]
-    : Functor[SinglePhasedRepositoryInitialization[F, *]] =
-    new Functor[SinglePhasedRepositoryInitialization[F, *]] {
+    : Functor[[a] =>> SinglePhasedRepositoryInitialization[F, a]] =
+    new Functor[[a] =>> SinglePhasedRepositoryInitialization[F, a]] {
       override def map[A, B](fa: SinglePhasedRepositoryInitialization[F, A])(
         f: A => B
       ): SinglePhasedRepositoryInitialization[F, B] =

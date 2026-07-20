@@ -26,7 +26,7 @@ object RepeatingRoutine {
     }
   }
 
-  def foreverMRecovering[F[_]: Timer: MonadError[*[_], Throwable]: ErrorLogger, U, R](
+  def foreverMRecovering[F[_]: Timer: [f[_]] =>> MonadError[f, Throwable]: ErrorLogger, U, R](
     action: F[U]
   )(getIntervalToNextExecution: F[FiniteDuration]): F[R] = {
     val recoveringAction: F[Unit] =
@@ -62,9 +62,10 @@ object RepeatingRoutine {
    *   ループにて保持される状態の型
    * @return
    */
-  def whileDefinedMRecovering[F[_]: MonadError[*[_], Throwable]: Timer: ErrorLogger, State](
-    init: State
-  )(
+  def whileDefinedMRecovering[F[_]: [f[_]] =>> MonadError[
+    f,
+    Throwable
+  ]: Timer: ErrorLogger, State](init: State)(
     action: State => F[Option[State]]
   )(getIntervalToNextExecution: F[FiniteDuration]): F[Unit] = {
     val recoveringAction: State => F[Option[State]] = s =>

@@ -22,7 +22,6 @@ import org.bukkit.entity.Player
 object ServerSwitchMenu extends Menu {
 
   import enumeratum._
-  import eu.timepit.refined.auto._
 
   /**
    * UI上のサーバを表すオブジェクト.
@@ -74,7 +73,7 @@ object ServerSwitchMenu extends Menu {
 
   class Environment(
     implicit val ioCanOpenStickMenu: IO CanOpen FirstPage.type,
-    implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+    val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
   /**
