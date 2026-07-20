@@ -25,7 +25,7 @@ class JdbcLastQuitPersistence[F[_]: Sync] extends LastQuitPersistence[F] {
             .map(_.localDateTime("lastquit"))
             .toList()
             .headOption
-        lastQuitDateTime.map(LastQuitDateTime)
+        lastQuitDateTime.map(LastQuitDateTime.apply)
       }
     }
 }

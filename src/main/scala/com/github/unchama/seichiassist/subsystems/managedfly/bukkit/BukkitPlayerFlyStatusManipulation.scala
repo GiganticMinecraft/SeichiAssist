@@ -60,7 +60,7 @@ class BukkitPlayerFlyStatusManipulation[AsyncContext[_]: Concurrent: OnMinecraft
    * プレーヤーがアイドル状態であるかを判定するアクション。
    */
   override val isPlayerIdle: Kleisli[AsyncContext, Player, IdleStatus] = Kleisli {
-    player: Player =>
+    (player: Player) =>
       for {
         currentIdleMinute <- idleTimeAPI.currentIdleMinute(player)
       } yield {

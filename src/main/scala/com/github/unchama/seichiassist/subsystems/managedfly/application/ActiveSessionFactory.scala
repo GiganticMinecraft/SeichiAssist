@@ -58,13 +58,13 @@ class ActiveSessionFactory[AsyncContext[_]: Timer: Concurrent, Player](
       currentRemainingDurationRef <-
         Ref.in[KleisliAsyncContext, SyncContext, RemainingFlyDuration](totalDuration)
 
-      kleisliAsyncUpdateRef = { duration: RemainingFlyDuration =>
+      kleisliAsyncUpdateRef = { (duration: RemainingFlyDuration) =>
         Kleisli.liftF {
           currentRemainingDurationRef.set(duration).coerceTo[AsyncContext]
         }
       }
 
-      fiber <- Kleisli { player: Player =>
+      fiber <- Kleisli { (player: Player) =>
         AsymmetricTryableFiber.start[AsyncContext, Nothing] {
           {
             ensurePlayerExp >>

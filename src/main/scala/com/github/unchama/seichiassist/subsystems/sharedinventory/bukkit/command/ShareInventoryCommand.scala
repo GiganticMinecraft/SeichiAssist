@@ -80,7 +80,7 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect: OnMinecraftServerThread](
 
     (for {
       oldSharedFlag <- Kleisli.liftF(sharedInventoryAPI.sharedFlag(player))
-      _ <- Kleisli.liftF(sharedInventoryAPI.save(uuid, InventoryContents(inventoryContents)))
+      _ <- Kleisli.liftF(sharedInventoryAPI.save(uuid, InventoryContents.of(inventoryContents)))
       newSharedFlag <- Kleisli.liftF(sharedInventoryAPI.sharedFlag(player))
       _ <- Kleisli.liftF(
         Sync[F]

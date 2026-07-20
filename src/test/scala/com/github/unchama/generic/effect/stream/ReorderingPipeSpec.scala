@@ -32,7 +32,7 @@ class ReorderingPipeSpec
     type TestInputType = Long
 
     "Reorder scrambled inputs as long as they are timestamped" in {
-      forAll(minSuccessful(100)) { input: List[TestInputType] =>
+      forAll(minSuccessful(100)) { (input: List[TestInputType]) =>
         whenever(input.nonEmpty) {
           val timeStamped: Vector[TimeStamped[TestInputType]] = {
             val withCurrentStamps = input.map(input => (new Token, input))

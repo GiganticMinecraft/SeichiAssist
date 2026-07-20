@@ -194,9 +194,8 @@ final class Config private (val config: FileConfiguration) {
 
   def getAnywhereEnderConfiguration: AnywhereEnderConfiguration =
     new AnywhereEnderConfiguration {
-      override val requiredMinimumLevel: SeichiLevel = SeichiLevel(
-        getIntFailFast("dokodemoenderlevel")
-      )
+      override val requiredMinimumLevel: SeichiLevel =
+        SeichiLevel.ofPositive(getIntFailFast("dokodemoenderlevel"))
     }
 
   def getAutoSaveSystemConfiguration: AutoSaveConfiguration = new AutoSaveConfiguration {
@@ -214,6 +213,6 @@ final class Config private (val config: FileConfiguration) {
       override val whenInSeichiWorld: BigDecimal = scala.math.BigDecimal.decimal(0.1)
     }
     override val oneMinuteBuildExpLimit: BuildExpAmount =
-      BuildExpAmount(BigDecimal(config.getString("BuildNum1minLimit")))
+      BuildExpAmount.ofNonNegative(BigDecimal(config.getString("BuildNum1minLimit")))
   }
 }

@@ -99,7 +99,7 @@ object BukkitMebiusItemStackCodec {
     val mebiusName = nbtItem.getString(nameTag)
 
     Some(
-      MebiusProperty(
+      MebiusProperty.of(
         mebiusType,
         ownerName,
         ownerUuid,

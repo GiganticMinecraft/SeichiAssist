@@ -64,7 +64,7 @@ object PlayerDataLoading {
 
       stmt
         .executeQuery(unlockedSkillEffectQuery)
-        .recordIteration { resultSet: ResultSet =>
+        .recordIteration { (resultSet: ResultSet) =>
           val effectName = resultSet.getString("effect_name")
           val effect =
             ActiveSkillNormalEffect
@@ -87,7 +87,7 @@ object PlayerDataLoading {
 
       statement
         .executeQuery(unlockedSkillQuery)
-        .recordIteration { resultSet: ResultSet =>
+        .recordIteration { (resultSet: ResultSet) =>
           val skillName = resultSet.getString("skill_name")
           val skill = SeichiSkill.withNameOption(skillName)
           if (skill.isEmpty) {
@@ -109,7 +109,7 @@ object PlayerDataLoading {
       val command = ("select * from " + db + "." + DatabaseConstants.PLAYERDATA_TABLENAME
         + " where uuid = '" + stringUuid + "'")
 
-      stmt.executeQuery(command).recordIteration { rs: ResultSet =>
+      stmt.executeQuery(command).recordIteration { (rs: ResultSet) =>
         playerData.settings.shouldDisplayDeathMessages = rs.getBoolean("killlogflag")
         playerData.settings.shouldDisplayWorldGuardLogs = rs.getBoolean("worldguardlogflag")
 
@@ -229,7 +229,7 @@ object PlayerDataLoading {
           val Titlenums =
             rs.getString("TitleFlags").split(",").reverse.dropWhile(_.isEmpty).reverse
 
-          val Titlearray = Titlenums.map { x: String =>
+          val Titlearray = Titlenums.map { (x: String) =>
             java.lang.Long.parseUnsignedLong(x, 16)
           }
           val TitleFlags = mutable.BitSet.fromBitMask(Titlearray)
