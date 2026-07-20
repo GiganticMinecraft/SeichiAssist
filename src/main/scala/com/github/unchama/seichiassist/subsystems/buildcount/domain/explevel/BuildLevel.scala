@@ -12,10 +12,7 @@ private[explevel] abstract class SeichiLevelInstances {
   import cats.implicits._
 
   implicit val positiveInt: PositiveInt[BuildLevel] = new PositiveInt[BuildLevel] {
-    override def wrapPositive(int: Int): BuildLevel = {
-      require(int >= 1)
-      BuildLevel(int)
-    }
+    override def wrapPositive(int: Int): BuildLevel = BuildLevel.ofPositive(int)
 
     override def asInt(t: BuildLevel): Int = t.level
   }
@@ -27,6 +24,9 @@ private[explevel] abstract class SeichiLevelInstances {
 
 object BuildLevel extends SeichiLevelInstances {
 
-  def ofPositive(rawLevel: Int): BuildLevel = positiveInt.wrapPositive(rawLevel)
+  def ofPositive(rawLevel: Int): BuildLevel = {
+    require(rawLevel >= 1)
+    new BuildLevel(rawLevel)
+  }
 
 }

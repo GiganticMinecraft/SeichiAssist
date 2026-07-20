@@ -51,7 +51,7 @@ case class BuildAmountData(expAmount: BuildExpAmount) {
 
 object BuildAmountData {
 
-  val initial: BuildAmountData = BuildAmountData(BuildExpAmount(BigDecimal(0)))
+  val initial: BuildAmountData = BuildAmountData(BuildExpAmount.ofNonNegative(BigDecimal(0)))
 
   implicit val order: Order[BuildAmountData] = Order.by(_.expAmount)
 

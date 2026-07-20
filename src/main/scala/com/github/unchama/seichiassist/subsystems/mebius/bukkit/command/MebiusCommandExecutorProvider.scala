@@ -86,7 +86,7 @@ class MebiusCommandExecutorProvider(
 
         MebiusInteractionTemplate(
           MessageEffect(s"${RED}命名はMEBIUSを装着して行ってください."),
-          _.copy(mebiusName = newName),
+          _.withMebiusName(newName),
           newProperty => {
             val newDisplayName =
               BukkitMebiusItemStackCodec.displayNameOfMaterializedItem(newProperty)
@@ -180,7 +180,7 @@ class MebiusCommandExecutorProvider(
 
         MebiusInteractionTemplate(
           MessageEffect(errorMessage),
-          _.copy(ownerNicknameOverride = Some(name)),
+          _.withOwnerNicknameOverride(name),
           newProperty =>
             SequentialEffect(
               MessageEffect(successMessage(name)),

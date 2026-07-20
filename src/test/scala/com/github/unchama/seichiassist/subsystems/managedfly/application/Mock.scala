@@ -77,7 +77,7 @@ private[managedfly] class Mock[AsyncContext[_]: Concurrent, SyncContext[
   ): PlayerFlyStatusManipulation[PlayerAsyncKleisli] = {
     new PlayerFlyStatusManipulation[PlayerAsyncKleisli] {
       override val ensurePlayerExp: PlayerAsyncKleisli[Unit] = Kleisli {
-        player: PlayerMockReference =>
+        (player: PlayerMockReference) =>
           player
             .experienceMutex
             .lockAndUpdate { experience =>
@@ -90,7 +90,7 @@ private[managedfly] class Mock[AsyncContext[_]: Concurrent, SyncContext[
       }
 
       override val consumePlayerExp: PlayerAsyncKleisli[Unit] = Kleisli {
-        player: PlayerMockReference =>
+        (player: PlayerMockReference) =>
           player
             .experienceMutex
             .lockAndUpdate { experience =>
@@ -103,7 +103,7 @@ private[managedfly] class Mock[AsyncContext[_]: Concurrent, SyncContext[
       }
 
       override val isPlayerIdle: PlayerAsyncKleisli[IdleStatus] = Kleisli {
-        player: PlayerMockReference =>
+        (player: PlayerMockReference) =>
           player.isIdleMutex.readLatest.coerceTo[AsyncContext].map {
             if (_) Idle else HasMovedRecently
           }
@@ -111,25 +111,25 @@ private[managedfly] class Mock[AsyncContext[_]: Concurrent, SyncContext[
 
       override val synchronizeFlyStatus: PlayerFlyStatus => PlayerAsyncKleisli[Unit] = {
         case Flying(_) =>
-          Kleisli { player: PlayerMockReference =>
+          Kleisli { (player: PlayerMockReference) =>
             player.isFlyingMutex.lockAndUpdate(_ => Monad[AsyncContext].pure(true)).as(())
           }
         case NotFlying =>
-          Kleisli { player: PlayerMockReference =>
+          Kleisli { (player: PlayerMockReference) =>
             player.isFlyingMutex.lockAndUpdate(_ => Monad[AsyncContext].pure(false)).as(())
           }
       }
 
       override val sendNotificationsOnInterruption
         : InternalInterruption => PlayerAsyncKleisli[Unit] = { interruption =>
-        Kleisli { player: PlayerMockReference =>
+        Kleisli { (player: PlayerMockReference) =>
           player.sendMessage(InterruptionMessageMock(interruption))
         }
       }
 
       override val notifyRemainingDuration
         : (IdleStatus, RemainingFlyDuration) => PlayerAsyncKleisli[Unit] = { (i, d) =>
-        Kleisli { player: PlayerMockReference => player.sendMessage(StatusMessageMock(i, d)) }
+        Kleisli { (player: PlayerMockReference) => player.sendMessage(StatusMessageMock(i, d)) }
       }
     }
   }

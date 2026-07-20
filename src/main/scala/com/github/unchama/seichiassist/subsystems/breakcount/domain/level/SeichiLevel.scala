@@ -15,10 +15,7 @@ private[level] abstract class SeichiLevelInstances {
   import cats.implicits._
 
   implicit lazy val positiveInt: PositiveInt[SeichiLevel] = new PositiveInt[SeichiLevel] {
-    override def wrapPositive(rawLevel: Int): SeichiLevel = {
-      require(rawLevel >= 1)
-      SeichiLevel(rawLevel)
-    }
+    override def wrapPositive(rawLevel: Int): SeichiLevel = SeichiLevel.ofPositive(rawLevel)
 
     override def asInt(t: SeichiLevel): Int = t.level
   }
@@ -31,6 +28,9 @@ private[level] abstract class SeichiLevelInstances {
 
 object SeichiLevel extends SeichiLevelInstances {
 
-  def ofPositive(rawLevel: Int): SeichiLevel = positiveInt.wrapPositive(rawLevel)
+  def ofPositive(rawLevel: Int): SeichiLevel = {
+    require(rawLevel >= 1)
+    new SeichiLevel(rawLevel)
+  }
 
 }

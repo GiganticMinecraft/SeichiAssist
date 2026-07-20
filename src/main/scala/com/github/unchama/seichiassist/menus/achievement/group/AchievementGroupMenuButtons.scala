@@ -116,7 +116,7 @@ object AchievementGroupMenuButtons {
                 case achievement: ManuallyUnlocked =>
                   achievement match {
                     case achievement: Normal[_] =>
-                      Kleisli { player: Player =>
+                      Kleisli { (player: Player) =>
                         for {
                           shouldUnlock <- achievement.condition.shouldUnlock(player)
                           _ <-

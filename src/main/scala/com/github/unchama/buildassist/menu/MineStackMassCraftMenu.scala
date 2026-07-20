@@ -186,7 +186,7 @@ object MineStackMassCraftMenu {
       } yield {
         val effect =
           if (!isLowerBuildLevel && allIngredientsAvailable)
-            Kleisli { _: Player => craftEffect }
+            Kleisli { (_: Player) => craftEffect }
           else errorEffect
 
         LeftClickButtonEffect(

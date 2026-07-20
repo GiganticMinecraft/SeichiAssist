@@ -212,6 +212,8 @@ lazy val root = (project in file(".")).settings(
     "-unchecked",
     "-language:higherKinds",
     "-deprecation",
+    "-Xsource:3",
+    "-Xsource-features:case-apply-copy-access",
     "-Ypatmat-exhaust-depth",
     "320",
     "-Ymacro-annotations",

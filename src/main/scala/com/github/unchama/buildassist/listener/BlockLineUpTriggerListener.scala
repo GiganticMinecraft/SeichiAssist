@@ -192,7 +192,7 @@ class BlockLineUpTriggerListener[
     // 建築量を足す
     import cats.effect.implicits._
     IncrementBuildExpWhenBuiltWithSkill[F, Player]
-      .of(player, BuildExpAmount(placedBlockCount))
+      .of(player, BuildExpAmount.ofNonNegative(placedBlockCount))
       .runSync[SyncIO]
       .unsafeRunSync()
 

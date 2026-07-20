@@ -18,7 +18,7 @@ class JdbcBuildAmountRateLimitPersistence[SyncContext[_]](
         sql"select available_permission, record_date from build_count_rate_limit where uuid = ${key.toString}"
           .stripMargin
           .map { rs =>
-            val exp = BuildExpAmount(rs.bigDecimal("available_permission"))
+            val exp = BuildExpAmount.ofNonNegative(rs.bigDecimal("available_permission"))
             val ldt = rs.localDateTime("record_date")
 
             BuildAmountRateLimiterSnapshot(exp, ldt)

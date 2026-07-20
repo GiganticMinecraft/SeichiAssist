@@ -25,7 +25,7 @@ object MebiusMessages {
         "あとちょっと掘ろうよ！",
         "僕もスキルでバーっと掘ってみたいなー"
       )
-      .map(MebiusPlayerMessage)
+      .map(MebiusPlayerMessage.apply)
   )
 
   val onMebiusBreak: RandomizedCollection[MebiusPlayerMessage] = new RandomizedCollection(
@@ -39,7 +39,7 @@ object MebiusMessages {
         "もし生まれ変わっても、また[str1]と…",
         "ごめんね…[str1]とずっと一緒でいたかったけど、僕がついていけなかったよ…"
       )
-      .map(MebiusPlayerMessage)
+      .map(MebiusPlayerMessage.apply)
   )
 
   val onDamageBreaking: RandomizedCollection[MebiusPlayerMessage] = new RandomizedCollection(
@@ -53,7 +53,7 @@ object MebiusMessages {
         "まだ平気…壊れるまでは、[str1]のことを守るんだ…",
         "僕のこと、大事にしてね？"
       )
-      .map(MebiusPlayerMessage)
+      .map(MebiusPlayerMessage.apply)
   )
 
   val onDamageWarnEnemy: RandomizedCollection[MebiusCombatMessage] = new RandomizedCollection(
@@ -67,7 +67,7 @@ object MebiusMessages {
         "いてっ！やめろよー！僕を怒らせたら怖いぞー！",
         "うわぁっ！飲み物がこぼれちゃったじゃないかー！"
       )
-      .map(MebiusCombatMessage)
+      .map(MebiusCombatMessage.apply)
   )
 
   val onMonsterKill: RandomizedCollection[MebiusCombatMessage] = new RandomizedCollection(
@@ -81,7 +81,7 @@ object MebiusMessages {
         "[str2]なんて僕の力を出すまでもなかったね！",
         "やるね！僕も負けてらんないぞー！"
       )
-      .map(MebiusCombatMessage)
+      .map(MebiusCombatMessage.apply)
   )
 
   val tips: List[String] = List(

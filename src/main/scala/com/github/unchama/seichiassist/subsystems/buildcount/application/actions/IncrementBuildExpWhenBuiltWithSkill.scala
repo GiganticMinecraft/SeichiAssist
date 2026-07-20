@@ -5,7 +5,7 @@ import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.Bui
 
 trait IncrementBuildExpWhenBuiltWithSkill[F[_], Player] {
 
-  def of(player: Player): F[Unit] = of(player, BuildExpAmount(1))
+  def of(player: Player): F[Unit] = of(player, BuildExpAmount.ofNonNegative(1))
 
   def of(player: Player, by: BuildExpAmount): F[Unit]
 

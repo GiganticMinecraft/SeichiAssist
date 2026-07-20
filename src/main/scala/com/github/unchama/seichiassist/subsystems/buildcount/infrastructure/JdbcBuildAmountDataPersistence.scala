@@ -19,7 +19,7 @@ class JdbcBuildAmountDataPersistence[F[_]](implicit F: Sync[F])
         sql"select build_count from playerdata where uuid = ${key.toString}"
           .stripMargin
           .map { rs =>
-            val exp = BuildExpAmount(BigDecimal(rs.string("build_count")))
+            val exp = BuildExpAmount.ofNonNegative(BigDecimal(rs.string("build_count")))
 
             BuildAmountData(exp)
           }
