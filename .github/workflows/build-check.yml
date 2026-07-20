@@ -25,8 +25,6 @@ on:
 
 jobs:
   build_check:
-    env:
-      BUILD_ENVIRONMENT_IS_CI_OR_LOCAL: "CI"
     runs-on: ubuntu-24.04
     container: ghcr.io/giganticminecraft/seichiassist-builder-v2:776da10
     steps:
