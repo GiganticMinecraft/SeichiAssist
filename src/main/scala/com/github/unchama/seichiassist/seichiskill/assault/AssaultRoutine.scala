@@ -28,7 +28,6 @@ import org.bukkit.inventory.meta.Damageable
 import org.bukkit.{GameMode, Location, Material, Sound}
 import scala.jdk.CollectionConverters._
 import cats.syntax.all._
-import cats.effect.Temporal
 
 object AssaultRoutine {
 

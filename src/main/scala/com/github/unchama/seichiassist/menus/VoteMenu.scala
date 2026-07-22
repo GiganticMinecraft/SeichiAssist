@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.menus
 import io.github.iltotore.iron.autoRefine
 
 import cats.data.{Kleisli, NonEmptyList}
-import cats.effect.{Async, IO, SyncIO}
+import cats.effect.{IO, SyncIO}
 import cats.implicits._
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.router.CanOpen

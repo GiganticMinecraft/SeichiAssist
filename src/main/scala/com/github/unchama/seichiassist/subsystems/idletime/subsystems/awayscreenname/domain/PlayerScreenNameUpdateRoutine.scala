@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscree
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import cats.effect.Temporal
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
 
 trait PlayerScreenNameUpdateRoutine[Player] {

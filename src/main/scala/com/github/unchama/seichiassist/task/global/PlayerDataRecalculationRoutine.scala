@@ -11,7 +11,6 @@ import com.github.unchama.seichiassist.achievement.hierarchy.AchievementGroup
 import org.bukkit.Bukkit
 
 import scala.concurrent.duration.FiniteDuration
-import cats.effect.Temporal
 
 object PlayerDataRecalculationRoutine {
 

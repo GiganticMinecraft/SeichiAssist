@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.manabar.application
 
-import cats.effect.{Concurrent, Async, Sync}
+import cats.effect.{Async, Sync}
 import cats.effect.std.Dispatcher
 import com.github.unchama.datarepository.definitions.FiberAdjoinedRepositoryDefinition
 import com.github.unchama.datarepository.template.RepositoryDefinition

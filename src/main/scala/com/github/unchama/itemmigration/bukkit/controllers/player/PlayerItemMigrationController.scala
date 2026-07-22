@@ -35,8 +35,6 @@ class PlayerItemMigrationController[F[_]: Async: [f[_]] =>> ContextCoercion[
   service: ItemMigrationService[F, PlayerInventoriesData[F]]
 ) extends Listener {
 
-  import cats.effect.syntax.all._
-
   private def cancelIfLockActive(player: Player, event: Cancellable): Unit = {
     if (!migrationState(player).hasMigrated.runSync[SyncIO].unsafeRunSync()) {
       event.setCancelled(true)

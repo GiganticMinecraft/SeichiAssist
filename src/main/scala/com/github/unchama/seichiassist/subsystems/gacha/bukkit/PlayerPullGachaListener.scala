@@ -5,7 +5,6 @@ import com.github.unchama.toIO
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
 
 import cats.effect.Async
-import cats.effect.syntax.all._
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.DrawGacha

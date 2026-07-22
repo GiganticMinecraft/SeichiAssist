@@ -1,7 +1,5 @@
 package com.github.unchama.buildassist
 
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
-
 import cats.effect.IO
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.router.CanOpen

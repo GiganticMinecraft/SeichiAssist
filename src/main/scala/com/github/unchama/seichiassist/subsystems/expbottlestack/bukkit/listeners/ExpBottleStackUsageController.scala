@@ -28,8 +28,6 @@ class ExpBottleStackUsageController[F[_]: Async: [f[_]] =>> ContextCoercion[
   effectEnvironment: EffectEnvironment[F]
 ) extends Listener {
 
-  import cats.effect.syntax.all._
-
   @EventHandler
   def onExpBottleHitBlock(event: ExpBottleEvent): Unit = {
     val bottle = event.getEntity

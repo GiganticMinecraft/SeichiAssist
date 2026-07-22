@@ -1,7 +1,5 @@
 package com.github.unchama.buildassist
 
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
-
 import cats.effect.SyncIO
 import com.github.unchama.buildassist.util.AsyncInventorySetter
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}

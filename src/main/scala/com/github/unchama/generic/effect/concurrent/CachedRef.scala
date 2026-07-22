@@ -4,11 +4,9 @@ import cats.effect.Async
 
 import scala.concurrent.duration.FiniteDuration
 import com.github.unchama.concurrent.RepeatingRoutine
-import cats.effect.{Ref, Temporal}
+import cats.effect.Ref
 
 trait CachedRef[F[_], A] {
-
-  import cats.implicits._
 
   val initial: Ref[F, A]
 

@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.anywhereender
 
 import cats.data.Kleisli
-import cats.effect.{Async, IO, LiftIO}
+import cats.effect.{Async, IO}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem

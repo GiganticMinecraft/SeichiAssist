@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.subsystems.vote.bukkit.command
 import com.github.unchama.toIO
 
 import cats.effect.Async
-import cats.effect.syntax.all._
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}

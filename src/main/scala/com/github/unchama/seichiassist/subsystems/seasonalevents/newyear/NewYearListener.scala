@@ -2,8 +2,6 @@ package com.github.unchama.seichiassist.subsystems.seasonalevents.newyear
 
 import com.github.unchama.runSync
 
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
-
 import cats.effect.{Async, IO, Sync, SyncIO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
@@ -92,8 +90,6 @@ class NewYearListener[F[_]: Async: NonServerThreadContextShift: [f[_]] =>> Conte
   def onPlayerConsumedNewYearApple(event: PlayerItemConsumeEvent): Unit = {
     val item = event.getItem
     if (!isNewYearApple(item)) return
-
-    import cats.effect.syntax.all._
 
     val player = event.getPlayer
     val today = LocalDate.now()

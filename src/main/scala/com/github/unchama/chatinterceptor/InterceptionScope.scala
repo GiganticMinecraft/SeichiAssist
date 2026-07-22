@@ -1,7 +1,6 @@
 package com.github.unchama.chatinterceptor
 
 import cats.effect.IO
-import cats.syntax.all._
 import com.github.unchama.chatinterceptor.CancellationReason.Overridden
 import com.github.unchama.chatinterceptor.InterceptorResponse.{Ignored, Intercepted}
 

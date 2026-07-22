@@ -4,7 +4,6 @@ import cats.effect.{IO, SyncIO}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, XYZTuple}
 import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{DualBreak, TrialBreak}
 import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillNormalEffect.{
@@ -24,7 +23,6 @@ import org.bukkit._
 import org.bukkit.entity.{Chicken, Player}
 
 import scala.util.Random
-import cats.effect.Temporal
 
 sealed trait ActiveSkillEffect {
   val nameOnUI: String
@@ -99,7 +97,6 @@ sealed abstract class ActiveSkillNormalEffect(
     breakArea: AxisAlignedCuboid,
     standard: Location
   )(implicit ioOnMainThread: OnMinecraftServerThread[IO]): IO[Unit] = {
-    import PluginExecutionContexts.{asyncShift, cachedThreadPool}
     import com.github.unchama.concurrent.syntax._
     import com.github.unchama.seichiassist.data.syntax._
 
@@ -269,7 +266,6 @@ sealed abstract class ActiveSkillPremiumEffect(
     breakArea: AxisAlignedCuboid,
     standard: Location
   )(implicit ioOnMainThread: OnMinecraftServerThread[IO]): IO[Unit] = {
-    import PluginExecutionContexts.{asyncShift, timer}
     import com.github.unchama.concurrent.syntax._
     import com.github.unchama.seichiassist.data.syntax._
 
