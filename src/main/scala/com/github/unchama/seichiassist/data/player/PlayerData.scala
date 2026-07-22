@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.data.player
 
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
 import cats.effect.IO
-import cats.effect.concurrent.Ref
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
@@ -17,6 +18,7 @@ import org.bukkit.entity.Player
 
 import java.util.{NoSuchElementException, UUID}
 import scala.collection.mutable
+import cats.effect.Ref
 
 /**
  * @deprecated

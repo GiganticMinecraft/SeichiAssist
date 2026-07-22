@@ -1,12 +1,13 @@
 package com.github.unchama.generic.effect
 
-import cats.effect.{Effect, IO, Sync}
+import cats.effect.Sync
+import cats.effect.std.Dispatcher
 
 object EffectExtra {
 
-  import cats.effect.implicits._
-
-  def runAsyncAndForget[F[_]: Effect, G[_]: Sync, A](fa: F[A]): G[Unit] =
-    fa.runAsync(_ => IO.unit).runSync[G]
+  def runAsyncAndForget[F[_], G[_]: Sync, A](fa: F[A])(
+    implicit dispatcher: Dispatcher[F]
+  ): G[Unit] =
+    Sync[G].delay(dispatcher.unsafeRunAndForget(fa))
 
 }

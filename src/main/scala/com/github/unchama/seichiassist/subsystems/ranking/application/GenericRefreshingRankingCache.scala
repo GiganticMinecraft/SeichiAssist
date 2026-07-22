@@ -1,9 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.ranking.application
 
 import cats.Order
-import cats.effect.concurrent.Ref
-import cats.effect.implicits._
-import cats.effect.{Concurrent, Timer}
+import cats.effect.syntax.all._
+import cats.effect.Async
 import cats.implicits._
 import cats.kernel.Monoid
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
@@ -12,10 +11,11 @@ import com.github.unchama.seichiassist.subsystems.ranking.domain._
 import org.typelevel.log4cats.ErrorLogger
 
 import scala.concurrent.duration.FiniteDuration
+import cats.effect.Ref
 
 object GenericRefreshingRankingCache {
 
-  def withPersistence[F[_]: Concurrent: Timer: ErrorLogger, R: Order: Monoid](
+  def withPersistence[F[_]: Async: ErrorLogger, R: Order: Monoid](
     persistence: RankingRecordPersistence[F, R],
     duration: FiniteDuration
   ): F[ReadOnlyRef[F, Ranking[R]]] =

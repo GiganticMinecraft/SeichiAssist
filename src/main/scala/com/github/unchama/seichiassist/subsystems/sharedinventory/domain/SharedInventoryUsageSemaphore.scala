@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.sharedinventory.domain
 
-import cats.effect.{Concurrent, Sync, Timer}
+import cats.effect.{Async, Sync}
 import com.github.unchama.generic.effect.concurrent.RecoveringSemaphore
 import com.github.unchama.seichiassist.subsystems.sharedinventory.domain.bukkit.InventoryContents
 
@@ -34,7 +34,7 @@ object SharedInventoryUsageSemaphore {
    */
   final val usageInterval = 10.second
 
-  def newIn[F[_]: Concurrent: Timer, G[_]: Sync](
+  def newIn[F[_]: Async, G[_]: Sync](
     implicit persistence: SharedInventoryPersistence[F]
   ): G[SharedInventoryUsageSemaphore[F]] =
     RecoveringSemaphore.newIn[G, F].map(rs => new SharedInventoryUsageSemaphore[F](rs))

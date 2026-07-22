@@ -1,9 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.managedfly.application.repository
 
-import cats.effect.{ConcurrentEffect, SyncEffect}
+import cats.effect.{Async, Sync}
+import cats.effect.std.Dispatcher
 import com.github.unchama.datarepository.definitions.RefDictBackedRepositoryDefinition
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.effect.EffectExtra
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.algebra.HasUuid
 import com.github.unchama.seichiassist.subsystems.managedfly.application.{
   ActiveSessionFactory,
@@ -19,7 +21,10 @@ object ActiveSessionReferenceRepositoryDefinition {
 
   import cats.implicits._
 
-  def withContext[F[_]: ConcurrentEffect, G[_]: SyncEffect, Player: HasUuid](
+  def withContext[F[_]: Async: Dispatcher, G[_]: Sync: [g[_]] =>> ContextCoercion[
+    g,
+    F
+  ], Player: HasUuid](
     factory: ActiveSessionFactory[F, Player],
     persistence: FlyDurationPersistenceRepository[G]
   ): RepositoryDefinition[G, Player, ActiveSessionReference[F, G]] =

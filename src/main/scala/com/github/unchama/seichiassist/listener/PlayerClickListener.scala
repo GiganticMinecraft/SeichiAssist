@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.listener
 
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.generic.effect.concurrent.TryableFiber
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
@@ -25,7 +27,7 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.{GameMode, Material, Sound}
 
 class PlayerClickListener(
-  implicit effectEnvironment: EffectEnvironment,
+  implicit effectEnvironment: EffectEnvironment[IO],
   manaApi: ManaApi[IO, SyncIO, Player],
   ioCanOpenStickMenu: IO CanOpen FirstPage.type,
   ioOnMainThread: OnMinecraftServerThread[IO]

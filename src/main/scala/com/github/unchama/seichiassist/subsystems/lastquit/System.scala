@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.lastquit
 
-import cats.effect.ConcurrentEffect
+import cats.effect.Async
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.lastquit.bukkit.commands.LastQuitCommand
 import com.github.unchama.seichiassist.subsystems.lastquit.bukkit.listeners.LastQuitUpdater
@@ -22,7 +23,7 @@ trait System[F[_]] extends Subsystem[F] {
 
 object System {
 
-  def wired[F[_]: ConcurrentEffect]: System[F] = {
+  def wired[F[_]: Async: [f[_]] =>> ContextCoercion[f, cats.effect.IO]]: System[F] = {
     val persistence: LastQuitPersistence[F] = new JdbcLastQuitPersistence[F]
     new System[F] {
       override implicit val api: LastQuitAPI[F] = new LastQuitAPI[F] {

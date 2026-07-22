@@ -1,11 +1,12 @@
 package com.github.unchama.chatinterceptor
 
-import cats.effect.concurrent.Deferred
-import cats.effect.{ContextShift, IO}
+import cats.effect.IO
+import cats.syntax.all._
 import com.github.unchama.chatinterceptor.CancellationReason.Overridden
 import com.github.unchama.chatinterceptor.InterceptorResponse.{Ignored, Intercepted}
 
 import scala.collection.mutable
+import cats.effect.Deferred
 
 sealed trait CancellationReason
 object CancellationReason {
@@ -19,12 +20,12 @@ object InterceptorResponse {
   case object Ignored extends InterceptorResponse
 }
 
-class InterceptionScope[K, R](implicit val cs: ContextShift[IO]) {
+class InterceptionScope[K, R] {
   private val map: mutable.Map[K, Deferred[IO, InterceptionResult[R]]] = mutable.HashMap()
 
   def cancelAnyInterception(key: K, reason: CancellationReason): IO[Unit] =
     IO { map.remove(key) }.flatMap {
-      case Some(deferred) => deferred.complete(Right(reason))
+      case Some(deferred) => deferred.complete(Right(reason)).void
       case None           => IO.pure(())
     }
 

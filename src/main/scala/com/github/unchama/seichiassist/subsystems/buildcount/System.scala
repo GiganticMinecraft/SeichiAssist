@@ -1,11 +1,12 @@
 package com.github.unchama.seichiassist.subsystems.buildcount
 
-import cats.effect.{Clock, ConcurrentEffect, SyncEffect}
+import cats.effect.{Clock, Async, Sync}
+import cats.effect.std.Dispatcher
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.fs2.workaround.fs3.Fs3Topic
-import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.generic.{ContextCoercion, UnsafeSyncRunner}
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.ratelimiting.RateLimiter
 import com.github.unchama.minecraft.actions.{GetConnectedPlayers, OnMinecraftServerThread}
@@ -32,7 +33,6 @@ import com.github.unchama.seichiassist.subsystems.buildcount.infrastructure.{
   JdbcBuildAmountRateLimitPersistence
 }
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
-import io.chrisdavenport.cats.effect.time.JavaTime
 import org.typelevel.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
@@ -47,14 +47,14 @@ trait System[F[_], G[_]] extends Subsystem[F] {
 
 object System {
 
-  import cats.effect.implicits._
+  import cats.effect.syntax.all._
   import cats.implicits._
 
   def wired[F[
     _
-  ]: OnMinecraftServerThread: ConcurrentEffect: ErrorLogger: DiscordNotificationAPI, G[
+  ]: OnMinecraftServerThread: Async: Dispatcher: ErrorLogger: DiscordNotificationAPI, G[
     _
-  ]: SyncEffect: [f[_]] =>> ContextCoercion[f, F]: Clock](
+  ]: Sync: UnsafeSyncRunner: [f[_]] =>> ContextCoercion[f, F]: Clock](
     implicit configuration: Configuration,
     getConnectedPlayers: GetConnectedPlayers[F, Player]
   ): F[System[F, G]] = {
@@ -63,8 +63,6 @@ object System {
       new JdbcBuildAmountDataPersistence[G]()
     implicit val rateLimitPersistence: JdbcBuildAmountRateLimitPersistence[G] =
       new JdbcBuildAmountRateLimitPersistence[G]()
-    implicit val javaTimeG: JavaTime[G] = JavaTime.fromClock
-
     val createSystem: F[System[F, G]] = for {
       buildCountTopic <- Fs3Topic[F, (Player, BuildAmountData)]
       rateLimiterRepositoryControls <-
