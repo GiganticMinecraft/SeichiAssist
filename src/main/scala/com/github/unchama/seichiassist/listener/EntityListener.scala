@@ -1,6 +1,8 @@
 package com.github.unchama.seichiassist.listener
 
-import cats.effect.{ConcurrentEffect, IO, SyncIO}
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
+import cats.effect.{Async, IO, SyncIO}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.ManagedWorld._
@@ -21,7 +23,7 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.meta.Damageable
 
 class EntityListener(
-  implicit effectEnvironment: EffectEnvironment,
+  implicit effectEnvironment: EffectEnvironment[IO],
   ioOnMainThread: OnMinecraftServerThread[IO],
   manaApi: ManaApi[IO, SyncIO, Player],
   globalNotification: DiscordNotificationAPI[IO]
@@ -215,7 +217,6 @@ class EntityListener(
 
   @EventHandler def onDeath(event: EntityDeathEvent): Unit = {
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
-    implicit val ioCE: ConcurrentEffect[IO] = IO.ioConcurrentEffect
     /*GiganticBerserk用*/
     // 死んだMOBがGiganticBerserkの対象MOBでなければ終了
     val entity = event.getEntity
@@ -226,6 +227,6 @@ class EntityListener(
     // プレイヤーが整地ワールドに居ない場合終了
     if (!player.getWorld.isSeichi) return
     val GBTR = new GiganticBerserkTask
-    GBTR.PlayerKillEnemy(player)
+    GBTR.PlayerKillEnemy[IO](player)
   }
 }

@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy
 
 import cats.data.Kleisli
-import cats.effect.{ConcurrentEffect, IO, SyncIO}
+import cats.effect.{Async, IO, SyncIO}
 import com.github.unchama.concurrent.RepeatingTaskContext
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.datarepository.template.RepositoryDefinition
@@ -52,7 +52,7 @@ object System {
       Player
     ],
     repeatingTaskContext: RepeatingTaskContext,
-    concurrentEffect: ConcurrentEffect[IO],
+    concurrentEffect: Async[IO],
     minecraftServerThread: OnMinecraftServerThread[IO],
     dragonNightTimeApi: DragonNightTimeApi
   ): SyncIO[System[IO, SyncIO, Player]] = {

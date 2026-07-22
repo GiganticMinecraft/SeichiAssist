@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary
 
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
 import cats.effect.IO
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
@@ -33,7 +35,7 @@ import scala.jdk.CollectionConverters._
 import scala.util.Random
 
 class AnniversaryListener(
-  implicit effectEnvironment: EffectEnvironment,
+  implicit effectEnvironment: EffectEnvironment[IO],
   ioOnMainThread: OnMinecraftServerThread[IO],
   gtToSiinaAPI: GtToSiinaAPI[ItemStack]
 ) extends Listener {

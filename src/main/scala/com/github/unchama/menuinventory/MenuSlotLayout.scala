@@ -1,6 +1,7 @@
 package com.github.unchama.menuinventory
 
-import cats.effect.{ContextShift, IO}
+import cats.effect.IO
+import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.menuinventory.slot.Slot
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
@@ -18,7 +19,7 @@ case class MenuSlotLayout(private[menuinventory] val layoutMap: Map[Int, Slot]) 
    */
   def effectOn(
     event: InventoryClickEvent
-  )(implicit cs: ContextShift[IO]): TargetedEffect[Player] =
+  )(implicit cs: NonServerThreadContextShift[IO]): TargetedEffect[Player] =
     layoutMap.get(event.getSlot) match {
       case Some(slot) => slot.effectOn(event)
       case None       => emptyEffect

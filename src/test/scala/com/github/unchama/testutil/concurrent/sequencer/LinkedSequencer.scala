@@ -1,7 +1,6 @@
 package com.github.unchama.testutil.concurrent.sequencer
 
-import cats.effect.concurrent.Deferred
-import cats.effect.{Async, Sync}
+import cats.effect.{Async, Deferred, Sync}
 import cats.implicits._
 import com.github.unchama.testutil.concurrent.Blocker
 
@@ -24,9 +23,10 @@ object LinkedSequencer {
   /**
    * DeferredのBlockerとしてのラッパー
    */
-  class CompletableBlocker[F[_]] private (promise: Deferred[F, Unit]) extends Blocker[F] {
+  class CompletableBlocker[F[_]: Async] private (promise: Deferred[F, Unit])
+      extends Blocker[F] {
 
-    def complete: F[Unit] = promise.complete(())
+    def complete: F[Unit] = promise.complete(()).void
 
     override def await(): F[Unit] = promise.get
 
@@ -34,7 +34,7 @@ object LinkedSequencer {
 
   object CompletableBlocker {
     def unsafeBlocked[F[_]: Async]: CompletableBlocker[F] =
-      new CompletableBlocker[F](Deferred.unsafeUncancelable)
+      new CompletableBlocker[F](Deferred.unsafe)
   }
 
   case class LinkedBlocker[F[_]: Async](

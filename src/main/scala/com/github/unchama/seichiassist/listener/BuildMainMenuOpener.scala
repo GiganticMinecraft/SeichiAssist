@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.listener
 
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
 import cats.effect.IO
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.router.CanOpen
@@ -12,7 +14,7 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.EquipmentSlot
 
 class BuildMainMenuOpener(
-  implicit effectEnvironment: EffectEnvironment,
+  implicit effectEnvironment: EffectEnvironment[IO],
   ioCanOpenBuildMainMenu: IO CanOpen BuildMainMenu.type
 ) extends Listener {
 

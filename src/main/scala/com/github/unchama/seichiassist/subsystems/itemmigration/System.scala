@@ -1,9 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.itemmigration
 
-import cats.effect.{ConcurrentEffect, IO, Sync, SyncEffect, SyncIO}
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
+import cats.effect.{Async, IO, Sync, SyncIO}
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.datarepository.template.RepositoryDefinition
-import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.generic.{ContextCoercion, UnsafeSyncRunner}
 import com.github.unchama.itemmigration.application.ItemMigrationStateRepositoryDefinitions
 import com.github.unchama.itemmigration.bukkit.controllers.player.PlayerItemMigrationController
 import com.github.unchama.itemmigration.service.ItemMigrationService
@@ -31,9 +33,9 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_]: ConcurrentEffect, G[_]: SyncEffect: [f[_]] =>> ContextCoercion[f, F]](
-    implicit logger: Logger
-  ): G[System[F]] = for {
+  def wired[F[_]: Async: [f[_]] =>> ContextCoercion[f, IO], G[_]: Sync: UnsafeSyncRunner: [f[
+    _
+  ]] =>> ContextCoercion[f, F]](implicit logger: Logger): G[System[F]] = for {
     migrations <- Sync[G].delay {
       implicit val syncIOUuidRepository: UuidRepository[SyncIO] =
         JdbcBackedUuidRepository.initializeStaticInstance[SyncIO].unsafeRunSync().apply[SyncIO]
@@ -65,7 +67,7 @@ object System {
 
     new System[F] {
       override val entryPoints: EntryPoints = new EntryPoints {
-        override def runDatabaseMigration[I[_]: SyncEffect]: I[Unit] = {
+        override def runDatabaseMigration[I[_]: Sync: UnsafeSyncRunner]: I[Unit] = {
           DatabaseMigrationController[I](migrations).runDatabaseMigration
         }
 

@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.menus.skill
 
+import com.github.unchama.toIO
+
 import io.github.iltotore.iron.autoRefine
 
 import cats.effect.{IO, SyncIO}

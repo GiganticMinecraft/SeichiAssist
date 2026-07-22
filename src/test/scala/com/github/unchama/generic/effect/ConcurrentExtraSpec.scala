@@ -1,18 +1,14 @@
 package com.github.unchama.generic.effect
 
-import cats.effect.concurrent.Deferred
-import cats.effect.{CancelToken, ContextShift, IO}
+import cats.effect.{Deferred, IO}
+import cats.effect.unsafe.implicits.global
 import com.github.unchama.testutil.concurrent.sequencer.LinkedSequencer
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-import scala.concurrent.ExecutionContext
-
 class ConcurrentExtraSpec extends AnyWordSpec with Matchers with MockFactory {
   "withSelfCancellationToken" should {
-    implicit val shift: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
-
     "not interrupt execution of non-cancelling action" in {
       ConcurrentExtra.withSelfCancellation[IO, Int](_ => IO.pure(42)).unsafeRunSync() mustBe 42
     }
@@ -33,7 +29,7 @@ class ConcurrentExtraSpec extends AnyWordSpec with Matchers with MockFactory {
 
       val program = for {
         blockerList <- LinkedSequencer[IO].newBlockerList
-        promise <- Deferred[IO, CancelToken[IO]]
+        promise <- Deferred[IO, IO[Unit]]
         _ <- ConcurrentExtra
           .withSelfCancellation[IO, Unit] { cancelToken =>
             for {
@@ -47,9 +43,9 @@ class ConcurrentExtraSpec extends AnyWordSpec with Matchers with MockFactory {
             } yield ()
           }
           .start
-        returnedCancelToken <- promise.get
+        cancellationAction <- promise.get
         _ <- blockerList(1).await() // let started fiber reach IO.never
-        _ <- returnedCancelToken // subProcessFinalizer should be called
+        _ <- cancellationAction // subProcessFinalizer should be called
         _ <- runFinalizer
       } yield ()
 

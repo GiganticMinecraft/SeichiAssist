@@ -1,9 +1,13 @@
 package com.github.unchama.seichiassist.menus.stickmenu
 
+import com.github.unchama.toIO
+
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
 import io.github.iltotore.iron.autoRefine
 
 import cats.data.Kleisli
-import cats.effect.{IO, SyncIO}
+import cats.effect.{Clock, IO, SyncIO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.itemstackbuilder.{
   IconItemStackBuilder,
@@ -60,7 +64,6 @@ import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
 import com.github.unchama.util.InventoryUtil
 import com.github.unchama.util.external.WorldGuardWrapper
-import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -90,7 +93,7 @@ object FirstPage extends Menu {
     val fastDiggingSettingsApi: FastDiggingSettingsApi[IO, Player],
     val rankingApi: RankingProvider[IO, SeichiAmountData],
     val gachaPointApi: GachaPointApi[IO, SyncIO, Player],
-    val ioJavaTime: JavaTime[IO],
+    val ioClock: Clock[IO],
     val ioCanOpenSecondPage: IO CanOpen SecondPage.type,
     val ioCanOpenMineStackMenu: IO CanOpen MineStackMainMenu.type,
     val ioCanOpenRegionMenu: IO CanOpen RegionMenu.type,

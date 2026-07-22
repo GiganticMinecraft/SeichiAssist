@@ -1,6 +1,8 @@
 package com.github.unchama.seichiassist.seichiskill.assault
 
-import cats.effect.{ExitCase, IO, SyncIO, Timer}
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
+import cats.effect.{IO, Outcome, SyncIO}
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.ManagedWorld._
@@ -16,7 +18,8 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.util.BreakUtil
 import com.github.unchama.seichiassist.data.XYZTuple
-import com.github.unchama.seichiassist.{DefaultEffectEnvironment, MaterialSets, SeichiAssist}
+import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import org.bukkit.ChatColor._
 import org.bukkit.block.Block
 import org.bukkit.enchantments.Enchantment
@@ -25,6 +28,7 @@ import org.bukkit.inventory.meta.Damageable
 import org.bukkit.{GameMode, Location, Material, Sound}
 import scala.jdk.CollectionConverters._
 import cats.syntax.all._
+import cats.effect.Temporal
 
 object AssaultRoutine {
 
@@ -232,32 +236,34 @@ object AssaultRoutine {
       // ブロックを書き換える
       if (shouldBreakAllBlocks) {
         (foundWaters ++ foundLavas).foreach(_.setType(Material.AIR))
-        DefaultEffectEnvironment.unsafeRunEffectAsync(
-          "ブロックを大量破壊する",
-          BreakUtil.massBreakBlock(
-            player,
-            foundBlocks,
-            player.getLocation,
-            toolToBeUsed,
-            shouldPlayBreakSound = false
+        PluginExecutionContexts
+          .effectEnvironment
+          .unsafeRunEffectAsync(
+            "ブロックを大量破壊する",
+            BreakUtil.massBreakBlock(
+              player,
+              foundBlocks,
+              player.getLocation,
+              toolToBeUsed,
+              shouldPlayBreakSound = false
+            )
           )
-        )
       } else {
         if (shouldRemoveOrCondenseWater) foundWaters.foreach(_.setType(Material.PACKED_ICE))
         if (shouldRemoveOrCondenseLava) foundLavas.foreach(_.setType(Material.MAGMA_BLOCK))
       }
 
       if (assaultSkill == AssaultArmor) {
-        DefaultEffectEnvironment.unsafeRunEffectAsync(
-          "アサルトアーマー範囲内の乗り物を破壊する",
-          destroyVehiclesInArea(player, breakGridPoints, block)
-        )
+        PluginExecutionContexts
+          .effectEnvironment
+          .unsafeRunEffectAsync(
+            "アサルトアーマー範囲内の乗り物を破壊する",
+            destroyVehiclesInArea(player, breakGridPoints, block)
+          )
       }
 
       Some(newState)
     }
-
-    implicit val timer: Timer[IO] = IO.timer(ctx)
 
     import scala.concurrent.duration._
 
@@ -273,13 +279,13 @@ object AssaultRoutine {
           ioOnMainThread.runAction(SyncIO(routineAction(s)))
         )(IO.pure(500.millis))
         .guaranteeCase {
-          case ExitCase.Error(_) | ExitCase.Completed =>
+          case Outcome.Errored(_) | Outcome.Succeeded(_) =>
             IO {
               // 継続条件が満たされなかった場合の表示
               player.sendMessage(s"${YELLOW}アサルトスキルがOFFになりました")
               player.playSound(currentLoc, Sound.BLOCK_LEVER_CLICK, 1f, 0.7f)
             }
-          case ExitCase.Canceled =>
+          case Outcome.Canceled() =>
             IO {
               // 明示的にプレーヤーが切り替えた場合
               player.sendMessage(s"${GREEN}アサルトスキル：${skill.name} OFF")

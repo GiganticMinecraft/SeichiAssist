@@ -1,8 +1,32 @@
 package com.github.unchama.generic
 
 import cats.arrow.FunctionK
-import cats.effect.{IO, Sync, SyncEffect, SyncIO}
+import cats.effect.std.Dispatcher
+import cats.effect.{IO, Sync, SyncIO}
 import cats.~>
+
+/**
+ * 外部の同期APIとの境界で、`F`を同期的に実行する能力。
+ *
+ * Cats Effect 3では`SyncEffect`が廃止されたため、同期実行が必要な境界だけでこの能力を明示的に要求する。
+ */
+trait UnsafeSyncRunner[F[_]] {
+  def unsafeRunSync[A](fa: F[A]): A
+}
+
+object UnsafeSyncRunner {
+  def apply[F[_]](implicit runner: UnsafeSyncRunner[F]): UnsafeSyncRunner[F] = runner
+
+  implicit val syncIORunner: UnsafeSyncRunner[SyncIO] = new UnsafeSyncRunner[SyncIO] {
+    override def unsafeRunSync[A](fa: SyncIO[A]): A = fa.unsafeRunSync()
+  }
+
+  implicit def dispatcherBackedRunner[F[_]](
+    implicit dispatcher: Dispatcher[F]
+  ): UnsafeSyncRunner[F] = new UnsafeSyncRunner[F] {
+    override def unsafeRunSync[A](fa: F[A]): A = dispatcher.unsafeRunSync(fa)
+  }
+}
 
 /**
  * 文脈FからGへの(自明な)変換を与える型クラス。
@@ -40,19 +64,16 @@ object ContextCoercion extends ContextCoercionOps {
 
   implicit def identityCoercion[F[_]]: ContextCoercion[F, F] = fromFunctionK(FunctionK.id)
 
-  implicit def syncEffectToSync[F[_]: SyncEffect, G[_]: Sync]: ContextCoercion[F, G] = {
-    import cats.effect.implicits._
-
+  implicit def syncEffectToSync[F[_]: UnsafeSyncRunner, G[_]: Sync]: ContextCoercion[F, G] = {
     fromFunctionK(new FunctionK[F, G] {
-      def apply[A](fa: F[A]): G[A] = Sync[G].delay {
-        fa.runSync[SyncIO].unsafeRunSync()
-      }
+      def apply[A](fa: F[A]): G[A] =
+        Sync[G].delay(UnsafeSyncRunner[F].unsafeRunSync(fa))
     })
   }
 
   implicit val catsEffectSyncIOToIOCoercion: ContextCoercion[SyncIO, IO] = fromFunctionK {
     new FunctionK[SyncIO, IO] {
-      def apply[A](fa: SyncIO[A]): IO[A] = fa.toIO
+      def apply[A](fa: SyncIO[A]): IO[A] = fa.to[IO]
     }
   }
 

@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.home
 
-import cats.effect.ConcurrentEffect
+import cats.effect.Async
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
@@ -24,9 +24,9 @@ trait System[F[_]] extends Subsystem[F] {
 }
 
 object System {
-  def wired[F[_]: OnMinecraftServerThread: ConcurrentEffect: NonServerThreadContextShift, G[
+  def wired[F[_]: OnMinecraftServerThread: Async: NonServerThreadContextShift: [f[
     _
-  ]: [f[_]] =>> ContextCoercion[f, F]](
+  ]] =>> ContextCoercion[f, cats.effect.IO], G[_]: [f[_]] =>> ContextCoercion[f, F]](
     implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player],
     buildCountReadAPI: BuildCountAPI[F, G, Player]
   ): System[F] = {

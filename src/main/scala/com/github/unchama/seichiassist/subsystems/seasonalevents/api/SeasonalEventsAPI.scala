@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.subsystems.seasonalevents.api
 import cats.Functor
 import cats.effect.Clock
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas
-import io.chrisdavenport.cats.effect.time.JavaTime
 
 import java.time.ZoneId
 
@@ -19,9 +18,9 @@ object ChristmasEventsAPI {
 
   def withF[F[_]: Clock: Functor]: ChristmasEventsAPI[F] = new ChristmasEventsAPI[F] {
     override val isInEvent: F[Boolean] =
-      JavaTime
-        .fromClock[F]
-        .getLocalDate(ZoneId.of("JST", ZoneId.SHORT_IDS))
+      Clock[F]
+        .realTimeInstant
+        .map(_.atZone(ZoneId.of("JST", ZoneId.SHORT_IDS)).toLocalDate)
         .map(Christmas.isInEvent)
   }
 

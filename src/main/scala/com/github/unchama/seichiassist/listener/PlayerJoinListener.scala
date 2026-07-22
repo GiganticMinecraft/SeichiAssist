@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.listener
 
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
 import cats.effect.IO
 import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.SeichiAssist
@@ -101,12 +103,12 @@ class PlayerJoinListener extends Listener {
         .sendMessageToEveryoneIgnoringPreferenceIO(
           s"$LIGHT_PURPLE$BOLD${player.getName}さんはこのサーバーに初めてログインしました！"
         )
-        .unsafeRunAsyncAndForget()
+        .unsafeRunAndForget()
       SendMessageEffect
         .sendMessageToEveryoneIgnoringPreferenceIO(
           s"${WHITE}webサイトはもう読みましたか？→$YELLOW${UNDERLINE}https://www.seichi.network/gigantic"
         )
-        .unsafeRunAsyncAndForget()
+        .unsafeRunAndForget()
 
       SendSoundEffect.sendEverySound[IO](Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f).unsafeRunSync()
 

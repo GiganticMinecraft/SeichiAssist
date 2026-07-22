@@ -1,14 +1,13 @@
 package com.github.unchama.seichiassist.subsystems.minestack
 
 import cats.data.Kleisli
-import cats.effect.concurrent.Ref
-import cats.effect.{ConcurrentEffect, SyncEffect}
+import cats.effect.{Async, Sync}
 import com.github.unchama.datarepository.bukkit.player.{
   BukkitRepositoryControls,
   PlayerDataRepository
 }
 import com.github.unchama.datarepository.template.RepositoryDefinition
-import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.generic.{ContextCoercion, UnsafeSyncRunner}
 import com.github.unchama.minecraft.bukkit.objects.BukkitMaterial
 import com.github.unchama.minecraft.objects.MinecraftMaterial
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
@@ -40,6 +39,7 @@ import org.bukkit.event.Listener
 import org.bukkit.inventory.ItemStack
 import com.github.unchama.seichiassist.subsystems.minestack.bukkit.EntityDropItemListener
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import cats.effect.Ref
 
 trait System[F[_], Player, ItemStack] extends Subsystem[F] {
 
@@ -51,9 +51,11 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_]: ConcurrentEffect, G[_]: SyncEffect: [f[_]] =>> ContextCoercion[f, F]](
+  def wired[F[_]: Async: [f[_]] =>> ContextCoercion[f, cats.effect.IO], G[
+    _
+  ]: Sync: UnsafeSyncRunner: [f[_]] =>> ContextCoercion[f, F]](
     implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
-    effectEnvironment: EffectEnvironment
+    effectEnvironment: EffectEnvironment[F]
   ): F[System[F, Player, ItemStack]] = {
     implicit val minecraftMaterial: MinecraftMaterial[Material, ItemStack] = new BukkitMaterial
     implicit val _mineStackObjectList: MineStackObjectList[F, ItemStack, Player] =

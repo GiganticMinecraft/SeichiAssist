@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.listeners
 
-import cats.effect.ConcurrentEffect
+import cats.effect.Async
 import com.github.unchama.seichiassist.subsystems.tradesystems.domain.TradeSuccessResult
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.traderules.BigOrRegular
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.domain.{
@@ -20,12 +20,12 @@ import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.targetedeffect.commandsender.MessageEffectF
 import com.github.unchama.targetedeffect.player.FocusedSoundEffectF
 
-class GachaTradeListener[F[_]: ConcurrentEffect, G[_]](
+class GachaTradeListener[F[_]: Async, G[_]](
   rule: GachaTradeRule[ItemStack, (BigOrRegular, Int)]
 )(
   gachaListProvider: GachaListProvider[F, ItemStack],
   tradeAction: TradeAction[F, Player, ItemStack, (BigOrRegular, Int)],
-  effectEnvironment: EffectEnvironment
+  effectEnvironment: EffectEnvironment[F]
 ) extends Listener {
 
   import cats.implicits._
@@ -48,7 +48,7 @@ class GachaTradeListener[F[_]: ConcurrentEffect, G[_]](
 
     val program = for {
       gachaList <- gachaListProvider.readGachaList
-      tradeRule <- ConcurrentEffect[F].pure(rule.ruleFor(name, gachaList))
+      tradeRule <- Async[F].pure(rule.ruleFor(name, gachaList))
       tradeResult <- tradeAction.execute(
         player,
         inventory.getContents().filterNot(_ == null).toList

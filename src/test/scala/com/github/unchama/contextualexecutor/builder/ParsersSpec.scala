@@ -1,5 +1,6 @@
 package com.github.unchama.contextualexecutor.builder
 
+import cats.effect.unsafe.implicits.global
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import io.github.iltotore.iron.constraint.numeric.{GreaterEqual, Interval, Positive}

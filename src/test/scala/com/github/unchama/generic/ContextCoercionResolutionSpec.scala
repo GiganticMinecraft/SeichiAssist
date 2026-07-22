@@ -1,6 +1,7 @@
 package com.github.unchama.generic
 
 import cats.effect.{IO, SyncIO}
+import cats.effect.unsafe.implicits.global
 import org.scalatest.wordspec.AnyWordSpec
 
 /**

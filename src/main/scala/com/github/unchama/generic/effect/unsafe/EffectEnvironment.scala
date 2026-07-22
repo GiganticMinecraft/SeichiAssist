@@ -1,12 +1,13 @@
 package com.github.unchama.generic.effect.unsafe
 
-import cats.effect.Effect
-import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.TargetedEffectF
 
 /**
- * [[Effect]]を実行する環境
+ * `F`をインピュアなコールバックから実行する環境。
+ *
+ * この環境の寿命は、内部で使用する`Dispatcher[F]`の寿命より長くてはならない。
  */
-trait EffectEnvironment {
+trait EffectEnvironment[F[_]] {
 
   /**
    * `program` を `context` の文脈にてunsafeに実行する。
@@ -15,7 +16,7 @@ trait EffectEnvironment {
    *
    * このメソッドの実装は `context` を用いて実行に関するロギングを行ってよい。
    */
-  def unsafeRunEffectAsync[U, F[_]: Effect](context: String, program: F[U]): Unit
+  def unsafeRunEffectAsync[U](context: String, program: F[U]): Unit
 
   /**
    * `receiver`を`effect`に適用して得られる`IO`を例外を補足して実行する。
@@ -32,7 +33,7 @@ trait EffectEnvironment {
    */
   def unsafeRunAsyncTargetedEffect[T](
     receiver: T
-  )(effect: TargetedEffect[T], context: String): Unit =
+  )(effect: TargetedEffectF[F, T], context: String): Unit =
     unsafeRunEffectAsync(context, effect(receiver))
 
 }

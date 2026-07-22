@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification
 
-import cats.effect.Concurrent
+import cats.effect.Async
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.minecraft.actions.{GetConnectedPlayers, OnMinecraftServerThread}
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
@@ -20,7 +21,9 @@ object System {
 
   def backgroundProcess[F[
     _
-  ]: Concurrent: ErrorLogger: OnMinecraftServerThread: DiscordNotificationAPI, G[_], A](
+  ]: Async: ErrorLogger: OnMinecraftServerThread: DiscordNotificationAPI: [f[
+    _
+  ]] =>> ContextCoercion[f, cats.effect.IO], G[_], A](
     buildCountReadAPI: BuildCountAPI[F, G, Player]
   )(implicit getConnectedPlayers: GetConnectedPlayers[F, Player]): F[A] = {
     val notifyLevelUp: NotifyLevelUp[F, Player] = BukkitNotifyLevelUp[F]

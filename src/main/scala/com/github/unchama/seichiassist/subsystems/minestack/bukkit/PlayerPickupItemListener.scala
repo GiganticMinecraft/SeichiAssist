@@ -1,8 +1,12 @@
 package com.github.unchama.seichiassist.subsystems.minestack.bukkit
 
-import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
-import cats.effect.concurrent.Ref
-import cats.effect.{ConcurrentEffect, Sync}
+import com.github.unchama.toIO
+
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
+import cats.effect.syntax.all._
+import cats.effect.{Async, Sync}
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.ApplicativeExtra.whenAOrElse
 import com.github.unchama.seichiassist.SeichiAssist
@@ -16,8 +20,9 @@ import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{GameMode, Sound}
+import cats.effect.Ref
 
-class PlayerPickupItemListener[F[_]: ConcurrentEffect](
+class PlayerPickupItemListener[F[_]: Async: [f[_]] =>> ContextCoercion[f, cats.effect.IO]](
   implicit autoCollectPreferenceRepository: PlayerDataRepository[Ref[F, AutoCollectPreference]],
   mineStackRepository: MineStackRepository[F, Player, ItemStack]
 ) extends Listener {
@@ -54,7 +59,7 @@ class PlayerPickupItemListener[F[_]: ConcurrentEffect](
             .whenA(intoSucceedItemStacksAndFailedItemStacks._2.nonEmpty)
         } yield ()
 
-        program.toIO.unsafeRunAsyncAndForget()
+        program.toIO.unsafeRunAndForget()
       case _ => ()
     }
   }

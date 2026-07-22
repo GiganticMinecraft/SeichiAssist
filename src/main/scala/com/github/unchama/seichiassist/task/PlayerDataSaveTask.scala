@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.task
 
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
 import cats.Monad
 import cats.effect.{IO, Sync}
 import com.github.unchama.seichiassist.data.player.{NicknameStyle, PlayerData}

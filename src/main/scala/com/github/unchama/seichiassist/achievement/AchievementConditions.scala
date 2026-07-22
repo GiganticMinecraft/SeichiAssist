@@ -1,13 +1,18 @@
 package com.github.unchama.seichiassist.achievement
 
-import cats.effect.{IO, SyncIO}
+import com.github.unchama.toIO
+
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
+import cats.Functor
+import cats.effect.{Clock, IO, SyncIO}
+import cats.syntax.all._
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.clock
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
 import com.github.unchama.util.time.LunisolarDate
-import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -154,8 +159,8 @@ object AchievementConditions {
     AchievementCondition(predicate, _ + "にプレイ", dateSpecification)
   }
 
-  private def localDatetimeWithSystemTimezone[F[_]: JavaTime]: F[LocalDateTime] =
-    JavaTime[F].getLocalDateTime(ZoneId.systemDefault())
+  private def localDatetimeWithSystemTimezone[F[_]: Clock: Functor]: F[LocalDateTime] =
+    Clock[F].realTimeInstant.map(_.atZone(ZoneId.systemDefault()).toLocalDateTime)
 
   def playedOn(
     month: Month,

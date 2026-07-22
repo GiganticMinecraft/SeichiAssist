@@ -1,9 +1,7 @@
 package com.github.unchama.menuinventory
 
-import cats.Parallel.Aux
-import cats.effect.concurrent.Ref
 import cats.effect.{IO, Sync, SyncIO}
-import cats.{Eq, effect}
+import cats.Eq
 import com.github.unchama.menuinventory.slot.Slot
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.targetedeffect.TargetedEffect
@@ -11,6 +9,7 @@ import com.github.unchama.targetedeffect.player.PlayerEffects
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.{Inventory, InventoryHolder, ItemStack}
+import cats.effect.Ref
 
 /**
  * 共有された[sessionInventory]を作用付きの「メニュー」として扱うインベントリを保持するためのセッション.
@@ -60,8 +59,7 @@ class MenuSession private (private val frame: MenuFrame) extends InventoryHolder
         itemStack = slotOption.map(_.itemStack).getOrElse(new ItemStack(Material.AIR))
       } yield IO { sessionInventory.setItem(slotIndex, itemStack) }
 
-      implicit val ioParallel: Aux[IO, effect.IO.Par] = IO.ioParallel(IO.contextShift(ctx))
-      effects.parSequence_
+      effects.parSequence_.evalOn(ctx)
     }
 
     for {

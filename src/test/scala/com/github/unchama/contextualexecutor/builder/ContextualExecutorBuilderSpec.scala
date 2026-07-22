@@ -1,6 +1,7 @@
 package com.github.unchama.contextualexecutor.builder
 
 import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 import com.github.unchama.contextualexecutor.{
   ContextualExecutor,
   ExecutedCommand,

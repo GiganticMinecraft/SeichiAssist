@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.autosave
 
-import cats.effect.{Sync, Timer}
+import cats.effect.Async
 import com.github.unchama.minecraft.actions.{GetConnectedPlayers, OnMinecraftServerThread}
 import com.github.unchama.seichiassist.subsystems.autosave.application.{
   CanNotifySaves,
@@ -15,7 +15,7 @@ import com.github.unchama.seichiassist.subsystems.autosave.bukkit.instances.{
 import org.bukkit.entity.Player
 
 object System {
-  def backgroundProcess[F[_]: Sync: Timer: OnMinecraftServerThread](
+  def backgroundProcess[F[_]: Async: OnMinecraftServerThread](
     implicit getConnectedPlayers: GetConnectedPlayers[F, Player],
     configuration: SystemConfiguration
   ): F[Nothing] = {

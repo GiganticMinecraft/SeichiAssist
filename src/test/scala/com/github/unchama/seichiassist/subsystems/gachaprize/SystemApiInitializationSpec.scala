@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gachaprize
 
 import cats.effect.IO
-import cats.effect.concurrent.Ref
+import cats.effect.unsafe.implicits.global
 import com.github.unchama.generic.Cloneable
 import com.github.unchama.generic.effect.concurrent.CachedRef
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.gachaevent.{
@@ -21,6 +21,7 @@ import org.bukkit.inventory.ItemStack
 import org.scalatest.wordspec.AnyWordSpec
 
 import scala.concurrent.duration._
+import cats.effect.Ref
 
 /**
  * gachaprizeサブシステムのAPI構築の回帰テスト。

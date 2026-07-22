@@ -1,12 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.gridregion
 
 import cats.data.Kleisli
-import cats.effect.SyncEffect
-import cats.effect.concurrent.Ref
+import cats.effect.Sync
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.datarepository.template.RepositoryDefinition
-import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.generic.{ContextCoercion, UnsafeSyncRunner}
 import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gridregion.application.actions.{
@@ -37,6 +36,7 @@ import com.github.unchama.seichiassist.subsystems.gridregion.infrastructure.{
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.World
+import cats.effect.Ref
 
 trait System[F[_], Player, Location, World] extends Subsystem[F] {
 
@@ -48,7 +48,7 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_], G[_]: SyncEffect: [f[_]] =>> ContextCoercion[f, F]]
+  def wired[F[_], G[_]: Sync: UnsafeSyncRunner: [f[_]] =>> ContextCoercion[f, F]]
     : G[System[F, Player, Location, World]] = {
     implicit val regionCountPersistence: RegionCountAllUntilNowPersistence[G] =
       new JdbcRegionCountAllUntilNowPersistence[G]

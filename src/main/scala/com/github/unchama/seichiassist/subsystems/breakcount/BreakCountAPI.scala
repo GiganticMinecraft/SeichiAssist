@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.breakcount
 
 import cats.Monad
-import cats.effect.{Concurrent, Timer}
+import cats.effect.Concurrent
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.Diff
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
@@ -19,6 +19,7 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.{
 
 import java.util.UUID
 import scala.concurrent.duration.FiniteDuration
+import cats.effect.Temporal
 
 trait BreakCountWriteAPI[G[_], Player] {
 
@@ -98,7 +99,7 @@ trait BreakCountReadAPI[F[_], G[_], Player] {
    * `duration` 毎に纏められた、プレーヤーの整地量増加を流すストリーム。
    */
   def batchedIncreases(duration: FiniteDuration)(
-    implicit FTimer: Timer[F],
+    implicit FTimer: Temporal[F],
     FConcurrent: Concurrent[F]
   ): fs2.Stream[F, BatchedSeichiExpMap[Player]] =
     StreamExtra.foldGate(

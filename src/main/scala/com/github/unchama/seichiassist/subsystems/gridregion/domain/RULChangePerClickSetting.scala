@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gridregion.domain
 
 import cats.effect.Sync
-import cats.effect.concurrent.Ref
+import cats.effect.Ref
 
 /**
  * [[SubjectiveRegionShape]] の変更を行う UI で、クリック毎に主観的領域選択をどの程度の長さ伸縮させるかの設定。

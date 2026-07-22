@@ -1,9 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.breakskilltargetconfig
 
 import cats.data.Kleisli
-import cats.effect.SyncEffect
+import cats.effect.Sync
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
-import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.generic.{ContextCoercion, UnsafeSyncRunner}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.application.repository.BreakSkillTargetConfigRepositoryDefinition
 import com.github.unchama.seichiassist.subsystems.breakskilltargetconfig.domain.{
@@ -21,7 +21,8 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_], G[_]: SyncEffect: [f[_]] =>> ContextCoercion[f, F]]: G[System[F, Player]] = {
+  def wired[F[_], G[_]: Sync: UnsafeSyncRunner: [f[_]] =>> ContextCoercion[f, F]]
+    : G[System[F, Player]] = {
     implicit val breakSkillTargetConfigPersistence: BreakSkillTargetConfigPersistence[G] =
       new JdbcBreakSkillTargetConfigPersistence[G]
 

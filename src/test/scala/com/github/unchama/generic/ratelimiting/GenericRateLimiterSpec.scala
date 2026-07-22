@@ -1,17 +1,13 @@
 package com.github.unchama.generic.ratelimiting
 
-import cats.effect.Timer
+import cats.effect.IO
 import com.github.unchama.generic.algebra.typeclasses.OrderedMonus
 import com.github.unchama.testutil.concurrent.tests.ConcurrentEffectTest
-import com.github.unchama.testutil.execution.MonixTestSchedulerTests
+import com.github.unchama.testutil.execution.CatsEffectTestControl
 import io.github.iltotore.iron.:|
 
 import io.github.iltotore.iron.constraint.numeric.GreaterEqual
 import io.github.iltotore.iron.refineUnsafe
-import monix.catnap.SchedulerEffect
-import monix.eval.Task
-import monix.execution.ExecutionModel
-import monix.execution.schedulers.TestScheduler
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 
@@ -26,12 +22,7 @@ trait GenericRateLimiterSpec
     extends AnyWordSpecLike
     with Matchers
     with ConcurrentEffectTest
-    with MonixTestSchedulerTests {
-
-  implicit private val monixScheduler: TestScheduler = TestScheduler(
-    ExecutionModel.SynchronousExecution
-  )
-  implicit private val monixTimer: Timer[Task] = SchedulerEffect.timer(monixScheduler)
+    with CatsEffectTestControl {
 
   type Natural = Int :| GreaterEqual[0]
 
@@ -51,13 +42,9 @@ trait GenericRateLimiterSpec
   /**
    * 新しい [[RateLimiter]] を
    *   - `seed` をパラメータ生成のシード
-   *   - `monixTimer` をスケジューラ
-   *
    * として作成する。
    */
-  def newRandomRateLimiter(seed: Int)(
-    implicit monixTimer: Timer[Task]
-  ): Task[RateLimiter[Task, Natural]]
+  def newRandomRateLimiter(seed: Int): IO[RateLimiter[IO, Natural]]
 
   /**
    * [[RateLimiter.peekAvailablePermissions]] の呼び出し自体が、[[RateLimiter]]の動作に干渉しないことをテストする。
@@ -74,18 +61,18 @@ trait GenericRateLimiterSpec
       val maxSleep = 1.minute
 
       val program = for {
-        randomSeed <- Task(Random.nextInt())
+        randomSeed <- IO.delay(Random.nextInt())
         rateLimiterA <- newRandomRateLimiter(randomSeed)
         rateLimiterB <- newRandomRateLimiter(randomSeed)
         _ <- rateLimiterA.peekAvailablePermissions
 
-        sleepPeriod <- Task {
+        sleepPeriod <- IO.delay {
           val duration = Random.nextInt(60).seconds
           assert(duration <= maxSleep)
           duration
         }
 
-        _ <- monixTimer.sleep(sleepPeriod)
+        _ <- IO.sleep(sleepPeriod)
 
         peekA <- rateLimiterA.peekAvailablePermissions
         peekB <- rateLimiterB.peekAvailablePermissions

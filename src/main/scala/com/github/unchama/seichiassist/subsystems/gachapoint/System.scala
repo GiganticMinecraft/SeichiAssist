@@ -1,13 +1,14 @@
 package com.github.unchama.seichiassist.subsystems.gachapoint
 
 import cats.data.Kleisli
-import cats.effect.{ConcurrentEffect, IO, SyncEffect, Timer}
+import cats.effect.{Async, IO, Sync}
+import cats.effect.std.Dispatcher
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.{
   BukkitRepositoryControls,
   PlayerDataRepository
 }
-import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.generic.{ContextCoercion, UnsafeSyncRunner}
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.stream.StreamExtra
@@ -31,12 +32,12 @@ trait System[F[_], G[_], Player] extends Subsystem[F] {
 
 object System {
 
-  import cats.effect.implicits._
+  import cats.effect.syntax.all._
   import cats.implicits._
 
-  def wired[F[_]: ConcurrentEffect: Timer: ErrorLogger, G[_]: SyncEffect: [f[
+  def wired[F[_]: Async: Dispatcher: ErrorLogger: [f[_]] =>> ContextCoercion[IO, f], G[
     _
-  ]] =>> ContextCoercion[f, F]](
+  ]: Sync: UnsafeSyncRunner: [f[_]] =>> ContextCoercion[f, F]](
     breakCountReadAPI: BreakCountReadAPI[F, G, Player]
   )(implicit ioOnMainThread: OnMinecraftServerThread[IO]): G[System[F, G, Player]] = {
     import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance

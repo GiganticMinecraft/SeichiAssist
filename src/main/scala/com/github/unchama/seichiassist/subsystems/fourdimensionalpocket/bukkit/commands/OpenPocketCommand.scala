@@ -1,11 +1,15 @@
 package com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.commands
 
+import com.github.unchama.toIO
+
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
 import cats.data.Kleisli
-import cats.effect.{Effect, IO, SyncIO}
+import cats.effect.{Async, IO, SyncIO}
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
 import com.github.unchama.datarepository.KeyedDataRepository
-import com.github.unchama.generic.RefDict
+import com.github.unchama.generic.{ContextCoercion, RefDict}
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.actions.InteractInventory
@@ -20,7 +24,9 @@ import org.bukkit.inventory.Inventory
 
 import java.util.UUID
 
-class OpenPocketCommand[F[_]: Effect: [f[_]] =>> InteractInventory[f, Player, Inventory]](
+class OpenPocketCommand[F[_]: Async: [f[_]] =>> InteractInventory[f, Player, Inventory]: [f[
+  _
+]] =>> ContextCoercion[f, IO]](
   repository: KeyedDataRepository[Player, ReadOnlyRef[F, Inventory]],
   persistence: RefDict[F, UUID, Inventory]
 )(implicit syncIOUuidRepository: UuidRepository[SyncIO]) {
@@ -29,7 +35,7 @@ class OpenPocketCommand[F[_]: Effect: [f[_]] =>> InteractInventory[f, Player, In
       List(s"$RED/openpocket [プレイヤー名]", "対象プレイヤーの四次元ポケットを開きます。", "編集結果はオンラインのプレイヤーにのみ反映されます。")
     })
 
-  import cats.effect.implicits._
+  import cats.effect.syntax.all._
   import cats.implicits._
 
   val executor: TabExecutor = playerCommandBuilder
@@ -48,7 +54,8 @@ class OpenPocketCommand[F[_]: Effect: [f[_]] =>> InteractInventory[f, Player, In
               repository(player)
                 .read
                 .map(inventory =>
-                  Kleisli(InteractInventory.apply.open(inventory)).mapK(Effect.toIOK)
+                  Kleisli(InteractInventory.apply.open(inventory))
+                    .mapK(ContextCoercion.asFunctionK[F, IO])
                 )
                 .toIO
             } else {
@@ -64,7 +71,8 @@ class OpenPocketCommand[F[_]: Effect: [f[_]] =>> InteractInventory[f, Player, In
                     .read(targetPlayerUuid)
                     .map {
                       case Some(inventory) =>
-                        Kleisli(InteractInventory.apply.open(inventory)).mapK(Effect.toIOK)
+                        Kleisli(InteractInventory.apply.open(inventory))
+                          .mapK(ContextCoercion.asFunctionK[F, IO])
                       case None =>
                         MessageEffect(s"${RED}プレーヤーのインベントリが見つかりませんでした")
                     }

@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.managedfly.application
 
-import cats.effect.{Concurrent, ConcurrentEffect, Sync}
+import cats.effect.{Concurrent, Async, Sync}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.Mutex
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.{NotFlying, PlayerFlyStatus}
@@ -8,7 +8,7 @@ import com.github.unchama.seichiassist.subsystems.managedfly.domain.{NotFlying, 
 /**
  * プレーヤーの飛行セッションの参照
  */
-class ActiveSessionReference[AsyncContext[_]: ConcurrentEffect, SyncContext[_]: Sync](
+class ActiveSessionReference[AsyncContext[_]: Async, SyncContext[_]: Sync](
   private val sessionMutexRef: Mutex[AsyncContext, SyncContext, Option[
     ActiveSession[AsyncContext, SyncContext]
   ]]
@@ -51,10 +51,10 @@ object ActiveSessionReference {
 
   import cats.implicits._
 
-  def createNew[AsyncContext[_]: ConcurrentEffect, SyncContext[_]: Sync: [f[
-    _
-  ]] =>> ContextCoercion[f, AsyncContext]]
-    : SyncContext[ActiveSessionReference[AsyncContext, SyncContext]] = {
+  def createNew[AsyncContext[_]: Async, SyncContext[_]: Sync: [f[_]] =>> ContextCoercion[
+    f,
+    AsyncContext
+  ]]: SyncContext[ActiveSessionReference[AsyncContext, SyncContext]] = {
     for {
       mutex <- Mutex
         .of[AsyncContext, SyncContext, Option[ActiveSession[AsyncContext, SyncContext]]](None)

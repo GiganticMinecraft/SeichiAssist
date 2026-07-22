@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.task.global
 
-import cats.effect.{IO, Timer}
+import cats.effect.IO
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
@@ -9,6 +9,7 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 
 import scala.concurrent.duration.FiniteDuration
+import cats.effect.Temporal
 
 object PlayerDataBackupRoutine {
   def apply()(implicit context: RepeatingTaskContext): IO[Nothing] = {
@@ -56,8 +57,6 @@ object PlayerDataBackupRoutine {
         _ <- if (saveRequired) save else IO.unit
       } yield true
     }
-
-    implicit val timer: Timer[IO] = IO.timer(context)
 
     RepeatingRoutine.permanentRoutine(getRepeatInterval, routineAction)
   }

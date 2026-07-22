@@ -1,9 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.mebius.domain.speech
 
 import cats.effect.Sync
-import cats.effect.concurrent.Ref
 
 import scala.util.Random
+import cats.effect.Ref
 
 /**
  * Mebiusの発話を阻止するかどうかを決定するオブジェクトのクラス。

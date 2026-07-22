@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.donate
 
-import cats.effect.ConcurrentEffect
+import cats.effect.Async
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillPremiumEffect
 import com.github.unchama.seichiassist.subsystems.donate.bukkit.commands.DonationCommand
@@ -22,7 +23,7 @@ trait System[F[_]] extends Subsystem[F] {
 
 object System {
 
-  def wired[F[_]: ConcurrentEffect]: System[F] = {
+  def wired[F[_]: Async: [f[_]] =>> ContextCoercion[f, cats.effect.IO]]: System[F] = {
     implicit val persistence: DonatePersistence[F] = new JdbcDonatePersistence[F]
 
     new System[F] {

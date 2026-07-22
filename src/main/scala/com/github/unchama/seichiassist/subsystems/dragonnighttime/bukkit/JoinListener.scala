@@ -4,10 +4,8 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.entity.Player
 
-import java.time.LocalDateTime
-import java.time.Instant
 import java.time.ZoneId
-import cats.effect.{Effect, Sync, Timer}
+import cats.effect.{Async, Clock, Sync}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.subsystems.dragonnighttime.application.DragonNightTimeImpl
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.FastDiggingEffectWriteApi
@@ -18,12 +16,12 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effec
 }
 import com.github.unchama.targetedeffect.commandsender.MessageEffectF
 
-import java.util.concurrent.TimeUnit
 import java.time.format.DateTimeFormatter
+import cats.effect.Temporal
 
-class JoinListener[F[_]: Effect: Timer](
+class JoinListener[F[_]: Async: Temporal](
   implicit fastDiggingEffectApi: FastDiggingEffectWriteApi[F, Player],
-  effectEnvironment: EffectEnvironment
+  effectEnvironment: EffectEnvironment[F]
 ) extends Listener {
 
   import cats.implicits._
@@ -31,19 +29,13 @@ class JoinListener[F[_]: Effect: Timer](
   @EventHandler
   def onJoin(e: PlayerJoinEvent): Unit = {
     val program = for {
-      currentLocalDate <- Timer[F].clock.realTime(TimeUnit.MILLISECONDS).map {
-        currentEpochMilli =>
-          LocalDateTime
-            .ofInstant(Instant.ofEpochMilli(currentEpochMilli), ZoneId.systemDefault())
-            .toLocalDate
-      }
+      currentLocalDate <- Clock[F]
+        .realTimeInstant
+        .map(_.atZone(ZoneId.systemDefault()).toLocalDate)
       effectivePeriod <- Sync[F].pure(DragonNightTimeImpl.effectivePeriod(currentLocalDate))
-      currentLocalTime <- Timer[F].clock.realTime(TimeUnit.MILLISECONDS).map {
-        currentEpochMilli =>
-          LocalDateTime
-            .ofInstant(Instant.ofEpochMilli(currentEpochMilli), ZoneId.systemDefault())
-            .toLocalTime
-      }
+      currentLocalTime <- Clock[F]
+        .realTimeInstant
+        .map(_.atZone(ZoneId.systemDefault()).toLocalTime)
       isDragonNightTime <- Sync[F].pure(effectivePeriod.contains(currentLocalTime))
       effectToAdd <-
         Sync[F].pure(

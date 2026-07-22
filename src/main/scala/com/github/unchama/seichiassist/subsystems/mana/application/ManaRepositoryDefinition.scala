@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.mana.application
 
 import cats.Monad
-import cats.effect.concurrent.Ref
-import cats.effect.{ConcurrentEffect, Sync}
+import cats.effect.{Async, Sync}
+import cats.effect.std.Dispatcher
 import com.github.unchama.datarepository.definitions.{
   RefDictBackedRepositoryDefinition,
   SignallingRepositoryDefinition
@@ -17,12 +17,13 @@ import com.github.unchama.seichiassist.subsystems.mana.domain.{
   ManaAmountPersistence
 }
 import org.typelevel.log4cats.ErrorLogger
+import cats.effect.Ref
 
 object ManaRepositoryDefinition {
 
   import cats.implicits._
 
-  def withContext[F[_]: ConcurrentEffect: ErrorLogger, G[_]: Sync: [f[_]] =>> ContextCoercion[
+  def withContext[F[_]: Async: Dispatcher: ErrorLogger, G[_]: Sync: [f[_]] =>> ContextCoercion[
     f,
     F
   ], Player: HasUuid](

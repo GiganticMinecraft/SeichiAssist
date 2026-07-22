@@ -95,7 +95,7 @@ object ArrowEffects {
     val soundEffect =
       sound.map(FocusedSoundEffect(_, 1.0f, 1.3f)).getOrElse(TargetedEffect.emptyEffect)
 
-    val waitForCollision = IO.sleep(100.ticks)(IO.timer(ExecutionContext.global))
+    val waitForCollision = IO.sleep(100.ticks)
 
     import scala.util.chaining._
     SequentialEffect(

@@ -1,13 +1,14 @@
 package com.github.unchama.seichiassist.subsystems.managedfly
 
 import cats.data.Kleisli
-import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
+import cats.effect.{Async, Sync}
+import cats.effect.std.Dispatcher
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.{
   BukkitRepositoryControls,
   PlayerDataRepository
 }
-import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.generic.{ContextCoercion, UnsafeSyncRunner}
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
@@ -35,11 +36,11 @@ object System {
 
   import cats.implicits._
 
-  def wired[AsyncContext[_]: ConcurrentEffect: OnMinecraftServerThread: Timer, SyncContext[
+  def wired[AsyncContext[_]: Async: Dispatcher: OnMinecraftServerThread: [f[
     _
-  ]: SyncEffect: [f[_]] =>> ContextCoercion[f, AsyncContext]](
-    configuration: SystemConfiguration
-  )(
+  ]] =>> ContextCoercion[f, cats.effect.IO], SyncContext[_]: Sync: UnsafeSyncRunner: [f[
+    _
+  ]] =>> ContextCoercion[f, AsyncContext]](configuration: SystemConfiguration)(
     implicit idleTimeAPI: IdleTimeAPI[AsyncContext, Player]
   ): SyncContext[System[SyncContext, AsyncContext]] = {
     implicit val _configuration: SystemConfiguration = configuration

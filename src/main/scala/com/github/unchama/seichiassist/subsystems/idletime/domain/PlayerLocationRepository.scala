@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.idletime.domain
 
-import cats.effect.concurrent.Ref
+import cats.effect.Ref
 
 trait PlayerLocationRepository[F[_], Location, Player] {
 

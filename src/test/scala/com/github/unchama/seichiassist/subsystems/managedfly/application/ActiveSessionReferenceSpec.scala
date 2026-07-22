@@ -1,19 +1,13 @@
 package com.github.unchama.seichiassist.subsystems.managedfly.application
 
-import cats.effect.{SyncIO, Timer}
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.{
   Flying,
   NotFlying,
   RemainingFlyDuration
 }
-import com.github.unchama.testutil.concurrent.tests.{
-  ConcurrentEffectTest,
-  TaskDiscreteEventually
-}
-import com.github.unchama.testutil.execution.MonixTestSchedulerTests
-import monix.catnap.SchedulerEffect
-import monix.eval.Task
-import monix.execution.schedulers.TestScheduler
+import com.github.unchama.testutil.concurrent.tests.{ConcurrentEffectTest, IODiscreteEventually}
+import com.github.unchama.testutil.execution.CatsEffectTestControl
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
@@ -22,34 +16,29 @@ class ActiveSessionReferenceSpec
     extends AnyWordSpec
     with ScalaCheckPropertyChecks
     with Matchers
-    with TaskDiscreteEventually
+    with IODiscreteEventually
     with ConcurrentEffectTest
-    with MonixTestSchedulerTests {
+    with CatsEffectTestControl {
 
   import com.github.unchama.generic.ContextCoercion._
 
   import scala.concurrent.duration._
 
-  implicit override val patienceConfig: PatienceConfig =
-    PatienceConfig(timeout = 5.seconds, interval = 10.millis)
   implicit override val discreteEventuallyConfig: DiscreteEventuallyConfig =
     DiscreteEventuallyConfig(1000000)
 
-  implicit val monixScheduler: TestScheduler = TestScheduler()
-  implicit val monixTimer: Timer[Task] = SchedulerEffect.timer(monixScheduler)
-
-  val mock = new Mock[Task, SyncIO]
+  val mock = new Mock[IO, SyncIO]
 
   import mock._
 
   "New fly session reference" should {
     "not have started any session" in {
       val program = for {
-        sessionRef <- ActiveSessionReference.createNew[Task, SyncIO]
-        status <- sessionRef.getLatestFlyStatus
+        sessionRef <- ActiveSessionReference.createNew[IO, SyncIO].coerceTo[IO]
+        status <- sessionRef.getLatestFlyStatus.coerceTo[IO]
       } yield status
 
-      program.unsafeRunSync() shouldBe NotFlying
+      awaitForProgram(program) shouldBe NotFlying
     }
   }
 
@@ -61,7 +50,7 @@ class ActiveSessionReferenceSpec
 
       implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
         playerMockFlyStatusManipulation
-      val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
+      val factory = new ActiveSessionFactory[IO, PlayerMockReference]()
 
       val sessionLengthInMinutes = 10
       val sessionDuration =
@@ -73,8 +62,8 @@ class ActiveSessionReferenceSpec
           initiallyFlying = false,
           InfiniteExperience,
           initiallyIdle = false
-        ).coerceTo[Task]
-        sessionRef <- ActiveSessionReference.createNew[Task, SyncIO].coerceTo[Task]
+        ).coerceTo[IO]
+        sessionRef <- ActiveSessionReference.createNew[IO, SyncIO].coerceTo[IO]
 
         createSession = factory.start[SyncIO](sessionDuration)
 
@@ -83,17 +72,17 @@ class ActiveSessionReferenceSpec
 
         // then
         _ <- discreteEventually {
-          Task {
+          IO {
             sessionRef.getLatestFlyStatus.unsafeRunSync() shouldBe Flying(sessionDuration)
           }
         }
 
         // when
-        _ <- monixTimer.sleep(sessionLengthInMinutes.minutes)
+        _ <- IO.sleep(sessionLengthInMinutes.minutes)
 
         // then
         _ <- discreteEventually {
-          Task {
+          IO {
             sessionRef.getLatestFlyStatus.unsafeRunSync() shouldBe NotFlying
           }
         }
@@ -109,7 +98,7 @@ class ActiveSessionReferenceSpec
 
       implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
         playerMockFlyStatusManipulation
-      val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
+      val factory = new ActiveSessionFactory[IO, PlayerMockReference]()
 
       val program = for {
         // given
@@ -117,15 +106,15 @@ class ActiveSessionReferenceSpec
           initiallyFlying = false,
           InfiniteExperience,
           initiallyIdle = false
-        ).coerceTo[Task]
-        sessionRef <- ActiveSessionReference.createNew[Task, SyncIO].coerceTo[Task]
+        ).coerceTo[IO]
+        sessionRef <- ActiveSessionReference.createNew[IO, SyncIO].coerceTo[IO]
 
         createSession = factory.start[SyncIO](RemainingFlyDuration.Infinity)
 
         // when
         _ <- sessionRef.replaceSession(createSession.run(playerRef))
         _ <- discreteEventually {
-          Task {
+          IO {
             sessionRef.getLatestFlyStatus.unsafeRunSync() shouldBe Flying(
               RemainingFlyDuration.Infinity
             )
@@ -135,7 +124,7 @@ class ActiveSessionReferenceSpec
 
         // then
         _ <- discreteEventually {
-          Task {
+          IO {
             sessionRef.getLatestFlyStatus.unsafeRunSync() shouldBe NotFlying
           }
         }
@@ -151,7 +140,7 @@ class ActiveSessionReferenceSpec
 
       implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
         playerMockFlyStatusManipulation
-      val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
+      val factory = new ActiveSessionFactory[IO, PlayerMockReference]()
 
       val targetSessionLength = 10
       val targetSessionDuration =
@@ -163,15 +152,15 @@ class ActiveSessionReferenceSpec
           initiallyFlying = false,
           InfiniteExperience,
           initiallyIdle = false
-        ).coerceTo[Task]
-        sessionRef <- ActiveSessionReference.createNew[Task, SyncIO].coerceTo[Task]
+        ).coerceTo[IO]
+        sessionRef <- ActiveSessionReference.createNew[IO, SyncIO].coerceTo[IO]
 
         // when
         _ <- sessionRef.replaceSession(
           factory.start[SyncIO](RemainingFlyDuration.Infinity).run(playerRef)
         )
         _ <- discreteEventually {
-          Task {
+          IO {
             sessionRef.getLatestFlyStatus.unsafeRunSync() shouldBe Flying(
               RemainingFlyDuration.Infinity
             )
@@ -183,7 +172,7 @@ class ActiveSessionReferenceSpec
 
         // then
         _ <- discreteEventually {
-          Task {
+          IO {
             sessionRef.getLatestFlyStatus.unsafeRunSync() shouldBe Flying(targetSessionDuration)
           }
         }
@@ -199,7 +188,7 @@ class ActiveSessionReferenceSpec
 
       implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
         playerMockFlyStatusManipulation
-      val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
+      val factory = new ActiveSessionFactory[IO, PlayerMockReference]()
 
       val firstSessionLength = 10
       val firstSessionDuration =
@@ -217,37 +206,37 @@ class ActiveSessionReferenceSpec
           initiallyFlying = false,
           InfiniteExperience,
           initiallyIdle = false
-        ).coerceTo[Task]
-        sessionRef <- ActiveSessionReference.createNew[Task, SyncIO].coerceTo[Task]
+        ).coerceTo[IO]
+        sessionRef <- ActiveSessionReference.createNew[IO, SyncIO].coerceTo[IO]
 
         // when
         _ <- sessionRef.replaceSession(
           factory.start[SyncIO](firstSessionDuration).run(playerRef)
         )
         _ <- discreteEventually {
-          Task {
+          IO {
             sessionRef.getLatestFlyStatus.unsafeRunSync() shouldBe Flying(firstSessionDuration)
           }
         }
         _ <- sessionRef.replaceSession(
           factory.start[SyncIO](secondSessionDuration).run(playerRef)
         )
-        _ <- monixTimer.sleep(firstSessionLength.minutes)
+        _ <- IO.sleep(firstSessionLength.minutes)
 
         // then
         _ <- discreteEventually {
           // もしセッションが残留していた場合、飛行状態が解除されるはず
-          Task {
+          IO {
             playerRef.isFlyingMutex.readLatest.unsafeRunSync() shouldBe true
           }
         }
 
         // when
-        _ <- monixTimer.sleep((secondSessionLength - firstSessionLength).minutes)
+        _ <- IO.sleep((secondSessionLength - firstSessionLength).minutes)
 
         // then
         _ <- discreteEventually {
-          Task {
+          IO {
             playerRef.isFlyingMutex.readLatest.unsafeRunSync() shouldBe false
           }
         }

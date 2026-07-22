@@ -1,9 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.playerheadskin.domain
 
 import cats.effect.Sync
-import cats.effect.concurrent.Ref
 import cats.syntax.all._
 import com.github.unchama.generic.ApplicativeExtra
+import cats.effect.Ref
 
 class PlayerHeadUrlRepository[F[_]: Sync](implicit fetcher: PlayerHeadSkinUrlFetcher[F]) {
 

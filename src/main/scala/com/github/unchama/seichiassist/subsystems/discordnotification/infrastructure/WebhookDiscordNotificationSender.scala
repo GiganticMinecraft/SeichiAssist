@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.discordnotification.infrastructure
 
-import cats.effect.{ContextShift, Sync}
+import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 
 import java.io.IOException
@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets
 import scala.util.Using
 import scala.util.chaining.scalaUtilChainingOps
 
-class WebhookDiscordNotificationSender[F[_]: Sync: ContextShift] private (webhookURL: String)
+class WebhookDiscordNotificationSender[F[_]: Sync] private (webhookURL: String)
     extends DiscordNotificationAPI[F] {
   assert(webhookURL.nonEmpty, "GlobalNotificationSenderのURLに空文字列が指定されました。コンフィグを確認してください。")
 
@@ -18,8 +18,7 @@ class WebhookDiscordNotificationSender[F[_]: Sync: ContextShift] private (webhoo
   private val parsedURL = new URL(webhookURL)
   override def sendPlainText(message: String): F[Unit] =
     for {
-      _ <- ContextShift[F].shift
-      responseCode <- Sync[F].delay {
+      responseCode <- Sync[F].blocking {
         import io.circe.generic.auto._
         import io.circe.syntax._
         val markdownSafeMessage = message
@@ -75,9 +74,7 @@ object WebhookDiscordNotificationSender {
    * @return
    *   初期化に成功した場合はSome、初期化中に特定の例外が送出された場合はNone。マスクされない例外が送出されたときは、再送出する。
    */
-  def tryCreate[F[_]: Sync: ContextShift](
-    webhookURL: String
-  ): Option[WebhookDiscordNotificationSender[F]] = {
+  def tryCreate[F[_]: Sync](webhookURL: String): Option[WebhookDiscordNotificationSender[F]] = {
     try {
       Some(new WebhookDiscordNotificationSender[F](webhookURL))
     } catch {

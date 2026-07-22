@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.idletime
 
-import cats.effect.{ContextShift, IO, LiftIO, Sync, SyncIO}
+import cats.effect.{IO, LiftIO, Sync, SyncIO}
 import com.github.unchama.concurrent.RepeatingTaskContext
 import com.github.unchama.datarepository.bukkit.player.{
   BukkitRepositoryControls,
@@ -33,8 +33,7 @@ object System {
 
   def wired[F[_]: Sync: LiftIO](
     implicit repeatingTaskContext: RepeatingTaskContext,
-    onMainThread: OnMinecraftServerThread[IO],
-    ioShift: ContextShift[IO]
+    onMainThread: OnMinecraftServerThread[IO]
   ): SyncIO[System[F, Player]] = {
     implicit val playerLocationRepository
       : Player => PlayerLocationRepository[SyncIO, Location, Player] =
