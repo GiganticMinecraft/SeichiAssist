@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.subsystems.present.bukkit.command
 import com.github.unchama.toIO
 
 import cats.data.Kleisli
-import cats.effect.syntax.all._
 import cats.effect.{Async, Sync}
 import cats.implicits._
 import com.github.unchama.concurrent.NonServerThreadContextShift

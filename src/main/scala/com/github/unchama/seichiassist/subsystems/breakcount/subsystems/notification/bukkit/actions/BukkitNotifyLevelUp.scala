@@ -5,7 +5,6 @@ import com.github.unchama.toIO
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
 
 import cats.Applicative
-import cats.effect.syntax.all._
 import cats.effect.{Async, IO, Sync, SyncIO}
 import com.github.unchama.generic.Diff
 import com.github.unchama.generic.ContextCoercion

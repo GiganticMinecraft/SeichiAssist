@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.subsystems.idletime.domain
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import cats.effect.Temporal
 
 trait PlayerIdleTimeRecalculationRoutine[Player] {
 

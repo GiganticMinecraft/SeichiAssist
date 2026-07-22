@@ -1,11 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.gachapoint.domain
 
-import cats.effect.{Concurrent, Sync}
+import cats.effect.Sync
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.RecoveringSemaphore
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.GachaPoint
 import cats.Monad
-import cats.effect.{Ref, Temporal}
+import cats.effect.Ref
 
 /**
  * 特定のプレーヤーについてガチャポイント変換の制御を提供するオブジェクトのクラス。

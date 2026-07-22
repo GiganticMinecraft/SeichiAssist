@@ -15,12 +15,10 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.potion.{PotionData, PotionType}
 import org.bukkit.{Bukkit, Material, Sound}
 
-import scala.concurrent.ExecutionContext
 import scala.reflect.ClassTag
 
 object ArrowEffects {
 
-  import cats.implicits._
   import com.github.unchama.concurrent.syntax._
   import com.github.unchama.targetedeffect._
 

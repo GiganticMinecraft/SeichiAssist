@@ -2,8 +2,6 @@ package com.github.unchama.seichiassist.subsystems.seasonalevents.christmas
 
 import com.github.unchama.runSync
 
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
-
 import cats.effect.{Sync, SyncIO}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.ManagedWorld._
@@ -86,8 +84,6 @@ class ChristmasItemListener[F[_], G[_]: Sync: [g[_]] =>> ContextCoercion[g, Sync
   @EventHandler
   def onPlayerConsumeChristmasPotion(event: PlayerItemConsumeEvent): Unit = {
     if (!isChristmasPotion(event.getItem)) return
-
-    import cats.effect.syntax.all._
 
     val player = event.getPlayer
 

@@ -15,8 +15,6 @@ import java.util.UUID
 class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextShift]
     extends GachaTicketFromAdminTeamRepository[F] {
 
-  import cats.implicits._
-
   /**
    * @return 呼び出された時点で永続化バックエンド中にある全プレイヤーの「運営からのガチャ券」を増加させる作用
    */

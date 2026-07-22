@@ -54,7 +54,6 @@ class GachaCommand[
 ) {
 
   import cats.implicits._
-  import cats.effect.syntax.all._
 
   private val printDescriptionExecutor = EchoExecutor(
     MessageEffect(

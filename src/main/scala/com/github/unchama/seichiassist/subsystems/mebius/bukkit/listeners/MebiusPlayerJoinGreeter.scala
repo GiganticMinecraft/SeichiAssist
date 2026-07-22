@@ -29,8 +29,6 @@ class MebiusPlayerJoinGreeter[F[_]](
   def onJoin(event: PlayerJoinEvent): Unit = {
     val player = event.getPlayer
 
-    import cats.implicits._
-
     BukkitMebiusItemStackCodec
       .decodePropertyOfOwnedMebius(player)(player.getInventory.getHelmet)
       .foreach { property =>

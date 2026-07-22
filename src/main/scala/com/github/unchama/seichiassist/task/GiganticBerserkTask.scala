@@ -81,7 +81,6 @@ class GiganticBerserkTask {
 
       // 最大レベルになった時の処理
       if (playerdata.giganticBerserk.reachedLimit()) {
-        import cats.effect.syntax.all._
         import cats.implicits._
         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 

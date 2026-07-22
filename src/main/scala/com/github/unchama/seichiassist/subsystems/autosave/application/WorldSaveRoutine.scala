@@ -4,7 +4,6 @@ import cats.Applicative
 import cats.effect.Async
 import com.github.unchama.concurrent.RepeatingRoutine
 import org.bukkit.ChatColor.AQUA
-import cats.effect.Temporal
 
 object WorldSaveRoutine {
   def apply[F[_]: Async: CanSaveWorlds: CanNotifySaves]()(

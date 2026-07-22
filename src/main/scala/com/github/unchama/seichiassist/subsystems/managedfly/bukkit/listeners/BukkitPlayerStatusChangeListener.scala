@@ -27,8 +27,6 @@ class BukkitPlayerStatusChangeListener[F[_]: Async: [f[_]] =>> ContextCoercion[
   playerFlyStatusManipulation: PlayerFlyStatusManipulation[[a] =>> Kleisli[F, Player, a]]
 ) extends Listener {
 
-  import cats.effect.syntax.all._
-
   @EventHandler
   def onWorldChange(event: PlayerChangedWorldEvent): Unit = {
     val player = event.getPlayer

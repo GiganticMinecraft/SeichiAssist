@@ -35,7 +35,7 @@ class PlayerClickListener(
 
   import ManagedWorld._
   import com.github.unchama.generic.ContextCoercion._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, timer}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.timer
   import com.github.unchama.targetedeffect._
 
   private val plugin = SeichiAssist.instance
@@ -80,7 +80,6 @@ class PlayerClickListener(
     if (MaterialSets.breakToolMaterials.contains(event.getMaterial)) {
       skillState.activeSkill match {
         case Some(ActiveSkill(_, _, RemoteArea(_), coolDownOption, _, _)) =>
-          import cats.implicits._
           import com.github.unchama.concurrent.syntax._
 
           // クールダウン処理

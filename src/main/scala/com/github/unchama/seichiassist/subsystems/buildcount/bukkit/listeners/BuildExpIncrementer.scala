@@ -2,9 +2,6 @@ package com.github.unchama.seichiassist.subsystems.buildcount.bukkit.listeners
 
 import com.github.unchama.runSync
 
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
-
-import cats.effect.syntax.all._
 import cats.effect.{Sync, SyncIO}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.IncrementBuildExpWhenBuiltByHand

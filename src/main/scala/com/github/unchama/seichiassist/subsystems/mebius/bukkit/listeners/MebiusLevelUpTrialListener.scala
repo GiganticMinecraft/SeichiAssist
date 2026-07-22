@@ -2,8 +2,6 @@ package com.github.unchama.seichiassist.subsystems.mebius.bukkit.listeners
 
 import com.github.unchama.toIO
 
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
-
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
@@ -44,7 +42,6 @@ class MebiusLevelUpTrialListener(
         BukkitMebiusItemStackCodec.materialize(newMebiusProperty)
       }
 
-      import cats.implicits._
       effectEnvironment.unsafeRunEffectAsync(
         "Mebiusのレベルアップ時の通知を行う",
         serviceRepository(player)

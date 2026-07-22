@@ -1,7 +1,5 @@
 package com.github.unchama.seichiassist.data.player
 
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
-
 import cats.effect.IO
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.achievement.Nicknames

@@ -1,7 +1,5 @@
 package com.github.unchama.seichiassist.bungee
 
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
-
 import com.github.unchama.seichiassist.SeichiAssist
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player

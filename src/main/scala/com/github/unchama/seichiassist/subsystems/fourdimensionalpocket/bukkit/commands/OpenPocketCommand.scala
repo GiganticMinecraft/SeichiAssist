@@ -2,8 +2,6 @@ package com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.
 
 import com.github.unchama.toIO
 
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
-
 import cats.data.Kleisli
 import cats.effect.{Async, IO, SyncIO}
 import com.github.unchama.contextualexecutor.builder.Parsers
@@ -35,7 +33,6 @@ class OpenPocketCommand[F[_]: Async: [f[_]] =>> InteractInventory[f, Player, Inv
       List(s"$RED/openpocket [プレイヤー名]", "対象プレイヤーの四次元ポケットを開きます。", "編集結果はオンラインのプレイヤーにのみ反映されます。")
     })
 
-  import cats.effect.syntax.all._
   import cats.implicits._
 
   val executor: TabExecutor = playerCommandBuilder

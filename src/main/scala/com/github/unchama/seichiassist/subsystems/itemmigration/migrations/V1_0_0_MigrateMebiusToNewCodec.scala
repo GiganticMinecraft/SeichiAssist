@@ -1,7 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.itemmigration.migrations
 
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
-
 import io.github.iltotore.iron.autoRefine
 
 import cats.effect.SyncIO

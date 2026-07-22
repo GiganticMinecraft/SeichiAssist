@@ -16,8 +16,6 @@ import java.util.UUID
 class JdbcHomePersistence[F[_]: Sync: NonServerThreadContextShift] extends HomePersistence[F] {
   private val serverId = SeichiAssist.seichiAssistConfig.getServerNum
 
-  import cats.implicits._
-
   override def upsert(ownerUuid: UUID, id: HomeId)(home: Home): F[Unit] =
     NonServerThreadContextShift[F].evalOn(Sync[F].delay[Unit] {
       DB.localTx { implicit session =>

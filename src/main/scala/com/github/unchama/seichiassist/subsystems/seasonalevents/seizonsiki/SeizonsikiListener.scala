@@ -28,8 +28,6 @@ class SeizonsikiListener[F[_], G[_]: Sync: [g[_]] =>> ContextCoercion[g, SyncIO]
   implicit manaApi: ManaWriteApi[G, Player]
 ) extends Listener {
 
-  import cats.effect.syntax.all._
-
   @EventHandler
   def onZombieKilledByPlayer(event: EntityDeathEvent): Unit = {
     val entity = event.getEntity

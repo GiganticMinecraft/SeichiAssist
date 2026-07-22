@@ -6,7 +6,6 @@ import com.github.unchama.toIO
 
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
 
-import cats.effect.syntax.all._
 import cats.effect.{Async, Sync, SyncIO}
 import cats.effect.IO
 import com.github.unchama.generic.ContextCoercion
@@ -240,7 +239,6 @@ class TilingSkillTriggerListener[G[_]: Async: [g[_]] =>> ContextCoercion[g, IO],
       }
     }
 
-    import cats.effect.syntax.all._
     IncrementBuildExpWhenBuiltWithSkill[F, Player]
       .of(player, BuildExpAmount.ofNonNegative(placementCount))
       .runSync[SyncIO]

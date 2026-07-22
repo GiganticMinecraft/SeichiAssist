@@ -1,6 +1,6 @@
 package com.github.unchama.util.nms.v1_18_2.world
 
-import cats.effect.{Concurrent, Sync}
+import cats.effect.Sync
 
 object WorldChunkSaving {
 

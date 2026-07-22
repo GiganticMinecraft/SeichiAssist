@@ -1,7 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.itemmigration
 
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
-
 import cats.effect.{Async, IO, Sync, SyncIO}
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.datarepository.template.RepositoryDefinition

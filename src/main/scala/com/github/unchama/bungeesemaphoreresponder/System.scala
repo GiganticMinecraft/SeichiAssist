@@ -1,7 +1,7 @@
 package com.github.unchama.bungeesemaphoreresponder
 
 import org.apache.pekko.actor.ActorSystem
-import cats.effect.{Async, IO}
+import cats.effect.Async
 import com.github.unchama.bungeesemaphoreresponder.bukkit.listeners.BungeeSemaphoreCooperator
 import com.github.unchama.bungeesemaphoreresponder.domain.actions.BungeeSemaphoreSynchronization
 import com.github.unchama.bungeesemaphoreresponder.domain.{PlayerDataFinalizer, PlayerName}

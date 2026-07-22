@@ -1,10 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.itemmigration.controllers
 
-import com.github.unchama.runSync
-
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
-
-import cats.effect.{Sync, SyncIO}
+import cats.effect.Sync
 import com.github.unchama.generic.UnsafeSyncRunner
 import com.github.unchama.itemmigration.domain.ItemMigrations
 import com.github.unchama.itemmigration.service.ItemMigrationService
@@ -20,8 +16,6 @@ case class DatabaseMigrationController[F[_]: Sync: UnsafeSyncRunner](
 
   lazy val runDatabaseMigration: F[Unit] = Sync[F].delay {
     DB.autoCommit { implicit session =>
-      import cats.effect.syntax.all._
-
       // DB内アイテムのマイグレーション
       val migration = ItemMigrationService
         .inContextOf[F](

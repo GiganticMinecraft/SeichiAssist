@@ -2,8 +2,6 @@ package com.github.unchama.seichiassist.subsystems.chatratelimiter.bukkit.listen
 
 import com.github.unchama.runSync
 
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
-
 import cats.effect.{Sync, SyncIO}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.chatratelimiter.domain.{

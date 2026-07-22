@@ -5,7 +5,7 @@ import com.github.unchama.toIO
 import io.github.iltotore.iron.autoRefine
 
 import cats.data.Kleisli
-import cats.effect.{Async, IO, SyncIO}
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.generic.effect.concurrent.TryableFiber
 import com.github.unchama.itemstackbuilder.{
   AbstractItemStackBuilder,
@@ -54,10 +54,7 @@ object ActiveSkillMenu extends Menu {
   private case object Selected extends SkillSelectionState
 
   import com.github.unchama.menuinventory.syntax._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
-    asyncShift,
-    layoutPreparationContext
-  }
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
   class Environment(
     implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player],
@@ -371,8 +368,6 @@ object ActiveSkillMenu extends Menu {
                           val notificationMessage =
                             s"${player.getName}が全てのスキルを習得し、アサルト・アーマーを解除しました！"
 
-                          import cats.effect.syntax.all._
-
                           (
                             unlockedState.obtained(SeichiSkill.AssaultArmor),
                             SequentialEffect(
@@ -426,7 +421,6 @@ object ActiveSkillMenu extends Menu {
                   SequentialEffect(
                     skill match {
                       case skill: AssaultSkill =>
-                        import cats.implicits._
                         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
                         import environment.manaApi
 

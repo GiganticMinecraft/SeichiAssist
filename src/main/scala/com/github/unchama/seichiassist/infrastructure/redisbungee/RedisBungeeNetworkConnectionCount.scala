@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.infrastructure.redisbungee
 
 import org.apache.pekko.actor.ActorSystem
-import cats.effect.{Async, IO}
+import cats.effect.Async
 import com.github.unchama.seichiassist.domain.actions.GetNetworkConnectionCount
 import com.github.unchama.seichiassist.domain.configuration.RedisBungeeRedisConfiguration
 import org.typelevel.log4cats.ErrorLogger
