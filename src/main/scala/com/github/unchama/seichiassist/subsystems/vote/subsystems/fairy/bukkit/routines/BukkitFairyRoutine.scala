@@ -14,7 +14,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
-import cats.effect.{Ref, Temporal}
+import cats.effect.Ref
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
 
 class BukkitFairyRoutine(fairySpeech: FairySpeech[IO, Player])(

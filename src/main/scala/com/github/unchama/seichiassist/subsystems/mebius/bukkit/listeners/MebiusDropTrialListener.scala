@@ -4,8 +4,6 @@ import com.github.unchama.runSync
 
 import com.github.unchama.toIO
 
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
-
 import cats.effect.{IO, Sync, SyncIO}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
@@ -40,9 +38,6 @@ class MebiusDropTrialListener[G[_]: ChristmasEventsAPI: RandomEffect: Sync: [g[
   effectEnvironment: EffectEnvironment[IO],
   timer: Temporal[IO]
 ) extends Listener {
-
-  import cats.effect.syntax.all._
-  import cats.implicits._
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   def tryMebiusDropOn(event: BlockBreakEvent): Unit = {

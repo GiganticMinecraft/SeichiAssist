@@ -9,7 +9,6 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 
 import scala.concurrent.duration.FiniteDuration
-import cats.effect.Temporal
 
 object PlayerDataBackupRoutine {
   def apply()(implicit context: RepeatingTaskContext): IO[Nothing] = {

@@ -4,7 +4,6 @@ import com.github.unchama.toIO
 
 import cats.Monad
 import cats.data.Kleisli
-import cats.effect.syntax.all._
 import cats.effect.{Async, IO}
 import com.github.unchama.chatinterceptor.CancellationReason.Overridden
 import com.github.unchama.chatinterceptor.ChatInterceptionScope

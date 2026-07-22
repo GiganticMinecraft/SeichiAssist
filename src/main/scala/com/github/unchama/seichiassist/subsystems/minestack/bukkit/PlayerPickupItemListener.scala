@@ -4,7 +4,6 @@ import com.github.unchama.toIO
 
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
 
-import cats.effect.syntax.all._
 import cats.effect.{Async, Sync}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository

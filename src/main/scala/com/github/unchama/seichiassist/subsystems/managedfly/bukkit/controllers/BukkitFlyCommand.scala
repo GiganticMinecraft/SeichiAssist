@@ -56,7 +56,6 @@ object BukkitFlyCommand {
         parseResult.map(r => RemainingFlyDuration.PositiveMinutes.fromPositive(r))
       }
 
-  import cats.effect.syntax.all._
   import cats.implicits._
 
   private def startEndlessCommand[F[_]: Async: [f[_]] =>> ContextCoercion[f, IO], G[

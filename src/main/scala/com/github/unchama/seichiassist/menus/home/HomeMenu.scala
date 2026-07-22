@@ -152,7 +152,6 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
 case class HomeMenuButtonComputations(player: Player)(
   private implicit val environment: HomeMenu.Environment
 ) {
-  import cats.effect.syntax.all._
   import environment._
 
   def setHomeNameButton(homeNumber: Int): IO[Button] = {

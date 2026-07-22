@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
 
-import cats.effect.{Async, IO, SyncIO}
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.ManagedWorld._
@@ -216,7 +216,6 @@ class EntityListener(
   }
 
   @EventHandler def onDeath(event: EntityDeathEvent): Unit = {
-    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
     /*GiganticBerserk用*/
     // 死んだMOBがGiganticBerserkの対象MOBでなければ終了
     val entity = event.getEntity

@@ -19,7 +19,6 @@ import com.github.unchama.util.collection.RandomizedCollection
 import org.bukkit.entity.Player
 
 import scala.concurrent.duration.FiniteDuration
-import cats.effect.Temporal
 
 object PeriodicMebiusSpeechRoutine {
 
