@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.bookedachivement.bukkit.listener
 
 import cats.effect.{Async, IO}
-import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.SeichiAssist
@@ -11,10 +10,10 @@ import org.bukkit.Bukkit
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.{EventHandler, Listener}
 
-class GrantBookedAchievementListener[
-  F[_]: Async: NonServerThreadContextShift: [f[_]] =>> ContextCoercion[IO, f]
-](implicit effectEnvironment: EffectEnvironment[F], service: AchievementBookingService[F])
-    extends Listener {
+class GrantBookedAchievementListener[F[_]: Async: [f[_]] =>> ContextCoercion[IO, f]](
+  implicit effectEnvironment: EffectEnvironment[F],
+  service: AchievementBookingService[F]
+) extends Listener {
 
   import cats.implicits._
 

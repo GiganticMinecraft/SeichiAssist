@@ -244,7 +244,6 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val bookedAchievementSystem: Subsystem[IO] = {
-    import PluginExecutionContexts.asyncShift
 
     implicit val effectEnvironment: EffectEnvironment[IO] =
       PluginExecutionContexts.effectEnvironment
@@ -253,7 +252,6 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val buildCountSystem: subsystems.buildcount.System[IO, SyncIO] = {
-    import PluginExecutionContexts.clock
 
     implicit val configuration: subsystems.buildcount.application.Configuration =
       seichiAssistConfig.buildCountConfiguration
@@ -289,7 +287,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val seasonalEventsSystem: subsystems.seasonalevents.System[IO] = {
-    import PluginExecutionContexts.{asyncShift, onMainThread}
+    import PluginExecutionContexts.onMainThread
 
     implicit val effectEnvironment: EffectEnvironment[IO] =
       PluginExecutionContexts.effectEnvironment
@@ -378,7 +376,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val presentSystem: Subsystem[IO] = {
-    import PluginExecutionContexts.{asyncShift, onMainThread}
+    import PluginExecutionContexts.onMainThread
 
     implicit val uuidToLastSeenName: UuidToLastSeenName[IO] = new GlobalPlayerAccessor[IO]
     subsystems.present.System.wired
@@ -403,7 +401,6 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val gachaPrizeSystem: subsystems.gachaprize.System[IO] = {
-    import PluginExecutionContexts.timer
 
     subsystems.gachaprize.System.wired[IO].unsafeRunSync()
   }
@@ -607,8 +604,6 @@ class SeichiAssist extends JavaPlugin() {
         SeichiAssist.playermap.remove(player.getUniqueId).get.tap(_.updateOnQuit())
       } >>= (playerData => PlayerDataSaveTask.savePlayerData[IO](player, playerData))
     }
-
-    import PluginExecutionContexts.timer
 
     new BungeeSemaphoreResponderSystem(
       Seq(
@@ -835,7 +830,7 @@ class SeichiAssist extends JavaPlugin() {
 
     // サブシステムのリポジトリのバックアップ処理を走らせる
     {
-      import PluginExecutionContexts.{asyncShift, timer}
+      import PluginExecutionContexts.timer
 
       import scala.concurrent.duration._
 

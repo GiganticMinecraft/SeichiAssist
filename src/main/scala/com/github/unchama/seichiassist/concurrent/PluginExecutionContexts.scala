@@ -33,9 +33,7 @@ final class PluginExecutionContexts private (
 
 object PluginExecutionContexts {
 
-  def resource(plugin: JavaPlugin)(
-    implicit ioRuntime: IORuntime
-  ): Resource[IO, PluginExecutionContexts] =
+  def resource(plugin: JavaPlugin): Resource[IO, PluginExecutionContexts] =
     contextsResource(plugin).flatMap(install)
 
   def cachedThreadPool: ExecutionContextExecutorService = current.cachedThreadPool

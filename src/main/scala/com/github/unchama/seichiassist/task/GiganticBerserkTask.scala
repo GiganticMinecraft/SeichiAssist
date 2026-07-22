@@ -4,7 +4,7 @@ import com.github.unchama.toIO
 
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
 
-import cats.effect.{Async, IO, SyncIO}
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
@@ -19,7 +19,7 @@ import org.bukkit.entity.Player
 import scala.util.Random
 
 class GiganticBerserkTask {
-  def PlayerKillEnemy[F[_]: Async: DiscordNotificationAPI: [f[_]] =>> ContextCoercion[f, IO]](
+  def PlayerKillEnemy[F[_]: DiscordNotificationAPI: [f[_]] =>> ContextCoercion[f, IO]](
     p: Player
   )(implicit manaApi: ManaApi[IO, SyncIO, Player]): Unit = {
     val player = p

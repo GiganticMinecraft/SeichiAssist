@@ -80,8 +80,6 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
         impureFunction2.expects(()).once()
       }
 
-      import cats.implicits._
-
       def runImpureFunction(o: NumberedObject) = IO(impureFunction(o))
 
       val runImpureFunction2 = IO(impureFunction2(()))
@@ -116,8 +114,6 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
         finalizer.expects(NumberedObject(0)).once()
         impureFunction2.expects(()).once()
       }
-
-      import cats.implicits._
 
       def runImpureFunction(o: NumberedObject): IO[Unit] = IO(impureFunction(o))
 
@@ -233,8 +229,6 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
         impureFunction2.expects(()).once()
       }
 
-      import cats.implicits._
-
       def runImpureFunction(o: NumberedObject): IO[Unit] = IO(impureFunction(o))
 
       val runImpureFunction2 = IO(impureFunction2(()))
@@ -269,8 +263,6 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
         finalizer.expects(NumberedObject(0)).once()
         impureFunction2.expects(()).once()
       }
-
-      import cats.implicits._
 
       def runImpureFunction(o: NumberedObject): IO[Unit] = IO(impureFunction(o))
 

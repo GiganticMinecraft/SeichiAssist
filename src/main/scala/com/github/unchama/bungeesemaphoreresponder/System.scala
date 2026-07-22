@@ -9,9 +9,8 @@ import com.github.unchama.bungeesemaphoreresponder.infrastructure.redis.RedisBun
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
-import cats.effect.Temporal
 
-class System[F[_]: Async: Temporal](val finalizers: List[PlayerDataFinalizer[F, Player]])(
+class System[F[_]: Async](val finalizers: List[PlayerDataFinalizer[F, Player]])(
   implicit configuration: Configuration,
   _akkaSystem: ActorSystem,
   effectEnvironment: EffectEnvironment[F]

@@ -25,8 +25,6 @@ class ConcurrentExtraSpec extends AnyWordSpec with Matchers with MockFactory {
       val runSubProcessFinalizer = IO(subProcessFinalizer())
       val runFinalizer = IO(finalizer())
 
-      import cats.implicits._
-
       val program = for {
         blockerList <- LinkedSequencer[IO].newBlockerList
         promise <- Deferred[IO, IO[Unit]]
