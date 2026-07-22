@@ -35,9 +35,11 @@ class MebiusInteractionResponder(
     event.getEntity match {
       case player: Player =>
         val helmet = player.getInventory.getHelmet
-        val mebiusProperty = BukkitMebiusItemStackCodec
-          .decodePropertyOfOwnedMebius(player)(helmet)
-          .getOrElse(return)
+        val mebiusProperty =
+          BukkitMebiusItemStackCodec.decodePropertyOfOwnedMebius(player)(helmet) match {
+            case Some(property) => property
+            case None           => return
+          }
 
         val speechService = serviceRepository(player)
 
@@ -120,10 +122,12 @@ class MebiusInteractionResponder(
     val killedMonsterName = killedMonster.getName
     if (killedMonsterName == "") return
 
-    val mebiusProperty =
-      BukkitMebiusItemStackCodec
-        .decodePropertyOfOwnedMebius(player)(player.getInventory.getHelmet)
-        .getOrElse(return)
+    val mebiusProperty = BukkitMebiusItemStackCodec.decodePropertyOfOwnedMebius(player)(
+      player.getInventory.getHelmet
+    ) match {
+      case Some(property) => property
+      case None           => return
+    }
 
     val speechService = serviceRepository(player)
 
@@ -148,10 +152,12 @@ class MebiusInteractionResponder(
 
     val player = event.getPlayer
 
-    val mebiusProperty =
-      BukkitMebiusItemStackCodec
-        .decodePropertyOfOwnedMebius(player)(player.getInventory.getHelmet)
-        .getOrElse(return)
+    val mebiusProperty = BukkitMebiusItemStackCodec.decodePropertyOfOwnedMebius(player)(
+      player.getInventory.getHelmet
+    ) match {
+      case Some(property) => property
+      case None           => return
+    }
 
     val speechService = serviceRepository(player)
 

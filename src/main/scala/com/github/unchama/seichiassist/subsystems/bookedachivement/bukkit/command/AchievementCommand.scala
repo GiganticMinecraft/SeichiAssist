@@ -95,12 +95,10 @@ object AchievementCommand {
         val targetPlayerNames: List[String] =
           scopeSpec match {
             case ScopeSpecification.USER =>
-              val targetPlayerName =
-                context
-                  .args
-                  .yetToBeParsed
-                  .headOption
-                  .getOrElse(return IO.pure(MessageEffect(s"${RED}プレーヤー名が未入力です。")))
+              val targetPlayerName = context.args.yetToBeParsed.headOption match {
+                case Some(playerName) => playerName
+                case None             => return IO.pure(MessageEffect(s"${RED}プレーヤー名が未入力です。"))
+              }
               List(targetPlayerName)
             case ScopeSpecification.SERVER =>
               Bukkit.getServer.getOnlinePlayers.asScala.map(_.getName).toList

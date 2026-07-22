@@ -3,7 +3,6 @@ package com.github.unchama.menuinventory
 import cats.effect.IO
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.{EventHandler, Listener}
@@ -24,8 +23,9 @@ class MenuHandler(implicit val cs: NonServerThreadContextShift[IO], env: EffectE
     }
 
     // メニュー外のクリック排除
-    val clickedInventory = event.getClickedInventory.ifNull {
-      return
+    val clickedInventory = Option(event.getClickedInventory) match {
+      case Some(inventory) => inventory
+      case None            => return
     }
 
     val holder = event.getWhoClicked.getOpenInventory.getTopInventory.getHolder match {

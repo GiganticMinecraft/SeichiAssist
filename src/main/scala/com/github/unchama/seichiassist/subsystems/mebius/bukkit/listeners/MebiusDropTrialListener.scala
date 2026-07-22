@@ -50,8 +50,10 @@ class MebiusDropTrialListener[G[_]: ChristmasEventsAPI: RandomEffect: Sync: [g[
     val droppedMebiusProperty = MebiusDrop
       .tryOnce[G](player.getName, player.getUniqueId.toString)
       .runSync[SyncIO]
-      .unsafeRunSync()
-      .getOrElse(return)
+      .unsafeRunSync() match {
+      case Some(property) => property
+      case None           => return
+    }
 
     val mebius =
       BukkitMebiusItemStackCodec.materialize(droppedMebiusProperty)

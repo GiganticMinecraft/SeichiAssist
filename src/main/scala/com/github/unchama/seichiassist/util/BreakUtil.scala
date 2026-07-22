@@ -177,11 +177,8 @@ object BreakUtil {
     canBreakBlockMadeFromQuartz
   }
 
-  private def equalsIgnoreNameCaseWorld(name: String): Boolean = {
-    val world = ManagedWorld.fromName(name).getOrElse(return false)
-
-    world.shouldMuteCoreProtect
-  }
+  private def equalsIgnoreNameCaseWorld(name: String): Boolean =
+    ManagedWorld.fromName(name).exists(_.shouldMuteCoreProtect)
 
   /**
    * TODO: これはビジネスロジックである。breakcountシステムによって管理されるべき。
@@ -386,11 +383,11 @@ object BreakUtil {
    * @return
    * 重力値（破壊範囲の上に積まれているブロック数）
    */
-  def getGravity(player: Player, block: Block, isAssault: Boolean): Int = {
+  def getGravity(player: Player, block: Block, isAssault: Boolean): Int = scala.util.boundary {
     // 1. 重力値を適用すべきか判定
     // 整地ワールド判定
     if (!player.getWorld.isSeichi)
-      return 0
+      scala.util.boundary.break(0)
 
     // 2. 破壊要因判定
     /**
@@ -485,7 +482,7 @@ object BreakUtil {
         // カウンタを加算
         surfaceCandidateCount += 1
         if (surfaceCandidateCount >= surfaceThreshold) {
-          return gravity
+          scala.util.boundary.break(gravity)
         }
       } else {
         // カウンタをクリア

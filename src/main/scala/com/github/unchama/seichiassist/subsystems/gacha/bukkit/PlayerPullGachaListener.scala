@@ -10,7 +10,6 @@ import com.github.unchama.seichiassist.subsystems.gacha.application.actions.Draw
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util._
-import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
@@ -30,8 +29,9 @@ class PlayerPullGachaListener[F[_]: [f[_]] =>> ContextCoercion[f, cats.effect.IO
 
     if (player.getGameMode != GameMode.SURVIVAL) return
 
-    val clickedItemStack = event.getItem.ifNull {
-      return
+    val clickedItemStack = Option(event.getItem) match {
+      case Some(itemStack) => itemStack
+      case None            => return
     }
 
     if (!ItemInformation.isGachaTicket(clickedItemStack)) return
@@ -50,8 +50,9 @@ class PlayerPullGachaListener[F[_]: [f[_]] =>> ContextCoercion[f, cats.effect.IO
     if (event.getHand == EquipmentSlot.OFF_HAND) return
 
     val action = event.getAction
-    val clickedBlock = event.getClickedBlock.ifNull {
-      return
+    val clickedBlock = Option(event.getClickedBlock) match {
+      case Some(block) => block
+      case None        => return
     }
 
     /*

@@ -24,7 +24,6 @@ class PlayerInventoryListener(
 
   import com.github.unchama.targetedeffect._
   import com.github.unchama.util.InventoryUtil._
-  import com.github.unchama.util.syntax._
 
   private val playerMap = SeichiAssist.playermap
 
@@ -148,8 +147,9 @@ class PlayerInventoryListener(
     }
 
     // インベントリが存在しない時終了
-    val topinventory = view.getTopInventory.ifNull {
-      return
+    val topinventory = Option(view.getTopInventory) match {
+      case Some(inventory) => inventory
+      case None            => return
     }
 
     // インベントリが6列でない時終了

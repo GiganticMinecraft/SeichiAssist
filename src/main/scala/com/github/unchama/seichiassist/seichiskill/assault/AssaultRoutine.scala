@@ -124,7 +124,10 @@ object AssaultRoutine {
 
     def routineAction(state: IterationState): Option[IterationState] = {
       val skillState = playerData.skillState.get.unsafeRunSync()
-      val assaultSkill = skillState.assaultSkill.getOrElse(return None)
+      val assaultSkill = skillState.assaultSkill match {
+        case Some(skill) => skill
+        case None        => return None
+      }
 
       if (player.getGameMode != GameMode.SURVIVAL) {
         player.sendMessage(s"${GREEN}ゲームモードをサバイバルに変更してください。")
