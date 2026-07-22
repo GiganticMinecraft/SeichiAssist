@@ -1,8 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.present.bukkit.command
 
+import com.github.unchama.toIO
+
 import cats.data.Kleisli
-import cats.effect.implicits._
-import cats.effect.{ConcurrentEffect, Sync}
+import cats.effect.{Async, Sync}
 import cats.implicits._
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.contextualexecutor.ContextualExecutor
@@ -12,6 +13,7 @@ import com.github.unchama.contextualexecutor.executors.{
   EchoExecutor,
   TraverseExecutor
 }
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.domain.actions.UuidToLastSeenName
@@ -68,38 +70,38 @@ class PresentCommand {
        * 構文:
        *   - /present state
        */
-      def executor[F[_]: ConcurrentEffect: NonServerThreadContextShift](
-        implicit persistence: PresentPersistence[F, ItemStack]
-      ): ContextualExecutor = playerCommandBuilder.buildWith { context =>
-        val eff = for {
-          // off-main-thread
-          _ <- NonServerThreadContextShift[F].shift
-          state <- persistence.fetchState(context.sender.getUniqueId)
-        } yield {
-          val presents = state
-            .toList
-            // 配布対象外のプレゼントを除外
-            .filter { case (_, state) => state != PresentClaimingState.Unavailable }
-            .sortBy(_._1)
-            .map {
-              case (id, state) =>
-                s"${presentStateColor(state)}ID=$id: ${presentStateLabel(state)}"
-            }
-            .filter(_.nonEmpty)
+      def executor[
+        F[_]: Async: NonServerThreadContextShift: [f[_]] =>> ContextCoercion[f, cats.effect.IO]
+      ](implicit persistence: PresentPersistence[F, ItemStack]): ContextualExecutor =
+        playerCommandBuilder.buildWith { context =>
+          val eff = for {
+            // off-main-thread
+            state <- persistence.fetchState(context.sender.getUniqueId)
+          } yield {
+            val presents = state
+              .toList
+              // 配布対象外のプレゼントを除外
+              .filter { case (_, state) => state != PresentClaimingState.Unavailable }
+              .sortBy(_._1)
+              .map {
+                case (id, state) =>
+                  s"${presentStateColor(state)}ID=$id: ${presentStateLabel(state)}"
+              }
+              .filter(_.nonEmpty)
 
-          val lines = if (presents.isEmpty) {
-            List("対象のプレゼントが存在しません")
-          } else {
-            List(
-              s"${ChatColor.GRAY}${ChatColor.UNDERLINE}対象のプレゼント一覧：${ChatColor.RESET}"
-            ) ::: presents
+            val lines = if (presents.isEmpty) {
+              List("対象のプレゼントが存在しません")
+            } else {
+              List(
+                s"${ChatColor.GRAY}${ChatColor.UNDERLINE}対象のプレゼント一覧：${ChatColor.RESET}"
+              ) ::: presents
+            }
+
+            MessageEffect(lines)
           }
 
-          MessageEffect(lines)
+          eff.toIO
         }
-
-        eff.toIO
-      }
     }
 
     object ListSubCommand {
@@ -114,9 +116,9 @@ class PresentCommand {
        *
        *   - /present list &lt;page: PositiveInt&gt;
        */
-      def executor[F[_]: ConcurrentEffect: NonServerThreadContextShift](
-        implicit persistence: PresentPersistence[F, ItemStack]
-      ): ContextualExecutor =
+      def executor[
+        F[_]: Async: NonServerThreadContextShift: [f[_]] =>> ContextCoercion[f, cats.effect.IO]
+      ](implicit persistence: PresentPersistence[F, ItemStack]): ContextualExecutor =
         playerCommandBuilder
           .thenParse(
             Parsers.closedRangeInt[Int :| Positive](
@@ -131,7 +133,6 @@ class PresentCommand {
             val page = context.args.parsed.head
             val player = context.sender.getUniqueId
             val eff = for {
-              _ <- NonServerThreadContextShift[F].shift
               states <- persistence.fetchStateWithPagination(player, perPage, page)
               messageLine = states.fold(
                 {
@@ -167,9 +168,11 @@ class PresentCommand {
        *
        * 出力: 受け取った場合は、その旨表示する。失敗した場合は、適切なエラーメッセージを表示する。
        */
-      def executor[
-        F[_]: ConcurrentEffect: NonServerThreadContextShift: OnMinecraftServerThread
-      ](implicit persistence: PresentPersistence[F, ItemStack]): ContextualExecutor =
+      def executor[F[_]: Async: NonServerThreadContextShift: OnMinecraftServerThread: [f[
+        _
+      ]] =>> ContextCoercion[f, cats.effect.IO]](
+        implicit persistence: PresentPersistence[F, ItemStack]
+      ): ContextualExecutor =
         playerCommandBuilder
           .thenParse(presentIdParser)
           .ifArgumentsMissing(help)
@@ -178,7 +181,6 @@ class PresentCommand {
             val presentId = context.args.parsed.head
 
             (for {
-              _ <- Kleisli.liftF(NonServerThreadContextShift[F].shift)
               states <- Kleisli.liftF(persistence.fetchState(player))
             } yield {
               val claimState = states.getOrElse(presentId, PresentClaimingState.Unavailable)
@@ -224,9 +226,9 @@ class PresentCommand {
        *
        * 出力: 定義が成功した場合は、割り振られたアイテムのIDを表示する。失敗した場合は、適切なエラーメッセージを表示する。
        */
-      def executor[F[_]: ConcurrentEffect: NonServerThreadContextShift](
-        implicit persistence: PresentPersistence[F, ItemStack]
-      ): ContextualExecutor =
+      def executor[
+        F[_]: Async: NonServerThreadContextShift: [f[_]] =>> ContextCoercion[f, cats.effect.IO]
+      ](implicit persistence: PresentPersistence[F, ItemStack]): ContextualExecutor =
         playerCommandBuilder.buildWithExecutionCSEffect { context =>
           val player = context.sender
           if (player.hasPermission("seichiassist.present.define")) {
@@ -236,7 +238,6 @@ class PresentCommand {
               MessageEffectF[F]("メインハンドに何も持っていません。プレゼントを定義するためには、メインハンドに対象アイテムを持ってください。")
             } else {
               (for {
-                _ <- Kleisli.liftF(NonServerThreadContextShift[F].shift)
                 presentID <- Kleisli.liftF(persistence.define(mainHandItem))
               } yield {
                 MessageEffectF(s"メインハンドに持ったアイテムをプレゼントとして定義しました。IDは${presentID}です。")
@@ -260,9 +261,9 @@ class PresentCommand {
        *
        * 出力: 操作の結果とそれに伴うメッセージ。
        */
-      def executor[F[_]: ConcurrentEffect: NonServerThreadContextShift](
-        implicit persistence: PresentPersistence[F, ItemStack]
-      ): ContextualExecutor =
+      def executor[
+        F[_]: Async: NonServerThreadContextShift: [f[_]] =>> ContextCoercion[f, cats.effect.IO]
+      ](implicit persistence: PresentPersistence[F, ItemStack]): ContextualExecutor =
         ContextualExecutorBuilder
           .beginConfiguration
           .thenParse(presentIdParser)
@@ -274,7 +275,6 @@ class PresentCommand {
                 noPermissionMessage
               } else {
                 (for {
-                  _ <- Kleisli.liftF(NonServerThreadContextShift[F].shift)
                   result <- Kleisli.liftF(persistence.delete(presentId))
                 } yield result match {
                   case DeleteResult.Done =>
@@ -313,7 +313,9 @@ class PresentCommand {
        * 備考:
        *   - †: スペース区切り。
        */
-      def executor[F[_]: ConcurrentEffect: NonServerThreadContextShift](
+      def executor[
+        F[_]: Async: NonServerThreadContextShift: [f[_]] =>> ContextCoercion[f, cats.effect.IO]
+      ](
         implicit persistence: PresentPersistence[F, ItemStack],
         globalPlayerAccessor: UuidToLastSeenName[F]
       ): ContextualExecutor =
@@ -328,7 +330,6 @@ class PresentCommand {
               // Parserを通した段階でargs[0]は "player" | "all" になっているのでこれでOK
               val isGlobal = mode == "all"
               (for {
-                _ <- Kleisli.liftF(NonServerThreadContextShift[F].shift)
                 // TODO: 以下の処理は多分共通化できるがうまい方法が思いつかない
                 globalUUID2Name <- Kleisli.liftF(globalPlayerAccessor.entries)
                 // 可変長引数には対応していないので`yetToBeParsed`を使う
@@ -386,7 +387,9 @@ class PresentCommand {
        * 備考:
        *   - ✝: スペース区切り。
        */
-      def executor[F[_]: ConcurrentEffect: NonServerThreadContextShift](
+      def executor[
+        F[_]: Async: NonServerThreadContextShift: [f[_]] =>> ContextCoercion[f, cats.effect.IO]
+      ](
         implicit persistence: PresentPersistence[F, ItemStack],
         globalPlayerAccessor: UuidToLastSeenName[F]
       ): ContextualExecutor =
@@ -401,7 +404,6 @@ class PresentCommand {
               val (presentId, presentScope) = args.parsed
               val isGlobal = presentScope == "all"
               (for {
-                _ <- Kleisli.liftF(NonServerThreadContextShift[F].shift)
                 globalUUID2Name <- Kleisli.liftF(globalPlayerAccessor.entries)
                 // 可変長引数には対応していないので`yetToBeParsed`を使う
                 restArg = args
@@ -469,7 +471,9 @@ class PresentCommand {
     }
   }
 
-  def executor[F[_]: ConcurrentEffect: NonServerThreadContextShift: OnMinecraftServerThread](
+  def executor[F[_]: Async: NonServerThreadContextShift: OnMinecraftServerThread: [f[
+    _
+  ]] =>> ContextCoercion[f, cats.effect.IO]](
     implicit persistence: PresentPersistence[F, ItemStack],
     globalPlayerAccessor: UuidToLastSeenName[F]
   ): TabExecutor = BranchedExecutor(

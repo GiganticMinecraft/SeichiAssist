@@ -13,7 +13,7 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.{Material, Sound}
 
 class PlayerInventoryListener(
-  implicit effectEnvironment: EffectEnvironment,
+  implicit effectEnvironment: EffectEnvironment[IO],
   ioCanOpenBuildMainMenu: IO CanOpen BuildMainMenu.type,
   playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
 ) extends Listener {

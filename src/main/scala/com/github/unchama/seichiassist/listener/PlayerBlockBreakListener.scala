@@ -1,5 +1,9 @@
 package com.github.unchama.seichiassist.listener
 
+import com.github.unchama.toIO
+
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
 import cats.effect.{Fiber, IO, SyncIO}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
@@ -37,7 +41,7 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.util.control.Breaks
 
 class PlayerBlockBreakListener(
-  implicit effectEnvironment: EffectEnvironment,
+  implicit effectEnvironment: EffectEnvironment[IO],
   ioOnMainThread: OnMinecraftServerThread[IO],
   manaApi: ManaApi[IO, SyncIO, Player],
   mineStackAPI: MineStackAPI[IO, Player, ItemStack]
@@ -249,10 +253,6 @@ class PlayerBlockBreakListener(
         import cats.implicits._
         import com.github.unchama.concurrent.syntax._
         import com.github.unchama.generic.ContextCoercion._
-        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
-          asyncShift,
-          cachedThreadPool
-        }
 
         val effectPrograms = for {
           ((blocks, lavas, waters), chunkIndex) <-
@@ -268,7 +268,7 @@ class PlayerBlockBreakListener(
             .lockedBlockChunkScope
             .useTracked(blockChunk) { blocks =>
               for {
-                _ <- IO.sleep((chunkIndex * 4).ticks)(IO.timer(cachedThreadPool))
+                _ <- IO.sleep((chunkIndex * 4).ticks)
                 _ <- ioOnMainThread.runAction(SyncIO {
                   (lavas ++ waters).foreach(_.setType(Material.AIR))
                 })
@@ -285,7 +285,7 @@ class PlayerBlockBreakListener(
                   )
               } yield ()
             }
-            .start(asyncShift)
+            .start
         }
 
         // 壊したブロック数に応じてクールダウンを発生させる
@@ -302,9 +302,7 @@ class PlayerBlockBreakListener(
           if (coolDownTicks != 0) {
             for {
               _ <- reference.set(false).coerceTo[IO]
-              _ <- IO
-                .timer(PluginExecutionContexts.sleepAndRoutineContext)
-                .sleep(coolDownTicks.ticks)
+              _ <- IO.sleep(coolDownTicks.ticks)
               _ <- reference.set(true).coerceTo[IO]
               _ <- FocusedSoundEffect(Sound.ENTITY_ARROW_HIT_PLAYER, 0.5f, 0.1f).run(player)
             } yield ()
@@ -324,7 +322,7 @@ class PlayerBlockBreakListener(
 
         effectEnvironment.unsafeRunEffectAsync(
           "複数破壊エフェクトを実行する",
-          effectPrograms.sequence[IO, Fiber[IO, Unit]]
+          effectPrograms.sequence[IO, Fiber[IO, Throwable, Unit]]
         )
         effectEnvironment.unsafeRunEffectAsync(
           "複数破壊エフェクトの後処理を実行する",

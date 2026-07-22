@@ -1,11 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.gachapoint.domain
 
-import cats.effect.concurrent.Ref
-import cats.effect.{Concurrent, Sync, Timer}
+import cats.effect.Sync
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.RecoveringSemaphore
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.GachaPoint
 import cats.Monad
+import cats.effect.Ref
 
 /**
  * 特定のプレーヤーについてガチャポイント変換の制御を提供するオブジェクトのクラス。
@@ -54,7 +54,7 @@ object BatchUsageSemaphore {
   /**
    * プレーヤーが持つガチャポイントとプレーヤーへガチャ券を与える作用から [[BatchUsageSemaphore]]を作成する。
    */
-  def newIn[G[_]: Sync: [f[_]] =>> ContextCoercion[f, F], F[_]: Concurrent: Timer](
+  def newIn[G[_]: Sync: [f[_]] =>> ContextCoercion[f, F], F[_]: cats.effect.Async](
     gachaPointRef: Ref[G, GachaPoint],
     grantAction: GrantGachaTicketToAPlayer[F]
   ): G[BatchUsageSemaphore[F, G]] =

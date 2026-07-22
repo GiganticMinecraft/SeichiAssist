@@ -2,16 +2,16 @@ package com.github.unchama.seichiassist.subsystems.managedfly.application
 
 import cats.Monad
 import cats.data.Kleisli
-import cats.effect.concurrent.Ref
-import cats.effect.{Concurrent, ExitCase, Sync, Timer}
+import cats.effect.{Async, Outcome, Sync}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.{AsymmetricTryableFiber, ReadOnlyRef}
 import com.github.unchama.seichiassist.subsystems.managedfly.domain._
+import cats.effect.Ref
 
 /**
  * プレーヤーに紐づいたFlyセッションを作成できるオブジェクト。
  */
-class ActiveSessionFactory[AsyncContext[_]: Timer: Concurrent, Player](
+class ActiveSessionFactory[AsyncContext[_]: Async, Player](
   implicit
   KleisliAsyncContext: PlayerFlyStatusManipulation[[a] =>> Kleisli[AsyncContext, Player, a]]
 ) {
@@ -20,7 +20,7 @@ class ActiveSessionFactory[AsyncContext[_]: Timer: Concurrent, Player](
 
   private def tickDuration[F[_]](
     duration: RemainingFlyDuration
-  )(implicit F: Sync[F]): F[RemainingFlyDuration] =
+  )(implicit F: cats.MonadError[F, Throwable]): F[RemainingFlyDuration] =
     duration.tickOneMinute match {
       case Some(tickedDuration) => F.pure(tickedDuration)
       case None                 => F.raiseError(FlyDurationExpired)
@@ -38,7 +38,7 @@ class ActiveSessionFactory[AsyncContext[_]: Timer: Concurrent, Player](
     for {
       oldIdleStatus <- isPlayerIdle
       _ <- notifyRemainingDuration(oldIdleStatus, duration)
-      _ <- Timer[KleisliAsyncContext].sleep(1.minute)
+      _ <- Async[KleisliAsyncContext].sleep(1.minute)
       newIdleStatus <- isPlayerIdle
       newDuration <- newIdleStatus match {
         case Idle =>
@@ -51,7 +51,7 @@ class ActiveSessionFactory[AsyncContext[_]: Timer: Concurrent, Player](
   def start[SyncContext[_]: Sync: [f[_]] =>> ContextCoercion[f, AsyncContext]](
     totalDuration: RemainingFlyDuration
   ): KleisliAsyncContext[ActiveSession[AsyncContext, SyncContext]] = {
-    import cats.effect.implicits._
+    import cats.effect.syntax.all._
     import cats.implicits._
     import com.github.unchama.generic.ContextCoercion._
 
@@ -70,12 +70,12 @@ class ActiveSessionFactory[AsyncContext[_]: Timer: Concurrent, Player](
           {
             ensurePlayerExp >>
               synchronizeFlyStatus(Flying(totalDuration)) >>
-              totalDuration.iterateForeverM { duration =>
+              totalDuration.iterateForeverM[KleisliAsyncContext, Nothing] { duration =>
                 doOneMinuteCycle(duration).flatTap(kleisliAsyncUpdateRef)
               }
           }.guaranteeCase {
-            case ExitCase.Error(e: InternalInterruption) => sendNotificationsOnInterruption(e)
-            case _                                       => Monad[KleisliAsyncContext].unit
+            case Outcome.Errored(e: InternalInterruption) => sendNotificationsOnInterruption(e)
+            case _                                        => Monad[KleisliAsyncContext].unit
           }.guarantee {
             synchronizeFlyStatus(NotFlying)
           }.run(player)

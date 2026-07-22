@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.expbottlestack
 
-import cats.effect.{ConcurrentEffect, SyncEffect}
+import cats.effect.{Async, Sync}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
@@ -16,8 +16,10 @@ trait System[F[_], G[_], H[_]] extends Subsystem[H] {
 }
 
 object System {
-  def wired[F[_]: ConcurrentEffect, G[_]: SyncEffect: [f[_]] =>> ContextCoercion[f, F], H[_]](
-    implicit effectEnvironment: EffectEnvironment
+  def wired[F[_]: Async: [f[_]] =>> ContextCoercion[f, cats.effect.IO], G[_]: Sync: [f[
+    _
+  ]] =>> ContextCoercion[f, F]: [g[_]] =>> ContextCoercion[g, cats.effect.SyncIO], H[_]](
+    implicit effectEnvironment: EffectEnvironment[F]
   ): F[System[F, G, H]] = {
     import cats.implicits._
 

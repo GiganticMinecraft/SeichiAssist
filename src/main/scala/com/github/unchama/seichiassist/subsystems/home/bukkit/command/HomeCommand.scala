@@ -1,9 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.home.bukkit.command
 
+import com.github.unchama.toIO
+
 import cats.Monad
 import cats.data.Kleisli
-import cats.effect.implicits._
-import cats.effect.{ConcurrentEffect, IO}
+import cats.effect.{Async, IO}
 import com.github.unchama.chatinterceptor.CancellationReason.Overridden
 import com.github.unchama.chatinterceptor.ChatInterceptionScope
 import com.github.unchama.concurrent.NonServerThreadContextShift
@@ -31,9 +32,9 @@ import org.bukkit.entity.Player
 
 class HomeCommand[F[
   _
-]: OnMinecraftServerThread: ConcurrentEffect: NonServerThreadContextShift: HomeAPI, G[_]: [f[
+]: OnMinecraftServerThread: Async: NonServerThreadContextShift: HomeAPI: [f[
   _
-]] =>> ContextCoercion[f, F]](
+]] =>> ContextCoercion[f, IO], G[_]: [f[_]] =>> ContextCoercion[f, F]](
   implicit scope: ChatInterceptionScope,
   breakCountReadAPI: BreakCountReadAPI[F, G, Player],
   buildCountReadAPI: BuildCountAPI[F, G, Player]
@@ -116,11 +117,9 @@ class HomeCommand[F[
         _ <- MessageEffectF[F](s"ホームポイント${homeId}は現在のレベルでは使用できません")
           .apply(player)
           .whenA(!isHomeAvailable)
-        _ <-
-          NonServerThreadContextShift[F].shift >> HomeWriteAPI[F]
-            .remove(player.getUniqueId, homeId) >> MessageEffectF[F](
-            s"ホームポイント${homeId}を削除しました。"
-          ).apply(player).whenA(isHomeAvailable)
+        _ <- HomeWriteAPI[F].remove(player.getUniqueId, homeId) >> MessageEffectF[F](
+          s"ホームポイント${homeId}を削除しました。"
+        ).apply(player).whenA(isHomeAvailable)
       } yield TargetedEffect.emptyEffect
 
       eff.toIO
@@ -133,7 +132,6 @@ class HomeCommand[F[
 
       val eff = for {
         maxAvailableHomeCount <- Kleisli.liftF(Home.maxAvailableHomeCountF(player))
-        _ <- Kleisli.liftF(NonServerThreadContextShift[F].shift)
         homeLocation <- Kleisli.liftF(HomeReadAPI[F].get(player.getUniqueId, homeId))
       } yield {
         val isHomeAvailable = maxAvailableHomeCount >= homeId.value
@@ -172,11 +170,11 @@ class HomeCommand[F[
         _ <- MessageEffectF[F](s"ホームポイント${homeId}は現在のレベルでは使用できません")
           .apply(player)
           .whenA(!isHomeAvailable)
-        _ <-
-          NonServerThreadContextShift[F].shift >> HomeWriteAPI[F]
-            .upsertLocation(player.getUniqueId, homeId)(homeLocation) >> MessageEffectF[F](
-            s"現在位置をホームポイント${homeId}に設定しました"
-          ).apply(player).whenA(isHomeAvailable)
+        _ <- HomeWriteAPI[F].upsertLocation(player.getUniqueId, homeId)(
+          homeLocation
+        ) >> MessageEffectF[F](s"現在位置をホームポイント${homeId}に設定しました")
+          .apply(player)
+          .whenA(isHomeAvailable)
       } yield TargetedEffect.emptyEffect
 
       eff.toIO

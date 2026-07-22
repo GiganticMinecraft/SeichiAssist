@@ -1,18 +1,23 @@
 package com.github.unchama.seichiassist.subsystems.lastquit.bukkit.listeners
 
-import cats.effect.ConcurrentEffect
-import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
+import com.github.unchama.toIO
+
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
+import cats.effect.Async
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.lastquit.LastQuitAPI
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.{EventHandler, Listener}
 
-class LastQuitUpdater[F[_]: ConcurrentEffect](implicit lastQuitAPI: LastQuitAPI[F])
-    extends Listener {
+class LastQuitUpdater[F[_]: Async: [f[_]] =>> ContextCoercion[f, cats.effect.IO]](
+  implicit lastQuitAPI: LastQuitAPI[F]
+) extends Listener {
 
   @EventHandler
   def onQuit(event: PlayerQuitEvent): Unit = {
     val uuid = event.getPlayer.getUniqueId
-    lastQuitAPI.updateLastLastQuitDateTimeNow(uuid).toIO.unsafeRunAsyncAndForget()
+    lastQuitAPI.updateLastLastQuitDateTimeNow(uuid).toIO.unsafeRunAndForget()
   }
 
 }

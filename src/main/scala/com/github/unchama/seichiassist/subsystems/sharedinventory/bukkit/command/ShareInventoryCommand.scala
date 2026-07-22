@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.sharedinventory.bukkit.command
 
 import cats.data.Kleisli
-import cats.effect.{ConcurrentEffect, Sync}
+import cats.effect.{Async, Sync}
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
@@ -17,9 +18,9 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{Bukkit, Material}
 
-class ShareInventoryCommand[F[_]: ConcurrentEffect: OnMinecraftServerThread](
-  implicit sharedInventoryAPI: SharedInventoryAPI[F, Player]
-) {
+class ShareInventoryCommand[
+  F[_]: Async: OnMinecraftServerThread: [f[_]] =>> ContextCoercion[f, cats.effect.IO]
+](implicit sharedInventoryAPI: SharedInventoryAPI[F, Player]) {
 
   import cats.implicits._
 

@@ -1,11 +1,16 @@
 package com.github.unchama.seichiassist.subsystems.managedfly.bukkit.controllers
 
+import com.github.unchama.runSync
+
+import com.github.unchama.toIO
+
 import cats.data.Kleisli
-import cats.effect.{ConcurrentEffect, IO, SyncEffect, SyncIO}
+import cats.effect.{Async, IO, Sync, SyncIO}
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.datarepository.KeyedDataRepository
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates
 import com.github.unchama.seichiassist.subsystems.managedfly.application.{
   ActiveSessionFactory,
@@ -51,10 +56,11 @@ object BukkitFlyCommand {
         parseResult.map(r => RemainingFlyDuration.PositiveMinutes.fromPositive(r))
       }
 
-  import cats.effect.implicits._
   import cats.implicits._
 
-  private def startEndlessCommand[F[_]: ConcurrentEffect, G[_]: SyncEffect](
+  private def startEndlessCommand[F[_]: Async: [f[_]] =>> ContextCoercion[f, IO], G[
+    _
+  ]: Sync: [g[_]] =>> ContextCoercion[g, F]](
     implicit
     sessionReferenceRepository: KeyedDataRepository[Player, ActiveSessionReference[F, G]],
     factory: ActiveSessionFactory[F, Player]
@@ -67,7 +73,9 @@ object BukkitFlyCommand {
       } yield TargetedEffect.emptyEffect
     }
 
-  private def addCommand[F[_]: ConcurrentEffect, G[_]: SyncEffect](
+  private def addCommand[F[_]: Async: [f[_]] =>> ContextCoercion[f, IO], G[_]: Sync: [g[
+    _
+  ]] =>> ContextCoercion[g, F]: [g[_]] =>> ContextCoercion[g, SyncIO]](
     implicit
     sessionReferenceRepository: KeyedDataRepository[Player, ActiveSessionReference[F, G]],
     factory: ActiveSessionFactory[F, Player]
@@ -92,7 +100,7 @@ object BukkitFlyCommand {
         } yield TargetedEffect.emptyEffect
     }
 
-  private def finishCommand[F[_]: ConcurrentEffect, G[_]](
+  private def finishCommand[F[_]: Async: [f[_]] =>> ContextCoercion[f, IO], G[_]](
     implicit
     sessionReferenceRepository: KeyedDataRepository[Player, ActiveSessionReference[F, G]]
   ): ContextualExecutor =
@@ -107,7 +115,9 @@ object BukkitFlyCommand {
       }
     }
 
-  def executor[F[_]: ConcurrentEffect, G[_]: SyncEffect](
+  def executor[F[_]: Async: [f[_]] =>> ContextCoercion[f, IO], G[_]: Sync: [g[
+    _
+  ]] =>> ContextCoercion[g, F]: [g[_]] =>> ContextCoercion[g, SyncIO]](
     implicit
     sessionReferenceRepository: KeyedDataRepository[Player, ActiveSessionReference[F, G]],
     factory: ActiveSessionFactory[F, Player]

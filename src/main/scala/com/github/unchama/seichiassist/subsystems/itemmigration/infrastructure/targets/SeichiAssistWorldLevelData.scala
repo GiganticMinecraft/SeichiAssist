@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.targets
 
-import cats.effect.{Concurrent, Sync}
+import cats.effect.{Async, Sync}
 import com.github.unchama.itemmigration.bukkit.targets.WorldLevelData
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.util.external.{ExternalPlugins, ExternalServices}
@@ -26,5 +26,5 @@ private object DelegatedImpls {
     )
 }
 
-class SeichiAssistWorldLevelData[F[_]](implicit metricsLogger: Logger, F: Concurrent[F])
+class SeichiAssistWorldLevelData[F[_]](implicit metricsLogger: Logger, F: Async[F])
     extends WorldLevelData[F](DelegatedImpls.getWorlds, DelegatedImpls.getWorldChunkCoordinates)

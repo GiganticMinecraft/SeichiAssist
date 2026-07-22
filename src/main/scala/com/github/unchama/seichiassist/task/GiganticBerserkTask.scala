@@ -1,6 +1,11 @@
 package com.github.unchama.seichiassist.task
 
-import cats.effect.{ConcurrentEffect, IO, SyncIO}
+import com.github.unchama.toIO
+
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
+import cats.effect.{Async, IO, SyncIO}
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
@@ -14,7 +19,7 @@ import org.bukkit.entity.Player
 import scala.util.Random
 
 class GiganticBerserkTask {
-  def PlayerKillEnemy[F[_]: ConcurrentEffect: DiscordNotificationAPI](
+  def PlayerKillEnemy[F[_]: Async: DiscordNotificationAPI: [f[_]] =>> ContextCoercion[f, IO]](
     p: Player
   )(implicit manaApi: ManaApi[IO, SyncIO, Player]): Unit = {
     val player = p
@@ -76,7 +81,6 @@ class GiganticBerserkTask {
 
       // 最大レベルになった時の処理
       if (playerdata.giganticBerserk.reachedLimit()) {
-        import cats.effect.implicits._
         import cats.implicits._
         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 
@@ -92,7 +96,7 @@ class GiganticBerserkTask {
             SendMessageEffect.sendMessageToEveryoneIgnoringPreferenceIO(messageWithColor)
         ).sequence
 
-        program.unsafeRunAsyncAndForget()
+        program.unsafeRunAndForget()
       }
     } else { // レベルが10かつ段階が第2段階の木の剣未満の場合は進化待機状態へ
       if (playerdata.giganticBerserk.stage <= 4) {

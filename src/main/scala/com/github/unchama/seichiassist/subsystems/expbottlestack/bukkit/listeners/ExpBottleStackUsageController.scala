@@ -1,6 +1,13 @@
 package com.github.unchama.seichiassist.subsystems.expbottlestack.bukkit.listeners
 
-import cats.effect.{Effect, SyncEffect, SyncIO}
+import com.github.unchama.runSync
+
+import com.github.unchama.toIO
+
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
+import cats.effect.{Async, Sync, SyncIO}
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.subsystems.expbottlestack.bukkit.Resources
@@ -13,12 +20,13 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 
-class ExpBottleStackUsageController[F[_]: Effect, G[_]: SyncEffect](
+class ExpBottleStackUsageController[F[_]: Async: [f[_]] =>> ContextCoercion[
+  f,
+  cats.effect.IO
+], G[_]: Sync: [g[_]] =>> ContextCoercion[g, SyncIO]](
   implicit managedBottleScope: ResourceScope[F, G, ThrownExpBottle],
-  effectEnvironment: EffectEnvironment
+  effectEnvironment: EffectEnvironment[F]
 ) extends Listener {
-
-  import cats.effect.implicits._
 
   @EventHandler
   def onExpBottleHitBlock(event: ExpBottleEvent): Unit = {
@@ -57,7 +65,7 @@ class ExpBottleStackUsageController[F[_]: Effect, G[_]: SyncEffect](
       effectEnvironment.unsafeRunEffectAsync(
         "経験値瓶の消費を待つ",
         managedBottleScope.useTracked[ThrownExpBottle, Nothing](bottleResource) { _ =>
-          Effect[F].never
+          Async[F].never
         }
       )
 

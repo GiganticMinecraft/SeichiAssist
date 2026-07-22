@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.menus.home
 
+import com.github.unchama.toIO
+
 import cats.effect.IO
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.MapExtra
@@ -150,7 +152,6 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
 case class HomeMenuButtonComputations(player: Player)(
   private implicit val environment: HomeMenu.Environment
 ) {
-  import cats.effect.implicits._
   import environment._
 
   def setHomeNameButton(homeNumber: Int): IO[Button] = {

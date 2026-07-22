@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.listener
 
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.generic.effect.concurrent.TryableFiber
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
@@ -25,7 +27,7 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.{GameMode, Material, Sound}
 
 class PlayerClickListener(
-  implicit effectEnvironment: EffectEnvironment,
+  implicit effectEnvironment: EffectEnvironment[IO],
   manaApi: ManaApi[IO, SyncIO, Player],
   ioCanOpenStickMenu: IO CanOpen FirstPage.type,
   ioOnMainThread: OnMinecraftServerThread[IO]
@@ -33,7 +35,7 @@ class PlayerClickListener(
 
   import ManagedWorld._
   import com.github.unchama.generic.ContextCoercion._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, timer}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.timer
   import com.github.unchama.targetedeffect._
 
   private val plugin = SeichiAssist.instance
@@ -78,7 +80,6 @@ class PlayerClickListener(
     if (MaterialSets.breakToolMaterials.contains(event.getMaterial)) {
       skillState.activeSkill match {
         case Some(ActiveSkill(_, _, RemoteArea(_), coolDownOption, _, _)) =>
-          import cats.implicits._
           import com.github.unchama.concurrent.syntax._
 
           // クールダウン処理

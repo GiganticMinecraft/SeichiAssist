@@ -1,25 +1,32 @@
 package com.github.unchama.seichiassist
 
-import cats.effect.{Effect, IO}
+import cats.effect.Async
+import cats.effect.std.Dispatcher
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 
 // the error log should report that the error comes from SeichiAssist. To achieve this,
 // TODO prepare alternative environment that uses dedicated Logger for effect execution
-object DefaultEffectEnvironment extends EffectEnvironment {
+final class DefaultEffectEnvironment[F[_]](dispatcher: Dispatcher[F])(implicit F: Async[F])
+    extends EffectEnvironment[F] {
 
-  override def unsafeRunEffectAsync[U, F[_]: Effect](context: String, program: F[U]): Unit = {
-    import cats.effect.implicits._
+  override def unsafeRunEffectAsync[U](context: String, program: F[U]): Unit = {
+    import cats.syntax.all._
 
-    program
-      .runAsync {
-        case Left(error) =>
-          IO {
-            println(s"${context}最中にエラーが発生しました。")
-            error.printStackTrace()
-          }
-        case Right(_) => IO.unit
+    dispatcher.unsafeRunAndForget {
+      program.void.handleErrorWith { error =>
+        F.delay {
+          println(s"${context}最中にエラーが発生しました。")
+          error.printStackTrace()
+        }
       }
-      .unsafeRunSync()
+    }
   }
+
+}
+
+object DefaultEffectEnvironment {
+
+  def apply[F[_]: Async](dispatcher: Dispatcher[F]): EffectEnvironment[F] =
+    new DefaultEffectEnvironment[F](dispatcher)
 
 }

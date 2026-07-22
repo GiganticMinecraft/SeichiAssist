@@ -1,14 +1,20 @@
 package com.github.unchama.seichiassist.subsystems.home.bukkit.listeners
 
-import cats.effect.ConcurrentEffect
-import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
+import com.github.unchama.toIO
+
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
+import cats.effect.Async
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.home.{HomeAPI, HomeReadAPI}
 import com.github.unchama.seichiassist.subsystems.home.bukkit.LocationCodec
 import com.github.unchama.seichiassist.subsystems.home.domain.{Home, HomeId}
 import org.bukkit.event.player.PlayerRespawnEvent
 import org.bukkit.event.{EventHandler, Listener}
 
-class RespawnLocationOverwriter[F[_]: ConcurrentEffect: HomeAPI] extends Listener {
+class RespawnLocationOverwriter[
+  F[_]: Async: HomeAPI: [f[_]] =>> ContextCoercion[f, cats.effect.IO]
+] extends Listener {
 
   @EventHandler
   def onRespawn(event: PlayerRespawnEvent): Unit = {

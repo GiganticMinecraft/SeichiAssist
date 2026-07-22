@@ -1,12 +1,12 @@
 package com.github.unchama.generic.effect.stream
 
-import cats.effect.concurrent.Ref
 import cats.effect.{Concurrent, Sync}
 import cats.{Eq, Monad}
 import com.github.unchama.generic.Diff
 import com.github.unchama.minecraft.algebra.HasUuid
 import fs2.{Chunk, Pull, Stream}
 import org.typelevel.log4cats.ErrorLogger
+import cats.effect.Ref
 
 object StreamExtra {
 
@@ -37,7 +37,7 @@ object StreamExtra {
   def uncons[F[_], O](stream: Stream[F, O]): Stream[F, (Chunk[O], Stream[F, O])] =
     stream
       .pull
-      .unconsNonEmpty
+      .uncons
       .flatMap {
         case Some((head, tail)) => Pull.output1(head, tail)
         case None               => Pull.done

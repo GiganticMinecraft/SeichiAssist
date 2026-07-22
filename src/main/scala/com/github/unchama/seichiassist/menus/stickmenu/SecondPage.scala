@@ -1,5 +1,9 @@
 package com.github.unchama.seichiassist.menus.stickmenu
 
+import com.github.unchama.toIO
+
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
 import io.github.iltotore.iron.autoRefine
 
 import cats.effect.{IO, SyncIO}

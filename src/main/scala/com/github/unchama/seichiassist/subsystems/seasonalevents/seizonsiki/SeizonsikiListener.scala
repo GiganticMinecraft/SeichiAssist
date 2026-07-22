@@ -1,6 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki
 
-import cats.effect.{SyncEffect, SyncIO}
+import com.github.unchama.runSync
+
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
+import cats.effect.{Sync, SyncIO}
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
 import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.randomlyDropItemAt
@@ -19,10 +24,9 @@ import org.bukkit.event.{EventHandler, Listener}
 import java.time.LocalDate
 import java.util.Random
 
-class SeizonsikiListener[F[_], G[_]: SyncEffect](implicit manaApi: ManaWriteApi[G, Player])
-    extends Listener {
-
-  import cats.effect.implicits._
+class SeizonsikiListener[F[_], G[_]: Sync: [g[_]] =>> ContextCoercion[g, SyncIO]](
+  implicit manaApi: ManaWriteApi[G, Player]
+) extends Listener {
 
   @EventHandler
   def onZombieKilledByPlayer(event: EntityDeathEvent): Unit = {
@@ -68,7 +72,7 @@ class SeizonsikiListener[F[_], G[_]: SyncEffect](implicit manaApi: ManaWriteApi[
 
       val messages = deathMessages(player.getName)
       sendMessageToEveryoneIgnoringPreferenceIO(messages(new Random().nextInt(messages.size)))
-        .unsafeRunAsyncAndForget()
+        .unsafeRunAndForget()
     }
   }
 }

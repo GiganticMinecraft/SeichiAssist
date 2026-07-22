@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.mebius.bukkit.command
 
+import com.github.unchama.toIO
+
 import cats.data.Kleisli
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}

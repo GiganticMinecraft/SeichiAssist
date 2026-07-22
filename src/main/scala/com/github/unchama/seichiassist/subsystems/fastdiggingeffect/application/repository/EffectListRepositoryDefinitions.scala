@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.repository
 
-import cats.effect.concurrent.Deferred
-import cats.effect.{Concurrent, ConcurrentEffect, Effect, Fiber, Sync, SyncEffect, Timer}
+import cats.effect.std.Dispatcher
+import cats.effect.{Async, Deferred, Fiber, Sync}
 import com.github.unchama.datarepository.definitions.FiberAdjoinedRepositoryDefinition.FiberAdjoined
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
 import com.github.unchama.datarepository.template.initialization.{
@@ -18,7 +18,7 @@ import org.typelevel.log4cats.ErrorLogger
 
 object EffectListRepositoryDefinitions {
 
-  import cats.effect.implicits._
+  import cats.effect.syntax.all._
   import cats.implicits._
 
   import scala.concurrent.duration._
@@ -28,16 +28,16 @@ object EffectListRepositoryDefinitions {
    */
   type RepositoryValue[F[_], G[_]] = Mutex[F, G, FastDiggingEffectList] FiberAdjoined F
 
-  def initialization[F[_]: Concurrent, G[_]: Sync: [f[_]] =>> ContextCoercion[f, F]]
+  def initialization[F[_]: Async, G[_]: Sync: [f[_]] =>> ContextCoercion[f, F]]
     : SinglePhasedRepositoryInitialization[G, RepositoryValue[F, G]] =
     (_, _) => {
       for {
         ref <- Mutex.of[F, G, FastDiggingEffectList](FastDiggingEffectList.empty)
-        deferred <- Deferred.in[G, F, Fiber[F, Nothing]]
+        deferred <- Deferred.in[G, F, Fiber[F, Throwable, Nothing]]
       } yield PrefetchResult.Success(ref, deferred)
     }
 
-  def tappingAction[F[_]: ConcurrentEffect: Timer: ErrorLogger, G[_]: SyncEffect: [f[
+  def tappingAction[F[_]: Async: Dispatcher: ErrorLogger, G[_]: Sync: [f[
     _
   ]] =>> ContextCoercion[f, F], Player](
     effectTopic: Fs3Topic[F, Option[(Player, FastDiggingEffectList)]]
@@ -45,19 +45,20 @@ object EffectListRepositoryDefinitions {
     case (player, (mutexRef, fiberPromise)) =>
       val programToRun: F[Unit] =
         StreamExtra
-          .compileToRestartingStream("[EffectListRepositoryDefinitions]") {
+          .compileToRestartingStream[F, Nothing]("[EffectListRepositoryDefinitions]") {
             fs2.Stream.fixedRate[F](1.second).evalMap { _ =>
               ContextCoercion(mutexRef.readLatest).flatMap { latestEffectList =>
                 effectTopic.publish1(Some(player, latestEffectList))
               }
             }
           }
-          .start >>= fiberPromise.complete
+          .start
+          .flatMap(fiber => fiberPromise.complete(fiber).void)
 
       EffectExtra.runAsyncAndForget[F, G, Unit](programToRun)
   }
 
-  def finalization[F[_]: Effect, G[_]: SyncEffect, Player]
+  def finalization[F[_]: Async: Dispatcher, G[_]: Sync, Player]
     : RepositoryFinalization[G, Player, RepositoryValue[F, G]] =
     RepositoryFinalization.withoutAnyPersistence[G, Player, RepositoryValue[F, G]] {
       (_, value) =>

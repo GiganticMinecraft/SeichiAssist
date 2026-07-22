@@ -1,7 +1,7 @@
 package com.github.unchama.generic.effect.concurrent
 
-import cats.effect.concurrent.Deferred
-import cats.effect.{Concurrent, Sync}
+import cats.effect.{Async, Deferred, Sync}
+import cats.syntax.all._
 
 import java.util.concurrent.atomic.AtomicReference
 import scala.annotation.tailrec
@@ -10,26 +10,26 @@ import scala.collection.immutable.LongMap
 /**
  * A [[Deferred]] to which one can query for the "current value".
  *
- * While [[cats.effect.concurrent.TryableDeferred]] serves for this purpose, it restricts the
- * `tryGet` operation to the same context the promise is being completed. This turns out to be
- * too restrictive in some cases, especially when we want to immediately know if the promise is
+ * While [[cats.effect.Deferred.tryGet]] serves for this purpose, it restricts the `tryGet`
+ * operation to the same context the promise is being completed. This turns out to be too
+ * restrictive in some cases, especially when we want to immediately know if the promise is
  * completed or not.
  *
- * [[AsymmetricTryableDeferred]] is similar to [[cats.effect.concurrent.TryableDeferred]] in
- * spirit, but allows one to query for the current value in a more relaxed context.
+ * [[AsymmetricTryableDeferred]] allows one to query for the current value in a more relaxed
+ * context.
  */
 trait AsymmetricTryableDeferred[F[_], A] extends Deferred[F, A] {
 
-  def tryGet[G[_]: Sync]: G[Option[A]]
+  def tryGetIn[G[_]: Sync]: G[Option[A]]
 
 }
 
 object AsymmetricTryableDeferred {
 
-  def concurrent[F[_]: Concurrent, A]: F[AsymmetricTryableDeferred[F, A]] =
+  def concurrent[F[_]: Async, A]: F[AsymmetricTryableDeferred[F, A]] =
     concurrentIn[F, F, A]
 
-  def concurrentIn[F[_]: Concurrent, G[_]: Sync, A]: G[AsymmetricTryableDeferred[F, A]] =
+  def concurrentIn[F[_]: Async, G[_]: Sync, A]: G[AsymmetricTryableDeferred[F, A]] =
     Sync[G].delay {
       new ConcurrentAsymmetricDeferred(new AtomicReference(State.Unset(LinkedMap.empty)))
     }
@@ -116,7 +116,7 @@ object AsymmetricTryableDeferred {
   }
 
   final private class ConcurrentAsymmetricDeferred[F[_], A](ref: AtomicReference[State[A]])(
-    implicit F: Concurrent[F]
+    implicit F: Async[F]
   ) extends AsymmetricTryableDeferred[F, A] {
     def get: F[A] =
       F.defer {
@@ -124,25 +124,29 @@ object AsymmetricTryableDeferred {
           case State.Set(a) =>
             F.pure(a)
           case State.Unset(_) =>
-            F.cancelable[A] { cb =>
-              val id = unsafeRegister(cb)
+            F.async[A] { cb =>
+              F.delay {
+                val id = unsafeRegister(cb)
 
-              @tailrec
-              def unregister(): Unit =
-                ref.get match {
-                  case State.Set(_)             => ()
-                  case s @ State.Unset(waiting) =>
-                    val updated = State.Unset(waiting - id)
-                    if (ref.compareAndSet(s, updated)) ()
-                    else unregister()
-                }
+                @tailrec
+                def unregister(): Unit =
+                  ref.get match {
+                    case State.Set(_)             => ()
+                    case s @ State.Unset(waiting) =>
+                      val updated = State.Unset(waiting - id)
+                      if (ref.compareAndSet(s, updated)) ()
+                      else unregister()
+                  }
 
-              F.delay(unregister())
+                Some(F.delay(unregister()))
+              }
             }
         }
       }
 
-    def tryGet[G[_]: Sync]: G[Option[A]] =
+    def tryGet: F[Option[A]] = tryGetIn[F]
+
+    def tryGetIn[G[_]: Sync]: G[Option[A]] =
       Sync[G].delay {
         ref.get match {
           case State.Set(a)   => Some(a)
@@ -167,24 +171,20 @@ object AsymmetricTryableDeferred {
       id
     }
 
-    def complete(a: A): F[Unit] =
+    def complete(a: A): F[Boolean] =
       F.defer(unsafeComplete(a))
 
     @tailrec
-    private def unsafeComplete(a: A): F[Unit] =
+    private def unsafeComplete(a: A): F[Boolean] =
       ref.get match {
         case State.Set(_) =>
-          throw new IllegalStateException(
-            "Attempting to complete a Deferred that has already been completed"
-          )
+          F.pure(false)
 
         case s @ State.Unset(_) =>
           if (ref.compareAndSet(s, State.Set(a))) {
             val list = s.waiting.values
-            if (list.nonEmpty)
-              notifyReadersLoop(a, list)
-            else
-              F.unit
+            val notify = if (list.nonEmpty) notifyReadersLoop(a, list) else F.unit
+            notify.as(true)
           } else {
             unsafeComplete(a)
           }

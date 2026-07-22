@@ -1,10 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.gachapoint.application.process
 
 import cats.Applicative
-import cats.effect.concurrent.Ref
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.GachaPoint
+import cats.effect.Ref
 
 object AddSeichiExpAsGachaPoint {
 
