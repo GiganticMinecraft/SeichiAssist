@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.bookedachivement.bukkit.listener
 
-import cats.effect.{ConcurrentEffect, LiftIO}
-import com.github.unchama.concurrent.NonServerThreadContextShift
+import cats.effect.{Async, IO}
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.bookedachivement.domain.AchievementOperation
@@ -10,8 +10,8 @@ import org.bukkit.Bukkit
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.{EventHandler, Listener}
 
-class GrantBookedAchievementListener[F[_]: ConcurrentEffect: NonServerThreadContextShift](
-  implicit effectEnvironment: EffectEnvironment,
+class GrantBookedAchievementListener[F[_]: Async: [f[_]] =>> ContextCoercion[IO, f]](
+  implicit effectEnvironment: EffectEnvironment[F],
   service: AchievementBookingService[F]
 ) extends Listener {
 
@@ -29,9 +29,8 @@ class GrantBookedAchievementListener[F[_]: ConcurrentEffect: NonServerThreadCont
      * `.shift`を行ってから書き込みを行うわずかな時間にプレイヤーが退出し終了処理が行われる可能性があるが、 パフォーマンスを取り、妥協してこの実装としている。
      */
     val program = for {
-      _ <- NonServerThreadContextShift[F].shift
       ids <- service.loadBookedAchievementsIds(player.getUniqueId)
-      _ <- LiftIO[F].liftIO(ids.traverse {
+      _ <- ContextCoercion[IO, F, List[Unit]](ids.traverse {
         case (AchievementOperation.GIVE, id) =>
           playerData.tryForcefullyUnlockAchievement(id).run(effectRunner)
         case (AchievementOperation.DEPRIVE, id) =>

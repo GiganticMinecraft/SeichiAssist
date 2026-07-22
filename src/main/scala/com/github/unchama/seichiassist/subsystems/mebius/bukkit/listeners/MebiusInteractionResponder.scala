@@ -1,6 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.mebius.bukkit.listeners
 
-import cats.effect.SyncIO
+import com.github.unchama.toIO
+
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets
@@ -25,7 +27,7 @@ import org.bukkit.inventory.meta.Damageable
 
 class MebiusInteractionResponder(
   implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]],
-  effectEnvironment: EffectEnvironment
+  effectEnvironment: EffectEnvironment[IO]
 ) extends Listener {
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   def onDamage(event: EntityDamageByEntityEvent): Unit = {
@@ -84,8 +86,6 @@ class MebiusInteractionResponder(
       .decodePropertyOfOwnedMebius(player)(event.getBrokenItem)
       .foreach { property =>
         val speechService = serviceRepository(player)
-
-        import cats.implicits._
 
         effectEnvironment.unsafeRunEffectAsync(
           "Mebius破壊時のエフェクトを再生する",

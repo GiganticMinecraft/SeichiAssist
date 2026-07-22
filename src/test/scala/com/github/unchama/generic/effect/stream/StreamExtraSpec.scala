@@ -1,18 +1,11 @@
 package com.github.unchama.generic.effect.stream
 
-import com.github.unchama.testutil.concurrent.tests.ConcurrentEffectTest
-import com.github.unchama.testutil.execution.MonixTestSchedulerTests
 import org.scalacheck.{Arbitrary, Gen}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
-class StreamExtraSpec
-    extends AnyWordSpec
-    with ScalaCheckPropertyChecks
-    with Matchers
-    with ConcurrentEffectTest
-    with MonixTestSchedulerTests {
+class StreamExtraSpec extends AnyWordSpec with ScalaCheckPropertyChecks with Matchers {
 
   "StreamExtra.takeEvery" should {
     "be equivalent to accessing every n elements" in {

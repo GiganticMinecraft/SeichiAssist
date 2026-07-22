@@ -2,8 +2,8 @@ package com.github.unchama.generic.effect.concurrent
 
 import cats.Applicative
 import cats.data.State
-import cats.effect.concurrent.Ref
-import cats.effect.{ConcurrentEffect, Resource, Sync}
+import cats.effect.std.Dispatcher
+import cats.effect.{Async, Ref, Resource, Sync}
 import com.github.unchama.fs2.workaround.fs3.Fs3Topic
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.generic.effect.stream.ReorderingPipe
@@ -58,7 +58,7 @@ object AsymmetricSignallingRef {
   /**
    * 指定された値で初期化された[[AsymmetricSignallingRef]]を作成する作用。
    */
-  def apply[G[_]: Sync, F[_]: ConcurrentEffect: [g[_]] =>> ContextCoercion[G, g], A](
+  def apply[G[_]: Sync, F[_]: Async: Dispatcher: [g[_]] =>> ContextCoercion[G, g], A](
     initial: A
   ): G[AsymmetricSignallingRef[G, F, A]] = in[G, G, F, A](initial)
 
@@ -67,7 +67,7 @@ object AsymmetricSignallingRef {
    *
    * [[apply]] とほぼ等価であるが、状態の作成を別の作用型の中で行う。
    */
-  def in[H[_]: Sync, G[_]: Sync, F[_]: ConcurrentEffect: [g[_]] =>> ContextCoercion[G, g], A](
+  def in[H[_]: Sync, G[_]: Sync, F[_]: Async: Dispatcher: [g[_]] =>> ContextCoercion[G, g], A](
     initial: A
   ): H[AsymmetricSignallingRef[G, F, A]] = {
     val initialState = TimeStamped(new Token, new Token, initial)
@@ -82,7 +82,7 @@ object AsymmetricSignallingRef {
   private final class AsymmetricSignallingRefImpl[G[_], F[_], A](
     state: Ref[G, TimeStamped[A]],
     changeTopic: Fs3Topic[F, TimeStamped[A]]
-  )(implicit G: Sync[G], F: ConcurrentEffect[F], GToF: ContextCoercion[G, F])
+  )(implicit G: Sync[G], F: Async[F], dispatcher: Dispatcher[F], GToF: ContextCoercion[G, F])
       extends AsymmetricSignallingRef[G, F, A] {
 
     private val topicQueueSize = 10

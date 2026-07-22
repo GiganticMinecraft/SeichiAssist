@@ -7,19 +7,19 @@ import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackRepository
 import org.bukkit.GameMode
 import org.bukkit.inventory.ItemStack
-import cats.effect.concurrent.Ref
 import com.github.unchama.seichiassist.subsystems.minestack.domain.AutoCollectPreference
 import org.bukkit.entity.Player
-import cats.effect.Effect
+import cats.effect.Async
 import com.github.unchama.generic.ApplicativeExtra.whenAOrElse
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import org.bukkit.Sound
 import org.bukkit.entity.EntityType
+import cats.effect.Ref
 
-class EntityDropItemListener[F[_]: Effect](
+class EntityDropItemListener[F[_]: Async](
   implicit autoCollectPreferenceRepository: PlayerDataRepository[Ref[F, AutoCollectPreference]],
   mineStackRepository: MineStackRepository[F, Player, ItemStack],
-  effectEnvironment: EffectEnvironment
+  effectEnvironment: EffectEnvironment[F]
 ) extends Listener {
 
   import scala.jdk.CollectionConverters._
@@ -42,7 +42,7 @@ class EntityDropItemListener[F[_]: Effect](
           intoSucceedItemStacksAndFailedItemStacks <- whenAOrElse(
             currentAutoMineStackState.isEnabled
           )(mineStackRepository.tryIntoMineStack(player, drops), (drops, Vector.empty))
-          _ <- Effect[F].delay {
+          _ <- Async[F].delay {
             if (!event.getDrops().isEmpty()) {
               player.playSound(player.getLocation, Sound.ENTITY_ITEM_PICKUP, 1f, 1f)
             }

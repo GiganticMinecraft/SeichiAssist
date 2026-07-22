@@ -1,6 +1,6 @@
 package com.github.unchama.datarepository.bukkit.player
 
-import cats.effect.{Sync, SyncEffect, SyncIO}
+import cats.effect.Sync
 import cats.{Monad, ~>}
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.datarepository.template._
@@ -10,7 +10,7 @@ import com.github.unchama.datarepository.template.initialization.{
   SinglePhasedRepositoryInitialization,
   TwoPhasedRepositoryInitialization
 }
-import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.generic.{ContextCoercion, UnsafeSyncRunner}
 import org.bukkit.entity.Player
 import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
@@ -45,7 +45,6 @@ case class BukkitRepositoryControls[F[_], R](
 
 object BukkitRepositoryControls {
 
-  import cats.effect.implicits._
   import cats.implicits._
   import org.bukkit.entity.Player
   import org.bukkit.event.Listener
@@ -56,18 +55,16 @@ object BukkitRepositoryControls {
   }
 
   private object Initializers {
-    def singlePhased[F[_]: SyncEffect, R](
+    def singlePhased[F[_]: Sync: UnsafeSyncRunner, R](
       initialization: SinglePhasedRepositoryInitialization[F, R]
     )(tapOnJoin: (Player, R) => F[Unit])(dataMap: TrieMap[UUID, R]): PreLoginAndJoinListener = {
       // noinspection ScalaUnusedSymbol
       new PreLoginAndJoinListener {
         @EventHandler(priority = EventPriority.LOWEST)
         override def onPlayerPreLogin(event: AsyncPlayerPreLoginEvent): Unit = {
-          initialization
-            .prepareData(event.getUniqueId, event.getName)
-            .runSync[SyncIO]
-            .attempt
-            .unsafeRunSync() match {
+          UnsafeSyncRunner[F].unsafeRunSync(
+            initialization.prepareData(event.getUniqueId, event.getName).attempt
+          ) match {
             case Left(error) =>
               // TODO use Logger
               error.printStackTrace()
@@ -85,12 +82,12 @@ object BukkitRepositoryControls {
         override def onPlayerJoin(event: PlayerJoinEvent): Unit = {
           val player = event.getPlayer
 
-          tapOnJoin(player, dataMap(player.getUniqueId)).runSync[SyncIO].unsafeRunSync()
+          UnsafeSyncRunner[F].unsafeRunSync(tapOnJoin(player, dataMap(player.getUniqueId)))
         }
       }
     }
 
-    def twoPhased[F[_]: SyncEffect, R](
+    def twoPhased[F[_]: Sync: UnsafeSyncRunner, R](
       initialization: TwoPhasedRepositoryInitialization[F, Player, R]
     )(
       temporaryDataMap: TrieMap[UUID, initialization.IntermediateData],
@@ -115,10 +112,9 @@ object BukkitRepositoryControls {
 
           temporaryDataMap.get(player.getUniqueId) match {
             case Some(temporaryData) =>
-              dataMap(player) = initialization
-                .prepareData(player, temporaryData)
-                .runSync[SyncIO]
-                .unsafeRunSync()
+              dataMap(player) = UnsafeSyncRunner[F].unsafeRunSync(
+                initialization.prepareData(player, temporaryData)
+              )
 
             case None =>
               val message =
@@ -169,7 +165,7 @@ object BukkitRepositoryControls {
     }
   }
 
-  def createHandles[F[_]: SyncEffect, R](
+  def createHandles[F[_]: Sync: UnsafeSyncRunner, R](
     definition: RepositoryDefinition[F, Player, R]
   ): F[BukkitRepositoryControls[F, R]] = {
     import cats.implicits._

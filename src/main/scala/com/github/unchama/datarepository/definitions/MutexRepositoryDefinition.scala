@@ -1,13 +1,13 @@
 package com.github.unchama.datarepository.definitions
 
-import cats.effect.{Concurrent, Sync}
+import cats.effect.{Async, Sync}
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.Mutex
 
 object MutexRepositoryDefinition {
 
-  def over[F[_]: Concurrent, G[_]: Sync: [f[_]] =>> ContextCoercion[f, F], Player, R](
+  def over[F[_]: Async, G[_]: Sync: [f[_]] =>> ContextCoercion[f, F], Player, R](
     underlying: RepositoryDefinition.Phased[G, Player, R]
   ): underlying.Self[Mutex[F, G, R]] =
     underlying.flatXmap(r => Mutex.of[F, G, R](r))(_.readLatest)

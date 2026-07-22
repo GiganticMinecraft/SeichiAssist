@@ -1,6 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.mebius.bukkit.listeners
 
-import cats.effect.{IO, SyncEffect, SyncIO, Timer}
+import com.github.unchama.runSync
+
+import com.github.unchama.toIO
+
+import cats.effect.{IO, Sync, SyncIO}
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.ManagedWorld._
@@ -24,15 +29,15 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.FiniteDuration
+import cats.effect.Temporal
 
-class MebiusDropTrialListener[G[_]: ChristmasEventsAPI: RandomEffect: SyncEffect](
+class MebiusDropTrialListener[G[_]: ChristmasEventsAPI: RandomEffect: Sync: [g[
+  _
+]] =>> ContextCoercion[g, SyncIO]](
   implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]],
-  effectEnvironment: EffectEnvironment,
-  timer: Timer[IO]
+  effectEnvironment: EffectEnvironment[IO],
+  timer: Temporal[IO]
 ) extends Listener {
-
-  import cats.effect.implicits._
-  import cats.implicits._
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   def tryMebiusDropOn(event: BlockBreakEvent): Unit = {

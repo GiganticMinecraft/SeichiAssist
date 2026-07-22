@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.data.descrptions
 
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
 import cats.effect.IO
 import com.github.unchama.seichiassist.ManagedWorld
 import com.github.unchama.seichiassist.data.player.PlayerData

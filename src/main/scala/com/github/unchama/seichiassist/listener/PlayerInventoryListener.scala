@@ -18,7 +18,7 @@ import org.bukkit.{Material, Sound}
 import com.github.unchama.seichiassist.items.ExchangeTicket
 
 class PlayerInventoryListener(
-  implicit effectEnvironment: EffectEnvironment,
+  implicit effectEnvironment: EffectEnvironment[IO],
   ioOnMainThread: OnMinecraftServerThread[IO]
 ) extends Listener {
 

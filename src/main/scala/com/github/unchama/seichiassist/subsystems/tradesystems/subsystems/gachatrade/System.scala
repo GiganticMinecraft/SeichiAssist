@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade
 
-import cats.effect.ConcurrentEffect
+import cats.effect.Async
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
@@ -23,6 +23,7 @@ import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachat
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.actions.BukkitTradeActionFromInventory
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.generic.UnsafeSyncRunner
 import com.github.unchama.seichiassist.subsystems.tradesystems.domain.TradeResult
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.actions.BukkitTradeActionFromMineStack
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
@@ -30,8 +31,7 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.domain.TradeError
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.application.TradeFromMineStackRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
-import cats.effect.SyncEffect
-import cats.effect.Timer
+import cats.effect.Sync
 
 trait System[F[_], Player, ItemStack] extends Subsystem[F] {
   val api: GachaTradeAPI[F, Player, ItemStack]
@@ -42,11 +42,11 @@ object System {
   import cats.implicits._
   import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasName.instance
 
-  def wired[F[_]: ConcurrentEffect: Timer: OnMinecraftServerThread, G[_]: SyncEffect](
+  def wired[F[_]: Async: OnMinecraftServerThread, G[_]: Sync: UnsafeSyncRunner](
     implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
     gachaPointApi: GachaPointApi[F, G, Player],
     mineStackAPI: MineStackAPI[F, Player, ItemStack],
-    effectEnvironment: EffectEnvironment
+    effectEnvironment: EffectEnvironment[F]
   ): G[System[F, Player, ItemStack]] = {
     type TransactionInfo = (BigOrRegular, Int)
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =

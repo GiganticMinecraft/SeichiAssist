@@ -1,6 +1,6 @@
 package com.github.unchama.buildassist
 
-import cats.effect.{ConcurrentEffect, IO, SyncIO}
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.buildassist.listener._
 import com.github.unchama.buildassist.menu.BuildAssistMenuRouter
 import com.github.unchama.datarepository.KeyedDataRepository
@@ -12,7 +12,8 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
-import com.github.unchama.seichiassist.{DefaultEffectEnvironment, subsystems}
+import com.github.unchama.seichiassist.subsystems
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
@@ -27,7 +28,6 @@ class BuildAssist(plugin: Plugin)(
   buildCountAPI: subsystems.buildcount.BuildCountAPI[IO, SyncIO, Player],
   manaApi: ManaApi[IO, SyncIO, Player],
   mineStackAPI: MineStackAPI[IO, Player, ItemStack],
-  ioConcurrentEffect: ConcurrentEffect[IO],
   playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
 ) {
 
@@ -65,7 +65,8 @@ class BuildAssist(plugin: Plugin)(
     import buildCountAPI._
     import menuRouter._
 
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    implicit val effectEnvironment: EffectEnvironment[IO] =
+      PluginExecutionContexts.effectEnvironment
 
     val listeners = List(
       new BuildMainMenuOpener(),

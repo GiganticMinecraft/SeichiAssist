@@ -1,7 +1,8 @@
 package com.github.unchama.menuinventory.slot.button
 
 import cats.data
-import cats.effect.{ContextShift, IO}
+import cats.effect.IO
+import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.menuinventory.slot.Slot
 import com.github.unchama.menuinventory.slot.button.action.ButtonEffect
 import com.github.unchama.targetedeffect._
@@ -26,14 +27,14 @@ case class Button(override val itemStack: ItemStack, private val effects: List[B
     extends Slot {
   override def effectOn(
     event: InventoryClickEvent
-  )(implicit cs: ContextShift[IO]): TargetedEffect[Player] = {
+  )(implicit cs: NonServerThreadContextShift[IO]): TargetedEffect[Player] = {
 
     import com.github.unchama.generic.syntax._
 
     UnfocusedEffect {
       event.setCancelled(true)
     }.followedBy(data.Kleisli { t =>
-      cs.shift *> SequentialEffect(effects.map(_.asyncEffectOn(event))).apply(t)
+      cs.evalOn(SequentialEffect(effects.map(_.asyncEffectOn(event))).apply(t))
     })
   }
 

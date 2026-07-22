@@ -1,10 +1,11 @@
 package com.github.unchama.seichiassist.menus.skill
 
+import com.github.unchama.toIO
+
 import io.github.iltotore.iron.autoRefine
 
 import cats.data.Kleisli
-import cats.effect.concurrent.Ref
-import cats.effect.{ConcurrentEffect, IO, SyncIO}
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.generic.effect.concurrent.TryableFiber
 import com.github.unchama.itemstackbuilder.{
   AbstractItemStackBuilder,
@@ -40,6 +41,7 @@ import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionType
 import org.bukkit.{Material, Sound}
+import cats.effect.Ref
 
 object ActiveSkillMenu extends Menu {
 
@@ -52,10 +54,7 @@ object ActiveSkillMenu extends Menu {
   private case object Selected extends SkillSelectionState
 
   import com.github.unchama.menuinventory.syntax._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
-    asyncShift,
-    layoutPreparationContext
-  }
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
   class Environment(
     implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player],
@@ -147,8 +146,6 @@ object ActiveSkillMenu extends Menu {
         state <- ref.get
       } yield {
         val selectionState = ButtonComputations.selectionStateOf(skill)(state)
-        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
-        implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
         ButtonComputations.seichiSkillButton(selectionState, skill)
       }
     }
@@ -287,10 +284,9 @@ object ActiveSkillMenu extends Menu {
       }
     }
 
-    def seichiSkillButton[F[_]: ConcurrentEffect: DiscordNotificationAPI](
-      state: SkillSelectionState,
-      skill: SeichiSkill
-    )(implicit environment: Environment): Button = {
+    def seichiSkillButton(state: SkillSelectionState, skill: SeichiSkill)(
+      implicit environment: Environment
+    ): Button = {
       import environment._
 
       val itemStack = {
@@ -372,17 +368,12 @@ object ActiveSkillMenu extends Menu {
                           val notificationMessage =
                             s"${player.getName}が全てのスキルを習得し、アサルト・アーマーを解除しました！"
 
-                          import cats.effect.implicits._
-
                           (
                             unlockedState.obtained(SeichiSkill.AssaultArmor),
                             SequentialEffect(
                               MessageEffect(s"$YELLOW${BOLD}全てのスキルを習得し、アサルト・アーマーを解除しました"),
-                              Kleisli.liftF(
-                                DiscordNotificationAPI[F]
-                                  .sendPlainText(notificationMessage)
-                                  .toIO
-                              ),
+                              Kleisli
+                                .liftF(globalNotification.sendPlainText(notificationMessage)),
                               Kleisli.liftF(
                                 SendMessageEffect.sendMessageToEveryoneIgnoringPreferenceIO(
                                   s"$GOLD$BOLD$notificationMessage"
@@ -430,7 +421,6 @@ object ActiveSkillMenu extends Menu {
                   SequentialEffect(
                     skill match {
                       case skill: AssaultSkill =>
-                        import cats.implicits._
                         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
                         import environment.manaApi
 

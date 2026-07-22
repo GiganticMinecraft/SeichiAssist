@@ -1,6 +1,8 @@
 package com.github.unchama.seichiassist.commands
 
-import cats.effect.{Effect => CatsEffect}
+import cats.effect.{Async => CatsEffect}
+import cats.effect.IO
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.FastDiggingSettingsWriteApi
@@ -11,8 +13,10 @@ import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 
-// TODO: Effect.toIOKを剥がす
-class EffectCommand[F[_]: CatsEffect](api: FastDiggingSettingsWriteApi[F, Player]) {
+// TODO: Async.toIOKを剥がす
+class EffectCommand[F[_]: CatsEffect: [f[_]] =>> ContextCoercion[f, IO]](
+  api: FastDiggingSettingsWriteApi[F, Player]
+) {
   private val printUsageExecutor = playerCommandBuilder.buildWithEffectAsExecution(
     MessageEffectF(
       List(
@@ -39,7 +43,7 @@ class EffectCommand[F[_]: CatsEffect](api: FastDiggingSettingsWriteApi[F, Player
             s"${RED}採掘速度上昇効果:OFF"
         }
       }
-    } >> MessageEffectF("再度 /ef コマンドを実行することでトグルします。")).mapK(CatsEffect.toIOK)
+    } >> MessageEffectF("再度 /ef コマンドを実行することでトグルします。")).mapK(ContextCoercion.asFunctionK[F, IO])
   }
 
   private val messageFlagToggleExecutor = playerCommandBuilder.buildWithEffectAsExecution {
@@ -55,7 +59,7 @@ class EffectCommand[F[_]: CatsEffect](api: FastDiggingSettingsWriteApi[F, Player
           }
         }
       }
-      .mapK(CatsEffect.toIOK)
+      .mapK(ContextCoercion.asFunctionK[F, IO])
   }
 
   val executor: TabExecutor = BranchedExecutor(

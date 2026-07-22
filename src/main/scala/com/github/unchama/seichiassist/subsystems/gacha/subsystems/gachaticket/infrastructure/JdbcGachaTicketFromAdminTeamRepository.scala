@@ -15,19 +15,17 @@ import java.util.UUID
 class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextShift]
     extends GachaTicketFromAdminTeamRepository[F] {
 
-  import cats.implicits._
-
   /**
    * @return 呼び出された時点で永続化バックエンド中にある全プレイヤーの「運営からのガチャ券」を増加させる作用
    */
   override def addToAllKnownPlayers(amount: GachaTicketAmount): F[Unit] = {
     // NOTE: apply関数はBooleanを返すのでdelayメソッドには型明示が必要
-    NonServerThreadContextShift[F].shift >> Sync[F].delay[Unit] {
+    NonServerThreadContextShift[F].evalOn(Sync[F].delay[Unit] {
       DB.localTx { implicit session =>
         sql"update playerdata set numofsorryforbug = numofsorryforbug + ${amount.value}"
           .execute()
       }
-    }
+    })
   }
 
   /**
@@ -37,7 +35,7 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
     amount: GachaTicketAmount,
     playerName: PlayerName
   ): F[GrantResultOfGachaTicketFromAdminTeam] = {
-    NonServerThreadContextShift[F].shift >> Sync[F].delay {
+    NonServerThreadContextShift[F].evalOn(Sync[F].delay {
       DB.localTx { implicit session =>
         val affectedRows =
           sql"UPDATE playerdata SET numofsorryforbug = numofsorryforbug + ${amount.value} WHERE name = ${playerName.name}"
@@ -45,7 +43,7 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
 
         getReceiptResult(affectedRows)
       }
-    }
+    })
   }
 
   /**
@@ -55,7 +53,7 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
     amount: GachaTicketAmount,
     uuid: UUID
   ): F[GrantResultOfGachaTicketFromAdminTeam] = {
-    NonServerThreadContextShift[F].shift >> Sync[F].delay {
+    NonServerThreadContextShift[F].evalOn(Sync[F].delay {
       DB.localTx { implicit session =>
         val affectedRows =
           sql"UPDATE playerdata SET numofsorryforbug = numofsorryforbug + ${amount.value} WHERE uuid = ${uuid.toString}"
@@ -63,11 +61,11 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
 
         getReceiptResult(affectedRows)
       }
-    }
+    })
   }
 
   override def receive(uuid: UUID): F[GachaTicketAmount] = {
-    NonServerThreadContextShift[F].shift >> Sync[F].delay {
+    NonServerThreadContextShift[F].evalOn(Sync[F].delay {
       DB.localTx { implicit session =>
         val hasAmount =
           sql"SELECT numofsorryforbug FROM playerdata WHERE uuid = ${uuid.toString} FOR UPDATE"
@@ -87,7 +85,7 @@ class JdbcGachaTicketFromAdminTeamRepository[F[_]: Sync: NonServerThreadContextS
 
         GachaTicketAmount(receiveAmount)
       }
-    }
+    })
   }
 
   private def getReceiptResult(updatedRows: Int): GrantResultOfGachaTicketFromAdminTeam =

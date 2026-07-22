@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gachapoint.bukkit
 
-import cats.effect.{IO, LiftIO}
+import cats.effect.IO
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.factories.BukkitGachaSkullData
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.GrantGachaTicketToAPlayer
@@ -13,9 +14,10 @@ import org.bukkit.ChatColor.{GOLD, WHITE}
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 
-case class GrantBukkitGachaTicketToAPlayer[F[_]: LiftIO](player: Player)(
-  implicit ioOnMainThread: OnMinecraftServerThread[IO]
-) extends GrantGachaTicketToAPlayer[F] {
+case class GrantBukkitGachaTicketToAPlayer[F[_]: [f[_]] =>> ContextCoercion[IO, f]](
+  player: Player
+)(implicit ioOnMainThread: OnMinecraftServerThread[IO])
+    extends GrantGachaTicketToAPlayer[F] {
 
   override def give(count: Int): F[Unit] = {
     val effect =
@@ -30,7 +32,7 @@ case class GrantBukkitGachaTicketToAPlayer[F[_]: LiftIO](player: Player)(
         )
       } else emptyEffect
 
-    LiftIO[F].liftIO {
+    ContextCoercion[IO, F, Unit] {
       effect(player)
     }
   }

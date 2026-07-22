@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.idletime.domain
 
 import cats.effect.Sync
-import cats.effect.concurrent.Ref
+import cats.effect.Ref
 
 class PlayerIdleMinuteRepository[F[_]: Sync] {
 
