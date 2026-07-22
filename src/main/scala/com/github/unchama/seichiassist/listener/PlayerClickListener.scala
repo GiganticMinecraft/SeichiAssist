@@ -242,9 +242,10 @@ class PlayerClickListener(
     }
 
     val clickedBlock = e.getClickedBlock
-    val skullData = ItemInformation.getSkullDataFromBlock(clickedBlock).getOrElse {
+    val skullData = ItemInformation.getSkullDataFromBlock(clickedBlock) match {
+      case Some(data) => data
       // 頭じゃない場合無視
-      return
+      case None => return
     }
 
     // 壊せない場合無視

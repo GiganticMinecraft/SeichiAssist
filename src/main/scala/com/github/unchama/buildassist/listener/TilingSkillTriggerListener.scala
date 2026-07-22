@@ -161,40 +161,42 @@ class TilingSkillTriggerListener[G[_]: [g[_]] =>> ContextCoercion[g, IO], F[_]: 
               placementCount += 1
             }
 
-            def consumeOnePlacementItemFromInventory(): Option[Unit] = {
-              @scala.annotation.tailrec
-              def forever(block: => Unit): Nothing = {
-                block; forever(block)
-              }
+            def consumeOnePlacementItemFromInventory(): Option[Unit] =
+              scala.util.boundary[Option[Unit]] {
+                @scala.annotation.tailrec
+                def forever(block: => Unit): Nothing = {
+                  block; forever(block)
+                }
 
-              // インベントリの左上から一つずつ確認する。
-              // 一度「該当アイテムなし」と判断したスロットは次回以降スキップする
-              forever {
-                val consumptionSource = playerInventory.getItem(itemSourceSearchInventoryIndex)
+                // インベントリの左上から一つずつ確認する。
+                // 一度「該当アイテムなし」と判断したスロットは次回以降スキップする
+                forever {
+                  val consumptionSource =
+                    playerInventory.getItem(itemSourceSearchInventoryIndex)
 
-                if (consumptionSource != null && consumptionSource.isSimilar(offHandItem)) {
-                  val sourceStackAmount = consumptionSource.getAmount
+                  if (consumptionSource != null && consumptionSource.isSimilar(offHandItem)) {
+                    val sourceStackAmount = consumptionSource.getAmount
 
-                  // 取得したインベントリデータから数量を1ひき、インベントリに反映する
-                  val updatedItem =
-                    if (sourceStackAmount == 1)
-                      new ItemStack(Material.AIR)
-                    else
-                      consumptionSource.clone().tap(_.setAmount(sourceStackAmount - 1))
-                  playerInventory.setItem(itemSourceSearchInventoryIndex, updatedItem)
+                    // 取得したインベントリデータから数量を1ひき、インベントリに反映する
+                    val updatedItem =
+                      if (sourceStackAmount == 1)
+                        new ItemStack(Material.AIR)
+                      else
+                        consumptionSource.clone().tap(_.setAmount(sourceStackAmount - 1))
+                    playerInventory.setItem(itemSourceSearchInventoryIndex, updatedItem)
 
-                  return Some(())
-                } else {
-                  if (itemSourceSearchInventoryIndex == 35) {
-                    itemSourceSearchInventoryIndex = 0
-                  } else if (itemSourceSearchInventoryIndex == 8) {
-                    return None
+                    scala.util.boundary.break(Some(()))
                   } else {
-                    itemSourceSearchInventoryIndex += 1
+                    if (itemSourceSearchInventoryIndex == 35) {
+                      itemSourceSearchInventoryIndex = 0
+                    } else if (itemSourceSearchInventoryIndex == 8) {
+                      scala.util.boundary.break(None)
+                    } else {
+                      itemSourceSearchInventoryIndex += 1
+                    }
                   }
                 }
               }
-            }
 
             if (replaceableMaterials.contains(targetSurfaceBlock.getType)) {
               // 他人の保護がかかっている場合は処理を終了

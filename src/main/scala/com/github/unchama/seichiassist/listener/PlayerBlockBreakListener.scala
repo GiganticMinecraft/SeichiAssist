@@ -53,13 +53,15 @@ class PlayerBlockBreakListener(
 
   // アクティブスキルの実行
   @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
-  def onPlayerActiveSkillEvent(event: BlockBreakEvent): Unit = {
+  def onPlayerActiveSkillEvent(event: BlockBreakEvent): Unit = scala.util.boundary {
     val player = event.getPlayer
 
     if (!player.getWorld.isSeichiSkillAllowed) return
 
-    val block =
-      MaterialSets.refineBlock(event.getBlock, MaterialSets.materials).getOrElse(return)
+    val block = MaterialSets.refineBlock(event.getBlock, MaterialSets.materials) match {
+      case Some(block) => block
+      case None        => return
+    }
 
     // 重力値によるキャンセル判定(スキル判定より先に判定させること)
     val gravity = BreakUtil.getGravity(player, block, isAssault = false)
@@ -76,9 +78,13 @@ class PlayerBlockBreakListener(
     }
 
     // 実際に使用するツール
-    val tool: BreakTool = MaterialSets
-      .refineItemStack(player.getInventory.getItemInMainHand, MaterialSets.breakToolMaterials)
-      .getOrElse(return)
+    val tool: BreakTool = MaterialSets.refineItemStack(
+      player.getInventory.getItemInMainHand,
+      MaterialSets.breakToolMaterials
+    ) match {
+      case Some(tool) => tool
+      case None       => return
+    }
 
     // 耐久値がマイナスかつ耐久無限ツールでない時処理を終了
     if (
@@ -102,7 +108,10 @@ class PlayerBlockBreakListener(
     }
 
     // 選択したスキル
-    val selectedSkill = skillState.activeSkill.getOrElse(return)
+    val selectedSkill = skillState.activeSkill match {
+      case Some(skill) => skill
+      case None        => return
+    }
     if (!selectedSkill.range.isInstanceOf[MultiArea] || skillState.usageMode == Disabled) return
 
     // 消費するマナが不足しているか判定
@@ -145,7 +154,7 @@ class PlayerBlockBreakListener(
         manaApi.manaAmount(player).canAcquire(manaToConsumeOnBreakArea).unsafeRunSync() match {
           case false if isBreakBlockManaFullyConsumed(player).unsafeRunSync() =>
             event.setCancelled(true)
-            return
+            scala.util.boundary.break()
           case _ =>
         }
       }

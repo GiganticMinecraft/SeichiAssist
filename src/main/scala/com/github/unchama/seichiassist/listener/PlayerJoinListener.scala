@@ -40,7 +40,7 @@ class PlayerJoinListener extends Listener {
     "プレーヤーデータの読み込みに失敗しました。再接続しても読み込まれない場合管理者に連絡してください。"
 
   @EventHandler
-  def onPlayerPreLoginEvent(event: AsyncPlayerPreLoginEvent): Unit = {
+  def onPlayerPreLoginEvent(event: AsyncPlayerPreLoginEvent): Unit = scala.util.boundary {
     val maxTryCount = 10
 
     (1 until maxTryCount + 1).foreach { tryCount =>
@@ -48,7 +48,7 @@ class PlayerJoinListener extends Listener {
 
       try {
         loadPlayerData(event.getUniqueId, event.getName)
-        return
+        scala.util.boundary.break()
       } catch {
         case e: Exception =>
           if (isLastTry) {
@@ -57,7 +57,7 @@ class PlayerJoinListener extends Listener {
 
             event.setKickMessage(failedToLoadDataError)
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER)
-            return
+            scala.util.boundary.break()
           }
       }
 
