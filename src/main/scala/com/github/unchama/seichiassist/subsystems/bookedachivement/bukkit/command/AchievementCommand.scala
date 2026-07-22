@@ -1,9 +1,12 @@
 package com.github.unchama.seichiassist.subsystems.bookedachivement.bukkit.command
 
+import com.github.unchama.toIO
+
 import cats.data.Kleisli
-import cats.effect.{ConcurrentEffect, IO}
+import cats.effect.{Async, IO}
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.bookedachivement.domain.AchievementOperation
 import com.github.unchama.seichiassist.subsystems.bookedachivement.service.AchievementBookingService
@@ -75,7 +78,7 @@ object AchievementCommand {
   )
 
   // TODO: パーサーを分けるべき
-  def executor[F[_]: ConcurrentEffect](
+  def executor[F[_]: Async: [f[_]] =>> ContextCoercion[f, IO]](
     implicit service: AchievementBookingService[F]
   ): TabExecutor = ContextualExecutorBuilder
     .beginConfiguration
@@ -108,7 +111,7 @@ object AchievementCommand {
               }
           }
 
-        import cats.effect.implicits._
+        import cats.effect.syntax.all._
         import cats.implicits._
 
         targetPlayerNames.map { playerName =>

@@ -1,6 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.mebius.bukkit.listeners
 
-import cats.effect.SyncIO
+import com.github.unchama.toIO
+
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.ManagedWorld._
@@ -18,7 +22,7 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
 class MebiusLevelUpTrialListener(
   implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]],
-  effectEnvironment: EffectEnvironment,
+  effectEnvironment: EffectEnvironment[IO],
   messages: PropertyModificationMessages
 ) extends Listener {
 

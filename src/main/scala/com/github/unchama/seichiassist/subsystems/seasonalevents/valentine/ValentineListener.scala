@@ -1,8 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.valentine
 
-import cats.effect.{ConcurrentEffect, IO, LiftIO}
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
+import cats.effect.{Async, IO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.randomlyDropItemAt
 import com.github.unchama.seichiassist.subsystems.seasonalevents.domain.LastQuitPersistenceRepository
@@ -29,8 +32,10 @@ import org.bukkit.potion.{PotionEffect, PotionEffectType}
 import java.util.{Random, UUID}
 import scala.util.chaining._
 
-class ValentineListener[F[_]: ConcurrentEffect: NonServerThreadContextShift](
-  implicit effectEnvironment: EffectEnvironment,
+class ValentineListener[
+  F[_]: Async: NonServerThreadContextShift: [f[_]] =>> ContextCoercion[IO, f]
+](
+  implicit effectEnvironment: EffectEnvironment[F],
   repository: LastQuitPersistenceRepository[F, UUID],
   ioOnMainThread: OnMinecraftServerThread[IO]
 ) extends Listener {
@@ -88,9 +93,8 @@ class ValentineListener[F[_]: ConcurrentEffect: NonServerThreadContextShift](
 
     import cats.implicits._
     val program = for {
-      _ <- NonServerThreadContextShift[F].shift
       lastQuit <- repository.loadPlayerLastQuit(playerUuid)
-      _ <- LiftIO[F].liftIO {
+      _ <- ContextCoercion[IO, F, Unit] {
         val hasNotJoinedBeforeYet = lastQuit.forall(EVENT_DURATION.isEntirelyAfter)
 
         val effects =
@@ -140,7 +144,7 @@ class ValentineListener[F[_]: ConcurrentEffect: NonServerThreadContextShift](
         new NBTItem(item).getString(NBTTagConstants.producerNameTag)
       )
       sendMessageToEveryoneIgnoringPreferenceIO(messages(new Random().nextInt(messages.size)))
-        .unsafeRunAsyncAndForget()
+        .unsafeRunAndForget()
     }
     player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0f, 1.2f)
   }

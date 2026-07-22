@@ -1,13 +1,16 @@
 package com.github.unchama.contextualexecutor.builder
 
+import com.github.unchama.toIO
+
 import cats.data.{Kleisli, OptionT}
-import cats.effect.{Effect, IO}
+import cats.effect.{Async, IO}
 import com.github.unchama.contextualexecutor.{
   ContextualExecutor,
   ParsedArgCommandContext,
   PartiallyParsedArgs,
   RawCommandContext
 }
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.command.CommandSender
@@ -148,11 +151,11 @@ case class ContextualExecutorBuilder[CS <: CommandSender, HArgs <: Tuple](
    *
    * [ContextualExecutor]の制約にあるとおり, [execution]は任意スレッドでの実行に対応しなければならない.
    */
-  def buildWithExecutionF[F[_]: Effect, U](
+  def buildWithExecutionF[F[_]: Async: [f[_]] =>> ContextCoercion[f, IO], U](
     execution: ExecutionF[F, CS, U, HArgs]
   ): ContextualExecutor =
     buildWith(context => {
-      Effect[F].toIO(execution(context)).as(TargetedEffect.emptyEffect)
+      execution(context).toIO.as(TargetedEffect.emptyEffect)
     })
 
   /**
@@ -161,7 +164,7 @@ case class ContextualExecutorBuilder[CS <: CommandSender, HArgs <: Tuple](
    *
    * [[ContextualExecutor]]の制約にあるとおり, `execution` は任意スレッドからの呼び出しに対応しなければならない.
    */
-  def buildWithExecutionCSEffect[F[_]: Effect, U](
+  def buildWithExecutionCSEffect[F[_]: Async: [f[_]] =>> ContextCoercion[f, IO], U](
     execution: ExecutionCSEffect[F, CS, U, HArgs]
   ): ContextualExecutor =
     buildWithExecutionF[F, U](context => execution(context).run(context.sender))

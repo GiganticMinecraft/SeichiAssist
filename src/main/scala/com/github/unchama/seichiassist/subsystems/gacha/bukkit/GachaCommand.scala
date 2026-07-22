@@ -1,7 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.gacha.bukkit
 
+import com.github.unchama.toIO
+
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
 import cats.data.Kleisli
-import cats.effect.{ConcurrentEffect, Sync}
+import cats.effect.{Async, Sync}
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.ParserResponse.{failWith, succeedWith}
 import com.github.unchama.contextualexecutor.builder.{
@@ -10,6 +14,7 @@ import com.github.unchama.contextualexecutor.builder.{
   SingleArgumentParser
 }
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.minecraft.bukkit.algebra.CloneableBukkitItemStack.instance
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
@@ -40,14 +45,16 @@ import java.time.format.DateTimeFormatter
 import java.util.UUID
 import scala.util.chaining.scalaUtilChainingOps
 
-class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
+class GachaCommand[
+  F[_]: OnMinecraftServerThread: Async: [f[_]] =>> ContextCoercion[f, cats.effect.IO]
+](
   implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
   canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack],
   gachaTicketAPI: GachaTicketAPI[F]
 ) {
 
   import cats.implicits._
-  import cats.effect.implicits._
+  import cats.effect.syntax.all._
 
   private val printDescriptionExecutor = EchoExecutor(
     MessageEffect(

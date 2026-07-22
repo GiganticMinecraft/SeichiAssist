@@ -1,11 +1,10 @@
 package com.github.unchama.fs2.workaround.fs3
 
-import cats.Applicative
-import cats.effect.concurrent.Ref
-import cats.effect.{Bracket, Concurrent, Resource, Sync}
+import cats.effect.std.Dispatcher
+import cats.effect.{Async, Ref, Resource, Sync}
 import com.github.unchama.generic.effect.concurrent.AsymmetricTryableDeferred
 import fs2.concurrent.SignallingRef
-import fs2.{INothing, Pipe, Stream}
+import fs2.{Pipe, Stream}
 
 import scala.collection.immutable.LongMap
 
@@ -124,7 +123,7 @@ trait Fs3Topic[F[_], A] { self =>
    * Returns an alternate view of this `Topic` where its elements are of type `B`, given two
    * functions, `A => B` and `B => A`.
    */
-  def imap[B](f: A => B)(g: B => A)(implicit F: Applicative[F]): Fs3Topic[F, B] =
+  def imap[B](f: A => B)(g: B => A): Fs3Topic[F, B] =
     new Fs3Topic[F, B] {
       def publish: Pipe[F, B, Nothing] = sfb => self.publish(sfb.map(g))
       def publish1(b: B): F[Either[Fs3Topic.Closed, Unit]] = self.publish1(g(b))
@@ -145,80 +144,90 @@ object Fs3Topic {
 
   import cats.implicits._
 
-  def apply[F[_], A](implicit F: Concurrent[F]): F[Fs3Topic[F, A]] =
-    in[F, F, A]
+  def apply[F[_], A](implicit F: Async[F]): F[Fs3Topic[F, A]] =
+    (
+      Ref.of[F, (LongMap[Fs3Channel[F, A]], Long)](LongMap.empty[Fs3Channel[F, A]] -> 1L),
+      SignallingRef[F, Int](0),
+      AsymmetricTryableDeferred.concurrent[F, Unit]
+    ).mapN(build[F, A])
 
   /**
    * Constructs a Topic
    */
-  def in[G[_], F[_], A](implicit G: Sync[G], F: Concurrent[F]): G[Fs3Topic[F, A]] =
+  def in[G[_], F[_], A](
+    implicit G: Sync[G],
+    F: Async[F],
+    dispatcher: Dispatcher[F]
+  ): G[Fs3Topic[F, A]] =
     (
       Ref.in[G, F, (LongMap[Fs3Channel[F, A]], Long)](LongMap.empty[Fs3Channel[F, A]] -> 1L),
-      SignallingRef.in[G, F, Int](0),
+      G.delay(dispatcher.unsafeRunSync(SignallingRef[F, Int](0))),
       AsymmetricTryableDeferred.concurrentIn[F, G, Unit]
-    ).mapN {
-      case (state, subscriberCount, signalClosure) =>
-        new Fs3Topic[F, A] {
-          def foreach[B](lm: LongMap[B])(f: B => F[Unit]): F[Unit] =
-            lm.foldLeft(F.unit) { case (op, (_, b)) => op >> f(b) }
+    ).mapN(build[F, A])
 
-          def publish1(a: A): F[Either[Fs3Topic.Closed, Unit]] =
-            signalClosure.tryGet[F].flatMap {
-              case Some(_) => Fs3Topic.closed.pure[F]
-              case None    =>
-                state
-                  .get
-                  .flatMap { case (subs, _) => foreach(subs)(_.send(a).void) }
-                  .as(Fs3Topic.rightUnit)
-            }
+  private def build[F[_], A](
+    state: Ref[F, (LongMap[Fs3Channel[F, A]], Long)],
+    subscriberCount: SignallingRef[F, Int],
+    signalClosure: AsymmetricTryableDeferred[F, Unit]
+  )(implicit F: Async[F]): Fs3Topic[F, A] =
+    new Fs3Topic[F, A] {
+      def foreach[B](lm: LongMap[B])(f: B => F[Unit]): F[Unit] =
+        lm.foldLeft(F.unit) { case (op, (_, b)) => op >> f(b) }
 
-          def subscribeAwait(maxQueued: Int): Resource[F, Stream[F, A]] = Resource.suspend {
-            for {
-              channel <- Fs3Channel.bounded[F, A](maxQueued)
-            } yield {
-              val subscribe = state.modify {
-                case (subs, id) =>
-                  (subs.updated(id, channel), id + 1) -> id
-              } <* subscriberCount.update(_ + 1)
-
-              def unsubscribe(id: Long) =
-                state.modify {
-                  case (subs, nextId) =>
-                    // _After_ we remove the bounded channel for this
-                    // subscriber, we need to drain it to unblock to
-                    // publish loop which might have already enqueued
-                    // something.
-                    def drainChannel: F[Unit] =
-                      subs.get(id).traverse_ { chan => chan.close >> chan.stream.compile.drain }
-
-                    (subs - id, nextId) -> drainChannel
-                }.flatten >> subscriberCount.update(_ - 1)
-
-              Resource.make(subscribe)(unsubscribe).as(channel.stream)
-            }
-          }
-
-          def publish: Pipe[F, A, INothing] = { in =>
-            (in ++ Stream.eval_(close)).evalMap(publish1).takeWhile(_.isRight).drain
-          }
-
-          def subscribe(maxQueued: Int): Stream[F, A] =
-            Stream.resource(subscribeAwait(maxQueued)).flatten
-
-          def subscribers: Stream[F, Int] = subscriberCount.discrete
-
-          def close: F[Unit] = {
-            Bracket[F, Throwable].uncancelable {
-              signalClosure.complete(()).flatMap { _ =>
-                state.get.flatMap { case (subs, _) => foreach(subs)(_.close.void) }
-//                  .as(Fs3Topic.rightUnit)
-              }
-            }
-          }
-
-          def closed: F[Unit] = signalClosure.get
-          def isClosed: F[Boolean] = signalClosure.tryGet[F].map(_.isDefined)
+      def publish1(a: A): F[Either[Fs3Topic.Closed, Unit]] =
+        signalClosure.tryGet.flatMap {
+          case Some(_) => Fs3Topic.closed.pure[F]
+          case None    =>
+            state
+              .get
+              .flatMap { case (subs, _) => foreach(subs)(_.send(a).void) }
+              .as(Fs3Topic.rightUnit)
         }
+
+      def subscribeAwait(maxQueued: Int): Resource[F, Stream[F, A]] =
+        Resource.eval(Fs3Channel.bounded[F, A](maxQueued)).flatMap { channel =>
+          val subscribe = state.modify {
+            case (subs, id) =>
+              (subs.updated(id, channel), id + 1) -> id
+          } <* subscriberCount.update(_ + 1)
+
+          def unsubscribe(id: Long) =
+            state.modify {
+              case (subs, nextId) =>
+                // _After_ we remove the bounded channel for this
+                // subscriber, we need to drain it to unblock to
+                // publish loop which might have already enqueued
+                // something.
+                def drainChannel: F[Unit] =
+                  subs.get(id).traverse_ { chan => chan.close >> chan.stream.compile.drain }
+
+                (subs - id, nextId) -> drainChannel
+            }.flatten >> subscriberCount.update(_ - 1)
+
+          Resource.make(subscribe)(unsubscribe).as(channel.stream)
+        }
+
+      def publish: Pipe[F, A, Nothing] = { in =>
+        (in ++ Stream.exec(close)).evalMap(publish1).takeWhile(_.isRight).drain
+      }
+
+      def subscribe(maxQueued: Int): Stream[F, A] =
+        Stream.resource(subscribeAwait(maxQueued)).flatten
+
+      def subscribers: Stream[F, Int] = subscriberCount.discrete
+
+      def close: F[Unit] = {
+        F.uncancelable { _ =>
+          signalClosure.complete(()).flatMap { firstClosure =>
+            if (firstClosure)
+              state.get.flatMap { case (subs, _) => foreach(subs)(_.close.void) }
+            else F.unit
+          }
+        }
+      }
+
+      def closed: F[Unit] = signalClosure.get
+      def isClosed: F[Boolean] = signalClosure.tryGet.map(_.isDefined)
     }
 
   private final val closed: Either[Closed, Unit] = Left(Closed)

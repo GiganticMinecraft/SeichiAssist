@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.dragonnighttime.application
 
-import cats.effect.{Concurrent, Sync, Timer}
+import cats.effect.{Async, Clock, Sync}
 import com.github.unchama.concurrent.RepeatingRoutine
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.FastDiggingEffectWriteApi
@@ -13,14 +13,10 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaMultiplier
 import com.github.unchama.util.time.LocalTimeUtil
 
-import java.time.{Instant, LocalDateTime, ZoneId}
-import java.util.concurrent.TimeUnit
+import java.time.ZoneId
 
 object DragonNightTimeRoutine {
-  def apply[F[_]: Concurrent: CanBroadcast: Timer, G[_]: [f[_]] =>> ContextCoercion[
-    f,
-    F
-  ], Player](
+  def apply[F[_]: Async: CanBroadcast, G[_]: [f[_]] =>> ContextCoercion[f, F], Player](
     implicit fastDiggingEffectApi: FastDiggingEffectWriteApi[F, Player],
     manaApi: ManaApi[F, G, Player]
   ): F[Nothing] = {
@@ -28,11 +24,8 @@ object DragonNightTimeRoutine {
     import scala.concurrent.duration.FiniteDuration
 
     val todayEffectivePeriod =
-      Timer[F].clock.realTime(TimeUnit.MILLISECONDS).map { currentEpochMilli =>
-        val currentLocalDate =
-          LocalDateTime
-            .ofInstant(Instant.ofEpochMilli(currentEpochMilli), ZoneId.systemDefault())
-            .toLocalDate
+      Clock[F].realTimeInstant.map { instant =>
+        val currentLocalDate = instant.atZone(ZoneId.systemDefault()).toLocalDate
 
         DragonNightTimeImpl.effectivePeriod(currentLocalDate)
       }
@@ -43,11 +36,8 @@ object DragonNightTimeRoutine {
       getIntervalToNextExecution <- {
         import cats.implicits._
 
-        Timer[F].clock.realTime(TimeUnit.MILLISECONDS).map { currentEpochMilli =>
-          val currentLocalTime =
-            LocalDateTime
-              .ofInstant(Instant.ofEpochMilli(currentEpochMilli), ZoneId.systemDefault())
-              .toLocalTime
+        Clock[F].realTimeInstant.map { instant =>
+          val currentLocalTime = instant.atZone(ZoneId.systemDefault()).toLocalTime
 
           LocalTimeUtil.getDurationToNextTimeOfDay(currentLocalTime, dailyDragonNightTime)
         }
@@ -71,7 +61,7 @@ object DragonNightTimeRoutine {
       _ <- CanBroadcast[F].broadcast(
         s"今から${DragonNightTimeImpl.endAtString(effectivePeriod)}までの間、採掘速度上昇Lv10のバフが付与され、マナ使用率が80%になります。"
       )
-      _ <- Timer[F].sleep(effectivePeriod.toFiniteDuration)
+      _ <- Async[F].sleep(effectivePeriod.toFiniteDuration)
       _ <- ContextCoercion(manaApi.setManaConsumptionWithDragonNightTime(ManaMultiplier(1)))
       _ <- CanBroadcast[F].broadcast("ドラゲナイタイムが終了しました。")
     } yield ()

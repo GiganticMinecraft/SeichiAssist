@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.mebius
 
-import cats.effect.{ContextShift, IO, Sync, SyncEffect, SyncIO, Timer}
+import cats.effect.{IO, Sync, SyncIO}
 import com.github.unchama.concurrent.RepeatingTaskContext
 import com.github.unchama.datarepository.bukkit.player.{
   BukkitRepositoryControls,
@@ -8,6 +8,7 @@ import com.github.unchama.datarepository.bukkit.player.{
 }
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.mebius.application.repository.{
@@ -31,14 +32,14 @@ import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 
 import scala.util.Random
+import cats.effect.Temporal
 
 object System {
-  def wired[F[_]: Sync, G[_]: SeasonalEventsAPI: SyncEffect](
-    implicit effectEnvironment: EffectEnvironment,
-    timer: Timer[IO],
+  def wired[F[_]: Sync, G[_]: SeasonalEventsAPI: Sync: [g[_]] =>> ContextCoercion[g, SyncIO]](
+    implicit effectEnvironment: EffectEnvironment[IO],
+    timer: Temporal[IO],
     repeatingTaskContext: RepeatingTaskContext,
-    onMainThread: OnMinecraftServerThread[IO],
-    ioShift: ContextShift[IO]
+    onMainThread: OnMinecraftServerThread[IO]
   ): SyncIO[Subsystem[F]] = {
 
     implicit val messages: PropertyModificationMessages = PropertyModificationBukkitMessages

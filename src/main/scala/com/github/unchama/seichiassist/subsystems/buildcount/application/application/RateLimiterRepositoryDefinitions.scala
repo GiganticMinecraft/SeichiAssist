@@ -11,7 +11,6 @@ import com.github.unchama.seichiassist.subsystems.buildcount.application.Configu
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.BuildAmountRateLimiterSnapshot
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountRateLimitPersistence
-import io.chrisdavenport.cats.effect.time.JavaTime
 
 import java.time.ZoneId
 import java.util.concurrent.TimeUnit
@@ -20,7 +19,7 @@ object RateLimiterRepositoryDefinitions {
 
   import scala.concurrent.duration._
 
-  def initialization[G[_]: Sync: JavaTime: Clock](
+  def initialization[G[_]: Sync: Clock](
     implicit config: Configuration,
     persistence: BuildAmountRateLimitPersistence[G]
   ): SinglePhasedRepositoryInitialization[G, RateLimiter[G, BuildExpAmount]] = {
@@ -33,7 +32,9 @@ object RateLimiterRepositoryDefinitions {
       .extendPreparation { (_, _) => loadedRecordOpt =>
         {
           for {
-            currentLocalTime <- JavaTime[G].getLocalDateTime(ZoneId.systemDefault())
+            currentLocalTime <- Clock[G]
+              .realTimeInstant
+              .map(_.atZone(ZoneId.systemDefault()).toLocalDateTime)
             initialPermitCount = loadedRecordOpt.fold(max) { loadedRecord =>
               val duration = FiniteDuration(
                 java.time.Duration.between(loadedRecord.recordTime, currentLocalTime).toNanos,
@@ -58,7 +59,7 @@ object RateLimiterRepositoryDefinitions {
       }
   }
 
-  def finalization[F[_]: Sync: JavaTime, Player: HasUuid](
+  def finalization[F[_]: Sync: Clock, Player: HasUuid](
     implicit persistence: BuildAmountRateLimitPersistence[F]
   ): RepositoryFinalization[F, Player, RateLimiter[F, BuildExpAmount]] =
     RepositoryFinalization.withoutAnyFinalization {

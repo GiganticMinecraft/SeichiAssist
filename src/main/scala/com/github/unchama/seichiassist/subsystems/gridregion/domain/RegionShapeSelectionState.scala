@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gridregion.domain
 
 import cats.effect.Sync
-import cats.effect.concurrent.Ref
+import cats.effect.Ref
 
 class RegionShapeSelectionState[F[_]] private (
   private val regionUnitsReference: Ref[F, SubjectiveRegionShape]

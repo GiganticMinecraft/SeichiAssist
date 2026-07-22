@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.anywhereender
 
 import cats.data.Kleisli
-import cats.effect.{Effect, IO, LiftIO}
+import cats.effect.{Async, IO, LiftIO}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
@@ -27,7 +27,7 @@ object System {
   def wired[F[_]: [g[_]] =>> BreakCountReadAPI[IO, g, Player]: [f[_]] =>> ContextCoercion[
     f,
     G
-  ], G[_]: Effect](
+  ], G[_]: Async: [g[_]] =>> ContextCoercion[IO, g]: [g[_]] =>> ContextCoercion[g, IO]](
     configuration: SystemConfiguration
   )(implicit onMainThread: OnMinecraftServerThread[IO]): System[G] = new System[G] {
 
@@ -60,7 +60,7 @@ object System {
           case Right(_) =>
             Kleisli((player: Player) =>
               PlayerEffects.openInventoryEffect(player.getEnderChest).run(player)
-            ).mapK(LiftIO.liftK)
+            ).mapK(ContextCoercion.asFunctionK[IO, G])
         }
     }
 
