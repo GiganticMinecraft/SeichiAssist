@@ -5,7 +5,6 @@ import com.github.unchama.toIO
 import cats.data.Kleisli
 import cats.effect.{Async, Sync}
 import cats.implicits._
-import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.{
@@ -70,9 +69,9 @@ class PresentCommand {
        * 構文:
        *   - /present state
        */
-      def executor[
-        F[_]: Async: NonServerThreadContextShift: [f[_]] =>> ContextCoercion[f, cats.effect.IO]
-      ](implicit persistence: PresentPersistence[F, ItemStack]): ContextualExecutor =
+      def executor[F[_]: Async: [f[_]] =>> ContextCoercion[f, cats.effect.IO]](
+        implicit persistence: PresentPersistence[F, ItemStack]
+      ): ContextualExecutor =
         playerCommandBuilder.buildWith { context =>
           val eff = for {
             // off-main-thread
@@ -116,9 +115,9 @@ class PresentCommand {
        *
        *   - /present list &lt;page: PositiveInt&gt;
        */
-      def executor[
-        F[_]: Async: NonServerThreadContextShift: [f[_]] =>> ContextCoercion[f, cats.effect.IO]
-      ](implicit persistence: PresentPersistence[F, ItemStack]): ContextualExecutor =
+      def executor[F[_]: Async: [f[_]] =>> ContextCoercion[f, cats.effect.IO]](
+        implicit persistence: PresentPersistence[F, ItemStack]
+      ): ContextualExecutor =
         playerCommandBuilder
           .thenParse(
             Parsers.closedRangeInt[Int :| Positive](
@@ -168,11 +167,9 @@ class PresentCommand {
        *
        * 出力: 受け取った場合は、その旨表示する。失敗した場合は、適切なエラーメッセージを表示する。
        */
-      def executor[F[_]: Async: NonServerThreadContextShift: OnMinecraftServerThread: [f[
-        _
-      ]] =>> ContextCoercion[f, cats.effect.IO]](
-        implicit persistence: PresentPersistence[F, ItemStack]
-      ): ContextualExecutor =
+      def executor[
+        F[_]: Async: OnMinecraftServerThread: [f[_]] =>> ContextCoercion[f, cats.effect.IO]
+      ](implicit persistence: PresentPersistence[F, ItemStack]): ContextualExecutor =
         playerCommandBuilder
           .thenParse(presentIdParser)
           .ifArgumentsMissing(help)
@@ -226,9 +223,9 @@ class PresentCommand {
        *
        * 出力: 定義が成功した場合は、割り振られたアイテムのIDを表示する。失敗した場合は、適切なエラーメッセージを表示する。
        */
-      def executor[
-        F[_]: Async: NonServerThreadContextShift: [f[_]] =>> ContextCoercion[f, cats.effect.IO]
-      ](implicit persistence: PresentPersistence[F, ItemStack]): ContextualExecutor =
+      def executor[F[_]: Async: [f[_]] =>> ContextCoercion[f, cats.effect.IO]](
+        implicit persistence: PresentPersistence[F, ItemStack]
+      ): ContextualExecutor =
         playerCommandBuilder.buildWithExecutionCSEffect { context =>
           val player = context.sender
           if (player.hasPermission("seichiassist.present.define")) {
@@ -261,9 +258,9 @@ class PresentCommand {
        *
        * 出力: 操作の結果とそれに伴うメッセージ。
        */
-      def executor[
-        F[_]: Async: NonServerThreadContextShift: [f[_]] =>> ContextCoercion[f, cats.effect.IO]
-      ](implicit persistence: PresentPersistence[F, ItemStack]): ContextualExecutor =
+      def executor[F[_]: Async: [f[_]] =>> ContextCoercion[f, cats.effect.IO]](
+        implicit persistence: PresentPersistence[F, ItemStack]
+      ): ContextualExecutor =
         ContextualExecutorBuilder
           .beginConfiguration
           .thenParse(presentIdParser)
@@ -313,9 +310,7 @@ class PresentCommand {
        * 備考:
        *   - †: スペース区切り。
        */
-      def executor[
-        F[_]: Async: NonServerThreadContextShift: [f[_]] =>> ContextCoercion[f, cats.effect.IO]
-      ](
+      def executor[F[_]: Async: [f[_]] =>> ContextCoercion[f, cats.effect.IO]](
         implicit persistence: PresentPersistence[F, ItemStack],
         globalPlayerAccessor: UuidToLastSeenName[F]
       ): ContextualExecutor =
@@ -387,9 +382,7 @@ class PresentCommand {
        * 備考:
        *   - ✝: スペース区切り。
        */
-      def executor[
-        F[_]: Async: NonServerThreadContextShift: [f[_]] =>> ContextCoercion[f, cats.effect.IO]
-      ](
+      def executor[F[_]: Async: [f[_]] =>> ContextCoercion[f, cats.effect.IO]](
         implicit persistence: PresentPersistence[F, ItemStack],
         globalPlayerAccessor: UuidToLastSeenName[F]
       ): ContextualExecutor =
@@ -471,9 +464,9 @@ class PresentCommand {
     }
   }
 
-  def executor[F[_]: Async: NonServerThreadContextShift: OnMinecraftServerThread: [f[
-    _
-  ]] =>> ContextCoercion[f, cats.effect.IO]](
+  def executor[
+    F[_]: Async: OnMinecraftServerThread: [f[_]] =>> ContextCoercion[f, cats.effect.IO]
+  ](
     implicit persistence: PresentPersistence[F, ItemStack],
     globalPlayerAccessor: UuidToLastSeenName[F]
   ): TabExecutor = BranchedExecutor(

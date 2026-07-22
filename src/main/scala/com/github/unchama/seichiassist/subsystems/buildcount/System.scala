@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.buildcount
 
-import cats.effect.{Clock, Async, Sync}
+import cats.effect.{Async, Sync}
 import cats.effect.std.Dispatcher
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
@@ -54,7 +54,7 @@ object System {
     _
   ]: OnMinecraftServerThread: Async: Dispatcher: ErrorLogger: DiscordNotificationAPI, G[
     _
-  ]: Sync: UnsafeSyncRunner: [f[_]] =>> ContextCoercion[f, F]: Clock](
+  ]: Sync: UnsafeSyncRunner: [f[_]] =>> ContextCoercion[f, F]](
     implicit configuration: Configuration,
     getConnectedPlayers: GetConnectedPlayers[F, Player]
   ): F[System[F, G]] = {

@@ -4,7 +4,7 @@ import com.github.unchama.toIO
 
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
 
-import cats.effect.{Async, IO}
+import cats.effect.IO
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
@@ -20,7 +20,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 
-class GtToSiinaringo[F[_]: Async: [f[_]] =>> ContextCoercion[f, IO]](
+class GtToSiinaringo[F[_]: [f[_]] =>> ContextCoercion[f, IO]](
   implicit canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack],
   gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
   tradeItemFactory: StaticTradeItemFactory[ItemStack]

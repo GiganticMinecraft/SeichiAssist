@@ -10,7 +10,6 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effec
   FastDiggingEffect,
   FastDiggingEffectCause
 }
-import cats.effect.Temporal
 
 object PlayerCountEffectSynchronization {
 
@@ -18,7 +17,7 @@ object PlayerCountEffectSynchronization {
 
   import scala.concurrent.duration._
 
-  def using[F[_]: Async: Temporal: [f[_]] =>> GetConnectedPlayers[
+  def using[F[_]: Async: [f[_]] =>> GetConnectedPlayers[
     f,
     Player
   ]: GetNetworkConnectionCount, Player](

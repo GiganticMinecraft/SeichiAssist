@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.idletime
 
-import cats.effect.{IO, LiftIO, Sync, SyncIO}
+import cats.effect.{IO, Sync, SyncIO}
 import com.github.unchama.concurrent.RepeatingTaskContext
 import com.github.unchama.datarepository.bukkit.player.{
   BukkitRepositoryControls,
@@ -31,7 +31,7 @@ trait System[F[_], Player] extends Subsystem[F] {
 
 object System {
 
-  def wired[F[_]: Sync: LiftIO](
+  def wired[F[_]: Sync](
     implicit repeatingTaskContext: RepeatingTaskContext,
     onMainThread: OnMinecraftServerThread[IO]
   ): SyncIO[System[F, Player]] = {

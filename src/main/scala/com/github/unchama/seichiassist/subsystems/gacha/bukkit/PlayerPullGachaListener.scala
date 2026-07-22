@@ -4,7 +4,6 @@ import com.github.unchama.toIO
 
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
 
-import cats.effect.Async
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.DrawGacha
@@ -20,7 +19,7 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.{EquipmentSlot, ItemStack}
 import org.bukkit.{GameMode, Material}
 
-class PlayerPullGachaListener[F[_]: Async: [f[_]] =>> ContextCoercion[f, cats.effect.IO]](
+class PlayerPullGachaListener[F[_]: [f[_]] =>> ContextCoercion[f, cats.effect.IO]](
   implicit drawGacha: DrawGacha[F, Player],
   gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player]
 ) extends Listener {

@@ -6,7 +6,7 @@ import com.github.unchama.toIO
 
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
 
-import cats.effect.{Async, Sync, SyncIO}
+import cats.effect.SyncIO
 import cats.effect.IO
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.buildassist.BuildAssist
@@ -26,13 +26,11 @@ import org.bukkit.{Location, Material}
 import scala.util.chaining._
 import scala.util.control.Breaks
 
-class TilingSkillTriggerListener[G[_]: Async: [g[_]] =>> ContextCoercion[g, IO], F[_]: [f[
+class TilingSkillTriggerListener[G[_]: [g[_]] =>> ContextCoercion[g, IO], F[_]: [f[
   _
-]] =>> IncrementBuildExpWhenBuiltWithSkill[f, Player]: Sync: [f[_]] =>> ContextCoercion[
-  f,
-  SyncIO
-]](implicit mineStackAPI: MineStackAPI[G, Player, ItemStack])
-    extends Listener {
+]] =>> IncrementBuildExpWhenBuiltWithSkill[f, Player]: [f[_]] =>> ContextCoercion[f, SyncIO]](
+  implicit mineStackAPI: MineStackAPI[G, Player, ItemStack]
+) extends Listener {
 
   // 範囲設置スキルの発動を担うハンドラメソッド
   @EventHandler

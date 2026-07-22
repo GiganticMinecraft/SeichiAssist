@@ -11,7 +11,7 @@ import org.bukkit.entity.Player
 import java.time.ZoneId
 import scala.util.Random
 
-class BukkitFairySpeech[F[_]: Sync: Clock](
+class BukkitFairySpeech[F[_]: Sync](
   implicit fairyPersistence: FairyPersistence[F],
   fairySpeechAPI: FairySpeechAPI[F, Player]
 ) extends FairySpeech[F, Player] {

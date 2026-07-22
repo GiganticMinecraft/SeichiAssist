@@ -1,8 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents
 
 import cats.Functor
-import cats.effect.{Clock, Async, IO, Sync}
-import com.github.unchama.concurrent.NonServerThreadContextShift
+import cats.effect.{Clock, Async, IO}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
@@ -38,9 +37,10 @@ class System[F[_]](
 }
 
 object System {
-  def wired[F[_]: Async: NonServerThreadContextShift: [f[_]] =>> ContextCoercion[IO, f], G[
-    _
-  ]: Sync: [g[_]] =>> ContextCoercion[g, cats.effect.SyncIO], H[_]](instance: JavaPlugin)(
+  def wired[F[_]: Async: [f[_]] =>> ContextCoercion[IO, f], G[_]: [g[_]] =>> ContextCoercion[
+    g,
+    cats.effect.SyncIO
+  ], H[_]](instance: JavaPlugin)(
     implicit manaWriteApi: ManaWriteApi[G, Player],
     effectEnvironment: EffectEnvironment[F],
     ioOnMainThread: OnMinecraftServerThread[IO],

@@ -123,7 +123,7 @@ class PlayerBlockBreakListener(
       }
       breakAreaList.foreach { breakArea =>
         import com.github.unchama.seichiassist.data.syntax._
-        val BlockSearching.Result(breakBlocks, waterBlocks, lavaBlocks) =
+        val BlockSearching.Result(breakBlocks, _, _) =
           BlockSearching
             .searchForBlocksBreakableWithSkill(player, breakArea.gridPoints(), block)
             .unsafeRunSync()

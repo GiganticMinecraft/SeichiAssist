@@ -22,7 +22,7 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.infrastructure.{
 import com.github.unchama.seichiassist.subsystems.gachaprize.usecase.GachaPrizeUseCase
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import cats.effect.{Ref, Temporal}
+import cats.effect.Ref
 
 trait System[F[_]] extends Subsystem[F] {
   val api: GachaPrizeAPI[F, ItemStack, Player]
@@ -34,7 +34,7 @@ object System {
   import scala.concurrent.duration._
   import cats.implicits._
 
-  def wired[F[_]: Async: Temporal]: F[System[F]] = {
+  def wired[F[_]: Async]: F[System[F]] = {
     implicit val _serializeAndDeserialize: SerializeAndDeserialize[Nothing, ItemStack] =
       BukkitItemStackSerializeAndDeserialize
     implicit val _gachaPersistence: GachaPrizeListPersistence[F, ItemStack] =

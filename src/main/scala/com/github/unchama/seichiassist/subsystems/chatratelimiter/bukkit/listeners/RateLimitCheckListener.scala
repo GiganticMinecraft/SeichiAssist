@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.chatratelimiter.bukkit.listen
 
 import com.github.unchama.runSync
 
-import cats.effect.{Sync, SyncIO}
+import cats.effect.SyncIO
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.chatratelimiter.domain.{
   ChatPermissionRequestResult,
@@ -13,7 +13,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.AsyncPlayerChatEvent
 import org.bukkit.event.{EventHandler, Listener}
 
-class RateLimitCheckListener[F[_], G[_]: Sync: [g[_]] =>> ContextCoercion[g, SyncIO]](
+class RateLimitCheckListener[F[_], G[_]: [g[_]] =>> ContextCoercion[g, SyncIO]](
   implicit api: ObtainChatPermission[F, G, Player]
 ) extends Listener {
   @EventHandler

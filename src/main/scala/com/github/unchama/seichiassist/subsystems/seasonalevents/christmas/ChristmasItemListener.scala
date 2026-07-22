@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.seasonalevents.christmas
 
 import com.github.unchama.runSync
 
-import cats.effect.{Sync, SyncIO}
+import cats.effect.SyncIO
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.MaterialSets
@@ -31,7 +31,7 @@ import org.bukkit.{Bukkit, Sound}
 
 import java.util.Random
 
-class ChristmasItemListener[F[_], G[_]: Sync: [g[_]] =>> ContextCoercion[g, SyncIO]](
+class ChristmasItemListener[F[_], G[_]: [g[_]] =>> ContextCoercion[g, SyncIO]](
   instance: JavaPlugin
 )(implicit manaApi: ManaWriteApi[G, Player])
     extends Listener {

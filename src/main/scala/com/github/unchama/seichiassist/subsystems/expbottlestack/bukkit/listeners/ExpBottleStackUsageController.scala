@@ -6,7 +6,7 @@ import com.github.unchama.toIO
 
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
 
-import cats.effect.{Async, Sync, SyncIO}
+import cats.effect.{Async, SyncIO}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
@@ -23,7 +23,7 @@ import org.bukkit.inventory.ItemStack
 class ExpBottleStackUsageController[F[_]: Async: [f[_]] =>> ContextCoercion[
   f,
   cats.effect.IO
-], G[_]: Sync: [g[_]] =>> ContextCoercion[g, SyncIO]](
+], G[_]: [g[_]] =>> ContextCoercion[g, SyncIO]](
   implicit managedBottleScope: ResourceScope[F, G, ThrownExpBottle],
   effectEnvironment: EffectEnvironment[F]
 ) extends Listener {

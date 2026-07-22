@@ -17,9 +17,8 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effec
 import com.github.unchama.targetedeffect.commandsender.MessageEffectF
 
 import java.time.format.DateTimeFormatter
-import cats.effect.Temporal
 
-class JoinListener[F[_]: Async: Temporal](
+class JoinListener[F[_]: Async](
   implicit fastDiggingEffectApi: FastDiggingEffectWriteApi[F, Player],
   effectEnvironment: EffectEnvironment[F]
 ) extends Listener {

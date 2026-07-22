@@ -73,7 +73,7 @@ object BukkitFlyCommand {
       } yield TargetedEffect.emptyEffect
     }
 
-  private def addCommand[F[_]: Async: [f[_]] =>> ContextCoercion[f, IO], G[_]: Sync: [g[
+  private def addCommand[F[_]: [f[_]] =>> ContextCoercion[f, IO], G[_]: Sync: [g[
     _
   ]] =>> ContextCoercion[g, F]: [g[_]] =>> ContextCoercion[g, SyncIO]](
     implicit

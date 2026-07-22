@@ -26,7 +26,7 @@ import java.time.ZoneId
 import scala.concurrent.duration.FiniteDuration
 import scala.util.Random
 
-class BukkitRecoveryMana[F[_]: Async: Clock, G[_]: [f[_]] =>> ContextCoercion[f, F]](
+class BukkitRecoveryMana[F[_]: Async, G[_]: [f[_]] =>> ContextCoercion[f, F]](
   player: Player,
   fairySpeech: FairySpeech[F, Player]
 )(
