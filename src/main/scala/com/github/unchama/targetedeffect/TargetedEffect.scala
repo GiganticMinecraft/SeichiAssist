@@ -6,7 +6,6 @@ import cats.kernel.Monoid
 import cats.{Applicative, FlatMap}
 
 import scala.concurrent.duration.FiniteDuration
-import cats.effect.Temporal
 
 object TargetedEffect {
 
@@ -70,7 +69,7 @@ object UnfocusedEffect {
 }
 
 object DelayEffect {
-  def apply(duration: FiniteDuration)(implicit timer: Temporal[IO]): TargetedEffect[Any] =
+  def apply(duration: FiniteDuration): TargetedEffect[Any] =
     Kleisli.liftF(IO.sleep(duration))
 }
 

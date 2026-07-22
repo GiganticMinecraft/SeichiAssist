@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.listeners
 
-import cats.effect.Async
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import org.bukkit.Material
@@ -10,7 +9,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.EquipmentSlot
 
-class OpenPocketInventoryOnPlacingEnderPortalFrame[F[_]: Async](
+class OpenPocketInventoryOnPlacingEnderPortalFrame[F[_]](
   api: FourDimensionalPocketApi[F, Player],
   effectEnvironment: EffectEnvironment[F]
 ) extends Listener {

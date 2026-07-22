@@ -192,8 +192,6 @@ lazy val root = (project in file(".")).settings(
     // enumeratumのfindValuesがマクロでコンパニオンのツリーを参照するため
     "-Yretain-trees",
     "-Wunused:all",
-    "-Wvalue-discard",
-    "-Wnonunit-statement",
     // implicit valの初期化が自分自身を暗黙引数として解決すると、フィールドに
     // 未初期化のnullが格納される実行時バグになる（例: 匿名クラス内の
     // `override protected implicit val F: Monad[F] = implicitly`）。

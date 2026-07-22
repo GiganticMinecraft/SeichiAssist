@@ -17,12 +17,10 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.FiniteDuration
-import cats.effect.Temporal
 
 class MebiusPlayerJoinGreeter[F[_]](
   implicit effectEnvironment: EffectEnvironment[IO],
-  speechServiceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]],
-  timer: Temporal[IO]
+  speechServiceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]]
 ) extends Listener {
 
   @EventHandler(priority = EventPriority.MONITOR)

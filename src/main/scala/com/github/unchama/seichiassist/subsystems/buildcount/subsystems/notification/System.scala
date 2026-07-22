@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification
 
 import cats.effect.Async
-import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.minecraft.actions.{GetConnectedPlayers, OnMinecraftServerThread}
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
@@ -19,16 +18,26 @@ import org.bukkit.entity.Player
 
 object System {
 
-  def backgroundProcess[F[
-    _
-  ]: Async: ErrorLogger: OnMinecraftServerThread: DiscordNotificationAPI: [f[
-    _
-  ]] =>> ContextCoercion[f, cats.effect.IO], G[_], A](
+  def backgroundProcess[F[_]: Async: ErrorLogger, G[_], A](
     buildCountReadAPI: BuildCountAPI[F, G, Player]
-  )(implicit getConnectedPlayers: GetConnectedPlayers[F, Player]): F[A] = {
-    val notifyLevelUp: NotifyLevelUp[F, Player] = BukkitNotifyLevelUp[F]
+  )(
+    implicit getConnectedPlayers: GetConnectedPlayers[F, Player],
+    onMinecraftServerThread: OnMinecraftServerThread[F],
+    discordNotificationAPI: DiscordNotificationAPI[F]
+  ): F[A] = {
+    val notifyLevelUp: NotifyLevelUp[F, Player] = BukkitNotifyLevelUp[F](
+      using Async[F],
+      onMinecraftServerThread,
+      discordNotificationAPI,
+      getConnectedPlayers
+    )
     val notifyBuildAmountThreshold: NotifyBuildAmountThreshold[F, Player] =
-      BukkitNotifyBuildAmountThreshold[F]
+      BukkitNotifyBuildAmountThreshold[F](
+        using Async[F],
+        discordNotificationAPI,
+        onMinecraftServerThread,
+        getConnectedPlayers
+      )
     StreamExtra.compileToRestartingStream("[buildcount.notification]") {
       val levelNotification =
         buildCountReadAPI.buildLevelUpdates.evalMap {

@@ -4,7 +4,7 @@ import com.github.unchama.runSync
 
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
 
-import cats.effect.{IO, Sync, SyncIO}
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.seichiassist.ManagedWorld._
@@ -24,11 +24,10 @@ import org.bukkit.{Material, Sound}
 import scala.util.chaining.scalaUtilChainingOps
 import scala.util.control.Breaks
 
-class BlockLineUpTriggerListener[
-  F[_]: [f[_]] =>> IncrementBuildExpWhenBuiltWithSkill[f, Player]: Sync: [f[
-    _
-  ]] =>> ContextCoercion[f, SyncIO]
-](
+class BlockLineUpTriggerListener[F[_]: [f[_]] =>> IncrementBuildExpWhenBuiltWithSkill[
+  f,
+  Player
+]: [f[_]] =>> ContextCoercion[f, SyncIO]](
   implicit manaApi: ManaApi[IO, SyncIO, Player],
   mineStackAPI: MineStackAPI[IO, Player, ItemStack]
 ) extends Listener {

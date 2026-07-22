@@ -7,7 +7,6 @@ import cats.data.Kleisli
 import cats.effect.{Async, IO}
 import com.github.unchama.chatinterceptor.CancellationReason.Overridden
 import com.github.unchama.chatinterceptor.ChatInterceptionScope
-import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
@@ -30,11 +29,10 @@ import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 
-class HomeCommand[F[
-  _
-]: OnMinecraftServerThread: Async: NonServerThreadContextShift: HomeAPI: [f[
-  _
-]] =>> ContextCoercion[f, IO], G[_]: [f[_]] =>> ContextCoercion[f, F]](
+class HomeCommand[F[_]: OnMinecraftServerThread: Async: HomeAPI: [f[_]] =>> ContextCoercion[
+  f,
+  IO
+], G[_]: [f[_]] =>> ContextCoercion[f, F]](
   implicit scope: ChatInterceptionScope,
   breakCountReadAPI: BreakCountReadAPI[F, G, Player],
   buildCountReadAPI: BuildCountAPI[F, G, Player]

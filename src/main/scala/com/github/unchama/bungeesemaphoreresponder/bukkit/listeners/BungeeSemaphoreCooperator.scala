@@ -16,9 +16,7 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import scala.concurrent.duration.{Duration, FiniteDuration}
 import cats.effect.Temporal
 
-class BungeeSemaphoreCooperator[F[_]: Async: Temporal](
-  finalizers: List[PlayerDataFinalizer[F, Player]]
-)(
+class BungeeSemaphoreCooperator[F[_]: Async](finalizers: List[PlayerDataFinalizer[F, Player]])(
   implicit synchronization: BungeeSemaphoreSynchronization[F[Unit], PlayerName],
   configuration: Configuration,
   effectEnvironment: EffectEnvironment[F]

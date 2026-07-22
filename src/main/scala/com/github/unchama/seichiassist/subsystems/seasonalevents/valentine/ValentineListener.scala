@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.subsystems.seasonalevents.valentine
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
 
 import cats.effect.{Async, IO}
-import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
@@ -32,9 +31,7 @@ import org.bukkit.potion.{PotionEffect, PotionEffectType}
 import java.util.{Random, UUID}
 import scala.util.chaining._
 
-class ValentineListener[
-  F[_]: Async: NonServerThreadContextShift: [f[_]] =>> ContextCoercion[IO, f]
-](
+class ValentineListener[F[_]: Async: [f[_]] =>> ContextCoercion[IO, f]](
   implicit effectEnvironment: EffectEnvironment[F],
   repository: LastQuitPersistenceRepository[F, UUID],
   ioOnMainThread: OnMinecraftServerThread[IO]

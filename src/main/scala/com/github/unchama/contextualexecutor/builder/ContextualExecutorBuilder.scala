@@ -3,7 +3,7 @@ package com.github.unchama.contextualexecutor.builder
 import com.github.unchama.toIO
 
 import cats.data.{Kleisli, OptionT}
-import cats.effect.{Async, IO}
+import cats.effect.IO
 import com.github.unchama.contextualexecutor.{
   ContextualExecutor,
   ParsedArgCommandContext,
@@ -151,7 +151,7 @@ case class ContextualExecutorBuilder[CS <: CommandSender, HArgs <: Tuple](
    *
    * [ContextualExecutor]の制約にあるとおり, [execution]は任意スレッドでの実行に対応しなければならない.
    */
-  def buildWithExecutionF[F[_]: Async: [f[_]] =>> ContextCoercion[f, IO], U](
+  def buildWithExecutionF[F[_]: [f[_]] =>> ContextCoercion[f, IO], U](
     execution: ExecutionF[F, CS, U, HArgs]
   ): ContextualExecutor =
     buildWith(context => {
@@ -164,7 +164,7 @@ case class ContextualExecutorBuilder[CS <: CommandSender, HArgs <: Tuple](
    *
    * [[ContextualExecutor]]の制約にあるとおり, `execution` は任意スレッドからの呼び出しに対応しなければならない.
    */
-  def buildWithExecutionCSEffect[F[_]: Async: [f[_]] =>> ContextCoercion[f, IO], U](
+  def buildWithExecutionCSEffect[F[_]: [f[_]] =>> ContextCoercion[f, IO], U](
     execution: ExecutionCSEffect[F, CS, U, HArgs]
   ): ContextualExecutor =
     buildWithExecutionF[F, U](context => execution(context).run(context.sender))

@@ -2,8 +2,7 @@ package com.github.unchama.seichiassist.subsystems.seasonalevents.newyear
 
 import com.github.unchama.runSync
 
-import cats.effect.{Async, IO, Sync, SyncIO}
-import com.github.unchama.concurrent.NonServerThreadContextShift
+import cats.effect.{Async, IO, SyncIO}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
@@ -34,10 +33,9 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import java.time.LocalDate
 import java.util.{Random, UUID}
 
-class NewYearListener[F[_]: Async: NonServerThreadContextShift: [f[_]] =>> ContextCoercion[
-  IO,
-  f
-], G[_]: Sync: [g[_]] =>> ContextCoercion[g, SyncIO]](
+class NewYearListener[F[_]: Async: [f[_]] =>> ContextCoercion[IO, f], G[_]: [g[
+  _
+]] =>> ContextCoercion[g, SyncIO]](
   implicit effectEnvironment: EffectEnvironment[F],
   repository: LastQuitPersistenceRepository[F, UUID],
   manaApi: ManaWriteApi[G, Player],

@@ -2,7 +2,6 @@ package com.github.unchama.testutil.concurrent.tests
 
 import cats.Monad
 import cats.effect.IO
-import cats.syntax.all._
 import org.scalactic.source.Position
 import org.scalatest.exceptions.{StackDepthException, TestFailedException}
 

@@ -6,7 +6,7 @@ import com.github.unchama.toIO
 
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
 
-import cats.effect.{Async, Sync, SyncIO}
+import cats.effect.{Async, SyncIO}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.itemmigration.bukkit.targets.PlayerInventoriesData
@@ -29,7 +29,7 @@ import org.bukkit.event.{Cancellable, EventHandler, EventPriority, Listener}
 class PlayerItemMigrationController[F[_]: Async: [f[_]] =>> ContextCoercion[
   f,
   cats.effect.IO
-], G[_]: Sync: [g[_]] =>> ContextCoercion[g, SyncIO]: [g[_]] =>> ContextCoercion[g, F]](
+], G[_]: [g[_]] =>> ContextCoercion[g, SyncIO]: [g[_]] =>> ContextCoercion[g, F]](
   migrationState: KeyedDataRepository[Player, PlayerMigrationState[G]],
   migrations: ItemMigrations,
   service: ItemMigrationService[F, PlayerInventoriesData[F]]

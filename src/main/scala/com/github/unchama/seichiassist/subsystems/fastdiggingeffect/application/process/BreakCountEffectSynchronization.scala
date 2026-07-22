@@ -12,13 +12,12 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effec
 }
 
 import scala.concurrent.duration.DurationInt
-import cats.effect.Temporal
 
 object BreakCountEffectSynchronization {
 
   import cats.implicits._
 
-  def using[F[_]: Async: Temporal, G[_], Player: HasUuid](
+  def using[F[_]: Async, G[_], Player: HasUuid](
     implicit configuration: Configuration,
     api: FastDiggingEffectWriteApi[F, Player],
     breakCountReadAPI: BreakCountReadAPI[F, G, Player]

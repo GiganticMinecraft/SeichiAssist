@@ -4,7 +4,7 @@ import com.github.unchama.runSync
 
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
 
-import cats.effect.{Sync, SyncIO}
+import cats.effect.SyncIO
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
@@ -24,7 +24,7 @@ import org.bukkit.event.{EventHandler, Listener}
 import java.time.LocalDate
 import java.util.Random
 
-class SeizonsikiListener[F[_], G[_]: Sync: [g[_]] =>> ContextCoercion[g, SyncIO]](
+class SeizonsikiListener[F[_], G[_]: [g[_]] =>> ContextCoercion[g, SyncIO]](
   implicit manaApi: ManaWriteApi[G, Player]
 ) extends Listener {
 

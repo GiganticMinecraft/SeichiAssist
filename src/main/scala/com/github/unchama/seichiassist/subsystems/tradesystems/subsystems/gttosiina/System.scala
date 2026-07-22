@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina
 
-import cats.effect.Async
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
@@ -20,7 +19,7 @@ trait System[F[_], ItemStack] extends Subsystem[F] {
 
 object System {
 
-  def wired[F[_]: Async: [f[_]] =>> ContextCoercion[f, cats.effect.IO]](
+  def wired[F[_]: [f[_]] =>> ContextCoercion[f, cats.effect.IO]](
     implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player]
   ): System[F, ItemStack] = {
     implicit val canBeSignedAsGachaPrize: CanBeSignedAsGachaPrize[ItemStack] =
