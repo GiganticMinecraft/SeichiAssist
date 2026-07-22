@@ -1,6 +1,11 @@
 package com.github.unchama.buildassist.listener
 
-import cats.effect.{IO, SyncEffect, SyncIO}
+import com.github.unchama.runSync
+
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
+import cats.effect.{IO, Sync, SyncIO}
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.IncrementBuildExpWhenBuiltWithSkill
@@ -20,7 +25,9 @@ import scala.util.chaining.scalaUtilChainingOps
 import scala.util.control.Breaks
 
 class BlockLineUpTriggerListener[
-  F[_]: [f[_]] =>> IncrementBuildExpWhenBuiltWithSkill[f, Player]: SyncEffect
+  F[_]: [f[_]] =>> IncrementBuildExpWhenBuiltWithSkill[f, Player]: Sync: [f[
+    _
+  ]] =>> ContextCoercion[f, SyncIO]
 ](
   implicit manaApi: ManaApi[IO, SyncIO, Player],
   mineStackAPI: MineStackAPI[IO, Player, ItemStack]
@@ -190,7 +197,7 @@ class BlockLineUpTriggerListener[
     }
 
     // 建築量を足す
-    import cats.effect.implicits._
+    import cats.effect.syntax.all._
     IncrementBuildExpWhenBuiltWithSkill[F, Player]
       .of(player, BuildExpAmount.ofNonNegative(placedBlockCount))
       .runSync[SyncIO]

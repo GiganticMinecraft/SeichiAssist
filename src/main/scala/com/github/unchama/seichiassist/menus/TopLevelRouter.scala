@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.menus
 
-import cats.effect.{IO, SyncIO}
+import cats.effect.{Clock, IO, SyncIO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.menuinventory.LayoutPreparationContext
 import com.github.unchama.menuinventory.router.CanOpen
@@ -56,7 +56,6 @@ import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventor
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.FairySpeechAPI
-import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.{Location, World}
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -81,7 +80,7 @@ trait TopLevelRouter[F[_]] {
 object TopLevelRouter {
 
   def apply(
-    implicit javaTime: JavaTime[IO],
+    implicit clock: Clock[IO],
     layoutPreparationContext: LayoutPreparationContext,
     onMainThread: OnMinecraftServerThread[IO],
     nonServerThreadContextShift: NonServerThreadContextShift[IO],

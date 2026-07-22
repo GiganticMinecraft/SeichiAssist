@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.seichiskill.effect
 
-import cats.effect.{IO, SyncIO, Timer}
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist.SeichiAssist
@@ -24,6 +24,7 @@ import org.bukkit._
 import org.bukkit.entity.{Chicken, Player}
 
 import scala.util.Random
+import cats.effect.Temporal
 
 sealed trait ActiveSkillEffect {
   val nameOnUI: String
@@ -102,8 +103,6 @@ sealed abstract class ActiveSkillNormalEffect(
     import com.github.unchama.concurrent.syntax._
     import com.github.unchama.seichiassist.data.syntax._
 
-    implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
-
     val isSkillDualBreakOrTrialBreak = Seq(DualBreak, TrialBreak).contains(usedSkill)
 
     this match {
@@ -112,8 +111,6 @@ sealed abstract class ActiveSkillNormalEffect(
         val world = player.getWorld
 
         for {
-          _ <- asyncShift.shift
-
           explosionLocations <- IO {
             breakArea
               .gridPoints(2)
@@ -321,7 +318,7 @@ sealed abstract class ActiveSkillPremiumEffect(
                 _ <- FocusedSoundEffect(Sound.ENTITY_WITCH_AMBIENT, 1f, 1.5f).run(player)
               } yield ()
             }
-            .start(asyncShift)
+            .start
 
           _ <- IO {
             breakBlocks.foreach { b =>

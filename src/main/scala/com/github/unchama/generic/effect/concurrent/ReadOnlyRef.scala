@@ -1,7 +1,7 @@
 package com.github.unchama.generic.effect.concurrent
 
 import cats.Functor
-import cats.effect.concurrent.Ref
+import cats.effect.Ref
 
 trait ReadOnlyRef[F[_], A] {
 

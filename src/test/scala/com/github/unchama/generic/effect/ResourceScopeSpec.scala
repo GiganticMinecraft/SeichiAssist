@@ -1,21 +1,21 @@
 package com.github.unchama.generic.effect
 
-import cats.effect.{ContextShift, IO, Resource, SyncIO}
+import cats.effect.{IO, Resource, SyncIO}
+import cats.effect.unsafe.implicits.global
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.testutil.concurrent.sequencer.LinkedSequencer
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-import scala.concurrent.ExecutionContext
-
 class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
 
   case class NumberedObject(id: Int)
 
-  "Default implementation of ResourceScope" should {
-    implicit val shift: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
+  private def syncIOToIO[A](action: SyncIO[A]): IO[A] =
+    IO.delay(action.unsafeRunSync())
 
+  "Default implementation of ResourceScope" should {
     val firstResourceScope: ResourceScope[IO, IO, NumberedObject] = ResourceScope.unsafeCreate
     val secondResourceScope: ResourceScope[IO, IO, NumberedObject] = ResourceScope.unsafeCreate
 
@@ -34,26 +34,17 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
 
       useTracked(firstResourceScope, NumberedObject(0)) { _ =>
         for {
-          _ <- IO {
-            firstResourceScope.trackedHandlers.unsafeRunSync() mustBe Set(NumberedObject(0))
-          }
-          _ <- IO { secondResourceScope.trackedHandlers.unsafeRunSync() mustBe Set() }
+          _ <- firstResourceScope.trackedHandlers.map(_ mustBe Set(NumberedObject(0)))
+          _ <- secondResourceScope.trackedHandlers.map(_ mustBe Set())
           _ <- useTracked(firstResourceScope, NumberedObject(1)) { _ =>
             for {
-              _ <- IO {
-                firstResourceScope.trackedHandlers.unsafeRunSync() mustBe Set(
-                  NumberedObject(0),
-                  NumberedObject(1)
-                )
-              }
-              _ <- IO {
-                secondResourceScope.trackedHandlers.unsafeRunSync() mustBe Set()
-              }
+              _ <- firstResourceScope
+                .trackedHandlers
+                .map(_ mustBe Set(NumberedObject(0), NumberedObject(1)))
+              _ <- secondResourceScope.trackedHandlers.map(_ mustBe Set())
             } yield ()
           }
-          _ <- IO {
-            firstResourceScope.trackedHandlers.unsafeRunSync() mustBe Set(NumberedObject(0))
-          }
+          _ <- firstResourceScope.trackedHandlers.map(_ mustBe Set(NumberedObject(0)))
         } yield ()
       }.unsafeRunSync()
 
@@ -154,8 +145,6 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
   }
 
   "Singleton resource scope" should {
-    implicit val shift: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
-
     val firstResourceScope: SingleResourceScope[IO, SyncIO, NumberedObject] =
       ResourceScope.unsafeCreateSingletonScope
     val secondResourceScope: SingleResourceScope[IO, SyncIO, NumberedObject] =
@@ -179,13 +168,16 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
       firstResourceScope.isTracked(NumberedObject(0)).unsafeRunSync() mustBe false
 
       useTrackedForSome(firstResourceScope, NumberedObject(0)) { _ =>
-        IO {
-          firstResourceScope.isTracked(NumberedObject(0)).unsafeRunSync() mustBe true
-
-          firstResourceScope.isTracked(NumberedObject(1)).unsafeRunSync() mustBe false
-
-          secondResourceScope.isTracked(NumberedObject(0)).unsafeRunSync() mustBe false
-        }
+        for {
+          tracked0 <- syncIOToIO(firstResourceScope.isTracked(NumberedObject(0)))
+          tracked1 <- syncIOToIO(firstResourceScope.isTracked(NumberedObject(1)))
+          trackedInSecondScope <- syncIOToIO(secondResourceScope.isTracked(NumberedObject(0)))
+          _ <- IO {
+            tracked0 mustBe true
+            tracked1 mustBe false
+            trackedInSecondScope mustBe false
+          }
+        } yield ()
       }.unsafeRunSync()
 
       firstResourceScope.isTracked(NumberedObject(0)).unsafeRunSync() mustBe false
@@ -257,7 +249,7 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
               IO.never
           }.start
         _ <- blockerList(1).await()
-        releaseAction <- firstResourceScope.getReleaseAction(NumberedObject(0)).toIO
+        releaseAction <- syncIOToIO(firstResourceScope.getReleaseAction(NumberedObject(0)))
         _ <- releaseAction.value
         _ <- runImpureFunction2
       } yield ()
@@ -294,7 +286,7 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
               IO.never
           }.start
         _ <- blockerList(1).await()
-        releaseAction <- firstResourceScope.getReleaseAllAction.toIO
+        releaseAction <- syncIOToIO(firstResourceScope.getReleaseAllAction)
         _ <- releaseAction.value
         _ <- runImpureFunction2
       } yield ()

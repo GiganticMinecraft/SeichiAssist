@@ -1,5 +1,7 @@
 package com.github.unchama.buildassist.menu
 
+import com.github.unchama.toIO
+
 import cats.effect.IO
 import com.github.unchama.buildassist.{BuildAssist, TemporaryMutableBuildAssistPlayerData}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}

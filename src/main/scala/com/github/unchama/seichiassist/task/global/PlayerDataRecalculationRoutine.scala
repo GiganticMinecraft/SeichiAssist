@@ -1,6 +1,8 @@
 package com.github.unchama.seichiassist.task.global
 
-import cats.effect.{IO, SyncIO, Timer}
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
@@ -9,6 +11,7 @@ import com.github.unchama.seichiassist.achievement.hierarchy.AchievementGroup
 import org.bukkit.Bukkit
 
 import scala.concurrent.duration.FiniteDuration
+import cats.effect.Temporal
 
 object PlayerDataRecalculationRoutine {
 
@@ -74,8 +77,6 @@ object PlayerDataRecalculationRoutine {
 
       }
     }
-
-    implicit val timer: Timer[IO] = IO.timer(context)
 
     RepeatingRoutine.permanentRoutine(
       getRepeatInterval,

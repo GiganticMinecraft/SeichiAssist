@@ -1,6 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.listeners
 
-import cats.effect.{ConcurrentEffect, IO}
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
+import cats.effect.{Async, IO}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyPersistence
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.FairySpeech
 import org.bukkit.ChatColor._
@@ -13,14 +15,14 @@ import java.time.LocalDateTime
 class FairyPlayerJoinGreeter(
   implicit fairyPersistence: FairyPersistence[IO],
   fairySpeech: FairySpeech[IO, Player],
-  concurrentEffect: ConcurrentEffect[IO]
+  concurrentEffect: Async[IO]
 ) extends Listener {
 
   import cats.implicits._
 
   @EventHandler(priority = EventPriority.HIGHEST)
   def onAsyncPlayerPreLogin(e: AsyncPlayerPreLoginEvent): Unit = {
-    fairyPersistence.initializePlayerData(e.getUniqueId).unsafeRunAsyncAndForget()
+    fairyPersistence.initializePlayerData(e.getUniqueId).unsafeRunAndForget()
   }
 
   @EventHandler

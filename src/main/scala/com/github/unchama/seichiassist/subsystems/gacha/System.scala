@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.gacha
 
 import cats.data.Kleisli
-import cats.effect.ConcurrentEffect
+import cats.effect.Async
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.{GetConnectedPlayers, OnMinecraftServerThread}
 import com.github.unchama.minecraft.bukkit.algebra.CloneableBukkitItemStack.instance
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
@@ -38,10 +39,10 @@ trait System[F[_], Player] extends Subsystem[F] {
 
 object System {
 
-  def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread: [f[_]] =>> GetConnectedPlayers[
+  def wired[F[_]: Async: OnMinecraftServerThread: [f[_]] =>> GetConnectedPlayers[
     f,
     Player
-  ]: GachaTicketAPI](
+  ]: GachaTicketAPI: [f[_]] =>> ContextCoercion[f, cats.effect.IO]](
     implicit gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player],
     mineStackAPI: MineStackAPI[F, Player, ItemStack]
   ): System[F, Player] = {

@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.mebius.bukkit.gateway
 
-import cats.effect.{IO, SyncIO, Timer}
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.seichiassist.subsystems.mebius.domain.property.MebiusProperty
 import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{
   MebiusSpeechGateway,
@@ -20,14 +20,18 @@ import org.bukkit.entity.Player
 
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.FiniteDuration
+import cats.effect.Temporal
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
 
-class BukkitMebiusSpeechGateway(player: Player)(implicit timer: Timer[IO])
+class BukkitMebiusSpeechGateway(player: Player)(implicit timer: Temporal[IO])
     extends MebiusSpeechGateway[SyncIO] {
 
   override def sendMessage(property: MebiusProperty, message: String): SyncIO[Unit] = {
-    MessageEffect(s"$RESET$GRAY<$GOLD$BOLD${property.mebiusName}$RESET$GRAY>$RESET $message")
-      .run(player)
-      .runAsync(_ => IO.unit)
+    SyncIO {
+      MessageEffect(s"$RESET$GRAY<$GOLD$BOLD${property.mebiusName}$RESET$GRAY>$RESET $message")
+        .run(player)
+        .unsafeRunAndForget()
+    }
   }
 
   override def playSpeechSound(strength: MebiusSpeechStrength): SyncIO[Unit] = {
@@ -54,6 +58,6 @@ class BukkitMebiusSpeechGateway(player: Player)(implicit timer: Timer[IO])
         )
     }
 
-    effect.run(player).runAsync(_ => IO.unit)
+    SyncIO(effect.run(player).unsafeRunAndForget())
   }
 }

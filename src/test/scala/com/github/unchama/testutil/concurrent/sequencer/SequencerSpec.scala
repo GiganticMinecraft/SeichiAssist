@@ -1,16 +1,13 @@
 package com.github.unchama.testutil.concurrent.sequencer
 
-import cats.effect.{ContextShift, IO}
+import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 import org.scalatest.wordspec.AnyWordSpec
 
 import java.util.concurrent.ConcurrentLinkedQueue
-import scala.concurrent.ExecutionContext
 import scala.util.Random
 
 class SequencerSpec extends AnyWordSpec {
-  implicit val ec: ExecutionContext = ExecutionContext.global
-  implicit val shift: ContextShift[IO] = IO.contextShift(ec)
-
   val sequencerImplementations: List[Sequencer[IO]] = List(LinkedSequencer[IO])
 
   val randomizedProgramListSize = 20000
@@ -38,7 +35,7 @@ class SequencerSpec extends AnyWordSpec {
           }
           scrambledPrograms = Random.shuffle(indexedPrograms).toList
           startedFibers <- scrambledPrograms.traverse(_.start)
-          _ <- startedFibers.traverse(_.join)
+          _ <- startedFibers.traverse(_.joinWithNever)
         } yield ()
 
         program.unsafeRunSync()

@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.elevator.bukkit.listeners
 
-import cats.effect.{ConcurrentEffect, Sync}
+import cats.effect.{Async, Sync}
 import com.github.unchama.generic.ApplicativeExtra
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.subsystems.elevator.application.actions.FindTeleportLocation
@@ -8,9 +8,9 @@ import org.bukkit.Location
 import org.bukkit.event.player.{PlayerMoveEvent, PlayerToggleSneakEvent}
 import org.bukkit.event.{EventHandler, Listener}
 
-class ElevatorEventsListener[F[_]: ConcurrentEffect](
+class ElevatorEventsListener[F[_]: Async](
   implicit findTeleportLocation: FindTeleportLocation[F, Location],
-  effectEnvironment: EffectEnvironment
+  effectEnvironment: EffectEnvironment[F]
 ) extends Listener {
 
   import cats.implicits._
