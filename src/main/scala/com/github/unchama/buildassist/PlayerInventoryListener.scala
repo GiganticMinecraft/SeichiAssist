@@ -17,8 +17,6 @@ class PlayerInventoryListener(
 ) extends Listener {
 
   import com.github.unchama.targetedeffect._
-  import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
-
   // 直列設置設定画面
   @EventHandler
   def onPlayerClickBlockLineUpEvent(event: InventoryClickEvent): Unit = {
@@ -33,8 +31,9 @@ class PlayerInventoryListener(
     // インベントリを開けたのがプレイヤーではない時終了
     if (he.getType != EntityType.PLAYER) return
 
-    val topinventory = view.getTopInventory.ifNull {
-      return
+    val topinventory = Option(view.getTopInventory) match {
+      case Some(inventory) => inventory
+      case None            => return
     }
 
     // インベントリが存在しない時終了

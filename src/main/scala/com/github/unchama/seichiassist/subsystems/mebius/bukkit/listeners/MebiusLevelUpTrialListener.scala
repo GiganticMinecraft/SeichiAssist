@@ -30,10 +30,12 @@ class MebiusLevelUpTrialListener(
 
     if (!player.getWorld.isSeichi) return
 
-    val oldMebiusProperty =
-      BukkitMebiusItemStackCodec
-        .decodePropertyOfOwnedMebius(player)(player.getInventory.getHelmet)
-        .getOrElse(return)
+    val oldMebiusProperty = BukkitMebiusItemStackCodec.decodePropertyOfOwnedMebius(player)(
+      player.getInventory.getHelmet
+    ) match {
+      case Some(property) => property
+      case None           => return
+    }
 
     val newMebiusProperty = oldMebiusProperty.tryUpgradeByOneLevel[SyncIO].unsafeRunSync()
 
