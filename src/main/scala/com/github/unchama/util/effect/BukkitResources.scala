@@ -15,7 +15,7 @@ object BukkitResources {
     referenceSet: Set[B]
   ): Resource[F, Set[B]] =
     Resource.make(Sync[F].delay(referenceSet))(block =>
-      OnMinecraftServerThread[F].runAction[SyncIO, Unit] {
+      OnMinecraftServerThread[F].runAction[Unit] {
         SyncIO {
           block.foreach(_.setType(Material.AIR))
         }
@@ -29,12 +29,12 @@ object BukkitResources {
     spawnLocation: Location,
     tag: Class[E]
   ): Resource[F, E] = {
-    Resource.make(OnMinecraftServerThread[F].runAction[SyncIO, E] {
+    Resource.make(OnMinecraftServerThread[F].runAction[E] {
       SyncIO {
         spawnLocation.getWorld.spawn(spawnLocation, tag)
       }
     })(e =>
-      OnMinecraftServerThread[F].runAction[SyncIO, Unit] {
+      OnMinecraftServerThread[F].runAction[Unit] {
         SyncIO {
           e.remove()
         }

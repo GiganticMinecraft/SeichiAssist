@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote.bukkit.actions
 
-import cats.effect.{Sync, SyncEffect}
+import cats.effect.Sync
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.data.ItemData
@@ -15,7 +15,7 @@ import com.github.unchama.seichiassist.subsystems.vote.domain.{
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
 import org.bukkit.entity.Player
 
-class BukkitReceiveVoteBenefits[F[_]: OnMinecraftServerThread: Sync, G[_]: SyncEffect: [f[
+class BukkitReceiveVoteBenefits[F[_]: OnMinecraftServerThread: Sync, G[_]: Sync: [f[
   _
 ]] =>> ContextCoercion[f, F]](
   implicit votePersistence: VotePersistence[F],

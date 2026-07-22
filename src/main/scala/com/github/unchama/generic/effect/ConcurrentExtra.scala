@@ -1,8 +1,8 @@
 package com.github.unchama.generic.effect
 
-import cats.Applicative
-import cats.effect.concurrent.Deferred
-import cats.effect.{CancelToken, Concurrent}
+import cats.effect.Deferred
+import cats.effect.Concurrent
+import cats.effect.implicits._
 
 object ConcurrentExtra {
   import cats.implicits._
@@ -10,10 +10,10 @@ object ConcurrentExtra {
   /**
    * `f` を並行的に開始し、 `f` の計算をキャンセルする計算を`f`に渡してから結果をawaitする計算を返す。
    *
-   * `f` 内で渡された `CancelToken[F]` を実行した際の動作は未定義となる。 実際、`f` 内のキャンセルはそれ自身の終了をブロックしながらawaitするため、
+   * `f` 内で渡されたキャンセル作用を実行した際の動作は未定義となる。 実際、`f` 内のキャンセルはそれ自身の終了をブロックしながらawaitするため、
    * ハングすることが予想される。
    */
-  def withSelfCancellation[F[_]: Concurrent, A](f: CancelToken[F] => F[A]): F[A] =
+  def withSelfCancellation[F[_]: Concurrent, A](f: F[Unit] => F[A]): F[A] =
     for {
       //  [start `awaitToken >>= f`]--
       //             |               |
@@ -26,16 +26,14 @@ object ConcurrentExtra {
       //             |
       // yield a <----
 
-      tokenPromise <- Deferred[F, CancelToken[F]]
+      tokenPromise <- Deferred[F, F[Unit]]
 
       fiber <- Concurrent[F].start(tokenPromise.get.flatMap(f))
 
-      _ <- tokenPromise.complete(fiber.cancel)
+      _ <- tokenPromise.complete(fiber.cancel).void
 
-      a <- fiber.join
+      a <- fiber.joinWithNever
     } yield a
-
-  import cats.effect._
 
   /**
    * 与えられた複数の入力プログラムをすべて並列に実行するようなプログラムを構築します。
@@ -52,13 +50,8 @@ object ConcurrentExtra {
    *    - `Left[Throwable]` だった場合、入力プログラムが例外を送出して異常終了したこと
    *    をそれぞれ表します。
    */
-  def attemptInParallel[F[_]: ConcurrentEffect, A](
+  def attemptInParallel[F[_]: Concurrent, A](
     programs: List[F[A]]
-  ): F[List[Either[Throwable, A]]] = {
-    ConcurrentEffect[F]
-      .bracketCase(programs.traverse(Concurrent[F].start(_)))(_.traverse(_.join.attempt)) {
-        case (fibers, ExitCase.Canceled) => fibers.traverse(_.cancel).void
-        case _                           => Applicative[F].unit
-      }
-  }
+  ): F[List[Either[Throwable, A]]] =
+    programs.parTraverse(_.attempt)
 }

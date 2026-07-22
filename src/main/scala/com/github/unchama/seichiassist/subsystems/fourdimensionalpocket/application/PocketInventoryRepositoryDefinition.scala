@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.application
 
-import cats.effect.concurrent.Deferred
-import cats.effect.{ConcurrentEffect, Fiber, Sync}
+import cats.effect.{Async, Fiber, Sync}
+import cats.effect.std.Dispatcher
 import com.github.unchama.datarepository.definitions.{
   FiberAdjoinedRepositoryDefinition,
   MutexRepositoryDefinition,
@@ -23,20 +23,21 @@ import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.{
   PocketSizeTable
 }
 import org.typelevel.log4cats.ErrorLogger
+import cats.effect.Deferred
 
 object PocketInventoryRepositoryDefinition {
 
-  import cats.effect.implicits._
+  import cats.effect.syntax.all._
   import cats.implicits._
 
   /**
    * プレーヤーのポケットインベントリと、それを整地レベルに応じて更新するプロセスの組
    */
   type RepositoryValue[F[_], G[_], Inventory] =
-    (Mutex[F, G, Inventory], Deferred[F, Fiber[F, Nothing]])
+    (Mutex[F, G, Inventory], Deferred[F, Fiber[F, Throwable, Nothing]])
 
   def withContext[
-    F[_]: ConcurrentEffect: ErrorLogger,
+    F[_]: Async: Dispatcher: ErrorLogger,
     G[_]: Sync: [f[_]] =>> ContextCoercion[f, F],
     Player: HasUuid,
     Inventory: [a] =>> CreateInventory[G, a]: [a] =>> InteractInventory[F, Player, a]
@@ -69,9 +70,11 @@ object PocketInventoryRepositoryDefinition {
 
           EffectExtra.runAsyncAndForget[F, G, Unit] {
             StreamExtra
-              .compileToRestartingStream("[PocketInventoryRepository]")(processStream)
-              .start >>=
-              fiberPromise.complete
+              .compileToRestartingStream[F, Nothing]("[PocketInventoryRepository]")(
+                processStream
+              )
+              .start
+              .flatMap(fiber => fiberPromise.complete(fiber).void)
           }
         }
       }

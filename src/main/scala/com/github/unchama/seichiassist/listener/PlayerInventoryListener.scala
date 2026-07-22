@@ -18,13 +18,12 @@ import org.bukkit.{Material, Sound}
 import com.github.unchama.seichiassist.items.ExchangeTicket
 
 class PlayerInventoryListener(
-  implicit effectEnvironment: EffectEnvironment,
+  implicit effectEnvironment: EffectEnvironment[IO],
   ioOnMainThread: OnMinecraftServerThread[IO]
 ) extends Listener {
 
   import com.github.unchama.targetedeffect._
   import com.github.unchama.util.InventoryUtil._
-  import com.github.unchama.util.syntax._
 
   private val playerMap = SeichiAssist.playermap
 
@@ -148,8 +147,9 @@ class PlayerInventoryListener(
     }
 
     // インベントリが存在しない時終了
-    val topinventory = view.getTopInventory.ifNull {
-      return
+    val topinventory = Option(view.getTopInventory) match {
+      case Some(inventory) => inventory
+      case None            => return
     }
 
     // インベントリが6列でない時終了

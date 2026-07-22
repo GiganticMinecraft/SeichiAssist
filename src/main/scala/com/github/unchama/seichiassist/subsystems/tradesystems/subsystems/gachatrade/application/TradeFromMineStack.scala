@@ -11,8 +11,7 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.tradesystems.domain.TradeResult
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.domain.TradeError
 import com.github.unchama.generic.effect.concurrent.RecoveringSemaphore
-import cats.effect.Concurrent
-import cats.effect.Timer
+import cats.effect.Async
 
 class TradeFromMineStack[F[_]: Sync, ItemStack, Player: HasName, TransactionInfo](
   recoveringSemaphore: RecoveringSemaphore[F]
@@ -68,7 +67,7 @@ object TradeFromMineStack {
 
   final val usageInterval = 1.second
 
-  def newIn[G[_]: Sync, F[_]: Concurrent: Timer, ItemStack, Player: HasName, TransactionInfo](
+  def newIn[G[_]: Sync, F[_]: Async, ItemStack, Player: HasName, TransactionInfo](
     implicit tradeAction: TradeAction[F, Player, ItemStack, TransactionInfo],
     gachaListProvider: GachaListProvider[F, ItemStack],
     gachaTradeRule: GachaTradeRule[ItemStack, TransactionInfo],

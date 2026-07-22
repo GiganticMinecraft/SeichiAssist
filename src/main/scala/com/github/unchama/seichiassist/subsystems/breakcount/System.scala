@@ -1,11 +1,12 @@
 package com.github.unchama.seichiassist.subsystems.breakcount
 
 import cats.Monad
-import cats.effect.{ConcurrentEffect, SyncEffect}
+import cats.effect.{Async, Sync}
+import cats.effect.std.Dispatcher
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.fs2.workaround.fs3.Fs3Topic
-import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.generic.{ContextCoercion, UnsafeSyncRunner}
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
@@ -41,14 +42,14 @@ trait System[F[_], G[_]] extends Subsystem[F] {
 
 object System {
 
-  import cats.effect.implicits._
+  import cats.effect.syntax.all._
   import cats.implicits._
 
   def wired[F[
     _
-  ]: ConcurrentEffect: OnMinecraftServerThread: ErrorLogger: DiscordNotificationAPI, G[
+  ]: Async: Dispatcher: OnMinecraftServerThread: ErrorLogger: DiscordNotificationAPI, G[
     _
-  ]: SyncEffect: [f[_]] =>> ContextCoercion[f, F]](
+  ]: Sync: UnsafeSyncRunner: [f[_]] =>> ContextCoercion[f, F]](
   ): F[System[F, G]] = {
     implicit val persistence: SeichiAmountDataPersistence[G] =
       new JdbcSeichiAmountDataPersistence[G]
@@ -81,7 +82,7 @@ object System {
 
       new System[F, G] {
         override val api: BreakCountAPI[F, G, Player] = new BreakCountAPI[F, G, Player] {
-          override protected implicit val _GMonad: Monad[G] = implicitly[SyncEffect[G]]
+          override protected implicit val _GMonad: Monad[G] = implicitly[Sync[G]]
           override val seichiAmountDataRepository
             : KeyedDataRepository[Player, ReadOnlyRef[G, SeichiAmountData]] =
             breakCountRepository.map(ReadOnlyRef.fromRef)

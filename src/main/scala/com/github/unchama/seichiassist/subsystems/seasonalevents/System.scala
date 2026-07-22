@@ -1,9 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents
 
 import cats.Functor
-import cats.effect.{Clock, ConcurrentEffect, IO, SyncEffect}
-import com.github.unchama.concurrent.NonServerThreadContextShift
+import cats.effect.{Clock, Async, IO}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
@@ -37,11 +37,12 @@ class System[F[_]](
 }
 
 object System {
-  def wired[F[_]: ConcurrentEffect: NonServerThreadContextShift, G[_]: SyncEffect, H[_]](
-    instance: JavaPlugin
-  )(
+  def wired[F[_]: Async: [f[_]] =>> ContextCoercion[IO, f], G[_]: [g[_]] =>> ContextCoercion[
+    g,
+    cats.effect.SyncIO
+  ], H[_]](instance: JavaPlugin)(
     implicit manaWriteApi: ManaWriteApi[G, Player],
-    effectEnvironment: EffectEnvironment,
+    effectEnvironment: EffectEnvironment[F],
     ioOnMainThread: OnMinecraftServerThread[IO],
     gtToSiinaAPI: GtToSiinaAPI[ItemStack]
   ): System[H] = {
@@ -51,13 +52,17 @@ object System {
 
     new System(
       listeners = Seq(
-        new AnniversaryListener(),
-        new ChristmasItemListener(instance),
+        new AnniversaryListener()(
+          com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.effectEnvironment,
+          ioOnMainThread,
+          gtToSiinaAPI
+        ),
+        new ChristmasItemListener[F, G](instance),
         HalloweenItemListener,
         new LimitedLoginBonusGifter,
-        new SeizonsikiListener,
-        new ValentineListener(),
-        new NewYearListener()
+        new SeizonsikiListener[F, G],
+        new ValentineListener[F](),
+        new NewYearListener[F, G]()
       ),
       commands = Map("event" -> new EventCommand().executor)
     )

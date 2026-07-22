@@ -1,6 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.mebius.bukkit.listeners
 
-import cats.effect.SyncIO
+import com.github.unchama.toIO
+
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets
@@ -25,7 +27,7 @@ import org.bukkit.inventory.meta.Damageable
 
 class MebiusInteractionResponder(
   implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]],
-  effectEnvironment: EffectEnvironment
+  effectEnvironment: EffectEnvironment[IO]
 ) extends Listener {
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   def onDamage(event: EntityDamageByEntityEvent): Unit = {
@@ -33,9 +35,11 @@ class MebiusInteractionResponder(
     event.getEntity match {
       case player: Player =>
         val helmet = player.getInventory.getHelmet
-        val mebiusProperty = BukkitMebiusItemStackCodec
-          .decodePropertyOfOwnedMebius(player)(helmet)
-          .getOrElse(return)
+        val mebiusProperty =
+          BukkitMebiusItemStackCodec.decodePropertyOfOwnedMebius(player)(helmet) match {
+            case Some(property) => property
+            case None           => return
+          }
 
         val speechService = serviceRepository(player)
 
@@ -85,8 +89,6 @@ class MebiusInteractionResponder(
       .foreach { property =>
         val speechService = serviceRepository(player)
 
-        import cats.implicits._
-
         effectEnvironment.unsafeRunEffectAsync(
           "Mebius破壊時のエフェクトを再生する",
           MebiusMessages.onMebiusBreak.pickOne[SyncIO].toIO.flatMap { message =>
@@ -120,10 +122,12 @@ class MebiusInteractionResponder(
     val killedMonsterName = killedMonster.getName
     if (killedMonsterName == "") return
 
-    val mebiusProperty =
-      BukkitMebiusItemStackCodec
-        .decodePropertyOfOwnedMebius(player)(player.getInventory.getHelmet)
-        .getOrElse(return)
+    val mebiusProperty = BukkitMebiusItemStackCodec.decodePropertyOfOwnedMebius(player)(
+      player.getInventory.getHelmet
+    ) match {
+      case Some(property) => property
+      case None           => return
+    }
 
     val speechService = serviceRepository(player)
 
@@ -148,10 +152,12 @@ class MebiusInteractionResponder(
 
     val player = event.getPlayer
 
-    val mebiusProperty =
-      BukkitMebiusItemStackCodec
-        .decodePropertyOfOwnedMebius(player)(player.getInventory.getHelmet)
-        .getOrElse(return)
+    val mebiusProperty = BukkitMebiusItemStackCodec.decodePropertyOfOwnedMebius(player)(
+      player.getInventory.getHelmet
+    ) match {
+      case Some(property) => property
+      case None           => return
+    }
 
     val speechService = serviceRepository(player)
 

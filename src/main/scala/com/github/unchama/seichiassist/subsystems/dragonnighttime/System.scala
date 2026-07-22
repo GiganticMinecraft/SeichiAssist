@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.dragonnighttime
 
-import cats.effect.{Concurrent, Timer}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.{GetConnectedPlayers, OnMinecraftServerThread}
 import com.github.unchama.seichiassist.subsystems.dragonnighttime.application._
@@ -11,7 +10,7 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import org.bukkit.event.Listener
 import com.github.unchama.seichiassist.subsystems.dragonnighttime.bukkit.JoinListener
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import cats.effect.Effect
+import cats.effect.Async
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import org.bukkit.entity.Player
 
@@ -22,12 +21,10 @@ trait System[F[_]] extends Subsystem[F] {
 }
 
 object System {
-  def backgroundProcess[F[_]: Concurrent: Timer: OnMinecraftServerThread: [f[
-    _
-  ]] =>> GetConnectedPlayers[f, org.bukkit.entity.Player], G[_]: [f[_]] =>> ContextCoercion[
+  def backgroundProcess[F[_]: Async: OnMinecraftServerThread: [f[_]] =>> GetConnectedPlayers[
     f,
-    F
-  ], Player](
+    org.bukkit.entity.Player
+  ], G[_]: [f[_]] =>> ContextCoercion[f, F], Player](
     implicit fastDiggingEffectApi: FastDiggingEffectWriteApi[F, Player],
     manaApi: ManaApi[F, G, Player]
   ): F[Nothing] = {
@@ -36,9 +33,9 @@ object System {
     DragonNightTimeRoutine[F, G, Player]
   }
 
-  def wired[F[_]: Timer: Effect](
+  def wired[F[_]: Async](
     implicit fastDiggingEffectApi: FastDiggingEffectWriteApi[F, Player],
-    effectEnvironment: EffectEnvironment
+    effectEnvironment: EffectEnvironment[F]
   ): System[F] = {
     new System[F] {
       val dragonNightTime: DragonNightTime = DragonNightTimeImpl

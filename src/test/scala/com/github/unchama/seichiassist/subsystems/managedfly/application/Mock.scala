@@ -2,12 +2,12 @@ package com.github.unchama.seichiassist.subsystems.managedfly.application
 
 import cats.Monad
 import cats.data.Kleisli
-import cats.effect.{Concurrent, Sync}
+import cats.effect.{Async, Sync}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.Mutex
 import com.github.unchama.seichiassist.subsystems.managedfly.domain._
 
-private[managedfly] class Mock[AsyncContext[_]: Concurrent, SyncContext[_]: Sync: [f[
+private[managedfly] class Mock[AsyncContext[_]: Async, SyncContext[_]: Sync: [f[
   _
 ]] =>> ContextCoercion[f, AsyncContext]] {
 

@@ -5,7 +5,6 @@ import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.BuildMainMenu
-import com.github.unchama.seichiassist.subsystems.playerheadskin.PlayerHeadSkinAPI
 import net.md_5.bungee.api.ChatColor._
 import org.bukkit.entity.{EntityType, Player}
 import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}
@@ -13,14 +12,11 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.{Material, Sound}
 
 class PlayerInventoryListener(
-  implicit effectEnvironment: EffectEnvironment,
-  ioCanOpenBuildMainMenu: IO CanOpen BuildMainMenu.type,
-  playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
+  implicit effectEnvironment: EffectEnvironment[IO],
+  ioCanOpenBuildMainMenu: IO CanOpen BuildMainMenu.type
 ) extends Listener {
 
   import com.github.unchama.targetedeffect._
-  import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
-
   // 直列設置設定画面
   @EventHandler
   def onPlayerClickBlockLineUpEvent(event: InventoryClickEvent): Unit = {
@@ -35,8 +31,9 @@ class PlayerInventoryListener(
     // インベントリを開けたのがプレイヤーではない時終了
     if (he.getType != EntityType.PLAYER) return
 
-    val topinventory = view.getTopInventory.ifNull {
-      return
+    val topinventory = Option(view.getTopInventory) match {
+      case Some(inventory) => inventory
+      case None            => return
     }
 
     // インベントリが存在しない時終了

@@ -1,9 +1,13 @@
 package com.github.unchama.seichiassist.subsystems.breakcount.subsystems.notification.bukkit.actions
 
+import com.github.unchama.toIO
+
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
 import cats.Applicative
-import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
-import cats.effect.{ConcurrentEffect, IO, Sync, SyncIO}
+import cats.effect.{Async, IO, Sync, SyncIO}
 import com.github.unchama.generic.Diff
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
@@ -30,8 +34,9 @@ object BukkitNotifyLevelUp {
 
   import cats.implicits._
 
-  def apply[F[_]: OnMinecraftServerThread: ConcurrentEffect: DiscordNotificationAPI]
-    : NotifyLevelUp[F, Player] =
+  def apply[F[_]: OnMinecraftServerThread: Async: DiscordNotificationAPI: [f[
+    _
+  ]] =>> ContextCoercion[f, IO]]: NotifyLevelUp[F, Player] =
     new NotifyLevelUp[F, Player] {
       override def ofSeichiAmountTo(player: Player)(diff: Diff[SeichiAmountData]): F[Unit] = {
         val Diff(oldBreakAmount, newBreakAmount) = diff
@@ -53,11 +58,11 @@ object BukkitNotifyLevelUp {
                 .sendMessageToEveryoneIgnoringPreferenceIO(s"$GOLD$BOLD$notificationMessage")(
                   forString[IO]
                 )
-                .unsafeRunAsyncAndForget()
+                .unsafeRunAndForget()
               DiscordNotificationAPI[F]
                 .sendPlainText(notificationMessage)
                 .toIO
-                .unsafeRunAsyncAndForget()
+                .unsafeRunAndForget()
             } >> SendSoundEffect
               .sendEverySound[SyncIO](Sound.ENTITY_ENDER_DRAGON_DEATH, 1.0f, 1.2f)
           )
