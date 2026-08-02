@@ -2,9 +2,10 @@ package com.github.unchama.seichiassist.subsystems.fairy.domain
 
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyManaRecovery
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
-  FairyManaRecoveryState,
-  FairyBaseRecoveryMana
+  FairyBaseRecoveryMana,
+  FairyManaRecoveryState
 }
+import io.github.iltotore.iron.autoRefine
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
@@ -18,7 +19,7 @@ class FairyManaRecoverySpec extends AnyWordSpec with ScalaCheckPropertyChecks wi
       val baseManaRecoveryRatio = 0.7
       val result =
         FairyManaRecovery.compute(mana, 100L, 0.5, isDragonNight = false)
-      result.finalRecoveredMana shouldBe mana.amount * baseManaRecoveryRatio +- 0.001
+      result.finalRecoveredMana shouldBe (mana.amount * baseManaRecoveryRatio +- 0.001)
       result.consumedGachaAppleCount shouldBe 0
       result.state shouldBe FairyManaRecoveryState.RecoverWithoutAppleButLessThanAApple
     }
@@ -28,7 +29,7 @@ class FairyManaRecoverySpec extends AnyWordSpec with ScalaCheckPropertyChecks wi
       val baseManaRecoveryRatio = 0.7
       val result =
         FairyManaRecovery.compute(mana, 0L, 0.5, isDragonNight = false)
-      result.finalRecoveredMana shouldBe mana.amount * baseManaRecoveryRatio +- 0.001
+      result.finalRecoveredMana shouldBe (mana.amount * baseManaRecoveryRatio +- 0.001)
       result.consumedGachaAppleCount shouldBe 0
       result.state shouldBe FairyManaRecoveryState.RecoverWithoutAppleButLessThanAApple
     }
@@ -46,28 +47,29 @@ class FairyManaRecoverySpec extends AnyWordSpec with ScalaCheckPropertyChecks wi
       val bonusManaPerApple = 0.3
       val result = FairyManaRecovery.compute(mana, 1L, 0.03, isDragonNight = false)
 
-      result.manaBeforeDragonNightMultiplier shouldBe
+      result.manaBeforeDragonNightMultiplier shouldBe (
         ((mana.amount * baseManaRecoveryRatio) * 0.5 + bonusManaPerApple) +- 0.001
+      )
     }
 
     "bonusRoll > 0.03 のときボーナスなし" in {
       val mana = FairyBaseRecoveryMana(600)
       val result = FairyManaRecovery.compute(mana, 10L, 0.5, isDragonNight = false)
       val baseAmount = 600 * 0.7
-      result.manaBeforeDragonNightMultiplier shouldBe baseAmount +- 0.001
+      result.manaBeforeDragonNightMultiplier shouldBe (baseAmount +- 0.001)
     }
 
     "isDragonNight = true のときマナ回復量が2倍になる" in {
       val mana = FairyBaseRecoveryMana(600)
       val normal = FairyManaRecovery.compute(mana, 10L, 0.5, isDragonNight = false)
       val dragon = FairyManaRecovery.compute(mana, 10L, 0.5, isDragonNight = true)
-      dragon.finalRecoveredMana shouldBe normal.finalRecoveredMana * 2.0 +- 0.001
+      dragon.finalRecoveredMana shouldBe (normal.finalRecoveredMana * 2.0 +- 0.001)
     }
 
     "isDragonNight = false のときボーナスが付かない" in {
       val mana = FairyBaseRecoveryMana(600)
       val result = FairyManaRecovery.compute(mana, 10L, 0.5, isDragonNight = false)
-      result.finalRecoveredMana shouldBe result.manaBeforeDragonNightMultiplier +- 0.001
+      result.finalRecoveredMana shouldBe (result.manaBeforeDragonNightMultiplier +- 0.001)
     }
 
     "mineStackedAmount < pureAppleConsumeAmount のとき、がちゃりんご消費数が持っている分に丸められる" in {

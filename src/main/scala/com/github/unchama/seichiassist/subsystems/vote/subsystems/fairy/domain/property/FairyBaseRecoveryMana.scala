@@ -1,5 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property
 
+import io.github.iltotore.iron.:|
+import io.github.iltotore.iron.constraint.numeric.GreaterEqual
+import io.github.iltotore.iron.refineEither
+
 /**
  * 妖精の1回の回復サイクルあたりのマナ回復量。
  *
@@ -9,11 +13,16 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.
  * @see [[com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairyBaseRecoveryMana]]
  *      召喚時の回復量決定ロジック
  */
-case class FairyBaseRecoveryMana(amount: Int) {
-  require(amount >= 0)
-}
+case class FairyBaseRecoveryMana(amount: Int :| GreaterEqual[200]) {}
 
 object FairyBaseRecoveryMana {
+  def tryFromRaw(raw: Int): FairyBaseRecoveryMana = {
+    val amount = raw
+      .refineEither[GreaterEqual[200]]
+      .getOrElse(throw new IllegalArgumentException("FairyBaseRecoveryManaの回復量が200未満です"))
+
+    FairyBaseRecoveryMana(amount)
+  }
 
   /**
    * 妖精召喚時の基本マナ回復量を計算する。
@@ -38,7 +47,7 @@ object FairyBaseRecoveryMana {
     require(randomRoll >= 0.0 && randomRoll < 1.0, "randomRollは [0.0, 1.0) の範囲で指定してください。")
     val maxJitterSteps = (levelCappedManaAmount / 20).toInt
     val jitter = (maxJitterSteps * randomRoll) / 2.9
-    FairyBaseRecoveryMana(
+    FairyBaseRecoveryMana.tryFromRaw(
       (levelCappedManaAmount / 10 - levelCappedManaAmount / 30 + jitter).toInt + 200
     )
   }
