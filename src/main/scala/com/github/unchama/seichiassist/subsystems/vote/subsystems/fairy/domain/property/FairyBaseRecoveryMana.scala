@@ -13,10 +13,12 @@ import io.github.iltotore.iron.refineEither
  * @see [[com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairyBaseRecoveryMana]]
  *      召喚時の回復量決定ロジック
  */
-case class FairyBaseRecoveryMana(amount: Int :| GreaterEqual[200]) {}
+opaque type FairyBaseRecoveryMana = Int :| GreaterEqual[200]
 
 object FairyBaseRecoveryMana {
-  def tryFromRaw(raw: Int): FairyBaseRecoveryMana = {
+  def apply(raw: Int :| GreaterEqual[200]): FairyBaseRecoveryMana = raw
+
+  def applyUnsafe(raw: Int): FairyBaseRecoveryMana = {
     val amount = raw
       .refineEither[GreaterEqual[200]]
       .getOrElse(throw new IllegalArgumentException("FairyBaseRecoveryManaの回復量が200未満です"))
@@ -47,8 +49,12 @@ object FairyBaseRecoveryMana {
     require(randomRoll >= 0.0 && randomRoll < 1.0, "randomRollは [0.0, 1.0) の範囲で指定してください。")
     val maxJitterSteps = (levelCappedManaAmount / 20).toInt
     val jitter = (maxJitterSteps * randomRoll) / 2.9
-    FairyBaseRecoveryMana.tryFromRaw(
+    FairyBaseRecoveryMana.applyUnsafe(
       (levelCappedManaAmount / 10 - levelCappedManaAmount / 30 + jitter).toInt + 200
     )
+  }
+
+  extension (self: FairyBaseRecoveryMana) {
+    def amount: Int :| GreaterEqual[200] = self
   }
 }

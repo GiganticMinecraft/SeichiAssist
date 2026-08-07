@@ -100,7 +100,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
           .map(_.int("fairy_recovery_mana_value"))
           .single()
           .get
-      FairyBaseRecoveryMana.tryFromRaw(recoveryMana)
+      FairyBaseRecoveryMana.applyUnsafe(recoveryMana)
     }
   }
 
