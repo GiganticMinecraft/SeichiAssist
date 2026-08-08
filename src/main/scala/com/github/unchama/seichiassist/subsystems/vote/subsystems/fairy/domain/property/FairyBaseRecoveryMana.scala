@@ -15,6 +15,7 @@ import io.github.iltotore.iron.constraint.numeric.GreaterEqual
 type FairyBaseRecoveryMana = FairyBaseRecoveryMana.T
 
 object FairyBaseRecoveryMana extends RefinedType[Int, GreaterEqual[200]] {
+
   /**
    * 妖精召喚時の基本マナ回復量を計算する。
    *
