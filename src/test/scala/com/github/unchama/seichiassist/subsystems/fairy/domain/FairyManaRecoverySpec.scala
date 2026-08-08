@@ -5,7 +5,6 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.p
   FairyBaseRecoveryMana,
   FairyManaRecoveryState
 }
-import io.github.iltotore.iron.autoRefine
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks

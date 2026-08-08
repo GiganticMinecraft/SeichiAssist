@@ -1,8 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property
 
-import io.github.iltotore.iron.:|
+import io.github.iltotore.iron.{:|, RefinedType}
 import io.github.iltotore.iron.constraint.numeric.GreaterEqual
-import io.github.iltotore.iron.refineEither
 
 /**
  * 妖精の1回の回復サイクルあたりのマナ回復量。
@@ -13,19 +12,9 @@ import io.github.iltotore.iron.refineEither
  * @see [[com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairyBaseRecoveryMana]]
  *      召喚時の回復量決定ロジック
  */
-opaque type FairyBaseRecoveryMana = Int :| GreaterEqual[200]
+type FairyBaseRecoveryMana = FairyBaseRecoveryMana.T
 
-object FairyBaseRecoveryMana {
-  def apply(raw: Int :| GreaterEqual[200]): FairyBaseRecoveryMana = raw
-
-  def applyUnsafe(raw: Int): FairyBaseRecoveryMana = {
-    val amount = raw
-      .refineEither[GreaterEqual[200]]
-      .getOrElse(throw new IllegalArgumentException("FairyBaseRecoveryManaの回復量が200未満です"))
-
-    FairyBaseRecoveryMana(amount)
-  }
-
+object FairyBaseRecoveryMana extends RefinedType[Int, GreaterEqual[200]] {
   /**
    * 妖精召喚時の基本マナ回復量を計算する。
    *
@@ -55,6 +44,6 @@ object FairyBaseRecoveryMana {
   }
 
   extension (self: FairyBaseRecoveryMana) {
-    def amount: Int :| GreaterEqual[200] = self
+    def amount: Int :| GreaterEqual[200] = self.value
   }
 }
