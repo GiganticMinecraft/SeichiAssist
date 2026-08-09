@@ -1,13 +1,15 @@
 package com.github.unchama.seichiassist.subsystems.gacha.bukkit
 
-import cats.effect.ConcurrentEffect
-import cats.effect.Effect.ops.toAllEffectOps
+import com.github.unchama.toIO
+
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.DrawGacha
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util._
-import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
@@ -16,7 +18,7 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.{EquipmentSlot, ItemStack}
 import org.bukkit.{GameMode, Material}
 
-class PlayerPullGachaListener[F[_]: ConcurrentEffect](
+class PlayerPullGachaListener[F[_]: [f[_]] =>> ContextCoercion[f, cats.effect.IO]](
   implicit drawGacha: DrawGacha[F, Player],
   gachaPrizeAPI: GachaPrizeAPI[F, ItemStack, Player]
 ) extends Listener {
@@ -27,8 +29,9 @@ class PlayerPullGachaListener[F[_]: ConcurrentEffect](
 
     if (player.getGameMode != GameMode.SURVIVAL) return
 
-    val clickedItemStack = event.getItem.ifNull {
-      return
+    val clickedItemStack = Option(event.getItem) match {
+      case Some(itemStack) => itemStack
+      case None            => return
     }
 
     if (!ItemInformation.isGachaTicket(clickedItemStack)) return
@@ -47,8 +50,9 @@ class PlayerPullGachaListener[F[_]: ConcurrentEffect](
     if (event.getHand == EquipmentSlot.OFF_HAND) return
 
     val action = event.getAction
-    val clickedBlock = event.getClickedBlock.ifNull {
-      return
+    val clickedBlock = Option(event.getClickedBlock) match {
+      case Some(block) => block
+      case None        => return
     }
 
     /*
@@ -85,7 +89,7 @@ class PlayerPullGachaListener[F[_]: ConcurrentEffect](
     }
 
     // ガチャの実行
-    drawGacha.draw(player, count).toIO.unsafeRunAsyncAndForget()
+    drawGacha.draw(player, count).toIO.unsafeRunAndForget()
   }
 
 }

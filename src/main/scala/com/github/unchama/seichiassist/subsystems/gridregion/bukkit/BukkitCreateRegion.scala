@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.gridregion.bukkit
 
 import cats.effect.Sync
-import cats.effect.concurrent.Ref
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.seichiassist.subsystems.gridregion.application.actions.CreateRegion
 import com.github.unchama.seichiassist.subsystems.gridregion.domain.{
@@ -12,6 +11,7 @@ import org.bukkit.Location
 import org.bukkit.entity.Player
 import com.github.unchama.util.external.{WorldEditWrapper, WorldGuardWrapper}
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion
+import cats.effect.Ref
 
 class BukkitCreateRegion[F[_]: Sync](
   implicit regionCountAllUntilNowRepository: KeyedDataRepository[Player, Ref[F, RegionCount]]

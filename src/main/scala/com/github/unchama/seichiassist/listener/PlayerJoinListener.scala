@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.listener
 
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
 import cats.effect.IO
 import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.SeichiAssist
@@ -38,7 +40,7 @@ class PlayerJoinListener extends Listener {
     "プレーヤーデータの読み込みに失敗しました。再接続しても読み込まれない場合管理者に連絡してください。"
 
   @EventHandler
-  def onPlayerPreLoginEvent(event: AsyncPlayerPreLoginEvent): Unit = {
+  def onPlayerPreLoginEvent(event: AsyncPlayerPreLoginEvent): Unit = scala.util.boundary {
     val maxTryCount = 10
 
     (1 until maxTryCount + 1).foreach { tryCount =>
@@ -46,7 +48,7 @@ class PlayerJoinListener extends Listener {
 
       try {
         loadPlayerData(event.getUniqueId, event.getName)
-        return
+        scala.util.boundary.break()
       } catch {
         case e: Exception =>
           if (isLastTry) {
@@ -55,7 +57,7 @@ class PlayerJoinListener extends Listener {
 
             event.setKickMessage(failedToLoadDataError)
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER)
-            return
+            scala.util.boundary.break()
           }
       }
 
@@ -101,12 +103,12 @@ class PlayerJoinListener extends Listener {
         .sendMessageToEveryoneIgnoringPreferenceIO(
           s"$LIGHT_PURPLE$BOLD${player.getName}さんはこのサーバーに初めてログインしました！"
         )
-        .unsafeRunAsyncAndForget()
+        .unsafeRunAndForget()
       SendMessageEffect
         .sendMessageToEveryoneIgnoringPreferenceIO(
           s"${WHITE}webサイトはもう読みましたか？→$YELLOW${UNDERLINE}https://www.seichi.network/gigantic"
         )
-        .unsafeRunAsyncAndForget()
+        .unsafeRunAndForget()
 
       SendSoundEffect.sendEverySound[IO](Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f).unsafeRunSync()
 

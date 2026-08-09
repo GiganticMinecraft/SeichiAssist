@@ -1,18 +1,17 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit
 
-import cats.effect.Sync
+import cats.effect.{Clock, Sync}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyPersistence
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property._
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.resources.FairyMessageTable
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.FairySpeech
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.FairySpeechAPI
-import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.entity.Player
 
 import java.time.ZoneId
 import scala.util.Random
 
-class BukkitFairySpeech[F[_]: Sync: JavaTime](
+class BukkitFairySpeech[F[_]: Sync](
   implicit fairyPersistence: FairyPersistence[F],
   fairySpeechAPI: FairySpeechAPI[F, Player]
 ) extends FairySpeech[F, Player] {
@@ -33,7 +32,9 @@ class BukkitFairySpeech[F[_]: Sync: JavaTime](
 
   override def summonSpeech(player: Player): F[Unit] =
     for {
-      startHour <- JavaTime[F].getLocalDateTime(ZoneId.systemDefault()).map(_.getHour)
+      startHour <- Clock[F]
+        .realTimeInstant
+        .map(_.atZone(ZoneId.systemDefault()).toLocalDateTime.getHour)
       nameCalledByFairy = ScreenNameForFairy(player.getName)
       fairyMessages = getSummonMessagesByStartHour(startHour, nameCalledByFairy)
       message <- randomMessage(fairyMessages)

@@ -1,12 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy
 
 import cats.data.Kleisli
-import cats.effect.{ConcurrentEffect, IO, SyncIO}
+import cats.effect.{Async, IO, SyncIO}
 import com.github.unchama.concurrent.RepeatingTaskContext
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.timer
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
@@ -52,7 +51,7 @@ object System {
       Player
     ],
     repeatingTaskContext: RepeatingTaskContext,
-    concurrentEffect: ConcurrentEffect[IO],
+    concurrentEffect: Async[IO],
     minecraftServerThread: OnMinecraftServerThread[IO],
     dragonNightTimeApi: DragonNightTimeApi
   ): SyncIO[System[IO, SyncIO, Player]] = {

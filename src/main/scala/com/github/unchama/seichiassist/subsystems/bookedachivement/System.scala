@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.bookedachivement
 
-import cats.effect.ConcurrentEffect
-import com.github.unchama.concurrent.NonServerThreadContextShift
+import cats.effect.Async
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.bookedachivement.bukkit.command.AchievementCommand
@@ -15,8 +15,10 @@ import org.bukkit.event.Listener
 import java.util.UUID
 
 object System {
-  def wired[F[_]: ConcurrentEffect: NonServerThreadContextShift, G[_]](
-    implicit effectEnvironment: EffectEnvironment
+  def wired[F[_]: Async: [f[_]] =>> ContextCoercion[cats.effect.IO, f]: [f[
+    _
+  ]] =>> ContextCoercion[f, cats.effect.IO], G[_]](
+    implicit effectEnvironment: EffectEnvironment[F]
   ): Subsystem[G] = {
 
     implicit val repository: BookedAchievementPersistenceRepository[F, UUID] =

@@ -1,6 +1,6 @@
 package com.github.unchama.generic
 
-import cats.effect.concurrent.Ref
+import cats.effect.Ref
 
 object RefExtra {
 

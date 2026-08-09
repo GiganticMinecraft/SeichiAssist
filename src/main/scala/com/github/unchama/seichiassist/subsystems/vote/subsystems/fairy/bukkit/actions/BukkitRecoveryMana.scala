@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions
 
-import cats.effect.{ConcurrentEffect, Sync}
+import cats.effect.{Async, Clock, Sync}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
@@ -18,7 +18,6 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.p
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.speech.FairySpeech
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffectF
-import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -27,10 +26,10 @@ import java.time.ZoneId
 import scala.concurrent.duration.FiniteDuration
 import scala.util.Random
 
-class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: [f[_]] =>> ContextCoercion[
-  f,
-  F
-]](player: Player, fairySpeech: FairySpeech[F, Player])(
+class BukkitRecoveryMana[F[_]: Async, G[_]: [f[_]] =>> ContextCoercion[f, F]](
+  player: Player,
+  fairySpeech: FairySpeech[F, Player]
+)(
   implicit manaApi: ManaApi[F, G, Player],
   fairyPersistence: FairyPersistence[F],
   mineStackAPI: MineStackAPI[F, Player, ItemStack],
@@ -68,7 +67,7 @@ class BukkitRecoveryMana[F[_]: ConcurrentEffect: JavaTime, G[_]: [f[_]] =>> Cont
         )
 
       bonusRoll <- Sync[F].delay(new Random().nextDouble())
-      now <- JavaTime[F].getLocalDateTime(ZoneId.systemDefault())
+      now <- Clock[F].realTimeInstant.map(_.atZone(ZoneId.systemDefault()).toLocalDateTime)
       isDragonNightTime = dragonNightTimeApi.isInDragonNightTime(now)
       result = FairyManaRecovery.compute(
         defaultRecoveryMana,

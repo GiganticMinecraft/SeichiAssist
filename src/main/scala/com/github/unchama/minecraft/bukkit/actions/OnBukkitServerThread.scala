@@ -1,55 +1,28 @@
 package com.github.unchama.minecraft.bukkit.actions
 
-import cats.Monad
-import cats.effect.{ConcurrentEffect, ContextShift, Sync, SyncEffect, SyncIO}
-import com.github.unchama.generic.ContextCoercion
+import cats.effect.{Async, SyncIO}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 
-class OnBukkitServerThread[F[_]](
-  implicit hostPlugin: JavaPlugin,
-  shift: ContextShift[F],
-  F: ConcurrentEffect[F]
-) extends OnMinecraftServerThread[F] {
+class OnBukkitServerThread[F[_]](hostPlugin: JavaPlugin)(implicit F: Async[F])
+    extends OnMinecraftServerThread[F] {
 
-  import cats.implicits._
+  import cats.syntax.all._
 
-  override def runAction[G[_]: SyncEffect, A](ga: G[A]): F[A] = {
-    val checkMainThread = Sync[G].delay {
-      hostPlugin.getServer.isPrimaryThread
-    }
+  override def runAction[A](action: SyncIO[A]): F[A] =
+    F.defer {
+      F.delay(hostPlugin.getServer.isPrimaryThread).flatMap {
+        case true  => action.to[F]
+        case false =>
+          F.async[A] { callback =>
+            F.delay {
+              val run: Runnable = () => callback(action.attempt.unsafeRunSync())
+              val task = hostPlugin.getServer.getScheduler.runTask(hostPlugin, run)
 
-    for {
-      // メインスレッドにいる場合はすぐに実行できるので試行
-      immediateResult <- ContextCoercion.syncEffectToSync[G, F].apply {
-        checkMainThread.ifM[Option[A]](ga.map(Some.apply), Monad[G].pure(None))
-      }
-
-      result <- immediateResult match {
-        // メインスレッドですでに実行ができた場合実行結果を
-        case Some(value) => Monad[F].pure(value)
-
-        // 実行結果が得られていない場合、メインスレッドに飛んで実行結果を戻す
-        // メインスレッドに飛ぶアクション自体をcancelableにする
-        case None =>
-          F.cancelable[A] { cb =>
-            val run: Runnable = () => {
-              // メインスレッド内でgaを実行、結果を取り出し、継続に渡す
-              val a = SyncEffect[G].runSync[SyncIO, A](ga).unsafeRunSync()
-              cb(Right(a))
+              Some(F.delay(task.cancel()))
             }
-
-            val task = Bukkit.getScheduler.runTask(hostPlugin, run)
-
-            // runAction自体がキャンセル可能になるために、cancelableに対してtask.cancelを戻す
-            F.delay(task.cancel())
           }
       }
-
-      // 継続の実行がメインスレッドから外れるよう促す
-      _ <- shift.shift
-    } yield result
-  }
+    }
 
 }

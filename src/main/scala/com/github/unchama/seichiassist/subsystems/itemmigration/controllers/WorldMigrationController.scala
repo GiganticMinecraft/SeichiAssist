@@ -4,7 +4,6 @@ import cats.effect.IO
 import com.github.unchama.itemmigration.domain.ItemMigrations
 import com.github.unchama.itemmigration.service
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.loggers.WorldLevelMigrationSlf4jLogger
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.repositories.WorldLevelItemsMigrationVersionRepository
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.targets.SeichiAssistWorldLevelData
@@ -24,7 +23,6 @@ case class WorldMigrationController(migrations: ItemMigrations)(implicit logger:
         new WorldLevelMigrationSlf4jLogger(logger)
       )
       .runMigration(migrations) {
-        import PluginExecutionContexts.asyncShift
         new SeichiAssistWorldLevelData()
       }
   }

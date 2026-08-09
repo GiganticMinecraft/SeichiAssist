@@ -1,10 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.fourdimensionalpocket
 
 import cats.data.Kleisli
-import cats.effect.{ConcurrentEffect, Sync, SyncEffect, SyncIO}
+import cats.effect.{Async, Sync, SyncIO}
+import cats.effect.std.Dispatcher
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
-import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.generic.{ContextCoercion, UnsafeSyncRunner}
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
@@ -48,10 +49,12 @@ object System {
   import cats.implicits._
   import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid._
 
-  def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread: ErrorLogger, G[_]: SyncEffect: [f[
+  def wired[F[_]: Async: Dispatcher: OnMinecraftServerThread: ErrorLogger, G[
     _
-  ]] =>> ContextCoercion[f, F]](breakCountReadAPI: BreakCountReadAPI[F, G, Player])(
-    implicit effectEnvironment: EffectEnvironment,
+  ]: Sync: UnsafeSyncRunner: [f[_]] =>> ContextCoercion[f, F]](
+    breakCountReadAPI: BreakCountReadAPI[F, G, Player]
+  )(
+    implicit effectEnvironment: EffectEnvironment[F],
     syncIOUuidRepository: UuidRepository[SyncIO]
   ): F[System[F, Player]] = {
     val persistence: PocketInventoryPersistence[G, Inventory] =
@@ -117,7 +120,7 @@ object System {
         override val listeners: Seq[Listener] = Vector(openPocketListener)
         override val commands: Map[String, TabExecutor] = Map(
           "openpocket" -> openPocketCommand.executor,
-          "fd" -> FourDimensionalPocketCommand.executor
+          "fd" -> FourDimensionalPocketCommand.executor[F]
         )
       }
     }

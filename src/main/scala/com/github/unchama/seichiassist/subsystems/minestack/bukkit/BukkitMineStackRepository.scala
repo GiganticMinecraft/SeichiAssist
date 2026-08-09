@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.minestack.bukkit
 
 import cats.effect.Sync
-import cats.effect.concurrent.Ref
 import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.ListExtra
 import com.github.unchama.seichiassist.subsystems.minestack.domain.MineStackRepository
@@ -12,6 +11,7 @@ import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobje
 }
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import cats.effect.Ref
 
 class BukkitMineStackRepository[F[_]: Sync](
   implicit mineStackObjectList: MineStackObjectList[F, ItemStack, Player],

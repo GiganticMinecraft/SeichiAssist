@@ -183,7 +183,6 @@ case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) 
     ranking: Ranking[R]
   )(implicit environment: Environment): IO[Seq[(Int, Button)]] = {
     import environment.playerHeadSkinAPI
-    import environment.nonServerThreadContextShift
 
     def entry(position: Int, record: RankingRecord[R]): IO[Button] = {
       playerHeadSkinAPI.playerHeadSkinUrlByUUID(record.uuid).map { skinUrl =>

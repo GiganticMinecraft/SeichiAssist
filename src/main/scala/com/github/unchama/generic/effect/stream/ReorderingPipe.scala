@@ -35,7 +35,7 @@ object ReorderingPipe {
       ): (WaitMap[A], Chunk[A]) = {
         map.get(next) match {
           case Some((a, newNext)) => go(map.removed(next), newNext, accum.appended(a))
-          case None               => (WaitMap(next, map), Chunk.vector(accum))
+          case None               => (WaitMap(next, map), Chunk.from(accum))
         }
       }
 

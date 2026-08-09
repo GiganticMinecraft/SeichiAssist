@@ -1,6 +1,7 @@
 package com.github.unchama.menuinventory.slot
 
-import cats.effect.{ContextShift, IO}
+import cats.effect.IO
+import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -32,6 +33,6 @@ trait Slot {
    *   クリックした[Player]へ及ぼすべき作用
    */
   def effectOn(event: InventoryClickEvent)(
-    implicit cs: ContextShift[IO]
+    implicit cs: NonServerThreadContextShift[IO]
   ): TargetedEffect[Player]
 }

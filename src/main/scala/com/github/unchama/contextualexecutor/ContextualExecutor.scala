@@ -1,5 +1,7 @@
 package com.github.unchama.contextualexecutor
 
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
 import cats.effect.IO
 import org.bukkit.command.{Command, CommandSender, TabExecutor}
 

@@ -16,10 +16,8 @@ import java.util.UUID
 class JdbcHomePersistence[F[_]: Sync: NonServerThreadContextShift] extends HomePersistence[F] {
   private val serverId = SeichiAssist.seichiAssistConfig.getServerNum
 
-  import cats.implicits._
-
   override def upsert(ownerUuid: UUID, id: HomeId)(home: Home): F[Unit] =
-    NonServerThreadContextShift[F].shift >> Sync[F].delay[Unit] {
+    NonServerThreadContextShift[F].evalOn(Sync[F].delay[Unit] {
       DB.localTx { implicit session =>
         val HomeLocation(worldName, x, y, z, pitch, yaw) = home.location
 
@@ -38,10 +36,10 @@ class JdbcHomePersistence[F[_]: Sync: NonServerThreadContextShift] extends HomeP
              |      yaw = $yaw,
              |      world_name = $worldName""".stripMargin.update()
       }
-    }
+    })
 
   override def list(ownerUuid: UUID): F[Map[HomeId, Home]] =
-    NonServerThreadContextShift[F].shift >> Sync[F].delay {
+    NonServerThreadContextShift[F].evalOn(Sync[F].delay {
       DB.readOnly { implicit session =>
         // NOTE 2021/05/19: 何故かDB上のIDは1少ない。つまり、ID 1のホームはDB上ではid=0である。
         sql"""SELECT id, name, location_x, location_y, location_z, world_name, pitch, yaw
@@ -68,10 +66,10 @@ class JdbcHomePersistence[F[_]: Sync: NonServerThreadContextShift] extends HomeP
           .stripMargin
           .list()
       }.toMap
-    }
+    })
 
   override def remove(ownerUuid: UUID, id: HomeId): F[Boolean] = {
-    NonServerThreadContextShift[F].shift >> Sync[F].delay {
+    NonServerThreadContextShift[F].evalOn(Sync[F].delay {
       DB.localTx { implicit session =>
         // NOTE 2022/04/16: 何故かDB上のIDは1少ない。つまり、ID 1のホームはDB上ではid=0である。
         sql"""delete from seichiassist.home
@@ -79,6 +77,6 @@ class JdbcHomePersistence[F[_]: Sync: NonServerThreadContextShift] extends HomeP
              |  and player_uuid = ${ownerUuid.toString}
              |  and id = ${id.value - 1}""".stripMargin.execute()
       }
-    }
+    })
   }
 }

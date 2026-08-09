@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.mana.domain
 
 import cats.FlatMap
-import cats.effect.concurrent.Ref
+import cats.effect.Ref
 
 /**
  * プレーヤーが持つマナに対する操作を提供するオブジェクト。
