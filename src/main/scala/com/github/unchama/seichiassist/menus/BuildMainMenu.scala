@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.menus
 
+import com.github.unchama.toIO
+
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.buildassist.menu.{BlockPlacementSkillMenu, MineStackMassCraftMenu}
 import com.github.unchama.buildassist.{BuildAssist, MenuInventoryData}

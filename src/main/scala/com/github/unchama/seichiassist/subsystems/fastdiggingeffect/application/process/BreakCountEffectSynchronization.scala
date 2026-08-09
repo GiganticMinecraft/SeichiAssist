@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.process
 
-import cats.effect.{ConcurrentEffect, Timer}
+import cats.effect.Async
 import com.github.unchama.minecraft.algebra.HasUuid
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.FastDiggingEffectWriteApi
@@ -17,7 +17,7 @@ object BreakCountEffectSynchronization {
 
   import cats.implicits._
 
-  def using[F[_]: ConcurrentEffect: Timer, G[_], Player: HasUuid](
+  def using[F[_]: Async, G[_], Player: HasUuid](
     implicit configuration: Configuration,
     api: FastDiggingEffectWriteApi[F, Player],
     breakCountReadAPI: BreakCountReadAPI[F, G, Player]

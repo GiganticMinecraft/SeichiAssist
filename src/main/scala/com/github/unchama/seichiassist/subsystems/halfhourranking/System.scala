@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.halfhourranking
 
-import cats.effect.{Concurrent, Timer}
+import cats.effect.Async
 import cats.{Applicative, Functor}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.stream.StreamExtra
@@ -22,7 +22,7 @@ object System {
 
   import scala.concurrent.duration._
 
-  def backgroundProcess[F[_]: OnMinecraftServerThread: Timer: Concurrent: ErrorLogger, G[_]: [f[
+  def backgroundProcess[F[_]: OnMinecraftServerThread: Async: ErrorLogger, G[_]: [f[
     _
   ]] =>> ContextCoercion[f, F]: Functor](
     implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player]

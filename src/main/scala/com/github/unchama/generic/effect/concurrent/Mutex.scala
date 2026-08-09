@@ -1,14 +1,14 @@
 package com.github.unchama.generic.effect.concurrent
 
-import cats.effect.concurrent.{MVar, MVar2, Ref}
-import cats.effect.{Bracket, Concurrent, ExitCase, Sync}
+import cats.effect.std.{Mutex => EffectMutex}
+import cats.effect.{Async, Ref, Sync}
 import com.github.unchama.generic.ContextCoercion
 
 final class Mutex[MutexContext[_], ReadContext[_]: [f[_]] =>> ContextCoercion[
   f,
   MutexContext
-], A] private (mVar: MVar2[MutexContext, A], previous: Ref[ReadContext, A])(
-  implicit fBracket: Bracket[MutexContext, Throwable]
+], A] private (mutex: EffectMutex[MutexContext], previous: Ref[ReadContext, A])(
+  implicit F: Async[MutexContext]
 ) {
 
   import ContextCoercion._
@@ -24,19 +24,13 @@ final class Mutex[MutexContext[_], ReadContext[_]: [f[_]] =>> ContextCoercion[
    * ブロッキングを行うことになる。
    */
   def lockAndModify[B](use: A => MutexContext[(A, B)]): MutexContext[B] =
-    Bracket[MutexContext, Throwable].bracketCase(mVar.take) { a =>
-      use(a) >>= {
-        case (newA, b) =>
-          mVar.put(newA).flatTap(_ => previous.set(newA).coerceTo[MutexContext]).as(b)
+    mutex.lock.surround {
+      previous.get.coerceTo[MutexContext].flatMap { a =>
+        use(a).flatMap {
+          case (newA, b) =>
+            previous.set(newA).coerceTo[MutexContext].as(b)
+        }
       }
-    } {
-      case (_, ExitCase.Completed) =>
-        // このケースではmVarに値はputされている
-        fBracket.unit
-      case (a, _) =>
-        // 元の値をputし直すことでロックを返却する
-        // 外側の `F` は失敗する
-        mVar.put(a)
     }
 
   /**
@@ -61,13 +55,13 @@ object Mutex {
 
   import cats.implicits._
 
-  def of[F[_]: Concurrent, G[_]: Sync: [f[_]] =>> ContextCoercion[f, F], A](
+  def of[F[_]: Async, G[_]: Sync: [f[_]] =>> ContextCoercion[f, F], A](
     initial: A
   ): G[Mutex[F, G, A]] = {
     for {
       ref <- Ref.of[G, A](initial)
-      mVar <- MVar.in[G, F, A](initial)
-      mutex <- Sync[G].delay(new Mutex(mVar, ref))
-    } yield mutex
+      mutex <- EffectMutex.in[G, F]
+      result <- Sync[G].delay(new Mutex(mutex, ref))
+    } yield result
   }
 }

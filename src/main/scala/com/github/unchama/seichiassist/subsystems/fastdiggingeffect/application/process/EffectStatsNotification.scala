@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.process
 
-import cats.effect.ConcurrentEffect
+import cats.effect.Async
 import com.github.unchama.minecraft.actions.SendMinecraftMessage
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.stats.{
   EffectListDiff,
@@ -10,7 +10,7 @@ import org.bukkit.ChatColor.{RED, RESET, WHITE, YELLOW}
 
 object EffectStatsNotification {
 
-  def using[F[_]: ConcurrentEffect: [f[_]] =>> SendMinecraftMessage[f, Player], Player](
+  def using[F[_]: Async: [f[_]] =>> SendMinecraftMessage[f, Player], Player](
     effectDiffWithSettings: fs2.Stream[
       F,
       (Player, (EffectListDiff, FastDiggingEffectStatsSettings))

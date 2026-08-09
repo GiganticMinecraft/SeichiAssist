@@ -43,12 +43,13 @@ object ValentineItemData {
    */
   def isUsableCookie(item: ItemStack): Boolean = {
     val now = LocalDateTime.now()
-    val exp = LocalDateTime.ofEpochSecond(
-      Option(new NBTItem(item).getLong(NBTTagConstants.expiryDateTimeTag))
-        .getOrElse(return false),
-      0,
-      ZoneOffset.of("+9")
-    )
+    val expiryEpochSecond = Option(
+      new NBTItem(item).getLong(NBTTagConstants.expiryDateTimeTag)
+    ) match {
+      case Some(epochSecond) => epochSecond
+      case None              => return false
+    }
+    val exp = LocalDateTime.ofEpochSecond(expiryEpochSecond, 0, ZoneOffset.of("+9"))
     now.isBefore(exp) || now.isEqual(exp)
   }
 

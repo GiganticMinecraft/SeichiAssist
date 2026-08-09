@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.elevator
 
-import cats.effect.ConcurrentEffect
+import cats.effect.Async
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.elevator.application.actions.FindTeleportLocation
@@ -11,9 +11,7 @@ import org.bukkit.event.Listener
 
 object System {
 
-  def wired[F[_]: ConcurrentEffect](
-    implicit effectEnvironment: EffectEnvironment
-  ): Subsystem[F] = {
+  def wired[F[_]: Async](implicit effectEnvironment: EffectEnvironment[F]): Subsystem[F] = {
     implicit val findTeleportLocation: FindTeleportLocation[F, Location] =
       new BukkitFindTeleportLocation[F]
 

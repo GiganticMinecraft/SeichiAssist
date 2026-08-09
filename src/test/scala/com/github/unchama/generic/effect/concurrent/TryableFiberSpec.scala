@@ -1,10 +1,8 @@
 package com.github.unchama.generic.effect.concurrent
 
-import cats.effect.concurrent.Deferred
-import cats.effect.{ContextShift, IO}
+import cats.effect.{Deferred, IO}
+import cats.effect.unsafe.implicits.global
 import org.scalatest.wordspec.AnyWordSpec
-
-import scala.concurrent.ExecutionContext
 
 class TryableFiberSpec extends AnyWordSpec {
   "Unit fiber" should {
@@ -25,8 +23,6 @@ class TryableFiberSpec extends AnyWordSpec {
   }
 
   "Started fiber" should {
-    implicit val shift: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
-
     "never be complete for non-terminating IO" in {
       val assertionProgram =
         for {
