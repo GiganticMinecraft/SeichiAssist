@@ -204,6 +204,16 @@ lazy val root = (project in file(".")).settings(
       .rename(
         "org.mariadb.jdbc.**" -> "com.github.unchama.seichiassist.relocateddependencies.org.mariadb.jdbc.@1"
       )
+      .inAll,
+    // Paperは自前で slf4j-api 1.8.0-beta4 を提供しており、プラグインのクラスローダーは
+    // `org.slf4j.helpers.*` などの共有クラスをそちら側から解決する。一方 slf4j-jdk14 は
+    // Paperに含まれないためプラグインJar側（2.x）が使われ、2.xのアダプタが1.8系のヘルパを
+    // 呼ぶことで `NoSuchMethodError: MessageFormatter.basicArrayFormat` となる。
+    // slf4jを丸ごと再配置し、プラグインのロギングをサーバー側の実装から独立させる。
+    ShadeRule
+      .rename(
+        "org.slf4j.**" -> "com.github.unchama.seichiassist.relocateddependencies.org.slf4j.@1"
+      )
       .inAll
   ),
   // assemblyの実行時にテストを走らせる（sbt-assembly 1.0.0からはデフォルトで実行されない）。

@@ -126,7 +126,7 @@ class SeichiAssist extends JavaPlugin() {
   private implicit val ioRuntime: IORuntime = IORuntimeBuilder().build()
 
   private val releasePluginExecutionContexts: IO[Unit] =
-    PluginExecutionContexts.resource(this).allocated.unsafeRunSync()._2
+    PluginExecutionContexts.resource(this, ioRuntime).allocated.unsafeRunSync()._2
 
   private var hasBeenLoadedAlready = false
 
