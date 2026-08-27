@@ -1,12 +1,13 @@
 package com.github.unchama.seichiassist.subsystems.fastdiggingeffect
 
 import cats.data.Kleisli
-import cats.effect.{ConcurrentEffect, SyncEffect, SyncIO, Timer}
+import cats.effect.{Async, Sync, SyncIO}
+import cats.effect.std.Dispatcher
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.fs2.workaround.fs3.Fs3Topic
-import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.generic.{ContextCoercion, UnsafeSyncRunner}
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.minecraft.actions.{
@@ -66,13 +67,13 @@ trait System[F[_], G[_], Player] extends Subsystem[G] {
 
 object System {
 
-  import cats.effect.implicits._
+  import cats.effect.syntax.all._
   import cats.implicits._
   import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid._
 
-  def wired[G[_]: SyncEffect, F[
+  def wired[G[_]: Sync: UnsafeSyncRunner, F[
     _
-  ]: OnMinecraftServerThread: Timer: ConcurrentEffect: ErrorLogger: [g[_]] =>> ContextCoercion[
+  ]: OnMinecraftServerThread: Async: Dispatcher: ErrorLogger: [g[_]] =>> ContextCoercion[
     G,
     g
   ]: [f[_]] =>> GetConnectedPlayers[f, Player]: GetNetworkConnectionCount, H[_]](

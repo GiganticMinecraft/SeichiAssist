@@ -1,6 +1,7 @@
 package com.github.unchama.datarepository.definitions
 
-import cats.effect.{ConcurrentEffect, Sync}
+import cats.effect.std.Dispatcher
+import cats.effect.{Async, Sync}
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
 import com.github.unchama.datarepository.template.initialization.SinglePhasedRepositoryInitialization
@@ -14,7 +15,7 @@ object SessionMutexRepositoryDefinition {
 
   import cats.implicits._
 
-  def withRepositoryContext[F[_]: ConcurrentEffect, G[_]: Sync: [f[_]] =>> ContextCoercion[
+  def withRepositoryContext[F[_]: Async: Dispatcher, G[_]: Sync: [f[_]] =>> ContextCoercion[
     f,
     F
   ], Player]: RepositoryDefinition[G, Player, SessionMutex[F, G]] = {

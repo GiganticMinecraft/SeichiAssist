@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.process
 
-import cats.effect.{ConcurrentEffect, Timer}
+import cats.effect.Async
 import com.github.unchama.minecraft.actions.GetConnectedPlayers
 import com.github.unchama.seichiassist.domain.actions.GetNetworkConnectionCount
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.FastDiggingEffectApi
@@ -17,7 +17,7 @@ object PlayerCountEffectSynchronization {
 
   import scala.concurrent.duration._
 
-  def using[F[_]: ConcurrentEffect: Timer: [f[_]] =>> GetConnectedPlayers[
+  def using[F[_]: Async: [f[_]] =>> GetConnectedPlayers[
     f,
     Player
   ]: GetNetworkConnectionCount, Player](

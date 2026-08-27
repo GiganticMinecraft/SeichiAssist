@@ -55,8 +55,7 @@ val testDependencies = Seq(
   "org.scalamock" %% "scalamock" % "6.2.0",
   "org.scalatest" %% "scalatest" % "3.2.20",
   "org.scalatestplus" %% "scalacheck-1-19" % "3.2.20.0",
-  // テスト用のTestSchedulerを使うため
-  "io.monix" %% "monix" % "3.4.1"
+  "org.typelevel" %% "cats-effect-testkit" % "3.7.0"
 ).map(_ % "test")
 
 val dependenciesToEmbed = Seq(
@@ -73,17 +72,16 @@ val dependenciesToEmbed = Seq(
 
   // effect system
   "org.typelevel" %% "cats-core" % "2.13.0",
-  "org.typelevel" %% "cats-effect" % "2.5.5",
-  "co.fs2" %% "fs2-core" % "2.5.13",
+  "org.typelevel" %% "cats-effect" % "3.7.0",
+  "co.fs2" %% "fs2-core" % "3.13.0",
 
   // algebra
-  "org.typelevel" %% "log4cats-core" % "1.7.0",
-  "org.typelevel" %% "log4cats-slf4j" % "1.7.0",
-  "io.chrisdavenport" %% "cats-effect-time" % "0.1.3",
+  "org.typelevel" %% "log4cats-core" % "2.8.0",
+  "org.typelevel" %% "log4cats-slf4j" % "2.8.0",
 
   // logging
-  "org.slf4j" % "slf4j-api" % "1.7.36",
-  "org.slf4j" % "slf4j-jdk14" % "1.7.36",
+  "org.slf4j" % "slf4j-api" % "2.0.17",
+  "org.slf4j" % "slf4j-jdk14" % "2.0.17",
 
   // type-safety utils
   "io.github.iltotore" %% "iron" % "3.3.2",
@@ -205,6 +203,16 @@ lazy val root = (project in file(".")).settings(
     ShadeRule
       .rename(
         "org.mariadb.jdbc.**" -> "com.github.unchama.seichiassist.relocateddependencies.org.mariadb.jdbc.@1"
+      )
+      .inAll,
+    // Paperは自前で slf4j-api 1.8.0-beta4 を提供しており、プラグインのクラスローダーは
+    // `org.slf4j.helpers.*` などの共有クラスをそちら側から解決する。一方 slf4j-jdk14 は
+    // Paperに含まれないためプラグインJar側（2.x）が使われ、2.xのアダプタが1.8系のヘルパを
+    // 呼ぶことで `NoSuchMethodError: MessageFormatter.basicArrayFormat` となる。
+    // slf4jを丸ごと再配置し、プラグインのロギングをサーバー側の実装から独立させる。
+    ShadeRule
+      .rename(
+        "org.slf4j.**" -> "com.github.unchama.seichiassist.relocateddependencies.org.slf4j.@1"
       )
       .inAll
   ),

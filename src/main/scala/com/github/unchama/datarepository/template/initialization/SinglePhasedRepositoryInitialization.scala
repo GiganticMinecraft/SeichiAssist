@@ -1,10 +1,10 @@
 package com.github.unchama.datarepository.template.initialization
 
 import cats.effect.Sync
-import cats.effect.concurrent.Ref
 import cats.{Applicative, Functor, Monad}
 
 import java.util.UUID
+import cats.effect.Ref
 
 /**
  * データレポジトリの初期化処理を記述するオブジェクト。

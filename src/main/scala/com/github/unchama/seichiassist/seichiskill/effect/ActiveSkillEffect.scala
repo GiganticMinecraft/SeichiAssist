@@ -1,10 +1,9 @@
 package com.github.unchama.seichiassist.seichiskill.effect
 
-import cats.effect.{IO, SyncIO, Timer}
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, XYZTuple}
 import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{DualBreak, TrialBreak}
 import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillNormalEffect.{
@@ -98,11 +97,8 @@ sealed abstract class ActiveSkillNormalEffect(
     breakArea: AxisAlignedCuboid,
     standard: Location
   )(implicit ioOnMainThread: OnMinecraftServerThread[IO]): IO[Unit] = {
-    import PluginExecutionContexts.{asyncShift, cachedThreadPool}
     import com.github.unchama.concurrent.syntax._
     import com.github.unchama.seichiassist.data.syntax._
-
-    implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
 
     val isSkillDualBreakOrTrialBreak = Seq(DualBreak, TrialBreak).contains(usedSkill)
 
@@ -112,8 +108,6 @@ sealed abstract class ActiveSkillNormalEffect(
         val world = player.getWorld
 
         for {
-          _ <- asyncShift.shift
-
           explosionLocations <- IO {
             breakArea
               .gridPoints(2)
@@ -272,7 +266,6 @@ sealed abstract class ActiveSkillPremiumEffect(
     breakArea: AxisAlignedCuboid,
     standard: Location
   )(implicit ioOnMainThread: OnMinecraftServerThread[IO]): IO[Unit] = {
-    import PluginExecutionContexts.{asyncShift, timer}
     import com.github.unchama.concurrent.syntax._
     import com.github.unchama.seichiassist.data.syntax._
 
@@ -321,7 +314,7 @@ sealed abstract class ActiveSkillPremiumEffect(
                 _ <- FocusedSoundEffect(Sound.ENTITY_WITCH_AMBIENT, 1f, 1.5f).run(player)
               } yield ()
             }
-            .start(asyncShift)
+            .start
 
           _ <- IO {
             breakBlocks.foreach { b =>

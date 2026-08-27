@@ -1,8 +1,7 @@
 package com.github.unchama.itemmigration.bukkit.targets
 
 import cats.Monad
-import cats.effect.concurrent.Ref
-import cats.effect.{Concurrent, Sync}
+import cats.effect.{Async, Sync}
 import com.github.unchama.itemmigration.bukkit.util.MigrationHelper
 import com.github.unchama.itemmigration.domain.{ItemMigrationTarget, ItemStackConversion}
 import com.github.unchama.util.MillisecondTimer
@@ -11,6 +10,7 @@ import org.bukkit.entity.{Item, ItemFrame}
 import org.bukkit.inventory.{InventoryHolder, ItemStack}
 import org.bukkit.{Bukkit, World, WorldCreator}
 import org.slf4j.Logger
+import cats.effect.Ref
 
 /**
  * マイグレーションターゲットとしてのワールドデータを表すデータ
@@ -25,7 +25,7 @@ import org.slf4j.Logger
 case class WorldLevelData[F[_]](
   getWorlds: F[IndexedSeq[World]],
   enumerateChunkCoordinates: World => F[Seq[(Int, Int)]]
-)(implicit metricsLogger: Logger, F: Concurrent[F])
+)(implicit metricsLogger: Logger, F: Async[F])
     extends ItemMigrationTarget[F] {
 
   override def runMigration(conversion: ItemStackConversion): F[Unit] = {
@@ -109,7 +109,7 @@ object WorldLevelData {
     }
   }
 
-  private def queueChunkSaverFlush[F[_]](implicit F: Concurrent[F], logger: Logger) = {
+  private def queueChunkSaverFlush[F[_]](implicit F: Async[F], logger: Logger) = {
     import com.github.unchama.util.nms.v1_18_2.world.WorldChunkSaving
 
     F.delay {
@@ -142,7 +142,7 @@ object WorldLevelData {
     originalWorld: World,
     targetChunks: Seq[(Int, Int)],
     conversion: ItemStack => ItemStack
-  )(implicit F: Concurrent[F], logger: Logger): F[Unit] =
+  )(implicit F: Async[F], logger: Logger): F[Unit] =
     for {
       worldRef <- Ref.of(originalWorld)
       _ <- {

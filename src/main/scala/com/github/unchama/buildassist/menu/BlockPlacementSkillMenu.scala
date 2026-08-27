@@ -1,5 +1,7 @@
 package com.github.unchama.buildassist.menu
 
+import com.github.unchama.toIO
+
 import cats.effect.IO
 import com.github.unchama.buildassist.{BuildAssist, TemporaryMutableBuildAssistPlayerData}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
@@ -26,10 +28,7 @@ import org.bukkit.{Material, Sound}
 
 object BlockPlacementSkillMenu extends Menu {
 
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
-    asyncShift,
-    onMainThread
-  }
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
   import menuinventory.syntax._
 
   class Environment(

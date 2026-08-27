@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.ranking
 
-import cats.effect.{Concurrent, Timer}
+import cats.effect.Async
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
 import com.github.unchama.seichiassist.subsystems.ranking.api.{
@@ -18,7 +18,7 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_]: Timer: Concurrent: ErrorLogger, H[_]]: F[AssortedRankingApi[F]] =
+  def wired[F[_]: Async: ErrorLogger, H[_]]: F[AssortedRankingApi[F]] =
     for {
       seichiRanking <- GenericRefreshingRankingCache.withPersistence(
         new JdbcSeichiRankingRecordPersistence[F],

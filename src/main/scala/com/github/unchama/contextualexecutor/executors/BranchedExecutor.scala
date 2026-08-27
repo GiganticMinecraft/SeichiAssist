@@ -19,24 +19,22 @@ case class BranchedExecutor(
         case None           => IO.pure(())
       }
 
-    val (argHead, argTail) = rawContext.args match {
-      case ::(head, tl) => (head, tl)
-      case Nil          => return executeOptionally(whenArgInsufficient)
+    rawContext.args match {
+      case argHead :: argTail =>
+        branches.get(argHead) match {
+          case Some(branch) => branch.executionWith(rawContext.copy(args = argTail))
+          case None         => executeOptionally(whenBranchNotFound)
+        }
+      case Nil => executeOptionally(whenArgInsufficient)
     }
-
-    val branch = branches.getOrElse(argHead, return executeOptionally(whenBranchNotFound))
-
-    val argShiftedContext = rawContext.copy(args = argTail)
-
-    branch.executionWith(argShiftedContext)
   }
 
   override def tabCandidatesFor(context: RawCommandContext): List[String] = {
     context.args match {
       case head :: tail =>
-        val childExecutor = branches.getOrElse(head, return Nil)
-
-        childExecutor.tabCandidatesFor(context.copy(args = tail))
+        branches
+          .get(head)
+          .fold(List.empty[String])(_.tabCandidatesFor(context.copy(args = tail)))
       case Nil => branches.keys.toArray.sorted.toList
     }
   }

@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.mebius.domain.speech
 
 import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 import org.scalatest.wordspec.AnyWordSpec
 
 import scala.util.Random

@@ -1,6 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.mebius.bukkit.listeners
 
-import cats.effect.SyncIO
+import com.github.unchama.toIO
+
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.ManagedWorld._
@@ -18,7 +20,7 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
 class MebiusLevelUpTrialListener(
   implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]],
-  effectEnvironment: EffectEnvironment,
+  effectEnvironment: EffectEnvironment[IO],
   messages: PropertyModificationMessages
 ) extends Listener {
 
@@ -28,10 +30,12 @@ class MebiusLevelUpTrialListener(
 
     if (!player.getWorld.isSeichi) return
 
-    val oldMebiusProperty =
-      BukkitMebiusItemStackCodec
-        .decodePropertyOfOwnedMebius(player)(player.getInventory.getHelmet)
-        .getOrElse(return)
+    val oldMebiusProperty = BukkitMebiusItemStackCodec.decodePropertyOfOwnedMebius(player)(
+      player.getInventory.getHelmet
+    ) match {
+      case Some(property) => property
+      case None           => return
+    }
 
     val newMebiusProperty = oldMebiusProperty.tryUpgradeByOneLevel[SyncIO].unsafeRunSync()
 
@@ -40,7 +44,6 @@ class MebiusLevelUpTrialListener(
         BukkitMebiusItemStackCodec.materialize(newMebiusProperty)
       }
 
-      import cats.implicits._
       effectEnvironment.unsafeRunEffectAsync(
         "Mebiusのレベルアップ時の通知を行う",
         serviceRepository(player)

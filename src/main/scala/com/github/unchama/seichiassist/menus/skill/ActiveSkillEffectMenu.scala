@@ -32,7 +32,6 @@ import com.github.unchama.itemstackbuilder.SkullOwnerUuid
 
 object ActiveSkillEffectMenu extends Menu {
 
-  import cats.implicits._
   import com.github.unchama.menuinventory.syntax._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import com.github.unchama.targetedeffect._
