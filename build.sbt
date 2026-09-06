@@ -56,7 +56,7 @@ val testDependencies = Seq(
   "org.scalatest" %% "scalatest" % "3.2.20",
   "org.scalatestplus" %% "scalacheck-1-19" % "3.2.20.0",
   // テスト用のTestSchedulerを使うため
-  "io.monix" %% "monix" % "3.4.1"
+  "io.monix" %% "monix" % "3.5.0"
 ).map(_ % "test")
 
 val dependenciesToEmbed = Seq(
