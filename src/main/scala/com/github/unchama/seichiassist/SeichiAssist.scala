@@ -521,12 +521,6 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val joinAndQuitMessenger: Subsystem[IO] =
     subsystems.joinandquitmessenger.System.wired[IO]
 
-  private lazy val elevatorSystem: Subsystem[IO] = {
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
-
-    subsystems.elevator.System.wired[IO]
-  }
-
   private lazy val blockLiquidStreamSystem: Subsystem[IO] =
     subsystems.blockliquidstream.System.wired[IO]
 
@@ -589,7 +583,6 @@ class SeichiAssist extends JavaPlugin() {
     breakSkillTargetConfigSystem,
     breakSuppressionPreferenceSystem,
     joinAndQuitMessenger,
-    elevatorSystem,
     blockLiquidStreamSystem,
     cancelDamageByFallingBlocksSystem,
     playerHeadSkinSystem,
