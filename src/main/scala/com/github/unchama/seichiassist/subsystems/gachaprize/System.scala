@@ -21,6 +21,7 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.infrastructure.{
   JdbcGachaPrizeListPersistence
 }
 import com.github.unchama.seichiassist.subsystems.gachaprize.usecase.GachaPrizeUseCase
+import com.github.unchama.seichiassist.subsystems.itemmigration.migrations.V1_5_0_MigrateGiganticGiftTicketLore
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -46,8 +47,16 @@ object System {
     implicit val _gachaEventPersistence: GachaEventPersistence[F] =
       new JdbcGachaEventPersistence[F]
 
+    val normalizedGachaPrizeList = _gachaPersistence
+      .list
+      .map(_.map { prize =>
+        prize.copy(itemStack =
+          V1_5_0_MigrateGiganticGiftTicketLore.migrationFunction(prize.itemStack)
+        )
+      })
+
     for {
-      gachaPrizeList <- _gachaPersistence.list
+      gachaPrizeList <- normalizedGachaPrizeList
     } yield {
       implicit val gachaPrizesRef: CachedRef[F, Vector[GachaPrizeTableEntry[ItemStack]]] =
         new CachedRef[F, Vector[GachaPrizeTableEntry[ItemStack]]] {
@@ -62,7 +71,7 @@ object System {
 
       new System[F] {
         override val backgroundProcess: F[Nothing] =
-          gachaPrizesRef.startUpdateRoutine(_gachaPersistence.list)
+          gachaPrizesRef.startUpdateRoutine(normalizedGachaPrizeList)
 
         override implicit val api: GachaPrizeAPI[F, ItemStack, Player] =
           createApi(
