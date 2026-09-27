@@ -2,7 +2,7 @@
 addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "2.5.0")
 
 // Lintを掛けるため
-addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.14.7")
+addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.14.9")
 
 // コードフォーマットするため
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.6.2")
