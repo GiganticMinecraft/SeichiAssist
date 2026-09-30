@@ -14,6 +14,18 @@ import org.bukkit.entity.Player
 import scala.collection.{Set, mutable}
 
 object BlockSearching {
+  private val waterloggedMaterials = scala
+    .collection
+    .immutable
+    .Set(
+      Material.WATER,
+      Material.BUBBLE_COLUMN,
+      Material.TALL_SEAGRASS,
+      Material.SEAGRASS,
+      Material.KELP,
+      Material.KELP_PLANT
+    )
+
   case class Result(
     solids: List[BlockBreakableBySkill],
     waters: List[Block],
@@ -39,14 +51,6 @@ object BlockSearching {
     relativeVectors.collect {
       case XYZTuple(x, y, z) =>
         val targetBlock = referencePoint.getRelative(x, y, z)
-        val waterloggedMaterials = Set(
-          Material.WATER,
-          Material.BUBBLE_COLUMN,
-          Material.TALL_SEAGRASS,
-          Material.SEAGRASS,
-          Material.KELP,
-          Material.KELP_PLANT
-        )
 
         if (BreakUtil.canBreakWithSkill(player, targetBlock, lockedBlocks)) {
           if (targetBlock.getType == Material.LAVA) {
