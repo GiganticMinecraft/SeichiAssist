@@ -1,7 +1,14 @@
 package com.github.unchama.buildassist.listener
 
-import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
-import cats.effect.{ConcurrentEffect, SyncEffect, SyncIO}
+import com.github.unchama.runSync
+
+import com.github.unchama.toIO
+
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
+import cats.effect.SyncIO
+import cats.effect.IO
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.IncrementBuildExpWhenBuiltWithSkill
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
@@ -19,9 +26,9 @@ import org.bukkit.{Location, Material}
 import scala.util.chaining._
 import scala.util.control.Breaks
 
-class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[_]: [f[
+class TilingSkillTriggerListener[G[_]: [g[_]] =>> ContextCoercion[g, IO], F[_]: [f[
   _
-]] =>> IncrementBuildExpWhenBuiltWithSkill[f, Player]: SyncEffect](
+]] =>> IncrementBuildExpWhenBuiltWithSkill[f, Player]: [f[_]] =>> ContextCoercion[f, SyncIO]](
   implicit mineStackAPI: MineStackAPI[G, Player, ItemStack]
 ) extends Listener {
 
@@ -154,40 +161,42 @@ class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[_]: [f[
               placementCount += 1
             }
 
-            def consumeOnePlacementItemFromInventory(): Option[Unit] = {
-              @scala.annotation.tailrec
-              def forever(block: => Unit): Nothing = {
-                block; forever(block)
-              }
+            def consumeOnePlacementItemFromInventory(): Option[Unit] =
+              scala.util.boundary[Option[Unit]] {
+                @scala.annotation.tailrec
+                def forever(block: => Unit): Nothing = {
+                  block; forever(block)
+                }
 
-              // インベントリの左上から一つずつ確認する。
-              // 一度「該当アイテムなし」と判断したスロットは次回以降スキップする
-              forever {
-                val consumptionSource = playerInventory.getItem(itemSourceSearchInventoryIndex)
+                // インベントリの左上から一つずつ確認する。
+                // 一度「該当アイテムなし」と判断したスロットは次回以降スキップする
+                forever {
+                  val consumptionSource =
+                    playerInventory.getItem(itemSourceSearchInventoryIndex)
 
-                if (consumptionSource != null && consumptionSource.isSimilar(offHandItem)) {
-                  val sourceStackAmount = consumptionSource.getAmount
+                  if (consumptionSource != null && consumptionSource.isSimilar(offHandItem)) {
+                    val sourceStackAmount = consumptionSource.getAmount
 
-                  // 取得したインベントリデータから数量を1ひき、インベントリに反映する
-                  val updatedItem =
-                    if (sourceStackAmount == 1)
-                      new ItemStack(Material.AIR)
-                    else
-                      consumptionSource.clone().tap(_.setAmount(sourceStackAmount - 1))
-                  playerInventory.setItem(itemSourceSearchInventoryIndex, updatedItem)
+                    // 取得したインベントリデータから数量を1ひき、インベントリに反映する
+                    val updatedItem =
+                      if (sourceStackAmount == 1)
+                        new ItemStack(Material.AIR)
+                      else
+                        consumptionSource.clone().tap(_.setAmount(sourceStackAmount - 1))
+                    playerInventory.setItem(itemSourceSearchInventoryIndex, updatedItem)
 
-                  return Some(())
-                } else {
-                  if (itemSourceSearchInventoryIndex == 35) {
-                    itemSourceSearchInventoryIndex = 0
-                  } else if (itemSourceSearchInventoryIndex == 8) {
-                    return None
+                    scala.util.boundary.break(Some(()))
                   } else {
-                    itemSourceSearchInventoryIndex += 1
+                    if (itemSourceSearchInventoryIndex == 35) {
+                      itemSourceSearchInventoryIndex = 0
+                    } else if (itemSourceSearchInventoryIndex == 8) {
+                      scala.util.boundary.break(None)
+                    } else {
+                      itemSourceSearchInventoryIndex += 1
+                    }
                   }
                 }
               }
-            }
 
             if (replaceableMaterials.contains(targetSurfaceBlock.getType)) {
               // 他人の保護がかかっている場合は処理を終了
@@ -230,7 +239,6 @@ class TilingSkillTriggerListener[G[_]: ConcurrentEffect, F[_]: [f[
       }
     }
 
-    import cats.effect.implicits._
     IncrementBuildExpWhenBuiltWithSkill[F, Player]
       .of(player, BuildExpAmount.ofNonNegative(placementCount))
       .runSync[SyncIO]

@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname
 
-import cats.effect.{ContextShift, IO, Sync, SyncIO}
+import cats.effect.{IO, Sync, SyncIO}
 import com.github.unchama.concurrent.RepeatingTaskContext
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.datarepository.template.RepositoryDefinition
@@ -25,7 +25,6 @@ object System {
   def wired[F[_]: Sync](
     implicit repeatingTaskContext: RepeatingTaskContext,
     onMainThread: OnMinecraftServerThread[IO],
-    ioShift: ContextShift[IO],
     idleTimeAPI: IdleTimeAPI[IO, Player]
   ): SyncIO[Subsystem[F]] = {
     implicit val nameColorByIdleMinute: NameColorByIdleMinute[ChatColor] =

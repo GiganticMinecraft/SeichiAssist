@@ -1,8 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gachaprize
 
 import cats.Monad
-import cats.effect.{ConcurrentEffect, Timer}
-import cats.effect.concurrent.Ref
+import cats.effect.Async
 import com.github.unchama.generic.effect.concurrent.CachedRef
 import com.github.unchama.generic.serialization.SerializeAndDeserialize
 import com.github.unchama.minecraft.bukkit.algebra.BukkitItemStackSerializeAndDeserialize
@@ -23,6 +22,7 @@ import com.github.unchama.seichiassist.subsystems.gachaprize.infrastructure.{
 import com.github.unchama.seichiassist.subsystems.gachaprize.usecase.GachaPrizeUseCase
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import cats.effect.Ref
 
 trait System[F[_]] extends Subsystem[F] {
   val api: GachaPrizeAPI[F, ItemStack, Player]
@@ -34,7 +34,7 @@ object System {
   import scala.concurrent.duration._
   import cats.implicits._
 
-  def wired[F[_]: ConcurrentEffect: Timer]: F[System[F]] = {
+  def wired[F[_]: Async]: F[System[F]] = {
     implicit val _serializeAndDeserialize: SerializeAndDeserialize[Nothing, ItemStack] =
       BukkitItemStackSerializeAndDeserialize
     implicit val _gachaPersistence: GachaPrizeListPersistence[F, ItemStack] =
@@ -54,7 +54,7 @@ object System {
           override val initial: Ref[F, Vector[GachaPrizeTableEntry[ItemStack]]] =
             Ref.unsafe(gachaPrizeList)
 
-          override val updateInterval: F[FiniteDuration] = ConcurrentEffect[F].pure(1.minutes)
+          override val updateInterval: F[FiniteDuration] = Async[F].pure(1.minutes)
         }
 
       val gachaPrizeUseCase: GachaPrizeUseCase[F, ItemStack] =

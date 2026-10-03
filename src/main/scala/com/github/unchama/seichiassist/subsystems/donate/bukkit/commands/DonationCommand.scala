@@ -1,10 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.donate.bukkit.commands
 
 import cats.data.Kleisli
-import cats.effect.{ConcurrentEffect, Sync}
+import cats.effect.{Async, Sync}
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.donate.domain.{
   DonatePersistence,
   DonatePremiumEffectPoint,
@@ -19,7 +20,7 @@ import org.bukkit.command.TabExecutor
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class DonationCommand[F[_]: ConcurrentEffect](
+class DonationCommand[F[_]: Async: [f[_]] =>> ContextCoercion[f, cats.effect.IO]](
   implicit donatePersistence: DonatePersistence[F]
 ) {
 

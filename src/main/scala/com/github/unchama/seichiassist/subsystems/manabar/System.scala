@@ -1,7 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.manabar
 
-import cats.effect.{ConcurrentEffect, SyncEffect}
+import cats.effect.{Async, Sync}
+import cats.effect.std.Dispatcher
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
+import com.github.unchama.generic.{ContextCoercion, UnsafeSyncRunner}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.mana.ManaReadApi
 import com.github.unchama.seichiassist.subsystems.manabar.application.ManaBarSynchronizationRepository
@@ -13,7 +15,9 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_]: ConcurrentEffect: ErrorLogger, G[_]: SyncEffect](
+  def wired[F[_]: Async: Dispatcher: ErrorLogger, G[_]: Sync: UnsafeSyncRunner: [g[
+    _
+  ]] =>> ContextCoercion[g, F]](
     implicit manaApi: ManaReadApi[F, G, Player]
   ): G[Subsystem[F]] = {
     import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance

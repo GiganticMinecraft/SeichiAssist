@@ -1,6 +1,12 @@
 package com.github.unchama.itemmigration.bukkit.controllers.player
 
-import cats.effect.{ConcurrentEffect, SyncEffect, SyncIO}
+import com.github.unchama.runSync
+
+import com.github.unchama.toIO
+
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
+import cats.effect.{Async, SyncIO}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.itemmigration.bukkit.targets.PlayerInventoriesData
@@ -20,13 +26,14 @@ import org.bukkit.event.{Cancellable, EventHandler, EventPriority, Listener}
 /**
  * プレーヤーのアイテムマイグレーション処理中に、 該当プレーヤーの行動を制御するためのリスナオブジェクトのクラス
  */
-class PlayerItemMigrationController[F[_]: ConcurrentEffect, G[_]: SyncEffect](
+class PlayerItemMigrationController[F[_]: Async: [f[_]] =>> ContextCoercion[
+  f,
+  cats.effect.IO
+], G[_]: [g[_]] =>> ContextCoercion[g, SyncIO]: [g[_]] =>> ContextCoercion[g, F]](
   migrationState: KeyedDataRepository[Player, PlayerMigrationState[G]],
   migrations: ItemMigrations,
   service: ItemMigrationService[F, PlayerInventoriesData[F]]
 ) extends Listener {
-
-  import cats.effect.implicits._
 
   private def cancelIfLockActive(player: Player, event: Cancellable): Unit = {
     if (!migrationState(player).hasMigrated.runSync[SyncIO].unsafeRunSync()) {
@@ -64,5 +71,5 @@ class PlayerItemMigrationController[F[_]: ConcurrentEffect, G[_]: SyncEffect](
       _ <- service.runMigration(migrations)(PlayerInventoriesData(player))
       _ <- ContextCoercion[G, F, Unit](migrationState(player).setMigrated)
     } yield ()
-  }.toIO.unsafeRunAsyncAndForget()
+  }.toIO.unsafeRunAndForget()
 }

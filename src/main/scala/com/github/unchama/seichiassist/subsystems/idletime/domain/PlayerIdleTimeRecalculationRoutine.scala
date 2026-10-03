@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.idletime.domain
 
-import cats.effect.{IO, SyncIO, Timer}
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 
@@ -18,8 +18,6 @@ trait PlayerIdleTimeRecalculationRoutine[Player] {
     onMainThread: OnMinecraftServerThread[IO]
   ): IO[Nothing] = {
     val repeatInterval: IO[FiniteDuration] = IO(1.minute)
-
-    implicit val timer: Timer[IO] = IO.timer(repeatingTaskContext)
 
     RepeatingRoutine.permanentRoutine(
       repeatInterval,

@@ -1,7 +1,7 @@
 package com.github.unchama.generic.effect.concurrent
 
 import cats.Monad
-import cats.effect.{Concurrent, Sync}
+import cats.effect.{Async, Sync}
 import com.github.unchama.generic.ContextCoercion
 
 class SessionMutex[F[_]: Monad, G[_]] private (underlying: Mutex[F, G, TryableFiber[F, Unit]]) {
@@ -37,8 +37,7 @@ object SessionMutex {
 
   import cats.implicits._
 
-  def newIn[F[_]: Concurrent, G[_]: Sync: [f[_]] =>> ContextCoercion[f, F]]
-    : G[SessionMutex[F, G]] =
+  def newIn[F[_]: Async, G[_]: Sync: [f[_]] =>> ContextCoercion[f, F]]: G[SessionMutex[F, G]] =
     for {
       mutex <- Mutex.of[F, G, TryableFiber[F, Unit]](TryableFiber.unit[F])
     } yield new SessionMutex(mutex)

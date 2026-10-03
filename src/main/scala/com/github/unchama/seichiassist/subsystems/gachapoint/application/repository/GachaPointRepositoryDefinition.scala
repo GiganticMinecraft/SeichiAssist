@@ -1,8 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gachapoint.application.repository
 
 import cats.Monad
-import cats.effect.concurrent.Ref
-import cats.effect.{Concurrent, Sync, Timer}
+import cats.effect.{Async, Sync}
 import com.github.unchama.datarepository.definitions.RefDictBackedRepositoryDefinition
 import com.github.unchama.datarepository.template._
 import com.github.unchama.generic.ContextCoercion
@@ -15,6 +14,7 @@ import com.github.unchama.seichiassist.subsystems.gachapoint.domain.{
   BatchUsageSemaphore,
   GrantGachaTicketToAPlayer
 }
+import cats.effect.Ref
 
 object GachaPointRepositoryDefinition {
 
@@ -27,9 +27,9 @@ object GachaPointRepositoryDefinition {
 
   import cats.implicits._
 
-  def withContext[G[_]: Sync: [f[_]] =>> ContextCoercion[f, F], F[
-    _
-  ]: Concurrent: Timer, Player: HasUuid](persistence: GachaPointPersistence[G])(
+  def withContext[G[_]: Sync: [f[_]] =>> ContextCoercion[f, F], F[_]: Async, Player: HasUuid](
+    persistence: GachaPointPersistence[G]
+  )(
     grantEffectFactory: Player => GrantGachaTicketToAPlayer[F]
   ): RepositoryDefinition[G, Player, RepositoryValue[F, G]] =
     RefDictBackedRepositoryDefinition

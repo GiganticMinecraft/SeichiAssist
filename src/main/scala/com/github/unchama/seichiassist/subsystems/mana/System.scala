@@ -1,11 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.mana
 
-import cats.effect.concurrent.Ref
-import cats.effect.{ConcurrentEffect, SyncEffect}
+import cats.effect.{Async, Sync}
+import cats.effect.std.Dispatcher
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.fs2.workaround.fs3.Fs3Topic
-import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.generic.{ContextCoercion, UnsafeSyncRunner}
 import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
@@ -23,6 +23,7 @@ import com.github.unchama.seichiassist.subsystems.mana.domain.{
 import com.github.unchama.seichiassist.subsystems.mana.infrastructure.JdbcManaAmountPersistence
 import org.typelevel.log4cats.ErrorLogger
 import org.bukkit.entity.Player
+import cats.effect.Ref
 
 trait System[F[_], G[_], Player] extends Subsystem[F] {
 
@@ -32,13 +33,14 @@ trait System[F[_], G[_], Player] extends Subsystem[F] {
 
 object System {
 
-  import cats.effect.implicits._
+  import cats.effect.syntax.all._
   import cats.implicits._
 
-  def wired[F[_]: ConcurrentEffect: ErrorLogger, G[_]: SyncEffect: [f[_]] =>> ContextCoercion[
-    f,
-    F
-  ]](implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player]): F[System[F, G, Player]] = {
+  def wired[F[_]: Async: Dispatcher: ErrorLogger, G[_]: Sync: UnsafeSyncRunner: [f[
+    _
+  ]] =>> ContextCoercion[f, F]](
+    implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player]
+  ): F[System[F, G, Player]] = {
     import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 
     val manaPersistence: ManaAmountPersistence[G] = new JdbcManaAmountPersistence[G]

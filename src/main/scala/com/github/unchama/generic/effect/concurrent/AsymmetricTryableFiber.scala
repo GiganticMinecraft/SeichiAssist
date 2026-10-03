@@ -1,13 +1,12 @@
 package com.github.unchama.generic.effect.concurrent
 
-import cats.effect.{CancelToken, Concurrent, ExitCase, Fiber, Sync}
+import cats.effect.{Async, Outcome, Sync}
 import cats.{Functor, Monad}
 
 /**
- * We can think of a [[cats.effect.concurrent.Deferred]] as a "mutable" Promise to which read
- * and write operations are synchronized. Then [[cats.effect.concurrent.TryableDeferred]] is a
- * [[cats.effect.concurrent.Deferred]] which can immediately tell whether it has been completed
- * or not.
+ * We can think of a [[cats.effect.Deferred]] as a "mutable" Promise to which read and write
+ * operations are synchronized. Its `tryGet` operation can immediately tell whether it has been
+ * completed or not.
  *
  * Analogously then, [[Fiber]] is a read-only promise and we should be able to describe a
  * [[Fiber]] which can tell its completion status. [[AsymmetricTryableFiber]] serves this
@@ -16,7 +15,7 @@ import cats.{Functor, Monad}
  * @tparam F
  *   the context in which the fiber is run
  */
-abstract class AsymmetricTryableFiber[F[_]: Functor, A] extends Fiber[F, A] {
+abstract class AsymmetricTryableFiber[F[_]: Functor, A] {
 
   import AsymmetricTryableFiber._
 
@@ -38,7 +37,9 @@ abstract class AsymmetricTryableFiber[F[_]: Functor, A] extends Fiber[F, A] {
 
   import cats.implicits._
 
-  override def cancel: CancelToken[F] = cancelIfRunning.as(())
+  def cancel: F[Unit] = cancelIfRunning.void
+
+  def join: F[A]
 
   def isRunning[G[_]: Sync]: G[Boolean] = getCurrentStatus[G] map {
     case Running => true
@@ -74,8 +75,8 @@ object AsymmetricTryableFiber {
    * @return
    *   a [[AsymmetricTryableFiber]] which can be used to cancel, join or tryJoin the result
    */
-  def start[F[_], A](fa: F[A])(implicit F: Concurrent[F]): F[AsymmetricTryableFiber[F, A]] = {
-    import cats.effect.implicits._
+  def start[F[_], A](fa: F[A])(implicit F: Async[F]): F[AsymmetricTryableFiber[F, A]] = {
+    import cats.effect.syntax.all._
     import cats.implicits._
 
     for {
@@ -84,24 +85,22 @@ object AsymmetricTryableFiber {
         {
           fa >>= { a => completionPromise.complete(Completed(a)).as(a) }
         }.guaranteeCase {
-          case ExitCase.Error(e) =>
+          case Outcome.Errored(e) =>
             // when the action fa threw an error
-            completionPromise.complete(Error(e))
-          case _ => F.unit
+            completionPromise.complete(Error(e)).void
+          case Outcome.Canceled()   => F.unit
+          case Outcome.Succeeded(_) => F.unit
         }
       }
     } yield new AsymmetricTryableFiber[F, A] {
-      override def cancelIfRunning: F[Boolean] = fiber.cancel >> {
-        completionPromise.complete(Cancelled).as(true).recover {
-          case _: IllegalStateException =>
-            // When `complete` was impossible
-            false
-          // otherwise rethrow
-        }
+      override def cancelIfRunning: F[Boolean] = completionPromise.tryGet.flatMap {
+        case Some(_) => F.pure(false)
+        case None    =>
+          fiber.cancel >> completionPromise.complete(Cancelled)
       }
 
       override def getCurrentStatus[G[_]: Sync]: G[FiberStatus[A]] = {
-        completionPromise.tryGet[G] map {
+        completionPromise.tryGetIn[G] map {
           case Some(value) => value
           case None        => Running
         }
@@ -109,7 +108,7 @@ object AsymmetricTryableFiber {
 
       override def waitForResult: F[FiberResult[A]] = completionPromise.get
 
-      override def join: F[A] = fiber.join
+      override def join: F[A] = fiber.joinWithNever
     }
   }
 

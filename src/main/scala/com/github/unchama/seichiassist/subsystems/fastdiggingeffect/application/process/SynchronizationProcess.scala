@@ -1,12 +1,12 @@
 package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.process
 
 import cats.{Monad, MonadError}
+import cats.effect.Clock
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.actions.GrantFastDiggingEffect
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect.FastDiggingEffectList
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.settings.FastDiggingEffectSuppressionState
-import io.chrisdavenport.cats.effect.time.JavaTime
 
 object SynchronizationProcess {
 
@@ -15,7 +15,7 @@ object SynchronizationProcess {
   def using[F[_]: [f[_]] =>> GrantFastDiggingEffect[f, Player]: [f[_]] =>> MonadError[
     f,
     Throwable
-  ]: JavaTime, Player](
+  ]: Clock, Player](
     suppressionState: KeyedDataRepository[
       Player,
       ReadOnlyRef[F, FastDiggingEffectSuppressionState]

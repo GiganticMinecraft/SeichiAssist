@@ -15,12 +15,10 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.potion.{PotionData, PotionType}
 import org.bukkit.{Bukkit, Material, Sound}
 
-import scala.concurrent.ExecutionContext
 import scala.reflect.ClassTag
 
 object ArrowEffects {
 
-  import cats.implicits._
   import com.github.unchama.concurrent.syntax._
   import com.github.unchama.targetedeffect._
 
@@ -95,7 +93,7 @@ object ArrowEffects {
     val soundEffect =
       sound.map(FocusedSoundEffect(_, 1.0f, 1.3f)).getOrElse(TargetedEffect.emptyEffect)
 
-    val waitForCollision = IO.sleep(100.ticks)(IO.timer(ExecutionContext.global))
+    val waitForCollision = IO.sleep(100.ticks)
 
     import scala.util.chaining._
     SequentialEffect(

@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.minestack.domain
 
 import cats.effect.Sync
-import cats.effect.concurrent.Ref
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject
+import cats.effect.Ref
 
 class MineStackUsageHistory[F[_]: Sync, ItemStack] {
 

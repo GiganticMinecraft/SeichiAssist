@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.lastquit.bukkit.commands
 
 import cats.data.Kleisli
-import cats.effect.ConcurrentEffect
+import cats.effect.Async
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.seichiassist.infrastructure.minecraft.{
   JdbcLastSeenNameToUuid,
@@ -14,7 +15,9 @@ import org.bukkit.command.TabExecutor
 
 import java.time.format.DateTimeFormatter
 
-class LastQuitCommand[F[_]: ConcurrentEffect](implicit lastQuitAPI: LastQuitAPI[F]) {
+class LastQuitCommand[F[_]: Async: [f[_]] =>> ContextCoercion[f, cats.effect.IO]](
+  implicit lastQuitAPI: LastQuitAPI[F]
+) {
 
   import cats.implicits._
 

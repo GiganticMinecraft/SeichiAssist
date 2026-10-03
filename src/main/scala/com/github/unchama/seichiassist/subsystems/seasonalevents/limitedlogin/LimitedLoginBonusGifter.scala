@@ -13,7 +13,8 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin.Lo
 }
 import com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin.LoginBonusItemList.bonusAt
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
-import com.github.unchama.seichiassist.{DefaultEffectEnvironment, SeichiAssist}
+import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.{EventHandler, Listener}
@@ -76,9 +77,11 @@ class LimitedLoginBonusGifter(implicit ioOnMainThread: OnMinecraftServerThread[I
   ): Unit = {
     import cats.implicits._
 
-    DefaultEffectEnvironment.unsafeRunEffectAsync(
-      s"${itemName}を付与する",
-      List.fill(amount)(grantItemStacksEffect(item)).sequence.run(player)
-    )
+    PluginExecutionContexts
+      .effectEnvironment
+      .unsafeRunEffectAsync(
+        s"${itemName}を付与する",
+        List.fill(amount)(grantItemStacksEffect(item)).sequence.run(player)
+      )
   }
 }

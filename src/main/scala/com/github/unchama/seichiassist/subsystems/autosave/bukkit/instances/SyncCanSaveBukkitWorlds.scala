@@ -14,13 +14,17 @@ object SyncCanSaveBukkitWorlds {
     val save: SyncIO[Unit] = SyncIO {
       def saveWorld(world: World): Unit = {
         // WARNを防ぐためMinecraftサーバーデフォルトの自動セーブは無効化
-        val server = getFieldAsAccessibleField(Bukkit.getServer.getClass, "console")
-          .getOrElse(return)
-          .get(Bukkit.getServer)
+        val serverField =
+          getFieldAsAccessibleField(Bukkit.getServer.getClass, "console") match {
+            case Some(field) => field
+            case None        => return
+          }
+        val server = serverField.get(Bukkit.getServer)
 
-        getFieldAsAccessibleField(server.getClass, "autosavePeriod")
-          .getOrElse(return)
-          .set(server, 0)
+        getFieldAsAccessibleField(server.getClass, "autosavePeriod") match {
+          case Some(field) => field.set(server, 0)
+          case None        => return
+        }
 
         world.save()
       }

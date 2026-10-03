@@ -1,5 +1,7 @@
 package com.github.unchama.chatinterceptor
 
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
 import org.bukkit.event.player.{AsyncPlayerChatEvent, PlayerQuitEvent}
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
 

@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.application.actions
 
 import cats.Monad
-import cats.effect.concurrent.Ref
-import cats.effect.{Effect, Sync}
+import cats.effect.{Async, Sync}
+import cats.effect.std.Dispatcher
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.fs2.workaround.fs3.Fs3Topic
 import com.github.unchama.generic.effect.EffectExtra
@@ -10,6 +10,7 @@ import com.github.unchama.generic.ratelimiting.RateLimiter
 import com.github.unchama.seichiassist.subsystems.buildcount.application.BuildExpMultiplier
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
+import cats.effect.Ref
 
 /**
  * [[Player]] が手でブロックを設置した際に建築量を加算するアクションを提供する型クラス。
@@ -30,7 +31,7 @@ object IncrementBuildExpWhenBuiltByHand {
     implicit ev: IncrementBuildExpWhenBuiltByHand[F, Player]
   ): IncrementBuildExpWhenBuiltByHand[F, Player] = ev
 
-  def using[F[_]: [f[_]] =>> ClassifyPlayerWorld[f, Player], G[_]: Effect, Player](
+  def using[F[_]: [f[_]] =>> ClassifyPlayerWorld[f, Player], G[_]: Async: Dispatcher, Player](
     rateLimiterRepository: KeyedDataRepository[Player, RateLimiter[F, BuildExpAmount]],
     dataRepository: KeyedDataRepository[Player, Ref[F, BuildAmountData]],
     dataTopic: Fs3Topic[G, (Player, BuildAmountData)]

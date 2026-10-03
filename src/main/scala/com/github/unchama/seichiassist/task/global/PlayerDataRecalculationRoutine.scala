@@ -1,6 +1,8 @@
 package com.github.unchama.seichiassist.task.global
 
-import cats.effect.{IO, SyncIO, Timer}
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
@@ -74,8 +76,6 @@ object PlayerDataRecalculationRoutine {
 
       }
     }
-
-    implicit val timer: Timer[IO] = IO.timer(context)
 
     RepeatingRoutine.permanentRoutine(
       getRepeatInterval,

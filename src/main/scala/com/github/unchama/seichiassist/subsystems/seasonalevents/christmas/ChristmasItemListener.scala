@@ -1,6 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.christmas
 
-import cats.effect.{SyncEffect, SyncIO}
+import com.github.unchama.runSync
+
+import cats.effect.SyncIO
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
@@ -28,9 +31,10 @@ import org.bukkit.{Bukkit, Sound}
 
 import java.util.Random
 
-class ChristmasItemListener[F[_], G[_]: SyncEffect](instance: JavaPlugin)(
-  implicit manaApi: ManaWriteApi[G, Player]
-) extends Listener {
+class ChristmasItemListener[F[_], G[_]: [g[_]] =>> ContextCoercion[g, SyncIO]](
+  instance: JavaPlugin
+)(implicit manaApi: ManaWriteApi[G, Player])
+    extends Listener {
   @EventHandler
   def onPlayerJoin(event: PlayerJoinEvent): Unit = {
     if (isInEventNow) {
@@ -80,8 +84,6 @@ class ChristmasItemListener[F[_], G[_]: SyncEffect](instance: JavaPlugin)(
   @EventHandler
   def onPlayerConsumeChristmasPotion(event: PlayerItemConsumeEvent): Unit = {
     if (!isChristmasPotion(event.getItem)) return
-
-    import cats.effect.implicits._
 
     val player = event.getPlayer
 

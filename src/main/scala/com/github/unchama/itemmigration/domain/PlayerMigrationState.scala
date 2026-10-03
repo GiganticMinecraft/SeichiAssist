@@ -1,7 +1,7 @@
 package com.github.unchama.itemmigration.domain
 
 import cats.effect.Sync
-import cats.effect.concurrent.Ref
+import cats.effect.Ref
 
 class PlayerMigrationState[F[_]] private (flagRef: Ref[F, Boolean]) {
 

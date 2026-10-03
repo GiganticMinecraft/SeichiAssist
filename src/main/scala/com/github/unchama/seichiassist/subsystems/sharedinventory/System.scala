@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.sharedinventory
 
-import cats.effect.{Concurrent, ConcurrentEffect, Timer}
+import cats.effect.Async
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.sharedinventory.bukkit.command.ShareInventoryCommand
@@ -24,8 +25,10 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_]: ConcurrentEffect: Timer: OnMinecraftServerThread, G[_]: Concurrent]
-    : G[System[F]] = {
+  def wired[F[_]: Async: OnMinecraftServerThread: [f[_]] =>> ContextCoercion[
+    f,
+    cats.effect.IO
+  ], G[_]: Async]: G[System[F]] = {
     implicit val persistence: SharedInventoryPersistence[F] =
       new JdbcSharedInventoryPersistence[F]
 

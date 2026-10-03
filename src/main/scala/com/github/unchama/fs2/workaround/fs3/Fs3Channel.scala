@@ -25,9 +25,8 @@ package com.github.unchama.fs2.workaround.fs3
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import cats.effect._
-import cats.effect.concurrent.{Deferred, Ref}
-import cats.effect.implicits._
+import cats.effect.{Concurrent, Deferred, Ref}
+import cats.effect.syntax.all._
 import cats.syntax.all._
 import fs2.{Chunk, Pipe, Pull, Stream}
 
@@ -128,16 +127,16 @@ object Fs3Channel {
 
     val initial = State(Vector.empty, 0, None, Vector.empty, false)
 
-    (Ref[F].of(initial), Deferred.tryable[F, Unit]).mapN { (state, closedGate) =>
+    (Ref[F].of(initial), Deferred[F, Unit]).mapN { (state, closedGate) =>
       new Fs3Channel[F, A] {
 
         def sendAll: Pipe[F, A, Nothing] = { in =>
-          (in ++ Stream.eval_(close.void)).evalMap(send).takeWhile(_.isRight).drain
+          (in ++ Stream.exec(close.void)).evalMap(send).takeWhile(_.isRight).drain
         }
 
         def send(a: A): F[Either[Closed, Unit]] = {
           Deferred[F, Unit].flatMap { producer =>
-            F.uncancelable {
+            F.uncancelable { _ =>
               state.modify {
                 case s @ State(_, _, _, _, closed @ true) =>
                   (s, Fs3Channel.closed.pure[F])
@@ -151,11 +150,8 @@ object Fs3Channel {
                   else
                     (
                       State(values, size, None, producers :+ (a -> producer), false),
-                      // FIXME:
-                      //   The latest implementation of fs2.concurrent.Channel would poll on the producer.get
-                      //   to allow cancellation of the send action. This is achieved by the MonadCancel typeclass of
-                      //   cats-effect 3, which is not available on cats-effect 2.
-                      //   We are temporarily not allowing any cancellation to happen here, but this can be improved.
+                      // This custom channel intentionally keeps a blocked send uncancelable so
+                      // cancellation cannot leave a partially registered producer behind.
                       notifyStream(waiting) <* producer.get
                     )
               }.flatten
@@ -203,7 +199,7 @@ object Fs3Channel {
                       val unblock = unblock_
                       val allValues = allValues_
 
-                      val toEmit = Chunk.vector(allValues)
+                      val toEmit = Chunk.from(allValues)
 
                       (
                         State(Vector(), 0, None, Vector.empty, closed),
@@ -228,7 +224,7 @@ object Fs3Channel {
         def notifyStream(waitForChanges: Option[Deferred[F, Unit]]): F[Either[Closed, Unit]] =
           waitForChanges.traverse(_.complete(())).as(rightUnit)
 
-        def signalClosure: F[Unit] = closedGate.complete(())
+        def signalClosure: F[Unit] = closedGate.complete(()).void
       }
     }
   }

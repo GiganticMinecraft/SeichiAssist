@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.gachaprize
 
-import cats.effect.concurrent.Ref
+import cats.effect.Ref
 
 package object domain {
 

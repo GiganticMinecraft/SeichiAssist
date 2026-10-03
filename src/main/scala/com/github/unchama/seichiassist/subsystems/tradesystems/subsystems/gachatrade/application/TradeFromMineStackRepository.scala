@@ -1,8 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.application
 
 import cats.effect.Sync
-import cats.effect.Timer
-import cats.effect.Concurrent
+import cats.effect.Async
 import com.github.unchama.minecraft.algebra.HasName
 import com.github.unchama.seichiassist.subsystems.tradesystems.application.TradeAction
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.domain.GachaListProvider
@@ -13,9 +12,7 @@ import com.github.unchama.datarepository.template.RepositoryDefinition
 
 object TradeFromMineStackRepository {
 
-  def inSyncContext[G[_]: Sync, F[
-    _
-  ]: Concurrent: Timer, ItemStack, Player: HasName, TransactionInfo](
+  def inSyncContext[G[_]: Sync, F[_]: Async, ItemStack, Player: HasName, TransactionInfo](
     implicit tradeAction: TradeAction[F, Player, ItemStack, TransactionInfo],
     gachaListProvider: GachaListProvider[F, ItemStack],
     gachaTradeRule: GachaTradeRule[ItemStack, TransactionInfo],
