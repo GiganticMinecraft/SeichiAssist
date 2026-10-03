@@ -86,7 +86,7 @@ val dependenciesToEmbed = Seq(
   "org.slf4j" % "slf4j-jdk14" % "1.7.36",
 
   // type-safety utils
-  "io.github.iltotore" %% "iron" % "3.3.2",
+  "io.github.iltotore" %% "iron" % "3.3.2-4-36c079",
   "com.beachape" %% "enumeratum" % "1.9.8",
 
   // protobuf
