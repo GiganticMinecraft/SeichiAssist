@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.bukkit
 
-import cats.effect.{Sync, Timer}
+import cats.effect.Async
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairyMessage
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairyspeech.domain.FairySpeechGateway
 import com.github.unchama.targetedeffect.commandsender.MessageEffectF
@@ -11,8 +11,7 @@ import org.bukkit.entity.Player
 
 import scala.concurrent.duration.DurationInt
 
-class BukkitFairySpeechGateway[F[_]: Sync: Timer](player: Player)
-    extends FairySpeechGateway[F] {
+class BukkitFairySpeechGateway[F[_]: Async](player: Player) extends FairySpeechGateway[F] {
 
   override def sendMessage(fairyMessages: Seq[FairyMessage]): F[Unit] = {
     val defaultFairyMessage = s"$AQUA$BOLD<マナ妖精>$RESET%s"
@@ -25,9 +24,9 @@ class BukkitFairySpeechGateway[F[_]: Sync: Timer](player: Player)
 
   override def playSpeechSound: F[Unit] = for {
     _ <- FocusedSoundEffectF(Sound.BLOCK_NOTE_BLOCK_PLING, 2.0f, 1.0f).run(player)
-    _ <- Timer[F].sleep(100.millis)
+    _ <- Async[F].sleep(100.millis)
     _ <- FocusedSoundEffectF(Sound.BLOCK_NOTE_BLOCK_PLING, 2.0f, 1.5f).run(player)
-    _ <- Timer[F].sleep(100.millis)
+    _ <- Async[F].sleep(100.millis)
     _ <- FocusedSoundEffectF(Sound.BLOCK_NOTE_BLOCK_PLING, 2.0f, 2.0f).run(player)
   } yield {}
 

@@ -1,7 +1,6 @@
 package com.github.unchama.datarepository.template
 
 import cats.effect.Sync
-import cats.effect.concurrent.Ref
 import cats.{Applicative, Apply, Monad}
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
 import com.github.unchama.datarepository.template.initialization.{
@@ -11,6 +10,7 @@ import com.github.unchama.datarepository.template.initialization.{
 import com.github.unchama.minecraft.algebra.HasUuid
 
 import java.util.UUID
+import cats.effect.Ref
 
 sealed trait RepositoryDefinition[F[_], Player, R] {
   final def map[S](f: R => S): RepositoryDefinition[F, Player, S] =

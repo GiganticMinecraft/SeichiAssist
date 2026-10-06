@@ -85,35 +85,36 @@ object V1_0_0_MigrateMebiusToNewCodec {
     itemStack: ItemStack
   )(implicit repository: UuidRepository[SyncIO], logger: Logger): ItemStack = {
     val OldMebiusRawProperty(ownerPlayerId, level, ownerNicknameOverride, mebiusName) =
-      OldBukkitMebiusItemStackCodec
-        .decodeOldMebiusProperty(itemStack)
-        .getOrElse(return itemStack)
+      OldBukkitMebiusItemStackCodec.decodeOldMebiusProperty(itemStack) match {
+        case Some(property) => property
+        case None           => return itemStack
+      }
 
     val clone = itemStack.clone()
 
-    val ownerUuid =
-      repository
-        .getUuid(ownerPlayerId)
-        // プレーヤーUUID解決は同期的な実行を待つ以外選択肢が無い
-        .unsafeRunSync()
-        .getOrElse {
-          logger.error(s"メビウス変換にて、${ownerPlayerId}のプレーヤーUUIDが解決できませんでした。")
+    val ownerUuid = repository
+      .getUuid(ownerPlayerId)
+      // プレーヤーUUID解決は同期的な実行を待つ以外選択肢が無い
+      .unsafeRunSync() match {
+      case Some(uuid) => uuid
+      case None       =>
+        logger.error(s"メビウス変換にて、${ownerPlayerId}のプレーヤーUUIDが解決できませんでした。")
 
-          // 解決できなかった場合ItemStackにエラーを書き込む。
-          clone.setItemMeta {
-            val meta = clone.getItemMeta
-            val lore = meta.getLore.asScala
+        // 解決できなかった場合ItemStackにエラーを書き込む。
+        clone.setItemMeta {
+          val meta = clone.getItemMeta
+          val lore = meta.getLore.asScala
 
-            // 冪等性のため、すでにエラーが書かれているケースを除外する
-            if (!lore.contains(ownerResolutionError)) {
-              meta.setLore {
-                lore.append(ownerResolutionError).asJava
-              }
+          // 冪等性のため、すでにエラーが書かれているケースを除外する
+          if (!lore.contains(ownerResolutionError)) {
+            meta.setLore {
+              lore.append(ownerResolutionError).asJava
             }
-            meta
           }
-          return clone
+          meta
         }
+        return clone
+    }
 
     val nbtItem = new NBTItem(clone)
 

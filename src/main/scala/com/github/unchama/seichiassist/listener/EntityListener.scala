@@ -1,6 +1,8 @@
 package com.github.unchama.seichiassist.listener
 
-import cats.effect.{ConcurrentEffect, IO, SyncIO}
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.ioRuntime
+
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.ManagedWorld._
@@ -21,7 +23,7 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.meta.Damageable
 
 class EntityListener(
-  implicit effectEnvironment: EffectEnvironment,
+  implicit effectEnvironment: EffectEnvironment[IO],
   ioOnMainThread: OnMinecraftServerThread[IO],
   manaApi: ManaApi[IO, SyncIO, Player],
   globalNotification: DiscordNotificationAPI[IO]
@@ -45,15 +47,13 @@ class EntityListener(
     if (player.getGameMode != GameMode.SURVIVAL) return
 
     // 壊されるブロックを取得
-    val block =
-      MaterialSets
-        .refineBlock(
-          player
-            .getWorld
-            .getBlockAt(projectile.getLocation.add(projectile.getVelocity.normalize)),
-          MaterialSets.materials
-        )
-        .getOrElse(return)
+    val block = MaterialSets.refineBlock(
+      player.getWorld.getBlockAt(projectile.getLocation.add(projectile.getVelocity.normalize)),
+      MaterialSets.materials
+    ) match {
+      case Some(block) => block
+      case None        => return
+    }
 
     // 整地ワールドでは重力値によるキャンセル判定を行う(スキル判定より先に判定させること)
     if (BreakUtil.getGravity(player, block, isAssault = false) > 3) {
@@ -69,9 +69,13 @@ class EntityListener(
     if (!BreakUtil.canBreakWithSkill(player, block)) return
 
     // 実際に使用するツール
-    val tool = MaterialSets
-      .refineItemStack(player.getInventory.getItemInMainHand, MaterialSets.breakToolMaterials)
-      .getOrElse(return)
+    val tool = MaterialSets.refineItemStack(
+      player.getInventory.getItemInMainHand,
+      MaterialSets.breakToolMaterials
+    ) match {
+      case Some(tool) => tool
+      case None       => return
+    }
 
     // 耐久値がマイナスかつ耐久無限ツールでない時処理を終了
     if (
@@ -93,7 +97,10 @@ class EntityListener(
     val playerData = playermap(player.getUniqueId)
 
     val skillState = playerData.skillState.get.unsafeRunSync()
-    val selectedSkill = skillState.activeSkill.getOrElse(return)
+    val selectedSkill = skillState.activeSkill match {
+      case Some(skill) => skill
+      case None        => return
+    }
     val activeSkillArea = BreakArea(selectedSkill, skillState.usageMode)
 
     val breakArea = activeSkillArea.makeBreakArea(player).unsafeRunSync().head
@@ -214,8 +221,6 @@ class EntityListener(
   }
 
   @EventHandler def onDeath(event: EntityDeathEvent): Unit = {
-    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
-    implicit val ioCE: ConcurrentEffect[IO] = IO.ioConcurrentEffect
     /*GiganticBerserk用*/
     // 死んだMOBがGiganticBerserkの対象MOBでなければ終了
     val entity = event.getEntity
@@ -226,6 +231,6 @@ class EntityListener(
     // プレイヤーが整地ワールドに居ない場合終了
     if (!player.getWorld.isSeichi) return
     val GBTR = new GiganticBerserkTask
-    GBTR.PlayerKillEnemy(player)
+    GBTR.PlayerKillEnemy[IO](player)
   }
 }

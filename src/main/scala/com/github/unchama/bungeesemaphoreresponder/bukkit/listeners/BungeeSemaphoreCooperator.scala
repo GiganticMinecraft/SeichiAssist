@@ -2,7 +2,7 @@ package com.github.unchama.bungeesemaphoreresponder.bukkit.listeners
 
 import cats.ApplicativeError
 import cats.data.Validated
-import cats.effect.{Async, ConcurrentEffect, Sync, Timer}
+import cats.effect.{Async, Sync}
 import com.github.unchama.bungeesemaphoreresponder.Configuration
 import com.github.unchama.bungeesemaphoreresponder.domain.actions.BungeeSemaphoreSynchronization
 import com.github.unchama.bungeesemaphoreresponder.domain.{PlayerDataFinalizer, PlayerName}
@@ -14,13 +14,12 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
 import scala.concurrent.duration.{Duration, FiniteDuration}
+import cats.effect.Temporal
 
-class BungeeSemaphoreCooperator[F[_]: ConcurrentEffect: Timer](
-  finalizers: List[PlayerDataFinalizer[F, Player]]
-)(
+class BungeeSemaphoreCooperator[F[_]: Async](finalizers: List[PlayerDataFinalizer[F, Player]])(
   implicit synchronization: BungeeSemaphoreSynchronization[F[Unit], PlayerName],
   configuration: Configuration,
-  effectEnvironment: EffectEnvironment
+  effectEnvironment: EffectEnvironment[F]
 ) extends Listener {
 
   @EventHandler(priority = EventPriority.LOWEST)
@@ -28,7 +27,7 @@ class BungeeSemaphoreCooperator[F[_]: ConcurrentEffect: Timer](
     val player = event.getPlayer
     val name = PlayerName(player.getName)
     val timeout = configuration.saveTimeoutDuration match {
-      case duration: FiniteDuration => Timer[F].sleep(duration)
+      case duration: FiniteDuration => Temporal[F].sleep(duration)
       case _: Duration.Infinite     => Async[F].never
     }
 
@@ -42,7 +41,7 @@ class BungeeSemaphoreCooperator[F[_]: ConcurrentEffect: Timer](
     import cats.implicits._
 
     val program = for {
-      raceResult <- ConcurrentEffect[F].race(timeout, quitProcess)
+      raceResult <- Async[F].race(timeout, quitProcess)
       _ <- raceResult match {
         case Left(_) =>
           synchronization.notifySaveFailureOf(name) >> ApplicativeError[F, Throwable]

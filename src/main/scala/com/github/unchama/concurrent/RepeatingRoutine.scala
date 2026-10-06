@@ -1,23 +1,24 @@
 package com.github.unchama.concurrent
 
-import cats.effect.{Sync, Timer}
-import cats.{Monad, MonadError}
+import cats.effect.Async
+import cats.Monad
 import com.github.unchama.generic.{ApplicativeErrorThrowableExtra}
 import org.typelevel.log4cats.ErrorLogger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 
 import scala.concurrent.duration.FiniteDuration
+import cats.effect.Temporal
 
 object RepeatingRoutine {
 
   import cats.implicits._
 
-  private def sleepWith[F[_]: Timer: Monad](
+  private def sleepWith[F[_]: Temporal](
     getIntervalToNextExecution: F[FiniteDuration]
   ): F[Unit] =
-    getIntervalToNextExecution >>= (Timer[F].sleep(_))
+    getIntervalToNextExecution >>= (Temporal[F].sleep(_))
 
-  def permanentRoutine[F[_]: Timer: Sync, U](
+  def permanentRoutine[F[_]: Async, U](
     getInterval: F[FiniteDuration],
     action: F[U]
   ): F[Nothing] = {
@@ -26,7 +27,7 @@ object RepeatingRoutine {
     }
   }
 
-  def foreverMRecovering[F[_]: Timer: [f[_]] =>> MonadError[f, Throwable]: ErrorLogger, U, R](
+  def foreverMRecovering[F[_]: Temporal: ErrorLogger, U, R](
     action: F[U]
   )(getIntervalToNextExecution: F[FiniteDuration]): F[R] = {
     val recoveringAction: F[Unit] =
@@ -46,7 +47,7 @@ object RepeatingRoutine {
    *   ループにて保持される状態の型
    * @return
    */
-  def recMTask[F[_]: Timer: Sync, State](
+  def recMTask[F[_]: Async, State](
     init: State
   )(action: State => F[Option[State]])(getInterval: F[FiniteDuration]): F[Unit] = {
     Slf4jLogger
@@ -62,10 +63,7 @@ object RepeatingRoutine {
    *   ループにて保持される状態の型
    * @return
    */
-  def whileDefinedMRecovering[F[_]: [f[_]] =>> MonadError[
-    f,
-    Throwable
-  ]: Timer: ErrorLogger, State](init: State)(
+  def whileDefinedMRecovering[F[_]: Temporal: ErrorLogger, State](init: State)(
     action: State => F[Option[State]]
   )(getIntervalToNextExecution: F[FiniteDuration]): F[Unit] = {
     val recoveringAction: State => F[Option[State]] = s =>

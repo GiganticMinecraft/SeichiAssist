@@ -11,7 +11,7 @@ trait ConcurrentEffectTest {
     for {
       startedFibers <- List.fill(concurrency)(program).traverse(_.start)
 
-      results <- startedFibers.traverse(_.join)
+      results <- startedFibers.traverse(_.joinWithNever)
     } yield results
   }
 

@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.breakcount.subsystems.notification
 
-import cats.effect.ConcurrentEffect
+import cats.effect.Async
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
@@ -14,7 +15,9 @@ object System {
 
   def backgroundProcess[F[
     _
-  ]: ConcurrentEffect: OnMinecraftServerThread: ErrorLogger: DiscordNotificationAPI, G[_], A](
+  ]: Async: OnMinecraftServerThread: ErrorLogger: DiscordNotificationAPI: [f[
+    _
+  ]] =>> ContextCoercion[f, cats.effect.IO], G[_], A](
     breakCountReadAPI: BreakCountReadAPI[F, G, Player]
   ): F[A] = {
     val action: NotifyLevelUp[F, Player] = BukkitNotifyLevelUp[F]

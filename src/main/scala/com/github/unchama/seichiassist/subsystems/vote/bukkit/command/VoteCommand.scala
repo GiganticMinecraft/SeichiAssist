@@ -1,7 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.vote.bukkit.command
 
-import cats.effect.ConcurrentEffect
-import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
+import com.github.unchama.toIO
+
+import cats.effect.Async
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.seichiassist.infrastructure.minecraft.{
@@ -14,7 +16,9 @@ import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 
-class VoteCommand[F[_]: ConcurrentEffect](implicit votePersistence: VotePersistence[F]) {
+class VoteCommand[F[_]: Async: [f[_]] =>> ContextCoercion[f, cats.effect.IO]](
+  implicit votePersistence: VotePersistence[F]
+) {
 
   private val usageEchoExecutor: EchoExecutor = EchoExecutor(
     MessageEffect(List(s"$RED/vote record <プレイヤー名>", "投票特典配布用コマンドです"))

@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.seichilevelupgift.usecases
 
-import cats.effect.Bracket.catsKleisliBracket
 import cats.effect.Sync
 import com.github.unchama.generic.Diff
 import com.github.unchama.generic.algebra.typeclasses.HasSuccessor

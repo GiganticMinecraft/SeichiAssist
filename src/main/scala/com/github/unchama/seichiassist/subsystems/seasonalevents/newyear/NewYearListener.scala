@@ -1,8 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.newyear
 
-import cats.effect.{ConcurrentEffect, IO, LiftIO, SyncEffect, SyncIO}
-import com.github.unchama.concurrent.NonServerThreadContextShift
+import com.github.unchama.runSync
+
+import cats.effect.{Async, IO, SyncIO}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.MaterialSets
@@ -31,8 +33,10 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import java.time.LocalDate
 import java.util.{Random, UUID}
 
-class NewYearListener[F[_]: ConcurrentEffect: NonServerThreadContextShift, G[_]: SyncEffect](
-  implicit effectEnvironment: EffectEnvironment,
+class NewYearListener[F[_]: Async: [f[_]] =>> ContextCoercion[IO, f], G[_]: [g[
+  _
+]] =>> ContextCoercion[g, SyncIO]](
+  implicit effectEnvironment: EffectEnvironment[F],
   repository: LastQuitPersistenceRepository[F, UUID],
   manaApi: ManaWriteApi[G, Player],
   ioOnMainThread: OnMinecraftServerThread[IO]
@@ -60,9 +64,8 @@ class NewYearListener[F[_]: ConcurrentEffect: NonServerThreadContextShift, G[_]:
     val player = event.getPlayer
 
     val program = for {
-      _ <- NonServerThreadContextShift[F].shift
       lastQuit <- repository.loadPlayerLastQuit(player.getUniqueId)
-      _ <- LiftIO[F].liftIO {
+      _ <- ContextCoercion[IO, F, Unit] {
         val hasNotJoinedInEventYet = lastQuit.forall(NEW_YEAR_EVE.isEntirelyAfter)
 
         val effects =
@@ -85,8 +88,6 @@ class NewYearListener[F[_]: ConcurrentEffect: NonServerThreadContextShift, G[_]:
   def onPlayerConsumedNewYearApple(event: PlayerItemConsumeEvent): Unit = {
     val item = event.getItem
     if (!isNewYearApple(item)) return
-
-    import cats.effect.implicits._
 
     val player = event.getPlayer
     val today = LocalDate.now()

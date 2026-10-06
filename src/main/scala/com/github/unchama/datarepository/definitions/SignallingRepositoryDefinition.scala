@@ -1,7 +1,7 @@
 package com.github.unchama.datarepository.definitions
 
-import cats.effect.concurrent.Ref
-import cats.effect.{Concurrent, ConcurrentEffect, Sync}
+import cats.effect.std.Dispatcher
+import cats.effect.{Async, Ref, Sync}
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.datarepository.template.RepositoryDefinition.Phased
 import com.github.unchama.generic.ContextCoercion
@@ -17,7 +17,7 @@ object SignallingRepositoryDefinition {
   import FiberAdjoinedRepositoryDefinition.FiberAdjoined
   import cats.implicits._
 
-  def withPublishSink[G[_]: Sync, F[_]: ConcurrentEffect: [g[_]] =>> ContextCoercion[
+  def withPublishSink[G[_]: Sync, F[_]: Async: Dispatcher: [g[_]] =>> ContextCoercion[
     G,
     g
   ]: ErrorLogger, Player: HasUuid, T](publishSink: Pipe[F, (Player, T), Unit])(
@@ -31,15 +31,18 @@ object SignallingRepositoryDefinition {
             AsymmetricSignallingRef[G, F, T](initialValue)
               .flatTap { ref =>
                 EffectExtra.runAsyncAndForget[F, G, Unit] {
-                  Concurrent[F].start[Nothing] {
-                    ref.valuesAwait.use[F, Nothing] { stream =>
-                      StreamExtra.compileToRestartingStream[F, Nothing](
-                        "[SignallingRepositoryDefinition]"
-                      ) {
-                        stream.map(player -> _).through(publishSink)
+                  Async[F]
+                    .start[Nothing] {
+                      ref.valuesAwait.use[Nothing] { stream =>
+                        StreamExtra.compileToRestartingStream[F, Nothing](
+                          "[SignallingRepositoryDefinition]"
+                        ) {
+                          stream.map(player -> _).through(publishSink)
+                        }
                       }
                     }
-                  } >>= fiberPromise.complete
+                    .flatMap(fiberPromise.complete)
+                    .void
                 }
               }
               .widen[Ref[G, T]]
@@ -48,7 +51,7 @@ object SignallingRepositoryDefinition {
       } { case (ref, fiberPromise) => ref.get.map(_ -> fiberPromise) }
   }
 
-  def withPublishSinkHidden[G[_]: Sync, F[_]: ConcurrentEffect: [g[_]] =>> ContextCoercion[
+  def withPublishSinkHidden[G[_]: Sync, F[_]: Async: Dispatcher: [g[_]] =>> ContextCoercion[
     G,
     g
   ]: ErrorLogger, Player: HasUuid, T](publishSink: Pipe[F, (Player, T), Unit])(

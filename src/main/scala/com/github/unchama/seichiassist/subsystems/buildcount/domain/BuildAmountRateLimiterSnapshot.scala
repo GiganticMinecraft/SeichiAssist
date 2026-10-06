@@ -1,9 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.domain
 
 import cats.Functor
+import cats.effect.Clock
 import cats.implicits._
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
-import io.chrisdavenport.cats.effect.time.JavaTime
 
 import java.time.{LocalDateTime, ZoneId}
 
@@ -17,11 +17,12 @@ import java.time.{LocalDateTime, ZoneId}
 case class BuildAmountRateLimiterSnapshot(amount: BuildExpAmount, recordTime: LocalDateTime)
 
 object BuildAmountRateLimiterSnapshot {
-  def now[F[_]: JavaTime: Functor](
+  def now[F[_]: Clock: Functor](
     buildExpAmount: BuildExpAmount
   ): F[BuildAmountRateLimiterSnapshot] = {
-    JavaTime[F]
-      .getLocalDateTime(ZoneId.systemDefault())
+    Clock[F]
+      .realTimeInstant
+      .map(_.atZone(ZoneId.systemDefault()).toLocalDateTime)
       .map(ldt => BuildAmountRateLimiterSnapshot(buildExpAmount, ldt))
   }
 }

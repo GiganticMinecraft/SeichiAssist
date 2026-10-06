@@ -1,6 +1,6 @@
 package com.github.unchama.util.nms.v1_18_2.world
 
-import cats.effect.{Concurrent, Sync}
+import cats.effect.Sync
 
 object WorldChunkSaving {
 
@@ -146,9 +146,10 @@ object WorldChunkSaving {
    * This action, when running, relaxes the save-queue throttle. The returned action completes
    * when there are no more chunks to be saved.
    */
-  def relaxFileIOThreadThrottle[F[_]](implicit F: Concurrent[F]): F[Unit] = Sync[F].delay {
-    FileIOThread.relaxThrottle(FileIOThread.instance)()
-  }
+  def relaxFileIOThreadThrottle[F[_]](implicit F: cats.effect.Async[F]): F[Unit] =
+    Sync[F].delay {
+      FileIOThread.relaxThrottle(FileIOThread.instance)()
+    }
 
   /**
    * Every world has its internal queue to remove entities or tile-entities. They are normally

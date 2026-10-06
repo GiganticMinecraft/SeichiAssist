@@ -1,12 +1,12 @@
 package com.github.unchama.seichiassist.subsystems.breakcountbar
 
-import cats.effect.concurrent.Ref
-import cats.effect.{ConcurrentEffect, SyncEffect}
+import cats.effect.{Async, Sync}
+import cats.effect.std.Dispatcher
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.fs2.workaround.fs3.Fs3Topic
-import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.generic.{ContextCoercion, UnsafeSyncRunner}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.breakcountbar.application.{
@@ -21,6 +21,7 @@ import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.{
 import com.github.unchama.seichiassist.subsystems.breakcountbar.infrastructure.JdbcBreakCountBarVisibilityPersistence
 import org.typelevel.log4cats.ErrorLogger
 import org.bukkit.entity.Player
+import cats.effect.Ref
 
 trait System[F[_], G[_], Player] extends Subsystem[F] {
 
@@ -35,8 +36,8 @@ object System {
   private final val topicSubscriptionSize = 10
 
   def wired[
-    G[_]: SyncEffect,
-    F[_]: ConcurrentEffect: [g[_]] =>> ContextCoercion[G, g]: ErrorLogger
+    G[_]: Sync: UnsafeSyncRunner,
+    F[_]: Async: Dispatcher: [g[_]] =>> ContextCoercion[G, g]: ErrorLogger
   ](breakCountReadAPI: BreakCountReadAPI[F, G, Player]): F[System[F, G, Player]] = {
     import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 

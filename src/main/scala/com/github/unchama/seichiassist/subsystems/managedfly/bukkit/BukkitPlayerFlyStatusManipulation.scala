@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.managedfly.bukkit
 
 import cats.data.Kleisli
-import cats.effect.{Concurrent, Sync, SyncIO}
+import cats.effect.{Async, Sync, SyncIO}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.idletime.IdleTimeAPI
 import com.github.unchama.seichiassist.subsystems.managedfly.application._
@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import org.bukkit.ChatColor.{GRAY, GREEN, RED}
 import org.bukkit.entity.Player
 
-class BukkitPlayerFlyStatusManipulation[AsyncContext[_]: Concurrent: OnMinecraftServerThread](
+class BukkitPlayerFlyStatusManipulation[AsyncContext[_]: Async: OnMinecraftServerThread](
   implicit configuration: SystemConfiguration,
   idleTimeAPI: IdleTimeAPI[AsyncContext, Player]
 ) extends PlayerFlyStatusManipulation[[a] =>> Kleisli[AsyncContext, Player, a]] {

@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.menus
 import io.github.iltotore.iron.autoRefine
 
 import cats.data.{Kleisli, NonEmptyList}
-import cats.effect.{ConcurrentEffect, IO, SyncIO}
+import cats.effect.{IO, SyncIO}
 import cats.implicits._
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.router.CanOpen
@@ -111,9 +111,6 @@ object VoteMenu extends Menu {
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
     private val uuid = player.getUniqueId
-
-    private implicit val ioCE: ConcurrentEffect[IO] =
-      IO.ioConcurrentEffect(PluginExecutionContexts.asyncShift)
 
     val receiveVoteBenefitsButton: IO[Button] = RecomputedButton {
       val uuid = player.getUniqueId

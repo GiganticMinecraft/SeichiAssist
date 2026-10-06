@@ -1,13 +1,13 @@
 package com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket
 
 import cats.data.Kleisli
-import cats.effect.{Sync, SyncEffect}
+import cats.effect.Sync
 import com.github.unchama.datarepository.bukkit.player.{
   BukkitRepositoryControls,
   PlayerDataRepository
 }
 import com.github.unchama.datarepository.template.RepositoryDefinition
-import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.generic.{ContextCoercion, UnsafeSyncRunner}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket.application.repository.ConsumeGachaTicketSettingRepositoryDefinition
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket.domain.{
@@ -26,7 +26,8 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_]: Sync, G[_]: SyncEffect: [f[_]] =>> ContextCoercion[f, F]]: F[System[F]] = {
+  def wired[F[_]: Sync, G[_]: Sync: UnsafeSyncRunner: [f[_]] =>> ContextCoercion[f, F]]
+    : F[System[F]] = {
     for {
       consumeGachaTicketSettingRepositoryControls <- ContextCoercion(
         BukkitRepositoryControls.createHandles(

@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.infrastructure.redisbungee
 
 import org.apache.pekko.actor.ActorSystem
-import cats.effect.{ContextShift, Effect, IO}
+import cats.effect.Async
 import com.github.unchama.seichiassist.domain.actions.GetNetworkConnectionCount
 import com.github.unchama.seichiassist.domain.configuration.RedisBungeeRedisConfiguration
 import org.typelevel.log4cats.ErrorLogger
@@ -9,14 +9,12 @@ import redis.RedisClient
 import redis.api.scripting.RedisScript
 import redis.protocol.{Bulk, MultiBulk}
 
-class RedisBungeeNetworkConnectionCount[F[_]: Effect: ErrorLogger](
-  connectionContextShift: ContextShift[IO]
-)(implicit configuration: RedisBungeeRedisConfiguration, actorSystem: ActorSystem)
-    extends GetNetworkConnectionCount[F] {
+class RedisBungeeNetworkConnectionCount[F[_]: Async: ErrorLogger]()(
+  implicit configuration: RedisBungeeRedisConfiguration,
+  actorSystem: ActorSystem
+) extends GetNetworkConnectionCount[F] {
 
   import cats.implicits._
-
-  implicit private val _cs: ContextShift[IO] = connectionContextShift
 
   private val redisClient = RedisClient(
     host = configuration.redisHost,
@@ -51,18 +49,17 @@ return result""")
   private val seichiServers = Set("s1", "s2", "s3", "s5", "s7")
 
   override val now: F[Int] =
-    Effect[F]
-      .liftIO {
-        IO.fromFuture(IO(redisClient.evalshaOrEval(script))).flatMap {
-          case MultiBulk(Some(vector)) =>
-            IO.pure {
-              vector.count {
-                case Bulk(Some(byteString)) => seichiServers.contains(byteString.utf8String)
-                case _                      => false
-              }
+    Async[F]
+      .fromFuture(Async[F].delay(redisClient.evalshaOrEval(script)))
+      .flatMap {
+        case MultiBulk(Some(vector)) =>
+          Async[F].pure {
+            vector.count {
+              case Bulk(Some(byteString)) => seichiServers.contains(byteString.utf8String)
+              case _                      => false
             }
-          case _ => IO.raiseError(new RuntimeException("Expected MultiBulk response"))
-        }
+          }
+        case _ => Async[F].raiseError(new RuntimeException("Expected MultiBulk response"))
       }
       .handleErrorWith { error =>
         ErrorLogger[F].error(error)("RedisBungee関連のデータを取得するのに失敗しました").as(0)

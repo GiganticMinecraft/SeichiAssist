@@ -1,25 +1,28 @@
 package com.github.unchama.generic.effect.concurrent
 
-import cats.effect.concurrent.Deferred
-import cats.effect.{CancelToken, Concurrent, Fiber}
+import cats.effect.Concurrent
 import cats.{FlatMap, Monad}
+import cats.effect.Deferred
 
 /**
- * We can think of a [[cats.effect.concurrent.Deferred]] as a "mutable" Promise to which read
- * and write operations are synchronized. Then [[cats.effect.concurrent.TryableDeferred]] is a
- * [[cats.effect.concurrent.Deferred]] which can immediately tell whether it has been completed
- * or not.
+ * We can think of a [[cats.effect.Deferred]] as a "mutable" Promise to which read and write
+ * operations are synchronized. Its `tryGet` operation can immediately tell whether it has been
+ * completed or not.
  *
  * Analogously then, [[Fiber]] is a read-only promise and we should be able to describe a
  * [[Fiber]] which can tell its completion status. [[TryableFiber]] serves this purpose.
  */
-trait TryableFiber[F[_], A] extends Fiber[F, A] {
+trait TryableFiber[F[_], A] {
   implicit val fFMap: FlatMap[F]
 
   /**
    * Obtains the current value of the `Fiber`, or None if it hasn't completed.
    */
   def tryJoin: F[Option[A]]
+
+  def cancel: F[Unit]
+
+  def join: F[A]
 
   import cats.implicits._
 
@@ -51,12 +54,12 @@ object TryableFiber {
     import cats.implicits._
 
     for {
-      promise <- Deferred.tryable[F, A]
-      fiber <- fConc.start(fa >>= promise.complete)
+      promise <- Deferred[F, A]
+      fiber <- fConc.start(fa.flatTap(a => promise.complete(a).void))
     } yield new TryableFiber[F, A] {
       override implicit val fFMap: Concurrent[F] = fConc
       override def tryJoin: F[Option[A]] = promise.tryGet
-      override def cancel: CancelToken[F] = fiber.cancel
+      override def cancel: F[Unit] = fiber.cancel
       override def join: F[A] = promise.get
     }
   }
@@ -68,7 +71,7 @@ object TryableFiber {
     override implicit val fFMap: Monad[F] = fMonad
 
     override def tryJoin: F[Option[Unit]] = fMonad.pure(Some(()))
-    override def cancel: CancelToken[F] = fMonad.unit
+    override def cancel: F[Unit] = fMonad.unit
     override def join: F[Unit] = fMonad.unit
   }
 }

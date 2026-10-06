@@ -11,7 +11,7 @@ object LunisolarDate {
   /**
    * 現在日時から旧暦の日付を返します。
    */
-  def now[F[_]: Clock: Functor]: F[LunisolarDate] = Clock[F].instantNow.map(of)
+  def now[F[_]: Clock: Functor]: F[LunisolarDate] = Clock[F].realTimeInstant.map(of)
 
   /**
    * 指定したInstantから旧暦の日付を返します。

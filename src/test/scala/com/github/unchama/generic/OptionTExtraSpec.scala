@@ -2,6 +2,7 @@ package com.github.unchama.generic
 
 import cats.data.OptionT
 import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 import cats.{Applicative, Id}
 import org.scalatest.wordspec.AnyWordSpec
 

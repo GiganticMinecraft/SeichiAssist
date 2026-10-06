@@ -33,7 +33,7 @@ import scala.jdk.CollectionConverters._
 import scala.util.Random
 
 class AnniversaryListener(
-  implicit effectEnvironment: EffectEnvironment,
+  implicit effectEnvironment: EffectEnvironment[IO],
   ioOnMainThread: OnMinecraftServerThread[IO],
   gtToSiinaAPI: GtToSiinaAPI[ItemStack]
 ) extends Listener {

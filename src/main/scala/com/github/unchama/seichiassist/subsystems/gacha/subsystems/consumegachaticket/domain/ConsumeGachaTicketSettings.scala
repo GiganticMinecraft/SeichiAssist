@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.gacha.subsystems.consumegachaticket.domain
 
 import cats.effect.Sync
-import cats.effect.concurrent.Ref
 import cats.implicits._
+import cats.effect.Ref
 
 class ConsumeGachaTicketSettings[F[_]: Sync] {
 

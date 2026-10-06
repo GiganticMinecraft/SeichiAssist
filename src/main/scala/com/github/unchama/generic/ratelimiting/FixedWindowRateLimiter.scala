@@ -1,38 +1,35 @@
 package com.github.unchama.generic.ratelimiting
 
-import cats.effect.concurrent.Ref
-import cats.effect.{Clock, Sync}
+import cats.effect.Sync
 import com.github.unchama.generic.algebra.typeclasses.OrderedMonus
 import com.github.unchama.generic.algebra.typeclasses.OrderedMonus._
 
-import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.FiniteDuration
+import cats.effect.Ref
 
 object FixedWindowRateLimiter {
 
   import cats.implicits._
 
-  def in[G[_]: Sync: Clock, A: OrderedMonus](
+  def in[G[_]: Sync, A: OrderedMonus](
     maxPermits: A,
     resetDuration: FiniteDuration,
     firstPermits: Option[A] = None
   ): G[RateLimiter[G, A]] = {
     case class RateLimiterState(lastResetTimeStampInMilli: Long, permitsUsedSoFar: A)
 
-    val inMillis = TimeUnit.MILLISECONDS
-
     val zero = OrderedMonus[A].empty
     val initialCount = maxPermits |-| firstPermits.getOrElse(maxPermits)
     val resetDurationInMillis = resetDuration.toMillis
 
     for {
-      initialTime <- Clock[G].realTime(inMillis)
+      initialTime <- Sync[G].realTime.map(_.toMillis)
       stateRef <- Ref[G].of(RateLimiterState(initialTime, initialCount))
     } yield new RateLimiter[G, A] {
       override protected val A: OrderedMonus[A] = implicitly
       override def requestPermission(a: A): G[A] = {
         for {
-          latestTime <- Clock[G].realTime(inMillis)
+          latestTime <- Sync[G].realTime.map(_.toMillis)
 
           obtainedPermits <- stateRef.modify {
             case RateLimiterState(lastRestoredTimeStampInMilli, permitsUsedSoFar) =>

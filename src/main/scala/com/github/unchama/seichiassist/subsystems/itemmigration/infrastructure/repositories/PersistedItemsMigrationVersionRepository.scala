@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.repositories
 
-import cats.effect.{ExitCase, Resource, Sync}
+import cats.effect.{Resource, Sync}
 import com.github.unchama.itemmigration.domain.{
   ItemMigrationVersionNumber,
   ItemMigrationVersionRepository
@@ -30,7 +30,7 @@ class PersistedItemsMigrationVersionRepository[F[_]](implicit dbSession: DBSessi
       // このリソースを使用する際にはロックが取れているというのを保証すればよいため、リソースの実体は無くて良い
       ()
     }) {
-      case (_, ExitCase.Completed) =>
+      case (_, Resource.ExitCase.Succeeded) =>
         F.delay {
           sql"commit".update()
           sql"unlock tables".update()

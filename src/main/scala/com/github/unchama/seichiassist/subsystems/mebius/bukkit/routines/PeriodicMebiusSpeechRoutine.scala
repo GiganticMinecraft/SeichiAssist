@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.mebius.bukkit.routines
 
 import cats.data.NonEmptyList
-import cats.effect.{IO, SyncIO, Timer}
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
@@ -61,8 +61,6 @@ object PeriodicMebiusSpeechRoutine {
     context: RepeatingTaskContext,
     onMainThread: OnMinecraftServerThread[IO]
   ): IO[Nothing] = {
-
-    implicit val timer: Timer[IO] = IO.timer(context)
 
     RepeatingRoutine.permanentRoutine(
       getRepeatInterval,
