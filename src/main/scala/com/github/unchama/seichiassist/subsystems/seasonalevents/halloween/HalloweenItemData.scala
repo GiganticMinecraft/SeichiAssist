@@ -66,7 +66,7 @@ object HalloweenItemData {
   // region HalloweenHoe
 
   val halloweenHoe: ItemStack = {
-    val displayName = Seq(
+    val hoeDisplayName = Seq(
       "C" -> RED,
       "E" -> GOLD,
       "N" -> YELLOW,
@@ -98,7 +98,7 @@ object HalloweenItemData {
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.DIAMOND_HOE).tap { meta =>
       import meta._
-      setDisplayName(displayName)
+      setDisplayName(hoeDisplayName)
       setLore(loreList)
       addItemFlags(ItemFlag.HIDE_ENCHANTS)
       enchantments.foreach { case (ench, lvl) => addEnchant(ench, lvl, true) }
