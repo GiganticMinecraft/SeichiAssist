@@ -1,4 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.halloween
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
 
 import com.github.unchama.seichiassist.util.EnchantNameToJapanese
 import de.tr7zw.nbtapi.NBTItem
@@ -42,10 +43,10 @@ object HalloweenItemData {
     val potionMeta =
       Bukkit.getItemFactory.getItemMeta(Material.POTION).asInstanceOf[PotionMeta].tap { meta =>
         import meta._
-        setDisplayName(s"$AQUA${ITALIC}うんちゃまの汗")
+        meta.setDisplayNameAsLegacy(s"$AQUA${ITALIC}うんちゃまの汗")
         setColor(fromRGB(1, 93, 178))
         addEnchant(Enchantment.MENDING, 1, true)
-        setLore(loreList)
+        meta.setLoreAsLegacy(loreList)
         itemFlags.foreach(flg => addItemFlags(flg))
         potionEffects.foreach(effect => addCustomEffect(effect, true))
       }
@@ -66,7 +67,7 @@ object HalloweenItemData {
   // region HalloweenHoe
 
   val halloweenHoe: ItemStack = {
-    val displayName = Seq(
+    val hoeDisplayName = Seq(
       "C" -> RED,
       "E" -> GOLD,
       "N" -> YELLOW,
@@ -98,8 +99,8 @@ object HalloweenItemData {
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.DIAMOND_HOE).tap { meta =>
       import meta._
-      setDisplayName(displayName)
-      setLore(loreList)
+      meta.setDisplayNameAsLegacy(hoeDisplayName)
+      meta.setLoreAsLegacy(loreList)
       addItemFlags(ItemFlag.HIDE_ENCHANTS)
       enchantments.foreach { case (ench, lvl) => addEnchant(ench, lvl, true) }
     }

@@ -1,4 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.gachaprize.bukkit.factories
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
 
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.StaticGachaPrizeFactory
 import org.bukkit.ChatColor._
@@ -23,8 +24,8 @@ object BukkitStaticGachaPrizeFactory extends StaticGachaPrizeFactory[ItemStack] 
     itemStack =>
       import itemStack._
       val meta = getItemMeta
-      meta.setDisplayName(s"$GOLD${BOLD}がちゃりんご")
-      meta.setLore(gachaRingoLore)
+      meta.setDisplayNameAsLegacy(s"$GOLD${BOLD}がちゃりんご")
+      meta.setLoreAsLegacy(gachaRingoLore)
       setItemMeta(meta)
   }
 
@@ -34,8 +35,8 @@ object BukkitStaticGachaPrizeFactory extends StaticGachaPrizeFactory[ItemStack] 
     new ItemStack(Material.CARROT_ON_A_STICK, 1).tap { itemStack =>
       import itemStack._
       val meta = getItemMeta
-      meta.setDisplayName(s"${DARK_RED}死神の鎌")
-      meta.setLore(
+      meta.setDisplayNameAsLegacy(s"${DARK_RED}死神の鎌")
+      meta.setLoreAsLegacy(
         List(
           s"${RED}頭を狩り取る形をしている...",
           "",

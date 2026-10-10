@@ -1,4 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
 
 import com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki.Seizonsiki.END_DATE
 import de.tr7zw.nbtapi.NBTItem
@@ -24,9 +25,8 @@ object SeizonsikiItemData {
     ).map(str => s"$RESET$str").asJava
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.GOLDEN_APPLE).tap { meta =>
-      import meta._
-      setDisplayName(s"$GOLD${BOLD}ゾんご")
-      setLore(loreList)
+      meta.setDisplayNameAsLegacy(s"$GOLD${BOLD}ゾんご")
+      meta.setLoreAsLegacy(loreList)
     }
 
     val itemStack = new ItemStack(Material.GOLDEN_APPLE, 1)

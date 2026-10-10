@@ -1,4 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
 
 import com.github.unchama.seichiassist.subsystems.mebius.domain.property._
 import com.github.unchama.seichiassist.subsystems.mebius.domain.resources.MebiusTalks
@@ -135,12 +136,12 @@ object BukkitMebiusItemStackCodec {
 
     item.setItemMeta {
       item.getItemMeta.tap { meta =>
-        meta.setDisplayName(displayNameOfMaterializedItem(property))
+        meta.setDisplayNameAsLegacy(displayNameOfMaterializedItem(property))
 
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE)
 
-        meta.setLore {
+        meta.setLoreAsLegacy {
           val talk = MebiusTalks.at(property.level)
 
           import LoreConstants._

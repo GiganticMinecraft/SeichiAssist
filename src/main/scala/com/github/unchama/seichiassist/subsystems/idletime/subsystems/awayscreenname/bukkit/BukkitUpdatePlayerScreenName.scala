@@ -1,4 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.idletime.subsystems.awayscreenname.bukkit
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.SeichiAssist
@@ -33,8 +34,8 @@ class BukkitUpdatePlayerScreenName[F[_]: Sync](
         val playerData = SeichiAssist.playermap(player.getUniqueId)
         val displayName = playerData.displayName()
 
-        player.setDisplayName(s"$newPlayerNameColor$displayName")
-        player.setPlayerListName(s"$newPlayerNameColor$displayName")
+        player.displayName(s"$newPlayerNameColor$displayName".parseAsLegacyTextComponent)
+        player.playerListName(s"$newPlayerNameColor$displayName".parseAsLegacyTextComponent)
       }
     } yield ()
 

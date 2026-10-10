@@ -1,4 +1,5 @@
 package com.github.unchama.buildassist.menu
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
 
 import io.github.iltotore.iron.autoRefine
 
@@ -140,8 +141,8 @@ object MineStackMassCraftMenu {
             import scala.jdk.javaapi.CollectionConverters.asJava
 
             val meta = productStack.getItemMeta
-            meta.setDisplayName(title)
-            meta.setLore(asJava(lore))
+            meta.setDisplayNameAsLegacy(title)
+            meta.setLoreAsLegacy(asJava(lore))
             meta
           }
 

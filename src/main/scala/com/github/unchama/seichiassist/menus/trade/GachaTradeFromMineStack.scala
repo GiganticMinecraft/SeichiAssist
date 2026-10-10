@@ -1,13 +1,12 @@
 package com.github.unchama.seichiassist.menus.trade
 
 import io.github.iltotore.iron.autoRefine
-
 import com.github.unchama.menuinventory.Menu
 import com.github.unchama.menuinventory.MenuFrame
 import cats.effect.IO
 import com.github.unchama.menuinventory.MenuSlotLayout
 import org.bukkit.entity.Player
-import org.bukkit.ChatColor._
+import org.bukkit.ChatColor.*
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import org.bukkit.inventory.ItemStack
 import com.github.unchama.menuinventory.slot.button.Button
@@ -35,6 +34,7 @@ import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.MineStackObject
 import cats.data.Kleisli
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.domain.TradeError
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger.*
 
 object GachaTradeFromMineStackMenu {
   class Environment(
@@ -147,18 +147,18 @@ case class GachaTradeFromMineStackMenu(
           import itemStack._
           setItemMeta {
             getItemMeta.tap { itemMeta =>
-              import itemMeta._
-              setDisplayName {
+              itemMeta.displayName {
                 val name = mineStackObject
                   .uiName
-                  .fold(if (hasDisplayName) getDisplayName else getType.toString)(itemName =>
-                    itemName
-                  )
+                  .fold(
+                    if (itemMeta.hasDisplayName) itemMeta.displayName.toLegacyText
+                    else getType.toString
+                  )(itemName => itemName)
 
-                s"$YELLOW$UNDERLINE$BOLD$name"
+                s"$YELLOW$UNDERLINE$BOLD$name".parseAsLegacyTextComponent
               }
 
-              setLore {
+              itemMeta.setLoreAsLegacy {
                 val operationDetail =
                   List(
                     s"$RESET$GREEN${String.format("%,d", stackedAmount)}個",
@@ -168,6 +168,8 @@ case class GachaTradeFromMineStackMenu(
               }
 
               setAmount(1)
+
+              itemMeta
             }
           }
         }
@@ -201,9 +203,10 @@ case class GachaTradeFromMineStackMenu(
 
           val name = mineStackObject
             .uiName
-            .fold(if (meta.hasDisplayName) meta.getDisplayName else itemStack.getType.toString)(
-              itemName => itemName
-            )
+            .fold(
+              if (meta.hasDisplayName) meta.displayName.toLegacyText
+              else itemStack.getType.toString
+            )(itemName => itemName)
 
           s"$YELLOW$UNDERLINE$BOLD$name"
         }

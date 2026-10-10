@@ -1,4 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.newyear
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
 
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerTextureValue}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear.{
@@ -29,11 +30,10 @@ object NewYearItemData {
     ).map(str => s"$RESET$str").asJava
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.GOLDEN_APPLE).tap { meta =>
-      import meta._
-      setDisplayName(s"$GOLD${BOLD}正月りんご")
-      setLore(loreList)
-      addEnchant(Enchantment.DIG_SPEED, 1, true)
-      addItemFlags(ItemFlag.HIDE_ENCHANTS)
+      meta.setDisplayNameAsLegacy(s"$GOLD${BOLD}正月りんご")
+      meta.setLoreAsLegacy(loreList)
+      meta.addEnchant(Enchantment.DIG_SPEED, 1, true)
+      meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
     }
 
     val itemStack = new ItemStack(Material.GOLDEN_APPLE, 1)
@@ -64,8 +64,8 @@ object NewYearItemData {
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.PAPER).tap { meta =>
       import meta._
-      setDisplayName(s"${AQUA}お年玉袋(${EVENT_YEAR}年)")
-      setLore(loreList)
+      meta.setDisplayNameAsLegacy(s"${AQUA}お年玉袋(${EVENT_YEAR}年)")
+      meta.setLoreAsLegacy(loreList)
       addEnchant(Enchantment.DIG_SPEED, 1, true)
       addItemFlags(ItemFlag.HIDE_ENCHANTS)
     }

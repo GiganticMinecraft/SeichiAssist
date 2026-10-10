@@ -14,6 +14,7 @@ import com.github.unchama.generic.ContextCoercion
 import org.bukkit.entity.Player
 import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
+import net.kyori.adventure.text.Component
 
 import java.util.UUID
 import scala.collection.concurrent.TrieMap
@@ -71,10 +72,10 @@ object BukkitRepositoryControls {
             case Left(error) =>
               // TODO use Logger
               error.printStackTrace()
-              event.setKickMessage("初期化処理中にエラーが発生しました。")
+              event.kickMessage(Component.text("初期化処理中にエラーが発生しました。"))
               event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER)
             case Right(PrefetchResult.Failed(errorMessageOption)) =>
-              errorMessageOption.foreach(event.setKickMessage)
+              errorMessageOption.foreach(message => event.kickMessage(Component.text(message)))
               event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER)
             case Right(PrefetchResult.Success(data)) =>
               dataMap(event.getUniqueId) = data
@@ -121,14 +122,13 @@ object BukkitRepositoryControls {
                 .unsafeRunSync()
 
             case None =>
-              val message =
-                s"""
-                   |データの読み込みに失敗しました。
-                   |再接続しても改善されない場合は、
-                   |整地鯖公式Discordサーバーからお知らせ下さい。
-                   |""".stripMargin
+              val message = Component.text(s"""
+                                              |データの読み込みに失敗しました。
+                                              |再接続しても改善されない場合は、
+                                              |整地鯖公式Discordサーバーからお知らせ下さい。
+                                              |""".stripMargin)
 
-              player.kickPlayer(message)
+              player.kick(message)
           }
         }
       }

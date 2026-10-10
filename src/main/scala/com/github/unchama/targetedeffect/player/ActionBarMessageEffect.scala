@@ -13,6 +13,7 @@ object ActionBarMessageEffect {
 
   def apply(textComponent: TextComponent): TargetedEffect[Player] = Kleisli { player =>
     IO {
+      // TODO(paper-hold): replace with sendActionBar
       player.spigot().sendMessage(ChatMessageType.ACTION_BAR, textComponent)
     }
   }

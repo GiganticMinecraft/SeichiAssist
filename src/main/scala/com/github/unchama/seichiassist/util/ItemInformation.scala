@@ -1,4 +1,5 @@
 package com.github.unchama.seichiassist.util
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
 
 import com.github.unchama.itemstackbuilder.SkullOwnerUuid
 import com.github.unchama.seichiassist.SkullOwners
@@ -37,12 +38,12 @@ object ItemInformation {
       ) == SkullOwners.unchama || skullMeta.getOwner == "unchama"))
     ) return false
 
-    skullMeta.hasLore && skullMeta.getLore.asScala.exists(containsRightClickMessage)
+    skullMeta.hasLore && skullMeta.getLoreAsLegacy.asScala.exists(containsRightClickMessage)
   }
 
   def isMineHeadItem(itemstack: ItemStack): Boolean = {
     itemstack.getType == Material.CARROT_ON_A_STICK &&
-    loreIndexOf(itemstack.getItemMeta.getLore.asScala.toList, "頭を狩り取る形をしている...") >= 0
+    loreIndexOf(itemstack.getItemMeta.getLoreAsLegacy.asScala.toList, "頭を狩り取る形をしている...") >= 0
   }
 
   def getSkullDataFromBlock(block: Block): Option[ItemStack] = {

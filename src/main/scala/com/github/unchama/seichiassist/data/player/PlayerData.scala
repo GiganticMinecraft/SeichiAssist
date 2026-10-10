@@ -112,8 +112,10 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
 
   // レベルを更新
   private def synchronizeDisplayNameToLevelState(): Unit = {
-    player.setDisplayName(displayName())
-    player.setPlayerListName(displayName())
+    import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
+
+    player.displayName(displayName().parseAsLegacyTextComponent)
+    player.playerListName(displayName().parseAsLegacyTextComponent)
   }
 
   // 表示される名前に整地Lvor二つ名を追加

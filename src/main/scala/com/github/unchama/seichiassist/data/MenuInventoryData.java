@@ -1,4 +1,5 @@
 package com.github.unchama.seichiassist.data;
+import static com.github.unchama.minecraft.paper.InlinedTextComponentBridger.*;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.achievement.Nicknames;
@@ -69,7 +70,7 @@ public final class MenuInventoryData {
 					Material.LIGHT_BLUE_STAINED_GLASS_PANE };
 			final ItemStack itemstack = new ItemStack(table[playerdata.giganticBerserk().stage()], 1);
 			final ItemMeta itemmeta = itemstack.getItemMeta();
-			itemmeta.setDisplayName(" ");
+			itemmeta.displayName(parseAsLegacyTextComponent(" "));
 			itemstack.setItemMeta(itemmeta);
 			placeGiganticBerserkGlass(inventory, itemstack);
 		}
@@ -119,7 +120,7 @@ public final class MenuInventoryData {
 				itemmeta.addEnchant(Enchantment.DAMAGE_ALL, 1, true);
 				itemmeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 			}
-			itemmeta.setDisplayName(" ");
+			itemmeta.displayName(parseAsLegacyTextComponent(" "));
 			itemstack.setItemMeta(itemmeta);
 
 			placeGiganticBerserkGlass(inventory, itemstack);
@@ -137,7 +138,7 @@ public final class MenuInventoryData {
 	}
 
 	private static Inventory getEmptyInventory(final int rows, final String title) {
-		return Bukkit.getServer().createInventory(null, rows * 9, title);
+		return Bukkit.getServer().createInventory(null, rows * 9, parseAsLegacyTextComponent(title));
 	}
 
 	private static ItemStack build(final Material mat, final String name, final String singleLore) {
@@ -160,11 +161,11 @@ public final class MenuInventoryData {
 		@SuppressWarnings("unchecked")
 		final T meta = (T) temp.getItemMeta();
 		if (name != null) {
-			meta.setDisplayName(name);
+			meta.displayName(parseAsLegacyTextComponent(name));
 		}
 
 		if (lore != null) {
-			meta.setLore(lore);
+			setLoreAsLegacy(meta, lore);
 		}
 		meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		modify.accept(meta);

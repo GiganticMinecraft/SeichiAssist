@@ -35,7 +35,7 @@ resolvers ++= Seq(
   "repo.spring.io" at "https://repo.spring.io/plugins-release/",
   "repo.spongepowered.org" at "https://repo.spongepowered.org/maven",
   "repo.maven.apache.org" at "https://repo.maven.apache.org/maven2",
-  "hub.spigotmc.org" at "https://hub.spigotmc.org/nexus/content/repositories/snapshots",
+  "papermc" at "https://repo.papermc.io/repository/maven-public/",
   "oss.sonatype.org" at "https://oss.sonatype.org/content/repositories/snapshots",
   "repo.phoenix616.dev" at "https://repo.phoenix616.dev" // authlibのため
 )
@@ -44,7 +44,7 @@ val providedDependencies = Seq(
   "org.jetbrains" % "annotations" % "26.1.0",
   "org.apache.commons" % "commons-lang3" % "3.21.0",
   "commons-codec" % "commons-codec" % "1.22.1",
-  "org.spigotmc" % "spigot-api" % "1.18.2-R0.1-SNAPSHOT",
+  "io.papermc.paper" % "paper-api" % "1.18.2-R0.1-SNAPSHOT",
   // https://maven.enginehub.org/repo/com/sk89q/worldedit/worldedit-bukkit/
   "com.sk89q.worldguard" % "worldguard-bukkit" % "7.0.7",
   "net.coreprotect" % "coreprotect" % "21.3",

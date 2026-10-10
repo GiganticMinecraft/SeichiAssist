@@ -1,4 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.bukkit.listeners
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
 
 import cats.effect.ConcurrentEffect
 import com.github.unchama.seichiassist.subsystems.tradesystems.domain.TradeSuccessResult
@@ -44,7 +45,7 @@ class GachaTradeListener[F[_]: ConcurrentEffect, G[_]](
     // インベントリサイズが6列でない時終了
     if (inventory.row != 6) return
 
-    if (event.getView.getTitle != s"$LIGHT_PURPLE${BOLD}交換したい景品を入れてください") return
+    if (event.getView.title.toLegacyText != s"$LIGHT_PURPLE${BOLD}交換したい景品を入れてください") return
 
     val program = for {
       gachaList <- gachaListProvider.readGachaList

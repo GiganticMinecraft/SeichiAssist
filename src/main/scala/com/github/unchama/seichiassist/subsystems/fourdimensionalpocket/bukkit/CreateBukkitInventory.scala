@@ -1,4 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.PocketSize
@@ -12,6 +13,6 @@ class CreateBukkitInventory[F[_]: Sync] extends CreateInventory[F, Inventory] {
     Sync[F].delay {
       Bukkit
         .getServer
-        .createInventory(null, size.totalStackCount, s"$DARK_PURPLE${BOLD}4次元ポケット")
+        .createInventoryAsLegacy(null, size.totalStackCount, s"$DARK_PURPLE${BOLD}4次元ポケット")
     }
 }

@@ -1,4 +1,5 @@
 package com.github.unchama.buildassist
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
 
 import cats.effect.IO
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
@@ -15,6 +16,7 @@ import org.bukkit.{Material, Sound}
 class PlayerInventoryListener(
   implicit effectEnvironment: EffectEnvironment,
   ioCanOpenBuildMainMenu: IO CanOpen BuildMainMenu.type,
+  // TODO(paper-hold): delete this parameter
   playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
 ) extends Listener {
 
@@ -60,7 +62,7 @@ class PlayerInventoryListener(
     // プレイヤーデータが無い場合は処理終了
 
     // インベントリ名が以下の時処理
-    if (view.getTitle == s"${DARK_PURPLE.toString}$BOLD「直列設置」設定") {
+    if (view.title.toLegacyText == s"${DARK_PURPLE.toString}$BOLD「直列設置」設定") {
       event.setCancelled(true)
 
       // プレイヤーインベントリのクリックの場合終了

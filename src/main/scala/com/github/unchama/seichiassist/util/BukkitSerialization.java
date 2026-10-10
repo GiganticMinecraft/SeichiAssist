@@ -1,4 +1,5 @@
 package com.github.unchama.seichiassist.util;
+import static com.github.unchama.minecraft.paper.InlinedTextComponentBridger.*;
 
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -42,7 +43,7 @@ public final class BukkitSerialization {
         try {
             ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data));
             BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
-            Inventory inventory = Bukkit.getServer().createInventory(null, dataInput.readInt(), ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "4次元ポケット");
+            Inventory inventory = Bukkit.getServer().createInventory(null, dataInput.readInt(), parseAsLegacyTextComponent(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "4次元ポケット"));
 
             // Read the serialized inventory
             for (int i = 0; i < inventory.getSize(); i++) {
@@ -59,7 +60,7 @@ public final class BukkitSerialization {
         try {
             ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data));
             BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
-            Inventory inventory = Bukkit.getServer().createInventory(null, dataInput.readInt(), ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "4次元ポケット");
+            Inventory inventory = Bukkit.getServer().createInventory(null, dataInput.readInt(), parseAsLegacyTextComponent(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "4次元ポケット"));
 
             // Read the serialized inventory
             for (int i = 0; i < inventory.getSize(); i++) {
@@ -72,7 +73,7 @@ public final class BukkitSerialization {
         } catch (NullPointerException e) {
             Bukkit.getLogger().warning("四次元ポケットの中身がnullです。四次元ポケットを初期化します。");
             e.printStackTrace();
-            return Bukkit.createInventory(null, 9 * 1, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "4次元ポケット");
+            return Bukkit.createInventory(null, 9 * 1, parseAsLegacyTextComponent(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "4次元ポケット"));
         }
     }
 }
