@@ -1,4 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
 
 import cats.effect.{LiftIO, Sync}
 import com.github.unchama.minecraft.actions.{GetConnectedPlayers, OnMinecraftServerThread}
@@ -61,16 +62,16 @@ class BukkitDrawGacha[F[_]: LiftIO: Sync: OnMinecraftServerThread: [f[
                 new TextComponent().tap { c =>
                   import c._
                   setText(
-                    s"$AQUA${prizeItem.getItemMeta.getDisplayName}${GOLD}を引きました！おめでとうございます！"
+                    s"$AQUA${prizeItem.getItemMeta.displayName.toLegacyText}${GOLD}を引きました！おめでとうございます！"
                   )
                   setHoverEvent {
                     new HoverEvent(
                       HoverEvent.Action.SHOW_TEXT,
                       new Text(
-                        s" ${prizeItem.getItemMeta.getDisplayName}\n" +
+                        s" ${prizeItem.getItemMeta.displayName.toLegacyText}\n" +
                           ListFormatters.getDescFormat(localizedEnchantmentList.toList) +
                           ListFormatters
-                            .getDescFormat(prizeItem.getItemMeta.getLore.asScala.toList)
+                            .getDescFormat(prizeItem.getItemMeta.getLoreAsLegacy.asScala.toList)
                       )
                     )
                   }
@@ -89,7 +90,7 @@ class BukkitDrawGacha[F[_]: LiftIO: Sync: OnMinecraftServerThread: [f[
               Sync[F].delay {
                 player.playSound(player.getLocation, Sound.ENTITY_WITHER_SPAWN, 0.8f, 1f)
 
-                if (gachaPrize.itemStack.getItemMeta().getDisplayName().contains("椎名林檎")) {
+                if (gachaPrize.itemStack.getItemMeta().displayName().toLegacyText.contains("椎名林檎")) {
                   player.sendMessage(s"${YELLOW}おめでとう！椎名林檎が出たよ！$additionalMessage")
                 } else if (count == 1) {
                   player.sendMessage(s"${GOLD}おめでとう！！大当たり！$additionalMessage")

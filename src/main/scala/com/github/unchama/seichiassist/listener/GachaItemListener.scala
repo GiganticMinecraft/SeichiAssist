@@ -1,4 +1,5 @@
 package com.github.unchama.seichiassist.listener
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
 
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
@@ -21,7 +22,7 @@ class GachaItemListener(implicit manaApi: ManaApi[IO, SyncIO, Player]) extends L
 
     if (!itemMeta.hasLore) return
 
-    val lore = CollectionConverters.ListHasAsScala(itemMeta.getLore).asScala.toList
+    val lore = CollectionConverters.ListHasAsScala(itemMeta.getLoreAsLegacy).asScala.toList
 
     if (ItemInformation.loreIndexOf(lore, "マナ完全回復") > 0) {
       manaApi.manaAmount(player).restoreCompletely.unsafeRunSync()

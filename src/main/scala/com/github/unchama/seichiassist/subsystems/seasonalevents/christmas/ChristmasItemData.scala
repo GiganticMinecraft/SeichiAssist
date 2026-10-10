@@ -1,4 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.christmas
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
 
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas.EVENT_YEAR
 import de.tr7zw.nbtapi.NBTItem
@@ -37,9 +38,9 @@ object ChristmasItemData {
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.CAKE).tap { meta =>
       import meta._
-      setDisplayName(s"$AQUA${ITALIC}まいんちゃんお手製クリスマスケーキ")
+      meta.setDisplayNameAsLegacy(s"$AQUA${ITALIC}まいんちゃんお手製クリスマスケーキ")
       addEnchant(Enchantment.MENDING, 1, true)
-      setLore(loreList)
+      meta.setLoreAsLegacy(loreList)
       itemFlags.foreach(flg => addItemFlags(flg))
     }
 
@@ -74,9 +75,9 @@ object ChristmasItemData {
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.COOKED_CHICKEN).tap { meta =>
       import meta._
-      setDisplayName(s"$AQUA${ITALIC}まいんちゃんお手製ローストターキー")
+      meta.setDisplayNameAsLegacy(s"$AQUA${ITALIC}まいんちゃんお手製ローストターキー")
       addEnchant(Enchantment.MENDING, 1, true)
-      setLore(loreList)
+      meta.setLoreAsLegacy(loreList)
       itemFlags.foreach(flg => addItemFlags(flg))
     }
 
@@ -115,10 +116,10 @@ object ChristmasItemData {
     val potionMeta =
       Bukkit.getItemFactory.getItemMeta(Material.POTION).asInstanceOf[PotionMeta].tap { meta =>
         import meta._
-        setDisplayName(s"$AQUA${ITALIC}みんなの涙")
+        meta.setDisplayNameAsLegacy(s"$AQUA${ITALIC}みんなの涙")
         setColor(fromRGB(215, 0, 58))
         addEnchant(Enchantment.MENDING, 1, true)
-        setLore(loreList)
+        meta.setLoreAsLegacy(loreList)
         itemFlags.foreach(flg => addItemFlags(flg))
         potionEffects.foreach(effect => addCustomEffect(effect, true))
       }
@@ -149,8 +150,8 @@ object ChristmasItemData {
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.DIAMOND_CHESTPLATE).tap { meta =>
       import meta._
-      setDisplayName(s"$AQUA${ITALIC}迷彩服（胴）")
-      setLore(loreList)
+      meta.setDisplayNameAsLegacy(s"$AQUA${ITALIC}迷彩服（胴）")
+      meta.setLoreAsLegacy(loreList)
       enchants.foreach(ench => addEnchant(ench, 1, true))
     }
 
@@ -199,8 +200,8 @@ object ChristmasItemData {
 
     Bukkit.getItemFactory.getItemMeta(Material.INK_SAC).tap { meta =>
       import meta._
-      setDisplayName(s"${AQUA}靴下(${EVENT_YEAR}年)")
-      setLore(loreList)
+      meta.setDisplayNameAsLegacy(s"${AQUA}靴下(${EVENT_YEAR}年)")
+      meta.setLoreAsLegacy(loreList)
       addEnchant(Enchantment.DIG_SPEED, 1, true)
       addItemFlags(ItemFlag.HIDE_ENCHANTS)
     }
@@ -223,7 +224,7 @@ object ChristmasItemData {
       s"$GREEN${ITALIC}大切なあなたへ。",
       s"$YELLOW$UNDERLINE${ITALIC}Merry Christmas $EVENT_YEAR"
     ).map(str => s"$RESET$str").asJava
-    head.setLore(lore)
+    head.setLoreAsLegacy(lore)
     head
   }
 

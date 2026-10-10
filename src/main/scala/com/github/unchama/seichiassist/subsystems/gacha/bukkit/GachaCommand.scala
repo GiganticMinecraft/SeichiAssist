@@ -1,4 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.gacha.bukkit
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
 
 import cats.data.Kleisli
 import cats.effect.{ConcurrentEffect, Sync}
@@ -253,7 +254,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
               val itemStack = gachaPrize.itemStack
               val probability = gachaPrize.probability.value
 
-              s"${gachaPrize.id.id}|${itemStack.getType.toString}/${itemStack.getItemMeta.getDisplayName}$RESET|${itemStack.getAmount}|$probability(${probability * 100}%)"
+              s"${gachaPrize.id.id}|${itemStack.getType.toString}/${itemStack.getItemMeta.displayName.toLegacyText}$RESET|${itemStack.getAmount}|$probability(${probability * 100}%)"
             }
             .toList
 
@@ -276,7 +277,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
             val probability = gachaPrize.probability.value
             val isSign = if (gachaPrize.signOwner) "あり" else "なし"
 
-            s"${gachaPrize.id.id}|${itemStack.getType.toString}/${itemStack.getItemMeta.getDisplayName}|${itemStack.getAmount}|$probability(${probability * 100}%)|$isSign"
+            s"${gachaPrize.id.id}|${itemStack.getType.toString}/${itemStack.getItemMeta.displayName.toLegacyText}|${itemStack.getAmount}|$probability(${probability * 100}%)|$isSign"
           }.toList
 
           val totalProbability = gachaPrizes.map(_.probability.value).sum
@@ -335,7 +336,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
             .flatMap {
               case Some(itemStack) =>
                 MessageEffectF(
-                  s"${targetId.id}|${itemStack.get.getType.toString}/${itemStack.get.getItemMeta.getDisplayName}${RESET}のアイテム数を${amount}個に変更しました。"
+                  s"${targetId.id}|${itemStack.get.getType.toString}/${itemStack.get.getItemMeta.displayName.toLegacyText}${RESET}のアイテム数を${amount}個に変更しました。"
                 )
               case None =>
                 MessageEffectF("指定されたIDのガチャ景品が存在しないため、アイテム数が変更できませんでした。")
@@ -359,7 +360,7 @@ class GachaCommand[F[_]: OnMinecraftServerThread: ConcurrentEffect](
         } yield {
           if (probabilityChange.nonEmpty) {
             MessageEffectF(
-              s"${targetId.id}|${itemStack.get.getType.toString}/${itemStack.get.getItemMeta.getDisplayName}${RESET}の確率を${newProb * 100.0}%に変更しました。"
+              s"${targetId.id}|${itemStack.get.getType.toString}/${itemStack.get.getItemMeta.displayName.toLegacyText}${RESET}の確率を${newProb * 100.0}%に変更しました。"
             )
           } else {
             MessageEffectF("指定されたIDのガチャ景品は存在しません。")

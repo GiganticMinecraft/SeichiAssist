@@ -1,4 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.minestack.bukkit
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
 
 import cats.Functor
 import cats.effect.Sync
@@ -1193,13 +1194,13 @@ class BukkitMineStackObjectList[F[_]: Sync](
         val rightHandItemStackMeta = rightHand.getItemMeta
         val leftHandItemStackMeta = leftHand.getItemMeta
 
-        val rightHandItemStackName = rightHandItemStackMeta.getDisplayName
-        val leftHandItemStackName = leftHandItemStackMeta.getDisplayName
+        val rightHandItemStackName = rightHandItemStackMeta.displayName.toLegacyText
+        val leftHandItemStackName = leftHandItemStackMeta.displayName.toLegacyText
 
         if (rightHandItemStackName != leftHandItemStackName) return false
 
-        val rightHandItemStackLore = Option(rightHandItemStackMeta.getLore)
-        val leftHandItemStackLore = Option(leftHandItemStackMeta.getLore)
+        val rightHandItemStackLore = Option(rightHandItemStackMeta.getLoreAsLegacy)
+        val leftHandItemStackLore = Option(leftHandItemStackMeta.getLoreAsLegacy)
 
         if (!rightHandItemStackLore.equals(leftHandItemStackLore)) return false
 

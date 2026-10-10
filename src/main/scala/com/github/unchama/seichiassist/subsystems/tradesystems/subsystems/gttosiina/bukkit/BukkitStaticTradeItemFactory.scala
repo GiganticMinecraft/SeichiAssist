@@ -1,4 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.bukkit
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
 
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.domain.StaticTradeItemFactory
 import org.bukkit.Material
@@ -14,8 +15,8 @@ object BukkitStaticTradeItemFactory extends StaticTradeItemFactory[ItemStack] {
     new ItemStack(Material.ENCHANTED_GOLDEN_APPLE, 1).tap { itemStack =>
       import itemStack._
       val meta = getItemMeta
-      meta.setDisplayName(s"$YELLOW$BOLD${ITALIC}椎名林檎")
-      meta.setLore(
+      meta.setDisplayNameAsLegacy(s"$YELLOW$BOLD${ITALIC}椎名林檎")
+      meta.setLoreAsLegacy(
         List(
           s"$RESET${GRAY}使用するとマナが全回復します",
           s"$RESET${AQUA}マナ完全回復",

@@ -12,6 +12,7 @@ import com.github.unchama.seichiassist.subsystems.tradesystems.domain.{
   TradeRule,
   TradeSuccessResult
 }
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
 import org.bukkit.inventory.ItemStack
 
 sealed trait BigOrRegular
@@ -52,8 +53,8 @@ class BukkitTrade(owner: String, gachaPrizeTable: Vector[GachaPrizeTableEntry[It
       val leftMeta = leftHand.getItemMeta
       val rightMeta = rightHand.getItemMeta
 
-      val leftLore = Option(leftMeta.getLore)
-      val rightLore = Option(rightMeta.getLore)
+      val leftLore = Option(leftMeta.getLoreAsLegacy)
+      val rightLore = Option(rightMeta.getLoreAsLegacy)
 
       val leftEnchantments = leftMeta.getEnchants
       val rightEnchantments = rightMeta.getEnchants

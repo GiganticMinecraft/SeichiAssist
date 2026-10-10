@@ -1,4 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.gachaprize.bukkit
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
 
 import com.github.unchama.seichiassist.subsystems.gachaprize.domain.{
   CanBeSignedAsGachaPrize,
@@ -31,9 +32,8 @@ object BukkitItemStackCanBeSignedAsGachaPrize extends CanBeSignedAsGachaPrize[It
     import scala.jdk.CollectionConverters._
 
     modifyMeta { m =>
-      import m._
-      setLore {
-        val originalLore = if (itemStack.getItemMeta.hasLore) getLore.asScala else Nil
+      m.setLoreAsLegacy {
+        val originalLore = if (itemStack.getItemMeta.hasLore) m.getLoreAsLegacy.asScala else Nil
         val appended = originalLore :+ s"$RESET${DARK_GREEN}所有者：$ownerName"
 
         appended.asJava

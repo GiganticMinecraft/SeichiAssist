@@ -1,4 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
 
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerTextureValue}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary.ANNIVERSARY_COUNT
@@ -38,9 +39,8 @@ object AnniversaryItemData {
       .asJava
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(OAK_SAPLING).tap { meta =>
-      import meta._
-      setDisplayName(s"$GOLD${BOLD}「気になる木」の苗")
-      setLore(loreList)
+      meta.setDisplayNameAsLegacy(s"$GOLD${BOLD}「気になる木」の苗")
+      meta.setLoreAsLegacy(loreList)
     }
 
     val itemStack = new ItemStack(OAK_SAPLING, 1)
@@ -101,9 +101,8 @@ object AnniversaryItemData {
       .asJava
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(WRITTEN_BOOK).tap { meta =>
-      import meta._
-      setDisplayName(s"$GOLD${BOLD}修繕の書")
-      setLore(loreList)
+      meta.setDisplayNameAsLegacy(s"$GOLD${BOLD}修繕の書")
+      meta.setLoreAsLegacy(loreList)
     }
 
     val itemStack = new ItemStack(WRITTEN_BOOK, 1)
@@ -150,8 +149,8 @@ object AnniversaryItemData {
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(DIAMOND_SHOVEL).tap { meta =>
       import meta._
-      setDisplayName(s"$GOLD${BOLD}SCARLET")
-      setLore(loreList)
+      meta.setDisplayNameAsLegacy(s"$GOLD${BOLD}SCARLET")
+      meta.setLoreAsLegacy(loreList)
       addItemFlags(ItemFlag.HIDE_ENCHANTS)
       enchantments.foreach { case (ench, lvl) => addEnchant(ench, lvl, true) }
     }
@@ -181,7 +180,7 @@ object AnniversaryItemData {
       s"$GREEN${ITALIC}大切なあなたへ感謝を。",
       s"$YELLOW$UNDERLINE$ITALIC${ANNIVERSARY_COUNT}th Anniversary"
     ).map(str => s"$RESET$str").asJava
-    head.setLore(lore)
+    head.setLoreAsLegacy(lore)
     head
   }
 

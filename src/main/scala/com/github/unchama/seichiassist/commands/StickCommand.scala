@@ -1,4 +1,5 @@
 package com.github.unchama.seichiassist.commands
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
 
 import cats.effect.IO
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
@@ -30,8 +31,8 @@ object StickCommand {
         stickItemStack <- IO(new ItemStack(Material.STICK, 1).tap { itemStack =>
           import itemStack._
           val meta = getItemMeta
-          meta.setDisplayName(s"$RESET${WHITE}木の棒メニュー(${thisMonth}月)")
-          meta.setLore(stickLore.asJava)
+          meta.setDisplayNameAsLegacy(s"$RESET${WHITE}木の棒メニュー(${thisMonth}月)")
+          meta.setLoreAsLegacy(stickLore.asJava)
           setItemMeta(meta)
         })
         inventoryNotFull <- IO(!InventoryOperations.isPlayerInventoryFull(sender))

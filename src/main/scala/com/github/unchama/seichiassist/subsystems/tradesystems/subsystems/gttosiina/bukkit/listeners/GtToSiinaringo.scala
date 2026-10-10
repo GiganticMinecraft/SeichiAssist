@@ -1,4 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gttosiina.bukkit.listeners
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
 
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, IO}
@@ -36,7 +37,7 @@ class GtToSiinaringo[F[_]: ConcurrentEffect](
     // インベントリサイズが4列でない時終了
     if (inventory.row != 4) return
 
-    if (event.getView.getTitle != s"$GOLD${BOLD}椎名林檎と交換したい景品を入れてネ") return
+    if (event.getView.title.toLegacyText != s"$GOLD${BOLD}椎名林檎と交換したい景品を入れてネ") return
     // 交換後の情報
     val tradedInformation =
       new BukkitTrade(name, gachaPrizeAPI.allGachaPrizeList.toIO.unsafeRunSync())

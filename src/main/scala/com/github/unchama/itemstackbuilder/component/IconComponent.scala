@@ -1,4 +1,5 @@
 package com.github.unchama.itemstackbuilder.component
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
 
 import com.github.unchama.util.syntax.Nullability._
 import org.bukkit.enchantments.Enchantment
@@ -14,7 +15,7 @@ import scala.jdk.javaapi.CollectionConverters.asJava
  * Created by karayuu on 2019/04/09
  */
 class IconComponent(val material: Material) {
-  var title: String = Bukkit.getItemFactory.getItemMeta(material).ifNotNull(_.getDisplayName)
+  var title: String = Bukkit.getItemFactory.getItemMeta(material).ifNotNull(_.displayName.toLegacyText)
   var lore: List[String] = Nil
 
   var isUnbreakable: Boolean = false
@@ -29,9 +30,9 @@ class IconComponent(val material: Material) {
   def itemMeta(): ItemMeta = {
     val meta = Bukkit.getItemFactory.getItemMeta(material)
 
-    title.ifNotNull(meta.setDisplayName)
+    title.ifNotNull(meta.setDisplayNameAsLegacy)
 
-    meta.setLore(asJava(lore))
+    meta.setLoreAsLegacy(asJava(lore))
 
     if (isUnbreakable) {
       meta.setUnbreakable(true)

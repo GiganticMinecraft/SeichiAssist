@@ -1,4 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.valentine
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
 
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine.{
   END_DATE_TIME,
@@ -65,9 +66,8 @@ object ValentineItemData {
     }.asJava
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.COOKIE).tap { meta =>
-      import meta._
-      setDisplayName(cookieName)
-      setLore(loreList)
+      meta.setDisplayNameAsLegacy(cookieName)
+      meta.setLoreAsLegacy(loreList)
     }
 
     val itemStack = new ItemStack(Material.COOKIE, 1)
@@ -107,9 +107,8 @@ object ValentineItemData {
     }.asJava
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.COOKIE).tap { meta =>
-      import meta._
-      setDisplayName(cookieName)
-      setLore(loreList)
+      meta.setDisplayNameAsLegacy(cookieName)
+      meta.setLoreAsLegacy(loreList)
     }
 
     val itemStack = new ItemStack(Material.COOKIE, 64)
@@ -164,7 +163,7 @@ object ValentineItemData {
       s"$GREEN${ITALIC}大切なあなたへ。",
       s"$YELLOW$UNDERLINE${ITALIC}Happy Valentine $EVENT_YEAR"
     ).map(str => s"$RESET$str").asJava
-    head.setLore(lore)
+    head.setLoreAsLegacy(lore)
     head
   }
 

@@ -117,6 +117,7 @@ import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 import com.github.unchama.seichiassist.subsystems.tradesystems.subsystems.gachatrade.GachaTradeAPI
 import com.github.unchama.seichiassist.subsystems.dragonnighttime.DragonNightTimeApi
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
 
 class SeichiAssist extends JavaPlugin() {
 
@@ -186,7 +187,7 @@ class SeichiAssist extends JavaPlugin() {
 
   private val kickAllPlayersDueToInitialization: SyncIO[Unit] = SyncIO {
     getServer.getOnlinePlayers.asScala.foreach { player =>
-      player.kickPlayer("プラグインを初期化しています。時間を置いて再接続してください。")
+      player.kick("プラグインを初期化しています。時間を置いて再接続してください。".parseAsLegacyTextComponent)
     }
   }
 

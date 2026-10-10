@@ -7,6 +7,7 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
 import com.github.unchama.seichiassist.subsystems.gachaprize.GachaPrizeAPI
 import com.github.unchama.seichiassist.subsystems.minestack.MineStackAPI
 import com.github.unchama.seichiassist.subsystems.minestack.domain.minestackobject.{
@@ -83,17 +84,18 @@ private[minestack] case class MineStackButtons(player: Player)(
         setItemMeta {
           getItemMeta.tap { itemMeta =>
             import itemMeta._
-            setDisplayName {
+            displayName {
               val name = mineStackObject
                 .uiName
-                .fold(if (hasDisplayName) getDisplayName else getType.toString)(itemName =>
+                .fold(if (hasDisplayName) displayName.toLegacyText else getType.toString)(itemName =>
                   itemName
                 )
 
-              s"$YELLOW$UNDERLINE$BOLD$name"
+
+              s"$YELLOW$UNDERLINE$BOLD$name".parseAsLegacyTextComponent
             }
 
-            setLore {
+            itemMeta.setLoreAsLegacy {
               val operationDetail =
                 if (mineStackObjectGroup.isRight) {
                   List(s"$RESET${DARK_GREEN}クリックで種類選択画面を開きます。")

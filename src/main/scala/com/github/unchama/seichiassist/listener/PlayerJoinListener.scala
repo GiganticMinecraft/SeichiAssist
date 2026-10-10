@@ -1,27 +1,22 @@
 package com.github.unchama.seichiassist.listener
+import com.github.unchama.minecraft.paper.InlinedTextComponentBridger._
 
 import cats.effect.IO
-import com.github.unchama.seichiassist.ManagedWorld._
+import com.github.unchama.seichiassist.ManagedWorld.*
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
-import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{
-  MebiusProperty,
-  NormalMebius
-}
+import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{MebiusProperty, NormalMebius}
 import com.github.unchama.seichiassist.util.{SendMessageEffect, SendSoundEffect}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import net.coreprotect.config.ConfigHandler
-import org.bukkit.ChatColor._
+import net.kyori.adventure.text.Component
+import org.bukkit.ChatColor.*
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
-import org.bukkit.event.player.{
-  AsyncPlayerPreLoginEvent,
-  PlayerChangedWorldEvent,
-  PlayerJoinEvent
-}
+import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerChangedWorldEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BookMeta
@@ -29,13 +24,13 @@ import org.bukkit.{Material, Sound}
 
 import java.util.UUID
 import scala.collection.mutable
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 class PlayerJoinListener extends Listener {
   private val playerMap: mutable.HashMap[UUID, PlayerData] = SeichiAssist.playermap
   private val databaseGateway = SeichiAssist.databaseGateway
   private val failedToLoadDataError =
-    "プレーヤーデータの読み込みに失敗しました。再接続しても読み込まれない場合管理者に連絡してください。"
+    Component.text("プレーヤーデータの読み込みに失敗しました。再接続しても読み込まれない場合管理者に連絡してください。")
 
   @EventHandler
   def onPlayerPreLoginEvent(event: AsyncPlayerPreLoginEvent): Unit = {
@@ -53,7 +48,7 @@ class PlayerJoinListener extends Listener {
             println("Caught exception while loading PlayerData.")
             e.printStackTrace()
 
-            event.setKickMessage(failedToLoadDataError)
+            event.kickMessage(failedToLoadDataError)
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER)
             return
           }
@@ -86,7 +81,7 @@ class PlayerJoinListener extends Listener {
           println("Caught exception while loading PlayerData.")
           e.printStackTrace()
 
-          player.kickPlayer(failedToLoadDataError)
+          player.kick(failedToLoadDataError)
           return
       }
     }
@@ -142,8 +137,8 @@ class PlayerJoinListener extends Listener {
       val stick = new ItemStack(Material.STICK, 1).tap { itemStack =>
         import itemStack._
         val meta = getItemMeta
-        meta.setDisplayName("木の棒メニュー")
-        meta.setLore(stickLore.asJava)
+        meta.displayName(Component.text("木の棒メニュー"))
+        meta.setLoreAsLegacy(stickLore.asJava)
         setItemMeta(meta)
       }
       inv.addItem(stick)
