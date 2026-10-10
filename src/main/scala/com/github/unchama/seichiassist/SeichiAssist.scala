@@ -134,7 +134,7 @@ class SeichiAssist extends JavaPlugin() {
    * このため `NamedJULLogger` で一旦ラップしたものをLogManagerに登録し、
    * それをSlf4jにアダプトしたロガーを利用している。
    */
-  implicit val logger: Logger = {
+  given Logger = {
     // TODO すべてのロギングをlog4cats経由で行えばこれは要らなさそう？
     //      適当なルートロガーをJUL経由で引っ張ってきてPrefixedLogger("[SeichiAssist]")を使う
     val pluginLogger = getLogger
@@ -146,7 +146,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   implicit val loggerF: org.typelevel.log4cats.Logger[IO] =
-    Slf4jLogger.getLoggerFromSlf4j(logger)
+    Slf4jLogger.getLoggerFromSlf4j(getSLF4JLogger)
 
   // endregion
 
@@ -684,15 +684,15 @@ class SeichiAssist extends JavaPlugin() {
 
     if (SeichiAssist.seichiAssistConfig.getDebugMode == 1) {
       // debugmode=1の時は最初からデバッグモードで鯖を起動
-      logger.info(s"${RED}SeichiAssistをデバッグモードで起動します")
-      logger.info(s"${RED}コンソールから/seichi debugmode")
-      logger.info(s"${RED}を実行するといつでもON/OFFを切り替えられます")
+      getSLF4JLogger.info(s"${RED}SeichiAssistをデバッグモードで起動します")
+      getSLF4JLogger.info(s"${RED}コンソールから/seichi debugmode")
+      getSLF4JLogger.info(s"${RED}を実行するといつでもON/OFFを切り替えられます")
       SeichiAssist.DEBUG = true
     } else {
       // debugmode=0の時は/seichi debugmodeによる変更コマンドも使えない
-      logger.info(s"${GREEN}SeichiAssistを通常モードで起動します")
-      logger.info(s"${GREEN}デバッグモードを使用する場合は")
-      logger.info(s"${GREEN}config.ymlの設定値を書き換えて再起動してください")
+      getSLF4JLogger.info(s"${GREEN}SeichiAssistを通常モードで起動します")
+      getSLF4JLogger.info(s"${GREEN}デバッグモードを使用する場合は")
+      getSLF4JLogger.info(s"${GREEN}config.ymlの設定値を書き換えて再起動してください")
     }
 
     {
@@ -860,7 +860,7 @@ class SeichiAssist extends JavaPlugin() {
     hasBeenLoadedAlready = true
     kickAllPlayersDueToInitialization.unsafeRunSync()
 
-    logger.info("SeichiAssistが有効化されました！")
+    getSLF4JLogger.info("SeichiAssistが有効化されました！")
   }
 
   override def onEnable(): Unit = {
@@ -868,7 +868,7 @@ class SeichiAssist extends JavaPlugin() {
       monitoredInitialization()
     } catch {
       case e: Throwable =>
-        logger.error("初期化処理に失敗しました。シャットダウンしています…")
+        getSLF4JLogger.error("初期化処理に失敗しました。シャットダウンしています…")
         e.printStackTrace()
         Bukkit.shutdown()
     }
@@ -972,10 +972,10 @@ class SeichiAssist extends JavaPlugin() {
       .unsafeRunSync()
 
     if (SeichiAssist.databaseGateway.disconnect() == ActionStatus.Fail) {
-      logger.info("データベース切断に失敗しました")
+      getSLF4JLogger.info("データベース切断に失敗しました")
     }
 
-    logger.info("SeichiAssistが無効化されました!")
+    getSLF4JLogger.info("SeichiAssistが無効化されました!")
   }
 
   def restartRepeatedJobs(): Unit = {
