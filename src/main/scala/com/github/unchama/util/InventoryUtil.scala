@@ -18,7 +18,17 @@ object InventoryUtil {
     title: Option[String] = None
   ): Inventory =
     size match {
-      case Left(size)  => Bukkit.createInventory(holder.orNull, size.rows * 9, title.map(_.parseAsLegacyTextComponent).orNull)
-      case Right(size) => Bukkit.createInventory(holder.orNull, size, title.map(_.parseAsLegacyTextComponent).orNull)
+      case Left(size) =>
+        Bukkit.createInventory(
+          holder.orNull,
+          size.rows * 9,
+          title.map(_.parseAsLegacyTextComponent).orNull
+        )
+      case Right(size) =>
+        Bukkit.createInventory(
+          holder.orNull,
+          size,
+          title.map(_.parseAsLegacyTextComponent).orNull
+        )
     }
 }

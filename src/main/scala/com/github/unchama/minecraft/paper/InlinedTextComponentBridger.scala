@@ -15,7 +15,8 @@ import java.util.List as juList
  */
 object InlinedTextComponentBridger {
   extension (self: String) {
-    def parseAsLegacyTextComponent: Component = LegacyComponentSerializer.legacySection().deserialize(self)
+    def parseAsLegacyTextComponent: Component =
+      LegacyComponentSerializer.legacySection().deserialize(self)
   }
 
   extension (self: Component) {
@@ -24,17 +25,17 @@ object InlinedTextComponentBridger {
 
   extension (self: org.bukkit.Server) {
     def createInventoryAsLegacy(
-                         owner: InventoryHolder | Null,
-                         typ: InventoryType,
-                         title: String
-                       ): Inventory =
+      owner: InventoryHolder | Null,
+      typ: InventoryType,
+      title: String
+    ): Inventory =
       self.createInventory(owner, typ, title.parseAsLegacyTextComponent)
 
     def createInventoryAsLegacy(
-                          owner: InventoryHolder | Null,
-                          rows: Int,
-                          title: String
-                        ): Inventory =
+      owner: InventoryHolder | Null,
+      rows: Int,
+      title: String
+    ): Inventory =
       self.createInventory(owner, rows, title.parseAsLegacyTextComponent)
   }
 
@@ -53,7 +54,9 @@ object InlinedTextComponentBridger {
 
     def setLoreAsLegacy(lines: juList[String] | Null): Unit = {
       if (lines.ne(null)) {
-        self.lore(lines.stream().map(line => line.parseAsLegacyTextComponent).collect(Collectors.toList))
+        self.lore(
+          lines.stream().map(line => line.parseAsLegacyTextComponent).collect(Collectors.toList)
+        )
       } else {
         self.lore(null)
       }

@@ -27,7 +27,8 @@ object MenuInventoryData {
     // プレイヤーデータ
     val playerdata = BuildAssist.instance.temporaryData(uuid)
 
-    val inventory = Bukkit.getServer.createInventoryAsLegacy(null, 4 * 9, s"$DARK_PURPLE$BOLD「直列設置」設定")
+    val inventory =
+      Bukkit.getServer.createInventoryAsLegacy(null, 4 * 9, s"$DARK_PURPLE$BOLD「直列設置」設定")
     var itemstack = new ItemStack(Material.PLAYER_HEAD, 11)
     var itemmeta: ItemMeta = itemstack.getItemMeta
     var lore = List(s"$RESET$DARK_RED${UNDERLINE}クリックで移動")

@@ -122,13 +122,11 @@ object BukkitRepositoryControls {
                 .unsafeRunSync()
 
             case None =>
-              val message = Component.text(
-                s"""
-                   |データの読み込みに失敗しました。
-                   |再接続しても改善されない場合は、
-                   |整地鯖公式Discordサーバーからお知らせ下さい。
-                   |""".stripMargin
-              )
+              val message = Component.text(s"""
+                                              |データの読み込みに失敗しました。
+                                              |再接続しても改善されない場合は、
+                                              |整地鯖公式Discordサーバーからお知らせ下さい。
+                                              |""".stripMargin)
 
               player.kick(message)
           }

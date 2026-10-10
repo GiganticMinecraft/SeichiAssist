@@ -87,10 +87,9 @@ private[minestack] case class MineStackButtons(player: Player)(
             displayName {
               val name = mineStackObject
                 .uiName
-                .fold(if (hasDisplayName) displayName.toLegacyText else getType.toString)(itemName =>
-                  itemName
+                .fold(if (hasDisplayName) displayName.toLegacyText else getType.toString)(
+                  itemName => itemName
                 )
-
 
               s"$YELLOW$UNDERLINE$BOLD$name".parseAsLegacyTextComponent
             }

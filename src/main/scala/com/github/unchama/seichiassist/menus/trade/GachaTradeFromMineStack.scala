@@ -150,9 +150,10 @@ case class GachaTradeFromMineStackMenu(
               itemMeta.displayName {
                 val name = mineStackObject
                   .uiName
-                  .fold(if (itemMeta.hasDisplayName) itemMeta.displayName.toLegacyText else getType.toString)(itemName =>
-                    itemName
-                  )
+                  .fold(
+                    if (itemMeta.hasDisplayName) itemMeta.displayName.toLegacyText
+                    else getType.toString
+                  )(itemName => itemName)
 
                 s"$YELLOW$UNDERLINE$BOLD$name".parseAsLegacyTextComponent
               }
@@ -202,9 +203,10 @@ case class GachaTradeFromMineStackMenu(
 
           val name = mineStackObject
             .uiName
-            .fold(if (meta.hasDisplayName) meta.displayName.toLegacyText else itemStack.getType.toString)(
-              itemName => itemName
-            )
+            .fold(
+              if (meta.hasDisplayName) meta.displayName.toLegacyText
+              else itemStack.getType.toString
+            )(itemName => itemName)
 
           s"$YELLOW$UNDERLINE$BOLD$name"
         }

@@ -90,7 +90,9 @@ class BukkitDrawGacha[F[_]: LiftIO: Sync: OnMinecraftServerThread: [f[
               Sync[F].delay {
                 player.playSound(player.getLocation, Sound.ENTITY_WITHER_SPAWN, 0.8f, 1f)
 
-                if (gachaPrize.itemStack.getItemMeta().displayName().toLegacyText.contains("椎名林檎")) {
+                if (
+                  gachaPrize.itemStack.getItemMeta().displayName().toLegacyText.contains("椎名林檎")
+                ) {
                   player.sendMessage(s"${YELLOW}おめでとう！椎名林檎が出たよ！$additionalMessage")
                 } else if (count == 1) {
                   player.sendMessage(s"${GOLD}おめでとう！！大当たり！$additionalMessage")
