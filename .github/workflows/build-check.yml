@@ -11,6 +11,9 @@ on:
       - .scalafix.conf
       - .scalafmt.conf
       - project/*
+      - .dockerignore
+      - docker/**
+      - localDependencies/**
       - .github/workflows/**.yml
       - .github/actions/**/**.yml
   pull_request:
@@ -20,6 +23,7 @@ jobs:
     runs-on: ubuntu-24.04
     outputs:
       sbt: ${{ steps.filter.outputs.sbt }}
+      docker: ${{ steps.filter.outputs.docker }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -37,6 +41,11 @@ jobs:
               - project/*
               - .github/workflows/**.yml
               - .github/actions/**/**.yml
+            docker:
+              - .dockerignore
+              - docker/**
+              - localDependencies/**
+              - .github/workflows/docker-build-check.yml
 
   build_check:
     needs: changes
@@ -68,11 +77,19 @@ jobs:
         if: github.ref == 'refs/heads/develop'
         uses: scalacenter/sbt-dependency-submission@d84eef4c09e633bcf5f113bcad7fd5e9af1baee9 # v3.2.3
 
+  docker_build_check:
+    needs: changes
+    if: needs.changes.outputs.docker == 'true'
+    uses: ./.github/workflows/docker-build-check.yml
+    permissions:
+      contents: read
+
   ci-gate:
     name: CI Gate
     needs:
       - changes
       - build_check
+      - docker_build_check
     if: always()
     runs-on: ubuntu-24.04
     steps:
