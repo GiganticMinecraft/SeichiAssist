@@ -43,6 +43,23 @@ class ExternalServicesSpec extends AnyWordSpec {
       assert(error.stderr.contains("TagNotFound"))
       assert(error.getMessage.contains("TagNotFound"))
     }
+
+    "stderrは末尾の行だけを保持する" in {
+      val command = Seq(
+        "sh",
+        "-c",
+        "i=1; while [ $i -le 1000 ]; do echo line$i >&2; i=$((i+1)); done; exit 1"
+      )
+
+      val error = intercept[ChunkSearchFailedException] {
+        ExternalServices.runChunkSearch[IO](command).unsafeRunSync()
+      }
+
+      val lines = error.stderr.linesIterator.toList
+      assert(lines.size == 100)
+      assert(lines.head == "line901")
+      assert(lines.last == "line1000")
+    }
   }
 
 }

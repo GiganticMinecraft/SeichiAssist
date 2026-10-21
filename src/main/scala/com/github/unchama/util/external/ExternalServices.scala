@@ -7,9 +7,6 @@ import com.github.unchama.util.bukkit.WorldUtil
 import org.bukkit.World
 import org.slf4j.Logger
 
-import java.nio.charset.StandardCharsets
-import java.nio.file.Files
-
 /**
  * チャンク検索の外部コマンドが非 0 の終了コードで終了したことを表す例外。
  *
@@ -28,9 +25,9 @@ class ChunkSearchFailedException(
 object ExternalServices {
 
   /**
-   * stderr のうち例外メッセージに含める最大文字数。panic のバックトレース等で長くなりうるため末尾のみ残す。
+   * 例外メッセージに含める stderr の最大行数。panic のバックトレース等で長くなりうるため末尾のみ残す。
    */
-  private final val maxStderrLength = 8192
+  private final val maxStderrLines = 100
 
   /**
    * `command` を外部プロセスとして実行し、標準出力を protobuf の [[SearchResult]] として解釈する。
@@ -40,39 +37,44 @@ object ExternalServices {
    * 終了コードを確認しないと失敗が「対象チャンク 0 件」と区別できない。
    */
   def runChunkSearch[F[_]: Sync](command: Seq[String]): F[SearchResult] = Sync[F].delay {
-    // stdout と stderr を両方パイプで受けると、片方のバッファが詰まった時点でデッドロックしうるため
-    // stderr は一時ファイルに逃がし、プロセス終了後に読む
-    val stderrFile = Files.createTempFile("chunk-search-stderr", ".log")
-    try {
-      val process = new ProcessBuilder(command: _*).redirectError(stderrFile.toFile).start()
-      // 標準入力は使わないので閉じておく
-      process.getOutputStream.close()
+    import scala.sys.process.{BasicIO, Process, ProcessIO}
 
-      val stdout =
-        try {
-          val stdoutStream = process.getInputStream
-          try stdoutStream.readAllBytes()
-          finally stdoutStream.close()
-        } catch {
-          case e: Throwable =>
-            process.destroyForcibly()
-            throw e
-        }
+    val stdout = new java.util.concurrent.atomic.AtomicReference(Array.emptyByteArray)
+    // stdout と stderr はそれぞれ別スレッドで読み切るので、パイプが詰まってデッドロックすることはない。
+    // stderr はメモリを使いすぎないよう末尾の maxStderrLines 行だけを保持する
+    val stderrTail = new java.util.ArrayDeque[String]()
 
-      val exitCode = process.waitFor()
-      if (exitCode != 0) {
-        val stderr = new String(Files.readAllBytes(stderrFile), StandardCharsets.UTF_8)
-        throw new ChunkSearchFailedException(
-          command,
-          exitCode,
-          stderr.takeRight(maxStderrLength)
-        )
+    val processIO = new ProcessIO(
+      _.close(),
+      out =>
+        try stdout.set(out.readAllBytes())
+        finally out.close(),
+      err =>
+        BasicIO.processFully { line =>
+          stderrTail.synchronized {
+            if (stderrTail.size >= maxStderrLines) stderrTail.removeFirst()
+            stderrTail.addLast(line)
+          }
+        }(err)
+    )
+
+    val process = Process(command).run(processIO)
+    // exitValue() はプロセスの終了と stdout/stderr を読むスレッドの終了を待つ。
+    // 待機中に割り込まれた場合等に外部プロセスが残らないよう、例外時は破棄する
+    val exitCode =
+      try process.exitValue()
+      catch {
+        case e: Throwable =>
+          process.destroy()
+          throw e
       }
 
-      SearchResult.parseFrom(stdout)
-    } finally {
-      Files.deleteIfExists(stderrFile)
+    if (exitCode != 0) {
+      val stderr = stderrTail.synchronized(String.join("\n", stderrTail))
+      throw new ChunkSearchFailedException(command, exitCode, stderr)
     }
+
+    SearchResult.parseFrom(stdout.get())
   }
 
   def getChunkCoordinates[F[_]: Sync](
@@ -82,12 +84,15 @@ object ExternalServices {
 
     // 従来の Runtime#exec(String) と同様に、設定値のコマンド文字列は空白で分割する。
     // ワールドのパスは空白を含みうるので分割せず 1 引数として渡す
-    val command =
-      chunkSearchCommand.trim.split("\\s+").toSeq :+ WorldUtil.getAbsoluteWorldFolder(world)
+    val buildCommand: F[Seq[String]] = Sync[F].delay {
+      val commandBase = chunkSearchCommand.trim
+      require(commandBase.nonEmpty, "chunk-search-command-base が設定されていません")
+      commandBase.split("\\s+").toSeq :+ WorldUtil.getAbsoluteWorldFolder(world)
+    }
 
     // 普通、この検索にはかなりの時間がかかるので要した時間をログに表示する
     MillisecondTimer
-      .timeF(runChunkSearch[F](command).map { searchResult =>
+      .timeF((buildCommand >>= runChunkSearch[F]).map { searchResult =>
         searchResult.result.flatMap {
           // https://bukkit.org/threads/combining-world-and-world_nether.60319/
           // Bukkitの挙動でワールドとフォルダが一対一に対応するため、dimIdは無視して良い
@@ -103,6 +108,10 @@ object ExternalServices {
             logger.error(
               s"${world.getName}内のチャンク検索(chunk-search)が終了コード${e.exitCode}で失敗したため、ワールドのアイテム変換を中断します。"
             )
+          }
+        case e =>
+          Sync[F].delay {
+            logger.error(s"${world.getName}内のチャンク検索(chunk-search)に失敗したため、ワールドのアイテム変換を中断します。", e)
           }
       }
       .flatTap { seq =>
