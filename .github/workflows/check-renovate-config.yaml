@@ -18,7 +18,7 @@ jobs:
       - name: Install npm
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
-          node-version: "24"
+          node-version: "26"
 
       - name: Check Renovate configuration
         run: npx --yes --package renovate -- renovate-config-validator --strict
