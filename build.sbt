@@ -63,7 +63,7 @@ val dependenciesToEmbed = Seq(
   "org.scala-lang.modules" %% "scala-collection-contrib" % "0.4.0",
 
   // DB
-  "org.mariadb.jdbc" % "mariadb-java-client" % "3.5.10",
+  "org.mariadb.jdbc" % "mariadb-java-client" % "3.5.11",
   "org.flywaydb" % "flyway-core" % "13.10.3",
   "org.flywaydb" % "flyway-mysql" % "13.10.3",
   "org.scalikejdbc" %% "scalikejdbc" % "4.3.5",
