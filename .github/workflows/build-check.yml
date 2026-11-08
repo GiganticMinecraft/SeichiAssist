@@ -17,7 +17,7 @@ on:
 
 jobs:
   changes:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       sbt: ${{ steps.filter.outputs.sbt }}
     steps:
@@ -41,7 +41,7 @@ jobs:
   build_check:
     needs: changes
     if: needs.changes.outputs.sbt == 'true'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     container: ghcr.io/giganticminecraft/seichiassist-builder-v2:776da10
     steps:
       - name: Checkout repository
@@ -74,7 +74,7 @@ jobs:
       - changes
       - build_check
     if: always()
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Check required CI jobs
         run: |
