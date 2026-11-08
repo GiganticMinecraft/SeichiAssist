@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM mirror.gcr.io/library/mariadb:12.3.3
+FROM mirror.gcr.io/library/mariadb:13.0.2
 
 WORKDIR /docker-entrypoint-initdb.d
 
