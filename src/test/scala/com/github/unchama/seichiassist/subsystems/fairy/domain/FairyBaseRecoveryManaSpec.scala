@@ -31,7 +31,7 @@ class FairyBaseRecoveryManaSpec extends AnyWordSpec with Matchers {
     "randomRoll が大きいほど amount が大きくなる（単調性）" in {
       val low = FairyBaseRecoveryMana.manaAmountAt(3000.0, 0.1)
       val high = FairyBaseRecoveryMana.manaAmountAt(3000.0, 0.9)
-      high.amount should be >= low.amount
+      assert(high.amount >= low.amount)
     }
 
     "負の levelCappedManaAmount は例外を投げる" in {

@@ -34,7 +34,7 @@ class PlayerItemMigrationController[F[_]: ConcurrentEffect, G[_]: SyncEffect](
     }
   }
 
-  private def cancelIfLockActive(event: PlayerEvent with Cancellable): Unit =
+  private def cancelIfLockActive(event: PlayerEvent & Cancellable): Unit =
     cancelIfLockActive(event.getPlayer, event)
 
   @EventHandler(priority = EventPriority.LOWEST)
