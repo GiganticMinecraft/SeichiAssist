@@ -184,6 +184,8 @@ lazy val root = (project in file(".")).settings(
   // コンパイルできない。再度有効化する場合は、ルールを別プロジェクトへ切り出して
   // 2.13でクロスビルドする必要がある。
   ScalafixConfig / sources := Nil,
+  // 依存ライブラリの旧版scala3-libraryでは、3.10.1コンパイラがTASTyを解決できない。
+  dependencyOverrides += "org.scala-lang" %% "scala3-library" % scalaVersion.value,
   excludeDependencies := Seq(ExclusionRule(organization = "org.bukkit", name = "bukkit")),
   unmanagedBase := baseDirectory.value / "localDependencies",
   scalacOptions ++= Seq(
