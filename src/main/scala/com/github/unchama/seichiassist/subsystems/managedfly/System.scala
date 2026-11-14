@@ -76,7 +76,7 @@ object System {
             }
 
           override val managedRepositoryControls
-            : Seq[BukkitRepositoryControls[AsyncContext, _]] =
+            : Seq[BukkitRepositoryControls[AsyncContext, ?]] =
             Seq(controls.coerceFinalizationContextTo[AsyncContext])
 
           override val listeners: Seq[Listener] =

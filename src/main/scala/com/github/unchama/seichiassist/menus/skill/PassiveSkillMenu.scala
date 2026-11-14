@@ -38,7 +38,7 @@ object PassiveSkillMenu extends Menu {
     implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player],
     val breakSkillTargetConfigAPI: BreakSkillTargetConfigAPI[IO, Player],
     val breakSuppressionPreferenceAPI: BreakSuppressionPreferenceAPI[IO, Player],
-    val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
+    val ioCanOpenFirstPage: IO `CanOpen` FirstPage.type,
     val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 

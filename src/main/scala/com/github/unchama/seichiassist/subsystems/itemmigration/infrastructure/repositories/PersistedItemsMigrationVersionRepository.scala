@@ -67,6 +67,6 @@ class PersistedItemsMigrationVersionRepository[F[_]](implicit dbSession: DBSessi
         sql"""
         insert into seichiassist.item_migration_on_database(version_string, completed_at)
         values (?, cast(now() as datetime))
-      """.batch(batchParams.toSeq: _*).apply[List]()
+      """.batch(batchParams.toSeq*).apply[List]()
       }
 }

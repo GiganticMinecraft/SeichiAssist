@@ -64,7 +64,7 @@ object SecondPage extends Menu {
   import menuinventory.syntax._
 
   class Environment(
-    implicit val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
+    implicit val ioCanOpenFirstPage: IO `CanOpen` FirstPage.type,
     val sharedInventoryAPI: SharedInventoryAPI[IO, Player],
     val gachaDrawAPI: GachaDrawAPI[IO, Player],
     val gachaPointAPI: GachaPointApi[IO, SyncIO, Player],

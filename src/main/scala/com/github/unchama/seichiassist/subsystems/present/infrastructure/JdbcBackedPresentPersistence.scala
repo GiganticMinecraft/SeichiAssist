@@ -63,7 +63,7 @@ class JdbcBackedPresentPersistence[F[_]: Sync] extends PresentPersistence[F, Ite
             sql"""
                   INSERT INTO present_state VALUES (?, ?, ?)
                   ON DUPLICATE KEY UPDATE present_id=present_id, uuid=uuid
-                 """.batch(initialValues: _*).apply[List]()
+                 """.batch(initialValues*).apply[List]()
           }
 
           // 型推論

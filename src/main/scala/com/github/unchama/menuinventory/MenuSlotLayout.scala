@@ -49,7 +49,7 @@ object MenuSlotLayout {
     indexedSlot
   )
 
-  def apply(mappings: (Int, Slot)*): MenuSlotLayout = MenuSlotLayout(Map(mappings: _*))
+  def apply(mappings: (Int, Slot)*): MenuSlotLayout = MenuSlotLayout(Map(mappings*))
 
   def combinedLayout(layouts: MenuSlotLayout*): MenuSlotLayout =
     layouts.toList.foldLeft(emptyLayout) { case (acc, layout) => acc.merge(layout) }

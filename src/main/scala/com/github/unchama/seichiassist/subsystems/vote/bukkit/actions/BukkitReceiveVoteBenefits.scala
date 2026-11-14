@@ -45,7 +45,7 @@ class BukkitReceiveVoteBenefits[F[_]: OnMinecraftServerThread: Sync, G[_]: SyncE
       _ <- {
         ContextCoercion(votePersistence.increaseEffectPoints(uuid, EffectPoint(10)))
           .replicateA(toBeClaimed.value) >>
-          grantItemStacksEffect[F](grantItems: _*).apply(player)
+          grantItemStacksEffect[F](grantItems*).apply(player)
       }.whenA(toBeClaimed.value != 0)
     } yield ()
   }

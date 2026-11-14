@@ -60,9 +60,9 @@ object ActiveSkillMenu extends Menu {
   class Environment(
     implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player],
     val manaApi: ManaApi[IO, SyncIO, Player],
-    val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type,
-    val ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
-    val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
+    val ioCanOpenActiveSkillMenu: IO `CanOpen` ActiveSkillMenu.type,
+    val ioCanOpenActiveSkillEffectMenu: IO `CanOpen` ActiveSkillEffectMenu.type,
+    val ioCanOpenFirstPage: IO `CanOpen` FirstPage.type,
     val ioOnMainThread: OnMinecraftServerThread[IO],
     val globalNotification: DiscordNotificationAPI[IO],
     val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
@@ -468,7 +468,7 @@ object ActiveSkillMenu extends Menu {
 
   private object ConstantButtons {
     def skillEffectMenuButton(
-      implicit ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type
+      implicit ioCanOpenActiveSkillEffectMenu: IO `CanOpen` ActiveSkillEffectMenu.type
     ): Button = {
       Button(
         new IconItemStackBuilder(Material.BOOKSHELF)

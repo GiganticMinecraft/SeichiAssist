@@ -29,8 +29,8 @@ object TradeSelector extends Menu {
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$LIGHT_PURPLE${BOLD}交換元を選んでください")
 
   class Environment(
-    implicit val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
-    val ioCanOpenGachaTradeMenu: IO CanOpen GachaTradeFromMineStackMenu,
+    implicit val ioCanOpenFirstPage: IO `CanOpen` FirstPage.type,
+    val ioCanOpenGachaTradeMenu: IO `CanOpen` GachaTradeFromMineStackMenu,
     val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player],
     val onMainThread: OnMinecraftServerThread[IO]
   )

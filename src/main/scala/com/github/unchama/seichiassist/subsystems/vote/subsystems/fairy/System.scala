@@ -124,7 +124,7 @@ object System {
 
           }
 
-        override val managedRepositoryControls: Seq[BukkitRepositoryControls[IO, _]] =
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[IO, ?]] =
           Seq(fairyRecoveryRoutineFiberRepositoryControls).map(
             _.coerceFinalizationContextTo[IO]
           )

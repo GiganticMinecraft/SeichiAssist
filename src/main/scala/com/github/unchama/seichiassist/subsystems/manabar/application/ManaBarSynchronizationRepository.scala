@@ -22,7 +22,7 @@ object ManaBarSynchronizationRepository {
     g
   ]: ErrorLogger, Player: HasUuid](
     manaApi: ManaReadApi[F, G, Player]
-  )(createFreshBossBar: G[BossBarWithPlayer[F, Player]]): RepositoryDefinition[G, Player, _] = {
+  )(createFreshBossBar: G[BossBarWithPlayer[F, Player]]): RepositoryDefinition[G, Player, ?] = {
     FiberAdjoinedRepositoryDefinition
       .extending {
         RepositoryDefinition

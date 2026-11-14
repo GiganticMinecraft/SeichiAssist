@@ -27,7 +27,7 @@ import org.bukkit.{GameMode, Material, Sound}
 class PlayerClickListener(
   implicit effectEnvironment: EffectEnvironment,
   manaApi: ManaApi[IO, SyncIO, Player],
-  ioCanOpenStickMenu: IO CanOpen FirstPage.type,
+  ioCanOpenStickMenu: IO `CanOpen` FirstPage.type,
   ioOnMainThread: OnMinecraftServerThread[IO]
 ) extends Listener {
 

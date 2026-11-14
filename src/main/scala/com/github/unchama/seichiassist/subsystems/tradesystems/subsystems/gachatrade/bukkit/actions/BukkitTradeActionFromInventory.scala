@@ -30,7 +30,7 @@ class BukkitTradeActionFromInventory[F[_]: Sync: OnMinecraftServerThread, G[_]](
       tradeResult.nonTradableItemStacks.filterNot(_ == null)
 
     InventoryOperations
-      .grantItemStacksEffect[F](nonTradableItemStacksToReturn: _*)
+      .grantItemStacksEffect[F](nonTradableItemStacksToReturn*)
       .apply(player) >> gachaPointApi
       .addGachaPoint(GachaPoint.gachaPointBy(tradeAmount))
       .apply(player)

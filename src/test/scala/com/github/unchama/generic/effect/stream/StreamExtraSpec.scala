@@ -23,7 +23,7 @@ class StreamExtraSpec
 
       forAll { (vector: Vector[Int]) =>
         val expected = (vector.indices by n).map(vector.apply)
-        val result = StreamExtra.takeEvery(n)(fs2.Stream(vector: _*)).compile.toList
+        val result = StreamExtra.takeEvery(n)(fs2.Stream(vector*)).compile.toList
 
         assertResult(expected)(result)
       }

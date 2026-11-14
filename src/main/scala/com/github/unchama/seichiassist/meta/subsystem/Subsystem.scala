@@ -25,7 +25,7 @@ trait Subsystem[F[_]] {
   /**
    * サブシステムが管理するデータリポジトリ群。
    */
-  val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Nil
+  val managedRepositoryControls: Seq[BukkitRepositoryControls[F, ?]] = Nil
 
   /**
    * データリポジトリ以外のプレーヤーデータの終了処理。

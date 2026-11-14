@@ -50,7 +50,7 @@ class JdbcMineStackObjectPersistence[F[_]: Sync, ItemStack, Player](
              | VALUES (?, ?, ?)
              | ON DUPLICATE KEY UPDATE
              | amount = VALUES(amount)
-             """.stripMargin.batch(batchParams: _*).apply[List]()
+             """.stripMargin.batch(batchParams*).apply[List]()
       }
     }
 
