@@ -47,7 +47,7 @@ object System {
         )
     } yield {
       new Subsystem[F] {
-        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, ?]] = Seq(
           playerScreenNameUpdateRoutineFiberRepositoryControls
         ).map(_.coerceFinalizationContextTo[F])
       }

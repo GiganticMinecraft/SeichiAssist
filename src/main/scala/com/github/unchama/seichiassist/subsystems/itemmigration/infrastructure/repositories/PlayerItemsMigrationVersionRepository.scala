@@ -54,7 +54,7 @@ class PlayerItemsMigrationVersionRepository[F[_]](serverId: String)(implicit F: 
           sql"""
           insert into seichiassist.player_in_server_item_migration(player_uuid, server_id, version_string, completed_at)
           values (?, ?, ?, cast(now() as datetime))
-        """.batch(batchParams.toSeq: _*).apply[List]()
+        """.batch(batchParams.toSeq*).apply[List]()
         }
       }
 }

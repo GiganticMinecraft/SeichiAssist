@@ -82,7 +82,7 @@ object System {
         override val api: IdleTimeAPI[F, Player] = (player: Player) =>
           idleMinuteRepositoryControls.repository(player).currentIdleMinute.to[F]
 
-        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] =
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, ?]] =
           Seq(
             playerLocationRepositoryControls,
             idleMinuteRepositoryControls,

@@ -23,9 +23,9 @@ import org.bukkit.inventory.ItemStack
 object CategorizedMineStackMenu {
 
   class Environment(
-    implicit val ioCanOpenMineStackMainMenu: IO CanOpen MineStackMainMenu.type,
-    val ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu,
-    val ioCanOpenSelectItemColorMenu: IO CanOpen MineStackSelectItemKindMenu,
+    implicit val ioCanOpenMineStackMainMenu: IO `CanOpen` MineStackMainMenu.type,
+    val ioCanOpenCategorizedMenu: IO `CanOpen` CategorizedMineStackMenu,
+    val ioCanOpenSelectItemColorMenu: IO `CanOpen` MineStackSelectItemKindMenu,
     val onMainThread: OnMinecraftServerThread[IO],
     val mineStackAPI: MineStackAPI[IO, Player, ItemStack],
     val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
@@ -55,7 +55,7 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
   )
 
   private def mineStackMainMenuButtonSection(
-    implicit ioCanOpenMineStackMainMenu: IO CanOpen MineStackMainMenu.type
+    implicit ioCanOpenMineStackMainMenu: IO `CanOpen` MineStackMainMenu.type
   ): Seq[(Int, Button)] =
     Seq(
       ChestSlotRef(5, 0) -> CommonButtons.transferButton(
@@ -148,7 +148,7 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
           .++(categorizedItemSection)
           .++(autoMineStackToggleButtonSection)
 
-      MenuSlotLayout(combinedLayout: _*)
+      MenuSlotLayout(combinedLayout*)
     }
   }
 }

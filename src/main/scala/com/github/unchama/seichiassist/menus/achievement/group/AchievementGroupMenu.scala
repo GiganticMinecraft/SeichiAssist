@@ -22,8 +22,8 @@ import org.bukkit.entity.Player
 object AchievementGroupMenu {
 
   class Environment(
-    implicit val ioCanOpenGroupMenu: IO CanOpen AchievementGroupMenu,
-    val ioCanOpenCategoryMenu: IO CanOpen AchievementCategoryMenu,
+    implicit val ioCanOpenGroupMenu: IO `CanOpen` AchievementGroupMenu,
+    val ioCanOpenCategoryMenu: IO `CanOpen` AchievementCategoryMenu,
     val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 

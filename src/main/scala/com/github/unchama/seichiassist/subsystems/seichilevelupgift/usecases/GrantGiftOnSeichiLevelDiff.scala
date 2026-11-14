@@ -26,7 +26,7 @@ object GrantGiftOnSeichiLevelDiff {
       .toList
       .map { level => GiftBundleTable.bundleAt(level) }
 
-    val giftBundle = giftBundles.fold(GiftBundle.empty)(_ combine _)
+    val giftBundle = giftBundles.fold(GiftBundle.empty)(_ `combine` _)
     giftBundle.traverseGifts { (gift, count) =>
       GrantLevelUpGiftAlgebra[F, Player].grant(gift).replicateA(count).run(player) >> {
         gift match {

@@ -26,7 +26,7 @@ object EffectListRepositoryDefinitions {
   /**
    * [[FastDiggingEffectList]] と、それを1秒ごとにトピックへ通知するファイバーの組。
    */
-  type RepositoryValue[F[_], G[_]] = Mutex[F, G, FastDiggingEffectList] FiberAdjoined F
+  type RepositoryValue[F[_], G[_]] = Mutex[F, G, FastDiggingEffectList] `FiberAdjoined` F
 
   def initialization[F[_]: Concurrent, G[_]: Sync: [f[_]] =>> ContextCoercion[f, F]]
     : SinglePhasedRepositoryInitialization[G, RepositoryValue[F, G]] =

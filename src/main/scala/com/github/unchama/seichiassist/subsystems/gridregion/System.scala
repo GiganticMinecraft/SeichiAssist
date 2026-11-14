@@ -161,7 +161,7 @@ object System {
               }
           }
 
-        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, ?]] = Seq(
           rulChangePerClickSettingRepositoryControls,
           regionUnitsRepositoryControls,
           regionCountAllUntilNowRepositoryControls

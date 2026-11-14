@@ -135,9 +135,7 @@ class AnniversaryListener(
     if (new Random().nextDouble() <= strangeSaplingSiinaRate) {
       block.setType(Material.CHEST)
       val chest = block.getState.asInstanceOf[Chest]
-      chest
-        .getBlockInventory
-        .addItem(List.fill(5)(gtToSiinaAPI.getMaxSiinaRingo(playerName)): _*)
+      chest.getBlockInventory.addItem(List.fill(5)(gtToSiinaAPI.getMaxSiinaRingo(playerName))*)
     } else {
       val random = new Random().nextInt(strangeSaplingBlockSet.size)
       block.setType(strangeSaplingBlockSet.toVector(random))

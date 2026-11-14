@@ -18,5 +18,5 @@ object Nullability {
   }
 
   // TODO move this away
-  def ListNotNull[T](elements: T*): Seq[T] = List(elements: _*).filter(_ != null)
+  def ListNotNull[T](elements: T*): Seq[T] = List(elements*).filter(_ != null)
 }

@@ -61,7 +61,7 @@ object AchievementCategoryMenu {
 
   def buttonFor(
     groupRepr: AchievementGroupRepr
-  )(implicit ioCanOpenGroupMenu: IO CanOpen AchievementGroupMenu): Button = {
+  )(implicit ioCanOpenGroupMenu: IO `CanOpen` AchievementGroupMenu): Button = {
     val (group, material) = groupRepr
     val partialBuilder =
       new IconItemStackBuilder(material).title(ColorScheme.navigation(s"実績「${group.name}」"))
@@ -80,8 +80,8 @@ object AchievementCategoryMenu {
   }
 
   class Environment(
-    implicit val ioCanOpenAchievementMainMenu: IO CanOpen AchievementMenu.type,
-    val ioCanOpenAchievementGroupMenu: IO CanOpen AchievementGroupMenu,
+    implicit val ioCanOpenAchievementMainMenu: IO `CanOpen` AchievementMenu.type,
+    val ioCanOpenAchievementGroupMenu: IO `CanOpen` AchievementGroupMenu,
     val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 

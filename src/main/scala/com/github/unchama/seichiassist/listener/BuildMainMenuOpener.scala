@@ -13,7 +13,7 @@ import org.bukkit.inventory.EquipmentSlot
 
 class BuildMainMenuOpener(
   implicit effectEnvironment: EffectEnvironment,
-  ioCanOpenBuildMainMenu: IO CanOpen BuildMainMenu.type
+  ioCanOpenBuildMainMenu: IO `CanOpen` BuildMainMenu.type
 ) extends Listener {
 
   import com.github.unchama.targetedeffect._

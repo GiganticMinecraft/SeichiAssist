@@ -14,7 +14,7 @@ import org.bukkit.{Material, Sound}
 
 class PlayerInventoryListener(
   implicit effectEnvironment: EffectEnvironment,
-  ioCanOpenBuildMainMenu: IO CanOpen BuildMainMenu.type,
+  ioCanOpenBuildMainMenu: IO `CanOpen` BuildMainMenu.type,
   playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
 ) extends Listener {
 

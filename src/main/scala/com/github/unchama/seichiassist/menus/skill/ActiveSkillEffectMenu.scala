@@ -38,9 +38,9 @@ object ActiveSkillEffectMenu extends Menu {
   import com.github.unchama.targetedeffect._
 
   class Environment(
-    implicit val ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
-    val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type,
-    val ioCanOpenTransactionHistoryMenu: IO CanOpen PremiumPointTransactionHistoryMenu,
+    implicit val ioCanOpenActiveSkillEffectMenu: IO `CanOpen` ActiveSkillEffectMenu.type,
+    val ioCanOpenActiveSkillMenu: IO `CanOpen` ActiveSkillMenu.type,
+    val ioCanOpenTransactionHistoryMenu: IO `CanOpen` PremiumPointTransactionHistoryMenu,
     val ioOnMainThread: OnMinecraftServerThread[IO],
     val voteAPI: VoteAPI[IO, Player],
     val donateAPI: DonatePremiumPointAPI[IO],
@@ -229,7 +229,7 @@ object ActiveSkillEffectMenu extends Menu {
     }
 
     def effectPurchaseHistoryMenuButton(
-      implicit ioCanOpenPremiumPointMenu: IO CanOpen PremiumPointTransactionHistoryMenu
+      implicit ioCanOpenPremiumPointMenu: IO `CanOpen` PremiumPointTransactionHistoryMenu
     ): Button =
       Button(
         new IconItemStackBuilder(Material.BOOKSHELF)
@@ -243,7 +243,7 @@ object ActiveSkillEffectMenu extends Menu {
       )
 
     def goBackToSkillMenuButton(
-      implicit ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type
+      implicit ioCanOpenActiveSkillMenu: IO `CanOpen` ActiveSkillMenu.type
     ): Button =
       CommonButtons.transferButton(
         new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),

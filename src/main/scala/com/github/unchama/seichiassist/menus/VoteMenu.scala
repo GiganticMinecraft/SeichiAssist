@@ -48,7 +48,7 @@ object VoteMenu extends Menu {
   class Environment(
     implicit val voteAPI: VoteAPI[IO, Player],
     val fairyAPI: FairyAPI[IO, SyncIO, Player],
-    val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
+    val ioCanOpenFirstPage: IO `CanOpen` FirstPage.type,
     val fairySpeechAPI: FairySpeechAPI[IO, Player],
     val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
@@ -96,7 +96,7 @@ object VoteMenu extends Menu {
       val exceptDynamicButtons = staticButtons ++ computeButtons
       MenuSlotLayout(exceptDynamicButtons).merge(
         if (isFairyUsing)
-          MenuSlotLayout(dynamicButtons: _*)
+          MenuSlotLayout(dynamicButtons*)
         else MenuSlotLayout.emptyLayout
       )
     }

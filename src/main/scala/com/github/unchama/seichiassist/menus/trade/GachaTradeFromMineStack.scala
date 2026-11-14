@@ -42,8 +42,8 @@ object GachaTradeFromMineStackMenu {
     val gachaTradeAPI: GachaTradeAPI[IO, Player, ItemStack],
     val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
     val onMainThread: OnMinecraftServerThread[IO],
-    val ioCanOpenTradeSelector: IO CanOpen TradeSelector.type,
-    val ioCanOpenGachaTradeMenu: IO CanOpen GachaTradeFromMineStackMenu,
+    val ioCanOpenTradeSelector: IO `CanOpen` TradeSelector.type,
+    val ioCanOpenGachaTradeMenu: IO `CanOpen` GachaTradeFromMineStackMenu,
     val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
@@ -114,7 +114,7 @@ case class GachaTradeFromMineStackMenu(
           case (button, index) =>
             index -> button
         }
-    } yield MenuSlotLayout(tradeButtonLayouts: _*).merge(uiOperation)
+    } yield MenuSlotLayout(tradeButtonLayouts*).merge(uiOperation)
 
   }
 

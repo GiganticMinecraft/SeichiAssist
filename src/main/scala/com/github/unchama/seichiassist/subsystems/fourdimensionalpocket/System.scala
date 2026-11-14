@@ -111,7 +111,7 @@ object System {
         )
       new System[F, Player] {
         override val api: FourDimensionalPocketApi[F, Player] = systemApi
-        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, ?]] = Seq(
           pocketInventoryRepositoryHandles.coerceFinalizationContextTo[F]
         )
         override val listeners: Seq[Listener] = Vector(openPocketListener)

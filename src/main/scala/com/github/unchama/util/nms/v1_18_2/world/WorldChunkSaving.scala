@@ -11,7 +11,7 @@ object WorldChunkSaving {
     private val craftBukkitPackage_1_18_R2 = "org.bukkit.craftbukkit.v1_18_R2"
 
     object FileIOThread {
-      private[Reflection] lazy val clazz: Class[_] =
+      private[Reflection] lazy val clazz: Class[?] =
         Class.forName(s"$nmsPackage_1_18_R2.FileIOThread")
 
       // public static FileIOThread method()
@@ -31,7 +31,7 @@ object WorldChunkSaving {
     }
 
     object Entity {
-      private[Reflection] lazy val clazz: Class[_] =
+      private[Reflection] lazy val clazz: Class[?] =
         Class.forName(s"$nmsPackage_1_18_R2.Entity")
 
       // public int field
@@ -56,7 +56,7 @@ object WorldChunkSaving {
     }
 
     object Chunk {
-      private[Reflection] lazy val clazz: Class[_] = Class.forName(s"$nmsPackage_1_18_R2.Chunk")
+      private[Reflection] lazy val clazz: Class[?] = Class.forName(s"$nmsPackage_1_18_R2.Chunk")
 
       // public void method(Entity)
       lazy val untrackEntity: AnyRef => AnyRef => Unit = {
@@ -66,21 +66,21 @@ object WorldChunkSaving {
     }
 
     object World {
-      private[Reflection] lazy val clazz: Class[_] = Class.forName(s"$nmsPackage_1_18_R2.World")
+      private[Reflection] lazy val clazz: Class[?] = Class.forName(s"$nmsPackage_1_18_R2.World")
 
       // public final List<Entity> field
-      lazy val entityList: AnyRef => java.util.List[_ <: AnyRef] = {
+      lazy val entityList: AnyRef => java.util.List[? <: AnyRef] = {
         val field = clazz.getDeclaredField("entityList")
-        receiver => field.get(receiver).asInstanceOf[java.util.List[_ <: AnyRef]]
+        receiver => field.get(receiver).asInstanceOf[java.util.List[? <: AnyRef]]
       }
 
       // public final List<Entity> field
       // originally
       // protected final List<Entity> field
-      lazy val entityRemovalQueue: AnyRef => java.util.List[_ <: AnyRef] = {
+      lazy val entityRemovalQueue: AnyRef => java.util.List[? <: AnyRef] = {
         val field = clazz.getDeclaredField("f")
         field.setAccessible(true)
-        receiver => field.get(receiver).asInstanceOf[java.util.List[_ <: AnyRef]]
+        receiver => field.get(receiver).asInstanceOf[java.util.List[? <: AnyRef]]
       }
 
       // public void method(Entity)
@@ -120,7 +120,7 @@ object WorldChunkSaving {
     }
 
     object CraftWorld {
-      private[Reflection] lazy val clazz: Class[_] =
+      private[Reflection] lazy val clazz: Class[?] =
         Class.forName(s"$craftBukkitPackage_1_18_R2.CraftWorld")
 
       // public final nms.WorldServer (<: nms.World)

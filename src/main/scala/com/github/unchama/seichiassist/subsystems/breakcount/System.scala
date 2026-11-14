@@ -96,7 +96,7 @@ object System {
           override val seichiAmountUpdates: fs2.Stream[F, (Player, SeichiAmountData)] =
             breakCountTopic.subscribe(1).mapFilter(identity)
         }
-        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, ?]] = Seq(
           breakCountRepositoryControls.coerceFinalizationContextTo[F]
         )
       }

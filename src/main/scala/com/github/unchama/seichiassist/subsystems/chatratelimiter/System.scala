@@ -28,7 +28,7 @@ object System {
         override val listeners: Seq[Listener] =
           Seq(new RateLimitCheckListener)
 
-        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] =
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, ?]] =
           Seq(handle.coerceFinalizationContextTo[F])
       }
     }

@@ -36,8 +36,8 @@ object NicknameShopMenu {
 
   class Environment(
     implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player],
-    val ioCanOpenNicknameShopMenu: IO CanOpen NicknameShopMenu,
-    val ioCanOpenNicknameMenu: IO CanOpen NickNameMenu.type
+    val ioCanOpenNicknameShopMenu: IO `CanOpen` NicknameShopMenu,
+    val ioCanOpenNicknameMenu: IO `CanOpen` NickNameMenu.type
   )
 
 }
@@ -104,7 +104,7 @@ case class NicknameShopMenu(val pageIndex: Int = 0) extends Menu {
         ChestSlotRef(3, 8) -> toNicknameMenuButton
       ) ++ nextPageButtonMapping
 
-    MenuSlotLayout(purchaseButtonMapping ++ uiOperationButtonMapping: _*)
+    MenuSlotLayout(purchaseButtonMapping ++ uiOperationButtonMapping*)
   }
 
   private case class NicknameShopMenuButtons(player: Player)(

@@ -102,7 +102,7 @@ class PlayerInventoryListener(
     if (ticketsToGive.nonEmpty) {
       effectEnvironment.unsafeRunAsyncTargetedEffect(player)(
         SequentialEffect(
-          InventoryOperations.grantItemStacksEffect(ticketsToGive: _*),
+          InventoryOperations.grantItemStacksEffect(ticketsToGive*),
           FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1f, 1f),
           MessageEffect(s"${GREEN}交換券の付与が終わりました")
         ),
@@ -127,7 +127,7 @@ class PlayerInventoryListener(
 
     // 返却処理
     effectEnvironment.unsafeRunAsyncTargetedEffect(player)(
-      InventoryOperations.grantItemStacksEffect(itemStacksToReturn: _*),
+      InventoryOperations.grantItemStacksEffect(itemStacksToReturn*),
       "鉱石交換でのアイテム返却を行う"
     )
   }

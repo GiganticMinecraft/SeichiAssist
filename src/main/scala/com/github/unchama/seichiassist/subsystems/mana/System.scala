@@ -77,7 +77,7 @@ object System {
           dragonNightTimeMultiplierRef.set(manaMultiplier)
       }
 
-      override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = List(
+      override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, ?]] = List(
         handles.coerceFinalizationContextTo[F]
       )
     }

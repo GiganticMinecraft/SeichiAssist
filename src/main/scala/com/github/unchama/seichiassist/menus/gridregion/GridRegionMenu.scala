@@ -32,7 +32,7 @@ object GridRegionMenu extends Menu {
     implicit val onMainThread: OnMinecraftServerThread[IO],
     val layoutPreparationContext: LayoutPreparationContext,
     val gridRegionAPI: GridRegionAPI[IO, Player, Location, World],
-    val ioCanOpenGridTemplateMenu: IO CanOpen GridTemplateMenu.type
+    val ioCanOpenGridTemplateMenu: IO `CanOpen` GridTemplateMenu.type
   )
 
   override val frame: MenuFrame =

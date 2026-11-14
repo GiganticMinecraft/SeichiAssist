@@ -51,7 +51,7 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
   var totalexp = 0L
   // 連続・通算ログイン用
   // ロード時に初期化される
-  var lastcheckdate: String = _
+  var lastcheckdate: String = scala.compiletime.uninitialized
   var loginStatus: LoginStatus = LoginStatus(null)
   // 期間限定ログイン用
   var LimitedLoginCount = 0
