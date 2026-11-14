@@ -22,7 +22,7 @@ object FairyManaRecoveryRoutineFiberRepositoryDefinition {
             EffectExtra.runAsyncAndForget[IO, SyncIO, Unit] {
               fairyRoutine
                 .start(player)
-                .start(IO.contextShift(context))
+                .start(using IO.contextShift(context))
                 .flatMap(fiber => promise.complete(fiber))
             }
         } yield promise

@@ -33,7 +33,7 @@ object PlayerScreenNameUpdateRoutineFiberRepositoryDefinitions {
           _ <- EffectExtra.runAsyncAndForget[IO, F, Unit] {
             playerScreenNameUpdateRoutine
               .start(player)
-              .start(IO.contextShift(repeatingTaskContext))
+              .start(using IO.contextShift(repeatingTaskContext))
               .flatMap(fiber => promise.complete(fiber))
           }
         } yield promise

@@ -43,7 +43,7 @@ class MenuHandler(implicit val cs: NonServerThreadContextShift[IO], env: EffectE
       "メニューのクリックを非同期で処理する",
       for {
         currentLayout <- holder.currentLayout.get
-        _ <- currentLayout.effectOn(event)(cs)(whoClicked)
+        _ <- currentLayout.effectOn(event)(using cs)(whoClicked)
       } yield ()
     )
   }
