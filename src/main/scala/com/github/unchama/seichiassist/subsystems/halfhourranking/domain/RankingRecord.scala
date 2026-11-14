@@ -15,6 +15,6 @@ case class RankingRecord[Player](batch: BatchedSeichiExpMap[Player]) {
     batch
       .toUuidCollatedList
       .filter(_._2 != SeichiExpAmount.zero)
-      .sortBy(_._2)(SeichiExpAmount.orderedMonus.toOrdering.reverse)
+      .sortBy(_._2)(using SeichiExpAmount.orderedMonus.toOrdering.reverse)
 
 }

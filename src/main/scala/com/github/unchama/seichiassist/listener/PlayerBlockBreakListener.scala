@@ -268,7 +268,7 @@ class PlayerBlockBreakListener(
             .lockedBlockChunkScope
             .useTracked(blockChunk) { blocks =>
               for {
-                _ <- IO.sleep((chunkIndex * 4).ticks)(IO.timer(cachedThreadPool))
+                _ <- IO.sleep((chunkIndex * 4).ticks)(using IO.timer(cachedThreadPool))
                 _ <- ioOnMainThread.runAction(SyncIO {
                   (lavas ++ waters).foreach(_.setType(Material.AIR))
                 })
@@ -285,7 +285,7 @@ class PlayerBlockBreakListener(
                   )
               } yield ()
             }
-            .start(asyncShift)
+            .start(using asyncShift)
         }
 
         // 壊したブロック数に応じてクールダウンを発生させる

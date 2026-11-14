@@ -8,7 +8,9 @@ import org.scalatest.wordspec.AnyWordSpec
 class OptionTExtraSpec extends AnyWordSpec {
   "failIf" should {
     "produce failing [a] =>> OptionT[Id, a] on true" in {
-      assert(OptionTExtra.failIf[Id](failCondition = true) == OptionT.none(Applicative[Id]))
+      assert(
+        OptionTExtra.failIf[Id](failCondition = true) == OptionT.none(using Applicative[Id])
+      )
     }
 
     "produce failing [a] =>> OptionT[IO, a] on true" in {
@@ -17,7 +19,8 @@ class OptionTExtraSpec extends AnyWordSpec {
 
     "produce succeeding [a] =>> OptionT[Id, a] on false" in {
       assert(
-        OptionTExtra.failIf[Id](failCondition = false) == OptionT.some(())(Applicative[Id])
+        OptionTExtra
+          .failIf[Id](failCondition = false) == OptionT.some(())(using Applicative[Id])
       )
     }
 

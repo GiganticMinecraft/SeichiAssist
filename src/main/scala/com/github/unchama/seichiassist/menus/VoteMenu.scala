@@ -113,7 +113,7 @@ object VoteMenu extends Menu {
     private val uuid = player.getUniqueId
 
     private implicit val ioCE: ConcurrentEffect[IO] =
-      IO.ioConcurrentEffect(PluginExecutionContexts.asyncShift)
+      IO.ioConcurrentEffect(using PluginExecutionContexts.asyncShift)
 
     val receiveVoteBenefitsButton: IO[Button] = RecomputedButton {
       val uuid = player.getUniqueId
