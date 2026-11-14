@@ -45,7 +45,7 @@ class JdbcBreakSkillTargetConfigPersistence[F[_]: Sync]
            | VALUES (?, ?, ?)
            | ON DUPLICATE KEY UPDATE
            | do_break = VALUE(do_break)
-                   """.stripMargin.batch(batchParams: _*).apply[List]()
+                   """.stripMargin.batch(batchParams*).apply[List]()
     }
   }
 

@@ -115,7 +115,7 @@ object System {
             buildCountTopic.subscribe(1)
         }
 
-        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] =
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, ?]] =
           List(rateLimiterRepositoryControls, buildAmountDataRepositoryControls).map(
             _.coerceFinalizationContextTo[F]
           )

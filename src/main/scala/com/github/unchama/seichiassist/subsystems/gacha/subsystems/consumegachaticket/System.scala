@@ -60,7 +60,7 @@ object System {
               )
 
           }
-        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] =
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, ?]] =
           Seq(consumeGachaTicketSettingRepositoryControls).map(_.coerceFinalizationContextTo[F])
 
       }

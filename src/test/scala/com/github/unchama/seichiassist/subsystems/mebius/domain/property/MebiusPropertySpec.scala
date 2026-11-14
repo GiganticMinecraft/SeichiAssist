@@ -13,7 +13,7 @@ class MebiusPropertySpec extends AnyWordSpec {
   "Initial mebius property" should {
     "be valid" in {
       // exception thrown if invalid
-      MebiusProperty.initialProperty(NormalMebius, testPlayerName, testPlayerUuid) equals
+      MebiusProperty.initialProperty(NormalMebius, testPlayerName, testPlayerUuid) `equals`
         MebiusProperty.initialProperty(NormalMebius, testPlayerName, testPlayerUuid)
     }
 

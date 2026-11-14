@@ -4,7 +4,7 @@ import java.io._
 
 // region 全プロジェクト共通のメタデータ
 
-ThisBuild / scalaVersion := "3.3.9"
+ThisBuild / scalaVersion := "3.4.3"
 // ThisBuild / version はGitHub Actionsによって取得/自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
 ThisBuild / version := "106"
@@ -184,6 +184,8 @@ lazy val root = (project in file(".")).settings(
   // コンパイルできない。再度有効化する場合は、ルールを別プロジェクトへ切り出して
   // 2.13でクロスビルドする必要がある。
   ScalafixConfig / sources := Nil,
+  // 依存ライブラリの旧版scala3-libraryでは、コンパイラがTASTyを解決できない。
+  dependencyOverrides += "org.scala-lang" %% "scala3-library" % scalaVersion.value,
   excludeDependencies := Seq(ExclusionRule(organization = "org.bukkit", name = "bukkit")),
   unmanagedBase := baseDirectory.value / "localDependencies",
   scalacOptions ++= Seq(

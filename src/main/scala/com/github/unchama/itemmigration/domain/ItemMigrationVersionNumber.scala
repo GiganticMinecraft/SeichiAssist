@@ -24,7 +24,7 @@ object ItemMigrationVersionNumber {
     versionHead: ItemMigrationVersionComponent,
     versionRest: ItemMigrationVersionComponent*
   ): ItemMigrationVersionNumber = {
-    ItemMigrationVersionNumber(NonEmptyList.of(versionHead, versionRest: _*))
+    ItemMigrationVersionNumber(NonEmptyList.of(versionHead, versionRest*))
   }
 
   def fromString(string: String): Option[ItemMigrationVersionNumber] =

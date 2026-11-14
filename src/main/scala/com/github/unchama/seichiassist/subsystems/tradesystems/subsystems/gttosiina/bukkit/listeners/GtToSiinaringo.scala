@@ -63,9 +63,7 @@ class GtToSiinaringo[F[_]: ConcurrentEffect](
       .flatMap(result => Seq.fill(result.amount)(result.itemStack))
 
     InventoryOperations
-      .grantItemStacksEffect[IO](
-        nonTradableItemStacksToReturn ++ tradableItemStacksToReturn: _*
-      )
+      .grantItemStacksEffect[IO](nonTradableItemStacksToReturn ++ tradableItemStacksToReturn*)
       .apply(player)
       .unsafeRunAsyncAndForget()
 

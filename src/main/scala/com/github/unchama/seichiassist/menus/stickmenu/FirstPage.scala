@@ -91,17 +91,17 @@ object FirstPage extends Menu {
     val rankingApi: RankingProvider[IO, SeichiAmountData],
     val gachaPointApi: GachaPointApi[IO, SyncIO, Player],
     val ioJavaTime: JavaTime[IO],
-    val ioCanOpenSecondPage: IO CanOpen SecondPage.type,
-    val ioCanOpenMineStackMenu: IO CanOpen MineStackMainMenu.type,
-    val ioCanOpenRegionMenu: IO CanOpen RegionMenu.type,
-    val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type,
-    val ioCanOpenServerSwitchMenu: IO CanOpen ServerSwitchMenu.type,
-    val ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type,
-    val ioCanOpenHomeMenu: IO CanOpen HomeMenu,
-    val ioCanOpenPassiveSkillMenu: IO CanOpen PassiveSkillMenu.type,
-    val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type,
-    val ioCanOpenVoteMenu: IO CanOpen VoteMenu.type,
-    val ioCanOpenGachaTradeMenu: IO CanOpen TradeSelector.type,
+    val ioCanOpenSecondPage: IO `CanOpen` SecondPage.type,
+    val ioCanOpenMineStackMenu: IO `CanOpen` MineStackMainMenu.type,
+    val ioCanOpenRegionMenu: IO `CanOpen` RegionMenu.type,
+    val ioCanOpenActiveSkillMenu: IO `CanOpen` ActiveSkillMenu.type,
+    val ioCanOpenServerSwitchMenu: IO `CanOpen` ServerSwitchMenu.type,
+    val ioCanOpenAchievementMenu: IO `CanOpen` AchievementMenu.type,
+    val ioCanOpenHomeMenu: IO `CanOpen` HomeMenu,
+    val ioCanOpenPassiveSkillMenu: IO `CanOpen` PassiveSkillMenu.type,
+    val ioCanOpenRankingRootMenu: IO `CanOpen` RankingRootMenu.type,
+    val ioCanOpenVoteMenu: IO `CanOpen` VoteMenu.type,
+    val ioCanOpenGachaTradeMenu: IO `CanOpen` TradeSelector.type,
     val enderChestAccessApi: AnywhereEnderChestAPI[IO],
     val gachaTicketAPI: GachaTicketAPI[IO],
     val voteAPI: VoteAPI[IO, Player],
@@ -464,7 +464,7 @@ object FirstPage extends Menu {
               val itemStacksToGive = Seq.fill(numberOfItemsToGive)(itemToGive)
 
               SequentialEffect(
-                util.InventoryOperations.grantItemStacksEffect(itemStacksToGive: _*),
+                util.InventoryOperations.grantItemStacksEffect(itemStacksToGive*),
                 UnfocusedEffect {
                   playerData.unclaimedApologyItems -= numberOfItemsToGive
                 },
@@ -570,7 +570,7 @@ object FirstPage extends Menu {
 
   private object ConstantButtons {
     def teleportServerButton(
-      implicit ioCanOpenServerSwitchMenu: IO CanOpen ServerSwitchMenu.type
+      implicit ioCanOpenServerSwitchMenu: IO `CanOpen` ServerSwitchMenu.type
     ): Button = {
       val buttonLore = List(
         s"${GRAY}・各サバイバルサーバー",
@@ -614,7 +614,7 @@ object FirstPage extends Menu {
     }
 
     def achievementSystemButton(
-      implicit ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type
+      implicit ioCanOpenAchievementMenu: IO `CanOpen` AchievementMenu.type
     ): Button = {
       val buttonLore = List(
         s"${GRAY}様々な実績に挑んで、",
@@ -634,7 +634,7 @@ object FirstPage extends Menu {
       )
     }
 
-    def secondPageButton(implicit ioCanOpenSecondPage: IO CanOpen SecondPage.type): Button =
+    def secondPageButton(implicit ioCanOpenSecondPage: IO `CanOpen` SecondPage.type): Button =
       CommonButtons.transferButton(
         new SkullItemStackBuilder(SkullOwners.MHF_ArrowRight),
         "2ページ目へ",
@@ -642,7 +642,7 @@ object FirstPage extends Menu {
       )
 
     def gachaPrizeExchangeButton(
-      implicit ioCanOpenGachaTradeSelectorMenu: IO CanOpen TradeSelector.type
+      implicit ioCanOpenGachaTradeSelectorMenu: IO `CanOpen` TradeSelector.type
     ): Button = {
       val iconItemStack =
         new IconItemStackBuilder(Material.NOTE_BLOCK)
@@ -670,7 +670,7 @@ object FirstPage extends Menu {
       )
     }
 
-    def homePointMenuButton(implicit ioCanOpenHomeMenu: IO CanOpen HomeMenu): Button = {
+    def homePointMenuButton(implicit ioCanOpenHomeMenu: IO `CanOpen` HomeMenu): Button = {
       val iconItemStack =
         new IconItemStackBuilder(Material.WHITE_BED)
           .title(s"$YELLOW$UNDERLINE${BOLD}ホームメニューを開く")
@@ -711,7 +711,7 @@ object FirstPage extends Menu {
     }
 
     def passiveSkillBookButton(
-      implicit ioCanOpenPassiveSkillMenu: IO CanOpen PassiveSkillMenu.type
+      implicit ioCanOpenPassiveSkillMenu: IO `CanOpen` PassiveSkillMenu.type
     ): Button = {
       val iconItemStack =
         new IconItemStackBuilder(Material.ENCHANTED_BOOK)
@@ -764,7 +764,7 @@ object FirstPage extends Menu {
       )
     }
 
-    def votePointMenuButton(implicit ioCanOpenVoteMenu: IO CanOpen VoteMenu.type): Button = {
+    def votePointMenuButton(implicit ioCanOpenVoteMenu: IO `CanOpen` VoteMenu.type): Button = {
       val iconItemStack =
         new IconItemStackBuilder(Material.DIAMOND)
           .enchanted()

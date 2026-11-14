@@ -43,7 +43,7 @@ class IconComponent(val material: Material) {
       meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
     }
 
-    meta.addItemFlags(itemFlagSet.toArray: _*)
+    meta.addItemFlags(itemFlagSet.toArray*)
 
     meta
   }

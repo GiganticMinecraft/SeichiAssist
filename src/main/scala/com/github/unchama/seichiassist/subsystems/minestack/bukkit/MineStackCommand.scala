@@ -25,8 +25,8 @@ import org.bukkit.inventory.ItemStack
 
 object MineStackCommand {
   def executor(
-    implicit ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu,
-    ioCanOpenMinestackMainMenu: IO CanOpen MineStackMainMenu.type,
+    implicit ioCanOpenCategorizedMenu: IO `CanOpen` CategorizedMineStackMenu,
+    ioCanOpenMinestackMainMenu: IO `CanOpen` MineStackMainMenu.type,
     mineStackAPI: MineStackAPI[IO, Player, ItemStack]
   ): TabExecutor =
     BranchedExecutor(
@@ -56,8 +56,8 @@ object MineStackCommand {
       )
 
     def openCategorizedMineStackMenu(
-      implicit ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu,
-      ioCanOpenMinestackMainMenu: IO CanOpen MineStackMainMenu.type
+      implicit ioCanOpenCategorizedMenu: IO `CanOpen` CategorizedMineStackMenu,
+      ioCanOpenMinestackMainMenu: IO `CanOpen` MineStackMainMenu.type
     ): ContextualExecutor =
       playerCommandBuilder
         .thenParse(

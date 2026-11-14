@@ -22,7 +22,7 @@ object SignallingRepositoryDefinition {
     g
   ]: ErrorLogger, Player: HasUuid, T](publishSink: Pipe[F, (Player, T), Unit])(
     definition: RepositoryDefinition.Phased[G, Player, T]
-  ): Phased.TwoPhased[G, Player, Ref[G, T] FiberAdjoined F] = {
+  ): Phased.TwoPhased[G, Player, Ref[G, T] `FiberAdjoined` F] = {
     FiberAdjoinedRepositoryDefinition
       .extending(definition.toTwoPhased)
       .flatXmapWithPlayer { player =>

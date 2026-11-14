@@ -61,7 +61,7 @@ class SeichiAssistPersistedItems[F[_]](implicit dBSession: DBSession, F: Sync[F]
       update seichiassist.playerdata
         set shareinv = ?, inventory = ?
         where uuid = ?
-    """.batch(batchParam: _*).apply[List]()
+    """.batch(batchParam*).apply[List]()
   }
 
 }

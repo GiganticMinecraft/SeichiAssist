@@ -51,7 +51,7 @@ object BukkitNotifyLevelUp {
 
               SendMessageEffect
                 .sendMessageToEveryoneIgnoringPreferenceIO(s"$GOLD$BOLD$notificationMessage")(
-                  forString[IO]
+                  using forString[IO]
                 )
                 .unsafeRunAsyncAndForget()
               DiscordNotificationAPI[F]

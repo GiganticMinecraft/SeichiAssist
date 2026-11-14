@@ -27,10 +27,10 @@ import org.bukkit.{Material, Sound}
 object HomeMenu {
 
   class Environment(
-    implicit val ioCanOpenConfirmationMenu: IO CanOpen HomeChangeConfirmationMenu,
-    val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
-    val ioCanOpenHome: IO CanOpen HomeMenu,
-    val ioCanOpenHomeRemoveConfirmationMenu: IO CanOpen HomeRemoveConfirmationMenu,
+    implicit val ioCanOpenConfirmationMenu: IO `CanOpen` HomeChangeConfirmationMenu,
+    val ioCanOpenFirstPage: IO `CanOpen` FirstPage.type,
+    val ioCanOpenHome: IO `CanOpen` HomeMenu,
+    val ioCanOpenHomeRemoveConfirmationMenu: IO `CanOpen` HomeRemoveConfirmationMenu,
     val homeReadAPI: HomeReadAPI[IO],
     val asyncShift: NonServerThreadContextShift[IO],
     val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
@@ -119,7 +119,7 @@ case class HomeMenu(pageIndex: Int = 0) extends Menu {
     for {
       dynamicPart <- dynamicPartComputation
       paginationPart = paginationPartMap
-    } yield MenuSlotLayout(homePointPart.flatten ++ dynamicPart.toMap ++ paginationPart: _*)
+    } yield MenuSlotLayout(homePointPart.flatten ++ dynamicPart.toMap ++ paginationPart*)
   }
 
   private object ConstantButtons {
@@ -313,7 +313,7 @@ case class HomeChangeConfirmationMenu(changeHomeNumber: Int, homeName: String = 
 
 object ConfirmationMenuEnvironment {
 
-  class Environment(implicit val ioCanOpenHomeMenu: IO CanOpen HomeMenu)
+  class Environment(implicit val ioCanOpenHomeMenu: IO `CanOpen` HomeMenu)
 
 }
 

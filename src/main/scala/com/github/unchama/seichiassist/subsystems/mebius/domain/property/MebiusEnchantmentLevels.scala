@@ -69,7 +69,7 @@ class MebiusEnchantmentLevels private (val mapping: Map[MebiusEnchantment, Int])
 object MebiusEnchantmentLevels {
 
   def apply(levelMapping: (MebiusEnchantment, Int)*) = new MebiusEnchantmentLevels(
-    Map(levelMapping: _*)
+    Map(levelMapping*)
   )
 
   def fromUnsafeCounts(counter: MebiusEnchantment => Int): MebiusEnchantmentLevels = {

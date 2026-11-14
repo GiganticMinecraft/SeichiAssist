@@ -20,7 +20,7 @@ import org.bukkit.event.Listener
 import java.util.UUID
 
 trait System[F[_]] extends Subsystem[F] {
-  val api: HomeReadAPI[F] with HomeWriteAPI[F]
+  val api: HomeReadAPI[F] & HomeWriteAPI[F]
 }
 
 object System {

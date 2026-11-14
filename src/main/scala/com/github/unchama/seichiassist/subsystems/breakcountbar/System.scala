@@ -81,7 +81,7 @@ object System {
             : KeyedDataRepository[Player, Ref[G, BreakCountBarVisibility]] =
             visibilityRepositoryHandles.repository
         }
-        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] =
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, ?]] =
           Seq(visibilityRepositoryHandles, expBarSynchronizationRepositoryHandles).map(
             _.coerceFinalizationContextTo[F]
           )

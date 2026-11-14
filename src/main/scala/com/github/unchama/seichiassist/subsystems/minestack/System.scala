@@ -148,7 +148,7 @@ object System {
         override val listeners: Seq[Listener] =
           Seq(new PlayerPickupItemListener[F], new EntityDropItemListener[F])
 
-        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, ?]] = Seq(
           mineStackObjectRepositoryControls,
           mineStackUsageHistoryRepositoryControls,
           autoCollectPreferenceRepositoryControls

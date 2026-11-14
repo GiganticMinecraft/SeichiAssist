@@ -52,10 +52,10 @@ object AsymmetricTryableDeferred {
    * limitations under the License.
    */
 
-  private[this] class LinkedMap[K, +V](
+  private class LinkedMap[K, +V](
     val entries: Map[K, (V, Long)],
-    private[this] val insertionOrder: LongMap[K],
-    private[this] val nextId: Long
+    private val insertionOrder: LongMap[K],
+    private val nextId: Long
   ) {
 
     /**
@@ -95,7 +95,7 @@ object AsymmetricTryableDeferred {
       keys.zip(values).mkString("LinkedMap(", ", ", ")")
   }
 
-  private[this] object LinkedMap {
+  private object LinkedMap {
     def empty[K, V]: LinkedMap[K, V] =
       emptyRef.asInstanceOf[LinkedMap[K, V]]
 
@@ -103,9 +103,9 @@ object AsymmetricTryableDeferred {
       new LinkedMap[Nothing, Nothing](Map.empty, LongMap.empty, 0)
   }
 
-  final private[this] class Id
+  final private class Id
 
-  sealed abstract private[this] class State[A]
+  sealed abstract private class State[A]
 
   private object State {
 
@@ -150,7 +150,7 @@ object AsymmetricTryableDeferred {
         }
       }
 
-    private[this] def unsafeRegister(cb: Either[Throwable, A] => Unit): Id = {
+    private def unsafeRegister(cb: Either[Throwable, A] => Unit): Id = {
       val id = new Id
 
       @tailrec
@@ -201,7 +201,7 @@ object AsymmetricTryableDeferred {
       acc
     }
 
-    private[this] val mapUnit = (_: Any) => ()
+    private val mapUnit = (_: Any) => ()
   }
 
 }

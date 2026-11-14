@@ -212,7 +212,7 @@ object System {
               .map(pair => ReadOnlyRef.fromRef(pair._1.mapK(ContextCoercion.asFunctionK)))
         }
 
-      override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
+      override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, ?]] = Seq(
         effectListRepositoryHandles,
         suppressionSettingsRepositoryHandles,
         statsSettingsRepositoryHandles

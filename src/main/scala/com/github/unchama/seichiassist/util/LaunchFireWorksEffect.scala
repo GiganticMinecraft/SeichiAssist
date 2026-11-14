@@ -39,10 +39,10 @@ object LaunchFireWorksEffect {
     effect.`with`(types(rand.nextInt(types.size)))
 
     // 基本の色を単色～5色以内でランダムに決める
-    effect.withColor(LaunchFireWorksEffect.getRandomColors(1 + rand.nextInt(5)): _*)
+    effect.withColor(LaunchFireWorksEffect.getRandomColors(1 + rand.nextInt(5))*)
 
     // 余韻の色を単色～3色以内でランダムに決める
-    effect.withFade(LaunchFireWorksEffect.getRandomColors(1 + rand.nextInt(3)): _*)
+    effect.withFade(LaunchFireWorksEffect.getRandomColors(1 + rand.nextInt(3))*)
 
     // 爆発後に点滅するかをランダムに決める
     effect.flicker(rand.nextBoolean())
