@@ -52,7 +52,7 @@ class GachaTradeListener[F[_]: ConcurrentEffect, G[_]](
       tradeResult <- tradeAction.execute(
         player,
         inventory.getContents().filterNot(_ == null).toList
-      )(tradeRule)
+      )(using tradeRule)
       (big, regular) = tradeResult.tradedSuccessResult.partition {
         case TradeSuccessResult(_, _, (rarity, _)) => rarity == BigOrRegular.Big
       }

@@ -87,7 +87,7 @@ object System {
               Kleisli { player =>
                 gachaListProvider.readGachaList.flatMap { gachaList =>
                   inventoryTradeAction.execute(player, contents)(
-                    gachaTradeRule.ruleFor(player.getName(), gachaList)
+                    using gachaTradeRule.ruleFor(player.getName(), gachaList)
                   )
                 }
               }
