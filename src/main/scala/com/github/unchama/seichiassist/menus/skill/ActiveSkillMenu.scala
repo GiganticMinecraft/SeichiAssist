@@ -148,7 +148,8 @@ object ActiveSkillMenu extends Menu {
       } yield {
         val selectionState = ButtonComputations.selectionStateOf(skill)(state)
         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
-        implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+        implicit val concurrentEffect: ConcurrentEffect[IO] =
+          IO.ioConcurrentEffect(using asyncShift)
         ButtonComputations.seichiSkillButton(selectionState, skill)
       }
     }

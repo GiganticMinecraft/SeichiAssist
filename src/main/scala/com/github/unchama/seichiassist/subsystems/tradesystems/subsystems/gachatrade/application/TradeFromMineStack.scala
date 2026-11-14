@@ -48,7 +48,7 @@ class TradeFromMineStack[F[_]: Sync, ItemStack, Player: HasName, TransactionInfo
           Sync[F].pure(Left(TradeError.NotTradableItem))
         } else {
           val tradeContents = List.fill(actualAmount)(signedItemStack)
-          tradeAction.execute(player, tradeContents)(tradeRule).map(Right(_))
+          tradeAction.execute(player, tradeContents)(using tradeRule).map(Right(_))
         }
       }
     } yield result

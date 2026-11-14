@@ -32,7 +32,7 @@ object MebiusSpeechRoutineFiberRepositoryDefinitions {
           _ <- EffectExtra.runAsyncAndForget[IO, G, Unit] {
             PeriodicMebiusSpeechRoutine
               .start(player)
-              .start(IO.contextShift(repeatingTaskContext))
+              .start(using IO.contextShift(repeatingTaskContext))
               .flatMap(fiber => promise.complete(fiber))
           }
         } yield promise
