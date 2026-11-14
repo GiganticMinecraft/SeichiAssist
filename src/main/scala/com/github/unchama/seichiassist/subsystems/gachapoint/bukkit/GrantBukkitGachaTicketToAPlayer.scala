@@ -24,7 +24,7 @@ case class GrantBukkitGachaTicketToAPlayer[F[_]: LiftIO](player: Player)(
         val itemStacksToGive = Seq.fill(count)(itemToGive)
 
         SequentialEffect(
-          InventoryOperations.grantItemStacksEffect(itemStacksToGive: _*),
+          InventoryOperations.grantItemStacksEffect(itemStacksToGive*),
           MessageEffect(s"${GOLD}ガチャ券${count}枚${WHITE}プレゼントフォーユー"),
           FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
         )

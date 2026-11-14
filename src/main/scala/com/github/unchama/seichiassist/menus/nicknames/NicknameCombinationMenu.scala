@@ -35,8 +35,8 @@ object NicknameCombinationMenu {
 
   class Environment(
     implicit val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player],
-    val ioCanOpenNicknameCombinationMenu: IO CanOpen NicknameCombinationMenu,
-    val ioCanOpenNicknameMenu: IO CanOpen NickNameMenu.type
+    val ioCanOpenNicknameCombinationMenu: IO `CanOpen` NicknameCombinationMenu,
+    val ioCanOpenNicknameMenu: IO `CanOpen` NickNameMenu.type
   )
 
   sealed trait NicknamePart {
@@ -143,7 +143,7 @@ case class NicknameCombinationMenu(pageIndex: Int = 0, nicknamePart: NicknamePar
       ChestSlotRef(3, 4) -> resetSelectionButton
     ) ++ nextPageButtonMapping
 
-    MenuSlotLayout(archivementButtonMapping ++ uiOperationButtonMapping: _*)
+    MenuSlotLayout(archivementButtonMapping ++ uiOperationButtonMapping*)
   }
 
   private case class NickNameCombinationMenuButtons(player: Player, nicknamePart: NicknamePart)(
@@ -156,9 +156,9 @@ case class NicknameCombinationMenu(pageIndex: Int = 0, nicknamePart: NicknamePar
 
     def partButton(archivementId: Int): Option[Button] = {
       val nickname = (nicknamePart match {
-        case NicknamePart.Head   => Nicknames.getHeadPartFor _
-        case NicknamePart.Middle => Nicknames.getMiddlePartFor _
-        case NicknamePart.Tail   => Nicknames.getTailPartFor _
+        case NicknamePart.Head   => Nicknames.getHeadPartFor
+        case NicknamePart.Middle => Nicknames.getMiddlePartFor
+        case NicknamePart.Tail   => Nicknames.getTailPartFor
       })(archivementId)
 
       val icon = nicknamePart match {

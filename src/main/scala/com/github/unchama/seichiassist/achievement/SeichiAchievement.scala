@@ -335,14 +335,14 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
 
   val values: IndexedSeq[SeichiAchievement] = findValues
 
-  val autoUnlockedAchievements: IndexedSeq[SeichiAchievement with AutoUnlocked] =
+  val autoUnlockedAchievements: IndexedSeq[SeichiAchievement & AutoUnlocked] =
     values.flatMap {
       case u: AutoUnlocked => Some(u)
       case _               => None
     }
 
   implicit class AutoUnlockedOps(autoUnlocked: AutoUnlocked) {
-    val asUnlockable: SeichiAchievement with Unlockable with AutoUnlocked = autoUnlocked match {
+    val asUnlockable: SeichiAchievement & Unlockable & AutoUnlocked = autoUnlocked match {
       case n: NormalAuto[_] => n
       case h: HiddenAuto[_] => h
     }

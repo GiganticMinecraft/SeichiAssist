@@ -26,7 +26,7 @@ object SyncCanSaveBukkitWorlds {
       }
 
       @tailrec
-      def getFieldAsAccessibleField(clazz: Class[_], name: String): Option[Field] = {
+      def getFieldAsAccessibleField(clazz: Class[?], name: String): Option[Field] = {
         clazz.getDeclaredFields.find(_.getName.equals(name)) match {
           case s @ Some(field) =>
             field.setAccessible(true)

@@ -23,11 +23,11 @@ import org.bukkit.inventory.ItemStack
 
 object RankingRootMenu extends Menu {
   class Environment(
-    implicit val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
-    val ioCanOpenSeichiRankingMenu: IO CanOpen RankingMenu[SeichiAmountData],
-    val ioCanOpenBuildRankingMenu: IO CanOpen RankingMenu[BuildAmountData],
-    val ioCanOpenLoginTimeRankingMenu: IO CanOpen RankingMenu[LoginTime],
-    val ioCanOpenVoteCountRankingMenu: IO CanOpen RankingMenu[VoteCount],
+    implicit val ioCanOpenFirstPage: IO `CanOpen` FirstPage.type,
+    val ioCanOpenSeichiRankingMenu: IO `CanOpen` RankingMenu[SeichiAmountData],
+    val ioCanOpenBuildRankingMenu: IO `CanOpen` RankingMenu[BuildAmountData],
+    val ioCanOpenLoginTimeRankingMenu: IO `CanOpen` RankingMenu[LoginTime],
+    val ioCanOpenVoteCountRankingMenu: IO `CanOpen` RankingMenu[VoteCount],
     val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 

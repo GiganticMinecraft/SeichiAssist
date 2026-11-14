@@ -104,7 +104,7 @@ object StreamExtra {
    */
   def compileToRestartingStream[F[_]: Sync: ErrorLogger, A](
     context: String
-  )(stream: Stream[F, _]): F[A] = {
+  )(stream: Stream[F, ?]): F[A] = {
     Monad[F].foreverM {
       stream
         .handleErrorWith { error =>

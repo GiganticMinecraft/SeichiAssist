@@ -36,7 +36,7 @@ object GridTemplateMenu extends Menu {
   private val aisleAmount = Math.ceil(templateKeepAmount / 9.0).toInt + 1
 
   class Environment(
-    implicit val canOpenGridRegionMenu: IO CanOpen GridRegionMenu.type,
+    implicit val canOpenGridRegionMenu: IO `CanOpen` GridRegionMenu.type,
     val gridRegionAPI: GridRegionAPI[IO, Player, Location, World],
     val layoutPreparationContext: LayoutPreparationContext,
     val onMinecraftServerThread: OnMinecraftServerThread[IO]
@@ -61,7 +61,7 @@ object GridTemplateMenu extends Menu {
     } yield {
       val templateButtonLayout = MenuSlotLayout(templateButtons.zipWithIndex.map {
         case (button: Button, index: Int) => index -> button
-      }: _*)
+      }*)
       val backMenuButtonPosition = (aisleAmount - 1) * 9
       val backMenuButton = CommonButtons.transferButton(
         new IconItemStackBuilder(Material.BARRIER).lore(List(s"$RED${UNDERLINE}クリックで戻る")),

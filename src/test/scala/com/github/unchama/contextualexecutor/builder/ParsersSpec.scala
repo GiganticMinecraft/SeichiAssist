@@ -51,7 +51,7 @@ class ParsersSpec extends AnyWordSpec {
   }
 
   private def assertFailureEffectSends(
-    result: ResponseEffectOrResult[CommandSender, _],
+    result: ResponseEffectOrResult[CommandSender, ?],
     expectedMessage: String
   ): Unit = {
     val effect = result.swap.getOrElse(fail("パース結果はLeftであるべきです"))

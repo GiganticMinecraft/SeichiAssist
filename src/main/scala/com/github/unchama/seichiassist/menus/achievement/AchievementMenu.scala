@@ -29,11 +29,11 @@ object AchievementMenu extends Menu {
   import com.github.unchama.menuinventory.syntax._
 
   class Environment(
-    implicit val ioCanOpenStickMenu: IO CanOpen FirstPage.type,
-    val ioCanOpenCategoryMenu: IO CanOpen AchievementCategoryMenu,
+    implicit val ioCanOpenStickMenu: IO `CanOpen` FirstPage.type,
+    val ioCanOpenCategoryMenu: IO `CanOpen` AchievementCategoryMenu,
     val ioOnMainThread: OnMinecraftServerThread[IO],
     val voteAPI: VoteAPI[IO, Player],
-    val ioCanOpenNickNameMenu: IO CanOpen NickNameMenu.type,
+    val ioCanOpenNickNameMenu: IO `CanOpen` NickNameMenu.type,
     val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 
@@ -52,7 +52,7 @@ object AchievementMenu extends Menu {
 
   def buttonFor(
     categoryRepr: AchievementCategoryRepr
-  )(implicit ioCanOpenCategoryMenu: IO CanOpen AchievementCategoryMenu): Button =
+  )(implicit ioCanOpenCategoryMenu: IO `CanOpen` AchievementCategoryMenu): Button =
     categoryRepr match {
       case (category, material) =>
         val includedGroups =

@@ -50,7 +50,7 @@ class WorldLevelItemsMigrationVersionRepository[F[_]](serverId: String)(implicit
           sql"""
           insert into seichiassist.item_migration_in_server_world_levels(server_id, version_string, completed_at)
           values (?, ?, cast(now() as datetime))
-        """.batch(batchParams: _*).apply[List]()
+        """.batch(batchParams*).apply[List]()
         }
       }
     }

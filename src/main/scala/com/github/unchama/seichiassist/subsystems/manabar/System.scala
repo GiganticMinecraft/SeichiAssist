@@ -23,7 +23,7 @@ object System {
 
     BukkitRepositoryControls.createHandles(definition).map { control =>
       new Subsystem[F] {
-        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] =
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, ?]] =
           List(control.coerceFinalizationContextTo[F])
       }
     }

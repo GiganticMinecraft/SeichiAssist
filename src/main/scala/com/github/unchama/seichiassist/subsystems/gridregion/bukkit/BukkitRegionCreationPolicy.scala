@@ -43,24 +43,24 @@ class BukkitRegionCreationPolicy[F[_]: Sync]
       WorldGuardWrapper.isNotOverlapping(world, protectedCuboidRegion)
     }
 
-  import cats.implicits._
-
   override def isWithinRegionUnitSizeLimit(
     shape: SubjectiveRegionShape,
     world: World,
     getGridLimitPerWorld: GetGridUnitSizeLimitPerWorld[F, World]
-  ): F[Boolean] = for {
-    gridSizeLimit <- getGridLimitPerWorld(world)
-  } yield gridSizeLimit.limit.count >= shape.regionUnits.count
+  ): F[Boolean] =
+    Sync[F].map(getGridLimitPerWorld(world)) { gridSizeLimit =>
+      gridSizeLimit.limit.count >= shape.regionUnits.count
+    }
 
   override def isNotOverRegionCountLimit(
     world: World,
     player: Player,
     getRegionCountLimit: GetRegionCountLimit[F, World]
-  ): F[Boolean] = for {
-    regionCountOfPlayer <- Sync[F].delay(WorldGuardWrapper.getNumberOfRegions(player, world))
-    limit <- getRegionCountLimit(world)
-  } yield regionCountOfPlayer < limit.value
+  ): F[Boolean] =
+    Sync[F].flatMap(Sync[F].delay(WorldGuardWrapper.getNumberOfRegions(player, world))) {
+      regionCountOfPlayer =>
+        Sync[F].map(getRegionCountLimit(world))(limit => regionCountOfPlayer < limit.value)
+    }
 
-  override protected implicit val F: Monad[F] = implicitly
+  override protected implicit val F: Monad[F] = Sync[F]
 }

@@ -28,7 +28,7 @@ object InventoryOperations {
       OnMinecraftServerThread[F].runAction(SyncIO {
         player
           .getInventory
-          .addItem(amalgamated: _*)
+          .addItem(amalgamated*)
           .values()
           .asScala
           .filter(_.getType != Material.AIR)

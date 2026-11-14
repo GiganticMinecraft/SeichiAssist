@@ -68,13 +68,13 @@ import com.github.unchama.seichiassist.menus.trade.TradeSelector
 
 trait TopLevelRouter[F[_]] {
 
-  implicit def canOpenStickMenu: F CanOpen FirstPage.type
+  implicit def canOpenStickMenu: F `CanOpen` FirstPage.type
 
-  implicit def canOpenAchievementMenu: F CanOpen AchievementMenu.type
+  implicit def canOpenAchievementMenu: F `CanOpen` AchievementMenu.type
 
-  implicit def ioCanOpenMineStackMenu: F CanOpen MineStackMainMenu.type
+  implicit def ioCanOpenMineStackMenu: F `CanOpen` MineStackMainMenu.type
 
-  implicit def ioCanOpenCategorizedMineStackMenu: F CanOpen CategorizedMineStackMenu
+  implicit def ioCanOpenCategorizedMineStackMenu: F `CanOpen` CategorizedMineStackMenu
 
 }
 
@@ -175,55 +175,58 @@ object TopLevelRouter {
 
     implicit lazy val stickMenuEnv: FirstPage.Environment = new FirstPage.Environment
 
-    implicit lazy val ioCanOpenVoteMenu: IO CanOpen VoteMenu.type = _.open
+    implicit lazy val ioCanOpenVoteMenu: IO `CanOpen` VoteMenu.type = _.open
 
-    implicit lazy val ioCanOpenNicknameShopMenu: IO CanOpen NicknameShopMenu = _.open
+    implicit lazy val ioCanOpenNicknameShopMenu: IO `CanOpen` NicknameShopMenu = _.open
 
-    implicit lazy val ioCanOpenNicknameCombinationMenu: IO CanOpen NicknameCombinationMenu =
+    implicit lazy val ioCanOpenNicknameCombinationMenu: IO `CanOpen` NicknameCombinationMenu =
       _.open
 
-    implicit lazy val ioCanOpenNickNameMenu: IO CanOpen NickNameMenu.type = _.open
+    implicit lazy val ioCanOpenNickNameMenu: IO `CanOpen` NickNameMenu.type = _.open
 
-    implicit lazy val ioCanOpenSelectItemColorMenu: IO CanOpen MineStackSelectItemKindMenu =
+    implicit lazy val ioCanOpenSelectItemColorMenu: IO `CanOpen` MineStackSelectItemKindMenu =
       _.open
-    implicit lazy val ioCanOpenAchievementGroupMenu: IO CanOpen AchievementGroupMenu = _.open
+    implicit lazy val ioCanOpenAchievementGroupMenu: IO `CanOpen` AchievementGroupMenu = _.open
     implicit lazy val ioCanOpenHomeConfirmationMenu
-      : IO CanOpen home.HomeChangeConfirmationMenu =
+      : IO `CanOpen` home.HomeChangeConfirmationMenu =
       _.open
-    implicit lazy val ioCanOpenAchievementCategoryMenu: IO CanOpen AchievementCategoryMenu =
+    implicit lazy val ioCanOpenAchievementCategoryMenu: IO `CanOpen` AchievementCategoryMenu =
       _.open
     implicit lazy val ioCanOpenPremiumPointTransactionHistoryMenu
-      : IO CanOpen PremiumPointTransactionHistoryMenu = _.open
-    implicit lazy val ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type =
+      : IO `CanOpen` PremiumPointTransactionHistoryMenu = _.open
+    implicit lazy val ioCanOpenActiveSkillEffectMenu: IO `CanOpen` ActiveSkillEffectMenu.type =
       _.open
     override implicit lazy val ioCanOpenCategorizedMineStackMenu
-      : IO CanOpen CategorizedMineStackMenu =
+      : IO `CanOpen` CategorizedMineStackMenu =
       _.open
-    implicit lazy val ioCanOpenSecondPage: IO CanOpen SecondPage.type = _.open
-    implicit lazy val ioCanOpenMineStackMenu: IO CanOpen MineStackMainMenu.type = _.open
-    implicit lazy val ioCanOpenRegionMenu: IO CanOpen RegionMenu.type = _.open
-    implicit lazy val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type = _.open
-    implicit lazy val ioCanOpenServerSwitchMenu: IO CanOpen ServerSwitchMenu.type = _.open
-    implicit lazy val ioCanOpenHomeMenu: IO CanOpen home.HomeMenu = _.open
-    implicit lazy val ioCanOpenHomeConfirmMenu: IO CanOpen home.HomeRemoveConfirmationMenu =
+    implicit lazy val ioCanOpenSecondPage: IO `CanOpen` SecondPage.type = _.open
+    implicit lazy val ioCanOpenMineStackMenu: IO `CanOpen` MineStackMainMenu.type = _.open
+    implicit lazy val ioCanOpenRegionMenu: IO `CanOpen` RegionMenu.type = _.open
+    implicit lazy val ioCanOpenActiveSkillMenu: IO `CanOpen` ActiveSkillMenu.type = _.open
+    implicit lazy val ioCanOpenServerSwitchMenu: IO `CanOpen` ServerSwitchMenu.type = _.open
+    implicit lazy val ioCanOpenHomeMenu: IO `CanOpen` home.HomeMenu = _.open
+    implicit lazy val ioCanOpenHomeConfirmMenu: IO `CanOpen` home.HomeRemoveConfirmationMenu =
       _.open
-    implicit lazy val ioCanOpenPassiveSkillMenu: IO CanOpen PassiveSkillMenu.type = _.open
+    implicit lazy val ioCanOpenPassiveSkillMenu: IO `CanOpen` PassiveSkillMenu.type = _.open
 
-    implicit lazy val ioCanOpenSeichiRankingMenu: IO CanOpen RankingMenu[SeichiAmountData] =
+    implicit lazy val ioCanOpenSeichiRankingMenu: IO `CanOpen` RankingMenu[SeichiAmountData] =
       _.open
-    implicit lazy val ioCanOpenBuildRankingMenu: IO CanOpen RankingMenu[BuildAmountData] =
+    implicit lazy val ioCanOpenBuildRankingMenu: IO `CanOpen` RankingMenu[BuildAmountData] =
       _.open
-    implicit lazy val ioCanOpenLoginTimeRankingMenu: IO CanOpen RankingMenu[LoginTime] = _.open
-    implicit lazy val ioCanOpenVoteCountRankingMenu: IO CanOpen RankingMenu[VoteCount] = _.open
-    implicit lazy val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type = _.open
-    implicit lazy val ioCanOpenGridRegionMenu: IO CanOpen GridRegionMenu.type = _.open
-    implicit lazy val ioCanOpenGridTemplateMenu: IO CanOpen GridTemplateMenu.type = _.open
+    implicit lazy val ioCanOpenLoginTimeRankingMenu: IO `CanOpen` RankingMenu[LoginTime] =
+      _.open
+    implicit lazy val ioCanOpenVoteCountRankingMenu: IO `CanOpen` RankingMenu[VoteCount] =
+      _.open
+    implicit lazy val ioCanOpenRankingRootMenu: IO `CanOpen` RankingRootMenu.type = _.open
+    implicit lazy val ioCanOpenGridRegionMenu: IO `CanOpen` GridRegionMenu.type = _.open
+    implicit lazy val ioCanOpenGridTemplateMenu: IO `CanOpen` GridTemplateMenu.type = _.open
 
-    override implicit lazy val canOpenStickMenu: IO CanOpen FirstPage.type = _.open
-    override implicit lazy val canOpenAchievementMenu: IO CanOpen AchievementMenu.type = _.open
+    override implicit lazy val canOpenStickMenu: IO `CanOpen` FirstPage.type = _.open
+    override implicit lazy val canOpenAchievementMenu: IO `CanOpen` AchievementMenu.type =
+      _.open
 
-    implicit lazy val canOpenGachaTradeSelectorMenu: IO CanOpen TradeSelector.type = _.open
-    implicit lazy val canOpenGachaTradeMenu: IO CanOpen GachaTradeFromMineStackMenu = _.open
+    implicit lazy val canOpenGachaTradeSelectorMenu: IO `CanOpen` TradeSelector.type = _.open
+    implicit lazy val canOpenGachaTradeMenu: IO `CanOpen` GachaTradeFromMineStackMenu = _.open
   }
 
 }

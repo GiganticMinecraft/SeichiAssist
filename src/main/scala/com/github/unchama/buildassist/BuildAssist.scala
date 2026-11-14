@@ -85,7 +85,7 @@ class BuildAssist(plugin: Plugin)(
 }
 
 object BuildAssist {
-  var instance: BuildAssist = _
+  var instance: BuildAssist = scala.compiletime.uninitialized
 
   val placementSkillExcludedMaterials: Set[Material] = Set(
     // NOTE: ドアブロックは設置時にフルブロックとして設置されないことがあるようなので除外している
@@ -158,8 +158,8 @@ object BuildAssist {
       Material.VINE // ツタ
     )
 
-  var plugin: Plugin = _
-  var config: BuildAssistConfig = _
+  var plugin: Plugin = scala.compiletime.uninitialized
+  var config: BuildAssistConfig = scala.compiletime.uninitialized
   val line_up_str: Seq[String] = Seq("OFF", "上側", "下側")
   val line_up_step_str: Seq[String] = Seq("上側", "下側", "両方")
   val line_up_off_on_str: Seq[String] = Seq("OFF", "ON")

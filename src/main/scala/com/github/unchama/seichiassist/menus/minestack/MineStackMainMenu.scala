@@ -27,8 +27,8 @@ object MineStackMainMenu extends Menu {
 
   class Environment(
     implicit val ioOnMainThread: OnMinecraftServerThread[IO],
-    val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
-    val ioCanOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu,
+    val ioCanOpenFirstPage: IO `CanOpen` FirstPage.type,
+    val ioCanOpenCategorizedMineStackMenu: IO `CanOpen` CategorizedMineStackMenu,
     val gachaPrizeAPI: GachaPrizeAPI[IO, ItemStack, Player],
     val mineStackAPI: MineStackAPI[IO, Player, ItemStack],
     val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
@@ -37,7 +37,7 @@ object MineStackMainMenu extends Menu {
   override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}MineStackメインメニュー")
 
   private def categoryButtonLayout(
-    implicit ioCanOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu
+    implicit ioCanOpenCategorizedMineStackMenu: IO `CanOpen` CategorizedMineStackMenu
   ): MenuSlotLayout = {
     def iconMaterialFor(category: MineStackObjectCategory): Material = category match {
       case ORES                        => Material.DIAMOND_ORE
@@ -112,7 +112,7 @@ object MineStackMainMenu extends Menu {
               slotIndex -> button
           }
           .traverse(_.sequence)
-      } yield MenuSlotLayout(buttonMapping: _*)
+      } yield MenuSlotLayout(buttonMapping*)
     }
   }
 
