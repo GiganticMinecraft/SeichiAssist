@@ -240,7 +240,7 @@ object ResourceScope {
         // リソースの確保自体に失敗した場合は
         // `resourceSlot` を別のリソースの確保のために開ける。
         allocated <- resource
-          .allocated(ResourceUsageContext)
+          .allocated(using ResourceUsageContext)
           .orElse(forgetUsage *> OptionT.none)
         (handler, releaseResource) = allocated
 

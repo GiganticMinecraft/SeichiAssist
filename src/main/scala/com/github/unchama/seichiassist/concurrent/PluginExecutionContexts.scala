@@ -33,9 +33,9 @@ object PluginExecutionContexts {
 
   implicit val onMainThread: OnMinecraftServerThread[IO] = {
     new OnBukkitServerThread[IO]()(
-      pluginInstance,
+      using pluginInstance,
       asyncShift,
-      IO.ioConcurrentEffect(asyncShift)
+      IO.ioConcurrentEffect(using asyncShift)
     )
   }
 
