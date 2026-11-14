@@ -321,7 +321,7 @@ sealed abstract class ActiveSkillPremiumEffect(
                 _ <- FocusedSoundEffect(Sound.ENTITY_WITCH_AMBIENT, 1f, 1.5f).run(player)
               } yield ()
             }
-            .start(asyncShift)
+            .start(using asyncShift)
 
           _ <- IO {
             breakBlocks.foreach { b =>
