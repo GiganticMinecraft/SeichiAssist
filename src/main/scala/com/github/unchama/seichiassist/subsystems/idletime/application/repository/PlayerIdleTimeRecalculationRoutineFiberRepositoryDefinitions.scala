@@ -29,7 +29,7 @@ object PlayerIdleTimeRecalculationRoutineFiberRepositoryDefinitions {
           _ <- EffectExtra.runAsyncAndForget[IO, F, Unit] {
             playerIdleTimeRecalculationRoutine(player)
               .start
-              .start(IO.contextShift(repeatingTaskContext))
+              .start(using IO.contextShift(repeatingTaskContext))
               .flatMap(fiber => promise.complete(fiber))
           }
         } yield promise

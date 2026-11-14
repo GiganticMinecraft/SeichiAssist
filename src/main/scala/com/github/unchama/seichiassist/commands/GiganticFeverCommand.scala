@@ -28,7 +28,7 @@ object GiganticFeverCommand {
         broadcast(s"$AQUA(${config.getGiganticFeverDisplayTime}間)"),
         WorldSettings.setDifficulty(worldsToToggleDifficulty, Difficulty.PEACEFUL),
         IO.sleep((config.getGiganticFeverMinutes * 60).minutes)(
-          IO.timer(ExecutionContext.global)
+          using IO.timer(ExecutionContext.global)
         ),
         WorldSettings.setDifficulty(worldsToToggleDifficulty, Difficulty.HARD),
         broadcast(s"${AQUA}フィーバー終了！MOBたちは戻ってきたぞ！")
