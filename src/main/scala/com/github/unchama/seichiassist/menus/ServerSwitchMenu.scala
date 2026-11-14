@@ -74,7 +74,7 @@ object ServerSwitchMenu extends Menu {
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 
   class Environment(
-    implicit val ioCanOpenStickMenu: IO CanOpen FirstPage.type,
+    implicit val ioCanOpenStickMenu: IO `CanOpen` FirstPage.type,
     val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )
 

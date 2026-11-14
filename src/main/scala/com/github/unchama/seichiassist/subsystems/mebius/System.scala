@@ -84,7 +84,7 @@ object System {
                 new MebiusRenamePreventionListener
               )
 
-              override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] =
+              override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, ?]] =
                 Seq(speechServiceRepositoryControls, speechRoutineFiberRepositoryControls).map(
                   _.coerceFinalizationContextTo[F]
                 )

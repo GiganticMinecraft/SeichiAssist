@@ -32,8 +32,8 @@ object RankingMenu {
 
   class Environment[R](
     implicit val rankingApi: RankingProvider[IO, R],
-    val ioCanOpenRankingMenuItself: IO CanOpen RankingMenu[R],
-    val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type,
+    val ioCanOpenRankingMenuItself: IO `CanOpen` RankingMenu[R],
+    val ioCanOpenRankingRootMenu: IO `CanOpen` RankingRootMenu.type,
     val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player],
     val nonServerThreadContextShift: NonServerThreadContextShift[IO]
   )
@@ -235,5 +235,5 @@ case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) 
     rankingSection <- rankingSection(ranking)
     uiOperationSection <- uiOperationSection(totalNumberOfPages)
     totalAmountSection <- totalAmountSection(ranking)
-  } yield MenuSlotLayout(rankingSection ++ uiOperationSection ++ totalAmountSection: _*)
+  } yield MenuSlotLayout(rankingSection ++ uiOperationSection ++ totalAmountSection*)
 }

@@ -24,8 +24,8 @@ import org.bukkit.entity.Player
 object PremiumPointTransactionHistoryMenu {
 
   class Environment(
-    implicit val ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
-    val ioCanOpenTransactionHistoryMenu: IO CanOpen PremiumPointTransactionHistoryMenu,
+    implicit val ioCanOpenActiveSkillEffectMenu: IO `CanOpen` ActiveSkillEffectMenu.type,
+    val ioCanOpenTransactionHistoryMenu: IO `CanOpen` PremiumPointTransactionHistoryMenu,
     val donateAPI: DonatePremiumPointAPI[IO],
     val playerHeadSkinAPI: PlayerHeadSkinAPI[IO, Player]
   )

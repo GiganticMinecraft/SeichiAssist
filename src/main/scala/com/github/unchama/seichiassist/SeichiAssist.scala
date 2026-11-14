@@ -786,9 +786,9 @@ class SeichiAssist extends JavaPlugin() {
     // 機能を果たそうとするものである。
     implicit val canOpenBuildMainMenu: CanOpen[IO, BuildMainMenu.type] =
       BuildAssistMenuRouter.apply.canOpenBuildMainMenu
-    implicit val ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu =
+    implicit val ioCanOpenCategorizedMenu: IO `CanOpen` CategorizedMineStackMenu =
       menuRouter.ioCanOpenCategorizedMineStackMenu
-    implicit val ioCanMineStackMainMenu: IO CanOpen MineStackMainMenu.type =
+    implicit val ioCanMineStackMainMenu: IO `CanOpen` MineStackMainMenu.type =
       menuRouter.ioCanOpenMineStackMenu
 
     // コマンドの登録
@@ -995,13 +995,13 @@ object SeichiAssist {
   // Playerdataに依存するデータリスト
   val playermap: mutable.HashMap[UUID, PlayerData] = mutable.HashMap()
 
-  var instance: SeichiAssist = _
+  var instance: SeichiAssist = scala.compiletime.uninitialized
   // デバッグフラグ(デバッグモード使用時はここで変更するのではなくconfig.ymlの設定値を変更すること！)
   // TODO deprecate this
   var DEBUG = false
   // TODO staticであるべきではない
-  var databaseGateway: DatabaseGateway = _
-  var seichiAssistConfig: Config = _
+  var databaseGateway: DatabaseGateway = scala.compiletime.uninitialized
+  var seichiAssistConfig: Config = scala.compiletime.uninitialized
 
   object Scopes {
     implicit val globalChatInterceptionScope: InterceptionScope[UUID, String] = {

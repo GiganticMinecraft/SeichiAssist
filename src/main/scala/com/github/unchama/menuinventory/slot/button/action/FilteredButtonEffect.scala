@@ -23,7 +23,7 @@ case class FilteredButtonEffect(private val clickEventFilter: ClickEventFilter)(
    * [ButtonEffectScope]に依存しない[TargetedEffect]を実行する[FilteredButtonEffect]を構築する.
    */
   def this(clickEventFilter: ClickEventFilter, effects: TargetedEffect[Player]*) = {
-    this(clickEventFilter) { _ => SequentialEffect(effects: _*) }
+    this(clickEventFilter) { _ => SequentialEffect(effects*) }
   }
 
   /**
@@ -51,7 +51,7 @@ object LeftClickButtonEffect {
     effects: TargetedEffect[Player]*
   ): FilteredButtonEffect =
     FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)((_: ButtonEffectScope) =>
-      effect.followedBy(SequentialEffect(effects: _*))
+      effect.followedBy(SequentialEffect(effects*))
     )
 }
 
@@ -69,6 +69,6 @@ object RightClickButtonEffect {
     effects: TargetedEffect[Player]*
   ): FilteredButtonEffect =
     FilteredButtonEffect(ClickEventFilter.RIGHT_CLICK)((_: ButtonEffectScope) =>
-      effect.followedBy(SequentialEffect(effects: _*))
+      effect.followedBy(SequentialEffect(effects*))
     )
 }

@@ -120,7 +120,7 @@ private[minestack] case class MineStackButtons(player: Player)(
     oldPage: Int
   )(
     implicit onMainThread: OnMinecraftServerThread[IO],
-    canOpenCategorizedMineStackMenu: IO CanOpen MineStackSelectItemKindMenu
+    canOpenCategorizedMineStackMenu: IO `CanOpen` MineStackSelectItemKindMenu
   ): IO[Button] = RecomputedButton {
     for {
       itemStack <- getMineStackObjectIconItemStack(mineStackObjectGroup)
@@ -152,7 +152,7 @@ private[minestack] case class MineStackButtons(player: Player)(
     oldPage: Int
   )(
     implicit onMainThread: OnMinecraftServerThread[IO],
-    canOpenMineStackSelectItemColorMenu: IO CanOpen MineStackSelectItemKindMenu
+    canOpenMineStackSelectItemColorMenu: IO `CanOpen` MineStackSelectItemKindMenu
   ): Kleisli[IO, Player, Unit] = {
     mineStackObjectGroup match {
       case Left(mineStackObject) =>

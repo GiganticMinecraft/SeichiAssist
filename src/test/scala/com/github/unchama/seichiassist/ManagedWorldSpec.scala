@@ -44,7 +44,7 @@ class ManagedWorldSpec extends AnyWordSpec with MockFactory {
         case (worldName, value) =>
           @nowarn
           val world = mock[World]
-          (world.getName _).expects().returning(worldName)
+          ((() => world.getName())).expects().returning(worldName)
           assert(world.isBlockLineUpSkillEnabled == value)
       }
     }
@@ -56,7 +56,7 @@ class ManagedWorldSpec extends AnyWordSpec with MockFactory {
         case (worldName, value) =>
           @nowarn
           val world = mock[World]
-          (world.getName _).expects().returning(worldName)
+          ((() => world.getName())).expects().returning(worldName)
           assert(world.shouldTrackBuildBlock == value)
       }
     }

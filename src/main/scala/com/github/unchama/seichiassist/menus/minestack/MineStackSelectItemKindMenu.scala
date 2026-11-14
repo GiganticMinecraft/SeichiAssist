@@ -104,7 +104,7 @@ case class MineStackSelectItemKindMenu(
 
     for {
       mapping <- buttonMapping.traverse(_.sequence)
-    } yield MenuSlotLayout(mapping ++ uiOperationSection(totalNumberOfPages)(pageIndex): _*)
+    } yield MenuSlotLayout(mapping ++ uiOperationSection(totalNumberOfPages)(pageIndex)*)
 
   }
 

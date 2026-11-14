@@ -48,7 +48,7 @@ object System {
               )
           }
 
-        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, ?]] = Seq(
           breakSuppressionPreferenceRepositoryControls.coerceFinalizationContextTo[F]
         )
       }

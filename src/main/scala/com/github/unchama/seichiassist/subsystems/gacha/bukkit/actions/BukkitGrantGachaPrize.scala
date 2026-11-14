@@ -48,7 +48,7 @@ class BukkitGrantGachaPrize[F[_]: Sync: OnMinecraftServerThread](
         prize.materializeWithOwnerSignature(player.getName)
       }
 
-      InventoryOperations.grantItemStacksEffect(newItemStacks: _*).apply(player)
+      InventoryOperations.grantItemStacksEffect(newItemStacks*).apply(player)
     }
 
   override implicit val F: Monad[F] = implicitly

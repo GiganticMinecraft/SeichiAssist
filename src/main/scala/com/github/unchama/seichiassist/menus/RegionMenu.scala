@@ -28,7 +28,7 @@ object RegionMenu extends Menu {
   import com.github.unchama.targetedeffect.player.PlayerEffects._
 
   class Environment(
-    implicit val ioCanOpenGridRegionMenu: IO CanOpen GridRegionMenu.type,
+    implicit val ioCanOpenGridRegionMenu: IO `CanOpen` GridRegionMenu.type,
     val gridRegionAPI: GridRegionAPI[IO, Player, Location, World]
   )
 

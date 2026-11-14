@@ -14,7 +14,7 @@ object FiberAdjoinedRepositoryDefinition {
 
   def extending[G[_]: Sync, F[_]: ConcurrentEffect, Player, R](
     definition: RepositoryDefinition.Phased[G, Player, R]
-  ): definition.Self[R FiberAdjoined F] =
+  ): definition.Self[R `FiberAdjoined` F] =
     definition
       .flatXmapWithIntermediateEffects(r => Deferred.in[G, F, Fiber[F, Nothing]].map(r -> _)) {
         case (r, _) =>
