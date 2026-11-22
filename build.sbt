@@ -87,7 +87,7 @@ val dependenciesToEmbed = Seq(
 
   // type-safety utils
   "io.github.iltotore" %% "iron" % "3.4.1",
-  "com.beachape" %% "enumeratum" % "1.9.8",
+  "com.beachape" %% "enumeratum" % "1.9.9",
 
   // protobuf
   "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
