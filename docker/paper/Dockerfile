@@ -3,7 +3,7 @@ FROM ghcr.io/giganticminecraft/chunk-search-rs:latest@sha256:d08779d3f72cec13b60
 FROM ghcr.io/giganticminecraft/seichiassist-runner-v2:latest@sha256:6773a580efffb231ac0076cfe309f7c25f23fa6c4d78080cb2f0391658b38287
 FROM mikefarah/yq:4.54.3 as yq
 
-FROM itzg/minecraft-server:stable-java17@sha256:35f069ed801f4b14655acb52fdb7745dccfe69399867f57608ae4136a32c3c9e
+FROM itzg/minecraft-server:stable-java17@sha256:94e447e5154d17c3bc3afb4dc8a339a67ade040c780c25572214f88df8048085
 
 # nkf と zip 展開ツールをインストール
 RUN \
